@@ -11,7 +11,7 @@
     "human has to re-read — the checker cannot know whether a renamed state key",
     "invalidates one sentence or a whole lesson."
   ],
-  "schemaVersion": "1.4",
+  "schemaVersion": "1.5",
   "repoRoot": "../../..",
   "checks": [
     {
@@ -607,6 +607,185 @@
         "intent whichpolicy",
         "the statutory station's why"
       ]
+    },
+    {
+      "id": "c1-sidebar-leaves",
+      "kind": "xmlids",
+      "why": "Eight more stations and eight more screens resolve through these leaves — learn.screen reads its matchers off the leaf rather than keeping a copy. A retired leaf is a station that opens nothing and a screen the Coach can never recognise, and it fails in the most misleading way: the Coach says it has no lessons for a screen that has a full one. sec_learn is NOT here on purpose — pb_learn ships that section itself.",
+      "files": [
+        "pb_sidebar/data/pb_sidebar_data.xml"
+      ],
+      "expect": [
+        "sec_overview",
+        "sec_people",
+        "sec_insights",
+        "sec_compliance",
+        "item_dashboard",
+        "item_approvals",
+        "item_employees",
+        "item_contracts",
+        "item_analytics",
+        "item_explorer",
+        "item_workforce_insights",
+        "item_govt_reports"
+      ],
+      "fixture": [
+        "MENU"
+      ],
+      "taughtIn": [
+        "all eight Phase C1 stations",
+        "all eight Phase C1 screens",
+        "tools/gen_learn_data.py::SIDEBAR_KEYS"
+      ]
+    },
+    {
+      "id": "c1-client-action-tags",
+      "kind": "contains",
+      "why": "Six of the eight new leaves carry an action TAG and an EMPTY action_xmlid, so the tag is the only thing that identifies the screen; Dashboard and Government Reports carry both. Rename one and a whole screen's content goes silently unreachable — LW and LA included, because a lesson renders over the replica but the Coach still has to know which live screen a learner is standing on.",
+      "files": [
+        "pb_dashboard/static/src/js/pb_dashboard.js",
+        "pb_approval/static/src/js/approval.js",
+        "pb_people/static/src/js/people.js",
+        "pb_contracts/static/src/js/contracts.js",
+        "pb_insights/static/src/js/insights.js",
+        "pb_explorer/static/src/js/explorer.js",
+        "pb_workforce_insights/static/src/js/workforce_insights.js",
+        "pb_govt_reports/static/src/js/govt_reports.js"
+      ],
+      "expect": [
+        "\"pb_dashboard\"",
+        "\"pb_approval\"",
+        "\"pb_people\"",
+        "\"pb_contracts\"",
+        "\"pb_insights\"",
+        "\"pb_explorer_cockpit\"",
+        "\"pb_workforce_insights\"",
+        "\"pb_govt_reports\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "screens dashboard / approvals / employees / contracts / insights / explorer / workforcean / govreports",
+        "tests/test_coach.py::test_14 and ::test_16"
+      ]
+    },
+    {
+      "id": "dashboard-anchors",
+      "kind": "contains",
+      "why": "pb_learn adds NOTHING to pb_dashboard.xml — LW points at four attributes that were already there, and the registry has now promoted them out of the `foreign` block into `product`. That promotion is a claim about somebody else's template, and three of the four are ALSO pointed at by pb_coach's hero_path, so it is checked at authoring time as well as by the module's own registry test.",
+      "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "expect": [
+        "data-coach=\"dash-hero\"",
+        "data-coach=\"dash-runpayroll\"",
+        "data-coach=\"dash-kpis\"",
+        "data-coach=\"dash-formula\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "LW steps 1-4",
+        "the dashboard replica in engine/screens.js",
+        "anchors.json product block",
+        "pb_coach/static/src/js/tours/hero_path.js"
+      ]
+    },
+    {
+      "id": "c1-cockpit-anchors",
+      "kind": "contains",
+      "why": "The 33 anchors pb_learn added to the seven Phase C1 cockpits are additive attributes in modules this one does not own. Nothing over there reads them, so a tidy-up would delete them without any test in those modules noticing — and the Coach's Show-me would then scroll to nothing. pb_people, pb_contracts and pb_govt_reports share the ppl-* CLASS vocabulary, which is exactly why the anchor KEYS are namespaced per screen.",
+      "files": [
+        "pb_approval/static/src/xml/approval.xml",
+        "pb_people/static/src/xml/people.xml",
+        "pb_contracts/static/src/xml/contracts.xml",
+        "pb_insights/static/src/xml/insights.xml",
+        "pb_explorer/static/src/xml/explorer.xml",
+        "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+        "pb_govt_reports/static/src/xml/govt_reports.xml"
+      ],
+      "expect": [
+        "data-coach=\"pa-hero\"",
+        "data-coach=\"pa-kpis\"",
+        "data-coach=\"pa-lanes\"",
+        "data-coach=\"pa-recent\"",
+        "data-coach=\"pa-reject\"",
+        "data-coach=\"pe-head\"",
+        "data-coach=\"pe-bulk\"",
+        "data-coach=\"pe-kpis\"",
+        "data-coach=\"pe-filters\"",
+        "data-coach=\"pe-roster\"",
+        "data-coach=\"ct-head\"",
+        "data-coach=\"ct-kpis\"",
+        "data-coach=\"ct-filters\"",
+        "data-coach=\"ct-roster\"",
+        "data-coach=\"in-hero\"",
+        "data-coach=\"in-trend\"",
+        "data-coach=\"in-duo\"",
+        "data-coach=\"in-pulse\"",
+        "data-coach=\"in-explore\"",
+        "data-coach=\"ex-head\"",
+        "data-coach=\"ex-rail\"",
+        "data-coach=\"ex-filters\"",
+        "data-coach=\"ex-headline\"",
+        "data-coach=\"ex-table\"",
+        "data-coach=\"wa-head\"",
+        "data-coach=\"wa-filters\"",
+        "data-coach=\"wa-kpis\"",
+        "data-coach=\"wa-chart\"",
+        "data-coach=\"wa-duo\"",
+        "data-coach=\"gr-head\"",
+        "data-coach=\"gr-countries\"",
+        "data-coach=\"gr-grid\"",
+        "data-coach=\"gr-empty\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "LA every step",
+        "intents wherelives / whichlane / howmanyslips / variance / rejectright / payrollready / expirysoon / whopays / whichtool / whichfilings",
+        "anchors.json product block"
+      ]
+    },
+    {
+      "id": "approvals-reject-testimony",
+      "kind": "contains",
+      "why": "LA step 6 and the rejectright answer both teach that the reject popover REQUIRES a written reason and that rejecting cancels every payslip in the run. That is a promise about this cockpit's own behaviour, not about the model's fields — the fields are pinned separately by payrun-reject-testimony — so it is checked where the learner meets it.",
+      "files": [
+        "pb_approval/static/src/xml/approval.xml",
+        "pb_approval/static/src/js/approval.js"
+      ],
+      "expect": [
+        "Reason (required)",
+        "All payslips in this run will be cancelled.",
+        "reject_note"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "LA step 6 (a rejection is testimony)",
+        "intent rejectright",
+        "the approvals replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "govt-reports-are-country-scoped",
+      "kind": "contains",
+      "why": "The whichfilings answer teaches that the tiles are chosen by the ACTIVE COMPANY'S COUNTRY rather than by what Payobook can produce, and that a country with no catalogue says so instead of faking a form. Both halves live in this one provider: the country-keyed catalogue and the `available` flag behind the empty state. The five VN report keys are pinned because the fixture mirrors them by name.",
+      "file": "pb_govt_reports/models/pb_govt_reports.py",
+      "expect": [
+        "def get_govt_reports_data",
+        "'VN': {",
+        "'bhxh630'",
+        "'bhxhdstk01'",
+        "'bangke_d01'",
+        "'tang_ld'",
+        "'giam_ld'",
+        "'available': available"
+      ],
+      "fixture": [
+        "PRACTICE.govreports"
+      ],
+      "taughtIn": [
+        "station govreports",
+        "screen govreports",
+        "intent whichfilings",
+        "the govreports replica in engine/screens.js"
+      ]
     }
   ],
   "anchorLint": {
@@ -627,7 +806,15 @@
       "pb_statutory/static/src/xml/statutory.xml",
       "pb_structures/static/src/xml/structures.xml",
       "pb_integrations/static/src/xml/integrations.xml",
-      "pb_statutory/static/src/xml/statutory_wizards.xml"
+      "pb_statutory/static/src/xml/statutory_wizards.xml",
+      "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "pb_approval/static/src/xml/approval.xml",
+      "pb_people/static/src/xml/people.xml",
+      "pb_contracts/static/src/xml/contracts.xml",
+      "pb_insights/static/src/xml/insights.xml",
+      "pb_explorer/static/src/xml/explorer.xml",
+      "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+      "pb_govt_reports/static/src/xml/govt_reports.xml"
     ]
   },
   "tokenLint": {

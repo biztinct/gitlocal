@@ -246,7 +246,7 @@
     <record id="intent_approve" model="learn.intent">
         <field name="key">approve</field>
         <field name="label">Can I approve this run?</field>
-        <field name="screens">payruns,payslips</field>
+        <field name="screens">payruns,payslips,approvals</field>
         <field name="dynamic">none</field>
         <field name="show_me">pk-card-actions</field>
         <field name="offer" eval="True"/>
@@ -442,7 +442,7 @@
     <record id="intent_reject" model="learn.intent">
         <field name="key">reject</field>
         <field name="label">What happens if I reject a run?</field>
-        <field name="screens">payruns</field>
+        <field name="screens">payruns,approvals</field>
         <field name="dynamic">none</field>
         <field name="show_me">pk-card-actions</field>
         <field name="offer" eval="True"/>
@@ -2078,6 +2078,1109 @@
         <field name="capability">any</field>
         <field name="kind">source</field>
         <field name="body">The connector list with its sync history and staged-record counts.</field>
+    </record>
+
+    <record id="intent_wherelives" model="learn.intent">
+        <field name="key">wherelives</field>
+        <field name="label">Where do I find things in Payobook?</field>
+        <field name="screens">dashboard,employees,insights</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">rep-nav</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_wherelives_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">where is everything</field>
+    </record>
+
+    <record id="intent_wherelives_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">where do i find</field>
+    </record>
+
+    <record id="intent_wherelives_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">sidebar sections</field>
+    </record>
+
+    <record id="intent_wherelives_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">what are the sections</field>
+    </record>
+
+    <record id="intent_wherelives_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">tim o dau</field>
+    </record>
+
+    <record id="intent_wherelives_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">menu nam o dau</field>
+    </record>
+
+    <record id="intent_wherelives_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">cac nhom muc</field>
+    </record>
+
+    <record id="intent_wherelives_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">Where do I find things in Payobook?</field>
+    </record>
+
+    <record id="intent_wherelives_p08" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="text">Tìm các chức năng trong Payobook ở đâu?</field>
+    </record>
+
+    <record id="intent_wherelives_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Six sections, and you work in two of them most days. &lt;b&gt;Overview&lt;/b&gt; is where you land and where approvals queue. &lt;b&gt;Pay Run&lt;/b&gt; is the month's work end to end. &lt;b&gt;People&lt;/b&gt; holds who can be paid, &lt;b&gt;Insights&lt;/b&gt; answers questions about what was paid, &lt;b&gt;Compliance&lt;/b&gt; is the filings, and &lt;b&gt;Setup&lt;/b&gt; is read often and changed rarely.</field>
+    </record>
+
+    <record id="intent_wherelives_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_wherelives_b020_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_wherelives_b020"/>
+        <field name="sequence">10</field>
+        <field name="text">Overview — the Dashboard you land on, and the Approvals queue</field>
+        <field name="anchor">dash-hero</field>
+    </record>
+
+    <record id="intent_wherelives_b020_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_wherelives_b020"/>
+        <field name="sequence">20</field>
+        <field name="text">Pay Run — run payroll, the board, the payslips, the import</field>
+        <field name="anchor">pw-rail</field>
+    </record>
+
+    <record id="intent_wherelives_b020_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_wherelives_b020"/>
+        <field name="sequence">30</field>
+        <field name="text">People — employees and the contracts payroll is computed from</field>
+        <field name="anchor">pe-kpis</field>
+    </record>
+
+    <record id="intent_wherelives_b020_s03" model="learn.intent.step">
+        <field name="block_id" ref="intent_wherelives_b020"/>
+        <field name="sequence">40</field>
+        <field name="text">Insights — what was paid, and the Explorer for the questions the board did not anticipate</field>
+        <field name="anchor">in-hero</field>
+    </record>
+
+    <record id="intent_wherelives_b020_s04" model="learn.intent.step">
+        <field name="block_id" ref="intent_wherelives_b020"/>
+        <field name="sequence">50</field>
+        <field name="text">Setup — the formula configurations and the statutory rates behind every figure</field>
+        <field name="anchor">fs-components</field>
+    </record>
+
+    <record id="intent_wherelives_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">ok</field>
+        <field name="body">A leaf that is not in your sidebar is one your groups do not open. The Journey still describes it — the person who cannot open a screen is exactly the person who needs to know what it is before asking for access.</field>
+    </record>
+
+    <record id="intent_wherelives_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_wherelives"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">Your own sidebar, as the product renders it for your groups.</field>
+    </record>
+
+    <record id="intent_whichlane" model="learn.intent">
+        <field name="key">whichlane</field>
+        <field name="label">Who is holding this run up?</field>
+        <field name="screens">approvals,payruns</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">pa-lanes</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_whichlane_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">who is holding it up</field>
+    </record>
+
+    <record id="intent_whichlane_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">who do i chase</field>
+    </record>
+
+    <record id="intent_whichlane_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">whose gate is it at</field>
+    </record>
+
+    <record id="intent_whichlane_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">who has to approve next</field>
+    </record>
+
+    <record id="intent_whichlane_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">ai dang giu</field>
+    </record>
+
+    <record id="intent_whichlane_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">phai hoi ai</field>
+    </record>
+
+    <record id="intent_whichlane_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">dot luong tac o dau</field>
+    </record>
+
+    <record id="intent_whichlane_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">Who is holding this run up?</field>
+    </record>
+
+    <record id="intent_whichlane_p08" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="text">Ai đang giữ đợt lương này lại?</field>
+    </record>
+
+    <record id="intent_whichlane_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">The lane a run is sitting in names the tier that has to act next — Officer review, then {{hrTierName}}, then {{gmTierName}}. That is the answer to "who do I chase", and it is more reliable than asking, because the record decides it rather than a memory of who said they would look.</field>
+    </record>
+
+    <record id="intent_whichlane_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">A card offers Approve and Reject only at the gate you hold. If you cannot see those buttons on a run, it is not yours to move — and pressing harder will not change that, because the buttons are decided by the record's own gate fields and your groups.</field>
+    </record>
+
+    <record id="intent_whichlane_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">A run in draft is not waiting for a signature at all. It is waiting for whoever computes it to submit it, and it does not appear in these lanes until they do.</field>
+    </record>
+
+    <record id="intent_whichlane_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichlane"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The approval lane the run is in, and the gate fields on its own record.</field>
+    </record>
+
+    <record id="intent_howmanyslips" model="learn.intent">
+        <field name="key">howmanyslips</field>
+        <field name="label">How many payslips should I read?</field>
+        <field name="screens">approvals,payslips,payruns</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">ps-chips,pa-lanes</field>
+        <field name="simpler">Not all of them. The system has already marked the ones it was unsure about — read those first, then pick two or three ordinary ones at random to make sure the ordinary ones are fine too.</field>
+        <field name="practice_key">m2</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_howmanyslips_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="text">how many payslips do i read</field>
+    </record>
+
+    <record id="intent_howmanyslips_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="text">do i have to read every payslip</field>
+    </record>
+
+    <record id="intent_howmanyslips_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="text">sampling strategy</field>
+    </record>
+
+    <record id="intent_howmanyslips_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="text">doc bao nhieu phieu</field>
+    </record>
+
+    <record id="intent_howmanyslips_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="text">co phai doc het khong</field>
+    </record>
+
+    <record id="intent_howmanyslips_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="text">lay mau phieu luong</field>
+    </record>
+
+    <record id="intent_howmanyslips_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="text">How many payslips should I read?</field>
+    </record>
+
+    <record id="intent_howmanyslips_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="text">Tôi nên đọc bao nhiêu phiếu lương?</field>
+    </record>
+
+    <record id="intent_howmanyslips_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Not forty-eight. Reading top to bottom is how a flagged payslip gets approved at six in the evening — the engine has already told you which ones it could not settle on its own, and those are where the judgement is.</field>
+    </record>
+
+    <record id="intent_howmanyslips_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_howmanyslips_b020_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_howmanyslips_b020"/>
+        <field name="sequence">10</field>
+        <field name="text">Filter to "Need review" and open every one of them</field>
+        <field name="anchor">ps-chips</field>
+    </record>
+
+    <record id="intent_howmanyslips_b020_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_howmanyslips_b020"/>
+        <field name="sequence">20</field>
+        <field name="text">Sample two or three the engine did NOT flag</field>
+        <field name="anchor">ps-list</field>
+    </record>
+
+    <record id="intent_howmanyslips_b020_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_howmanyslips_b020"/>
+        <field name="sequence">30</field>
+        <field name="text">Read one breakdown end to end — base to net — so you know the shape of a normal slip</field>
+        <field name="anchor">ps-breakdown</field>
+    </record>
+
+    <record id="intent_howmanyslips_b020_s03" model="learn.intent.step">
+        <field name="block_id" ref="intent_howmanyslips_b020"/>
+        <field name="sequence">40</field>
+        <field name="text">Compare the run's total against last month and say why it moved</field>
+        <field name="anchor">ps-kpis</field>
+    </record>
+
+    <record id="intent_howmanyslips_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">A flag marks the unusual, not the wrong. A clean payslip can still be incorrect and a flagged one can be perfectly fine — which is why the sample matters as much as the flags do.</field>
+    </record>
+
+    <record id="intent_howmanyslips_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_howmanyslips"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The run's flagged payslips, and the filter chips on the payslip review screen.</field>
+    </record>
+
+    <record id="intent_variance" model="learn.intent">
+        <field name="key">variance</field>
+        <field name="label">Is this variance normal?</field>
+        <field name="screens">approvals,payslips,insights,payruns</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">ps-kpis,in-trend</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_variance_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="text">explain the variance</field>
+    </record>
+
+    <record id="intent_variance_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="text">the total moved</field>
+    </record>
+
+    <record id="intent_variance_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="text">why is the run bigger</field>
+    </record>
+
+    <record id="intent_variance_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="text">bien dong co binh thuong</field>
+    </record>
+
+    <record id="intent_variance_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="text">tong thay doi</field>
+    </record>
+
+    <record id="intent_variance_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="text">giai thich chenh lech</field>
+    </record>
+
+    <record id="intent_variance_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="text">Is this variance normal?</field>
+    </record>
+
+    <record id="intent_variance_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="text">Biến động thế này có bình thường không?</field>
+    </record>
+
+    <record id="intent_variance_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">"Normal" is not a percentage — it is whether you can finish the sentence. On this run: July is 612,480,000 ₫ against June's 596,110,000 ₫, a rise of 2.7% on one more employee, and one payslip carries 3,100,000 ₫ more overtime than it did last month.</field>
+    </record>
+
+    <record id="intent_variance_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">A comfortable-looking total is where a single wrong payslip hides best. Three million đồng sits invisibly inside a 2.7% move, and nothing about the total says so — the flags do.</field>
+    </record>
+
+    <record id="intent_variance_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_variance_b030_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_variance_b030"/>
+        <field name="sequence">10</field>
+        <field name="text">Headcount first — two extra people explain most of what looks like a rise</field>
+        <field name="anchor">wa-kpis</field>
+    </record>
+
+    <record id="intent_variance_b030_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_variance_b030"/>
+        <field name="sequence">20</field>
+        <field name="text">Then overtime, which moves with the month rather than with the contract</field>
+        <field name="anchor">ps-breakdown</field>
+    </record>
+
+    <record id="intent_variance_b030_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_variance_b030"/>
+        <field name="sequence">30</field>
+        <field name="text">Then the flags, one at a time, because a total cannot show you those</field>
+        <field name="anchor">ps-chips</field>
+    </record>
+
+    <record id="intent_variance_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_variance"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The run's net total against the previous month's, and the payslips underneath both.</field>
+    </record>
+
+    <record id="intent_rejectright" model="learn.intent">
+        <field name="key">rejectright</field>
+        <field name="label">How do I write a rejection reason?</field>
+        <field name="screens">approvals,payruns</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">pa-reject</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_rejectright_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="text">what should the reason say</field>
+    </record>
+
+    <record id="intent_rejectright_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="text">good rejection note</field>
+    </record>
+
+    <record id="intent_rejectright_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="text">viet ly do tra lai</field>
+    </record>
+
+    <record id="intent_rejectright_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="text">ghi ly do the nao</field>
+    </record>
+
+    <record id="intent_rejectright_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="text">ly do tu choi viet gi</field>
+    </record>
+
+    <record id="intent_rejectright_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="text">How do I write a rejection reason?</field>
+    </record>
+
+    <record id="intent_rejectright_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="text">Viết lý do trả lại đợt lương thế nào cho đúng?</field>
+    </record>
+
+    <record id="intent_rejectright_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Name the payslip, name the figure, and name what you want checked. "Payslip NV0031 — overtime 4,200,000 ₫ is 382% of June. Please verify against the timesheet and resubmit." is a reason somebody can act on today.</field>
+    </record>
+
+    <record id="intent_rejectright_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">"Wrong", "please recheck" and "the numbers look off" all send 48 payslips back to draft and leave the officer guessing at what you saw. They will probably resubmit the same thing, and the second rejection is the one that becomes an argument.</field>
+    </record>
+
+    <record id="intent_rejectright_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">ok</field>
+        <field name="body">The reason is stored with your name and the time and stays on the record. That is what makes a payroll month defensible six months later, when nobody remembers the conversation.</field>
+    </record>
+
+    <record id="intent_rejectright_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_rejectright"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The rejection fields on the pay run record: the note, who wrote it and when.</field>
+    </record>
+
+    <record id="intent_payrollready" model="learn.intent">
+        <field name="key">payrollready</field>
+        <field name="label">Why is somebody not payroll-ready?</field>
+        <field name="screens">employees,runpayroll</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">pe-roster,pe-kpis</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_payrollready_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="text">not payroll ready</field>
+    </record>
+
+    <record id="intent_payrollready_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="text">why can this person not be paid</field>
+    </record>
+
+    <record id="intent_payrollready_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="text">readiness tick</field>
+    </record>
+
+    <record id="intent_payrollready_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="text">chua san sang tinh luong</field>
+    </record>
+
+    <record id="intent_payrollready_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="text">vi sao chua tra luong duoc</field>
+    </record>
+
+    <record id="intent_payrollready_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="text">dau san sang</field>
+    </record>
+
+    <record id="intent_payrollready_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="text">Why is somebody not payroll-ready?</field>
+    </record>
+
+    <record id="intent_payrollready_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="text">Vì sao một người chưa sẵn sàng tính lương?</field>
+    </record>
+
+    <record id="intent_payrollready_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Payroll-ready means everything needed to pay this person is present — a running contract, a wage on it, and bank details the payment file can use. Miss any one and the payslip still computes perfectly and the money still does not arrive.</field>
+    </record>
+
+    <record id="intent_payrollready_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">This is the failure with the longest gap between cause and symptom: the run looks finished, the reports reconcile, and the person tells you on {{payDay}}.</field>
+    </record>
+
+    <record id="intent_payrollready_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_payrollready_b030_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_payrollready_b030"/>
+        <field name="sequence">10</field>
+        <field name="text">Filter the roster to the people who are not ready</field>
+        <field name="anchor">pe-filters</field>
+    </record>
+
+    <record id="intent_payrollready_b030_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_payrollready_b030"/>
+        <field name="sequence">20</field>
+        <field name="text">Read what each one is missing — the row says which fact it is</field>
+        <field name="anchor">pe-roster</field>
+    </record>
+
+    <record id="intent_payrollready_b030_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_payrollready_b030"/>
+        <field name="sequence">30</field>
+        <field name="text">Fix it on the employee or the contract, not on the payslip afterwards</field>
+        <field name="anchor">ct-roster</field>
+    </record>
+
+    <record id="intent_payrollready_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The payroll-ready mark on the employee roster, and the contract behind it.</field>
+    </record>
+
+    <record id="intent_expirysoon" model="learn.intent">
+        <field name="key">expirysoon</field>
+        <field name="label">A contract expires mid-month — what happens?</field>
+        <field name="screens">contracts,employees</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">ct-roster,ct-filters</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_expirysoon_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="text">contract expires mid month</field>
+    </record>
+
+    <record id="intent_expirysoon_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="text">expiring contract</field>
+    </record>
+
+    <record id="intent_expirysoon_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="text">renewal not signed yet</field>
+    </record>
+
+    <record id="intent_expirysoon_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="text">hop dong het han giua thang</field>
+    </record>
+
+    <record id="intent_expirysoon_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="text">gia han chua ky</field>
+    </record>
+
+    <record id="intent_expirysoon_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="text">het han hop dong</field>
+    </record>
+
+    <record id="intent_expirysoon_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="text">A contract expires mid-month — what happens?</field>
+    </record>
+
+    <record id="intent_expirysoon_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="text">Hợp đồng hết hạn giữa tháng thì sao?</field>
+    </record>
+
+    <record id="intent_expirysoon_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Payroll computes from the contract, so it pays up to the day the contract ends and prorates the month around it. That is correct behaviour, and it is a surprise to everybody who was expecting a full month.</field>
+    </record>
+
+    <record id="intent_expirysoon_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">A renewal that is still in &lt;b&gt;draft&lt;/b&gt; on the run date is worse: a draft contract pays nothing at all, and the employee simply is not in the run. Draft is the state to hunt for in the week before payroll.</field>
+    </record>
+
+    <record id="intent_expirysoon_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Both cases are visible before the run and expensive after it. The expiring filter on this screen is a two-minute check; a missed renewal is a retro line next month and a conversation this one.</field>
+    </record>
+
+    <record id="intent_expirysoon_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_expirysoon"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The contract's own period and state, and the expiring filter over the roster.</field>
+    </record>
+
+    <record id="intent_whopays" model="learn.intent">
+        <field name="key">whopays</field>
+        <field name="label">Who can change what somebody is paid?</field>
+        <field name="screens">employees,contracts,payslips</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">ct-roster</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_whopays_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="text">who can change a salary</field>
+    </record>
+
+    <record id="intent_whopays_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="text">can i change someone pay</field>
+    </record>
+
+    <record id="intent_whopays_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="text">edit a wage</field>
+    </record>
+
+    <record id="intent_whopays_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="text">sua muc luong</field>
+    </record>
+
+    <record id="intent_whopays_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="text">doi luong nhan vien</field>
+    </record>
+
+    <record id="intent_whopays_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="text">ai duoc sua luong</field>
+    </record>
+
+    <record id="intent_whopays_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="text">Who can change what somebody is paid?</field>
+    </record>
+
+    <record id="intent_whopays_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="text">Ai được sửa mức lương của một người?</field>
+    </record>
+
+    <record id="intent_whopays_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">A wage is changed on the &lt;b&gt;contract&lt;/b&gt;, never on a payslip. The payslip is a result: correcting it leaves the agreement behind it unchanged, and the next recompute quietly puts the old figure back.</field>
+    </record>
+
+    <record id="intent_whopays_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">A change on a running contract applies from now on — it moves the registered insurance base with it, and it corrects nothing that has already been paid. The past is a retro line.</field>
+    </record>
+
+    <record id="intent_whopays_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The contract record, and the retro adjustment ledger for anything already paid.</field>
+    </record>
+
+    <record id="intent_whopays_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">40</field>
+        <field name="capability">no_access</field>
+        <field name="kind">refusal</field>
+        <field name="body">Not from here. The Employees and Contracts screens are not in your menu, so there is no wage for you to change and no button you are missing.</field>
+    </record>
+
+    <record id="intent_whopays_b050" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">50</field>
+        <field name="capability">no_access</field>
+        <field name="kind">who</field>
+        <field name="body">A payroll officer or above can read the contract; saving a new wage on it is usually held a tier higher again, because it is an HR agreement rather than a payroll setting.</field>
+    </record>
+
+    <record id="intent_whopays_b060" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">60</field>
+        <field name="capability">no_access</field>
+        <field name="kind">how</field>
+        <field name="body">Ask {{payrollSupportContact}}. A wage list is not something everybody in a company should be able to read, so expect to be asked what you need it for.</field>
+    </record>
+
+    <record id="intent_whopays_b070" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">70</field>
+        <field name="capability">no_access</field>
+        <field name="kind">source</field>
+        <field name="body">Your sidebar, and the groups the People leaves are gated on.</field>
+    </record>
+
+    <record id="intent_whopays_b080" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">80</field>
+        <field name="capability">operator</field>
+        <field name="kind">p</field>
+        <field name="body">You can open the contract and read it. Whether you can save a new wage on it depends on your groups, and on most companies that decision belongs a tier above payroll — a wage is an HR agreement that payroll executes.</field>
+    </record>
+
+    <record id="intent_whopays_b090" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">90</field>
+        <field name="capability">operator</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_whopays_b090_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_whopays_b090"/>
+        <field name="sequence">10</field>
+        <field name="text">Open the person on the Employees roster</field>
+        <field name="anchor">pe-roster</field>
+    </record>
+
+    <record id="intent_whopays_b090_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_whopays_b090"/>
+        <field name="sequence">20</field>
+        <field name="text">Read the contract behind them — the wage lives there</field>
+        <field name="anchor">ct-roster</field>
+    </record>
+
+    <record id="intent_whopays_b090_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_whopays_b090"/>
+        <field name="sequence">30</field>
+        <field name="text">Recompute the draft run afterwards, so the payslip follows the contract</field>
+        <field name="anchor">pw-compute</field>
+    </record>
+
+    <record id="intent_whopays_b100" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whopays"/>
+        <field name="sequence">100</field>
+        <field name="capability">operator</field>
+        <field name="kind">source</field>
+        <field name="body">The contract record, and your group membership.</field>
+    </record>
+
+    <record id="intent_whosees" model="learn.intent">
+        <field name="key">whosees</field>
+        <field name="label">Who can see this wage list?</field>
+        <field name="screens">employees,contracts,insights</field>
+        <field name="dynamic">none</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_whosees_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="text">who can see salaries</field>
+    </record>
+
+    <record id="intent_whosees_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="text">is this list private</field>
+    </record>
+
+    <record id="intent_whosees_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="text">who has access to wages</field>
+    </record>
+
+    <record id="intent_whosees_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="text">ai xem duoc danh sach luong</field>
+    </record>
+
+    <record id="intent_whosees_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="text">danh sach nay co rieng tu khong</field>
+    </record>
+
+    <record id="intent_whosees_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="text">quyen xem luong</field>
+    </record>
+
+    <record id="intent_whosees_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="text">Who can see this wage list?</field>
+    </record>
+
+    <record id="intent_whosees_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="text">Ai được xem danh sách lương này?</field>
+    </record>
+
+    <record id="intent_whosees_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Whoever holds one of the payroll groups the leaf is gated on — a payroll officer, a payroll manager, a final approver or an administrator. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all.</field>
+    </record>
+
+    <record id="intent_whosees_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">ok</field>
+        <field name="body">That is the right shape for this data. A wage list answers questions nobody asked about colleagues, and hiding the door is a stronger promise than disabling a button on it.</field>
+    </record>
+
+    <record id="intent_whosees_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Exporting it moves the data somewhere none of that applies. A spreadsheet of salaries has no groups on it and no way to be taken back.</field>
+    </record>
+
+    <record id="intent_whosees_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The groups on the People sidebar leaves, and your own group membership.</field>
+    </record>
+
+    <record id="intent_whichtool" model="learn.intent">
+        <field name="key">whichtool</field>
+        <field name="label">Insights or Explorer — which one answers this?</field>
+        <field name="screens">insights,explorer,workforcean</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">in-hero,ex-rail</field>
+        <field name="simpler">Use the board when your question is one that comes up every month, and the Explorer when it is not. The board has the answers somebody already thought of; the Explorer lets you ask for one nobody did.</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_whichtool_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="text">insights or explorer</field>
+    </record>
+
+    <record id="intent_whichtool_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="text">which analytics screen</field>
+    </record>
+
+    <record id="intent_whichtool_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="text">board or explorer</field>
+    </record>
+
+    <record id="intent_whichtool_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="text">dung phan tich hay explorer</field>
+    </record>
+
+    <record id="intent_whichtool_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="text">man hinh phan tich nao</field>
+    </record>
+
+    <record id="intent_whichtool_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="text">cong cu nao tra loi</field>
+    </record>
+
+    <record id="intent_whichtool_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="text">Insights or Explorer — which one answers this?</field>
+    </record>
+
+    <record id="intent_whichtool_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="text">Phân tích hay Explorer — cái nào trả lời được?</field>
+    </record>
+
+    <record id="intent_whichtool_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">&lt;b&gt;Insights&lt;/b&gt; answers the questions a payroll month asks every time: what did it cost, is that a trend, which department carries it, how much of it is statutory. &lt;b&gt;Explorer&lt;/b&gt; answers the one you thought of this morning — you pick the measure and the breakdown yourself.</field>
+    </record>
+
+    <record id="intent_whichtool_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">&lt;b&gt;Workforce Analytics&lt;/b&gt; is the third and it asks a different kind of question: not what payroll cost, but who was in it. Headcount paid, joiners and leavers, attendance exceptions, cost per head.</field>
+    </record>
+
+    <record id="intent_whichtool_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">ok</field>
+        <field name="body">All three read the same payslips, so they cannot disagree with each other or with a payslip. That is the point of building them over the payroll rather than over a reporting copy of it.</field>
+    </record>
+
+    <record id="intent_whichtool_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Neither of them explains WHY. They tell you a division is above the rest; the reason is in that division's configuration and its payslips, and no analytics screen will pretend otherwise.</field>
+    </record>
+
+    <record id="intent_whichtool_b050" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="sequence">50</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The three analytics cockpits, all built over the computed payslips.</field>
+    </record>
+
+    <record id="intent_whichfilings" model="learn.intent">
+        <field name="key">whichfilings</field>
+        <field name="label">Which filings does my company have to submit?</field>
+        <field name="screens">govreports</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">gr-grid,gr-countries</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_whichfilings_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="text">which filings do we submit</field>
+    </record>
+
+    <record id="intent_whichfilings_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="text">what reports does the government want</field>
+    </record>
+
+    <record id="intent_whichfilings_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="text">statutory filings list</field>
+    </record>
+
+    <record id="intent_whichfilings_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="text">phai nop bao cao nao</field>
+    </record>
+
+    <record id="intent_whichfilings_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="text">bao cao bat buoc gom nhung gi</field>
+    </record>
+
+    <record id="intent_whichfilings_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="text">mau bieu nop cho co quan</field>
+    </record>
+
+    <record id="intent_whichfilings_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="text">Which filings does my company have to submit?</field>
+    </record>
+
+    <record id="intent_whichfilings_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="text">Công ty tôi phải nộp những báo cáo nào?</field>
+    </record>
+
+    <record id="intent_whichfilings_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Whichever ones your company's &lt;b&gt;country&lt;/b&gt; has, and nothing else. The tiles are chosen by the active company's country rather than by what Payobook can produce — a Vietnamese company sees the BHXH forms and the labour-change declarations, and a company somewhere else sees that country's set.</field>
+    </record>
+
+    <record id="intent_whichfilings_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_whichfilings_b020_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_whichfilings_b020"/>
+        <field name="sequence">10</field>
+        <field name="text">Choose the month — the period control here is a month, not a date range</field>
+        <field name="anchor">gr-head</field>
+    </record>
+
+    <record id="intent_whichfilings_b020_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_whichfilings_b020"/>
+        <field name="sequence">20</field>
+        <field name="text">Check every run in that month has reached done before generating anything</field>
+        <field name="anchor">pk-tabs</field>
+    </record>
+
+    <record id="intent_whichfilings_b020_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_whichfilings_b020"/>
+        <field name="sequence">30</field>
+        <field name="text">Generate the tile you need — it opens the company's existing wizard, prefilled</field>
+        <field name="anchor">gr-grid</field>
+    </record>
+
+    <record id="intent_whichfilings_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">A filing built from a month whose runs are not all done is short by however many payslips are still in the pipeline — and it is the authority, not Payobook, that will notice.</field>
+    </record>
+
+    <record id="intent_whichfilings_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">If your country's group says the filings are coming soon, that is the truth rather than a fault: the tiles exist per country, and one with none has not been built yet. Payobook prepares the file either way — it does not submit it for you.</field>
+    </record>
+
+    <record id="intent_whichfilings_b050" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichfilings"/>
+        <field name="sequence">50</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The country report catalogue behind this cockpit, and the active company's country.</field>
     </record>
 
 </odoo>

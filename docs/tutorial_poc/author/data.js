@@ -75,7 +75,14 @@ const I18N = {
     badge: "Pay Run badge",
     badgeGot: "Pay Run badge earned",
     search: "Search the journey",
-    lines: { payrun: "Pay Run", setup: "Setup" },
+    // One key per station LINE. A line with no string here renders its own key
+    // as a heading — health_learn shipped exactly that when its selection was
+    // extended without the matching UI strings, and the map is the first thing
+    // a learner sees. tests/test_bundle.py::test_09 is the guard.
+    lines: {
+      payrun: "Pay Run", setup: "Setup", overview: "Overview",
+      people: "People", insights: "Insights", compliance: "Compliance",
+    },
     /* -- station cards -------------------------------------------------- */
     fullLesson: "Full lesson",
     outline: "Outline",
@@ -220,7 +227,10 @@ const I18N = {
     badge: "Huy hiệu Chạy lương",
     badgeGot: "Đã đạt huy hiệu Chạy lương",
     search: "Tìm trong hành trình",
-    lines: { payrun: "Chạy lương", setup: "Thiết lập" },
+    lines: {
+      payrun: "Chạy lương", setup: "Thiết lập", overview: "Tổng quan",
+      people: "Nhân sự", insights: "Phân tích", compliance: "Tuân thủ",
+    },
     /* -- station cards -------------------------------------------------- */
     fullLesson: "Bài học đầy đủ",
     outline: "Dàn ý",
@@ -715,6 +725,252 @@ const STATIONS = {
       },
     ],
   },
+
+  /* ---------------------------------------------------------------------------
+     THE OVERVIEW LINE (Phase C1).
+
+     APPENDED, NOT INSERTED, and the reason is mechanical rather than editorial:
+     the generator numbers stations with one counter that runs across every line
+     in declaration order, so inserting here would renumber Pay Run and Setup for
+     no content reason. The MAP does not draw them in this order — journey.js
+     holds the reading order (Overview, Pay Run, People, Insights, Compliance,
+     Setup), which is where a presentation decision belongs.
+
+     Two stations, and both are flagships. The Dashboard is where a new user
+     lands and the only screen that describes the whole month at once; Approvals
+     is where money stops being reversible. Everything between them already had
+     a lesson before Phase C.
+     ------------------------------------------------------------------------ */
+  overview: {
+    stations: [
+      {
+        id: "dashboard", icon: "grid", star: true, required: true, mins: 8, after: null,
+        title: B("Dashboard", "Bảng điều khiển"),
+        desc: B("Where you land, what the month looks like, and where everything else lives.",
+                "Nơi bạn vào đầu tiên, bức tranh cả tháng, và mọi thứ khác nằm ở đâu."),
+        outline: {
+          what: B("The command centre: who you are, which run is live, four numbers that describe the company, and a card for each part of the product worth opening today.",
+                  "Bảng điều khiển tổng: bạn là ai, đợt lương nào đang chạy, bốn con số mô tả cả công ty, và mỗi phần của sản phẩm đáng mở hôm nay là một thẻ."),
+          why: B("It is the only screen that answers \"what is the state of payroll right now\" without you choosing a filter first. Everything on it is a door — a figure you can open rather than a figure you have to write down.",
+                 "Đây là màn hình duy nhất trả lời được \"hiện trạng công việc lương lúc này ra sao\" mà bạn không phải chọn bộ lọc trước. Mọi thứ trên đó đều là một cánh cửa — con số để mở ra xem tiếp, không phải con số để chép lại."),
+          when: B("First thing, every day of payroll week, and any time you have been away long enough to have lost the thread.",
+                  "Việc đầu tiên mỗi ngày trong tuần tính lương, và bất cứ khi nào bạn vắng đủ lâu để mất mạch công việc."),
+          prereq: B("Nothing. This is the one screen everybody can open, and it is deliberately the least gated in the product.",
+                    "Không cần gì. Đây là màn hình ai cũng mở được, và nó cố ý là nơi ít bị chặn quyền nhất trong sản phẩm."),
+          mistakes: [
+            B("Reading a dashboard figure as today's work. Headcount and monthly payroll describe the company; only \"pending approval\" is a queue, and only one of those is yours.",
+              "Đọc một con số trên bảng điều khiển như thể là việc của hôm nay. Nhân sự và chi phí lương tháng mô tả cả công ty; chỉ \"chờ phê duyệt\" mới là hàng đợi, và trong đó chỉ một phần là của bạn."),
+            B("Treating it as a report and exporting the numbers. Every tile is a link into the screen that produced it — copying the figure loses the working behind it, which is the part somebody will ask about.",
+              "Coi nó như một báo cáo rồi xuất số ra ngoài. Mỗi ô đều là đường dẫn vào màn hình đã tạo ra nó — chép con số ra là mất phần tính toán phía sau, mà đó mới là phần sẽ có người hỏi tới."),
+            B("Waiting for the dashboard to tell you something is wrong. It shows what is happening, not what has been checked — a flagged payslip is a number here and a question on the Payslips screen.",
+              "Chờ bảng điều khiển báo cho biết có gì đó sai. Nó cho thấy điều đang diễn ra, không cho thấy điều đã được kiểm tra — một phiếu bị gắn cờ ở đây chỉ là một con số, còn câu hỏi thật nằm ở màn hình Phiếu lương."),
+          ],
+        },
+      },
+      {
+        id: "approvals", icon: "clipboard-check", star: true, required: true, mins: 7, after: "dashboard",
+        title: B("Approvals", "Phê duyệt"),
+        desc: B("Every run waiting for a signature, in the lane of the gate it is waiting at — including yours.",
+                "Mọi đợt lương đang chờ chữ ký, nằm ở làn của đúng cổng nó đang chờ — kể cả cổng của bạn."),
+        outline: {
+          what: B("Three lanes — Officer review, {{hrTierName}}, {{gmTierName}} — with a card per submitted run, the net at stake across all of them, and a list of what has already been decided.",
+                  "Ba làn — Chuyên viên soát, {{hrTierName}}, {{gmTierName}} — mỗi đợt đã trình là một thẻ, kèm tổng số tiền đang treo và danh sách những gì đã được quyết."),
+          why: B("The Pay Runs board shows every run there is; this screen shows only the ones a human still has to answer for. It is the queue, and the number in its header is the part of that queue that will not move until you move it.",
+                 "Bảng Đợt tính lương hiển thị mọi đợt đang có; màn hình này chỉ hiển thị những đợt vẫn cần một con người chịu trách nhiệm. Đây là hàng đợi, và con số ở tiêu đề chính là phần hàng đợi sẽ không nhúc nhích cho tới khi bạn động vào."),
+          when: B("Every morning of payroll week, and before you tell anybody a run is stuck — the lane it is in names who is holding it.",
+                  "Mỗi sáng trong tuần tính lương, và trước khi bạn nói với ai rằng một đợt đang tắc — làn mà nó nằm chỉ đích danh người đang giữ."),
+          prereq: B("One of the payroll approval groups. Without one the leaf is not in your sidebar at all, which is the honest form of \"you cannot approve\".",
+                    "Một trong các nhóm quyền phê duyệt lương. Không có nhóm nào thì mục này không xuất hiện trong thanh bên của bạn — đó là cách nói thẳng thắn của câu \"bạn không phê duyệt được\"."),
+          mistakes: [
+            B("Approving from the lane without opening the run. The card shows a total and a payslip count; the flags are on the payslips, and the total is what a wrong payslip hides inside.",
+              "Phê duyệt ngay trên làn mà chưa mở đợt lương ra. Thẻ chỉ hiện một con số tổng và số lượng phiếu; cờ cảnh báo nằm trên từng phiếu, và con số tổng chính là chỗ một phiếu sai ẩn mình."),
+            B("Reading an empty lane as a broken screen. Two of the three lanes are empty on most days — that is what a month looks like when nothing is stuck.",
+              "Thấy một làn trống rồi cho rằng màn hình bị lỗi. Đa số ngày trong tháng có hai trên ba làn trống — đó là hình ảnh của một kỳ lương không có gì bị tắc."),
+            B("Rejecting instead of asking. A rejection returns the whole batch to draft and is recorded with your name on it; a question in the corridor costs nobody two days.",
+              "Từ chối thay vì hỏi. Một lần từ chối trả cả lô về Nháp và được ghi lại kèm tên bạn; một câu hỏi ngoài hành lang thì không làm ai mất hai ngày."),
+          ],
+        },
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------------
+     THE PEOPLE LINE (Phase C1).
+
+     Two outlines rather than a lesson, and that is a scope decision with a
+     reason: what a payroll officer needs from People is a small number of
+     habits (read payroll-readiness before the run, watch the expiry chip) and
+     one distinction (a person is not a contract). Neither needs a nine-step
+     lesson, and writing one to be symmetrical with Pay Run would pad it.
+     ------------------------------------------------------------------------ */
+  people: {
+    stations: [
+      {
+        id: "employees", icon: "users", required: true, mins: 5, after: null,
+        title: B("Employees", "Nhân viên"),
+        desc: B("Everyone payroll can pay — with the two facts that decide whether they will actually be paid.",
+                "Toàn bộ những người hệ thống lương có thể trả — kèm hai dữ kiện quyết định họ có thực sự được trả hay không."),
+        outline: {
+          what: B("The people roster: headcount, running contracts, contracts expiring within thirty days, new hires, the monthly wage bill, and a payroll-ready mark on each person.",
+                  "Danh sách nhân sự: sĩ số, hợp đồng đang hiệu lực, hợp đồng hết hạn trong ba mươi ngày, người mới vào, quỹ lương tháng, và dấu sẵn sàng tính lương trên từng người."),
+          why: B("Payroll-ready is the whole point of this screen. Somebody with no bank account computes perfectly and is not paid, and you find that out either here, in a minute, or on {{payDay}}, from them.",
+                 "Dấu sẵn sàng tính lương mới là ý nghĩa của màn hình này. Một người chưa có tài khoản ngân hàng vẫn được tính lương hoàn hảo mà không nhận được tiền, và bạn biết điều đó hoặc ở đây trong một phút, hoặc vào {{payDay}}, do chính họ báo."),
+          when: B("Before a run rather than after it, and whenever somebody joins, leaves or changes department.",
+                  "Trước khi chạy một đợt lương chứ không phải sau, và mỗi khi có người vào, người nghỉ hoặc người đổi bộ phận."),
+          prereq: B("The Payroll Officer group or above — the leaf is gated, because a wage list is not something everybody in a company should be able to read.",
+                    "Quyền Chuyên viên tính lương trở lên — mục này bị chặn quyền, vì danh sách lương không phải thứ ai trong công ty cũng nên đọc được."),
+          mistakes: [
+            B("Reading the wage column as take-home pay. It is the registered contract base — the figure insurance is charged on — and nobody is paid exactly that in any month with overtime in it.",
+              "Đọc cột lương như thể là số thực nhận. Đó là lương cơ bản đã đăng ký theo hợp đồng — mức dùng tính bảo hiểm — và không ai nhận đúng con số đó trong bất kỳ tháng nào có tăng ca."),
+            B("Fixing a person's pay here. This screen holds who they are and what they were hired on; what they were paid last month is a payslip, and the two are corrected in different places.",
+              "Sửa lương của một người ở đây. Màn hình này lưu họ là ai và được tuyển với mức nào; còn số họ được trả tháng trước nằm trên phiếu lương, và hai thứ đó được sửa ở hai nơi khác nhau."),
+            B("Using bulk mode without reading the count. It is the one control here that changes many records at once, and \"12 selected\" is the only thing standing between a helpful edit and twelve wrong ones.",
+              "Dùng chế độ chọn nhiều mà không đọc con số. Đây là nút duy nhất ở đây thay đổi nhiều bản ghi cùng lúc, và dòng \"đã chọn 12\" là thứ duy nhất ngăn giữa một chỉnh sửa hữu ích và mười hai chỉnh sửa sai."),
+          ],
+        },
+      },
+      {
+        id: "contracts", icon: "file-text", mins: 5, after: "employees",
+        title: B("Contracts", "Hợp đồng"),
+        desc: B("The agreements payroll is actually paid from — and the expiry dates that quietly end them.",
+                "Những thoả thuận mà hệ thống lương thực sự dựa vào để trả — và các ngày hết hạn âm thầm kết thúc chúng."),
+        outline: {
+          what: B("Every contract with its type, its period and its wage: running, expiring within thirty days, draft and expired, plus the wage bill and the average wage across them.",
+                  "Từng hợp đồng kèm loại, thời hạn và mức lương: đang hiệu lực, sắp hết hạn trong ba mươi ngày, nháp và đã hết hạn, cùng quỹ lương và mức lương bình quân trên toàn bộ."),
+          why: B("A person is not a contract. Payroll computes from the contract, so a contract still in draft pays nothing however complete the employee record is — and a contract that expired mid-month is a proration nobody asked for.",
+                 "Con người không phải là hợp đồng. Hệ thống lương tính theo hợp đồng, nên một hợp đồng còn ở trạng thái Nháp thì không trả gì cả dù hồ sơ nhân viên có đầy đủ đến đâu — và một hợp đồng hết hạn giữa tháng là một lần tính theo ngày công mà không ai yêu cầu."),
+          when: B("In the week before a run, on the expiring filter, and whenever somebody is promoted, transferred or renewed.",
+                  "Trong tuần trước khi chạy lương, với bộ lọc sắp hết hạn, và mỗi khi có người được thăng chức, luân chuyển hoặc gia hạn."),
+          prereq: B("The Payroll Officer group or above, and the signed paperwork — this screen records an agreement that was made somewhere else.",
+                    "Quyền Chuyên viên tính lương trở lên, và giấy tờ đã ký — màn hình này ghi lại một thoả thuận đã được lập ở nơi khác."),
+          mistakes: [
+            B("Leaving a renewal in draft over the run date. The employee is on the roster, their contract is not running, and the run simply computes without them.",
+              "Để một hợp đồng gia hạn ở trạng thái Nháp vắt qua ngày chạy lương. Nhân viên vẫn có trong danh sách, hợp đồng thì chưa hiệu lực, và đợt lương đơn giản là tính mà không có họ."),
+            B("Editing a running contract's wage to correct one month. That changes the insurance base going forward and corrects nothing that has already been paid — the past is a retro line.",
+              "Sửa mức lương trên một hợp đồng đang hiệu lực để chỉnh cho một tháng. Việc đó thay đổi mức đóng bảo hiểm từ nay về sau và không sửa được gì đã trả — quá khứ phải xử lý bằng một dòng hồi tố."),
+          ],
+        },
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------------
+     THE INSIGHTS LINE (Phase C1).
+
+     Three outlines whose real content is a single distinction: which tool
+     answers which question. A board answers the questions somebody anticipated,
+     an explorer answers the ones nobody did, and workforce analytics answers a
+     question about people rather than about money. A learner who leaves with
+     that has everything these three screens can give them.
+     ------------------------------------------------------------------------ */
+  insights: {
+    stations: [
+      {
+        id: "insights", icon: "trending-up", required: true, mins: 5, after: null,
+        title: B("Insights", "Phân tích"),
+        desc: B("The board that answers the questions a payroll month asks every time.",
+                "Bảng phân tích trả lời những câu hỏi mà tháng lương nào cũng đặt ra."),
+        outline: {
+          what: B("Executive analytics over the runs that have been computed: the headline net, the cost story over three, six or twelve months, the department leaderboard, the statutory split and a workforce pulse.",
+                  "Phân tích tổng hợp trên các đợt lương đã tính: số thực chi nổi bật, diễn biến chi phí theo ba, sáu hay mười hai tháng, xếp hạng bộ phận, cơ cấu đóng bắt buộc và nhịp nhân sự."),
+          why: B("It is built from the payslips themselves rather than from a separate reporting copy, so a figure here and a figure on a payslip cannot disagree. Every number is a door back into the screen that produced it.",
+                 "Nó được dựng từ chính các phiếu lương chứ không từ một bản sao báo cáo riêng, nên một con số ở đây và một con số trên phiếu lương không thể lệch nhau. Mỗi con số đều là cánh cửa quay lại màn hình đã tạo ra nó."),
+          when: B("After a run reaches done, at month end, and any time somebody senior asks a question that starts with \"why is payroll\".",
+                  "Sau khi một đợt lương đạt Hoàn tất, vào cuối tháng, và bất cứ khi nào có lãnh đạo hỏi một câu bắt đầu bằng \"vì sao chi phí lương\"."),
+          prereq: B("An analytics group, and at least two completed runs — a trend needs a second point before it is a trend.",
+                    "Quyền phân tích, và ít nhất hai đợt lương đã hoàn tất — một xu hướng cần điểm thứ hai mới thành xu hướng."),
+          mistakes: [
+            B("Comparing a total against a total. Headcount moves between months, so the honest comparison is cost per head — two extra people explain most of what looks like a rise.",
+              "Đem một con số tổng so với một con số tổng. Sĩ số thay đổi giữa các tháng, nên phép so trung thực là chi phí bình quân đầu người — thêm hai người là đủ giải thích phần lớn cái vẻ \"tăng\" đó."),
+            B("Reading a board figure without its window. Three months and twelve months tell different stories about the same company, and the chip that decides which is easy to leave where somebody else left it.",
+              "Đọc một con số trên bảng mà quên khoảng thời gian của nó. Ba tháng và mười hai tháng kể hai câu chuyện khác nhau về cùng một công ty, và cái chip quyết định điều đó rất dễ bị để nguyên như người trước đã chọn."),
+            B("Using it to check a run before approving. This board reads runs that are done; the questions before approval are on the run itself.",
+              "Dùng nó để kiểm tra một đợt lương trước khi phê duyệt. Bảng này đọc các đợt đã Hoàn tất; những câu hỏi trước phê duyệt nằm trên chính đợt lương đó."),
+          ],
+        },
+      },
+      {
+        id: "explorer", icon: "compass", mins: 5, after: "insights",
+        title: B("Explorer", "Explorer"),
+        desc: B("For the question the board did not anticipate: pick a measure, break it down, filter it.",
+                "Dành cho câu hỏi mà bảng phân tích không lường trước: chọn chỉ tiêu, tách theo chiều, rồi lọc."),
+        outline: {
+          what: B("A question builder over the same payroll facts: one measure, one breakdown, one comparison, and any number of filters shown as removable tags above the result.",
+                  "Công cụ đặt câu hỏi trên cùng dữ liệu lương: một chỉ tiêu, một chiều tách, một chiều so sánh, và bao nhiêu bộ lọc tuỳ ý, hiển thị thành các thẻ có thể gỡ ngay phía trên kết quả."),
+          why: B("Boards answer anticipated questions and real ones are rarely anticipated. This is where \"net pay by division for the divisions that ran mid-cycle\" gets answered without anybody exporting a spreadsheet — and it reconciles with the payslips, which a spreadsheet stops doing the moment it is saved.",
+                 "Bảng phân tích trả lời những câu hỏi đã lường trước, còn câu hỏi thật thì hiếm khi được lường trước. Đây là nơi \"thực nhận theo bộ phận, chỉ các bộ phận chạy giữa kỳ\" được trả lời mà không ai phải xuất bảng tính — và nó luôn khớp với phiếu lương, điều mà một bảng tính hết đúng ngay khi vừa được lưu."),
+          when: B("When the board has answered everything it can and the question is still open, and when somebody needs a figure broken down a way nobody built a screen for.",
+                  "Khi bảng phân tích đã trả lời hết những gì nó có thể mà câu hỏi vẫn còn đó, và khi ai đó cần một con số tách theo cách chưa có màn hình nào dựng sẵn."),
+          prereq: B("An analytics group and a computed run. Knowing which measure you actually want helps more than any filter.",
+                    "Quyền phân tích và một đợt lương đã tính. Biết rõ mình thật sự cần chỉ tiêu nào còn hữu ích hơn mọi bộ lọc."),
+          mistakes: [
+            B("Quoting a figure without its filters. The tags above the result are part of the answer — the same measure with one tag removed is a different number and looks identical when it is pasted into an email.",
+              "Trích một con số mà bỏ quên bộ lọc của nó. Các thẻ phía trên kết quả là một phần của câu trả lời — cùng chỉ tiêu đó, gỡ một thẻ đi là một con số khác, mà khi dán vào email thì trông y hệt nhau."),
+            B("Expecting it to explain WHY. It tells you a division is 12% above the rest; the reason is in that division's configuration and its payslips, and the Explorer will not pretend otherwise.",
+              "Trông đợi nó giải thích VÌ SAO. Nó cho biết một bộ phận cao hơn phần còn lại 12%; còn lý do nằm trong cấu hình và các phiếu lương của bộ phận đó, và Explorer sẽ không giả vờ ngược lại."),
+          ],
+        },
+      },
+      {
+        id: "workforcean", icon: "bar-chart", mins: 4, after: "insights",
+        title: B("Workforce Analytics", "Phân tích nhân sự"),
+        desc: B("The same months read as people rather than as money: who was paid, who joined, who left.",
+                "Vẫn những tháng đó nhưng đọc theo con người thay vì theo tiền: ai được trả lương, ai vào, ai nghỉ."),
+        outline: {
+          what: B("Headcount paid month by month, joiners and leavers, cost per head, attendance exceptions and overtime — all read off the payroll that was actually run.",
+                  "Số người được trả lương theo từng tháng, người vào và người nghỉ, chi phí bình quân đầu người, ngoại lệ chấm công và tăng ca — tất cả đọc từ chính các đợt lương đã chạy."),
+          why: B("\"Employees paid\" is not \"employees employed\", and the gap between them is where a missing payslip lives. A month where headcount is flat and cost per head jumps is a different problem from one where both move.",
+                 "\"Được trả lương\" không đồng nghĩa với \"đang làm việc\", và khoảng chênh giữa hai con số ấy chính là chỗ một phiếu lương bị thiếu đang nằm. Một tháng có sĩ số đứng yên mà chi phí bình quân nhảy vọt là vấn đề khác hẳn với tháng cả hai cùng thay đổi."),
+          when: B("At month end beside Insights, and whenever a run's headcount does not match what you expected.",
+                  "Vào cuối tháng, đọc cùng với Phân tích, và bất cứ khi nào sĩ số của một đợt lương không khớp với kỳ vọng của bạn."),
+          prereq: B("An analytics group, and at least two runs to compare.",
+                    "Quyền phân tích, và ít nhất hai đợt lương để so sánh."),
+          mistakes: [
+            B("Reading the headcount line as a hiring chart. It counts people who were PAID, so a step in it can equally be a run that left somebody out.",
+              "Đọc đường sĩ số như biểu đồ tuyển dụng. Nó đếm những người ĐÃ ĐƯỢC TRẢ LƯƠNG, nên một bậc nhảy trên đó cũng có thể là một đợt lương đã bỏ sót ai đó."),
+            B("Taking attendance exceptions as somebody else's problem. Each one becomes an input, and the ones nobody resolved are the flags on next month's payslips.",
+              "Coi ngoại lệ chấm công là chuyện của người khác. Mỗi ngoại lệ đều trở thành một dữ liệu đầu vào, và những ngoại lệ không ai xử lý chính là các cờ cảnh báo trên phiếu lương tháng sau."),
+          ],
+        },
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------------
+     THE COMPLIANCE LINE (Phase C1).
+
+     One station, and it is the honest size of the thing: the cockpit is a
+     country-aware front door over wizards that already existed. What has to be
+     learned is which filings exist for the company's country, that the period
+     is a month, and that a country with no tiles is being told the truth rather
+     than being broken.
+     ------------------------------------------------------------------------ */
+  compliance: {
+    stations: [
+      {
+        id: "govreports", icon: "file-text", required: true, mins: 4, after: null,
+        title: B("Government Reports", "Báo cáo cơ quan nhà nước"),
+        desc: B("The statutory filings for this company's country, one month at a time.",
+                "Các báo cáo bắt buộc theo quốc gia của công ty này, mỗi lần một tháng."),
+        outline: {
+          what: B("A front door over the filing wizards: the report tiles this company's country has, grouped by the authority that asks for them, prefilled with the company and the month you chose.",
+                  "Cửa vào các trình lập báo cáo: những biểu mẫu mà quốc gia của công ty này có, nhóm theo cơ quan yêu cầu, và được điền sẵn công ty cùng tháng bạn đã chọn."),
+          why: B("Filings have deadlines set by law rather than by the company, and they are read by somebody outside it. This screen is where you find out which ones apply to you without asking who knows.",
+                 "Báo cáo bắt buộc có thời hạn do pháp luật ấn định chứ không do doanh nghiệp, và người đọc chúng nằm ngoài doanh nghiệp. Màn hình này cho biết những báo cáo nào áp dụng với bạn mà không phải đi hỏi xem ai biết."),
+          when: B("After the month's runs are done and before the authority's deadline — a filing built on an unfinished month is a filing that will have to be corrected.",
+                  "Sau khi các đợt lương của tháng đã Hoàn tất và trước hạn nộp của cơ quan — báo cáo lập trên một tháng chưa xong là báo cáo sẽ phải đính chính."),
+          prereq: B("Completed runs for the month, and the country's own paperwork rules — Payobook prepares the file, it does not submit it for you.",
+                    "Các đợt lương của tháng đã Hoàn tất, và quy định hồ sơ của chính quốc gia đó — Payobook lập tệp, chứ không nộp thay bạn."),
+          mistakes: [
+            B("Generating from a month whose runs are not all done. The tiles read what has been computed, so an unfinished run is a filing that is short by however many payslips are still in the pipeline.",
+              "Kết xuất báo cáo khi các đợt lương của tháng chưa hoàn tất hết. Các biểu mẫu đọc phần đã tính, nên một đợt còn dở là một báo cáo thiếu đúng bằng số phiếu lương còn đang trong quy trình."),
+            B("Reading \"coming soon\" as a fault. The tiles are per country, and a country with none simply has no filings built yet — which is better said than faked with a form nobody can submit.",
+              "Hiểu dòng \"sắp có\" như một lỗi. Các biểu mẫu là theo từng quốc gia, và quốc gia chưa có biểu mẫu nào thì đơn giản là chưa được xây dựng — nói rõ như vậy vẫn tốt hơn dựng ra một biểu mẫu không ai nộp được."),
+          ],
+        },
+      },
+    ],
+  },
 };
 
 /* =============================================================================
@@ -764,6 +1020,29 @@ const MORPHS = {
            "BHYT 240.000 · bảo hiểm 1.320.000 · thu nhập chịu thuế 1.960.000 · thuế TNCN 98.000"),
       delta: B("Net falls 57,000 ₫, not 60,000. The deduction grew by 60,000, and because insurance comes off before tax, taxable income fell by the same 60,000 and PIT fell 3,000 with it. Half a percentage point, one employee, every month.",
                "Thực nhận giảm 57.000 ₫, không phải 60.000. Khoản khấu trừ tăng 60.000, và vì bảo hiểm được trừ trước khi tính thuế, thu nhập chịu thuế cũng giảm đúng 60.000 nên thuế TNCN giảm theo 3.000. Nửa điểm phần trăm, một nhân viên, mỗi tháng."),
+    },
+  },
+
+  /* The RUN totals rather than one payslip — the comparison an approver
+     actually makes, and the one place a wrong payslip is invisible. Every
+     figure is already in the fixture: RUN.totalNet and the June row on
+     PRACTICE.board / PRACTICE.recentRuns, the two headcounts beside them, and
+     Hùng's overtime inputs. The 3,100,000 is 4,200,000 minus 1,100,000, before
+     tax, which is why it is quoted as overtime and not as net. */
+  runJuneJuly: {
+    before: {
+      h: B("June 2026", "Tháng 6/2026"),
+      big: "596,110,000 ₫",
+      d: B("47 employees · every gate said yes",
+           "47 nhân viên · mọi cổng đã đồng ý"),
+    },
+    after: {
+      h: B("July 2026", "Tháng 7/2026"),
+      big: "612,480,000 ₫",
+      d: B("48 employees · one payslip flagged, still unanswered",
+           "48 nhân viên · một phiếu bị gắn cờ, vẫn chưa được trả lời"),
+      delta: B("16,370,000 ₫ more, which is 2.7% on one extra employee. That is a comfortable-looking number, and comfortable-looking numbers are where a single wrong payslip hides best: Hùng's 3,100,000 ₫ of extra overtime sits inside it, and nothing about the total says so.",
+               "Nhiều hơn 16.370.000 ₫, tức 2,7% với thêm một nhân viên. Đó là con số trông rất dễ chịu, và những con số dễ chịu chính là nơi một phiếu lương sai ẩn mình tốt nhất: phần tăng ca thêm 3.100.000 ₫ của Hùng nằm gọn trong đó, và con số tổng không hề nói ra điều ấy."),
     },
   },
 };
@@ -1321,6 +1600,229 @@ const LESSONS = {
           correct: false,
           explanation: B("Let's rethink that. The instinct is right and the date is wrong: today means 20 July, and the decree does not say 20 July — so the declaration would record a legal start the company cannot evidence. Create the record now if you like; put 01/08 in the effective date, and tell whoever is reviewing July that the rates on this screen are next month's.",
                          "Hãy nghĩ lại một chút. Ý thức cẩn thận là đúng, chỉ có ngày là sai: hôm nay là 20/7, mà nghị định không nói 20/7 — nên bản khai báo sẽ ghi một mốc pháp lý mà doanh nghiệp không chứng minh được. Cứ tạo bản ghi ngay bây giờ cũng được; hãy điền 01/08 vào ngày hiệu lực, và báo cho người đang soát xét tháng 7 rằng tỷ lệ trên màn hình này là của tháng sau."),
+        },
+      ],
+    },
+  },
+  /* ===========================================================================
+     THE OVERVIEW LINE (Phase C1).
+
+     LW IS THE SUCCESSOR TO pb_coach's `hero_path`, and the succession is a
+     change of shape rather than of subject. The tour said the same four things
+     about the Dashboard — welcome, the KPIs, formula-driven payroll, the way in
+     — as spotlights over the LIVE screen, in English only, with no check at the
+     end and nothing recorded when it finished. Here it is a lesson: it runs over
+     the practice replica, it ships in both languages, it ends on a judgement
+     call rather than a "Done" button, and completion is stored per learner.
+
+     What was ADDED to the tour's narrative, because a first lesson has to leave
+     somebody able to work rather than impressed: the monthly loop (a Dashboard
+     is a state, and payroll is a cycle), the sidebar map (where the rest of the
+     product is), and the meta-step about asking for help — which is the whole
+     reason there is a Coach on every screen.
+
+     What was DROPPED: the Formula Studio deep-dive and the pay-run walkthrough.
+     Both are full lessons of their own now (L5 and L1), and a welcome that
+     rehearses them is a welcome nobody finishes.
+     ======================================================================== */
+  LW: {
+    id: "LW", station: "dashboard", mins: 8,
+    title: B("Welcome to your command centre", "Chào mừng tới trung tâm điều hành của bạn"),
+    goal: B("Read the Dashboard the way the first ten minutes of a payroll day needs it read — and know where everything else in Payobook lives.",
+            "Đọc Bảng điều khiển theo đúng cách mười phút đầu của một ngày làm lương cần — và biết mọi thứ còn lại trong Payobook nằm ở đâu."),
+    steps: [
+      {
+        screen: "dashboard", anchor: "dash-hero",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("The state of payroll, before you choose anything", "Hiện trạng công việc lương, trước khi bạn chọn bất cứ gì"),
+        body: B("This is the one screen that answers <b>\"where is payroll right now\"</b> without a filter, a period or a division being picked first. The line under your name is the live run: which one it is, how many payslips it holds, and how many are still waiting on a signature.",
+                "Đây là màn hình duy nhất trả lời câu hỏi <b>\"công việc lương đang ở đâu\"</b> mà không cần chọn trước bộ lọc, kỳ lương hay bộ phận nào. Dòng chữ dưới tên bạn là đợt lương đang chạy: đó là đợt nào, có bao nhiêu phiếu lương, và còn bao nhiêu phiếu đang chờ chữ ký."),
+        tip: B("Read it before your inbox. An email about payroll is somebody's version of this line; this is the line.",
+               "Hãy đọc nó trước khi mở hộp thư. Một email về chuyện lương là phiên bản của ai đó về dòng này; còn đây mới là dòng gốc."),
+      },
+      {
+        screen: "dashboard", anchor: "dash-kpis",
+        kicker: B("Reading the band", "Đọc dải chỉ số"),
+        title: B("Four numbers, and only one of them is a queue", "Bốn con số, và chỉ một trong số đó là hàng đợi"),
+        body: B("Headcount, monthly payroll, pending approval, active configurations. Three of those <b>describe the company</b> and will read almost the same tomorrow. <b>Pending approval</b> is different: it is work that has stopped, and it is the only number here that somebody has to do something about.",
+                "Nhân sự, chi phí lương tháng, chờ phê duyệt, cấu hình đang chạy. Ba trong số đó <b>mô tả cả công ty</b> và ngày mai đọc lại gần như vẫn thế. <b>Chờ phê duyệt</b> thì khác: đó là phần việc đang dừng lại, và là con số duy nhất ở đây cần có người xử lý."),
+        tip: B("It counts the company's pending sign-offs, at every gate — not yours. How many are yours is a question the Approvals screen answers.",
+               "Nó đếm toàn bộ các lượt chờ ký của công ty, ở mọi cổng — không phải riêng của bạn. Bao nhiêu trong đó là của bạn thì màn hình Phê duyệt mới trả lời."),
+      },
+      {
+        screen: "dashboard", anchor: "dash-formula",
+        kicker: B("What makes this product different", "Điều làm sản phẩm này khác biệt"),
+        title: B("Pay is computed from a rulebook you can read", "Lương được tính từ một bộ quy tắc bạn đọc được"),
+        body: B("Payobook does not hide its arithmetic behind fixed salary structures. Every line on every payslip comes from a named component in a <b>formula configuration</b> — one per division — written the way a spreadsheet is written and readable by the person who has to explain it. This card is the way in; the Formula Engine lesson is where you take one apart.",
+                "Payobook không giấu phép tính của mình sau các cấu trúc lương cố định. Mọi dòng trên mọi phiếu lương đều đến từ một thành phần có tên trong <b>cấu hình công thức</b> — mỗi bộ phận một bộ — được viết như một bảng tính và người phải đi giải thích nó vẫn đọc được. Thẻ này là lối vào; còn bài Công thức lương mới là nơi bạn mổ xẻ một bộ."),
+        tip: B("That is why \"why is my pay this number\" has an answer here rather than a promise to look into it.",
+               "Đó là lý do câu hỏi \"vì sao lương tôi lại là con số này\" có câu trả lời ngay, chứ không phải một lời hứa sẽ xem lại."),
+      },
+      {
+        screen: "dashboard", anchor: "dash-runpayroll",
+        kicker: B("The doors", "Những cánh cửa"),
+        title: B("Nothing on this screen is a second way of doing anything", "Không thứ gì trên màn hình này là một cách làm thứ hai"),
+        body: B("The buttons and cards here open the same screens the sidebar opens. <b>Run Payroll</b> from the hero is the same wizard as the Run Payroll leaf — same rules, same gates, same consequences. A dashboard that had its own shortcut to computing a run would be a second place for a run to be created, and there would be no way to be sure which one made the month.",
+                "Các nút và thẻ ở đây mở đúng những màn hình mà thanh bên mở. <b>Chạy bảng lương</b> ở phần đầu chính là trình hướng dẫn của mục Chạy bảng lương — cùng quy tắc, cùng cổng kiểm soát, cùng hậu quả. Một bảng điều khiển có lối tắt riêng để tính lương sẽ tạo ra nơi thứ hai sinh ra đợt lương, và khi đó không cách nào biết chắc tháng này được tạo từ nơi nào."),
+      },
+      {
+        screen: "dashboard", anchor: "rep-dash-runs",
+        kicker: B("The shape of a month", "Hình dạng của một tháng"),
+        title: B("Payroll is a loop, not a task", "Tính lương là một vòng lặp, không phải một đầu việc"),
+        body: B("Each row here is one month that was imported, computed, reviewed, approved by every gate and paid. The same loop, every month, in the same order — and the reason a run has a <b>state</b> rather than a tick is that the loop can stop at any point in it and somebody has to know where.",
+                "Mỗi dòng ở đây là một tháng đã được nhập dữ liệu, tính, soát xét, được mọi cổng phê duyệt và chi trả. Vẫn vòng lặp đó, mỗi tháng, theo đúng thứ tự đó — và lý do một đợt lương có <b>trạng thái</b> thay vì một dấu tích là vì vòng lặp có thể dừng ở bất kỳ điểm nào và phải có người biết nó dừng ở đâu."),
+        moment: { kind: "pipeline", chain: "payrun" },
+      },
+      {
+        screen: "dashboard", anchor: "rep-nav",
+        kicker: B("Where everything lives", "Mọi thứ nằm ở đâu"),
+        title: B("Six sections, and you only work in two of them", "Sáu nhóm mục, và bạn chỉ thật sự làm việc trong hai"),
+        body: B("<b>Overview</b> is where you land and where approvals queue. <b>Pay Run</b> is the month's work, top to bottom. <b>People</b> holds who can be paid, <b>Insights</b> answers questions about what was paid, and <b>Setup</b> is read often and changed rarely. A leaf that is not in your sidebar is one your groups do not open — the Journey still describes it, because the person who cannot open a screen is exactly the person who needs to know what it is.",
+                "<b>Tổng quan</b> là nơi bạn vào đầu tiên và là nơi các lượt phê duyệt xếp hàng. <b>Chạy lương</b> là toàn bộ công việc của tháng, từ đầu đến cuối. <b>Nhân sự</b> giữ thông tin ai có thể được trả lương, <b>Phân tích</b> trả lời các câu hỏi về những gì đã chi, còn <b>Thiết lập</b> thì thường xuyên được đọc và hiếm khi bị sửa. Mục nào không có trong thanh bên của bạn là mục mà nhóm quyền của bạn không mở được — Hành trình học vẫn mô tả nó, vì người không mở được một màn hình chính là người cần biết màn hình đó là gì."),
+        tip: B("The <b>Learning</b> section is this one. Everything you are reading now lives there, and it stays there while you work.",
+               "Nhóm mục <b>Học tập</b> chính là chỗ này. Mọi thứ bạn đang đọc đều nằm ở đó, và nó vẫn ở đó trong lúc bạn làm việc."),
+      },
+      {
+        screen: "dashboard", anchor: "",
+        kicker: B("How to get help", "Cách hỏi khi cần"),
+        title: B("There is a Coach on every screen, and it will not act for you", "Mọi màn hình đều có Trợ lý, và nó sẽ không thao tác thay bạn"),
+        body: B("The launcher in the bottom-right corner opens on <b>any</b> screen in Payobook, and it answers about the screen you are standing on: what it is, what to do next here, what a tile counts, and what a control would do before you press it. It guides — you act. It never computes a run, approves a payslip or changes a record, and it never invents a rate: every answer it gives is something a person wrote and a test checks.",
+                "Nút trợ giúp ở góc dưới bên phải mở được trên <b>mọi</b> màn hình của Payobook, và nó trả lời về đúng màn hình bạn đang đứng: đây là gì, ở đây nên làm gì tiếp, một ô số liệu đang đếm cái gì, và một nút sẽ gây ra điều gì trước khi bạn bấm. Nó hướng dẫn — bạn thao tác. Nó không bao giờ tự tính lương, phê duyệt phiếu lương hay sửa dữ liệu, và cũng không bao giờ bịa ra một tỷ lệ: mọi câu trả lời đều do con người viết và có kiểm thử canh giữ."),
+        tip: B("If it has nothing written for a screen it says so. \"I do not have lessons for this screen yet\" is a better answer than a confident one about the wrong screen.",
+               "Nếu chưa có nội dung cho một màn hình, nó sẽ nói thẳng. \"Tôi chưa có bài học cho màn hình này\" là câu trả lời tốt hơn một câu chắc nịch nhưng nói về màn hình khác."),
+      },
+    ],
+    quiz: {
+      question: B("The Dashboard says 3 pending approval. You hold the {{hrTierName}} gate. What does that number tell you about your own morning?",
+                  "Bảng điều khiển hiện 3 lượt chờ phê duyệt. Bạn là người giữ cổng {{hrTierName}}. Con số đó nói gì về buổi sáng của riêng bạn?"),
+      options: [
+        {
+          text: B("Three runs are waiting for my signature", "Có ba đợt lương đang chờ chữ ký của tôi"),
+          correct: false,
+          explanation: B("Let's rethink that. The tile counts every sign-off the company is waiting on, at every gate — most of them belong to somebody else. Acting on it as a personal queue means chasing runs that were never yours and missing the ones that were.",
+                         "Hãy nghĩ lại một chút. Ô đó đếm mọi lượt ký mà cả công ty đang chờ, ở mọi cổng — phần lớn thuộc về người khác. Coi nó như hàng đợi của riêng mình nghĩa là đi giục những đợt vốn không phải của bạn và bỏ sót đúng những đợt là của bạn."),
+        },
+        {
+          text: B("Three runs are waiting for somebody's signature, and Approvals will tell me how many are mine", "Có ba đợt đang chờ chữ ký của ai đó, và màn hình Phê duyệt sẽ cho biết bao nhiêu là của tôi"),
+          correct: true,
+          explanation: B("Exactly. The Dashboard reports the state; the queue that is yours has its own screen, and its header counts only what your groups let you act on. Reading the state first and the queue second is the order the whole product is built in.",
+                         "Chính xác. Bảng điều khiển báo cáo hiện trạng; còn hàng đợi của riêng bạn có màn hình riêng, và tiêu đề của nó chỉ đếm những gì nhóm quyền của bạn cho phép xử lý. Đọc hiện trạng trước rồi mới tới hàng đợi là đúng trật tự mà cả sản phẩm này được dựng lên."),
+        },
+        {
+          text: B("Payroll is behind schedule", "Công việc tính lương đang chậm tiến độ"),
+          correct: false,
+          explanation: B("Let's rethink that. Runs sitting at a gate mid-month is what a working approval chain looks like — the number only means \"behind\" once you know which gate each one is at and how long it has been there, and neither of those is on this tile.",
+                         "Hãy nghĩ lại một chút. Giữa tháng có vài đợt nằm chờ ở các cổng chính là hình ảnh của một chuỗi phê duyệt đang hoạt động — con số này chỉ có nghĩa là \"chậm\" khi bạn biết từng đợt đang ở cổng nào và đã nằm đó bao lâu, mà ô này không cho biết điều nào trong hai điều đó."),
+        },
+      ],
+    },
+  },
+
+  /* ===========================================================================
+     LA — the approval judgement.
+
+     It runs over the APPROVALS replica, whose lanes are the same board rows the
+     Pay Runs replica draws: the July Retail run at the Officer gate, and two
+     empty lanes behind it. Two of its steps stand on the Payslips replica
+     instead, because the judgement this lesson teaches is not made on the
+     approvals screen at all — it is made on the payslips inside the run, and
+     walking there is the point.
+     ======================================================================== */
+  LA: {
+    id: "LA", station: "approvals", mins: 9,
+    title: B("Approve like it's your signature", "Phê duyệt như thể đó là chữ ký của bạn"),
+    goal: B("Decide on a run the way somebody who will be asked about it decides: flags first, a sample after, and a variance you can explain in one sentence before you sign.",
+            "Ra quyết định trên một đợt lương theo cách của người sẽ bị hỏi lại về nó: xem cờ cảnh báo trước, lấy mẫu sau, và giải thích được biến động trong một câu trước khi ký."),
+    steps: [
+      {
+        screen: "approvals", anchor: "pa-hero",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("This screen is a queue, not a board", "Màn hình này là hàng đợi, không phải bảng theo dõi"),
+        body: B("The Pay Runs board shows every run there is. This one shows only the runs a human still has to answer for — and the chip in the corner counts the ones waiting on <b>you</b>. Everything else here is somebody else's signature, shown so you know who to ask rather than so you can do it for them.",
+                "Bảng Đợt tính lương hiển thị mọi đợt đang có. Màn hình này chỉ hiển thị những đợt vẫn cần một con người chịu trách nhiệm — và cái chip ở góc đếm số đợt đang chờ <b>bạn</b>. Mọi thứ khác ở đây là chữ ký của người khác, hiển thị ra để bạn biết cần hỏi ai, chứ không phải để bạn ký thay họ."),
+      },
+      {
+        screen: "approvals", anchor: "pa-kpis",
+        kicker: B("The number that matters", "Con số đáng chú ý"),
+        title: B("Net at stake is money that has not been paid yet", "Số tiền đang treo là khoản chưa được chi"),
+        body: B("Three counts, one per gate, and then <b>612,480,000 ₫</b> — the net of every run in the pipeline. It is worth reading as what it is: money that is one or more signatures away from leaving the company's account, and that can still be stopped by anybody who finds a reason to.",
+                "Ba con số đếm, mỗi cổng một con số, rồi tới <b>612.480.000 ₫</b> — tổng thực nhận của mọi đợt đang trong quy trình. Rất nên đọc nó đúng bản chất: đây là số tiền chỉ còn cách tài khoản công ty một hoặc vài chữ ký, và bất kỳ ai tìm ra lý do đều còn kịp chặn lại."),
+        tip: B("After the last gate that sentence stops being true. A correction to a completed run is a retro line in the next one, never an edit to this one.",
+               "Sau cổng cuối cùng thì câu đó không còn đúng nữa. Sửa một đợt đã Hoàn tất là một dòng hồi tố ở kỳ sau, không bao giờ là sửa trực tiếp vào đợt này."),
+      },
+      {
+        screen: "approvals", anchor: "pa-lanes",
+        kicker: B("Reading the lanes", "Đọc các làn"),
+        title: B("A lane is a gate, and an empty one is not a fault", "Mỗi làn là một cổng, và làn trống không phải là lỗi"),
+        body: B("Officer review, then {{hrTierName}}, then {{gmTierName}}. A run sits in the lane of the gate it is waiting at, so the lane <b>names the person to chase</b>. Two of the three are empty here, and that is what most days look like — a lane fills when work reaches it and empties when somebody signs.",
+                "Chuyên viên soát, rồi {{hrTierName}}, rồi {{gmTierName}}. Một đợt lương nằm ở làn của cổng nó đang chờ, nên làn đó <b>chỉ đích danh người cần hỏi</b>. Ở đây hai trên ba làn đang trống, và phần lớn các ngày đều như vậy — một làn chỉ đầy khi công việc tới đó và trống trở lại khi có người ký."),
+        tip: B("A card offers Approve and Reject only at the gate you hold. If you cannot see them, you are looking at somebody else's work, and pressing harder will not help.",
+               "Một thẻ chỉ hiện nút Phê duyệt và Từ chối ở đúng cổng bạn đang giữ. Không thấy hai nút đó nghĩa là bạn đang nhìn phần việc của người khác, và bấm mạnh hơn cũng không giúp được gì."),
+      },
+      {
+        screen: "payslips", anchor: "ps-chips",
+        kicker: B("The strategy", "Cách làm"),
+        title: B("Nobody reads forty-eight payslips, and nobody should", "Không ai đọc hết bốn mươi tám phiếu lương, và cũng không nên"),
+        body: B("Reading top to bottom is how a flagged payslip gets approved at six in the evening. The engine has already told you which ones it could not settle on its own — start there, then <b>sample</b> two or three it did not flag. A flag marks the unusual, not the wrong, so a clean slip can still be incorrect and a flagged one can be perfectly fine.",
+                "Đọc lần lượt từ trên xuống chính là cách một phiếu bị gắn cờ được duyệt vào sáu giờ chiều. Hệ thống đã chỉ ra những phiếu nó không tự quyết được — hãy bắt đầu từ đó, rồi <b>lấy mẫu</b> hai ba phiếu không bị gắn cờ. Cờ đánh dấu điều bất thường, không phải điều sai, nên một phiếu sạch vẫn có thể sai và một phiếu bị gắn cờ vẫn có thể hoàn toàn ổn."),
+        tip: B("Sampling is not a shortcut. It is how you find out whether the flags are the only problem — and if a sampled slip is wrong, the flags were never the point.",
+               "Lấy mẫu không phải là làm tắt. Đó là cách để biết các cờ cảnh báo có phải vấn đề duy nhất hay không — và nếu một phiếu lấy mẫu bị sai thì hoá ra các cờ chưa bao giờ là điều đáng lo nhất."),
+      },
+      {
+        screen: "payslips", anchor: "ps-breakdown",
+        kicker: B("Before & after", "Trước & sau"),
+        title: B("Explain the variance, or you are not ready to sign", "Giải thích được biến động, nếu không thì bạn chưa nên ký"),
+        body: B("July is 612,480,000 ₫ against June's 596,110,000 ₫. Toggle the two and say, out loud, why they differ — one more employee, and one payslip with 3,100,000 ₫ more overtime on it than last month. If you cannot finish that sentence, the gap is not small; it is unexamined.",
+                "Tháng 7 là 612.480.000 ₫ so với 596.110.000 ₫ của tháng 6. Hãy chuyển qua lại hai bên và nói thành lời vì sao chúng khác nhau — thêm một nhân viên, và một phiếu lương có tăng ca nhiều hơn tháng trước 3.100.000 ₫. Nếu bạn chưa nói trọn được câu đó thì khoảng chênh này không phải nhỏ; nó chỉ là chưa được soi tới."),
+        moment: { kind: "morph", which: "runJuneJuly" },
+      },
+      {
+        screen: "approvals", anchor: "pa-reject",
+        kicker: B("The hard part", "Phần khó"),
+        title: B("A rejection is testimony, and the reason is required", "Từ chối là lời chứng, và lý do là bắt buộc"),
+        body: B("Rejecting sends the <b>whole run</b> back to draft — all 48 payslips together, never one — and records three things against it: who rejected it, when, and <b>why in writing</b>. The product requires that reason because without it the officer who has to fix the run is guessing at what you saw, and will probably resubmit the same thing.",
+                "Từ chối đưa <b>cả đợt lương</b> về Nháp — toàn bộ 48 phiếu cùng lúc, không bao giờ chỉ một phiếu — và ghi lại ba điều: ai từ chối, vào lúc nào, và <b>vì sao, bằng văn bản</b>. Sản phẩm bắt buộc phải có lý do đó, vì thiếu nó thì chuyên viên phải sửa đợt lương chỉ còn cách đoán xem bạn đã thấy gì, và nhiều khả năng sẽ trình lại đúng thứ cũ."),
+        tip: B("\"Payslip NV0031 — overtime is 382% of June, verify against the timesheet\" is a reason somebody can act on. \"Wrong\" is a reason somebody has to interpret.",
+               "\"Phiếu NV0031 — tăng ca bằng 382% tháng 6, hãy đối chiếu bảng chấm công\" là lý do người khác xử lý được. Còn \"sai\" là lý do người khác phải tự đoán ý."),
+      },
+      {
+        screen: "approvals", anchor: "pa-lanes",
+        kicker: B("Before you act", "Trước khi thao tác"),
+        title: B("Approving is a signature, and it moves real money", "Phê duyệt là một chữ ký, và nó làm tiền thật dịch chuyển"),
+        body: B("Nothing about the button says so, which is why this step does. Pressing Approve moves 48 payslips one gate closer to being paid, together — there is no way to approve some of them — and the gate after yours checks totals rather than lines. If a wrong line is going to be caught, this is one of the last places it can be.",
+                "Cái nút không hề nói ra điều đó, nên bước này phải nói. Bấm Phê duyệt là đẩy 48 phiếu lương tiến thêm một cổng tới lúc được chi, cùng một lúc — không có cách nào duyệt một phần — và cổng sau bạn kiểm tra các con số tổng chứ không kiểm tra từng dòng. Nếu một dòng sai còn có thể bị bắt, thì đây là một trong những nơi cuối cùng bắt được."),
+        consequence: B("Affects the whole run, all 48 payslips together. It moves from your gate to the next one. Reversible: <b>yes, for now</b> — a later reviewer can still reject it back to draft, and that stops being true at done, after which a correction is a retro line. Verify first: every flagged payslip opened, a few unflagged ones sampled, and a one-sentence explanation of the variance against last month.",
+                       "Ảnh hưởng cả đợt lương, toàn bộ 48 phiếu cùng lúc. Đợt chuyển từ cổng của bạn sang cổng kế tiếp. Hoàn tác: <b>hiện tại thì được</b> — người soát xét sau vẫn có thể từ chối và trả về Nháp, nhưng điều đó chấm dứt khi đợt đạt Hoàn tất, sau đó mọi hiệu chỉnh là một dòng hồi tố. Kiểm tra trước: đã mở mọi phiếu bị gắn cờ, đã lấy mẫu vài phiếu không gắn cờ, và giải thích được biến động so với tháng trước trong một câu."),
+      },
+      {
+        screen: "approvals", anchor: "pa-recent",
+        kicker: B("Afterwards", "Sau khi ký"),
+        title: B("Whatever you decide is written down with your name on it", "Bạn quyết thế nào thì điều đó cũng được ghi lại kèm tên bạn"),
+        body: B("Approvals and rejections land in the same list, and a rejection keeps its written reason where the next person can read it. That is not surveillance — it is the reason a payroll month can be defended six months later, when nobody remembers the conversation and the record is all there is.",
+                "Phê duyệt và từ chối cùng rơi vào một danh sách, và một lần từ chối vẫn giữ nguyên lý do bằng văn bản ở nơi người sau đọc được. Đó không phải là giám sát — đó là lý do một kỳ lương vẫn bảo vệ được sau sáu tháng, khi không ai còn nhớ cuộc trao đổi nào và chỉ còn lại hồ sơ."),
+      },
+    ],
+    quiz: {
+      question: B("A run is waiting at your gate. The total is 2.7% above last month, one payslip is flagged and nobody has opened it, and payday is {{payDay}}. What do you do?",
+                  "Một đợt lương đang chờ ở cổng của bạn. Tổng cao hơn tháng trước 2,7%, một phiếu bị gắn cờ và chưa ai mở nó, và ngày trả lương là {{payDay}}. Bạn làm gì?"),
+      options: [
+        {
+          text: B("Approve — 2.7% against last month is well within normal", "Phê duyệt — 2,7% so với tháng trước là hoàn toàn bình thường"),
+          correct: false,
+          explanation: B("Let's rethink that. A total that looks reasonable is not evidence that every slip inside it is: one payslip with 3,100,000 ₫ of extra overtime sits comfortably inside a 2.7% move. The flag was raised about one employee, and approving without opening it is answering that question with silence.",
+                         "Hãy nghĩ lại một chút. Tổng trông hợp lý không phải bằng chứng rằng từng phiếu bên trong đều hợp lý: một phiếu có tăng ca thêm 3.100.000 ₫ nằm gọn trong mức biến động 2,7%. Cờ được giương lên về một nhân viên cụ thể, và duyệt mà không mở nó ra là trả lời câu hỏi đó bằng sự im lặng."),
+        },
+        {
+          text: B("Open the flagged payslip, and decide once you can say in one sentence why the total moved", "Mở phiếu bị gắn cờ, và chỉ quyết định khi nói được trong một câu vì sao con số tổng thay đổi"),
+          correct: true,
+          explanation: B("Yes. That sentence is the whole test, and it takes minutes: one more employee, and one payslip with far more overtime than last month. Once you can say it you can approve with your eyes open — or reject with something the officer can act on.",
+                         "Đúng vậy. Chính câu nói đó là toàn bộ phép thử, và nó chỉ tốn vài phút: thêm một nhân viên, và một phiếu lương có tăng ca nhiều hơn hẳn tháng trước. Khi nói được câu đó, bạn có thể duyệt một cách tỉnh táo — hoặc từ chối kèm một lý do mà chuyên viên xử lý được."),
+        },
+        {
+          text: B("Reject it so the officer re-checks everything before payday", "Từ chối để chuyên viên kiểm tra lại toàn bộ trước ngày trả lương"),
+          correct: false,
+          explanation: B("Let's rethink that. Rejecting sends all 48 payslips back to draft and puts a reason on the permanent record — and \"please check everything\" is not a reason anybody can act on. A rejection is testimony about a problem you found, not a way of asking somebody to go looking for one.",
+                         "Hãy nghĩ lại một chút. Từ chối sẽ đưa cả 48 phiếu về Nháp và ghi một lý do vào hồ sơ vĩnh viễn — mà \"vui lòng kiểm tra lại toàn bộ\" thì không phải lý do ai xử lý được. Từ chối là lời chứng về một vấn đề bạn đã phát hiện, không phải cách nhờ người khác đi tìm xem có vấn đề gì không."),
         },
       ],
     },
@@ -2029,6 +2531,64 @@ const SCREEN_CTX = {
             "Hãy đọc thời điểm đồng bộ gần nhất của từng đầu nối, không chỉ đọc trạng thái. Đã kết nối nói về thông tin đăng nhập; thời điểm đồng bộ mới nói về dữ liệu, và một đầu nối đã ngừng chạy trông y hệt một đầu nối đang chạy tốt."),
     chips: ["syncbroken", "whysetup", "whatnext"],
   },
+
+  /* -- Overview, People, Insights, Compliance (Phase C1) ------------------ */
+  dashboard: {
+    blurb: B("The command centre: the live run, four numbers that describe the company, and a door into each part of the product.",
+             "Trung tâm điều hành: đợt lương đang chạy, bốn con số mô tả cả công ty, và một lối vào cho từng phần của sản phẩm."),
+    next: B("Read the line under your name first — it names the live run and how much of it is still waiting. Then open the section the work is actually in; nothing on this screen is a second way of doing anything.",
+            "Hãy đọc dòng ngay dưới tên bạn trước — nó cho biết đợt lương đang chạy và còn bao nhiêu phần đang chờ. Rồi mở đúng nhóm mục chứa phần việc đó; không thứ gì trên màn hình này là một cách làm thứ hai."),
+    chips: ["whatpage", "wherelives", "whatnext", "practice"],
+  },
+  approvals: {
+    blurb: B("Every submitted run in the lane of the gate it is waiting at, with the net at stake across all of them.",
+             "Mọi đợt đã trình duyệt, nằm ở làn của cổng nó đang chờ, kèm tổng số tiền đang treo trên tất cả."),
+    next: B("Read the count in the header — that is the part of this queue only you can move. Then open the run rather than deciding from its card: the total is on the card and the flags are on the payslips.",
+            "Hãy đọc con số ở tiêu đề — đó là phần hàng đợi chỉ bạn mới đẩy đi được. Rồi mở đợt lương ra thay vì quyết định ngay trên thẻ: con số tổng nằm trên thẻ, còn cờ cảnh báo nằm trên từng phiếu lương."),
+    chips: ["howmanyslips", "variance", "rejectright", "whichlane", "approve"],
+  },
+  employees: {
+    blurb: B("The people roster: contract status, the monthly wage bill, and whether each person can actually be paid.",
+             "Danh sách nhân sự: tình trạng hợp đồng, quỹ lương tháng, và liệu từng người có thực sự nhận được lương hay không."),
+    next: B("Filter to the people who are not payroll-ready and clear them before the run, not after it. Somebody with no bank account computes perfectly and is still not paid.",
+            "Hãy lọc ra những người chưa sẵn sàng tính lương và xử lý trước khi chạy đợt lương, đừng để sau. Người chưa có tài khoản ngân hàng vẫn được tính lương hoàn hảo mà vẫn không nhận được tiền."),
+    chips: ["payrollready", "whopays", "whosees", "whatnext"],
+  },
+  contracts: {
+    blurb: B("Every contract with its type, its period and its wage — the agreements payroll is actually computed from.",
+             "Từng hợp đồng kèm loại, thời hạn và mức lương — chính là những thoả thuận mà hệ thống lương dựa vào để tính."),
+    next: B("Read the expiring filter before the run. A contract that ends mid-month is a proration nobody asked for, and one still in draft pays nothing at all.",
+            "Hãy xem bộ lọc sắp hết hạn trước khi chạy lương. Hợp đồng kết thúc giữa tháng là một lần tính theo ngày công mà không ai yêu cầu, còn hợp đồng còn ở Nháp thì không trả gì cả."),
+    chips: ["expirysoon", "whopays", "prorata", "whatpage"],
+  },
+  insights: {
+    blurb: B("Executive analytics over the runs that are done: the cost story, the department leaderboard and the statutory split.",
+             "Phân tích tổng hợp trên các đợt lương đã hoàn tất: diễn biến chi phí, xếp hạng bộ phận và cơ cấu đóng bắt buộc."),
+    next: B("Compare cost per head rather than total against total — headcount moves between months, and two extra people explain most of what looks like a rise. Every figure here opens the screen it came from.",
+            "Hãy so chi phí bình quân đầu người thay vì đem tổng so với tổng — sĩ số thay đổi giữa các tháng, và thêm hai người là đủ giải thích phần lớn cái vẻ \"tăng\" đó. Mọi con số ở đây đều mở ra màn hình đã tạo ra nó."),
+    chips: ["whichtool", "variance", "whatpage", "whatnext"],
+  },
+  explorer: {
+    blurb: B("A question builder over the same payroll facts: one measure, one breakdown, and the filters that scope them.",
+             "Công cụ đặt câu hỏi trên cùng dữ liệu lương: một chỉ tiêu, một chiều tách, và các bộ lọc giới hạn phạm vi."),
+    next: B("Choose the measure before the filters — most wrong answers here are the right filter on the wrong measure. And quote the tags with the number: the same measure with one tag removed is a different figure that looks identical in an email.",
+            "Hãy chọn chỉ tiêu trước rồi mới tới bộ lọc — phần lớn câu trả lời sai ở đây là lọc đúng nhưng chọn nhầm chỉ tiêu. Và khi trích con số thì trích kèm các thẻ lọc: cùng chỉ tiêu đó, gỡ một thẻ đi là một con số khác, mà trong email thì trông y hệt."),
+    chips: ["whichtool", "whatpage", "whatnext"],
+  },
+  workforcean: {
+    blurb: B("The same months read as people: headcount paid, joiners and leavers, attendance exceptions and cost per head.",
+             "Vẫn những tháng đó nhưng đọc theo con người: số người được trả lương, người vào và người nghỉ, ngoại lệ chấm công và chi phí bình quân đầu người."),
+    next: B("Read the headcount line as employees PAID, not employed. A step in it is a joiner wave, a leaver wave — or a run that left somebody out, which is the one worth checking.",
+            "Hãy đọc đường sĩ số là số người ĐƯỢC TRẢ LƯƠNG, không phải số người đang làm việc. Một bậc nhảy trên đó là một đợt vào mới, một đợt nghỉ việc — hoặc một đợt lương bỏ sót người, và đó mới là điều đáng kiểm tra."),
+    chips: ["whichtool", "whatpage", "prorata"],
+  },
+  govreports: {
+    blurb: B("The statutory filings this company's country asks for, grouped by authority and prefilled for one month.",
+             "Các báo cáo bắt buộc mà quốc gia của công ty này yêu cầu, nhóm theo cơ quan và điền sẵn cho một tháng."),
+    next: B("Check that the month's runs have all reached done before you generate anything. The tiles read what has been computed, so an unfinished run is a filing that is short.",
+            "Hãy kiểm tra mọi đợt lương của tháng đã đạt Hoàn tất trước khi kết xuất bất cứ gì. Các biểu mẫu đọc phần đã tính, nên một đợt còn dở là một báo cáo bị thiếu."),
+    chips: ["whichfilings", "whatpage", "whatnext"],
+  },
 };
 
 /* =============================================================================
@@ -2097,7 +2657,11 @@ const QA = [
   },
 
   {
-    id: "approve", screens: ["payruns", "payslips"],
+    /* Phase C1 added "approvals" to the screen list. The Approvals cockpit is
+       where approving now actually happens, and a capability-aware answer that
+       is unreachable on the screen the action lives on is content nobody can
+       find. Same for `reject` below. */
+    id: "approve", screens: ["payruns", "payslips", "approvals"],
     label: B("Can I approve this run?", "Tôi có thể phê duyệt đợt này không?"),
     match: ["how do i approve", "can i approve", "approve this run", "phê duyệt thế nào", "toi duyet duoc khong"],
     showMe: ["pk-card-actions"],
@@ -2150,7 +2714,7 @@ const QA = [
   },
 
   {
-    id: "reject", screens: ["payruns"],
+    id: "reject", screens: ["payruns", "approvals"],
     label: B("What happens if I reject a run?", "Nếu tôi từ chối một đợt thì điều gì xảy ra?"),
     match: ["how do i reject", "reject the run", "send it back", "từ chối đợt lương", "tra lai dot luong"],
     showMe: ["pk-card-actions"],
@@ -2531,6 +3095,258 @@ const QA = [
                        "Danh sách đầu nối kèm lịch sử đồng bộ và số bản ghi đang chờ.") },
     ],
   },
+  /* ===========================================================================
+     OVERVIEW / PEOPLE / INSIGHTS / COMPLIANCE INTENTS (Phase C1).
+
+     Appended rather than interleaved, for the same reason the Setup block was:
+     the generator writes records in this order, so inserting into the middle
+     renames every intent record id after the insertion point for no content
+     reason.
+     ======================================================================== */
+  {
+    id: "wherelives", screens: ["dashboard", "employees", "insights"],
+    label: B("Where do I find things in Payobook?", "Tìm các chức năng trong Payobook ở đâu?"),
+    match: ["where is everything", "where do i find", "sidebar sections", "what are the sections",
+            "tim o dau", "menu nam o dau", "cac nhom muc"],
+    showMe: ["rep-nav"],
+    blocks: [
+      { k: "p", v: B("Six sections, and you work in two of them most days. <b>Overview</b> is where you land and where approvals queue. <b>Pay Run</b> is the month's work end to end. <b>People</b> holds who can be paid, <b>Insights</b> answers questions about what was paid, <b>Compliance</b> is the filings, and <b>Setup</b> is read often and changed rarely.",
+                     "Sáu nhóm mục, và phần lớn các ngày bạn chỉ làm việc trong hai nhóm. <b>Tổng quan</b> là nơi bạn vào đầu tiên và là nơi các lượt phê duyệt xếp hàng. <b>Chạy lương</b> là toàn bộ công việc của tháng từ đầu tới cuối. <b>Nhân sự</b> giữ thông tin ai có thể được trả lương, <b>Phân tích</b> trả lời các câu hỏi về những gì đã chi, <b>Tuân thủ</b> là các báo cáo bắt buộc, còn <b>Thiết lập</b> thì thường xuyên được đọc và hiếm khi bị sửa.") },
+      { k: "steps", v: [
+        { t: B("Overview — the Dashboard you land on, and the Approvals queue", "Tổng quan — Bảng điều khiển bạn vào đầu tiên, và hàng đợi Phê duyệt"), a: "dash-hero" },
+        { t: B("Pay Run — run payroll, the board, the payslips, the import", "Chạy lương — chạy bảng lương, bảng đợt lương, phiếu lương, nhập dữ liệu"), a: "pw-rail" },
+        { t: B("People — employees and the contracts payroll is computed from", "Nhân sự — nhân viên và các hợp đồng mà hệ thống lương dựa vào để tính"), a: "pe-kpis" },
+        { t: B("Insights — what was paid, and the Explorer for the questions the board did not anticipate", "Phân tích — những gì đã chi, và Explorer cho các câu hỏi mà bảng không lường trước"), a: "in-hero" },
+        { t: B("Setup — the formula configurations and the statutory rates behind every figure", "Thiết lập — các cấu hình công thức và tỷ lệ luật định đứng sau mọi con số"), a: "fs-components" },
+      ] },
+      { k: "ok", v: B("A leaf that is not in your sidebar is one your groups do not open. The Journey still describes it — the person who cannot open a screen is exactly the person who needs to know what it is before asking for access.",
+                      "Mục nào không có trong thanh bên của bạn là mục mà nhóm quyền của bạn không mở được. Hành trình học vẫn mô tả nó — người không mở được một màn hình chính là người cần biết màn hình đó là gì trước khi đi xin quyền.") },
+      { k: "src", v: B("Your own sidebar, as the product renders it for your groups.",
+                       "Chính thanh bên của bạn, đúng như sản phẩm hiển thị theo nhóm quyền của bạn.") },
+    ],
+  },
+
+  {
+    id: "whichlane", screens: ["approvals", "payruns"],
+    label: B("Who is holding this run up?", "Ai đang giữ đợt lương này lại?"),
+    match: ["who is holding it up", "who do i chase", "whose gate is it at", "who has to approve next",
+            "ai dang giu", "phai hoi ai", "dot luong tac o dau"],
+    showMe: ["pa-lanes"],
+    blocks: [
+      { k: "p", v: B("The lane a run is sitting in names the tier that has to act next — Officer review, then {{hrTierName}}, then {{gmTierName}}. That is the answer to \"who do I chase\", and it is more reliable than asking, because the record decides it rather than a memory of who said they would look.",
+                     "Làn mà một đợt lương đang nằm chỉ đích danh vòng phải xử lý tiếp theo — Chuyên viên soát, rồi {{hrTierName}}, rồi {{gmTierName}}. Đó chính là câu trả lời cho \"tôi phải hỏi ai\", và nó đáng tin hơn việc đi hỏi, vì chính bản ghi quyết định điều đó chứ không phải trí nhớ về việc ai đã hứa sẽ xem.") },
+      { k: "p", v: B("A card offers Approve and Reject only at the gate you hold. If you cannot see those buttons on a run, it is not yours to move — and pressing harder will not change that, because the buttons are decided by the record's own gate fields and your groups.",
+                     "Một thẻ chỉ hiện nút Phê duyệt và Từ chối ở đúng cổng bạn đang giữ. Nếu bạn không thấy hai nút đó trên một đợt lương thì đợt đó không phải phần việc của bạn — và bấm mạnh hơn cũng không đổi được, vì các nút do chính các trường kiểm soát cổng của bản ghi và nhóm quyền của bạn quyết định.") },
+      { k: "warn", v: B("A run in draft is not waiting for a signature at all. It is waiting for whoever computes it to submit it, and it does not appear in these lanes until they do.",
+                        "Một đợt còn ở Nháp thì không hề chờ chữ ký nào. Nó đang chờ người tính lương trình lên, và nó chưa xuất hiện trong các làn này cho tới khi việc đó được làm.") },
+      { k: "src", v: B("The approval lane the run is in, and the gate fields on its own record.",
+                       "Làn phê duyệt mà đợt lương đang nằm, và các trường kiểm soát cổng trên chính bản ghi đó.") },
+    ],
+  },
+
+  {
+    id: "howmanyslips", screens: ["approvals", "payslips", "payruns"],
+    label: B("How many payslips should I read?", "Tôi nên đọc bao nhiêu phiếu lương?"),
+    match: ["how many payslips do i read", "do i have to read every payslip", "sampling strategy",
+            "doc bao nhieu phieu", "co phai doc het khong", "lay mau phieu luong"],
+    showMe: ["ps-chips", "pa-lanes"],
+    practice: "m2",
+    simpler: B("Not all of them. The system has already marked the ones it was unsure about — read those first, then pick two or three ordinary ones at random to make sure the ordinary ones are fine too.",
+               "Không phải tất cả. Hệ thống đã đánh dấu sẵn những phiếu mà nó không chắc — hãy đọc những phiếu đó trước, rồi chọn ngẫu nhiên hai ba phiếu bình thường để chắc rằng các phiếu bình thường cũng ổn."),
+    blocks: [
+      { k: "p", v: B("Not forty-eight. Reading top to bottom is how a flagged payslip gets approved at six in the evening — the engine has already told you which ones it could not settle on its own, and those are where the judgement is.",
+                     "Không phải bốn mươi tám phiếu. Đọc lần lượt từ trên xuống chính là cách một phiếu bị gắn cờ được duyệt vào sáu giờ chiều — hệ thống đã chỉ ra những phiếu nó không tự quyết được, và phần cần phán đoán nằm ở đó.") },
+      { k: "steps", v: [
+        { t: B("Filter to \"Need review\" and open every one of them", "Lọc theo \"Cần soát xét\" và mở từng phiếu một"), a: "ps-chips" },
+        { t: B("Sample two or three the engine did NOT flag", "Lấy mẫu hai ba phiếu mà hệ thống KHÔNG gắn cờ"), a: "ps-list" },
+        { t: B("Read one breakdown end to end — base to net — so you know the shape of a normal slip", "Đọc trọn một bảng chi tiết — từ lương cơ bản tới thực nhận — để nắm hình dạng của một phiếu bình thường"), a: "ps-breakdown" },
+        { t: B("Compare the run's total against last month and say why it moved", "So tổng của đợt với tháng trước và nói được vì sao nó thay đổi"), a: "ps-kpis" },
+      ] },
+      { k: "warn", v: B("A flag marks the unusual, not the wrong. A clean payslip can still be incorrect and a flagged one can be perfectly fine — which is why the sample matters as much as the flags do.",
+                        "Cờ cảnh báo đánh dấu điều bất thường, không phải điều sai. Một phiếu sạch vẫn có thể sai và một phiếu bị gắn cờ vẫn có thể hoàn toàn ổn — nên phần lấy mẫu quan trọng ngang với phần xem cờ.") },
+      { k: "src", v: B("The run's flagged payslips, and the filter chips on the payslip review screen.",
+                       "Các phiếu bị gắn cờ của đợt lương, và các chip lọc trên màn hình soát xét phiếu lương.") },
+    ],
+  },
+
+  {
+    id: "variance", screens: ["approvals", "payslips", "insights", "payruns"],
+    label: B("Is this variance normal?", "Biến động thế này có bình thường không?"),
+    match: ["explain the variance", "the total moved", "why is the run bigger",
+            "bien dong co binh thuong", "tong thay doi", "giai thich chenh lech"],
+    showMe: ["ps-kpis", "in-trend"],
+    blocks: [
+      { k: "p", v: B("\"Normal\" is not a percentage — it is whether you can finish the sentence. On this run: July is 612,480,000 ₫ against June's 596,110,000 ₫, a rise of 2.7% on one more employee, and one payslip carries 3,100,000 ₫ more overtime than it did last month.",
+                     "\"Bình thường\" không phải là một con số phần trăm — mà là việc bạn có nói trọn được câu giải thích hay không. Trên đợt này: tháng 7 là 612.480.000 ₫ so với 596.110.000 ₫ của tháng 6, tăng 2,7% với thêm một nhân viên, và một phiếu lương có tăng ca nhiều hơn tháng trước 3.100.000 ₫.") },
+      { k: "warn", v: B("A comfortable-looking total is where a single wrong payslip hides best. Three million đồng sits invisibly inside a 2.7% move, and nothing about the total says so — the flags do.",
+                        "Một con số tổng trông dễ chịu chính là nơi một phiếu lương sai ẩn mình tốt nhất. Ba triệu đồng nằm vô hình trong mức biến động 2,7%, và con số tổng không hề nói ra điều đó — các cờ cảnh báo mới nói.") },
+      { k: "steps", v: [
+        { t: B("Headcount first — two extra people explain most of what looks like a rise", "Xem sĩ số trước — thêm hai người là đủ giải thích phần lớn cái vẻ tăng đó"), a: "wa-kpis" },
+        { t: B("Then overtime, which moves with the month rather than with the contract", "Rồi tới tăng ca, thứ thay đổi theo tháng chứ không theo hợp đồng"), a: "ps-breakdown" },
+        { t: B("Then the flags, one at a time, because a total cannot show you those", "Rồi tới từng cờ cảnh báo một, vì con số tổng không cho bạn thấy chúng"), a: "ps-chips" },
+      ] },
+      { k: "src", v: B("The run's net total against the previous month's, and the payslips underneath both.",
+                       "Tổng thực nhận của đợt so với tháng trước, và các phiếu lương nằm dưới cả hai con số đó.") },
+    ],
+  },
+
+  {
+    id: "rejectright", screens: ["approvals", "payruns"],
+    label: B("How do I write a rejection reason?", "Viết lý do trả lại đợt lương thế nào cho đúng?"),
+    match: ["what should the reason say", "good rejection note",
+            "viet ly do tra lai", "ghi ly do the nao", "ly do tu choi viet gi"],
+    showMe: ["pa-reject"],
+    blocks: [
+      { k: "p", v: B("Name the payslip, name the figure, and name what you want checked. \"Payslip NV0031 — overtime 4,200,000 ₫ is 382% of June. Please verify against the timesheet and resubmit.\" is a reason somebody can act on today.",
+                     "Nêu rõ phiếu nào, con số nào, và bạn muốn kiểm tra điều gì. \"Phiếu NV0031 — tăng ca 4.200.000 ₫ bằng 382% tháng 6. Vui lòng đối chiếu bảng chấm công và trình lại.\" là lý do người khác xử lý được ngay hôm nay.") },
+      { k: "warn", v: B("\"Wrong\", \"please recheck\" and \"the numbers look off\" all send 48 payslips back to draft and leave the officer guessing at what you saw. They will probably resubmit the same thing, and the second rejection is the one that becomes an argument.",
+                        "\"Sai\", \"kiểm tra lại giúp\" hay \"số liệu trông không ổn\" đều đưa 48 phiếu lương về Nháp và để chuyên viên tự đoán xem bạn đã thấy gì. Nhiều khả năng họ sẽ trình lại đúng thứ cũ, và lần từ chối thứ hai mới là lần biến thành tranh cãi.") },
+      { k: "ok", v: B("The reason is stored with your name and the time and stays on the record. That is what makes a payroll month defensible six months later, when nobody remembers the conversation.",
+                      "Lý do được lưu kèm tên bạn và thời điểm, và ở lại trên bản ghi. Chính điều đó khiến một kỳ lương vẫn bảo vệ được sau sáu tháng, khi không ai còn nhớ cuộc trao đổi nào.") },
+      { k: "src", v: B("The rejection fields on the pay run record: the note, who wrote it and when.",
+                       "Các trường từ chối trên bản ghi đợt lương: nội dung lý do, ai viết và viết lúc nào.") },
+    ],
+  },
+
+  {
+    id: "payrollready", screens: ["employees", "runpayroll"],
+    label: B("Why is somebody not payroll-ready?", "Vì sao một người chưa sẵn sàng tính lương?"),
+    match: ["not payroll ready", "why can this person not be paid", "readiness tick",
+            "chua san sang tinh luong", "vi sao chua tra luong duoc", "dau san sang"],
+    showMe: ["pe-roster", "pe-kpis"],
+    blocks: [
+      { k: "p", v: B("Payroll-ready means everything needed to pay this person is present — a running contract, a wage on it, and bank details the payment file can use. Miss any one and the payslip still computes perfectly and the money still does not arrive.",
+                     "Sẵn sàng tính lương nghĩa là mọi thứ cần để trả cho người này đều đã có — một hợp đồng đang hiệu lực, mức lương trên hợp đồng đó, và thông tin ngân hàng mà tệp chi lương dùng được. Thiếu bất kỳ thứ nào thì phiếu lương vẫn tính hoàn hảo và tiền vẫn không tới nơi.") },
+      { k: "warn", v: B("This is the failure with the longest gap between cause and symptom: the run looks finished, the reports reconcile, and the person tells you on {{payDay}}.",
+                        "Đây là kiểu lỗi có khoảng cách dài nhất giữa nguyên nhân và triệu chứng: đợt lương trông đã xong, báo cáo vẫn khớp, và người đó báo cho bạn vào {{payDay}}.") },
+      { k: "steps", v: [
+        { t: B("Filter the roster to the people who are not ready", "Lọc danh sách theo những người chưa sẵn sàng"), a: "pe-filters" },
+        { t: B("Read what each one is missing — the row says which fact it is", "Đọc từng người đang thiếu gì — dòng đó ghi rõ thiếu dữ kiện nào"), a: "pe-roster" },
+        { t: B("Fix it on the employee or the contract, not on the payslip afterwards", "Sửa trên hồ sơ nhân viên hoặc hợp đồng, đừng sửa trên phiếu lương về sau"), a: "ct-roster" },
+      ] },
+      { k: "src", v: B("The payroll-ready mark on the employee roster, and the contract behind it.",
+                       "Dấu sẵn sàng tính lương trên danh sách nhân viên, và hợp đồng đứng sau nó.") },
+    ],
+  },
+
+  {
+    id: "expirysoon", screens: ["contracts", "employees"],
+    label: B("A contract expires mid-month — what happens?", "Hợp đồng hết hạn giữa tháng thì sao?"),
+    match: ["contract expires mid month", "expiring contract", "renewal not signed yet",
+            "hop dong het han giua thang", "gia han chua ky", "het han hop dong"],
+    showMe: ["ct-roster", "ct-filters"],
+    blocks: [
+      { k: "p", v: B("Payroll computes from the contract, so it pays up to the day the contract ends and prorates the month around it. That is correct behaviour, and it is a surprise to everybody who was expecting a full month.",
+                     "Hệ thống lương tính theo hợp đồng, nên nó trả tới đúng ngày hợp đồng kết thúc và tính phần tháng đó theo ngày công. Đó là hành vi đúng, và là điều bất ngờ với bất kỳ ai đang chờ một tháng lương đầy đủ.") },
+      { k: "warn", v: B("A renewal that is still in <b>draft</b> on the run date is worse: a draft contract pays nothing at all, and the employee simply is not in the run. Draft is the state to hunt for in the week before payroll.",
+                        "Một hợp đồng gia hạn còn ở trạng thái <b>Nháp</b> vào ngày chạy lương thì còn tệ hơn: hợp đồng nháp không trả gì cả, và nhân viên đó đơn giản là không có trong đợt lương. Nháp là trạng thái cần lùng cho ra trong tuần trước kỳ lương.") },
+      { k: "p", v: B("Both cases are visible before the run and expensive after it. The expiring filter on this screen is a two-minute check; a missed renewal is a retro line next month and a conversation this one.",
+                     "Cả hai trường hợp đều nhìn thấy được trước khi chạy lương và đều đắt sau đó. Bộ lọc sắp hết hạn trên màn hình này chỉ tốn hai phút; còn một lần quên gia hạn là một dòng hồi tố vào tháng sau và một cuộc trao đổi ngay tháng này.") },
+      { k: "src", v: B("The contract's own period and state, and the expiring filter over the roster.",
+                       "Thời hạn và trạng thái của chính hợp đồng, và bộ lọc sắp hết hạn trên danh sách.") },
+    ],
+  },
+
+  {
+    id: "whopays", screens: ["employees", "contracts", "payslips"],
+    label: B("Who can change what somebody is paid?", "Ai được sửa mức lương của một người?"),
+    match: ["who can change a salary", "can i change someone pay", "edit a wage",
+            "sua muc luong", "doi luong nhan vien", "ai duoc sua luong"],
+    showMe: ["ct-roster"],
+    roleVariants: {
+      any: [
+        { k: "p", v: B("A wage is changed on the <b>contract</b>, never on a payslip. The payslip is a result: correcting it leaves the agreement behind it unchanged, and the next recompute quietly puts the old figure back.",
+                       "Mức lương được sửa trên <b>hợp đồng</b>, không bao giờ sửa trên phiếu lương. Phiếu lương là kết quả: sửa nó thì thoả thuận phía sau vẫn nguyên như cũ, và lần tính lại kế tiếp âm thầm đưa con số cũ quay lại.") },
+        { k: "warn", v: B("A change on a running contract applies from now on — it moves the registered insurance base with it, and it corrects nothing that has already been paid. The past is a retro line.",
+                          "Một thay đổi trên hợp đồng đang hiệu lực chỉ áp dụng từ nay về sau — nó kéo theo mức lương đóng bảo hiểm đã đăng ký, và không sửa được gì đã trả. Quá khứ phải xử lý bằng một dòng hồi tố.") },
+        { k: "src", v: B("The contract record, and the retro adjustment ledger for anything already paid.",
+                         "Bản ghi hợp đồng, và sổ điều chỉnh hồi tố cho những gì đã chi.") },
+      ],
+      operator: [
+        { k: "p", v: B("You can open the contract and read it. Whether you can save a new wage on it depends on your groups, and on most companies that decision belongs a tier above payroll — a wage is an HR agreement that payroll executes.",
+                       "Bạn mở được hợp đồng và đọc nó. Còn lưu được mức lương mới hay không thì tuỳ nhóm quyền của bạn, và ở phần lớn công ty, quyết định đó thuộc về một cấp trên bộ phận lương — mức lương là thoả thuận nhân sự, còn bộ phận lương là bên thực thi.") },
+        { k: "steps", v: [
+          { t: B("Open the person on the Employees roster", "Mở đúng người trên danh sách Nhân viên"), a: "pe-roster" },
+          { t: B("Read the contract behind them — the wage lives there", "Đọc hợp đồng phía sau họ — mức lương nằm ở đó"), a: "ct-roster" },
+          { t: B("Recompute the draft run afterwards, so the payslip follows the contract", "Sau đó tính lại đợt lương nháp, để phiếu lương đi theo hợp đồng"), a: "pw-compute" },
+        ] },
+        { k: "src", v: B("The contract record, and your group membership.",
+                         "Bản ghi hợp đồng, và nhóm quyền của bạn.") },
+      ],
+      no_access: [
+        { k: "refusal", v: B("Not from here. The Employees and Contracts screens are not in your menu, so there is no wage for you to change and no button you are missing.",
+                             "Không phải từ đây. Màn hình Nhân viên và Hợp đồng không có trong menu của bạn, nên không có mức lương nào để bạn sửa và cũng không có nút nào bạn đang thiếu.") },
+        { k: "who", v: B("A payroll officer or above can read the contract; saving a new wage on it is usually held a tier higher again, because it is an HR agreement rather than a payroll setting.",
+                         "Chuyên viên tính lương trở lên có thể đọc hợp đồng; còn lưu một mức lương mới thường thuộc về một cấp cao hơn nữa, vì đó là thoả thuận nhân sự chứ không phải một thiết lập của bộ phận lương.") },
+        { k: "how", v: B("Ask {{payrollSupportContact}}. A wage list is not something everybody in a company should be able to read, so expect to be asked what you need it for.",
+                         "Hãy hỏi {{payrollSupportContact}}. Danh sách lương không phải thứ ai trong công ty cũng nên đọc được, nên hãy chuẩn bị trả lời bạn cần nó để làm gì.") },
+        { k: "src", v: B("Your sidebar, and the groups the People leaves are gated on.",
+                         "Thanh bên của bạn, và các nhóm quyền mà mục Nhân sự bị chặn theo.") },
+      ],
+    },
+  },
+
+  {
+    id: "whosees", screens: ["employees", "contracts", "insights"],
+    label: B("Who can see this wage list?", "Ai được xem danh sách lương này?"),
+    match: ["who can see salaries", "is this list private", "who has access to wages",
+            "ai xem duoc danh sach luong", "danh sach nay co rieng tu khong", "quyen xem luong"],
+    blocks: [
+      { k: "p", v: B("Whoever holds one of the payroll groups the leaf is gated on — a payroll officer, a payroll manager, a final approver or an administrator. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all.",
+                     "Những ai giữ một trong các nhóm quyền lương mà mục này bị chặn theo — chuyên viên tính lương, quản lý lương, người phê duyệt cuối hoặc quản trị viên. Người khác không thấy một màn hình bị làm mờ; họ không hề có mục đó trong thanh bên của mình.") },
+      { k: "ok", v: B("That is the right shape for this data. A wage list answers questions nobody asked about colleagues, and hiding the door is a stronger promise than disabling a button on it.",
+                      "Đó là cách làm đúng với loại dữ liệu này. Một danh sách lương trả lời những câu hỏi chẳng ai đặt ra về đồng nghiệp, và giấu hẳn cánh cửa là một cam kết mạnh hơn việc chỉ vô hiệu hoá một cái nút trên đó.") },
+      { k: "warn", v: B("Exporting it moves the data somewhere none of that applies. A spreadsheet of salaries has no groups on it and no way to be taken back.",
+                        "Xuất nó ra là đưa dữ liệu tới nơi mà mọi quy tắc trên không còn áp dụng. Một bảng tính lương thì không mang theo nhóm quyền nào và cũng không có cách nào thu hồi.") },
+      { k: "src", v: B("The groups on the People sidebar leaves, and your own group membership.",
+                       "Các nhóm quyền trên những mục Nhân sự ở thanh bên, và nhóm quyền của chính bạn.") },
+    ],
+  },
+
+  {
+    id: "whichtool", screens: ["insights", "explorer", "workforcean"],
+    label: B("Insights or Explorer — which one answers this?", "Phân tích hay Explorer — cái nào trả lời được?"),
+    match: ["insights or explorer", "which analytics screen", "board or explorer",
+            "dung phan tich hay explorer", "man hinh phan tich nao", "cong cu nao tra loi"],
+    showMe: ["in-hero", "ex-rail"],
+    simpler: B("Use the board when your question is one that comes up every month, and the Explorer when it is not. The board has the answers somebody already thought of; the Explorer lets you ask for one nobody did.",
+               "Dùng bảng phân tích khi câu hỏi của bạn là câu tháng nào cũng gặp, và dùng Explorer khi không phải vậy. Bảng chứa những câu trả lời đã có người nghĩ trước; còn Explorer cho bạn hỏi một câu chưa ai nghĩ tới."),
+    blocks: [
+      { k: "p", v: B("<b>Insights</b> answers the questions a payroll month asks every time: what did it cost, is that a trend, which department carries it, how much of it is statutory. <b>Explorer</b> answers the one you thought of this morning — you pick the measure and the breakdown yourself.",
+                     "<b>Phân tích</b> trả lời những câu hỏi mà tháng lương nào cũng đặt ra: tốn bao nhiêu, đó có phải xu hướng không, bộ phận nào gánh phần lớn, bao nhiêu trong đó là khoản bắt buộc. <b>Explorer</b> trả lời câu hỏi bạn vừa nghĩ ra sáng nay — bạn tự chọn chỉ tiêu và chiều tách.") },
+      { k: "p", v: B("<b>Workforce Analytics</b> is the third and it asks a different kind of question: not what payroll cost, but who was in it. Headcount paid, joiners and leavers, attendance exceptions, cost per head.",
+                     "<b>Phân tích nhân sự</b> là công cụ thứ ba và nó đặt một loại câu hỏi khác: không phải chi phí lương là bao nhiêu, mà là những ai nằm trong đó. Số người được trả lương, người vào và người nghỉ, ngoại lệ chấm công, chi phí bình quân đầu người.") },
+      { k: "ok", v: B("All three read the same payslips, so they cannot disagree with each other or with a payslip. That is the point of building them over the payroll rather than over a reporting copy of it.",
+                      "Cả ba đều đọc cùng những phiếu lương đó, nên chúng không thể lệch nhau và cũng không thể lệch với một phiếu lương. Đó chính là lý do chúng được dựng trên chính dữ liệu lương chứ không trên một bản sao báo cáo.") },
+      { k: "warn", v: B("Neither of them explains WHY. They tell you a division is above the rest; the reason is in that division's configuration and its payslips, and no analytics screen will pretend otherwise.",
+                        "Không công cụ nào trong số đó giải thích VÌ SAO. Chúng cho biết một bộ phận cao hơn phần còn lại; còn lý do nằm trong cấu hình và các phiếu lương của bộ phận đó, và không màn hình phân tích nào giả vờ ngược lại.") },
+      { k: "src", v: B("The three analytics cockpits, all built over the computed payslips.",
+                       "Ba màn hình phân tích, đều dựng trên các phiếu lương đã tính.") },
+    ],
+  },
+
+  {
+    id: "whichfilings", screens: ["govreports"],
+    label: B("Which filings does my company have to submit?", "Công ty tôi phải nộp những báo cáo nào?"),
+    match: ["which filings do we submit", "what reports does the government want", "statutory filings list",
+            "phai nop bao cao nao", "bao cao bat buoc gom nhung gi", "mau bieu nop cho co quan"],
+    showMe: ["gr-grid", "gr-countries"],
+    blocks: [
+      { k: "p", v: B("Whichever ones your company's <b>country</b> has, and nothing else. The tiles are chosen by the active company's country rather than by what Payobook can produce — a Vietnamese company sees the BHXH forms and the labour-change declarations, and a company somewhere else sees that country's set.",
+                     "Đúng những biểu mẫu mà <b>quốc gia</b> của công ty bạn có, không hơn. Các ô biểu mẫu được chọn theo quốc gia của công ty đang hoạt động chứ không theo những gì Payobook có thể tạo ra — một công ty Việt Nam thấy các mẫu BHXH và các tờ khai biến động lao động, còn công ty ở nơi khác thấy bộ biểu mẫu của quốc gia đó.") },
+      { k: "steps", v: [
+        { t: B("Choose the month — the period control here is a month, not a date range", "Chọn tháng — ô kỳ ở đây là một tháng, không phải một khoảng ngày"), a: "gr-head" },
+        { t: B("Check every run in that month has reached done before generating anything", "Kiểm tra mọi đợt lương của tháng đó đã đạt Hoàn tất trước khi kết xuất bất cứ gì"), a: "pk-tabs" },
+        { t: B("Generate the tile you need — it opens the company's existing wizard, prefilled", "Kết xuất biểu mẫu bạn cần — nó mở đúng trình hướng dẫn sẵn có của công ty, đã điền sẵn"), a: "gr-grid" },
+      ] },
+      { k: "warn", v: B("A filing built from a month whose runs are not all done is short by however many payslips are still in the pipeline — and it is the authority, not Payobook, that will notice.",
+                        "Một báo cáo lập từ tháng mà các đợt lương chưa hoàn tất hết sẽ thiếu đúng bằng số phiếu lương còn đang trong quy trình — và bên phát hiện ra sẽ là cơ quan quản lý, không phải Payobook.") },
+      { k: "p", v: B("If your country's group says the filings are coming soon, that is the truth rather than a fault: the tiles exist per country, and one with none has not been built yet. Payobook prepares the file either way — it does not submit it for you.",
+                     "Nếu phần dành cho quốc gia của bạn ghi rằng biểu mẫu sắp có, thì đó là sự thật chứ không phải lỗi: các biểu mẫu là theo từng quốc gia, và quốc gia chưa có biểu mẫu nào thì đơn giản là chưa được xây dựng. Dù thế nào thì Payobook cũng chỉ lập tệp — chứ không nộp thay bạn.") },
+      { k: "src", v: B("The country report catalogue behind this cockpit, and the active company's country.",
+                       "Danh mục biểu mẫu theo quốc gia đứng sau màn hình này, và quốc gia của công ty đang hoạt động.") },
+    ],
+  },
 ];
 
 /* =============================================================================
@@ -2806,6 +3622,154 @@ const COLUMNS = {
      B("Rows that arrived but have not been taken into payroll yet. A count that is climbing is the clearest single sign of a broken sync — those rows are somebody's attendance, waiting.",
        "Các dòng đã về nhưng chưa được đưa vào hệ thống lương. Con số này tăng dần là dấu hiệu rõ nhất của một đầu nối hỏng — những dòng đó là chấm công của ai đó, đang nằm chờ.")],
   ],
+  /* -- Overview, People, Insights, Compliance (Phase C1) ----------------- */
+  dashboard: [
+    ["headcount",
+     B("Headcount", "Nhân sự"),
+     B("Everybody the company currently employs, whether or not they were in the last run. It describes the company rather than the month, so it will read almost the same tomorrow — a figure to notice when it MOVES, not one to act on today.",
+       "Toàn bộ nhân sự công ty đang có, bất kể họ có nằm trong đợt lương gần nhất hay không. Con số này mô tả cả công ty chứ không mô tả tháng, nên ngày mai đọc lại gần như vẫn thế — đây là con số đáng chú ý khi nó THAY ĐỔI, không phải con số để xử lý hôm nay.")],
+    ["monthly_payroll",
+     B("Monthly payroll", "Chi phí lương tháng"),
+     B("The personnel cost of the current month, as computed so far. It is a cost figure rather than a payment figure: money still sitting in an unapproved run is counted here and has not left the company.",
+       "Chi phí nhân sự của tháng hiện tại, theo phần đã tính tới lúc này. Đây là con số chi phí chứ không phải con số đã chi: khoản tiền còn nằm trong một đợt chưa được duyệt vẫn được tính vào đây và chưa hề rời khỏi công ty.")],
+    ["pending_approval",
+     B("Pending approval", "Chờ phê duyệt"),
+     B("How many runs are waiting on a signature, at any gate, across the whole company. It is not your personal queue — how many are YOURS is a question the Approvals screen answers, and confusing the two means chasing work that was never yours.",
+       "Có bao nhiêu đợt lương đang chờ chữ ký, ở bất kỳ cổng nào, trên toàn công ty. Đây không phải hàng đợi của riêng bạn — bao nhiêu đợt là CỦA BẠN thì màn hình Phê duyệt mới trả lời, và nhầm lẫn hai thứ này khiến bạn đi giục những phần việc vốn không phải của mình.")],
+    ["active_configurations",
+     B("Active configurations", "Cấu hình đang chạy"),
+     B("How many formula configurations are switched on — normally one per division and cycle. A number that has grown without anybody adding a division is worth opening: an old configuration left active can still be selected by a run.",
+       "Có bao nhiêu cấu hình công thức đang được bật — thường là mỗi bộ phận và mỗi chu kỳ một bộ. Con số tăng lên mà không ai thêm bộ phận nào là điều đáng mở ra xem: một cấu hình cũ còn để bật vẫn có thể bị một đợt lương chọn phải.")],
+  ],
+
+  approvals: [
+    ["at_officer_review",
+     B("At Officer review", "Ở vòng Chuyên viên"),
+     B("Runs sitting at the first gate, waiting for the Payroll Officer to sign. A run only reaches this lane by being submitted, so anything still in draft is not counted here and is not waiting for anybody.",
+       "Các đợt đang nằm ở cổng đầu tiên, chờ Chuyên viên tính lương ký. Một đợt chỉ tới được làn này khi đã được trình lên, nên đợt còn ở Nháp thì không được tính vào đây và cũng không chờ ai cả.")],
+    ["at_hr_review",
+     B("At HR review", "Ở vòng HR soát xét"),
+     B("Runs the Officer has already passed, waiting at {{hrTierName}}. The lane names the tier that has to act next, which makes it the answer to \"who do I chase\" rather than a status word.",
+       "Các đợt đã qua vòng Chuyên viên, đang chờ ở {{hrTierName}}. Làn này chỉ đích danh vòng phải xử lý tiếp theo, nên nó là câu trả lời cho \"tôi phải hỏi ai\" chứ không chỉ là một từ mô tả trạng thái.")],
+    ["at_finance_approval",
+     B("At Finance approval", "Ở vòng Tài chính"),
+     B("The last gate before done. A run here has been read twice already, which is exactly why the reading at this tier is about totals rather than lines — and why a wrong line has to have been caught earlier.",
+       "Cổng cuối cùng trước khi Hoàn tất. Một đợt ở đây đã được soát hai lần rồi, và chính vì vậy phần soát ở vòng này là soát các con số tổng chứ không soát từng dòng — nên một dòng sai buộc phải bị bắt từ sớm hơn.")],
+    ["net_at_stake",
+     B("Net at stake", "Số tiền đang treo"),
+     B("The net of every run in the pipeline added together — money that is one or more signatures away from leaving the company's account and can still be stopped by anybody who finds a reason. After the last gate that stops being true.",
+       "Tổng thực nhận của mọi đợt đang trong quy trình cộng lại — số tiền chỉ còn cách tài khoản công ty một hoặc vài chữ ký, và bất kỳ ai tìm ra lý do đều còn kịp chặn lại. Sau cổng cuối cùng thì điều đó không còn đúng nữa.")],
+  ],
+
+  employees: [
+    ["headcount",
+     B("Headcount", "Nhân sự"),
+     B("Everybody on the roster within the filters currently active. It counts people the company employs, which is not the same as people the last run paid — that count lives on Workforce Analytics, and the gap between them is where a missing payslip hides.",
+       "Toàn bộ những người trong danh sách theo bộ lọc đang chọn. Nó đếm số người công ty đang thuê, khác với số người đợt lương gần nhất đã trả — con số đó nằm ở Phân tích nhân sự, và khoảng chênh giữa hai bên chính là chỗ một phiếu lương bị thiếu đang ẩn.")],
+    ["running_contracts",
+     B("Running contracts", "Hợp đồng hiệu lực"),
+     B("Contracts in force today. Payroll computes from the contract, so somebody on the roster whose contract is still in draft is on this screen and will not be in the run — which is why this number is worth comparing with headcount.",
+       "Số hợp đồng đang có hiệu lực hôm nay. Hệ thống lương tính theo hợp đồng, nên người có trong danh sách mà hợp đồng còn ở Nháp thì vẫn hiện trên màn hình này nhưng sẽ không có trong đợt lương — vì thế con số này rất đáng đem so với sĩ số.")],
+    ["expiring_30",
+     B("Expiring in 30 days", "Hết hạn trong 30 ngày"),
+     B("Contracts that end within the next month. Each one is either a renewal somebody has to sign or a leaver somebody has to settle, and both are cheaper to handle now than as a surprise proration on a payslip.",
+       "Các hợp đồng sẽ kết thúc trong vòng một tháng tới. Mỗi hợp đồng như vậy hoặc là một lần gia hạn cần người ký, hoặc là một trường hợp thôi việc cần quyết toán, và cả hai đều rẻ hơn nếu xử lý ngay bây giờ thay vì để thành một khoản tính theo ngày công bất ngờ trên phiếu lương.")],
+    ["new_this_month",
+     B("New this month", "Vào mới tháng này"),
+     B("People who joined inside the current period. They are the most likely rows to be prorated and the most likely to have bank details missing, so they are worth reading one by one rather than as a count.",
+       "Những người vào làm trong kỳ hiện tại. Đây là nhóm dễ bị tính theo ngày công nhất và cũng dễ thiếu thông tin ngân hàng nhất, nên rất đáng đọc từng người thay vì chỉ đọc con số tổng.")],
+    ["monthly_wage_bill",
+     B("Monthly wage bill", "Quỹ lương tháng"),
+     B("The registered contract bases added together — what the company has agreed to pay, before overtime, allowances or deductions. It is also the base insurance is charged on, which is why it moves when a contract is renewed rather than when a month is busy.",
+       "Tổng các mức lương cơ bản đã đăng ký theo hợp đồng — mức công ty đã cam kết trả, chưa tính tăng ca, phụ cấp hay khấu trừ. Đây cũng là mức dùng để tính bảo hiểm, nên nó thay đổi khi có hợp đồng được gia hạn chứ không phải khi tháng đó bận rộn.")],
+    ["payroll_ready",
+     B("Payroll-ready", "Sẵn sàng tính lương"),
+     B("The share of people who have everything needed to actually be paid: a running contract, a wage on it and usable bank details. Anybody outside this share computes perfectly and does not receive the money, which is the failure with the longest gap between cause and symptom.",
+       "Tỷ lệ những người đã có đủ mọi thứ để thực sự nhận được lương: hợp đồng đang hiệu lực, mức lương trên hợp đồng và thông tin ngân hàng dùng được. Ai nằm ngoài tỷ lệ này vẫn được tính lương hoàn hảo mà không nhận được tiền — kiểu lỗi có khoảng cách dài nhất giữa nguyên nhân và triệu chứng.")],
+  ],
+
+  contracts: [
+    ["running",
+     B("Running", "Đang hiệu lực"),
+     B("Contracts in force today, which is the set payroll will compute from. A contract that starts next week is not here yet and a person on it is not in this month's run either.",
+       "Các hợp đồng đang có hiệu lực hôm nay, tức là tập hợp mà hệ thống lương sẽ dựa vào để tính. Một hợp đồng bắt đầu từ tuần sau thì chưa nằm ở đây, và người thuộc hợp đồng đó cũng chưa có trong đợt lương tháng này.")],
+    ["draft",
+     B("Draft", "Nháp"),
+     B("Contracts that have been prepared and not put in force. A draft pays nothing at all — it is the state to hunt for in the week before a run, because the employee is on every other screen and simply absent from the payslips.",
+       "Các hợp đồng đã soạn nhưng chưa được đưa vào hiệu lực. Hợp đồng nháp thì không trả gì cả — đây là trạng thái cần lùng cho ra trong tuần trước khi chạy lương, vì nhân viên đó vẫn hiện trên mọi màn hình khác mà đơn giản là vắng mặt trong danh sách phiếu lương.")],
+    ["expired",
+     B("Expired", "Đã hết hạn"),
+     B("Contracts whose end date has passed. Each is either a leaver who still needs settling in Full & Final or a renewal that was never signed, and the second one is paid up to the end date and then stops.",
+       "Các hợp đồng đã qua ngày kết thúc. Mỗi hợp đồng như vậy hoặc là một người thôi việc còn phải quyết toán ở Quyết toán thôi việc, hoặc là một lần gia hạn chưa ai ký — và trường hợp thứ hai được trả tới đúng ngày kết thúc rồi dừng.")],
+    ["average_wage",
+     B("Average wage", "Lương bình quân"),
+     B("The wage bill divided by the number of contracts in the current filters. It is a scoped average, so it moves when you change a chip without anything having changed in the database — useful for comparing divisions, misleading as a headline.",
+       "Quỹ lương chia cho số hợp đồng trong phạm vi bộ lọc hiện tại. Đây là số bình quân theo phạm vi, nên nó thay đổi khi bạn đổi chip lọc dù dữ liệu không hề đổi — hữu ích để so sánh giữa các bộ phận, nhưng dễ gây hiểu nhầm nếu lấy làm con số tiêu đề.")],
+  ],
+
+  insights: [
+    /* The product's own caption under the headline is "net payroll" — NOT
+       "Net paid", which is the Pay Runs board's KPI and already means
+       "Đã chi". One English string, one Vietnamese; two screens that mean
+       slightly different things get two names. */
+    ["net_payroll",
+     B("Net payroll", "Lương thực chi"),
+     B("The headline: what actually left, or will leave, the bank account for the run this board is reading. It is read off the payslips themselves rather than a reporting copy, so it cannot disagree with the payslips underneath it.",
+       "Con số nổi bật: số tiền thực sự đã rời, hoặc sẽ rời, tài khoản ngân hàng cho đợt lương mà bảng này đang đọc. Nó được đọc thẳng từ chính các phiếu lương chứ không từ một bản sao báo cáo, nên không thể lệch với các phiếu lương nằm dưới.")],
+    ["cost_story",
+     B("Cost story", "Diễn biến chi phí"),
+     B("The same measure over three, six or twelve months. The window chip decides which story it tells, and a figure quoted without saying which window it came from is a figure somebody will contradict with the same screen.",
+       "Cùng một chỉ tiêu nhìn theo ba, sáu hay mười hai tháng. Chip chọn khoảng thời gian quyết định nó kể câu chuyện nào, và một con số trích ra mà không nói rõ lấy từ khoảng nào là con số sẽ bị người khác phản bác bằng đúng màn hình này.")],
+    ["statutory_split",
+     B("Statutory split", "Cơ cấu đóng bắt buộc"),
+     B("How much of the company's payroll cost is the law rather than salary: the employee leg deducted from payslips beside the employer leg paid on top. The second one never appears in anybody's net, so it is invisible in every conversation about pay unless somebody puts it on the table.",
+       "Bao nhiêu phần chi phí lương của công ty là do luật định chứ không phải tiền lương: phần người lao động bị khấu trừ trên phiếu lương đặt cạnh phần doanh nghiệp đóng thêm. Phần thứ hai không bao giờ xuất hiện trong thực nhận của ai, nên nó vô hình trong mọi cuộc trao đổi về lương trừ khi có người chủ động nêu ra.")],
+  ],
+
+  explorer: [
+    ["measure",
+     B("Measure", "Chỉ tiêu"),
+     B("What is being counted — net pay, gross, a contribution, a headcount. It is the first thing to choose and the most common thing to get wrong: most wrong answers here are the right filter applied to the wrong measure.",
+       "Thứ đang được đo — thực nhận, tổng thu nhập, một khoản đóng bảo hiểm, hay số người. Đây là thứ cần chọn đầu tiên và cũng là thứ hay chọn sai nhất: phần lớn câu trả lời sai ở đây là lọc đúng nhưng áp lên nhầm chỉ tiêu.")],
+    ["break_down_by",
+     B("Break down by", "Tách theo"),
+     B("The dimension the rows are grouped into — division, department, cycle, month. Changing it does not change the total, only how the same total is divided up, which is the quickest way to check that a number is what you think it is.",
+       "Chiều mà các dòng được nhóm theo — bộ phận, phòng ban, chu kỳ, tháng. Đổi nó không làm thay đổi con số tổng, chỉ thay đổi cách chia nhỏ cùng một tổng đó — và đây là cách nhanh nhất để kiểm tra xem một con số có đúng như bạn nghĩ không.")],
+    ["where",
+     B("Where", "Điều kiện"),
+     B("Every filter currently applied, shown as a removable tag. The tags are part of the answer: the same measure with one tag removed is a different figure, and the two look identical once they have been pasted into an email.",
+       "Toàn bộ bộ lọc đang áp dụng, hiển thị thành các thẻ có thể gỡ. Các thẻ đó là một phần của câu trả lời: cùng chỉ tiêu ấy mà gỡ đi một thẻ là ra một con số khác, và khi đã dán vào email thì hai con số trông y hệt nhau.")],
+  ],
+
+  workforcean: [
+    ["employees_paid",
+     B("Employees paid", "Nhân viên được trả lương"),
+     B("How many people the runs in scope actually produced a payslip for. It is not headcount: somebody employed all month whose contract sat in draft is counted on People and not here, and that difference is the point of the tile.",
+       "Có bao nhiêu người thực sự được các đợt lương trong phạm vi tạo ra phiếu lương. Đây không phải sĩ số: một người làm cả tháng nhưng hợp đồng còn ở Nháp thì được đếm ở màn hình Nhân sự chứ không phải ở đây, và chính khác biệt đó mới là ý nghĩa của ô này.")],
+    ["joiners",
+     B("Joiners", "Vào mới"),
+     B("People who first appear in a run inside this period. Almost all of them are prorated, which means almost all of them are a question somebody will ask about their first payslip.",
+       "Những người lần đầu xuất hiện trong một đợt lương thuộc kỳ này. Gần như tất cả đều được tính theo ngày công, nghĩa là gần như tất cả đều sẽ là một câu hỏi về phiếu lương đầu tiên của họ.")],
+    ["leavers",
+     B("Leavers", "Thôi việc"),
+     B("People whose last run falls in this period. Each one needs settling in Full & Final AND excluding from the ordinary monthly run — a leaver in both is paid twice, and recovering that is a legal conversation rather than a payroll one.",
+       "Những người có đợt lương cuối cùng rơi vào kỳ này. Mỗi người vừa cần được quyết toán ở Quyết toán thôi việc VÀ cần bị loại khỏi đợt lương tháng thông thường — người nằm ở cả hai chỗ sẽ được trả hai lần, và thu hồi khoản đó là chuyện pháp lý chứ không còn là chuyện tính lương.")],
+    ["cost_per_head",
+     B("Cost per head", "Chi phí bình quân"),
+     B("The run's cost divided by the people it paid. It is the only figure on this screen that survives a headcount change, which makes it the honest way to compare two months — a total against a total mostly measures how many people were in each.",
+       "Chi phí của đợt lương chia cho số người nó đã trả. Đây là con số duy nhất trên màn hình này không bị méo khi sĩ số thay đổi, nên nó là cách so sánh trung thực giữa hai tháng — còn đem tổng so với tổng thì chủ yếu là đang đo xem mỗi tháng có bao nhiêu người.")],
+  ],
+
+  govreports: [
+    ["period",
+     B("Period", "Kỳ báo cáo"),
+     B("The month being filed for. It is a month rather than a date range because the authorities ask for months, and a filing generated before every run in that month is done is short by however many payslips are still in the pipeline.",
+       "Tháng đang được lập báo cáo. Đây là một tháng chứ không phải một khoảng ngày, vì các cơ quan quản lý yêu cầu theo tháng — và một báo cáo kết xuất khi các đợt lương của tháng chưa xong sẽ thiếu đúng bằng số phiếu lương còn đang trong quy trình.")],
+    ["country",
+     B("Country", "Quốc gia"),
+     B("Which country's filing set is on display. The tiles are decided by the active company's country rather than by what Payobook can produce, and the chips only appear when a company runs payroll in more than one.",
+       "Bộ biểu mẫu của quốc gia nào đang hiển thị. Các ô biểu mẫu do quốc gia của công ty đang hoạt động quyết định chứ không do những gì Payobook có thể tạo ra, và các chip chỉ xuất hiện khi công ty chạy lương ở nhiều hơn một quốc gia.")],
+  ],
 };
 
 /* =============================================================================
@@ -2823,8 +3787,14 @@ const COLUMNS = {
 const PRACTICE_ANCHORS = {
   "rep-nav": "The replica's own sidebar. Mirrors pb_sidebar; nothing on it navigates the real app.",
   "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
-  "rep-dash-kpis": "The replica Dashboard's KPI row. Context only — Phase A teaches the Pay Run section.",
-  "rep-dash-runs": "The replica Dashboard's recent-runs list.",
+  /* The Dashboard replica's KPI row is NO LONGER practice-only. Phase C1 made
+     the Dashboard a station with a full lesson, so the replica draws the real
+     dash-hero / dash-runpayroll / dash-kpis / dash-formula attributes and the
+     registry owns those names (promoted out of `foreign`). What is left here is
+     the one panel with no product counterpart: the product's card is a single
+     "Latest pay run" summary, and a lesson about the monthly loop needs to show
+     a loop, so the replica draws three months and says so by name. */
+  "rep-dash-runs": "The replica Dashboard's three-month run list. The product draws ONE latest-run card here; three months is a teaching view, so it keeps a rep- name and the Coach must never claim to point at it on a live screen.",
   "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper.",
   "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen.",
 };
@@ -2832,11 +3802,20 @@ const PRACTICE_ANCHORS = {
 /* =============================================================================
    11. THE JOURNEY'S FRONT DOOR
    -----------------------------------------------------------------------------
-   The sidebar leaf that opens the Journey. It is here rather than hand-written
-   in the module for one reason: its NAME is content, and content ships in both
-   languages. "Learn" / "Học cùng Payobook" has to reach the .po through the
-   same path as every other translatable, or it is a string that only a code
-   review can catch when it drifts.
+   The sidebar SECTION and the leaf inside it. Both are here rather than
+   hand-written in the module for one reason: their NAMES are content, and
+   content ships in both languages. "Learn" / "Học cùng Payobook" has to reach
+   the .po through the same path as every other translatable, or it is a string
+   that only a code review can catch when it drifts.
+
+   PHASE C1 MOVED THE LEAF OUT OF Pay Run. Until now the Journey hung off
+   `sec_payrun` after Retro, which was honest while the map taught the Pay Run
+   desk and became wrong the moment it also taught Overview, People, Insights
+   and Compliance: a learner looking for the People lessons would have gone
+   hunting inside Pay Run. Learning is now its own destination —
+   `technical_key: learn`, sequence 50, so it sits after Compliance (45) and
+   before Planning (55), which is where a section that is about the whole
+   product rather than one desk belongs.
 
    `groups` is deliberately empty and there is no field for it: every gated leaf
    in this sidebar hides itself from users who cannot use it, which is right for
@@ -2847,13 +3826,31 @@ const PRACTICE_ANCHORS = {
 
    `compass` is not a preference. pb_sidebar renders a FIXED icon set and an
    unknown name draws a plain circle, so this is one of the names it knows.
+   `technical_key` is required on pb.sidebar.section; a section without one does
+   not load at all.
+
+   THE SECTION IS CALLED "Learning", NOT "Learn", and that is the A2 ruling
+   applied rather than a style choice: gettext allows ONE msgstr per msgid, and
+   "Learn" already means "Học cùng Payobook" as the leaf's name. Two English
+   "Learn"s with two different Vietnamese cannot both ship. "Learning" is
+   already a string in this module — the topbar suffix, chrome key `learn` —
+   with exactly the Vietnamese the section wants, so the two merge into one
+   entry instead of fighting over it.
    ========================================================================== */
-const SIDEBAR_LEAF = {
-  xmlid: "item_learn_journey",
-  section: "pb_sidebar.sec_payrun",
-  sequence: 90,
-  icon: "compass",
-  actionXmlid: "pb_learn.action_learn_journey",
-  actionTag: "learn_journey",
-  name: B("Learn", "Học cùng Payobook"),
+const SIDEBAR = {
+  section: {
+    xmlid: "sec_learn",
+    technicalKey: "learn",
+    sequence: 50,
+    showLabel: true,
+    name: B("Learning", "Học tập"),
+  },
+  leaf: {
+    xmlid: "item_learn_journey",
+    sequence: 10,
+    icon: "compass",
+    actionXmlid: "pb_learn.action_learn_journey",
+    actionTag: "learn_journey",
+    name: B("Learn", "Học cùng Payobook"),
+  },
 };

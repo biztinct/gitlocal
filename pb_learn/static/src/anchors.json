@@ -24,9 +24,10 @@
     "  foreign   data-coach anchors this module does not own. They belong to",
     "            pb_coach's tours and to PayAI, they predate pb_learn, and they",
     "            are listed so the lint can tell 'someone else's anchor' from",
-    "            'a typo of one of ours'. pw-division and pw-compute are the two",
-    "            that are BOTH — the registry owns them, pb_coach also points at",
-    "            them, and neither may rename them unilaterally.",
+    "            'a typo of one of ours'. Some entries are BOTH — pw-division,",
+    "            pw-compute, the seven fs-* and, from Phase C1, the four dash-*:",
+    "            the registry owns the name, pb_coach also points at it, and",
+    "            neither module may rename one unilaterally.",
     "",
     "tests/test_anchor_registry.py enforces every direction:",
     "  every product key exists in its template · every pattern prefix is",
@@ -362,24 +363,208 @@
       "screen": "statutory",
       "file": "pb_statutory/static/src/xml/statutory_wizards.xml",
       "desc": "The effective date on the new-policy wizard. It is the company's record of when a rate change legally started — read by auditors and by the statutory reports, and NOT a switch: the cockpit displays the latest-dated active policy the moment it is saved."
+    },
+    "dash-hero": {
+      "screen": "dashboard",
+      "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "desc": "The dashboard hero: who you are, which run is live, and how much of it is done. The first sentence Payobook says to anybody who logs in."
+    },
+    "dash-kpis": {
+      "screen": "dashboard",
+      "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "desc": "Headcount, monthly payroll, pending approvals and active configurations. Four numbers that describe the company, not the day."
+    },
+    "dash-runpayroll": {
+      "screen": "dashboard",
+      "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "desc": "Run Payroll, from the hero. The same wizard the sidebar leaf opens — the dashboard is a way in, never a second way of doing it."
+    },
+    "dash-formula": {
+      "screen": "dashboard",
+      "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "desc": "The formula engine card. Payobook computes pay from readable configurations rather than fixed structures, and this is where the dashboard says so."
+    },
+    "pa-hero": {
+      "screen": "approvals",
+      "file": "pb_approval/static/src/xml/approval.xml",
+      "desc": "The approval pipeline header, with the count that is waiting on YOU. Officer review, then HR review, then Finance approval, printed in order."
+    },
+    "pa-kpis": {
+      "screen": "approvals",
+      "file": "pb_approval/static/src/xml/approval.xml",
+      "desc": "How many runs sit at each gate, and the net at stake across all of them. A money figure that has not been paid and can still be stopped."
+    },
+    "pa-lanes": {
+      "screen": "approvals",
+      "file": "pb_approval/static/src/xml/approval.xml",
+      "desc": "The three lanes and the run cards in them. A card offers Approve and Reject only at the gate you hold; everywhere else it names who is holding it up."
+    },
+    "pa-recent": {
+      "screen": "approvals",
+      "file": "pb_approval/static/src/xml/approval.xml",
+      "desc": "Recently decided, approvals and rejections together, with the written reason on every rejection. The audit trail as a reading surface."
+    },
+    "pa-reject": {
+      "screen": "approvals",
+      "file": "pb_approval/static/src/xml/approval.xml",
+      "desc": "The reject popover. The reason field is required, and the note beneath it says what rejecting does to the payslips in the run."
+    },
+    "pe-head": {
+      "screen": "employees",
+      "file": "pb_people/static/src/xml/people.xml",
+      "desc": "The Employees header and its two actions: Select, which turns on bulk mode, and Add employee."
+    },
+    "pe-bulk": {
+      "screen": "employees",
+      "file": "pb_people/static/src/xml/people.xml",
+      "desc": "The bulk bar. Visible only in select mode, and the one control on this screen that changes many records at once."
+    },
+    "pe-kpis": {
+      "screen": "employees",
+      "file": "pb_people/static/src/xml/people.xml",
+      "desc": "Headcount, running contracts, contracts expiring within 30 days, new hires this month, the monthly wage bill and the payroll-ready share."
+    },
+    "pe-filters": {
+      "screen": "employees",
+      "file": "pb_people/static/src/xml/people.xml",
+      "desc": "Status chips, search and the date range. Every count above is scoped by whatever is active here."
+    },
+    "pe-roster": {
+      "screen": "employees",
+      "file": "pb_people/static/src/xml/people.xml",
+      "desc": "The employee cards: job, department, wage, contract expiry and the payroll-ready tick. Read the tick before a run, not after it."
+    },
+    "ct-head": {
+      "screen": "contracts",
+      "file": "pb_contracts/static/src/xml/contracts.xml",
+      "desc": "The Contracts header. A separate screen from Employees on purpose: a person is not a contract, and payroll is paid from the contract."
+    },
+    "ct-kpis": {
+      "screen": "contracts",
+      "file": "pb_contracts/static/src/xml/contracts.xml",
+      "desc": "Running, expiring within 30 days, draft, expired, the monthly wage bill and the average wage."
+    },
+    "ct-filters": {
+      "screen": "contracts",
+      "file": "pb_contracts/static/src/xml/contracts.xml",
+      "desc": "Status chips, search and the date range over the contract roster."
+    },
+    "ct-roster": {
+      "screen": "contracts",
+      "file": "pb_contracts/static/src/xml/contracts.xml",
+      "desc": "The contract cards, each with its period and its wage. The expiry chip is the one to read in the week before a run."
+    },
+    "in-hero": {
+      "screen": "insights",
+      "file": "pb_insights/static/src/xml/insights.xml",
+      "desc": "The headline figure and the run it was read from. Every number on this board is a door back to where it came from."
+    },
+    "in-trend": {
+      "screen": "insights",
+      "file": "pb_insights/static/src/xml/insights.xml",
+      "desc": "The cost story over three, six or twelve months. A trend answers a different question from a total, and the window chip decides which."
+    },
+    "in-duo": {
+      "screen": "insights",
+      "file": "pb_insights/static/src/xml/insights.xml",
+      "desc": "Department leaderboard and the statutory split, side by side: where the cost sits, and how much of it is the law rather than salary."
+    },
+    "in-pulse": {
+      "screen": "insights",
+      "file": "pb_insights/static/src/xml/insights.xml",
+      "desc": "Workforce pulse — attendance exceptions and headcount movement for this week and month to date."
+    },
+    "in-explore": {
+      "screen": "insights",
+      "file": "pb_insights/static/src/xml/insights.xml",
+      "desc": "Ask something else. The way out of a board that has answered every question it anticipated, into the Explorer."
+    },
+    "ex-head": {
+      "screen": "explorer",
+      "file": "pb_explorer/static/src/xml/explorer.xml",
+      "desc": "The Explorer header. A question builder rather than a report: pick a measure, break it down, filter it."
+    },
+    "ex-rail": {
+      "screen": "explorer",
+      "file": "pb_explorer/static/src/xml/explorer.xml",
+      "desc": "The chip rail: measure, breakdown and comparison. The three choices that define the question being asked."
+    },
+    "ex-filters": {
+      "screen": "explorer",
+      "file": "pb_explorer/static/src/xml/explorer.xml",
+      "desc": "The Where group — every active filter as a removable tag. A figure read without checking this is a figure read out of scope."
+    },
+    "ex-headline": {
+      "screen": "explorer",
+      "file": "pb_explorer/static/src/xml/explorer.xml",
+      "desc": "The result headline: the measure, the dimension it is broken down by, and the total the table sums to."
+    },
+    "ex-table": {
+      "screen": "explorer",
+      "file": "pb_explorer/static/src/xml/explorer.xml",
+      "desc": "The result table. Rows are the breakdown, columns are the comparison — and it reconciles with the payslips it was derived from."
+    },
+    "wa-head": {
+      "screen": "workforcean",
+      "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+      "desc": "The Workforce Insights header. Attendance, overtime, leave and cost per head, read off payroll rather than off a separate HR system."
+    },
+    "wa-filters": {
+      "screen": "workforcean",
+      "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+      "desc": "Division and period pickers. They scope every panel below, which is why an alarming number is worth re-reading with these in view."
+    },
+    "wa-kpis": {
+      "screen": "workforcean",
+      "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+      "desc": "Employees paid, joiners and leavers, and the cost per head. Employees PAID, not employed — the difference is the point."
+    },
+    "wa-chart": {
+      "screen": "workforcean",
+      "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+      "desc": "Headcount paid, month by month. A step in this line is a joiner wave, a leaver wave, or a run that did not include everybody."
+    },
+    "wa-duo": {
+      "screen": "workforcean",
+      "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+      "desc": "Attendance exceptions beside overtime. Two panels because the second is usually the consequence of the first."
+    },
+    "gr-head": {
+      "screen": "govreports",
+      "file": "pb_govt_reports/static/src/xml/govt_reports.xml",
+      "desc": "The filings header, naming the company, its country and the month being filed for. The period control is a month, not a date range."
+    },
+    "gr-countries": {
+      "screen": "govreports",
+      "file": "pb_govt_reports/static/src/xml/govt_reports.xml",
+      "desc": "The country chips. Shown only when this company runs payroll in more than one country, because the filings are the country's, not Payobook's."
+    },
+    "gr-grid": {
+      "screen": "govreports",
+      "file": "pb_govt_reports/static/src/xml/govt_reports.xml",
+      "desc": "The report tiles, grouped by the authority that asks for them. Each opens the existing wizard prefilled with the company and the period."
+    },
+    "gr-empty": {
+      "screen": "govreports",
+      "file": "pb_govt_reports/static/src/xml/govt_reports.xml",
+      "desc": "The honest empty state: this country's filings are not built yet. Better than a tile that generates a form nobody can submit."
     }
   },
   "pattern": {},
   "practice": {
     "rep-nav": "The replica's own sidebar. Mirrors pb_sidebar; nothing on it navigates the real app.",
     "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
-    "rep-dash-kpis": "The replica Dashboard's KPI row. Context only — Phase A teaches the Pay Run section.",
-    "rep-dash-runs": "The replica Dashboard's recent-runs list.",
+    "rep-dash-runs": "The replica Dashboard's three-month run list. The product draws ONE latest-run card here; three months is a teaching view, so it keeps a rep- name and the Coach must never claim to point at it on a live screen.",
     "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper.",
     "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen."
   },
   "foreign": {
     "pw-division": "pb_coach — hero_path.js, tour_payrun.js. ALSO ours: the registry owns it and neither module may rename it alone.",
     "pw-compute": "pb_coach — hero_path.js, tour_payrun.js. ALSO ours, same rule.",
-    "dash-hero": "pb_dashboard / pb_coach hero tour",
-    "dash-kpis": "pb_dashboard / pb_coach hero tour",
-    "dash-formula": "pb_dashboard / pb_coach hero tour",
-    "dash-runpayroll": "pb_dashboard / pb_coach hero tour",
+    "dash-hero": "pb_dashboard / pb_coach hero_path. ALSO ours from Phase C1: LW names it, the registry owns it, and neither module may rename it alone.",
+    "dash-kpis": "pb_dashboard / pb_coach hero_path. ALSO ours from Phase C1, same rule.",
+    "dash-formula": "pb_dashboard / pb_coach hero_path. ALSO ours from Phase C1, same rule.",
+    "dash-runpayroll": "pb_dashboard. ALSO ours from Phase C1 — no tour points at this one, so it is promoted on the fs-simulate terms: in the template, named by a lesson, owned by the registry.",
     "payai-pill": "pb_payroll_ai_insights — the PayAI launcher",
     "find-panel": "pb_formula_studio command layer",
     "palette": "pb_formula_studio command layer",
@@ -403,7 +588,15 @@
       "pb_statutory/static/src/xml/statutory.xml",
       "pb_structures/static/src/xml/structures.xml",
       "pb_integrations/static/src/xml/integrations.xml",
-      "pb_statutory/static/src/xml/statutory_wizards.xml"
+      "pb_statutory/static/src/xml/statutory_wizards.xml",
+      "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "pb_approval/static/src/xml/approval.xml",
+      "pb_people/static/src/xml/people.xml",
+      "pb_contracts/static/src/xml/contracts.xml",
+      "pb_insights/static/src/xml/insights.xml",
+      "pb_explorer/static/src/xml/explorer.xml",
+      "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+      "pb_govt_reports/static/src/xml/govt_reports.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

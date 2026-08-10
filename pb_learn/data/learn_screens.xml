@@ -126,4 +126,84 @@
         <field name="suggest_ids" eval="[(6, 0, [ref('intent_syncbroken'), ref('intent_whysetup'), ref('intent_whatnext')])]"/>
     </record>
 
+    <record id="screen_dashboard" model="learn.screen">
+        <field name="key">dashboard</field>
+        <field name="sequence">130</field>
+        <field name="name">Dashboard</field>
+        <field name="blurb">The command centre: the live run, four numbers that describe the company, and a door into each part of the product.</field>
+        <field name="next_step">Read the line under your name first — it names the live run and how much of it is still waiting. Then open the section the work is actually in; nothing on this screen is a second way of doing anything.</field>
+        <field name="sidebar_key">pb_sidebar.item_dashboard</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_wherelives'), ref('intent_whatnext'), ref('intent_practice')])]"/>
+    </record>
+
+    <record id="screen_approvals" model="learn.screen">
+        <field name="key">approvals</field>
+        <field name="sequence">140</field>
+        <field name="name">Approvals</field>
+        <field name="blurb">Every submitted run in the lane of the gate it is waiting at, with the net at stake across all of them.</field>
+        <field name="next_step">Read the count in the header — that is the part of this queue only you can move. Then open the run rather than deciding from its card: the total is on the card and the flags are on the payslips.</field>
+        <field name="sidebar_key">pb_sidebar.item_approvals</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_howmanyslips'), ref('intent_variance'), ref('intent_rejectright'), ref('intent_whichlane'), ref('intent_approve')])]"/>
+    </record>
+
+    <record id="screen_employees" model="learn.screen">
+        <field name="key">employees</field>
+        <field name="sequence">150</field>
+        <field name="name">Employees</field>
+        <field name="blurb">The people roster: contract status, the monthly wage bill, and whether each person can actually be paid.</field>
+        <field name="next_step">Filter to the people who are not payroll-ready and clear them before the run, not after it. Somebody with no bank account computes perfectly and is still not paid.</field>
+        <field name="sidebar_key">pb_sidebar.item_employees</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_payrollready'), ref('intent_whopays'), ref('intent_whosees'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_contracts" model="learn.screen">
+        <field name="key">contracts</field>
+        <field name="sequence">160</field>
+        <field name="name">Contracts</field>
+        <field name="blurb">Every contract with its type, its period and its wage — the agreements payroll is actually computed from.</field>
+        <field name="next_step">Read the expiring filter before the run. A contract that ends mid-month is a proration nobody asked for, and one still in draft pays nothing at all.</field>
+        <field name="sidebar_key">pb_sidebar.item_contracts</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_expirysoon'), ref('intent_whopays'), ref('intent_prorata'), ref('intent_whatpage')])]"/>
+    </record>
+
+    <record id="screen_insights" model="learn.screen">
+        <field name="key">insights</field>
+        <field name="sequence">170</field>
+        <field name="name">Insights</field>
+        <field name="blurb">Executive analytics over the runs that are done: the cost story, the department leaderboard and the statutory split.</field>
+        <field name="next_step">Compare cost per head rather than total against total — headcount moves between months, and two extra people explain most of what looks like a rise. Every figure here opens the screen it came from.</field>
+        <field name="sidebar_key">pb_sidebar.item_analytics</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whichtool'), ref('intent_variance'), ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_explorer" model="learn.screen">
+        <field name="key">explorer</field>
+        <field name="sequence">180</field>
+        <field name="name">Explorer</field>
+        <field name="blurb">A question builder over the same payroll facts: one measure, one breakdown, and the filters that scope them.</field>
+        <field name="next_step">Choose the measure before the filters — most wrong answers here are the right filter on the wrong measure. And quote the tags with the number: the same measure with one tag removed is a different figure that looks identical in an email.</field>
+        <field name="sidebar_key">pb_sidebar.item_explorer</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whichtool'), ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_workforcean" model="learn.screen">
+        <field name="key">workforcean</field>
+        <field name="sequence">190</field>
+        <field name="name">Workforce Analytics</field>
+        <field name="blurb">The same months read as people: headcount paid, joiners and leavers, attendance exceptions and cost per head.</field>
+        <field name="next_step">Read the headcount line as employees PAID, not employed. A step in it is a joiner wave, a leaver wave — or a run that left somebody out, which is the one worth checking.</field>
+        <field name="sidebar_key">pb_sidebar.item_workforce_insights</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whichtool'), ref('intent_whatpage'), ref('intent_prorata')])]"/>
+    </record>
+
+    <record id="screen_govreports" model="learn.screen">
+        <field name="key">govreports</field>
+        <field name="sequence">200</field>
+        <field name="name">Government Reports</field>
+        <field name="blurb">The statutory filings this company's country asks for, grouped by authority and prefilled for one month.</field>
+        <field name="next_step">Check that the month's runs have all reached done before you generate anything. The tiles read what has been computed, so an unfinished run is a filing that is short.</field>
+        <field name="sidebar_key">pb_sidebar.item_govt_reports</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whichfilings'), ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
 </odoo>

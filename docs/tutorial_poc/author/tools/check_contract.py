@@ -209,14 +209,22 @@ KINDS = {
 # Payobook anchors follow a screen-prefix convention, which is what makes them
 # lintable: pw (run payroll wizard), pk (pay run board), ps (payslip review),
 # im (import), iw (import wizard), lg (the shared ledgers), rep (replica-only),
-# and from Phase B fs (formula studio), st (statutory), sr (salary structures),
-# ig (integrations).
+# from Phase B fs (formula studio), st (statutory), sr (salary structures),
+# ig (integrations), and from Phase C1 dash (dashboard), pa (approvals),
+# pe (employees), ct (contracts), in (insights), ex (explorer),
+# wa (workforce analytics), gr (government reports).
+#
+# The Phase C1 prefixes are two letters each because the three People-family
+# cockpits share the `ppl-*` CLASS vocabulary in their templates — one prefix
+# per SCREEN is what stops a lesson pointing at the Employees roster and landing
+# on the Contracts one.
 #
 # A prefix missing from this list is not a loud failure — the anchor simply
 # stops being linted, and the content can then point at a control that does not
 # exist. Adding the prefix is part of adding a screen.
 ANCHOR_RE = re.compile(
-    r'"((?:pw|pk|ps|im|iw|lg|rep|fs|st|sr|ig)-[a-z0-9][a-z0-9-]*)"')
+    r'"((?:pw|pk|ps|im|iw|lg|rep|fs|st|sr|ig|dash|pa|pe|ct|in|ex|wa|gr)'
+    r'-[a-z0-9][a-z0-9-]*)"')
 
 
 def anchor_lint(cfg, res, quiet):

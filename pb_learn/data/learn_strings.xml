@@ -185,9 +185,29 @@
         <field name="value">Say it the full way</field>
     </record>
 
+    <record id="str_lines_compliance" model="learn.string">
+        <field name="key">lines.compliance</field>
+        <field name="value">Compliance</field>
+    </record>
+
+    <record id="str_lines_insights" model="learn.string">
+        <field name="key">lines.insights</field>
+        <field name="value">Insights</field>
+    </record>
+
+    <record id="str_lines_overview" model="learn.string">
+        <field name="key">lines.overview</field>
+        <field name="value">Overview</field>
+    </record>
+
     <record id="str_lines_payrun" model="learn.string">
         <field name="key">lines.payrun</field>
         <field name="value">Pay Run</field>
+    </record>
+
+    <record id="str_lines_people" model="learn.string">
+        <field name="key">lines.people</field>
+        <field name="value">People</field>
     </record>
 
     <record id="str_lines_setup" model="learn.string">

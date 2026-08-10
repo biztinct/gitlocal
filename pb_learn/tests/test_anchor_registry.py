@@ -54,10 +54,18 @@ XML_COMMENT_RE = re.compile(r'<!--.*?-->', re.S)
 #   they are shared on exactly the pw-* terms; fs-simulate is in studio.xml and
 #   no tour uses it. pb_learn adds NOTHING to studio.xml — promotion is a claim
 #   about ownership of a name, not a change to somebody else's template.
+#
+#   the four dash-*           were promoted in Phase C1 on the same terms. LW is
+#   hero_path's successor and names all four; hero_path itself still points at
+#   dash-hero, dash-kpis and dash-formula, so those three are genuinely shared
+#   and neither module may rename one alone. dash-runpayroll is the fs-simulate
+#   case: in the template, named by a lesson, pointed at by no tour. pb_learn
+#   adds NOTHING to pb_dashboard.xml either.
 SHARED_WITH_PB_COACH = {
     'pw-division', 'pw-compute',
     'fs-config', 'fs-components', 'fs-formula', 'fs-namesletters', 'fs-deps',
     'fs-preview', 'fs-simulate',
+    'dash-hero', 'dash-kpis', 'dash-formula', 'dash-runpayroll',
 }
 
 
@@ -225,5 +233,11 @@ class TestAnchorRegistry(TransactionCase):
         for key in SHARED_WITH_PB_COACH:
             self.assertIn(key, self.product,
                           "%s is shared with pb_coach but the registry does not own it" % key)
-            self.assertIn(key, self.foreign,
-                          "%s is owned by pb_coach too but `foreign` does not say so" % key)
+            # `_is_foreign`, not a literal lookup: a foreign claim may be a
+            # WILDCARD. The seven fs-* are covered by the `fs-*` entry, whose
+            # description names them one by one — a literal-key assertion here
+            # said they were undeclared while the registry documented them
+            # perfectly well, and it could not be caught before this run because
+            # there is no odoo-bin on the authoring machine.
+            self.assertTrue(self._is_foreign(key),
+                            "%s is owned by pb_coach too but `foreign` does not say so" % key)
