@@ -90,6 +90,9 @@ const I18N = {
     optional: "Optional",
     est: "About",
     min: "min",
+    // The "Start here" pulse the demo first-login greeting puts on LW. It is
+    // a POINT, not a play button — the card still has to be pressed.
+    startHere: "Start here",
     notVisible: "Not in your menu",
     notVisibleBody: "This screen is not in your sidebar, so you cannot open it yet. You can still read what it does and what it would take to be given access.",
     outlineNote: "This station is an outline: what it is, why it matters, when to use it and the mistakes it prevents. The full lesson is not written yet.",
@@ -238,6 +241,7 @@ const I18N = {
     optional: "Tuỳ chọn",
     est: "Khoảng",
     min: "phút",
+    startHere: "Bắt đầu từ đây",
     notVisible: "Không có trong menu của bạn",
     notVisibleBody: "Màn hình này chưa có trong thanh bên của bạn nên bạn chưa mở được. Bạn vẫn có thể đọc nó làm gì và cần gì để được cấp quyền.",
     outlineNote: "Trạm này là dàn ý: nó là gì, vì sao quan trọng, khi nào dùng và những lỗi nó giúp tránh. Bài học đầy đủ chưa được viết.",

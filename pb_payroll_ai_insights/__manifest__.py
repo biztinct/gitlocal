@@ -45,6 +45,21 @@ Inspired by: Power BI Copilot, ThoughtSpot, Julius AI, Tableau Pulse, Zoho Zia
         'web',
         'om_hr_payroll',
         'pb_hr_payroll_base',
+        # PHASE C2 — TO BE REMOVED AT DEPLOY TIME, NOT NOW.
+        #
+        # Nothing in this module requires pb_coach any more: the action envelope
+        # emits `open_lesson` and opens a pb_learn lesson, and the coach service
+        # is looked up optionally (ai_insight_chat.js) purely so a legacy
+        # `start_tour` envelope from a cached conversation still works while
+        # pb_coach is still installed.
+        #
+        # The dependency stays declared until the coordinated uninstall,
+        # because dropping it from the manifest BEFORE pb_coach is uninstalled
+        # would leave the two out of step on a live database — Odoo does not
+        # uninstall a module because a dependant stopped naming it, it just
+        # stops guaranteeing load order. Removing this line and uninstalling
+        # pb_coach happen in the same deploy-time follow-up commit; the ledger's
+        # deploy notes carry the order.
         'pb_coach',
     ],
     'data': [

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- The ephemeral-demo disclaimer chip. Copy is UNCHANGED from pb_coach's
+       (coach_overlay.xml) on purpose: it is the sentence the demo world has
+       been telling prospects, and rewording it during a refactor would make a
+       behaviour change look like a migration. Class names are pb_demo's own so
+       that uninstalling pb_coach takes its stylesheet with it cleanly. -->
+  <t t-name="pb_demo.DemoChrome">
+    <t t-if="state.show">
+      <div class="pbdc-disclaimer">
+        <span class="pbdc-ic">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+          </svg>
+        </span>
+        <span class="pbdc-tx">
+          Shared demo — pay slips you generate are temporary and may be cleaned or overwritten
+          by another demo user.
+          <a class="pbdc-link" t-on-click="requestPrivateDemo">Want a private demo?</a>
+        </span>
+        <button class="pbdc-x" t-on-click="dismiss" title="Dismiss">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+    </t>
+  </t>
+
+  <!-- One insertion point, every screen. Anchored on MainComponentsContainer
+       for the same reason pb_learn's coach_patch.xml is: pb_sidebar REPLACES
+       ActionContainer, and two modules xpath-ing the same replaced node is how
+       a patch quietly stops applying. Several modules adding siblings AFTER
+       this node is fine — they are appends, not replacements. -->
+  <t t-name="web.WebClient" t-inherit="web.WebClient" t-inherit-mode="extension">
+    <xpath expr="//MainComponentsContainer" position="after">
+      <DemoChrome/>
+    </xpath>
+  </t>
+
+</templates>

@@ -201,16 +201,28 @@
       ]
     },
     {
-      "id": "payai-known-tours",
+      "id": "payai-opens-lessons",
       "kind": "contains",
-      "why": "PayAI may only launch tours it actually ships, through this whitelist. pb_learn deliberately adds nothing to it: the Coach is a separate surface and must never become a fifth way to start a pb_coach tour. A change here means the two systems have started merging without anyone deciding to.",
-      "file": "pb_payroll_ai_insights/models/payroll_ai_engine.py",
+      "why": "PayAI may only offer to open something it can actually open, through this whitelist. Phase C2 re-targeted the envelope from pb_coach tours to pb_learn LESSONS, which is the change that lets this be checked at all: a tour was a registry entry in a module nobody validated against, and a lesson is a record whose key `learn.lesson` either has or has not. Both halves are pinned — the whitelist itself, and the old-tour compatibility map, whose ids are documentation of what each tour BECAME. If a lesson key here stops existing, PayAI's \"Show me\" opens a Journey that lands on the map and the offer was a lie.",
       "expect": [
-        "_KNOWN_TOURS = ('hero_path', 'tour_payrun', 'tour_formula', 'tour_payslips')"
+        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6')",
+        "'hero_path': 'LW'",
+        "'tour_payrun': 'L1'",
+        "'tour_formula': 'L5'",
+        "'tour_payslips': 'L3'",
+        "'tour_import': 'L4'",
+        "'tour_mapping': 'L5'",
+        "'type': 'open_lesson'"
       ],
       "fixture": [],
       "taughtIn": [
-        "design_v2 §9 — what happens to pb_coach"
+        "design_v2 §9 — what happens to pb_coach",
+        "ai_insight_chat.js::runAction",
+        "pb_learn journey.js::_applyDeepLink",
+        "every lesson key here is validated against learn_lessons.xml by pb_payroll_ai_insights/tests/test_action_envelope.py"
+      ],
+      "files": [
+        "pb_payroll_ai_insights/models/payroll_ai_engine.py"
       ]
     },
     {
@@ -785,6 +797,47 @@
         "screen govreports",
         "intent whichfilings",
         "the govreports replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "payai-lesson-keys-are-real",
+      "kind": "contains",
+      "why": "The other half of the envelope: the whitelist names eight lesson keys, and this is where they are checked against the lessons this repo actually ships. A key that is whitelisted and not written is a 'Show me' button that opens the Journey map — the offer made and not kept, which is the exact failure the Coach's honesty rules exist to prevent.",
+      "file": "pb_learn/data/learn_lessons.xml",
+      "expect": [
+        "<field name=\"key\">LW</field>",
+        "<field name=\"key\">L1</field>",
+        "<field name=\"key\">L2</field>",
+        "<field name=\"key\">L3</field>",
+        "<field name=\"key\">L4</field>",
+        "<field name=\"key\">L5</field>",
+        "<field name=\"key\">L6</field>",
+        "<field name=\"key\">LA</field>"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "payroll_ai_engine.py::_KNOWN_LESSONS",
+        "payroll_ai_engine.py::_TOUR_TO_LESSON"
+      ]
+    },
+    {
+      "id": "payai-has-no-hard-coach-dependency",
+      "kind": "absent",
+      "why": "The retirement, asserted as an ABSENCE because that is the shape of it. `useService(\"pb_coach\")` THROWS when the service is missing, so a single one of those anywhere in PayAI means the module cannot be constructed on a database where pb_coach has been uninstalled — and the symptom is a chat pill that never appears, with an error in a console nobody is watching. The optional lookup (`env.services.pb_coach`) is what replaced it.",
+      "files": [
+        "pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js",
+        "pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js",
+        "pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js",
+        "pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js"
+      ],
+      "expect": [
+        "useService(\"pb_coach\")",
+        "useService('pb_coach')"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "ai_insight_chat.js::setup",
+        "the deploy-time uninstall of pb_coach"
       ]
     }
   ],

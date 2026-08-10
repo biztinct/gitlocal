@@ -134,8 +134,11 @@
                                 </div>
                             </t>
 
-                            <!-- Coach action (AI offers to launch a guided tour) -->
-                            <t t-if="msg.action and msg.action.type === 'start_tour'">
+                            <!-- "Show me" (AI offers to open a pb_learn lesson).
+                                 `start_tour` is still accepted so a conversation
+                                 rendered from history, written before the Phase
+                                 C2 retarget, still draws its button. -->
+                            <t t-if="msg.action and (msg.action.type === 'open_lesson' or msg.action.type === 'start_tour')">
                                 <button class="payai-coach-action"
                                         t-on-click="() => this.runAction(msg.action)">
                                     <i class="fa fa-magic"/> <t t-esc="msg.action.label || 'Show me'"/>

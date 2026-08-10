@@ -48,6 +48,17 @@ can be extended without changing payroll logic.
             'pb_demo/static/src/scss/demo_analytics.scss',
             'pb_demo/static/src/js/demo_analytics.js',
             'pb_demo/static/src/xml/demo_analytics.xml',
+            # THE DEMO WORLD'S OWN CHROME (Phase C2). Moved out of pb_coach,
+            # which is being retired: the body tag that keeps a trial user
+            # inside Payroll, the ephemeral-data disclaimer, and the
+            # missing-record guard are all facts about the DEMO, not about
+            # guided tours. Every one of them stands down while pb_coach is
+            # still installed, so the two coexist until the uninstall.
+            'pb_demo/static/src/scss/demo_chrome.scss',
+            'pb_demo/static/src/js/demo_missing_record.js',
+            'pb_demo/static/src/js/demo_chrome.js',
+            'pb_demo/static/src/xml/demo_chrome.xml',
+            'pb_demo/static/src/js/demo_chrome_patch.js',
         ],
     },
     'post_init_hook': 'post_init_demo',

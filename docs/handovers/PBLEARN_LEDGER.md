@@ -584,6 +584,80 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   now actually happens and a capability-aware answer that is unreachable on the
   screen the action lives on is content nobody can find.
 
+### Run C2 (pb_coach retirement seams)
+
+- **`Registry.add` THROWS on a duplicate key, so "move it verbatim" was not
+  available.** `demo_missing_record.js` registers an error handler under the
+  name `demoMissingRecordHandler`, and pb_coach keeps its identical copy until
+  the deploy-time uninstall. A byte-for-byte copy in pb_demo would not have
+  "double-rendered" — `web/static/src/core/registry.js:103-107` raises
+  `DuplicatedKeyError` with no `force`, **while the backend bundle is being
+  evaluated**, taking every module after it down. The port is verbatim except
+  the registration, which is wrapped in `contains()`. `force: true` was
+  rejected on purpose: the two copies are the same function, so forcing would
+  only let asset load order decide which one is live, silently.
+- **An `absent` contract check greps the COMMENTS too, and it caught the new
+  one immediately.** `payai-has-no-hard-coach-dependency` pins the absence of
+  `useService("pb_coach")` — and the comment explaining why the hook was
+  replaced contained the literal. Same trap as
+  `live-surfaces-are-read-only` in B2, second occurrence: **a token pinned as
+  absent may not appear in the prose that explains it.** The comment now says
+  "asking for the coach through the service hook", and adds a line telling the
+  next reader not to write the literal.
+- **Two source-level tests were greping their own documentation.** The
+  first-login test asserted `assertNotIn('lesson:', …)` on a file whose comment
+  distinguishes `suggest` from `lesson`; the deep-link test split on
+  `_applyDeepLink()`, which matches the CALL SITE first and scoped the
+  assertion to the empty gap between the call and the definition. Both now
+  assert on the payload (`additionalContext: { lesson`) and split on the
+  definition (`_applyDeepLink() {`). **The rule: a source-level assertion must
+  be written against a string the CODE has to contain, never one the prose
+  might.**
+- **`static props = {}` is not "no props", it is "reject the props you are
+  given".** The Journey is a client action, so the action manager hands it
+  `action`, `actionId`, `className` and `updateActionState`, and a deep link's
+  context arrives on `props.action.context`. Phase A declared none, which was
+  invisible while nothing read them. `["*"]` — the set belongs to the action
+  manager, not to us.
+- **`tour_mapping` maps to L5, not L4 — a documented deviation from the
+  coordinator's table.** The stated criterion was "the nearest lesson", and the
+  mid/end mapping wizard pairs COMPONENTS across two formula configurations,
+  which is L5's subject; L4 is about attendance files and the import confidence
+  score. Sending somebody asking about component mapping into a lesson about
+  timesheets would be the wrong desk. `tour_import` → L4 as specified.
+- **The greeting had to be able to READ another module's flags without owning
+  them.** pb_coach's hero_path still auto-starts while both are installed, so
+  `first_login.js` reads `pb_coach_login_seen` / `pb_coach_welcomed` by their
+  literal names and stands down — and records its OWN key so it does not fire
+  the moment the hero tour is dismissed. It never writes pb_coach's keys, and
+  `test_retirement::test_06` asserts that in both directions. Worst case if
+  those names ever move: a demo user greeted twice on one login, while both
+  modules are installed, which ends at the uninstall.
+- **The successor greeting deliberately does LESS.** pb_coach auto-STARTED a
+  spotlight; pb_learn opens the Journey map with a "Start here" pulse on LW and
+  stops. `suggest` points, `lesson` opens, and they are two different context
+  keys for exactly that reason — a greeting has no business deciding somebody
+  has eight minutes right now. The pulse is three breaths and has a
+  `prefers-reduced-motion` branch.
+- **The launcher offset is a RUNTIME decision, not a deploy-time one.** Three
+  controls share the corner while pb_coach is installed and two once it is not,
+  and the module cannot know which database it is on. `first_login.js` sets
+  `body.pb-coach-absent` from whether the SERVICE exists; the stylesheet keys
+  both offsets off it, mobile included. The default stays the three-control
+  stack because a gap is a better wrong guess than an overlap.
+- **PayAI's action envelope became checkable by becoming a lesson key.** A tour
+  id could only ever be compared against a hard-coded tuple in another module's
+  registry; a lesson key is a record, so `payai-lesson-keys-are-real` and
+  `test_action_envelope::test_09` can now ask whether the button's promise can
+  be kept. That is the real argument for the retarget, over and above retiring
+  pb_coach.
+- **The old envelope is still accepted, and that is not politeness.** A cached
+  conversation, a slow provider rollout or a fine-tune that learned the old
+  vocabulary would otherwise have every "Show me" silently dropped for as long
+  as it lasted. `_sanitize_action` takes both forms and **always emits
+  `open_lesson`**, so the frontend has exactly one shape to handle and the
+  legacy path never needs pb_coach.
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5
@@ -618,3 +692,46 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   Show-me points at are not in the served templates: `-u pb_approval -u
   pb_people -u pb_contracts -u pb_insights -u pb_explorer -u
   pb_workforce_insights -u pb_govt_reports -u pb_learn`.
+
+#### Phase C2 — the pb_coach retirement, in two deploys
+
+**STEP 1, now (this commit). Every module below is coach-INDEPENDENT after it,
+and pb_coach keeps working untouched throughout.**
+
+```
+-u pb_payroll_ai_insights -u pb_demo -u pb_learn
+```
+
+Then verify, with pb_coach still installed:
+1. PayAI: ask "how do I run payroll?" → the "Show me" button opens the Journey
+   on L1 rather than starting a tour. The pb_coach FAB is still at 92px and the
+   Learn launcher is still at 160px — three controls, no overlap.
+2. Demo login: exactly ONE disclaimer chip (pb_coach's — pb_demo's stands down
+   while the service exists), and exactly ONE first-run greeting.
+3. Open a deleted demo record from a stale breadcrumb: still glides back to the
+   dashboard, and the backend bundle still evaluates — the duplicate-key guard
+   in pb_demo's copy of `demo_missing_record.js` is what is being verified.
+
+**STEP 2, deploy time, as its own follow-up commit — NOT made now.**
+1. `pb_payroll_ai_insights/__manifest__.py`: remove `'pb_coach'` from `depends`
+   and add `'pb_learn'` in its place. PayAI opens `pb_learn.action_learn_journey`
+   by name, and until that line exists the click is guarded in JS with a
+   "not installed on this database" notification rather than a traceback.
+2. Uninstall `pb_coach` from the database.
+3. `-u pb_payroll_ai_insights -u pb_demo -u pb_learn` again, then purge the
+   `ir_attachment` asset rows and restart.
+
+Then verify, with pb_coach gone:
+1. The corner is TWO controls: PayAI at 24px and the Learn launcher dropped to
+   92px (`body.pb-coach-absent`).
+2. Demo login: pb_demo now draws the disclaimer chip and sets
+   `body.pb-demo-user` itself — the apps menu and the Discuss systray are still
+   hidden, which is the CSS contract the class name preserves.
+3. pb_learn greets once per login with the Journey map and a "Start here" pulse
+   on LW. No spotlight starts by itself.
+4. PayAI's chat still constructs: the coach service is looked up optionally, so
+   its absence is a `null`, not a throw.
+
+pb_coach's FILES are deliberately not deleted in either step. Retirement here
+means nothing depends on it and its jobs have owners; deleting the module is a
+separate decision with its own commit.

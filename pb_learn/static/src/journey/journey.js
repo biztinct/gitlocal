@@ -57,7 +57,12 @@ const LOCAL_PREFS = "pbLearnPrefs";
 
 export class LearnJourney extends Component {
     static template = "pb_learn.Journey";
-    static props = {};
+    /* A client action is handed `action`, `actionId`, `className` and
+       `updateActionState` by the action manager. Phase A declared no props at
+       all, which was fine while nothing read them; the deep link needs
+       `props.action.context`, so the component now accepts what it is given.
+       "*" rather than a list, because the set belongs to the action manager. */
+    static props = ["*"];
 
     setup() {
         this.orm = useService("orm");
@@ -73,6 +78,11 @@ export class LearnJourney extends Component {
             morphSide: "before",
             search: "",
             // Phase 3 — mission runner.
+            // Deep links. `lesson` opens a lesson outright (PayAI's "Show me");
+            // `suggest` only PULSES a card on the map (the demo first-login
+            // greeting). Two keys because they are two different promises: one
+            // takes you somewhere, the other points.
+            suggest: "",
             missionKey: null,
             mStep: 0,
             mChoice: null,       // key of the option chosen
@@ -94,6 +104,7 @@ export class LearnJourney extends Component {
         onWillStart(async () => {
             this._restorePrefs();
             await this._loadBundle();
+            this._applyDeepLink();
         });
         onMounted(() => {
             setOverlayRoot(this.overlayRef.el);
@@ -327,15 +338,25 @@ export class LearnJourney extends Component {
             : (!s.visible
                 ? `<span class="lrn-chip warn">${ic("lock")}${esc(T("notVisible"))}</span>`
                 : "");
+        // "Start here" is a PULSE, never an auto-play. The demo greeting opens
+        // the map and points; the learner presses the card. A spotlight that
+        // starts by itself is the thing pb_coach's first-run tour did, and the
+        // reason people learned to dismiss it before reading it.
+        const start = this.state.suggest && this.state.suggest !== ""
+            && (s.lessons || []).some((l) => l.key === this.state.suggest);
+        const startChip = start
+            ? `<span class="lrn-chip a">${ic("sparkles")}${esc(T("startHere"))}</span>`
+            : "";
         return `
-        <button class="lrn-card ${s.star ? "star" : ""}${SP}${st === "done" ? "done" : ""}"
+        <button class="lrn-card ${s.star ? "star" : ""}${SP}${st === "done" ? "done" : ""}${
+                SP}${start ? "pulse" : ""}"
                 data-station="${esc(s.key)}">
             <span class="lrn-cardico">${ic(s.icon)}</span>
             <span class="lrn-cardmain">
                 <span class="lrn-cardtitle">${esc(tx(s.name))}
                     ${st === "done" ? ic("check-circle", "ok") : ""}</span>
                 <span class="lrn-carddesc">${esc(tx(s.summary))}</span>
-                <span class="lrn-cardmeta">${badge}${need}${gate}
+                <span class="lrn-cardmeta">${startChip}${badge}${need}${gate}
                     <span class="lrn-chip">${ic("clock")}${esc(T("est"))}${SP}${s.duration_min}${SP}${esc(T("min"))}</span>
                 </span>
             </span>
@@ -863,6 +884,47 @@ export class LearnJourney extends Component {
             ev.preventDefault();
             this.back();
         }
+    }
+
+    /* --------------------------------------------------------- deep links
+       PayAI's "Show me" opens `pb_learn.action_learn_journey` with
+       `context.lesson = "<key>"`; the demo first-login greeting opens it with
+       `context.suggest = "LW"`.
+
+       NEITHER MAY EVER BREAK THE JOURNEY. A key that does not resolve — a
+       lesson retired between a cached conversation and today, a station whose
+       leaf is not installed on this tenant, a context somebody hand-typed —
+       falls through to the map, which is exactly where the learner wanted to be
+       anyway. There is no error state here on purpose: the worst outcome of a
+       bad deep link should be an ordinary Journey. */
+    _applyDeepLink() {
+        let ctx = {};
+        try {
+            ctx = (this.props && this.props.action && this.props.action.context) || {};
+        } catch {
+            ctx = {};
+        }
+        const suggest = typeof ctx.suggest === "string" ? ctx.suggest : "";
+        if (suggest && this._stationOfLesson(suggest)) {
+            this.state.suggest = suggest;
+        }
+        const key = typeof ctx.lesson === "string" ? ctx.lesson : "";
+        if (!key) {
+            return;
+        }
+        const station = this._stationOfLesson(key);
+        if (!station) {
+            return;                       // unknown key → the map, silently
+        }
+        this.openStation(station.key);
+        this.startLesson();
+        this._log("lesson_deeplink");
+    }
+
+    /** The station carrying a lesson KEY (L1, LW…), or null. */
+    _stationOfLesson(key) {
+        return this.stations.find(
+            (s) => (s.lessons || []).some((l) => l.key === key)) || null;
     }
 
     // ------------------------------------------------------------ navigation
