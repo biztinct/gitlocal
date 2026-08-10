@@ -433,6 +433,56 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   `get_defaults` re-sorts the remaining five divisions alphabetically rather
   than preserving catalogue order (cosmetic).
 
+### Phase B VI audit fixes
+
+- **RULING: a bilingual dict literal in Python is not a translation.**
+  `_B(en, vi)` in learn_live.py and the inline `{'en':…, 'vi':…}` in
+  `live_check` were bilingual and still wrong: a Python dict is invisible to
+  the .po tooling, so a translator never sees it, a reviewer cannot diff it
+  against the rest of the module, and the one surface where the Coach speaks
+  from CODE drifts away from the twelve hundred strings that do not. The 17
+  static sentences are now `learn.string` records under `live.*`, generated
+  from `docs/tutorial_poc/author/data.js` like everything else and read
+  server-side in both language contexts by `_note()`.
+  **The line to hold:** a SENTENCE is content; choosing which sentence, and
+  with which numbers, is code. `%(count)s payslips computed for %(division)s`
+  is a record; the interpolation happens in Python, into it. Any future
+  server-side message goes the same way.
+  One deliberate exception stays a literal: the echo of an UNMAPPED product
+  state (`{'en': raw, 'vi': raw}`), because inventing a translation for a raw
+  selection key would be inventing a product string.
+- **`trình duyệt` is Vietnamese for "web browser".** Used as a noun for "the
+  act of submitting" in four content sites it reads as a piece of software. The
+  verb phrase `trình phê duyệt` was already correct elsewhere in the module —
+  the fix is `việc trình phê duyệt` (the act) and `trình đợt lương lên duyệt`
+  (submit the run), which is what the rest of the module already said. Worth a
+  ledger line because the wrong form is the SHORTER one and will be reached for
+  again.
+- **A rate is a decimal and Vietnamese writes decimals with a comma.**
+  `'%g' % 17.5` put "17.5%" inside a Vietnamese sentence — the same class of
+  leak as printing money without the reader's thousands separator, one
+  separator further in. Rate formatting is now language-aware and normalises
+  `-0` before formatting. Any future number that reaches a reader needs the
+  same two questions asked of it: which separator, and can it be negative zero.
+- **TWO CONFIG-CODE WORLDS, both correct — do not "fix" either.** The lessons'
+  practice company uses `HOASEN_RETAIL_END`; the demo world uses
+  `DEMO_RETAIL_END`. They are different companies, so different prefixes are
+  right. What was missing was the sentence saying so: the shape is
+  **PREFIX_DIVISION_CYCLE** and the shape is the thing to learn. Stated in the
+  glossary, in `whichconfig`, and in L5 where the practice code is first named.
+- **Do not write a placeholder as `<DIVISION>`.** Raw angle brackets are eaten
+  the moment glossary or answer bodies are rendered as HTML — and they will be.
+  Written as `PREFIX_DIVISION_CYCLE` with a concrete example beside it, in both
+  languages.
+- **n/a from this round, recorded so it is not re-hunted:** the `_fmt` /
+  `_money` grouping helpers were deleted with the three unconsumed live keys in
+  the previous round, so there is no count-through-a-money-formatter path left.
+  The one remaining count is `%(count)s`, a plain integer interpolation.
+  `pb_division_label` is a non-translatable Char computed from the division key
+  (hr_payslip_run.py:106-125), so it interpolates identically into both
+  language templates — noted in the code rather than worked around, because
+  translating it here would be inventing a product string.
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5

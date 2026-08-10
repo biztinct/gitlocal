@@ -138,27 +138,21 @@ class LearnMission(models.Model):
         a learner staring at a step that will not complete deserves to know
         which one they are in.
         """
+        Live = self.env['learn.live']
         step = self.env['learn.mission.step'].sudo().search([
             ('mission_id.key', '=', mission_key), ('key', '=', step_key)], limit=1)
         if not step:
-            return {'ok': False, 'note': {
-                'en': "No step '%s' in mission '%s'." % (step_key, mission_key),
-                'vi': "Không có bước '%s' trong nhiệm vụ '%s'." % (step_key, mission_key)}}
+            return {'ok': False,
+                    'note': Live.note('noSuchStep', step=step_key, mission=mission_key)}
         if step.mission_id.kind != 'live':
             # A fixture mission has no business calling this. Its steps run on
             # a JavaScript replica with no server behind them, and the moment
             # one of them starts asking the database a question it has stopped
             # being a practice surface.
-            return {'ok': False, 'note': {
-                'en': "'%s' is a practice mission — it has nothing to check on the server."
-                      % mission_key,
-                'vi': "'%s' là nhiệm vụ thực hành — không có gì để kiểm tra trên máy chủ."
-                      % mission_key}}
+            return {'ok': False, 'note': Live.note('notLive', mission=mission_key)}
         if not step.check:
-            return {'ok': False, 'note': {
-                'en': "Step '%s' is not verified by the server." % step_key,
-                'vi': "Bước '%s' không được máy chủ xác minh." % step_key}}
-        return self.env['learn.live'].check(step.check)
+            return {'ok': False, 'note': Live.note('notVerified', step=step_key)}
+        return Live.check(step.check)
 
     def _mission_dict(self):
         self.ensure_one()

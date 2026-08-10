@@ -126,6 +126,32 @@ const I18N = {
     liveFinish: "Finish the mission",
     liveLeave: "Leave",
     liveMinimise: "Minimise",
+    /* -- server-side (Phase B review fix) --------------------------------
+       These are read by models/learn_live.py and models/learn_mission.py,
+       not by the JS. They are records for the same reason every other
+       translatable is: a bilingual dict literal in Python is invisible to
+       the .po tooling, so a translator never sees it and a reviewer cannot
+       diff it. `%s` marks an interpolation the Python does, INTO this
+       template — the composition stays in code, the sentence does not. */
+    live: {
+      notDemo: "Live missions need the demo world. This one runs against real records in the Payobook demo company, and your session is somewhere else.",
+      noDivision: "No division has been assigned to you yet. Open Run Payroll once and one will be — each demo account drives its own division's June run.",
+      noRun: "No June run for your division yet. Open Run Payroll and compute it — the wizard already has your division and the period selected.",
+      noSlips: "The run exists but has no payslips yet. Press Compute in the wizard.",
+      computed: "%(count)s payslips computed for %(division)s.",
+      stillDraft: "Still in draft. Submit the run for approval from the Pay Runs board.",
+      notPastOfficer: "Not past the Payroll Officer gate yet.",
+      allGatesDone: "Done — every gate has said yes.",
+      noSuchCheck: "There is no check called '%(key)s'.",
+      noSuchStep: "No step '%(step)s' in mission '%(mission)s'.",
+      notLive: "'%(mission)s' is a practice mission — it has nothing to check on the server.",
+      notVerified: "Step '%(step)s' is not verified by the server.",
+      stateDraft: "Draft",
+      stateLevel0: "Payroll Officer pending",
+      stateLevel1: "HR review",
+      stateLevel2: "Finance approval",
+      stateDone: "Done",
+    },
     showHint: "Hint",
     scope: "What this touches",
     reversible: "Can I undo it",
@@ -245,6 +271,25 @@ const I18N = {
     liveFinish: "Hoàn thành nhiệm vụ",
     liveLeave: "Thoát",
     liveMinimise: "Thu gọn",
+    live: {
+      notDemo: "Nhiệm vụ trực tiếp cần môi trường demo. Nhiệm vụ này chạy trên dữ liệu thật của công ty demo Payobook, còn phiên của bạn đang ở nơi khác.",
+      noDivision: "Bạn chưa được gán bộ phận nào. Hãy mở Chạy bảng lương một lần là sẽ có — mỗi tài khoản demo tự chạy đợt lương tháng 6 của bộ phận mình.",
+      noRun: "Chưa có đợt lương tháng 6 cho bộ phận của bạn. Hãy mở Chạy bảng lương và tính — trình hướng dẫn đã chọn sẵn bộ phận và kỳ lương của bạn.",
+      noSlips: "Đợt lương đã có nhưng chưa có phiếu nào. Hãy bấm Tính trong trình hướng dẫn.",
+      computed: "Đã tính %(count)s phiếu lương cho %(division)s.",
+      stillDraft: "Vẫn ở trạng thái Nháp. Hãy trình đợt lương lên phê duyệt từ bảng Đợt tính lương.",
+      notPastOfficer: "Chưa qua cổng Chuyên viên tính lương.",
+      allGatesDone: "Hoàn tất — mọi cổng đã đồng ý.",
+      noSuchCheck: "Không có phép kiểm tra nào tên '%(key)s'.",
+      noSuchStep: "Không có bước '%(step)s' trong nhiệm vụ '%(mission)s'.",
+      notLive: "'%(mission)s' là nhiệm vụ thực hành — không có gì để kiểm tra trên máy chủ.",
+      notVerified: "Bước '%(step)s' không được máy chủ xác minh.",
+      stateDraft: "Nháp",
+      stateLevel0: "Chờ Chuyên viên tính lương",
+      stateLevel1: "HR soát xét",
+      stateLevel2: "Tài chính phê duyệt",
+      stateDone: "Hoàn tất",
+    },
     showHint: "Gợi ý",
     scope: "Thao tác này ảnh hưởng tới đâu",
     reversible: "Có hoàn tác được không",
@@ -375,8 +420,8 @@ const GLOSSARY = {
   },
   configCode: {
     term: B("Configuration code", "Mã cấu hình"),
-    def: B("The short unique name of a formula configuration — the thing Run Payroll actually selects when you choose a division. On the demo world the codes follow one pattern: DEMO_<DIVISION>_END for the end-cycle rulebook and DEMO_<DIVISION>_MID for the mid-cycle one.",
-           "Tên ngắn và duy nhất của một cấu hình công thức — chính là thứ Chạy bảng lương chọn khi bạn chọn bộ phận. Trên bản demo, các mã theo một quy ước: DEMO_<BỘ PHẬN>_END cho bộ quy tắc cuối kỳ và DEMO_<BỘ PHẬN>_MID cho giữa kỳ."),
+    def: B("The short unique name of a formula configuration — the thing Run Payroll actually selects when you choose a division. The shape is PREFIX_DIVISION_CYCLE, and the prefix is the company's: on this practice company the codes read HOASEN_RETAIL_END, and on the Payobook demo world they read DEMO_RETAIL_END for the end-cycle rulebook and DEMO_RETAIL_MID for the mid-cycle one. Learn the shape rather than any one prefix.",
+           "Tên ngắn và duy nhất của một cấu hình công thức — chính là thứ Chạy bảng lương chọn khi bạn chọn bộ phận. Dạng chung là TIỀN TỐ_BỘ PHẬN_CHU KỲ, và tiền tố là của từng công ty: trên công ty thực hành này mã đọc là HOASEN_RETAIL_END, còn trên môi trường demo của Payobook mã đọc là DEMO_RETAIL_END cho bộ quy tắc cuối kỳ và DEMO_RETAIL_MID cho giữa kỳ. Hãy nhớ dạng chung, đừng nhớ một tiền tố cụ thể."),
   },
 };
 
@@ -417,7 +462,7 @@ const STATIONS = {
             B("Running the wrong cycle. Mid-cycle pays an advance; end-cycle settles the month. They are not two views of one thing.",
               "Chạy nhầm chu kỳ. Giữa kỳ là tạm ứng; cuối kỳ là quyết toán cả tháng. Đó không phải hai cách nhìn của cùng một thứ."),
             B("Submitting for approval without opening the flagged payslips. A flag is a question the engine wants answered, and submitting is you answering it with silence.",
-              "Trình phê duyệt mà chưa mở các phiếu bị gắn cờ. Cờ là câu hỏi hệ thống muốn được trả lời, và trình duyệt là bạn trả lời nó bằng sự im lặng."),
+              "Trình phê duyệt mà chưa mở các phiếu bị gắn cờ. Cờ là câu hỏi hệ thống muốn được trả lời, và việc trình phê duyệt là bạn trả lời nó bằng sự im lặng."),
           ],
         },
       },
@@ -1101,8 +1146,8 @@ const LESSONS = {
         title: B("One division, one rulebook", "Một bộ phận, một bộ quy tắc"),
         body: B("This is <b>HOASEN_RETAIL_END</b> — the configuration every Retail payslip is computed by. The name at the top is a switcher: other divisions have their own, and they are not variations of this one. Choosing a division in Run Payroll is choosing which of these runs.",
                 "Đây là <b>HOASEN_RETAIL_END</b> — cấu hình mà mọi phiếu lương của Bán lẻ được tính theo. Cái tên ở trên cùng là một ô chuyển: các bộ phận khác có cấu hình riêng, và chúng không phải biến thể của cấu hình này. Chọn bộ phận trong Chạy bảng lương chính là chọn cấu hình nào sẽ chạy."),
-        tip: B("The code is the thing to quote when you ask someone about a number: \"HOASEN_RETAIL_END, component TNCN\" is a question that can be answered.",
-               "Mã cấu hình là thứ nên trích dẫn khi bạn hỏi ai đó về một con số: \"HOASEN_RETAIL_END, thành phần TNCN\" là một câu hỏi có thể trả lời được."),
+        tip: B("The code is the thing to quote when you ask someone about a number: \"HOASEN_RETAIL_END, component TNCN\" is a question that can be answered. The shape is PREFIX_DIVISION_CYCLE and the prefix belongs to the company — this practice company uses HOASEN, the Payobook demo world uses DEMO. Learn the shape, not the prefix.",
+               "Mã cấu hình là thứ nên trích dẫn khi bạn hỏi ai đó về một con số: \"HOASEN_RETAIL_END, thành phần TNCN\" là một câu hỏi có thể trả lời được. Dạng chung là TIỀN TỐ_BỘ PHẬN_CHU KỲ và tiền tố là của từng công ty — công ty thực hành này dùng HOASEN, môi trường demo của Payobook dùng DEMO. Hãy nhớ dạng chung, đừng nhớ tiền tố."),
       },
       {
         screen: "formula", anchor: "fs-components",
@@ -1522,7 +1567,7 @@ const MISSIONS = [
         B("The division is yours and the period is the one you meant — read both before computing, not after.",
           "Bộ phận đúng là của bạn và kỳ lương đúng là kỳ bạn định chạy — hãy đọc cả hai trước khi tính, đừng đọc sau."),
         B("Every flagged payslip opened and understood. A flag is a question about one employee, and submitting is you answering it.",
-          "Mọi phiếu bị gắn cờ đã được mở và hiểu rõ. Cờ là một câu hỏi về một nhân viên cụ thể, và trình duyệt chính là bạn trả lời câu hỏi đó."),
+          "Mọi phiếu bị gắn cờ đã được mở và hiểu rõ. Cờ là một câu hỏi về một nhân viên cụ thể, và việc trình phê duyệt chính là bạn trả lời câu hỏi đó."),
         B("You can say in one sentence why the total is what it is, before anybody at a later gate asks you.",
           "Bạn nói được trong một câu vì sao tổng lại là con số đó, trước khi có ai ở cổng phía sau hỏi bạn."),
         B("You know which gate the run is at and who holds it — the column names them.",
@@ -1845,7 +1890,7 @@ const MISSION_STEPS = {
       detail: B("Filter to \"Need review\" first, then sample two or three that are not flagged. The engine flags the unusual, not the wrong — so a clean slip can still be incorrect, and a flagged one can be perfectly fine.",
                 "Hãy lọc theo \"Cần soát xét\" trước, rồi lấy mẫu hai ba phiếu không bị gắn cờ. Hệ thống gắn cờ cái bất thường chứ không phải cái sai — nên một phiếu sạch vẫn có thể sai, và một phiếu bị gắn cờ vẫn có thể hoàn toàn ổn."),
       hint: B("Open the breakdown on one slip and follow it from base to net. If you can say where each line came from, you are ready to submit.",
-              "Hãy mở bảng chi tiết của một phiếu và đi từ lương cơ bản tới thực nhận. Nếu bạn nói được mỗi dòng đến từ đâu thì bạn đã sẵn sàng để trình duyệt."),
+              "Hãy mở bảng chi tiết của một phiếu và đi từ lương cơ bản tới thực nhận. Nếu bạn nói được mỗi dòng đến từ đâu thì bạn đã sẵn sàng để trình đợt lương lên duyệt."),
     },
     {
       id: "submit", nav: "payruns", check: "june_run_submitted",
@@ -2167,7 +2212,7 @@ const QA = [
 
   {
     id: "affectrun", screens: ["runpayroll", "import", "importwizard"],
-    label: B("Will this affect a run that is already submitted?", "Việc này có ảnh hưởng đợt đã trình duyệt không?"),
+    label: B("Will this affect a run that is already submitted?", "Việc này có ảnh hưởng đợt đã trình phê duyệt không?"),
     match: ["affect the current run", "will this change", "ảnh hưởng đợt đang chạy", "co anh huong dot da trinh"],
     blocks: [
       { k: "ok", v: B("No. What you do here reaches drafts only — the division and period you are working on. A run that has been submitted or approved cannot be touched from here at all.",
@@ -2457,8 +2502,8 @@ const QA = [
             "bo phan nay dung cau hinh nao", "mã cấu hình", "tim cau hinh"],
     showMe: ["fs-config", "pw-division"],
     blocks: [
-      { k: "p", v: B("One per division and cycle, and the code says which: the division's name, then <b>END</b> for the end-of-month settlement or <b>MID</b> for a mid-cycle advance. On the demo world they read DEMO_RETAIL_END, DEMO_LOGISTICS_MID and so on — one naming rule, twelve configurations.",
-                     "Mỗi bộ phận và mỗi chu kỳ có một cấu hình, và chính mã cho biết là cái nào: tên bộ phận, rồi <b>END</b> cho quyết toán cuối tháng hoặc <b>MID</b> cho khoản tạm ứng giữa kỳ. Trên bản demo, chúng đọc là DEMO_RETAIL_END, DEMO_LOGISTICS_MID và tương tự — một quy ước đặt tên, mười hai cấu hình.") },
+      { k: "p", v: B("One per division and cycle, and the code says which. The shape is <b>PREFIX_DIVISION_CYCLE</b>: a prefix that belongs to the company, the division, then <b>END</b> for the end-of-month settlement or <b>MID</b> for a mid-cycle advance. On the demo world that reads DEMO_RETAIL_END, DEMO_LOGISTICS_MID and so on — one naming rule, twelve configurations. On the practice company in the lessons the same rule reads HOASEN_RETAIL_END; the prefix changes, the shape does not.",
+                     "Mỗi bộ phận và mỗi chu kỳ có một cấu hình, và chính mã cho biết là cái nào. Dạng chung là <b>TIỀN TỐ_BỘ PHẬN_CHU KỲ</b>: một tiền tố thuộc về công ty, rồi tên bộ phận, rồi <b>END</b> cho quyết toán cuối tháng hoặc <b>MID</b> cho khoản tạm ứng giữa kỳ. Trên bản demo, mã đọc là DEMO_RETAIL_END, DEMO_LOGISTICS_MID và tương tự — một quy ước đặt tên, mười hai cấu hình. Trên công ty thực hành trong các bài học, cùng quy ước đó đọc là HOASEN_RETAIL_END; tiền tố đổi, còn dạng chung thì không.") },
       { k: "p", v: B("You do not have to look it up before running a payroll: choosing the division in Run Payroll selects the configuration, and prints its name in the scope panel. Reading that name before you compute is the check — it is also the only place the wrong-division mistake is visible.",
                      "Bạn không cần tra cứu trước khi chạy lương: chọn bộ phận trong Chạy bảng lương là đã chọn cấu hình, và tên của nó được in ở bảng phạm vi. Đọc cái tên đó trước khi tính chính là bước kiểm tra — và cũng là nơi duy nhất nhìn thấy được lỗi chọn nhầm bộ phận.") },
       { k: "src", v: B("The configuration codes on the divisions, and the scope panel in Run Payroll.",

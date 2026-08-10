@@ -93,7 +93,7 @@
         <field name="key">configCode</field>
         <field name="sequence">130</field>
         <field name="term">Configuration code</field>
-        <field name="definition">The short unique name of a formula configuration — the thing Run Payroll actually selects when you choose a division. On the demo world the codes follow one pattern: DEMO_&lt;DIVISION&gt;_END for the end-cycle rulebook and DEMO_&lt;DIVISION&gt;_MID for the mid-cycle one.</field>
+        <field name="definition">The short unique name of a formula configuration — the thing Run Payroll actually selects when you choose a division. The shape is PREFIX_DIVISION_CYCLE, and the prefix is the company's: on this practice company the codes read HOASEN_RETAIL_END, and on the Payobook demo world they read DEMO_RETAIL_END for the end-cycle rulebook and DEMO_RETAIL_MID for the mid-cycle one. Learn the shape rather than any one prefix.</field>
     </record>
 
 </odoo>
