@@ -772,7 +772,7 @@
 
     <record id="intent_affectrun_p05" model="learn.intent.phrase">
         <field name="intent_id" ref="intent_affectrun"/>
-        <field name="text">Việc này có ảnh hưởng đợt đã trình duyệt không?</field>
+        <field name="text">Việc này có ảnh hưởng đợt đã trình phê duyệt không?</field>
     </record>
 
     <record id="intent_affectrun_b010" model="learn.intent.block">
@@ -1955,7 +1955,7 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">One per division and cycle, and the code says which: the division's name, then &lt;b&gt;END&lt;/b&gt; for the end-of-month settlement or &lt;b&gt;MID&lt;/b&gt; for a mid-cycle advance. On the demo world they read DEMO_RETAIL_END, DEMO_LOGISTICS_MID and so on — one naming rule, twelve configurations.</field>
+        <field name="body">One per division and cycle, and the code says which. The shape is &lt;b&gt;PREFIX_DIVISION_CYCLE&lt;/b&gt;: a prefix that belongs to the company, the division, then &lt;b&gt;END&lt;/b&gt; for the end-of-month settlement or &lt;b&gt;MID&lt;/b&gt; for a mid-cycle advance. On the demo world that reads DEMO_RETAIL_END, DEMO_LOGISTICS_MID and so on — one naming rule, twelve configurations. On the practice company in the lessons the same rule reads HOASEN_RETAIL_END; the prefix changes, the shape does not.</field>
     </record>
 
     <record id="intent_whichconfig_b020" model="learn.intent.block">

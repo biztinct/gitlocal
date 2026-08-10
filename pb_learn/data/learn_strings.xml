@@ -195,6 +195,91 @@
         <field name="value">Setup</field>
     </record>
 
+    <record id="str_live_allgatesdone" model="learn.string">
+        <field name="key">live.allGatesDone</field>
+        <field name="value">Done — every gate has said yes.</field>
+    </record>
+
+    <record id="str_live_computed" model="learn.string">
+        <field name="key">live.computed</field>
+        <field name="value">%(count)s payslips computed for %(division)s.</field>
+    </record>
+
+    <record id="str_live_nodivision" model="learn.string">
+        <field name="key">live.noDivision</field>
+        <field name="value">No division has been assigned to you yet. Open Run Payroll once and one will be — each demo account drives its own division's June run.</field>
+    </record>
+
+    <record id="str_live_norun" model="learn.string">
+        <field name="key">live.noRun</field>
+        <field name="value">No June run for your division yet. Open Run Payroll and compute it — the wizard already has your division and the period selected.</field>
+    </record>
+
+    <record id="str_live_noslips" model="learn.string">
+        <field name="key">live.noSlips</field>
+        <field name="value">The run exists but has no payslips yet. Press Compute in the wizard.</field>
+    </record>
+
+    <record id="str_live_nosuchcheck" model="learn.string">
+        <field name="key">live.noSuchCheck</field>
+        <field name="value">There is no check called '%(key)s'.</field>
+    </record>
+
+    <record id="str_live_nosuchstep" model="learn.string">
+        <field name="key">live.noSuchStep</field>
+        <field name="value">No step '%(step)s' in mission '%(mission)s'.</field>
+    </record>
+
+    <record id="str_live_notdemo" model="learn.string">
+        <field name="key">live.notDemo</field>
+        <field name="value">Live missions need the demo world. This one runs against real records in the Payobook demo company, and your session is somewhere else.</field>
+    </record>
+
+    <record id="str_live_notlive" model="learn.string">
+        <field name="key">live.notLive</field>
+        <field name="value">'%(mission)s' is a practice mission — it has nothing to check on the server.</field>
+    </record>
+
+    <record id="str_live_notpastofficer" model="learn.string">
+        <field name="key">live.notPastOfficer</field>
+        <field name="value">Not past the Payroll Officer gate yet.</field>
+    </record>
+
+    <record id="str_live_notverified" model="learn.string">
+        <field name="key">live.notVerified</field>
+        <field name="value">Step '%(step)s' is not verified by the server.</field>
+    </record>
+
+    <record id="str_live_statedone" model="learn.string">
+        <field name="key">live.stateDone</field>
+        <field name="value">Done</field>
+    </record>
+
+    <record id="str_live_statedraft" model="learn.string">
+        <field name="key">live.stateDraft</field>
+        <field name="value">Draft</field>
+    </record>
+
+    <record id="str_live_statelevel0" model="learn.string">
+        <field name="key">live.stateLevel0</field>
+        <field name="value">Payroll Officer pending</field>
+    </record>
+
+    <record id="str_live_statelevel1" model="learn.string">
+        <field name="key">live.stateLevel1</field>
+        <field name="value">HR review</field>
+    </record>
+
+    <record id="str_live_statelevel2" model="learn.string">
+        <field name="key">live.stateLevel2</field>
+        <field name="value">Finance approval</field>
+    </record>
+
+    <record id="str_live_stilldraft" model="learn.string">
+        <field name="key">live.stillDraft</field>
+        <field name="value">Still in draft. Submit the run for approval from the Pay Runs board.</field>
+    </record>
+
     <record id="str_liveack" model="learn.string">
         <field name="key">liveAck</field>
         <field name="value">I have done this</field>

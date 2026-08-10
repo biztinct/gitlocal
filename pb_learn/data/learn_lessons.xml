@@ -527,7 +527,7 @@
         <field name="kicker">What &amp; why</field>
         <field name="title">One division, one rulebook</field>
         <field name="body">This is &lt;b&gt;HOASEN_RETAIL_END&lt;/b&gt; — the configuration every Retail payslip is computed by. The name at the top is a switcher: other divisions have their own, and they are not variations of this one. Choosing a division in Run Payroll is choosing which of these runs.</field>
-        <field name="tip">The code is the thing to quote when you ask someone about a number: "HOASEN_RETAIL_END, component TNCN" is a question that can be answered.</field>
+        <field name="tip">The code is the thing to quote when you ask someone about a number: "HOASEN_RETAIL_END, component TNCN" is a question that can be answered. The shape is PREFIX_DIVISION_CYCLE and the prefix belongs to the company — this practice company uses HOASEN, the Payobook demo world uses DEMO. Learn the shape, not the prefix.</field>
         <field name="screen">formula</field>
         <field name="anchor">fs-config</field>
         <field name="visual">none</field>
