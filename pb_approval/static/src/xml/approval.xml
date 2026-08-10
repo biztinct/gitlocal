@@ -12,7 +12,7 @@
             <div t-else="" class="pba-wrap">
 
                 <!-- ============================= hero ============================= -->
-                <div class="pba-hero">
+                <div class="pba-hero" data-coach="pa-hero">
                     <div class="hero-l">
                         <div class="eyebrow"><span t-out="ic('stamp',15)"/> Payroll</div>
                         <h1>Approval Pipeline</h1>
@@ -30,7 +30,7 @@
                 </div>
 
                 <!-- ============================= KPIs ============================= -->
-                <div class="pba-kpis">
+                <div class="pba-kpis" data-coach="pa-kpis">
                     <div class="kpi l0">
                         <span class="ico" t-out="ic('clock',18)"/>
                         <span class="n" t-esc="summary.officer or 0"/>
@@ -61,7 +61,7 @@
                 </div>
 
                 <!-- ============================= lanes ============================ -->
-                <div t-else="" class="pba-lanes">
+                <div t-else="" class="pba-lanes" data-coach="pa-lanes">
                     <section t-foreach="lanes" t-as="lane" t-key="lane.key"
                              t-attf-class="pba-lane {{ laneCls(lane.key) }}">
                         <div class="lane-h">
@@ -120,7 +120,7 @@
                 </div>
 
                 <!-- ========================= recently decided ===================== -->
-                <div class="pba-recent" t-if="recent.length">
+                <div class="pba-recent" t-if="recent.length" data-coach="pa-recent">
                     <div class="rec-h">Recently decided</div>
                     <div t-foreach="recent" t-as="run" t-key="run.id"
                          class="rec-row" t-on-click="() => this.openRun(run.id)">
@@ -140,7 +140,7 @@
 
             <!-- ========================== reject popover ========================= -->
             <div class="pba-scrim" t-if="state.rejectRun" t-on-click="closeReject">
-                <div class="pba-pop" t-on-click="(ev) => ev.stopPropagation()">
+                <div class="pba-pop" data-coach="pa-reject" t-on-click="(ev) => ev.stopPropagation()">
                     <div class="pop-h">
                         <span t-out="ic('xCircle',18)"/>
                         <span>Reject <t t-esc="state.rejectRun.name"/></span>

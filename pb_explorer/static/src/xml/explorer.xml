@@ -16,7 +16,7 @@
       <div t-else="" class="pbex-wrap">
 
         <!-- ============================ header =========================== -->
-        <div class="pbex-head">
+        <div class="pbex-head" data-coach="ex-head">
           <div class="pbex-head-main">
             <div class="eyebrow"><t t-out="ic('compass', 13)"/><span>Analytics</span></div>
             <h1>Explorer</h1>
@@ -138,7 +138,7 @@
         </div>
 
         <!-- =========================== chip rail ========================= -->
-        <div class="pbex-rail">
+        <div class="pbex-rail" data-coach="ex-rail">
 
           <!-- MEASURE -->
           <div class="pbex-chip-group">
@@ -204,7 +204,7 @@
           </div>
 
           <!-- WHERE -->
-          <div class="pbex-chip-group grow">
+          <div class="pbex-chip-group grow" data-coach="ex-filters">
             <span class="grp-label"><t t-out="ic('filter', 12)"/>Where</span>
             <div class="pbex-filters">
               <span t-foreach="activeFilters" t-as="flt"
@@ -257,7 +257,7 @@
         <!-- ============================ result =========================== -->
         <div class="pbex-card">
           <div class="pbex-card-head">
-            <div class="pbex-headline">
+            <div class="pbex-headline" data-coach="ex-headline">
               <span class="ttl">
                 <t t-esc="state.data ? state.data.measure_label : ''"/>
                 by <t t-esc="state.data ? state.data.dimension_label : ''"/>
@@ -364,7 +364,7 @@
             </div>
 
             <!-- table -->
-            <div t-else="" class="pbex-table-wrap">
+            <div t-else="" class="pbex-table-wrap" data-coach="ex-table">
               <table class="pbex-table">
                 <thead>
                   <tr>

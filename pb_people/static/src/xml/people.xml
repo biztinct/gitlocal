@@ -8,7 +8,7 @@
       <div t-else="" class="pbim-wrap">
 
         <!-- header -->
-        <div class="ppl-head">
+        <div class="ppl-head" data-coach="pe-head">
           <div>
             <h1 class="pbim-h1">Employees</h1>
             <p class="pbim-sub">Your people, contract status and payroll readiness at a glance.</p>
@@ -20,7 +20,7 @@
         </div>
 
         <!-- bulk selection bar -->
-        <div t-if="state.selectMode" class="pbim-panel ppl-bulkbar">
+        <div t-if="state.selectMode" class="pbim-panel ppl-bulkbar" data-coach="pe-bulk">
           <span class="ppl-bulk-count"><t t-esc="state.selected.length"/> selected</span>
           <button class="pbim-btn ghost pbim-btn-sm" t-on-click="selectAllVisible">Select all</button>
           <button class="pbim-btn ghost pbim-btn-sm" t-on-click="clearSelection">Clear</button>
@@ -33,7 +33,7 @@
         </div>
 
         <!-- KPI band -->
-        <div class="ppl-kpis">
+        <div class="ppl-kpis" data-coach="pe-kpis">
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('users',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.headcount"/><span class="l">Headcount</span></div></div>
           <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.running"/><span class="l">Running contracts</span></div></div>
           <div t-attf-class="pbim-stat {{ state.kpis.expiring_soon ? 'err' : '' }}"><span class="pbim-stat-ic amber"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.expiring_soon"/><span class="l">Expiring ≤30d</span></div></div>
@@ -43,7 +43,7 @@
         </div>
 
         <!-- filter bar -->
-        <div class="pbim-panel ppl-filters">
+        <div class="pbim-panel ppl-filters" data-coach="pe-filters">
           <div class="ppl-filter-row">
             <div class="pbim-chips">
               <button t-foreach="statusChips" t-as="c" t-key="c.id"
@@ -79,7 +79,7 @@
         </div>
 
         <!-- roster -->
-        <div t-if="filteredPeople.length" class="ppl-roster">
+        <div t-if="filteredPeople.length" class="ppl-roster" data-coach="pe-roster">
           <div t-foreach="filteredPeople" t-as="p" t-key="p.id" t-attf-class="ppl-card {{ state.selectMode and isSelected(p.id) ? 'sel' : '' }}" t-on-click="() => this.onCard(p)">
             <input t-if="state.selectMode" type="checkbox" class="ppl-cb" t-att-checked="isSelected(p.id)" t-on-click.stop="() => this.toggleSelect(p.id)"/>
             <div class="ppl-av" t-attf-style="background-image:url({{ p.avatar }})"><span t-if="!p.avatar" t-esc="p.initials"/></div>
