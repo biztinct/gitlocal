@@ -12,10 +12,10 @@
             <h1 class="pbim-h1">Salary Structures</h1>
             <p class="pbim-sub">Pay structures, their rules and category make-up across countries.</p>
           </div>
-          <button class="pbim-btn primary" t-on-click="newStructure"><t t-out="ic('plus',16)"/> New structure</button>
+          <button class="pbim-btn primary" data-coach="sr-new" t-on-click="newStructure"><t t-out="ic('plus',16)"/> New structure</button>
         </div>
 
-        <div class="ppl-kpis">
+        <div class="ppl-kpis" data-coach="sr-kpis">
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('layers',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.structures"/><span class="l">Structures</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('list',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.rules"/><span class="l">Salary rules</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('table',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.categories"/><span class="l">Categories</span></div></div>
@@ -23,7 +23,7 @@
           <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('cloud',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.countries"/><span class="l">Countries</span></div></div>
         </div>
 
-        <div class="pbim-panel ppl-filters">
+        <div class="pbim-panel ppl-filters" data-coach="sr-filters">
           <div class="ppl-filter-row">
             <div class="pbim-chips">
               <button t-foreach="statusChips" t-as="c" t-key="c.id"
@@ -61,7 +61,7 @@
           </div>
         </div>
 
-        <div t-if="filtered.length" class="ppl-roster">
+        <div t-if="filtered.length" class="ppl-roster" data-coach="sr-roster">
           <div t-foreach="filtered" t-as="s" t-key="s.id" class="ppl-card" t-on-click="() => this.openStructure(s.id)">
             <div class="ppl-av"><t t-out="ic('layers',20)"/></div>
             <div class="ppl-id">
@@ -79,7 +79,7 @@
 
         <div class="ppl-foot">
           Showing <t t-esc="filtered.length"/> of <t t-esc="state.total"/> ·
-          <button class="ppl-link" t-on-click="openAll">Open full structures list →</button>
+          <button class="ppl-link" data-coach="sr-openall" t-on-click="openAll">Open full structures list →</button>
         </div>
       </div>
     </div>
