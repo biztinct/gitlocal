@@ -14,7 +14,7 @@ is the deterministic scorer and nothing else, and there is no composer.
 import re
 import unicodedata
 
-from odoo import api, fields, models
+from odoo import api, fields, models, tools
 
 # Words that carry no topic. Without this, "what should I do to pay less BHXH"
 # matched "what does this page do" on the word "what" alone and the Coach
@@ -141,6 +141,7 @@ class LearnScreen(models.Model):
         return self._split(item.sudo().match_models) if item else set()
 
     @api.model
+    @tools.ormcache()
     def _contested_models(self):
         """Models that more than one screen's leaf claims.
 
@@ -163,6 +164,12 @@ class LearnScreen(models.Model):
         Computed from the live leaves rather than declared, because the contest
         is a fact about pb_sidebar and a copy of it here would be one more thing
         to keep in step.
+
+        CACHED, because `_matchers` is called once per screen and this walks
+        every screen: uncached it turned one bundle build into a quadratic
+        sweep of the sidebar. The inputs are two data tables that only change on
+        upgrade, and learn.screen's own write path already clears the registry
+        cache — the same invalidation learn.station relies on.
         """
         seen, contested = set(), set()
         for screen in self.sudo().search([]):
@@ -171,6 +178,26 @@ class LearnScreen(models.Model):
                     contested.add(model)
                 seen.add(model)
         return contested
+
+    # The cached contest above is derived from these records and from the
+    # sidebar leaves they name, so a change to either has to drop it. Mirrors
+    # learn.station._invalidate_learn_bundle, which clears the same cache for
+    # the same reason.
+    @api.model_create_multi
+    def create(self, vals_list):
+        rec = super().create(vals_list)
+        self.env.registry.clear_cache()
+        return rec
+
+    def write(self, vals):
+        res = super().write(vals)
+        self.env.registry.clear_cache()
+        return res
+
+    def unlink(self):
+        res = super().unlink()
+        self.env.registry.clear_cache()
+        return res
 
     def _matchers(self):
         """How to tell that THIS screen is the one on display.

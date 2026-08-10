@@ -11,7 +11,7 @@
     "human has to re-read — the checker cannot know whether a renamed state key",
     "invalidates one sentence or a whole lesson."
   ],
-  "schemaVersion": "1.3",
+  "schemaVersion": "1.4",
   "repoRoot": "../../..",
   "checks": [
     {
@@ -445,11 +445,12 @@
     {
       "id": "setup-cockpit-anchors",
       "kind": "contains",
-      "why": "The sixteen anchors pb_learn added to the three Setup cockpits are additive attributes in modules this one does not own. Nothing in those modules reads them, so a tidy-up would delete them without any test over there noticing — and the Coach's Show-me would then scroll to nothing.",
+      "why": "The seventeen anchors pb_learn added to the three Setup cockpits and the new-policy wizard are additive attributes in modules this one does not own. Nothing over there reads them, so a tidy-up would delete them without any test noticing — and the Coach's Show-me would then scroll to nothing.",
       "files": [
         "pb_statutory/static/src/xml/statutory.xml",
         "pb_structures/static/src/xml/structures.xml",
-        "pb_integrations/static/src/xml/integrations.xml"
+        "pb_integrations/static/src/xml/integrations.xml",
+        "pb_statutory/static/src/xml/statutory_wizards.xml"
       ],
       "expect": [
         "data-coach=\"st-new\"",
@@ -467,7 +468,8 @@
         "data-coach=\"ig-connect\"",
         "data-coach=\"ig-kpis\"",
         "data-coach=\"ig-filters\"",
-        "data-coach=\"ig-roster\""
+        "data-coach=\"ig-roster\"",
+        "data-coach=\"st-newpolicy-date\""
       ],
       "fixture": [],
       "taughtIn": [
@@ -511,7 +513,8 @@
         "mission mL1 every check step",
         "the intent whichpolicy live block",
         "screen payruns next_step",
-        "tests/test_mission.py::test_15"
+        "tests/test_mission.py::test_15",
+        "LIVE_VALUES is three keys: june_run_state, active_policy_rates, division_name — a whitelist entry with no reader is a read path nobody asked for"
       ]
     },
     {
@@ -580,6 +583,30 @@
         "mission mL1 open step and consequence card",
         "pb_demo_portal/controllers/main.py::_create_demo_user"
       ]
+    },
+    {
+      "id": "statutory-declares-config-prices",
+      "kind": "contains",
+      "why": "THE fact Phase B got wrong and had to be rewritten. A vietnam.insurance.policy record does NOT price a payslip: grep the rate fields and every reader is a display, an analytic or a report. What prices the BHYT line is a PARAMETER CONSTANT on the division's formula configuration — EEHI in the demo world — referenced by the component that charges it. L6, m4, changerate and whichpolicy all now teach that separation and the reconciliation it implies; if the product ever wires the policy into computation, every one of them needs re-reading, because they would then be teaching a gap that had closed.",
+      "file": "pb_demo/models/demo_catalog.py",
+      "expect": [
+        "('EEHI', 'Health Insurance Rate (EE)'",
+        "('HIEMP', 'Health Insurance (EE)', 'BHYT - NLĐ', 'INS', 'formula', '=-ROUND(MIN(BASIC,CAPLO)*EEHI)', True)"
+      ],
+      "fixture": [
+        "VN_RATES",
+        "CONFIG_PARAMS",
+        "POLICY"
+      ],
+      "taughtIn": [
+        "L5 step 2 (the parameters below the components)",
+        "L6 step 5 (the trace is a reconciliation, not a causation)",
+        "L6 step 7 (declaring a rate is half the job)",
+        "mission m4 consequence card, anomaly and reconcile step",
+        "intent changerate",
+        "intent whichpolicy",
+        "the statutory station's why"
+      ]
     }
   ],
   "anchorLint": {
@@ -599,7 +626,8 @@
       "pb_formula_studio/static/src/xml/studio.xml",
       "pb_statutory/static/src/xml/statutory.xml",
       "pb_structures/static/src/xml/structures.xml",
-      "pb_integrations/static/src/xml/integrations.xml"
+      "pb_integrations/static/src/xml/integrations.xml",
+      "pb_statutory/static/src/xml/statutory_wizards.xml"
     ]
   },
   "tokenLint": {

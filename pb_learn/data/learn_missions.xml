@@ -497,18 +497,18 @@
         <field name="line">setup</field>
         <field name="icon">shield-check</field>
         <field name="name">Apply a BHYT rate change — properly</field>
-        <field name="summary">A decree raises the health-insurance rate. Create the new policy the way the product actually supports, date it so no open month is touched, and see what it costs one employee.</field>
+        <field name="summary">A decree raises the health-insurance rate. Declare it the way the product actually supports, date it so the record says what the decree says — and find out why declaring it is only half the job.</field>
         <field name="duration_min">7</field>
         <field name="kind">full</field>
         <field name="screen">statutory</field>
         <field name="confidence_key">setup</field>
         <field name="confidence_gain">30</field>
-        <field name="consequence_title">You are about to change what every division deducts</field>
-        <field name="consequence_scope">One insurance policy serves the whole company. Every payslip computed after the effective date, in every division, uses these rates — this is not a per-configuration setting.</field>
-        <field name="consequence_reversible">Partly. The new record can be archived and the old one reopened, but any run that recomputed while the new rates were in force keeps the figures it produced until somebody recomputes it again.</field>
-        <field name="consequence_verify">That the effective date falls after every period that is still open. June and July are both unfinished here, so anything earlier than 01/08 can reach a month it has no business reaching.</field>
-        <field name="anomaly_title">The 60,000 that is only 57,000</field>
-        <field name="anomaly_body">Half a percentage point on Mai's registered base of 12,000,000 ₫ is 60,000 ₫ of extra BHYT — so it is natural to tell her that her pay drops by 60,000. It does not: it drops by 57,000. Insurance is deducted BEFORE the tax relief, so her taxable income falls by the same 60,000 and her thuế TNCN falls 3,000 with it. The number a payroll desk quotes from memory is almost always the contribution, and the number the employee sees is always the net. Quoting the wrong one is how a correct change becomes an argument on {{payDay}}.</field>
+        <field name="consequence_title">You are about to change what the company declares</field>
+        <field name="consequence_scope">What this cockpit shows, and what the contribution analytics and the statutory reports read — company-wide. It reprices &lt;b&gt;nothing&lt;/b&gt;: the rate that prices a payslip is a parameter on each division's formula configuration, and this record is not it.</field>
+        <field name="consequence_reversible">Yes. Archive the record and the previous declaration is displayed again — nothing downstream has been recomputed from it, because nothing downstream reads it to compute with.</field>
+        <field name="consequence_verify">That the date is the one the decree gives, and that you know which formula configurations have to change with it. Declaring a rate nobody has configured leaves the two disagreeing, and the payslips are the ones that will look wrong.</field>
+        <field name="anomaly_title">The declaration that changed nothing</field>
+        <field name="anomaly_body">The natural next sentence after saving this record is "so August's payslips will charge 2%". They will not. Nothing downstream reads this record to compute with — the rate that prices the BHYT line is a parameter on each division's formula configuration, and it is still at 1.5%. The mission ends with the declaration correct and the payroll unchanged, and that gap is the point: it is not a bug, it is the reason pay never moves because a reference table moved. Somebody now has to change twelve configurations, preview them, and simulate them — and the person who assumed otherwise finds out on {{payDay}}.</field>
     </record>
 
     <record id="mission_m4_did_00" model="learn.mission.note">
@@ -529,21 +529,14 @@
         <field name="mission_id" ref="mission_m4"/>
         <field name="sequence">30</field>
         <field name="kind">did</field>
-        <field name="body">Dated it from the first of the next month, so no run that is still open can recompute onto rates that were not in force for its period.</field>
+        <field name="body">Dated it from the day the decree applies, so the record evidences a legal start rather than the day somebody happened to type it.</field>
     </record>
 
     <record id="mission_m4_did_03" model="learn.mission.note">
         <field name="mission_id" ref="mission_m4"/>
         <field name="sequence">40</field>
         <field name="kind">did</field>
-        <field name="body">Read the impact on a real payslip before saving, and found that the net effect is smaller than the contribution change.</field>
-    </record>
-
-    <record id="mission_m4_did_04" model="learn.mission.note">
-        <field name="mission_id" ref="mission_m4"/>
-        <field name="sequence">50</field>
-        <field name="kind">did</field>
-        <field name="body">Ended the outgoing policy, so exactly one policy is in force on any given day.</field>
+        <field name="body">Found out that the declaration alone changes no payslip, and that the rate which does live in each division's configuration.</field>
     </record>
 
     <record id="mission_m4_check_00" model="learn.mission.note">
@@ -564,21 +557,21 @@
         <field name="mission_id" ref="mission_m4"/>
         <field name="sequence">30</field>
         <field name="kind">check</field>
-        <field name="body">The effective date is after every open period, and you have checked which periods are open.</field>
+        <field name="body">The effective date is the one the decree gives, and you can point at the decree.</field>
     </record>
 
     <record id="mission_m4_check_03" model="learn.mission.note">
         <field name="mission_id" ref="mission_m4"/>
         <field name="sequence">40</field>
         <field name="kind">check</field>
-        <field name="body">The outgoing policy has an end date, so two policies are never in force at once.</field>
+        <field name="body">Everyone reading this screen has been told the rates now shown are next month's — reviewers of an open run included.</field>
     </record>
 
     <record id="mission_m4_check_04" model="learn.mission.note">
         <field name="mission_id" ref="mission_m4"/>
         <field name="sequence">50</field>
         <field name="kind">check</field>
-        <field name="body">You can state the effect on one employee's NET, not just on the contribution.</field>
+        <field name="body">The formula configurations that price the affected lines are on somebody's list, with a date, or the declaration and the payroll stay out of step.</field>
     </record>
 
     <record id="mission_m4_step_00" model="learn.mission.step">
@@ -682,8 +675,8 @@
         <field name="key">effective</field>
         <field name="target">st-effective</field>
         <field name="instruction">Choose the effective date</field>
-        <field name="detail">It is 20 July. June's run is still being corrected and July's is awaiting approval — either could be recomputed this week.</field>
-        <field name="hint">The current policy is the active one with the latest effective date. Ask which periods that sentence puts at risk.</field>
+        <field name="detail">It is 20 July and the decree applies from 1 August. This field is the company's record of when the change legally started — it is read by auditors and by the statutory reports, and it is not read by anything that computes pay.</field>
+        <field name="hint">Whatever date you type, this screen starts showing the new rates the moment you save. So the date is not a switch — it is a statement about the law, and it has to be true.</field>
         <field name="is_decision" eval="True"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
@@ -704,7 +697,7 @@
         <field name="key">today</field>
         <field name="label">Today, 20/07/2026, so it is not forgotten</field>
         <field name="is_correct" eval="False"/>
-        <field name="recovery">Let's rethink that. From today means from 20 July — and July is not finished. If the run is rejected and recomputed, its payslips are charged an August rate for a July month, and nothing warns anybody: the figures simply come out slightly different from the ones already reviewed.</field>
+        <field name="recovery">Let's rethink that. The decree says 1 August, so a record dated 20 July declares a legal start the company cannot evidence — and the statutory reports built from it will say July ran at the new rate when it did not. Dating it correctly costs nothing: this screen shows the new rates from the moment you save either way, which is why the people reviewing July need telling rather than the field needing bending.</field>
     </record>
 
     <record id="mission_m4_step_03_opt_jan" model="learn.mission.option">
@@ -713,17 +706,17 @@
         <field name="key">jan</field>
         <field name="label">01/01/2026, to keep the year consistent</field>
         <field name="is_correct" eval="False"/>
-        <field name="recovery">Let's rethink that. Backdating to January would make the new rate the one in force for every month of the year — including four that have already been paid and reported. A retro line pays a difference; a backdated policy silently rewrites what the difference was.</field>
+        <field name="recovery">Let's rethink that. Backdating to January declares that the company has been contributing at the new rate all year — for four months that have already been paid, reported and filed at the old one. That is not a tidier record, it is a false one, and it is the kind an inspection finds by comparing the declaration with the returns.</field>
     </record>
 
     <record id="mission_m4_step_04" model="learn.mission.step">
         <field name="mission_id" ref="mission_m4"/>
         <field name="sequence">50</field>
-        <field name="key">preview</field>
+        <field name="key">reconcile</field>
         <field name="target">rep-slipline</field>
-        <field name="instruction">Read the impact on one real payslip</field>
-        <field name="detail">Mai's BHYT goes from 180,000 ₫ to 240,000 ₫, her insurance total from 1,260,000 to 1,320,000, her taxable income from 2,020,000 down to 1,960,000, her thuế TNCN from 101,000 to 98,000 — and her net from 12,919,000 ₫ to 12,862,000 ₫.</field>
-        <field name="hint">Subtract the two nets before you read on: the answer is 57,000, and the reason it is not 60,000 is the whole point of this step.</field>
+        <field name="instruction">Check what the payslip is still charging</field>
+        <field name="detail">The declaration now says 2.0%. Mai's BHYT line still says −180,000 ₫, which is 1.5% of her registered base — because that line is priced by a parameter on Retail's configuration, not by the record you just wrote. This is the reconciliation the Statutory screen exists for, and right now it fails.</field>
+        <field name="hint">If the configuration is changed too, her BHYT becomes 240,000 ₫ and her net falls 57,000 — not 60,000, because insurance comes off before the tax relief. But none of that happens from this screen.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
@@ -736,7 +729,7 @@
         <field name="key">consequence</field>
         <field name="target">st-new</field>
         <field name="instruction">Read what saving this record does</field>
-        <field name="detail">One policy serves every division, so this is not a change to Retail. The card names the scope, the way back and the thing to check, and the mission will not move until you have seen all three.</field>
+        <field name="detail">Read the scope line twice. It is company-wide and it reprices nothing — the two facts people find hardest to hold together on this screen, and the reason the next step goes looking at a payslip that has not moved.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="True"/>
         <field name="is_undo" eval="False"/>
@@ -748,9 +741,9 @@
         <field name="sequence">70</field>
         <field name="key">commit</field>
         <field name="target">st-roster</field>
-        <field name="instruction">Save the new policy, and end-date the old one</field>
-        <field name="detail">Set 31/07/2026 as the end date on the 2026 policy. Two active policies with no end date between them is not an error the system reports — it simply resolves to one of them, and you will not know which until a payslip tells you.</field>
-        <field name="hint">Afterwards the roster should read like a timeline: 2025 ended, 2026 ending on 31/07, August active from 01/08.</field>
+        <field name="instruction">Save the new policy and read the roster</field>
+        <field name="detail">The August record is now the one the rates table shows, because it has the latest effective date among the active policies — the table does not compare that date to today. The 2026 record stays on the list as the evidence of what was declared before it.</field>
+        <field name="hint">Read the effective-date chip above the rates table after you save. If it says 01/08, the screen is already showing August's declaration to everybody who opens it.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
@@ -762,9 +755,9 @@
         <field name="sequence">80</field>
         <field name="key">undo</field>
         <field name="target">st-roster</field>
-        <field name="instruction">Now undo it: archive the new policy and reopen the old one</field>
-        <field name="detail">Clear the end date on the 2026 policy and archive the August one, and the current policy is what it was this morning. Do it once here, because on a real tenant the undo is only this clean while no run has recomputed in between — after that, the records are back but the payslips are not.</field>
-        <field name="hint">That last sentence is the real lesson of this mission: the records are reversible and the payslips they produced are not.</field>
+        <field name="instruction">Now undo it: archive the August policy</field>
+        <field name="detail">Archiving takes it out of the active set, so the rates table falls back to the 2026 declaration and the roster stops listing it. That is the whole undo, and it is clean precisely because nothing was ever computed from it — a mistake in a declaration costs a correction, not a recompute.</field>
+        <field name="hint">Compare that with a configuration change, which is reversible in the records and not in the payslips it has already produced. That difference is why the two are separate.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="True"/>
@@ -880,7 +873,7 @@
         <field name="key">brief</field>
         <field name="instruction">Read what makes this one different</field>
         <field name="detail">Everything from here happens in Payobook itself. The practice missions ran on a fixture with no server behind them; this one creates real payslip records in the shared demo company, on the division assigned to your account. It is the safest real payroll you will ever run — and it is still a real one.</field>
-        <field name="hint">If you have not done the practice run yet, it is worth eight minutes: the same judgement, on a fixture where a wrong answer costs a sentence rather than a record.</field>
+        <field name="hint">The run this mission watches is the one YOU create. Your division already has a June run sitting there from the demo build, and the mission deliberately ignores it — otherwise step one would tick itself green for work you had not done.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>

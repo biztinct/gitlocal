@@ -334,7 +334,7 @@
         <field name="required" eval="True"/>
         <field name="star" eval="True"/>
         <field name="outline_what">The company's active insurance policy and tax table: who pays what, on which base, up to which ceiling, and from which date.</field>
-        <field name="outline_why">Every payslip in every division reads these numbers. A wrong rate here is not one wrong payslip — it is all of them, in the same direction, with a filing deadline attached.</field>
+        <field name="outline_why">This is what the company DECLARES it contributes, and it is what the cockpit, the contribution analytics and the statutory reports read. It is not what prices a payslip — that is a parameter in each division's formula configuration — so the real work here is keeping the two in agreement. When they disagree, payroll is running on a rate the company is not declaring.</field>
         <field name="outline_when">When a decree changes a rate or a deduction, at the start of a tax year, and whenever an employee asks why a contribution is the amount it is.</field>
         <field name="outline_prereq">A manager tier, and the decree or circular in front of you — this screen records a decision that was made elsewhere.</field>
     </record>
@@ -342,19 +342,19 @@
     <record id="station_statutory_mistake_0" model="learn.station.mistake">
         <field name="station_id" ref="station_statutory"/>
         <field name="sequence">10</field>
-        <field name="name">Editing the rate on the policy that is currently in force. There is no version history to fall back on: the old rate is simply gone, and any run that recomputes picks up the new one.</field>
+        <field name="name">Editing the rate on the policy that is currently in force. There is no version history to fall back on — the old declared rate is simply gone, and with it the evidence of what the company was declaring last month.</field>
     </record>
 
     <record id="station_statutory_mistake_1" model="learn.station.mistake">
         <field name="station_id" ref="station_statutory"/>
         <field name="sequence">20</field>
-        <field name="name">Creating the new policy but leaving its effective date at today while a month is still open. The current policy is chosen by latest effective date, so a run that recomputes gets rates that were not in force for its period.</field>
+        <field name="name">Creating the new policy but dating it from today rather than from the day the decree applies. The effective date is the company's record of when the change legally started, and a date nobody can point at a decree for is the first thing an inspection asks about.</field>
     </record>
 
     <record id="station_statutory_mistake_2" model="learn.station.mistake">
         <field name="station_id" ref="station_statutory"/>
         <field name="sequence">30</field>
-        <field name="name">Forgetting to end-date the outgoing policy. Two open-ended active policies is not an error the system reports — it just quietly resolves to one of them.</field>
+        <field name="name">Declaring the new rate and stopping there. The number that prices a payslip is a parameter on the division's formula configuration, so until that is changed too the run still charges the old rate — correctly, and against a declaration that now says otherwise.</field>
     </record>
 
     <record id="station_integrations" model="learn.station">

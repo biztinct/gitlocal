@@ -19,7 +19,7 @@
                 <h4>Identity</h4>
                 <label class="pplw-label">Name *</label><input class="pplw-in" t-on-input="(ev) => this.onField('name', ev)"/>
                 <label class="pplw-label">Code *</label><input class="pplw-in" t-on-input="(ev) => this.onField('code', ev)"/>
-                <label class="pplw-label">Effective date</label><input type="date" class="pplw-in" t-att-value="state.form.effective_date" t-on-change="(ev) => this.onField('effective_date', ev)"/>
+                <label class="pplw-label">Effective date</label><input type="date" class="pplw-in" data-coach="st-newpolicy-date" t-att-value="state.form.effective_date" t-on-change="(ev) => this.onField('effective_date', ev)"/>
                 <div class="pplw-note">Rates default to Vietnam 2024. Fine-tune ceilings and waivers later on the Advanced form.</div>
               </div>
               <div class="pplw-sec">
