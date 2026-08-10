@@ -117,11 +117,6 @@ export async function maybeGreet(env, orm, action) {
             return false;
         }
 
-        // pb_coach got there first on this login — stand down, and record that
-        // we consider this login greeted so we do not fire the moment the
-        // hero tour is dismissed.
-        const coachGreeted = !!ls(COACH_LOGIN_KEY) || ss(COACH_SESSION_KEY) === "1";
-
         let loginKey = "";
         try {
             const rows = await orm.read("res.users", [user.userId], ["login_date"]);
@@ -129,6 +124,22 @@ export async function maybeGreet(env, orm, action) {
         } catch {
             loginKey = "";
         }
+
+        // pb_coach got there first ON THIS LOGIN — stand down, and record that
+        // we consider this login greeted so we do not fire the moment the hero
+        // tour is dismissed.
+        //
+        // THREE conditions, and the last two are the fix for a bug that would
+        // only have appeared after the uninstall. `pb_coach_login_seen` is a
+        // localStorage string that SURVIVES pb_coach being removed: a truthiness
+        // test on it would have suppressed this greeting forever, on every
+        // browser profile that ever saw the hero tour, with nothing to point at.
+        // So: pb_coach has to still be INSTALLED (the service), and its flag has
+        // to name THIS login rather than some login last March. The
+        // session-storage flag needs no date — sessionStorage dies with the tab.
+        const coachGreeted = coachPresent(env)
+            && ((!!loginKey && ls(COACH_LOGIN_KEY) === loginKey)
+                || ss(COACH_SESSION_KEY) === "1");
 
         if (coachGreeted) {
             // Match pb_coach's own bookkeeping so this login counts as done.

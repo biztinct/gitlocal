@@ -839,6 +839,45 @@
         "ai_insight_chat.js::setup",
         "the deploy-time uninstall of pb_coach"
       ]
+    },
+    {
+      "id": "rejection-cancels-the-run",
+      "kind": "contains",
+      "why": "THE FACT PHASES A AND B GOT WRONG IN NINE PLACES. Rejecting does not send a run back to draft: `action_payslip_run_cancel` cascades `action_payslip_cancel` over every slip and writes the RUN to 'cancel', whose own selection label is 'Rejected' — so the board says rejected while the record says cancelled, and nothing hands the batch back to the officer. Returning it to a workable draft is `draft_payslip_run`, a DIFFERENT method gated to the Finance/GM tier. The false version taught a self-service undo that does not exist, and it taught it in the consequence cards of the two lessons about signing for money. If the product ever does wire rejection to draft, every site listed below needs re-reading, because they would then be teaching a gap that had closed.",
+      "files": [
+        "om_hr_payroll/models/hr_payslip.py",
+        "pb_payruns/models/hr_payslip_run.py",
+        "pb_approval/models/pb_approval.py"
+      ],
+      "expect": [
+        "('cancel', 'Rejected')",
+        "def action_payslip_run_cancel",
+        "line.action_payslip_cancel()",
+        "return self.write({'state': 'cancel'})",
+        "def draft_payslip_run",
+        "Only the Finance / GM tier can reset an approved pay run to",
+        "'action_payslip_run_cancel'"
+      ],
+      "fixture": [
+        "STATUS_LABELS.payrun",
+        "STATUS_LABELS.payslip",
+        "CHAINS.payrun"
+      ],
+      "taughtIn": [
+        "glossary payrun (the chain)",
+        "L1 step 8",
+        "L2 step 5 + its consequence card",
+        "L2 quiz option 3",
+        "L5 quiz option 1",
+        "LA step 6 + step 7 consequence",
+        "LA quiz option 3",
+        "mission m1 undo step",
+        "mission m2 consequence, debrief and undo step",
+        "mission mL1 consequence and submit step",
+        "intents approve / reject / affectrun / rejectright",
+        "stations payruns and approvals (mistakes)",
+        "the pipeline visual's branch caption in CHAINS.payrun"
+      ]
     }
   ],
   "anchorLint": {

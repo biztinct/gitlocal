@@ -1003,6 +1003,11 @@ const STATUS_LABELS = {
     level1: { l: B("HR review", "HR soát xét"), t: "warn" },
     level2: { l: B("Finance approval", "Tài chính phê duyệt"), t: "warn" },
     done: { l: B("Done", "Hoàn tất"), t: "ok" },
+    /* Where a rejection actually lands. The product's own label for this
+       selection value is "Rejected", not "Cancelled" — which is why the board
+       reads as a rejection while the record reads as a cancellation, and why
+       the content has to say both. */
+    cancel: { l: B("Rejected", "Đã từ chối"), t: "danger" },
   },
   /* A PAYSLIP's chain is FOUR stages, not five: it has no level0. Drawing the
      run's five on a payslip stepper would teach a gate that does not exist
@@ -1013,6 +1018,9 @@ const STATUS_LABELS = {
     level1: { l: B("HR Manager pending", "Chờ Trưởng phòng Nhân sự"), t: "warn" },
     level2: { l: B("GM pending", "Chờ Tổng Giám đốc"), t: "warn" },
     done: { l: B("Done", "Hoàn tất"), t: "ok" },
+    /* A rejected RUN cancels every slip in it, so a payslip has this state
+       too — reached by the batch, never by itself. */
+    cancel: { l: B("Rejected", "Đã từ chối"), t: "danger" },
   },
   importbatch: {
     map: { l: B("Mapping", "Đang ánh xạ"), t: "" },
@@ -1026,8 +1034,16 @@ const STATUS_LABELS = {
 const CHAINS = {
   payrun: {
     nodes: ["draft", "level0", "level1", "level2", "done"],
-    branch: B("Rejected — back to draft, with a written reason",
-              "Bị từ chối — trả về Nháp, kèm lý do bằng văn bản"),
+    /* THE BRANCH IS A DEAD END, not a loop back to the start, and the caption
+       said the opposite for the whole of Phases A and B. `action_payslip_run_
+       cancel` cascades `action_payslip_cancel` over every slip and writes the
+       RUN to 'cancel' — whose own selection label is "Rejected"
+       (om_hr_payroll/models/hr_payslip.py:975). Getting a workable draft back
+       is `draft_payslip_run`, a different method gated to the Finance/GM tier
+       (pb_payruns/models/hr_payslip_run.py:283-298). Pinned by
+       contract.json::rejection-cancels-the-run. */
+    branch: B("Rejected — the whole run is cancelled, with a written reason",
+              "Đã từ chối — cả đợt lương bị huỷ, kèm lý do bằng văn bản"),
   },
 };
 

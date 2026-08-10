@@ -71,7 +71,7 @@
     <record id="station_payruns_mistake_1" model="learn.station.mistake">
         <field name="station_id" ref="station_payruns"/>
         <field name="sequence">20</field>
-        <field name="name">Rejecting without a written reason. The run goes back to draft either way, but the person who has to fix it is then guessing at what you saw.</field>
+        <field name="name">Rejecting without a written reason. The product refuses an empty one, and a thin one is worse than none: the run is cancelled either way, and the person who has to rebuild it is guessing at what you saw.</field>
     </record>
 
     <record id="station_payruns_mistake_2" model="learn.station.mistake">
@@ -460,7 +460,7 @@
     <record id="station_approvals_mistake_2" model="learn.station.mistake">
         <field name="station_id" ref="station_approvals"/>
         <field name="sequence">30</field>
-        <field name="name">Rejecting instead of asking. A rejection returns the whole batch to draft and is recorded with your name on it; a question in the corridor costs nobody two days.</field>
+        <field name="name">Rejecting instead of asking. A rejection CANCELS the whole batch and is recorded with your name on it, and only the {{gmTierName}} tier can reopen it as a draft; a question in the corridor costs nobody two days.</field>
     </record>
 
     <record id="station_employees" model="learn.station">

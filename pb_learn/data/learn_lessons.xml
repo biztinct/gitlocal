@@ -99,7 +99,7 @@
         <field name="sequence">80</field>
         <field name="kicker">Where it goes</field>
         <field name="title">Your run enters the pipeline</field>
-        <field name="body">The run is now in &lt;b&gt;draft&lt;/b&gt; on the Pay Runs board. From here it travels through the Payroll Officer tier, {{hrTierName}}, {{gmTierName}} and then done. Each gate belongs to one group; nobody can skip one, and a rejection at any of them returns the run to draft with a written reason.</field>
+        <field name="body">The run is now in &lt;b&gt;draft&lt;/b&gt; on the Pay Runs board. From here it travels through the Payroll Officer tier, {{hrTierName}}, {{gmTierName}} and then done. Each gate belongs to one group; nobody can skip one, and a rejection at any of them &lt;b&gt;cancels&lt;/b&gt; the run — every payslip in it with it — with a written reason on the record.</field>
         <field name="screen">payruns</field>
         <field name="anchor">rep-pipeline</field>
         <field name="visual">pipeline</field>
@@ -196,8 +196,8 @@
         <field name="sequence">50</field>
         <field name="kicker">The hard part</field>
         <field name="title">A rejection is testimony, not a rebuke</field>
-        <field name="body">Rejecting sends the whole run back to &lt;b&gt;draft&lt;/b&gt; and records three things against it: who rejected it, when, and &lt;b&gt;why in writing&lt;/b&gt;. That written reason is the entire value of the rejection. Without it the officer who has to fix the run is guessing at what you saw, and will probably resubmit the same thing.</field>
-        <field name="consequence">Affects the whole run, not one payslip: all 48 return to draft together. Reversible: &lt;b&gt;yes&lt;/b&gt; — it is recomputed and resubmitted through the same chain, and nothing was paid. Verify first: that the problem really is the run, and not a single slip you could have discussed.</field>
+        <field name="body">Rejecting &lt;b&gt;cancels&lt;/b&gt; the run. Not "sends it back" — the run's own state becomes Rejected and every payslip in it is cancelled with it, together, and three things are recorded: who rejected it, when, and &lt;b&gt;why in writing&lt;/b&gt;. That written reason is the entire value of the rejection. Without it the officer who has to rebuild the run is guessing at what you saw.</field>
+        <field name="consequence">Affects the whole run, not one payslip: all 48 are cancelled together and the run reads Rejected. Reversible: &lt;b&gt;not by you&lt;/b&gt; — reopening a run as a draft is a {{gmTierName}} action, and until somebody with that tier does it there is nothing for the officer to recompute. Nothing was paid. Verify first: that the problem really is the run, and not a single slip you could have discussed.</field>
         <field name="screen">payruns</field>
         <field name="anchor">pk-card</field>
         <field name="visual">none</field>
@@ -253,7 +253,7 @@
         <field name="sequence">30</field>
         <field name="label">Reject it yourself and start a clean run</field>
         <field name="is_correct" eval="False"/>
-        <field name="feedback">Let's rethink that. A rejection is testimony about a problem you found — using it as a scheduling tool puts a reason on the record that is not true, and throws away two days of somebody's review.</field>
+        <field name="feedback">Let's rethink that. A rejection is testimony about a problem you found, and it CANCELS the run — using it as a scheduling tool puts an untrue reason on the record, throws away two days of somebody's review, and leaves the batch needing a {{gmTierName}} reset before anybody can even recompute it.</field>
     </record>
 
     <record id="lesson_l3" model="learn.lesson">
@@ -614,7 +614,7 @@
         <field name="sequence">10</field>
         <field name="label">Add the component now — the July run has already been computed, so it cannot be affected</field>
         <field name="is_correct" eval="False"/>
-        <field name="feedback">Let's rethink that. Computed is not finished: a rejection at any gate sends the run back to draft, and the recompute that follows would use the configuration as it is then — so July would quietly acquire an allowance that was never approved for it.</field>
+        <field name="feedback">Let's rethink that. Computed is not finished: a rejection at any gate cancels the run, and once {{gmTierName}} reopens it the recompute would use the configuration as it is THEN — so July would quietly acquire an allowance that was never approved for it.</field>
     </record>
 
     <record id="lesson_l5_quiz_opt_1" model="learn.quiz.option">
@@ -922,7 +922,7 @@
         <field name="sequence">60</field>
         <field name="kicker">The hard part</field>
         <field name="title">A rejection is testimony, and the reason is required</field>
-        <field name="body">Rejecting sends the &lt;b&gt;whole run&lt;/b&gt; back to draft — all 48 payslips together, never one — and records three things against it: who rejected it, when, and &lt;b&gt;why in writing&lt;/b&gt;. The product requires that reason because without it the officer who has to fix the run is guessing at what you saw, and will probably resubmit the same thing.</field>
+        <field name="body">Rejecting &lt;b&gt;cancels the whole run&lt;/b&gt; — all 48 payslips together, never one — and records three things against it: who rejected it, when, and &lt;b&gt;why in writing&lt;/b&gt;. The product refuses an empty reason, because without it the officer who has to rebuild the run is guessing at what you saw. And rejecting is not the officer's undo: only the {{gmTierName}} tier can reopen a run as a draft.</field>
         <field name="tip">"Payslip NV0031 — overtime is 382% of June, verify against the timesheet" is a reason somebody can act on. "Wrong" is a reason somebody has to interpret.</field>
         <field name="screen">approvals</field>
         <field name="anchor">pa-reject</field>
@@ -935,7 +935,7 @@
         <field name="kicker">Before you act</field>
         <field name="title">Approving is a signature, and it moves real money</field>
         <field name="body">Nothing about the button says so, which is why this step does. Pressing Approve moves 48 payslips one gate closer to being paid, together — there is no way to approve some of them — and the gate after yours checks totals rather than lines. If a wrong line is going to be caught, this is one of the last places it can be.</field>
-        <field name="consequence">Affects the whole run, all 48 payslips together. It moves from your gate to the next one. Reversible: &lt;b&gt;yes, for now&lt;/b&gt; — a later reviewer can still reject it back to draft, and that stops being true at done, after which a correction is a retro line. Verify first: every flagged payslip opened, a few unflagged ones sampled, and a one-sentence explanation of the variance against last month.</field>
+        <field name="consequence">Affects the whole run, all 48 payslips together. It moves from your gate to the next one. Reversible: &lt;b&gt;stoppable, not undoable&lt;/b&gt; — a later reviewer can still reject it, which cancels the batch rather than handing it back, and after done even that is gone: a correction is then a retro line. Verify first: every flagged payslip opened, a few unflagged ones sampled, and a one-sentence explanation of the variance against last month.</field>
         <field name="screen">approvals</field>
         <field name="anchor">pa-lanes</field>
         <field name="visual">none</field>
@@ -980,7 +980,7 @@
         <field name="sequence">30</field>
         <field name="label">Reject it so the officer re-checks everything before payday</field>
         <field name="is_correct" eval="False"/>
-        <field name="feedback">Let's rethink that. Rejecting sends all 48 payslips back to draft and puts a reason on the permanent record — and "please check everything" is not a reason anybody can act on. A rejection is testimony about a problem you found, not a way of asking somebody to go looking for one.</field>
+        <field name="feedback">Let's rethink that. Rejecting CANCELS all 48 payslips and puts a reason on the permanent record — and "please check everything" is not a reason anybody can act on. Worse, the officer cannot simply pick the run back up: reopening it as a draft is a {{gmTierName}} action. A rejection is testimony about a problem you found, not a way of asking somebody to go looking for one.</field>
     </record>
 
     <record id="lesson_lw" model="learn.lesson">
@@ -1055,9 +1055,9 @@
         <field name="lesson_id" ref="lesson_lw"/>
         <field name="sequence">60</field>
         <field name="kicker">Where everything lives</field>
-        <field name="title">Six sections, and you only work in two of them</field>
-        <field name="body">&lt;b&gt;Overview&lt;/b&gt; is where you land and where approvals queue. &lt;b&gt;Pay Run&lt;/b&gt; is the month's work, top to bottom. &lt;b&gt;People&lt;/b&gt; holds who can be paid, &lt;b&gt;Insights&lt;/b&gt; answers questions about what was paid, and &lt;b&gt;Setup&lt;/b&gt; is read often and changed rarely. A leaf that is not in your sidebar is one your groups do not open — the Journey still describes it, because the person who cannot open a screen is exactly the person who needs to know what it is.</field>
-        <field name="tip">The &lt;b&gt;Learning&lt;/b&gt; section is this one. Everything you are reading now lives there, and it stays there while you work.</field>
+        <field name="title">Sections, and you only work in two of them</field>
+        <field name="body">&lt;b&gt;Overview&lt;/b&gt; is where you land and where approvals queue. &lt;b&gt;Pay Run&lt;/b&gt; is the month's work, top to bottom. &lt;b&gt;People&lt;/b&gt; holds who can be paid, &lt;b&gt;Insights&lt;/b&gt; answers questions about what was paid, &lt;b&gt;Compliance&lt;/b&gt; is the filings the authorities ask for, and &lt;b&gt;Setup&lt;/b&gt; is read often and changed rarely. A leaf that is not in your sidebar is one your groups do not open — the Journey still describes it, because the person who cannot open a screen is exactly the person who needs to know what it is.</field>
+        <field name="tip">The menu on the left of this practice screen is the shape of the real one, not a copy of it — your own sidebar also carries a &lt;b&gt;Learning&lt;/b&gt; section, which is where the Journey you are reading this in lives.</field>
         <field name="screen">dashboard</field>
         <field name="anchor">rep-nav</field>
         <field name="visual">none</field>

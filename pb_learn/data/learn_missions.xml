@@ -242,9 +242,9 @@
         <field name="key">undo</field>
         <field name="nav">payruns</field>
         <field name="target">pk-card-actions</field>
-        <field name="instruction">Now undo it: send the run back to draft</field>
-        <field name="detail">Everything you just did is reversible until the run reaches done. Do it once here, so that when you need it on a real run you already know it is available and what it costs — the whole batch goes back together, and the reason is recorded.</field>
-        <field name="hint">The card's action footer offers Reject while the run is in the chain. That is the same control a reviewer uses.</field>
+        <field name="instruction">Now stop it: reject the run you just submitted</field>
+        <field name="detail">A submitted run can still be STOPPED, and that is not the same as undone. Rejecting cancels the whole batch — all 48 payslips with it — and records your reason. Getting a workable draft back afterwards is a {{gmTierName}} action, not yours. Do it once here, so that on a real run you already know both halves: that there is a way to stop money moving, and what it costs the people who have to restart it.</field>
+        <field name="hint">The card's action footer offers Reject while the run is in the chain. That is the same control a reviewer uses — which is why it is worth feeling how blunt it is before somebody else uses it on your run.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="True"/>
@@ -265,7 +265,7 @@
         <field name="confidence_gain">20</field>
         <field name="consequence_title">Approving moves 48 payslips one gate closer to being paid</field>
         <field name="consequence_scope">The whole run, all 48 payslips together — there is no way to approve some of them. It moves from {{hrTierName}} to {{gmTierName}}.</field>
-        <field name="consequence_reversible">Yes, at this gate: the next reviewer can still reject it back to draft. That stops being true at done, after which a correction is a retro line and never an edit.</field>
+        <field name="consequence_reversible">Stoppable at this gate rather than undoable: the next reviewer can still reject it, which cancels the whole batch — and reopening a cancelled run as a draft is a {{gmTierName}} action. At done even that is gone, and a correction becomes a retro line.</field>
         <field name="consequence_verify">That you have opened every flagged payslip, sampled a few unflagged ones, and can say in one sentence why the total differs from last month.</field>
         <field name="anomaly_title">The variance nobody questioned</field>
         <field name="anomaly_body">The run's net total is 612,480,000 ₫ against 596,110,000 ₫ in June — a rise of about 2.7%, on one more employee. That is a comfortable-looking number, and comfortable-looking numbers are where a single wrong payslip hides best: Hùng's overtime alone accounts for roughly three million of the difference, which is well inside the range a reviewer would wave through as 'a slightly busier month'. A total that looks reasonable is not evidence that every slip inside it is. The flags are.</field>
@@ -303,7 +303,7 @@
         <field name="mission_id" ref="mission_m2"/>
         <field name="sequence">50</field>
         <field name="kind">did</field>
-        <field name="body">Watched a rejection go back to draft and forward again, so reversibility is something you have done rather than been told.</field>
+        <field name="body">Watched a rejection cancel the batch, and found out who has to reopen it — so the cost of that decision is something you have seen rather than been told.</field>
     </record>
 
     <record id="mission_m2_check_00" model="learn.mission.note">
@@ -468,8 +468,8 @@
         <field name="key">undo</field>
         <field name="nav">payruns</field>
         <field name="target">pk-card</field>
-        <field name="instruction">Watch it come back, and send it forward again</field>
-        <field name="detail">The rejected run is in draft with your reason on it. The officer corrects the input, recomputes, and resubmits through the same chain — nothing was lost and nothing was paid. Do the round trip once here, because at done this stops being true.</field>
+        <field name="instruction">Watch what a rejection actually costs</field>
+        <field name="detail">The run now reads &lt;b&gt;Rejected&lt;/b&gt; and all 48 payslips are cancelled with it, your reason on the record. It does NOT come back by itself: reopening it as a draft is a {{gmTierName}} action, and only then can the officer correct the input, recompute and resubmit through the same chain. Nothing was paid — but a rejection costs a second person's time as well as the officer's, which is exactly why the reason has to be worth acting on.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="True"/>
@@ -793,7 +793,7 @@
         <field name="confidence_gain">40</field>
         <field name="consequence_title">This one is real</field>
         <field name="consequence_scope">Your assigned division's June 2026 run, in the shared Payobook demo company. Real payslip records are created, and other people exploring the demo can see them. No other division and no other period is touched — and no real company's data is anywhere near this.</field>
-        <field name="consequence_reversible">Partly, and the halves matter. Draft payslips can be deleted and recomputed as often as you like. Submitting is not silently undoable: from there the run moves only by being approved, or by being rejected back to draft with a written reason — the same chain a real payroll travels.</field>
+        <field name="consequence_reversible">Partly, and the halves matter. Draft payslips can be deleted and recomputed as often as you like. Submitting is not silently undoable: from there the run moves only by being approved, or by being rejected — which cancels the batch and needs the {{gmTierName}} tier to reopen it as a draft. The same chain a real payroll travels.</field>
         <field name="consequence_verify">That the division the wizard has selected is the one assigned to you. It is preselected and moved to the front of the list for exactly this reason, and the mission verifies against your assignment rather than against whatever the wizard happens to be showing.</field>
     </record>
 
@@ -940,7 +940,7 @@
         <field name="key">submit</field>
         <field name="nav">payruns</field>
         <field name="instruction">Submit the run for approval</field>
-        <field name="detail">This is the step that stops being reversible in the easy way. After it, the run moves only by being approved at each gate, or by being rejected back to draft with a written reason.</field>
+        <field name="detail">This is the step that stops being reversible in the easy way. After it, the run moves only by being approved at each gate, or by being rejected — and a rejection cancels the batch rather than handing it back to you.</field>
         <field name="hint">Submitting is you saying the flags have been answered. If any of them have not, go back — the run will still be there.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>

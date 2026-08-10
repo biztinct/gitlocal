@@ -112,6 +112,14 @@ class TestRetirementSeams(TransactionCase):
         self.assertIn('pb_coach_login_seen', self.first_login)
         self.assertIn('pb_coach_welcomed', self.first_login)
         self.assertIn('coachGreeted', self.first_login)
+        # And it stands down only while pb_coach is INSTALLED and its flag names
+        # THIS login. A truthiness test on a localStorage string that survives
+        # the uninstall would have suppressed the greeting forever, on every
+        # browser that ever saw the hero tour.
+        self.assertIn('coachPresent(env)', self.first_login,
+                      "the stand-down does not check that pb_coach is still installed")
+        self.assertIn('ls(COACH_LOGIN_KEY) === loginKey', self.first_login,
+                      "the stand-down compares a stale flag by truthiness, not by login")
         # Reading is the whole contract. A write to a pb_coach key would make
         # this module responsible for another module's bookkeeping.
         for key in ('pb_coach_login_seen', 'pb_coach_welcomed'):
@@ -142,7 +150,19 @@ class TestRetirementSeams(TransactionCase):
         fresh login re-greets and a page refresh does not nag."""
         self.assertIn('login_date', self.first_login)
         self.assertIn('pbLearnLoginSeen', self.first_login)
-        self.assertNotIn('pb_coach_', self.first_login.split('const COACH_SESSION_KEY')[1],
+        # Split on the FULL assignment: splitting on the NAME alone leaves the
+        # VALUE ("pb_coach_welcomed") at the head of the tail, so the assertion
+        # matched its own constant and could never have passed.
+        tail = self.first_login.split('const COACH_SESSION_KEY = "pb_coach_welcomed";')[1]
+        # And strip the COMMENTS. What is being asserted is that no CODE below
+        # names one of pb_coach's keys directly — the prose is allowed to, and
+        # has to, because the comment explaining the stale-flag bug names the
+        # flag. Third time in this module that a source-level assertion was
+        # written against prose it could not distinguish from code; the rule is
+        # in the ledger.
+        code = re.sub(r'/\*.*?\*/', '', tail, flags=re.S)
+        code = re.sub(r'(?<!:)//[^\n]*', '', code)
+        self.assertNotIn('pb_coach_', code,
                          "pb_coach's key names leak past the two read-only constants")
 
     def test_09_the_greeting_cannot_break_the_product(self):
@@ -171,8 +191,19 @@ class TestRetirementSeams(TransactionCase):
                       "the Coach does not set the launcher stack class")
         self.assertIn('bottom: 160px', self.coach_scss,
                       "the three-control offset is gone")
-        self.assertIn('body.pb-coach-absent .lrn-fab { bottom: 92px; }', self.coach_scss,
-                      "the two-control offset is missing — the corner has a hole in it")
+        desktop = self.coach_scss.find('body.pb-coach-absent .lrn-fab { bottom: 92px; }')
+        mobile = self.coach_scss.find('body.pb-coach-absent .lrn-fab { bottom: 86px; }')
+        self.assertNotEqual(desktop, -1,
+                            "the two-control offset is missing — the corner has a hole in it")
+        self.assertNotEqual(mobile, -1, "the phone offset is missing")
+        # ORDER, not presence. Both selectors are (0,2,1), so the later one
+        # wins: with the desktop rule after the media block it silently put the
+        # launcher back at 92px on a 380px screen, and every "present" assertion
+        # passed while it did.
+        self.assertLess(desktop, self.coach_scss.find('@media (max-width'),
+                        "the desktop offset is declared after the media block and "
+                        "overrides the phone one")
+        self.assertLess(self.coach_scss.find('@media (max-width'), mobile)
 
     def test_11_the_service_is_looked_up_optionally(self):
         """`useService` throws when a service is missing, and this code runs on

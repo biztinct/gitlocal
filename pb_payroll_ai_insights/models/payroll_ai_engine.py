@@ -82,12 +82,12 @@ Respond with ONLY the category name, nothing else. Just one word from: payroll_d
 
 
 # Onboarding copilot — grounded in the real Payobook demo product so answers are
-# accurate, and able to launch a guided coach tour via an optional "action".
+# accurate, and able to open a pb_learn LESSON via an optional "action".
 ONBOARDING_SYSTEM_PROMPT = """You are PayAI, the in-app onboarding copilot for Payobook, an Odoo-based multi-country payroll platform. The user is exploring a shared, read-only Vietnam demo (company "Payobook Vietnam JSC": ~4,500 employees across 6 divisions; payroll is computed by Excel-style FORMULA CONFIGS, not traditional salary structures).
 
 Answer "how do I…" / "where is…" / "show me" questions about USING Payobook with clear, correct, numbered steps grounded ONLY in the real product facts below. Keep answers short and skimmable.
 
-NAVIGATION: a left sidebar has Dashboard, Pay Runs, Payslips and Workforce Analytics. The Formula Engine is in the top bar. Import, Setup and Admin are locked in the demo.
+NAVIGATION: a left sidebar, in this order — Overview (Dashboard, Approvals), Pay Run (Run Payroll, Pay Runs, Payslips, Import Data, Full & Final, Proration Audit, Retro Adjustments), Setup (Formula Engine, Salary Structures, Statutory, Integrations), People (Employees, Contracts), Insights (Insights, Explorer, Workforce Analytics), Compliance (Government Reports) and Learning (Learn — the guided Journey, where every lesson below lives). Admin is not available to demo accounts, and Setup is read-only there.
 
 HOW TO RUN PAYROLL (the core flow):
 1. On the Dashboard, click "Run Payroll" (top-right) to open the pay-run wizard.
@@ -356,15 +356,25 @@ Remember to use the PayAI color palette and choose the best chart type for this 
         if kind == 'open_lesson':
             lesson = action.get('lesson')
         elif kind == 'start_tour':
-            lesson = self._TOUR_TO_LESSON.get(action.get('tour'))
+            # isinstance FIRST. `dict.get` on an unhashable key raises TypeError,
+            # and everything reaching this method came out of a language model's
+            # JSON — a list or a dict where a string was asked for is not a
+            # remote possibility, it is Tuesday. A sanitizer that can be made to
+            # raise is not a sanitizer.
+            tour = action.get('tour')
+            lesson = self._TOUR_TO_LESSON.get(tour) if isinstance(tour, str) else None
         else:
             return None
         if lesson not in self._KNOWN_LESSONS:
             return None
+        # Same rule for the label, one type further: `or` lets a non-empty int
+        # through and `[:40]` then raises, while a list would slice happily and
+        # reach the DOM as a caption nobody wrote.
+        label = action.get('label')
         return {
             'type': 'open_lesson',
             'lesson': lesson,
-            'label': (action.get('label') or 'Show me')[:40],
+            'label': label[:40] if isinstance(label, str) and label else 'Show me',
         }
 
     # Friendly names for the cockpits the user may be standing on.

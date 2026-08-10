@@ -33,6 +33,12 @@ import { user } from "@web/core/user";
 
 const DEMO_GROUP = "pb_demo.group_payobook_demo";
 const DISMISSED = "pb_demo_disclaimer_off";
+/* pb_coach's own dismissal flag, READ ONLY. A prospect who has already closed
+   this chip once has answered the question; making them close it a second time
+   because the module that drew it was retired underneath them is the kind of
+   detail that reads as the product forgetting things. Never written here — the
+   dismissal we record is ours. */
+const COACH_DISMISSED = "pb_coach_disclaimer_off";
 
 export class DemoChrome extends Component {
     static template = "pb_demo.DemoChrome";
@@ -90,7 +96,8 @@ export class DemoChrome extends Component {
 
     _dismissed() {
         try {
-            return window.localStorage.getItem(DISMISSED) === "1";
+            return window.localStorage.getItem(DISMISSED) === "1"
+                || window.localStorage.getItem(COACH_DISMISSED) === "1";
         } catch {
             return false;
         }

@@ -44,7 +44,7 @@
         <field name="key">payrun</field>
         <field name="sequence">60</field>
         <field name="term">Pay run</field>
-        <field name="definition">One batch of payslips for a division and a period, travelling draft → Payroll Officer → {{hrTierName}} → {{gmTierName}} → done. A rejection returns the whole batch to draft with a written reason.</field>
+        <field name="definition">One batch of payslips for a division and a period, travelling draft → Payroll Officer → {{hrTierName}} → {{gmTierName}} → done. A rejection at any gate CANCELS the whole batch, every payslip with it, and records who, when and why in writing.</field>
     </record>
 
     <record id="gloss_cycle" model="learn.glossary.term">

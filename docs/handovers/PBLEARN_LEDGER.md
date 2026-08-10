@@ -658,6 +658,131 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   `open_lesson`**, so the frontend has exactly one shape to handle and the
   legacy path never needs pb_coach.
 
+### Phase C review fixes
+
+- **THE BIG ONE: A REJECTION DOES NOT SEND A RUN BACK TO DRAFT. It CANCELS it.**
+  `action_payslip_run_cancel` cascades `action_payslip_cancel` over every slip
+  and writes the RUN to `'cancel'` (om_hr_payroll/models/hr_payslip.py:1227-1230),
+  and that selection value's own label is **"Rejected"** (:975) — so the board
+  says rejected while the record says cancelled. Getting a workable draft back
+  is `draft_payslip_run`, a DIFFERENT method gated to the Finance/GM tier
+  (pb_payruns/models/hr_payslip_run.py:283-298). Phases A and B taught the false
+  version in **24 content sites across both languages**, and taught it in the
+  places it does most damage: the consequence cards of the two lessons about
+  signing for money, and both `undo` mission steps. The corrected frame is that
+  rejecting is a way to STOP money moving, not an undo — the officer cannot pick
+  the batch back up, and a second person at the {{gmTierName}} tier has to
+  reopen it first. `contract.json::rejection-cancels-the-run` pins all three
+  halves (the cancel cascade, the tier gate on the reset, and pb_approval's
+  reject entry point) so it cannot drift back.
+  **Same shape as the Phase B statutory error**: a plausible mechanism nobody
+  had executed, propagated confidently across every surface. Both were found by
+  reading the product method rather than the product's UI.
+- **`STATUS_LABELS` now carries `cancel` on BOTH chains.** The run's and the
+  payslip's selections both have it; the fixture had neither, so nothing could
+  render the state the content now teaches.
+- **THIRD OCCURRENCE of "a source-level assertion greped its own prose."** The
+  first-login test asserts that no CODE below the two read-only constants names
+  a pb_coach key — and the comment explaining the stale-flag fix names one, as
+  it must. The test now strips comments before asserting. **THE RULE, now
+  written down: a source-level assertion must be scoped to code. Strip `//` and
+  `/* */` first, or assert on a string the code has to contain and the prose
+  cannot plausibly repeat.** Prior occurrences: the `absent` contract check in
+  B2 and again in C2, and the `lesson:` / `_applyDeepLink()` pair in C2.
+- **A test written and never executed is not a test.** The reviewer's verdict
+  turned on this and it was right: four assertions across three files were
+  broken in ways that made them unfalsifiable, and every one of them had shipped
+  under a "suite green" claim that had never been run. There is no odoo-bin
+  here, so the fix is a REPLAY HARNESS: the real test methods are exec'd against
+  a stub `self` carrying the same attributes `setUpClass` builds, with the
+  recordset shims backed by the generated XML. **43 assertions across four test
+  files now execute on every verification pass, with a tally.** Anything that
+  genuinely needs a database reports SKIP rather than passing silently.
+- **Two REAL bugs were found by running the tests rather than by writing them:**
+  `test_08` (registry) failed on `pw-result` and `st-effective`, because
+  **no test in this module counted a mission step's `target` as an anchor
+  reference** — m1 and m4 have pointed at those two since Phase A. Both
+  `test_04` and the new `test_08` now scan `learn.mission.step.target`.
+- **A truthiness test on another module's localStorage key is a permanent
+  regression waiting for an uninstall.** `!!ls("pb_coach_login_seen")` stood the
+  greeting down correctly while pb_coach was installed — and would have kept
+  standing it down FOREVER afterwards, on every browser profile that had ever
+  seen the hero tour, with nothing anywhere to point at. The stand-down now
+  requires that pb_coach is still INSTALLED (the service) **and** that its flag
+  names the CURRENT login. **Rule: a flag owned by a module you are retiring
+  must be read with an expiry, because it outlives the module.**
+- **`doAction` is async: a synchronous `try/catch` around it catches nothing.**
+  Shipped in C2 as the guard for a database without pb_learn — the one state it
+  existed for is the one state it did not cover. `.catch()` on the returned
+  promise. The general form: in this codebase every service call that looks
+  imperative is a promise, and a guard that does not say `await` or `.catch`
+  is decoration.
+- **A sanitizer that can be made to RAISE is not a sanitizer.** `_sanitize_action`
+  is the trust boundary between a language model's JSON and a button in the DOM,
+  and two shipped lines could be made to throw rather than refuse: `dict.get`
+  with an unhashable key (a list where a string was asked for), and `[:40]` on
+  an int. Both now type-check first, and `test_07b`/`test_07c` push sixteen
+  hostile shapes through the method with the assertion being that it never
+  raises.
+- **The client-side `start_tour` branch was unreachable and kept a dependency
+  alive.** `_sanitize_action` always emits `open_lesson`, so the browser can
+  never receive a tour envelope — the branch existed only to justify the coach
+  service lookup that justified the branch. Both removed. Legacy acceptance
+  stays server-side, where the LLM's output actually arrives. **PayAI's assets
+  now contain zero references to pb_coach, in code or in comments beyond one
+  explaining the removal.**
+- **Two same-specificity CSS rules: the later one wins, and ordering is not a
+  style question.** `body.pb-coach-absent .lrn-fab` was declared after the
+  `@media` block, so it silently overrode the phone offset and put the launcher
+  back at 92px on a 380px screen. `test_10` now asserts the ORDER, because
+  presence was never what was wrong.
+- **An undeclared `learn.event` kind is DROPPED, not raised** (`log`, learn_
+  progress.py:169-171) — which is correct for a stale browser tab and wrong for
+  a signal nobody declared. `lesson_deeplink` was being logged into a hole:
+  the one row that measures whether the PayAI retarget was worth doing.
+- **AMENDED CONVENTION — reserved anchors.** Phase C1 anchored whole REGIONS of
+  seven cockpits in one pass, and 16 of those had no content pointing at them
+  yet. The ruling is that they stay: the alternative is a second edit to
+  somebody else's template for every lesson written afterwards, and each of
+  those is a chance for a tidy-up to delete an attribute nothing over there
+  reads. **Anchors may be laid ahead of content where the region is certain to
+  be taught, and the registry marks them `reserved: true`.** Applied to all 35
+  currently-unreferenced product anchors rather than only C1's 16, because a
+  test that exempts some of them and not others exempts nothing;
+  `test_08` enforces it in BOTH directions, so the flag has to come off when the
+  content arrives.
+- **A column label is a lookup key.** "Active configurations" was tidier than
+  the product's "Active configs" and therefore unmatchable — `learn.column`
+  is looked up BY LABEL. Match the template verbatim, always.
+- **PayAI's system prompt was still describing a locked-down demo** ("Import,
+  Setup and Admin are locked") while the envelope it produces now offers L4
+  (Import) and L6 (Statutory). A prompt that contradicts the actions it can
+  emit teaches the model to refuse its own buttons. Rewritten to the real
+  sidebar, Learning section included.
+
+### Corrections to earlier Phase C claims (L9/L10)
+
+- **"1,205 translated strings, zero of them English" was one string too strong.**
+  `Explorer` is identical in both languages by design — a product name pb_sidebar
+  ships untranslated — and is allowlisted in `test_bundle::SAME_IN_BOTH`. The
+  honest claim, and the one the test actually makes, is that **no prose** reaches
+  a Vietnamese reader in English.
+- **Phase C as a whole is no longer a pure append, and the C1 commit's banner
+  should not be read as covering it.** C1 alone was: 909 → 1205, 0 removed, 0
+  retranslated, 296 added — true when it was written. The review fixes then
+  removed 30 msgids and added 32 (the rejection rewrite), so the whole of Phase
+  C is **909 → 1207, 21 removed, 319 added, 0 retranslated**.
+- **UNDISCLOSED DEVIATION IN C1, recorded now: the Dashboard replica was
+  REWRITTEN, not extended.** `SCREENS.dashboard()` gained a hero and a formula
+  card, moved to the real `dash-*` anchors and dropped `rep-dash-kpis` — while
+  the commit's reviewer-notes listed only three deletions, all in generated
+  files, under a zero-deletions framing that read as covering the whole change.
+  The rewrite is right (LW names those anchors, and a lesson step whose anchor
+  is absent renders a centred card instead of a spotlight) and the review
+  accepted it on merit. **The failure was disclosure, not judgement: a
+  hand-written asset rewritten inside a content commit has to be named in the
+  commit, because the generated-file diff cannot show it.**
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5

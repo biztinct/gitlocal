@@ -48,9 +48,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_rejectright_b020
 msgid ""
-"\"Wrong\", \"please recheck\" and \"the numbers look off\" all send 48 payslips back to draft and leave the officer guessing at what you saw. They will probably resubmit the same thing, and the second rejection is the one that becomes an argument."
+"\"Wrong\", \"please recheck\" and \"the numbers look off\" all cancel 48 payslips, need a {{gmTierName}} reset before anybody can start again, and leave the officer guessing at what you saw. They will probably rebuild the same thing, and the second rejection is the one that becomes an argument."
 msgstr ""
-"\"Sai\", \"kiểm tra lại giúp\" hay \"số liệu trông không ổn\" đều đưa 48 phiếu lương về Nháp và để chuyên viên tự đoán xem bạn đã thấy gì. Nhiều khả năng họ sẽ trình lại đúng thứ cũ, và lần từ chối thứ hai mới là lần biến thành tranh cãi."
+"\"Sai\", \"kiểm tra lại giúp\" hay \"số liệu trông không ổn\" đều huỷ 48 phiếu lương, cần vòng {{gmTierName}} mở lại thì mới có ai bắt đầu lại được, và để chuyên viên tự đoán xem bạn đã thấy gì. Nhiều khả năng họ sẽ dựng lại đúng thứ cũ, và lần từ chối thứ hai mới là lần biến thành tranh cãi."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_live_computed
@@ -145,9 +145,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_lw_step_05
 msgid ""
-"<b>Overview</b> is where you land and where approvals queue. <b>Pay Run</b> is the month's work, top to bottom. <b>People</b> holds who can be paid, <b>Insights</b> answers questions about what was paid, and <b>Setup</b> is read often and changed rarely. A leaf that is not in your sidebar is one your groups do not open — the Journey still describes it, because the person who cannot open a screen is exactly the person who needs to know what it is."
+"<b>Overview</b> is where you land and where approvals queue. <b>Pay Run</b> is the month's work, top to bottom. <b>People</b> holds who can be paid, <b>Insights</b> answers questions about what was paid, <b>Compliance</b> is the filings the authorities ask for, and <b>Setup</b> is read often and changed rarely. A leaf that is not in your sidebar is one your groups do not open — the Journey still describes it, because the person who cannot open a screen is exactly the person who needs to know what it is."
 msgstr ""
-"<b>Tổng quan</b> là nơi bạn vào đầu tiên và là nơi các lượt phê duyệt xếp hàng. <b>Chạy lương</b> là toàn bộ công việc của tháng, từ đầu đến cuối. <b>Nhân sự</b> giữ thông tin ai có thể được trả lương, <b>Phân tích</b> trả lời các câu hỏi về những gì đã chi, còn <b>Thiết lập</b> thì thường xuyên được đọc và hiếm khi bị sửa. Mục nào không có trong thanh bên của bạn là mục mà nhóm quyền của bạn không mở được — Hành trình học vẫn mô tả nó, vì người không mở được một màn hình chính là người cần biết màn hình đó là gì."
+"<b>Tổng quan</b> là nơi bạn vào đầu tiên và là nơi các lượt phê duyệt xếp hàng. <b>Chạy lương</b> là toàn bộ công việc của tháng, từ đầu đến cuối. <b>Nhân sự</b> giữ thông tin ai có thể được trả lương, <b>Phân tích</b> trả lời các câu hỏi về những gì đã chi, <b>Tuân thủ</b> là các báo cáo mà cơ quan quản lý yêu cầu, còn <b>Thiết lập</b> thì thường xuyên được đọc và hiếm khi bị sửa. Mục nào không có trong thanh bên của bạn là mục mà nhóm quyền của bạn không mở được — Hành trình học vẫn mô tả nó, vì người không mở được một màn hình chính là người cần biết màn hình đó là gì."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l1_step_00
@@ -485,6 +485,13 @@ msgstr ""
 "Xưởng làm việc cho cấu hình công thức của từng bộ phận — các thành phần, công thức đằng sau mỗi thành phần, nó phụ thuộc vào gì, và bản xem trước trực tiếp trên một nhân viên thật."
 
 #. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_m1_step_07
+msgid ""
+"A submitted run can still be STOPPED, and that is not the same as undone. Rejecting cancels the whole batch — all 48 payslips with it — and records your reason. Getting a workable draft back afterwards is a {{gmTierName}} action, not yours. Do it once here, so that on a real run you already know both halves: that there is a way to stop money moving, and what it costs the people who have to restart it."
+msgstr ""
+"Một đợt đã trình vẫn CHẶN được, và điều đó không giống với hoàn tác. Từ chối sẽ huỷ cả lô — kèm toàn bộ 48 phiếu lương — và ghi lại lý do của bạn. Còn để có lại một bản nháp làm việc được thì đó là thao tác của vòng {{gmTierName}}, không phải của bạn. Hãy làm một lần ở đây, để khi gặp đợt lương thật bạn đã biết cả hai vế: rằng có cách chặn dòng tiền lại, và cái giá của nó với những người phải khởi động lại."
+
+#. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_whopays_b010
 msgid ""
 "A wage is changed on the <b>contract</b>, never on a payslip. The payslip is a result: correcting it leaves the agreement behind it unchanged, and the next recompute quietly puts the old figure back."
@@ -502,8 +509,8 @@ msgid "Accept it as correct — it was a busy month"
 msgstr "Chấp nhận là đúng — tháng đó bận"
 
 #. module: pb_learn
-#: model:learn.column,label:pb_learn.col_dashboard_active_configurations
-msgid "Active configurations"
+#: model:learn.column,label:pb_learn.col_dashboard_active_configs
+msgid "Active configs"
 msgstr "Cấu hình đang chạy"
 
 #. module: pb_learn
@@ -545,16 +552,16 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.step,consequence:pb_learn.lesson_la_step_06
 msgid ""
-"Affects the whole run, all 48 payslips together. It moves from your gate to the next one. Reversible: <b>yes, for now</b> — a later reviewer can still reject it back to draft, and that stops being true at done, after which a correction is a retro line. Verify first: every flagged payslip opened, a few unflagged ones sampled, and a one-sentence explanation of the variance against last month."
+"Affects the whole run, all 48 payslips together. It moves from your gate to the next one. Reversible: <b>stoppable, not undoable</b> — a later reviewer can still reject it, which cancels the batch rather than handing it back, and after done even that is gone: a correction is then a retro line. Verify first: every flagged payslip opened, a few unflagged ones sampled, and a one-sentence explanation of the variance against last month."
 msgstr ""
-"Ảnh hưởng cả đợt lương, toàn bộ 48 phiếu cùng lúc. Đợt chuyển từ cổng của bạn sang cổng kế tiếp. Hoàn tác: <b>hiện tại thì được</b> — người soát xét sau vẫn có thể từ chối và trả về Nháp, nhưng điều đó chấm dứt khi đợt đạt Hoàn tất, sau đó mọi hiệu chỉnh là một dòng hồi tố. Kiểm tra trước: đã mở mọi phiếu bị gắn cờ, đã lấy mẫu vài phiếu không gắn cờ, và giải thích được biến động so với tháng trước trong một câu."
+"Ảnh hưởng cả đợt lương, toàn bộ 48 phiếu cùng lúc. Đợt chuyển từ cổng của bạn sang cổng kế tiếp. Hoàn tác: <b>chặn được, chứ không lùi lại được</b> — người soát xét sau vẫn có thể từ chối, và điều đó huỷ cả lô chứ không phải trả nó lại cho bạn; sau khi Hoàn tất thì đến cách đó cũng không còn: mọi hiệu chỉnh khi ấy là một dòng hồi tố. Kiểm tra trước: đã mở mọi phiếu bị gắn cờ, đã lấy mẫu vài phiếu không gắn cờ, và giải thích được biến động so với tháng trước trong một câu."
 
 #. module: pb_learn
 #: model:learn.step,consequence:pb_learn.lesson_l2_step_04
 msgid ""
-"Affects the whole run, not one payslip: all 48 return to draft together. Reversible: <b>yes</b> — it is recomputed and resubmitted through the same chain, and nothing was paid. Verify first: that the problem really is the run, and not a single slip you could have discussed."
+"Affects the whole run, not one payslip: all 48 are cancelled together and the run reads Rejected. Reversible: <b>not by you</b> — reopening a run as a draft is a {{gmTierName}} action, and until somebody with that tier does it there is nothing for the officer to recompute. Nothing was paid. Verify first: that the problem really is the run, and not a single slip you could have discussed."
 msgstr ""
-"Ảnh hưởng cả đợt lương, không phải một phiếu: cả 48 phiếu cùng quay về Nháp. Hoàn tác: <b>được</b> — đợt sẽ được tính lại và trình lại qua đúng chuỗi đó, và chưa có gì được chi. Kiểm tra trước: vấn đề có thực sự nằm ở cả đợt không, hay chỉ là một phiếu mà bạn có thể trao đổi riêng."
+"Ảnh hưởng cả đợt lương, không phải một phiếu: cả 48 phiếu cùng bị huỷ và đợt chuyển sang trạng thái Đã từ chối. Hoàn tác: <b>không phải bởi bạn</b> — mở lại một đợt thành bản nháp là thao tác của vòng {{gmTierName}}, và tới khi có người ở vòng đó làm việc ấy thì chuyên viên chẳng có gì để tính lại. Chưa có gì được chi. Kiểm tra trước: vấn đề có thực sự nằm ở cả đợt không, hay chỉ là một phiếu mà bạn có thể trao đổi riêng."
 
 #. module: pb_learn
 #: model:learn.step,consequence:pb_learn.lesson_l6_step_06
@@ -688,8 +695,8 @@ msgstr "Phê duyệt — 2,7% so với tháng trước là hoàn toàn bình th�
 
 #. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_approve_b110_s02
-msgid "Approve — or reject with a written reason, which returns the run to draft"
-msgstr "Phê duyệt — hoặc từ chối kèm lý do bằng văn bản, đợt sẽ quay về Nháp"
+msgid "Approve — or reject with a written reason, which cancels the run"
+msgstr "Phê duyệt — hoặc từ chối kèm lý do bằng văn bản, việc đó sẽ huỷ đợt lương"
 
 #. module: pb_learn
 #: model:learn.mission.option,label:pb_learn.mission_m2_step_05_opt_approve
@@ -1933,13 +1940,6 @@ msgstr ""
 "Từ đây trở đi mọi thứ diễn ra ngay trong Payobook. Các nhiệm vụ thực hành chạy trên dữ liệu giả lập không có máy chủ phía sau; nhiệm vụ này tạo ra phiếu lương thật trong công ty demo dùng chung, trên bộ phận được gán cho tài khoản của bạn. Đây là kỳ lương thật an toàn nhất bạn từng chạy — nhưng vẫn là một kỳ lương thật."
 
 #. module: pb_learn
-#: model:learn.mission.step,detail:pb_learn.mission_m1_step_07
-msgid ""
-"Everything you just did is reversible until the run reaches done. Do it once here, so that when you need it on a real run you already know it is available and what it costs — the whole batch goes back together, and the reason is recorded."
-msgstr ""
-"Mọi việc bạn vừa làm đều hoàn tác được cho tới khi đợt lương đạt Hoàn tất. Hãy làm một lần ở đây, để khi cần trên một đợt thật bạn đã biết là có cách và biết cái giá của nó — cả lô cùng quay về, và lý do được ghi lại."
-
-#. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l1_quiz_opt_1
 msgid ""
 "Exactly. Drafts exist for this: correct the input, recompute, and every dependent line — gross, thuế TNCN, net — corrects itself, because they were all derived from that input in the first place."
@@ -2410,7 +2410,7 @@ msgstr ""
 "Có bao nhiêu trường ở hệ thống nguồn được nối tới một trường ở đây. Một ánh xạ chưa từng được tạo là một cột âm thầm về rỗng, và dòng phiếu lương ăn theo nó chỉ đơn giản tính trên số không."
 
 #. module: pb_learn
-#: model:learn.column,body:pb_learn.col_dashboard_active_configurations
+#: model:learn.column,body:pb_learn.col_dashboard_active_configs
 msgid ""
 "How many formula configurations are switched on — normally one per division and cycle. A number that has grown without anybody adding a division is worth opening: an old configuration left active can still be selected by a run."
 msgstr ""
@@ -3023,9 +3023,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l2_quiz_opt_2
 msgid ""
-"Let's rethink that. A rejection is testimony about a problem you found — using it as a scheduling tool puts a reason on the record that is not true, and throws away two days of somebody's review."
+"Let's rethink that. A rejection is testimony about a problem you found, and it CANCELS the run — using it as a scheduling tool puts an untrue reason on the record, throws away two days of somebody's review, and leaves the batch needing a {{gmTierName}} reset before anybody can even recompute it."
 msgstr ""
-"Hãy nghĩ lại một chút. Từ chối là lời chứng về một vấn đề bạn phát hiện — dùng nó như công cụ điều phối tiến độ sẽ ghi vào hồ sơ một lý do không đúng sự thật, và vứt bỏ hai ngày soát xét của người khác."
+"Hãy nghĩ lại một chút. Từ chối là lời chứng về một vấn đề bạn phát hiện, và nó HUỶ đợt lương — dùng nó như công cụ điều phối tiến độ sẽ ghi vào hồ sơ một lý do không đúng sự thật, vứt bỏ hai ngày soát xét của người khác, và để lại một lô cần vòng {{gmTierName}} mở lại thì mới có ai tính lại được."
 
 #. module: pb_learn
 #: model:learn.mission.option,recovery:pb_learn.mission_m2_step_05_opt_approve
@@ -3051,9 +3051,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l5_quiz_opt_0
 msgid ""
-"Let's rethink that. Computed is not finished: a rejection at any gate sends the run back to draft, and the recompute that follows would use the configuration as it is then — so July would quietly acquire an allowance that was never approved for it."
+"Let's rethink that. Computed is not finished: a rejection at any gate cancels the run, and once {{gmTierName}} reopens it the recompute would use the configuration as it is THEN — so July would quietly acquire an allowance that was never approved for it."
 msgstr ""
-"Hãy nghĩ lại một chút. Đã tính không có nghĩa là đã xong: bị từ chối ở bất kỳ cổng nào cũng đưa đợt về Nháp, và lần tính lại sau đó sẽ dùng cấu hình tại thời điểm ấy — nên tháng 7 âm thầm có thêm một khoản phụ cấp chưa từng được duyệt cho nó."
+"Hãy nghĩ lại một chút. Đã tính không có nghĩa là đã xong: bị từ chối ở bất kỳ cổng nào cũng huỷ đợt lương, và khi vòng {{gmTierName}} mở lại thì lần tính lại sẽ dùng cấu hình TẠI THỜI ĐIỂM ĐÓ — nên tháng 7 âm thầm có thêm một khoản phụ cấp chưa từng được duyệt cho nó."
 
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l1_quiz_opt_0
@@ -3107,9 +3107,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_la_quiz_opt_2
 msgid ""
-"Let's rethink that. Rejecting sends all 48 payslips back to draft and puts a reason on the permanent record — and \"please check everything\" is not a reason anybody can act on. A rejection is testimony about a problem you found, not a way of asking somebody to go looking for one."
+"Let's rethink that. Rejecting CANCELS all 48 payslips and puts a reason on the permanent record — and \"please check everything\" is not a reason anybody can act on. Worse, the officer cannot simply pick the run back up: reopening it as a draft is a {{gmTierName}} action. A rejection is testimony about a problem you found, not a way of asking somebody to go looking for one."
 msgstr ""
-"Hãy nghĩ lại một chút. Từ chối sẽ đưa cả 48 phiếu về Nháp và ghi một lý do vào hồ sơ vĩnh viễn — mà \"vui lòng kiểm tra lại toàn bộ\" thì không phải lý do ai xử lý được. Từ chối là lời chứng về một vấn đề bạn đã phát hiện, không phải cách nhờ người khác đi tìm xem có vấn đề gì không."
+"Hãy nghĩ lại một chút. Từ chối sẽ HUỶ cả 48 phiếu lương và ghi một lý do vào hồ sơ vĩnh viễn — mà \"vui lòng kiểm tra lại toàn bộ\" thì không phải lý do ai xử lý được. Tệ hơn, chuyên viên không thể tự nhặt đợt lương đó lên làm tiếp: mở lại nó thành bản nháp là thao tác của vòng {{gmTierName}}. Từ chối là lời chứng về một vấn đề bạn đã phát hiện, không phải cách nhờ người khác đi tìm xem có vấn đề gì không."
 
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_lw_quiz_opt_2
@@ -3502,13 +3502,6 @@ msgstr ""
 "Cái nút không hề nói ra điều đó, nên bước này phải nói. Bấm Phê duyệt là đẩy 48 phiếu lương tiến thêm một cổng tới lúc được chi, cùng một lúc — không có cách nào duyệt một phần — và cổng sau bạn kiểm tra các con số tổng chứ không kiểm tra từng dòng. Nếu một dòng sai còn có thể bị bắt, thì đây là một trong những nơi cuối cùng bắt được."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_reject_b030
-msgid ""
-"Nothing is lost and nothing was paid, but a reason like \"wrong\" costs the officer a day of guessing. The written reason is the entire value of a rejection."
-msgstr ""
-"Không mất gì và chưa chi gì, nhưng một lý do kiểu \"sai\" khiến chuyên viên mất cả ngày để đoán. Chính lý do bằng văn bản mới là toàn bộ giá trị của việc từ chối."
-
-#. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_ml1_step_03
 msgid ""
 "Nothing is paid and nobody is notified. Drafts can be deleted and recomputed as often as you want."
@@ -3526,6 +3519,13 @@ msgstr ""
 #: model:learn.step,title:pb_learn.lesson_lw_step_03
 msgid "Nothing on this screen is a second way of doing anything"
 msgstr "Không thứ gì trên màn hình này là một cách làm thứ hai"
+
+#. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_reject_b030
+msgid ""
+"Nothing was paid, but this is blunter than it looks: the batch is cancelled, not handed back, and it takes a second person at the {{gmTierName}} tier before the officer can even start. A reason like \"wrong\" costs all of that and a day of guessing."
+msgstr ""
+"Chưa có gì được chi, nhưng thao tác này thô hơn vẻ ngoài của nó: cả lô bị huỷ chứ không phải được trả lại, và phải có người thứ hai ở vòng {{gmTierName}} thì chuyên viên mới bắt đầu lại được. Một lý do kiểu \"sai\" khiến người ta trả toàn bộ cái giá đó cộng thêm cả ngày đoán mò."
 
 #. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_ml1_check_04
@@ -3548,14 +3548,14 @@ msgstr ""
 "Không cần gì. Đây là màn hình ai cũng mở được, và nó cố ý là nơi ít bị chặn quyền nhất trong sản phẩm."
 
 #. module: pb_learn
+#: model:learn.mission.step,instruction:pb_learn.mission_m1_step_07
+msgid "Now stop it: reject the run you just submitted"
+msgstr "Giờ hãy chặn lại: từ chối đợt lương bạn vừa trình"
+
+#. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m4_step_07
 msgid "Now undo it: archive the August policy"
 msgstr "Giờ hãy hoàn tác: lưu trữ chính sách tháng 8"
-
-#. module: pb_learn
-#: model:learn.mission.step,instruction:pb_learn.mission_m1_step_07
-msgid "Now undo it: send the run back to draft"
-msgstr "Giờ hãy hoàn tác: trả đợt lương về Nháp"
 
 #. module: pb_learn
 #: model:learn.station,outline_what:pb_learn.station_structures
@@ -3621,9 +3621,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.glossary.term,definition:pb_learn.gloss_payrun
 msgid ""
-"One batch of payslips for a division and a period, travelling draft → Payroll Officer → {{hrTierName}} → {{gmTierName}} → done. A rejection returns the whole batch to draft with a written reason."
+"One batch of payslips for a division and a period, travelling draft → Payroll Officer → {{hrTierName}} → {{gmTierName}} → done. A rejection at any gate CANCELS the whole batch, every payslip with it, and records who, when and why in writing."
 msgstr ""
-"Một lô phiếu lương của một bộ phận trong một kỳ, đi qua Nháp → Chuyên viên tính lương → {{hrTierName}} → {{gmTierName}} → Hoàn tất. Từ chối sẽ trả cả lô về Nháp kèm lý do bằng văn bản."
+"Một lô phiếu lương của một bộ phận trong một kỳ, đi qua Nháp → Chuyên viên tính lương → {{hrTierName}} → {{gmTierName}} → Hoàn tất. Bị từ chối ở bất kỳ cổng nào sẽ HUỶ cả lô, kèm toàn bộ phiếu lương trong đó, và ghi lại ai từ chối, lúc nào và vì sao bằng văn bản."
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l5_step_00
@@ -3703,6 +3703,12 @@ msgid ""
 "Only the changed rate has moved — an employer share edited by accident is invisible on every payslip."
 msgstr ""
 "Chỉ tỷ lệ thay đổi mới bị sửa — một phần doanh nghiệp bị sửa nhầm sẽ không hiện ra trên bất kỳ phiếu lương nào."
+
+#. module: pb_learn
+#: model:learn.intent.step,text:pb_learn.intent_reject_b020_s03
+msgid ""
+"Only then does the officer correct the input, recompute and resubmit through the same chain"
+msgstr "Sau đó chuyên viên mới sửa dữ liệu đầu vào, tính lại và trình lại qua đúng chuỗi đó"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_00
@@ -3868,9 +3874,9 @@ msgstr "Thuế TNCN luỹ tiến, và nhẹ ở bậc thấp"
 #. module: pb_learn
 #: model:learn.mission,consequence_reversible:pb_learn.mission_ml1
 msgid ""
-"Partly, and the halves matter. Draft payslips can be deleted and recomputed as often as you like. Submitting is not silently undoable: from there the run moves only by being approved, or by being rejected back to draft with a written reason — the same chain a real payroll travels."
+"Partly, and the halves matter. Draft payslips can be deleted and recomputed as often as you like. Submitting is not silently undoable: from there the run moves only by being approved, or by being rejected — which cancels the batch and needs the {{gmTierName}} tier to reopen it as a draft. The same chain a real payroll travels."
 msgstr ""
-"Một phần, và ranh giới rất quan trọng. Phiếu lương nháp có thể xoá và tính lại bao nhiêu lần tuỳ ý. Trình phê duyệt thì không thể âm thầm hoàn tác: từ đó đợt lương chỉ đi tiếp bằng cách được duyệt, hoặc bị từ chối trả về Nháp kèm lý do bằng văn bản — đúng chuỗi mà một kỳ lương thật đi qua."
+"Một phần, và ranh giới rất quan trọng. Phiếu lương nháp có thể xoá và tính lại bao nhiêu lần tuỳ ý. Trình phê duyệt thì không thể âm thầm hoàn tác: từ đó đợt lương chỉ đi tiếp bằng cách được duyệt, hoặc bị từ chối — mà từ chối là huỷ cả lô và cần vòng {{gmTierName}} mở lại thành bản nháp. Đúng chuỗi mà một kỳ lương thật đi qua."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_lines_payrun
@@ -4497,32 +4503,32 @@ msgid "Reject, with a written reason naming the payslip and what to check"
 msgstr "Từ chối, kèm lý do bằng văn bản nêu rõ phiếu nào và cần kiểm tra gì"
 
 #. module: pb_learn
-#: model:learn.station.mistake,name:pb_learn.station_approvals_mistake_2
-msgid ""
-"Rejecting instead of asking. A rejection returns the whole batch to draft and is recorded with your name on it; a question in the corridor costs nobody two days."
-msgstr ""
-"Từ chối thay vì hỏi. Một lần từ chối trả cả lô về Nháp và được ghi lại kèm tên bạn; một câu hỏi ngoài hành lang thì không làm ai mất hai ngày."
-
-#. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_la_step_05
 msgid ""
-"Rejecting sends the <b>whole run</b> back to draft — all 48 payslips together, never one — and records three things against it: who rejected it, when, and <b>why in writing</b>. The product requires that reason because without it the officer who has to fix the run is guessing at what you saw, and will probably resubmit the same thing."
+"Rejecting <b>cancels the whole run</b> — all 48 payslips together, never one — and records three things against it: who rejected it, when, and <b>why in writing</b>. The product refuses an empty reason, because without it the officer who has to rebuild the run is guessing at what you saw. And rejecting is not the officer's undo: only the {{gmTierName}} tier can reopen a run as a draft."
 msgstr ""
-"Từ chối đưa <b>cả đợt lương</b> về Nháp — toàn bộ 48 phiếu cùng lúc, không bao giờ chỉ một phiếu — và ghi lại ba điều: ai từ chối, vào lúc nào, và <b>vì sao, bằng văn bản</b>. Sản phẩm bắt buộc phải có lý do đó, vì thiếu nó thì chuyên viên phải sửa đợt lương chỉ còn cách đoán xem bạn đã thấy gì, và nhiều khả năng sẽ trình lại đúng thứ cũ."
+"Từ chối sẽ <b>huỷ cả đợt lương</b> — toàn bộ 48 phiếu cùng lúc, không bao giờ chỉ một phiếu — và ghi lại ba điều: ai từ chối, vào lúc nào, và <b>vì sao, bằng văn bản</b>. Sản phẩm không cho để trống lý do, vì thiếu nó thì chuyên viên phải dựng lại đợt lương chỉ còn cách đoán xem bạn đã thấy gì. Và từ chối không phải là nút hoàn tác của chuyên viên: chỉ vòng {{gmTierName}} mới mở lại một đợt thành bản nháp được."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l2_step_04
 msgid ""
-"Rejecting sends the whole run back to <b>draft</b> and records three things against it: who rejected it, when, and <b>why in writing</b>. That written reason is the entire value of the rejection. Without it the officer who has to fix the run is guessing at what you saw, and will probably resubmit the same thing."
+"Rejecting <b>cancels</b> the run. Not \"sends it back\" — the run's own state becomes Rejected and every payslip in it is cancelled with it, together, and three things are recorded: who rejected it, when, and <b>why in writing</b>. That written reason is the entire value of the rejection. Without it the officer who has to rebuild the run is guessing at what you saw."
 msgstr ""
-"Từ chối đưa cả đợt lương về <b>Nháp</b> và ghi lại ba điều: ai từ chối, vào lúc nào, và <b>vì sao, bằng văn bản</b>. Chính lý do bằng văn bản đó mới là giá trị của việc từ chối. Không có nó, chuyên viên phải sửa đợt lương chỉ còn cách đoán xem bạn đã thấy gì, và nhiều khả năng sẽ trình lại đúng thứ cũ."
+"Từ chối là <b>huỷ</b> đợt lương. Không phải \"trả lại\" — trạng thái của chính đợt chuyển thành Đã từ chối và mọi phiếu lương trong đó cùng bị huỷ theo, một lượt, đồng thời ghi lại ba điều: ai từ chối, vào lúc nào, và <b>vì sao, bằng văn bản</b>. Chính lý do bằng văn bản đó mới là giá trị của việc từ chối. Không có nó, chuyên viên phải dựng lại đợt lương chỉ còn cách đoán xem bạn đã thấy gì."
+
+#. module: pb_learn
+#: model:learn.station.mistake,name:pb_learn.station_approvals_mistake_2
+msgid ""
+"Rejecting instead of asking. A rejection CANCELS the whole batch and is recorded with your name on it, and only the {{gmTierName}} tier can reopen it as a draft; a question in the corridor costs nobody two days."
+msgstr ""
+"Từ chối thay vì hỏi. Một lần từ chối HUỶ cả lô và được ghi lại kèm tên bạn, và chỉ vòng {{gmTierName}} mới mở lại nó thành bản nháp được; một câu hỏi ngoài hành lang thì không làm ai mất hai ngày."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_payruns_mistake_1
 msgid ""
-"Rejecting without a written reason. The run goes back to draft either way, but the person who has to fix it is then guessing at what you saw."
+"Rejecting without a written reason. The product refuses an empty one, and a thin one is worse than none: the run is cancelled either way, and the person who has to rebuild it is guessing at what you saw."
 msgstr ""
-"Từ chối mà không ghi lý do. Đợt lương vẫn quay về Nháp, nhưng người phải sửa nó lại phải đoán xem bạn đã thấy điều gì."
+"Từ chối mà không ghi lý do. Sản phẩm không cho để trống, và một lý do hời hợt còn tệ hơn không có: đằng nào đợt lương cũng bị huỷ, còn người phải dựng lại nó thì phải đoán xem bạn đã thấy điều gì."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_formula_mistake_1
@@ -4700,9 +4706,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_affectrun_b020
 msgid ""
-"Safe: recomputing a draft, deleting a draft, importing again into an open period. Gated: everything after submission, which moves only through the approval chain or a rejection back to draft."
+"Safe: recomputing a draft, deleting a draft, importing again into an open period. Gated: everything after submission, which moves only through the approval chain — or a rejection, which cancels the run outright."
 msgstr ""
-"An toàn: tính lại bản nháp, xoá bản nháp, nhập lại vào một kỳ còn mở. Có cổng chặn: mọi thứ sau khi đã trình, chỉ đi được qua chuỗi phê duyệt hoặc bị từ chối để quay về Nháp."
+"An toàn: tính lại bản nháp, xoá bản nháp, nhập lại vào một kỳ còn mở. Có cổng chặn: mọi thứ sau khi đã trình, chỉ đi được qua chuỗi phê duyệt — hoặc bị từ chối, mà từ chối là huỷ thẳng đợt lương."
 
 #. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_structures
@@ -4773,6 +4779,11 @@ msgstr "Phạm vi"
 #: model:learn.string,value:pb_learn.str_search
 msgid "Search the journey"
 msgstr "Tìm trong hành trình"
+
+#. module: pb_learn
+#: model:learn.step,title:pb_learn.lesson_lw_step_05
+msgid "Sections, and you only work in two of them"
+msgstr "Các nhóm mục, và bạn chỉ thật sự làm việc trong hai"
 
 #. module: pb_learn
 #: model:learn.station,summary:pb_learn.station_proration
@@ -4851,11 +4862,6 @@ msgid "Simulate before you activate"
 msgstr "Mô phỏng trước khi kích hoạt"
 
 #. module: pb_learn
-#: model:learn.step,title:pb_learn.lesson_lw_step_05
-msgid "Six sections, and you only work in two of them"
-msgstr "Sáu nhóm mục, và bạn chỉ thật sự làm việc trong hai"
-
-#. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_wherelives_b010
 msgid ""
 "Six sections, and you work in two of them most days. <b>Overview</b> is where you land and where approvals queue. <b>Pay Run</b> is the month's work end to end. <b>People</b> holds who can be paid, <b>Insights</b> answers questions about what was paid, <b>Compliance</b> is the filings, and <b>Setup</b> is read often and changed rarely."
@@ -4885,6 +4891,13 @@ msgid ""
 "Social insurance. The employee pays 8% of the registered insurance base and the employer pays 17.5% on top of it. Charged on the REGISTERED base, which is why overtime does not move it."
 msgstr ""
 "Bảo hiểm xã hội. Người lao động đóng 8% trên mức lương đóng BH đã đăng ký, doanh nghiệp đóng thêm 17,5%. Tính trên mức ĐÃ ĐĂNG KÝ, nên tăng ca không làm nó thay đổi."
+
+#. module: pb_learn
+#: model:learn.intent.step,text:pb_learn.intent_reject_b020_s02
+msgid ""
+"Somebody at the {{gmTierName}} tier reopens the cancelled run as a draft — this is the part people expect to be automatic and is not"
+msgstr ""
+"Một người ở vòng {{gmTierName}} mở lại đợt đã huỷ thành bản nháp — đây là khâu người ta hay tưởng là tự động, nhưng không phải"
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_integrations_staged_records
@@ -4968,6 +4981,13 @@ msgstr "Bước 2"
 #: model:learn.string,value:pb_learn.str_live_stilldraft
 msgid "Still in draft. Submit the run for approval from the Pay Runs board."
 msgstr "Vẫn ở trạng thái Nháp. Hãy trình đợt lương lên phê duyệt từ bảng Đợt tính lương."
+
+#. module: pb_learn
+#: model:learn.mission,consequence_reversible:pb_learn.mission_m2
+msgid ""
+"Stoppable at this gate rather than undoable: the next reviewer can still reject it, which cancels the whole batch — and reopening a cancelled run as a draft is a {{gmTierName}} action. At done even that is gone, and a correction becomes a retro line."
+msgstr ""
+"Ở cổng này thì chặn được chứ không lùi lại được: người soát xét kế tiếp vẫn có thể từ chối, và điều đó huỷ cả lô — còn mở lại một đợt đã bị từ chối thành bản nháp là thao tác của vòng {{gmTierName}}. Khi đã Hoàn tất thì đến cách đó cũng không còn, và mọi hiệu chỉnh trở thành một dòng hồi tố."
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_structures_structures
@@ -5163,13 +5183,6 @@ msgstr ""
 "Con số <b>1,5%</b> ở dòng BHYT là mức doanh nghiệp <b>khai báo</b>. Khoản <b>−180.000 ₫</b> trên phiếu tháng 7 của Mai là mức mà cấu hình của bộ phận cô ấy <b>đã tính</b> — 1,5% trên mức đóng đã đăng ký 12.000.000 ₫. Hôm nay hai bên khớp nhau, và đường nối này chính là cách bạn kiểm tra điều đó. Nhưng đây là hai bản ghi khác nhau: chỉ sửa tỷ lệ ở đây thì đồng bạc kia không nhúc nhích."
 
 #. module: pb_learn
-#: model:learn.step,tip:pb_learn.lesson_lw_step_05
-msgid ""
-"The <b>Learning</b> section is this one. Everything you are reading now lives there, and it stays there while you work."
-msgstr ""
-"Nhóm mục <b>Học tập</b> chính là chỗ này. Mọi thứ bạn đang đọc đều nằm ở đó, và nó vẫn ở đó trong lúc bạn làm việc."
-
-#. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m4_step_06
 msgid ""
 "The August record is now the one the rates table shows, because it has the latest effective date among the active policies — the table does not compare that date to today. The 2026 record stays on the list as the evidence of what was declared before it."
@@ -5353,9 +5366,9 @@ msgstr "Thẻ đợt lương"
 #. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_m1_step_07
 msgid ""
-"The card's action footer offers Reject while the run is in the chain. That is the same control a reviewer uses."
+"The card's action footer offers Reject while the run is in the chain. That is the same control a reviewer uses — which is why it is worth feeling how blunt it is before somebody else uses it on your run."
 msgstr ""
-"Phần chân thẻ hiện nút Từ chối khi đợt lương còn trong chuỗi. Đó chính là nút mà người soát xét dùng."
+"Phần chân thẻ hiện nút Từ chối khi đợt lương còn trong chuỗi. Đó chính là nút mà người soát xét dùng — nên rất đáng cảm nhận xem nó thô đến mức nào, trước khi có người dùng nó lên đợt lương của bạn."
 
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_l2_step_02
@@ -5749,6 +5762,13 @@ msgid "The mechanics"
 msgstr "Cơ chế thật"
 
 #. module: pb_learn
+#: model:learn.step,tip:pb_learn.lesson_lw_step_05
+msgid ""
+"The menu on the left of this practice screen is the shape of the real one, not a copy of it — your own sidebar also carries a <b>Learning</b> section, which is where the Journey you are reading this in lives."
+msgstr ""
+"Menu bên trái màn hình thực hành này mô phỏng hình dạng của menu thật, không phải bản sao của nó — thanh bên của chính bạn còn có nhóm mục <b>Học tập</b>, và đó là nơi chứa Hành trình học mà bạn đang đọc bài này trong đó."
+
+#. module: pb_learn
 #: model:learn.column,body:pb_learn.col_govreports_period
 msgid ""
 "The month being filed for. It is a month rather than a date range because the authorities ask for months, and a filing generated before every run in that month is done is short by however many payslips are still in the pipeline."
@@ -5780,11 +5800,6 @@ msgid ""
 "The number that priced that line is a parameter on Retail's configuration — <b>EEHI</b>, at the bottom of the component list in Formula Engine. That is where a rate actually moves a payslip."
 msgstr ""
 "Con số đã tính ra dòng đó là một tham số trong cấu hình của Bán lẻ — <b>EEHI</b>, nằm cuối danh sách thành phần trong Công thức lương. Đó mới là nơi một tỷ lệ thật sự làm thay đổi phiếu lương."
-
-#. module: pb_learn
-#: model:learn.intent.step,text:pb_learn.intent_reject_b020_s02
-msgid "The officer corrects the input, recomputes and resubmits through the same chain"
-msgstr "Chuyên viên sửa dữ liệu đầu vào, tính lại và trình lại qua đúng chuỗi đó"
 
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_l3_step_04
@@ -5953,13 +5968,6 @@ msgstr ""
 "Tổng các mức lương cơ bản đã đăng ký theo hợp đồng — mức công ty đã cam kết trả, chưa tính tăng ca, phụ cấp hay khấu trừ. Đây cũng là mức dùng để tính bảo hiểm, nên nó thay đổi khi có hợp đồng được gia hạn chứ không phải khi tháng đó bận rộn."
 
 #. module: pb_learn
-#: model:learn.mission.step,detail:pb_learn.mission_m2_step_07
-msgid ""
-"The rejected run is in draft with your reason on it. The officer corrects the input, recomputes, and resubmits through the same chain — nothing was lost and nothing was paid. Do the round trip once here, because at done this stops being true."
-msgstr ""
-"Đợt bị từ chối nằm ở Nháp cùng lý do của bạn. Chuyên viên sửa dữ liệu đầu vào, tính lại, và trình lại qua đúng chuỗi đó — không mất gì và chưa chi gì. Hãy đi trọn vòng một lần ở đây, vì tới trạng thái Hoàn tất thì điều này không còn đúng nữa."
-
-#. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_reject_b040
 msgid "The rejection fields on the pay run record: reason, who and when."
 msgstr "Các trường từ chối trên bản ghi đợt lương: lý do, người từ chối và thời điểm."
@@ -5999,9 +6007,16 @@ msgstr "Đợt lương đã có nhưng chưa có phiếu nào. Hãy bấm Tính 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l1_step_07
 msgid ""
-"The run is now in <b>draft</b> on the Pay Runs board. From here it travels through the Payroll Officer tier, {{hrTierName}}, {{gmTierName}} and then done. Each gate belongs to one group; nobody can skip one, and a rejection at any of them returns the run to draft with a written reason."
+"The run is now in <b>draft</b> on the Pay Runs board. From here it travels through the Payroll Officer tier, {{hrTierName}}, {{gmTierName}} and then done. Each gate belongs to one group; nobody can skip one, and a rejection at any of them <b>cancels</b> the run — every payslip in it with it — with a written reason on the record."
 msgstr ""
-"Đợt lương giờ ở trạng thái <b>Nháp</b> trên bảng Đợt tính lương. Từ đây nó đi qua vòng Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}} rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền; không ai bỏ qua được cổng nào, và bị từ chối ở bất kỳ cổng nào cũng đưa đợt về Nháp kèm lý do bằng văn bản."
+"Đợt lương giờ ở trạng thái <b>Nháp</b> trên bảng Đợt tính lương. Từ đây nó đi qua vòng Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}} rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền; không ai bỏ qua được cổng nào, và bị từ chối ở bất kỳ cổng nào cũng <b>huỷ</b> đợt lương — kèm theo toàn bộ phiếu lương trong đó — và ghi lý do bằng văn bản vào hồ sơ."
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_m2_step_07
+msgid ""
+"The run now reads <b>Rejected</b> and all 48 payslips are cancelled with it, your reason on the record. It does NOT come back by itself: reopening it as a draft is a {{gmTierName}} action, and only then can the officer correct the input, recompute and resubmit through the same chain. Nothing was paid — but a rejection costs a second person's time as well as the officer's, which is exactly why the reason has to be worth acting on."
+msgstr ""
+"Đợt lương giờ ở trạng thái <b>Đã từ chối</b> và cả 48 phiếu lương bị huỷ theo, kèm lý do của bạn trong hồ sơ. Nó KHÔNG tự quay lại: mở lại thành bản nháp là thao tác của vòng {{gmTierName}}, và chỉ sau đó chuyên viên mới sửa được dữ liệu đầu vào, tính lại và trình lại qua đúng chuỗi đó. Chưa có gì được chi — nhưng một lần từ chối tốn thời gian của cả người thứ hai chứ không chỉ của chuyên viên, và đó chính là lý do lý do phải đáng để người ta hành động."
 
 #. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_ml1_step_00
@@ -6290,9 +6305,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_reject_b010
 msgid ""
-"The whole run returns to draft — all 48 payslips together, never one — and three things are recorded against it: who rejected it, when, and why in writing."
+"The whole run is <b>cancelled</b> — all 48 payslips together, never one — its state becomes Rejected, and three things are recorded against it: who rejected it, when, and why in writing."
 msgstr ""
-"Cả đợt lương quay về trạng thái Nháp — toàn bộ 48 phiếu cùng lúc, không bao giờ chỉ một phiếu — và ba điều được ghi lại: ai từ chối, vào lúc nào, và vì sao, bằng văn bản."
+"Cả đợt lương bị <b>huỷ</b> — toàn bộ 48 phiếu cùng lúc, không bao giờ chỉ một phiếu — trạng thái chuyển thành Đã từ chối, và ba điều được ghi lại: ai từ chối, vào lúc nào, và vì sao, bằng văn bản."
 
 #. module: pb_learn
 #: model:learn.mission,consequence_scope:pb_learn.mission_m2
@@ -6408,9 +6423,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_ml1_step_05
 msgid ""
-"This is the step that stops being reversible in the easy way. After it, the run moves only by being approved at each gate, or by being rejected back to draft with a written reason."
+"This is the step that stops being reversible in the easy way. After it, the run moves only by being approved at each gate, or by being rejected — and a rejection cancels the batch rather than handing it back to you."
 msgstr ""
-"Đây là bước mà việc hoàn tác không còn dễ dàng nữa. Sau bước này, đợt lương chỉ đi tiếp bằng cách được duyệt ở từng cổng, hoặc bị từ chối trả về Nháp kèm lý do bằng văn bản."
+"Đây là bước mà việc hoàn tác không còn dễ dàng nữa. Sau bước này, đợt lương chỉ đi tiếp bằng cách được duyệt ở từng cổng, hoặc bị từ chối — và từ chối là huỷ cả lô chứ không phải trả nó lại cho bạn."
 
 #. module: pb_learn
 #: model:learn.station,outline_why:pb_learn.station_statutory
@@ -6660,15 +6675,15 @@ msgstr "Đang chờ bạn thao tác trong Payobook"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m2_step_07
-msgid "Watch it come back, and send it forward again"
-msgstr "Xem nó quay lại, rồi đưa nó đi tiếp lần nữa"
+msgid "Watch what a rejection actually costs"
+msgstr "Xem một lần từ chối thực sự tốn những gì"
 
 #. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m2_did_04
 msgid ""
-"Watched a rejection go back to draft and forward again, so reversibility is something you have done rather than been told."
+"Watched a rejection cancel the batch, and found out who has to reopen it — so the cost of that decision is something you have seen rather than been told."
 msgstr ""
-"Xem một lần từ chối đưa đợt về Nháp rồi đi tiếp, để khả năng hoàn tác là điều bạn đã tự làm chứ không phải chỉ nghe kể."
+"Xem một lần từ chối huỷ cả lô, và biết được ai mới là người mở lại nó — để cái giá của quyết định ấy là điều bạn đã tận mắt thấy chứ không phải chỉ nghe kể."
 
 #. module: pb_learn
 #: model:learn.lesson,name:pb_learn.lesson_lw
@@ -7042,13 +7057,6 @@ msgid ""
 "Yes — you hold every gate. That is worth using carefully rather than often: a chain where one person can sign every tier records one opinion four times, and the point of the tiers is that they are four different reads."
 msgstr ""
 "Có — bạn giữ mọi cổng. Điều đó nên được dùng một cách thận trọng chứ không nên dùng thường xuyên: một chuỗi mà một người ký được mọi vòng chỉ ghi lại một ý kiến bốn lần, trong khi ý nghĩa của các vòng là bốn lần soát khác nhau."
-
-#. module: pb_learn
-#: model:learn.mission,consequence_reversible:pb_learn.mission_m2
-msgid ""
-"Yes, at this gate: the next reviewer can still reject it back to draft. That stops being true at done, after which a correction is a retro line and never an edit."
-msgstr ""
-"Ở cổng này thì được: người soát xét kế tiếp vẫn có thể từ chối và trả về Nháp. Điều đó không còn đúng khi đã Hoàn tất, sau đó mọi hiệu chỉnh là một dòng hồi tố chứ không bao giờ là sửa trực tiếp."
 
 #. module: pb_learn
 #: model:learn.mission,consequence_reversible:pb_learn.mission_m4
