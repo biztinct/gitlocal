@@ -28,6 +28,27 @@ const MISSION_HOME = {
     payrun: "runpayroll",
     setup: "statutory",
 };
+
+/* The READING order of the lines on the map, and the icon each heading gets.
+ *
+ * Not the model's selection order and not the station sequence: the generator
+ * numbers stations with one counter across every line in declaration order, so
+ * a new section is APPENDED there to avoid renumbering the ones before it —
+ * which is right for storage and wrong for a page. A learner meets Overview
+ * first and Setup last, whatever order the content happened to be written in.
+ *
+ * A line missing from this list is still drawn, after the ones that are here.
+ * That is deliberate: a new section must never be able to disappear from the
+ * map because somebody forgot a second file. */
+const LINE_ORDER = ["overview", "payrun", "people", "insights", "compliance", "setup"];
+const LINE_ICON = {
+    overview: "grid",
+    payrun: "zap",
+    people: "users",
+    insights: "trending-up",
+    compliance: "shield-check",
+    setup: "plug",
+};
 import { shellHTML } from "../engine/screens";
 import { LiveState } from "../live/live_state";
 import { morphHTML, calcHTML, pipeHTML, runPipeline } from "../engine/visuals";
@@ -248,13 +269,15 @@ export class LearnJourney extends Component {
         const match = (s) =>
             !q || tx(s.name).toLowerCase().includes(q) || tx(s.summary).toLowerCase().includes(q);
 
-        const lineHTML = Object.keys(lines).map((lineKey) => {
+        const ordered = LINE_ORDER.filter((k) => lines[k])
+            .concat(Object.keys(lines).filter((k) => !LINE_ORDER.includes(k)));
+        const lineHTML = ordered.map((lineKey) => {
             const items = lines[lineKey].filter(match);
             if (!items.length) {
                 return "";
             }
             return `<section class="lrn-line">
-                <h3 class="lrn-linehead">${ic(lineKey === "daily" ? "zap" : "plug")}
+                <h3 class="lrn-linehead">${ic(LINE_ICON[lineKey] || "map-pin")}
                     ${esc(T("lines." + lineKey))}</h3>
                 <div class="lrn-cards">${items.map((s) => this._cardHTML(s)).join("")}</div>
             </section>`;

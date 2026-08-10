@@ -388,4 +388,280 @@
         <field name="name">Assuming a connector that is "connected" is also up to date. Connected describes the credentials; the last-sync time describes the data.</field>
     </record>
 
+    <record id="station_dashboard" model="learn.station">
+        <field name="key">dashboard</field>
+        <field name="name">Dashboard</field>
+        <field name="line">overview</field>
+        <field name="section">payroll</field>
+        <field name="sequence">120</field>
+        <field name="summary">Where you land, what the month looks like, and where everything else lives.</field>
+        <field name="icon">grid</field>
+        <field name="kind">lesson</field>
+        <field name="sidebar_key">pb_sidebar.item_dashboard</field>
+        <field name="duration_min">8</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="True"/>
+        <field name="outline_what">The command centre: who you are, which run is live, four numbers that describe the company, and a card for each part of the product worth opening today.</field>
+        <field name="outline_why">It is the only screen that answers "what is the state of payroll right now" without you choosing a filter first. Everything on it is a door — a figure you can open rather than a figure you have to write down.</field>
+        <field name="outline_when">First thing, every day of payroll week, and any time you have been away long enough to have lost the thread.</field>
+        <field name="outline_prereq">Nothing. This is the one screen everybody can open, and it is deliberately the least gated in the product.</field>
+    </record>
+
+    <record id="station_dashboard_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_dashboard"/>
+        <field name="sequence">10</field>
+        <field name="name">Reading a dashboard figure as today's work. Headcount and monthly payroll describe the company; only "pending approval" is a queue, and only one of those is yours.</field>
+    </record>
+
+    <record id="station_dashboard_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_dashboard"/>
+        <field name="sequence">20</field>
+        <field name="name">Treating it as a report and exporting the numbers. Every tile is a link into the screen that produced it — copying the figure loses the working behind it, which is the part somebody will ask about.</field>
+    </record>
+
+    <record id="station_dashboard_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_dashboard"/>
+        <field name="sequence">30</field>
+        <field name="name">Waiting for the dashboard to tell you something is wrong. It shows what is happening, not what has been checked — a flagged payslip is a number here and a question on the Payslips screen.</field>
+    </record>
+
+    <record id="station_approvals" model="learn.station">
+        <field name="key">approvals</field>
+        <field name="name">Approvals</field>
+        <field name="line">overview</field>
+        <field name="section">payroll</field>
+        <field name="sequence">130</field>
+        <field name="summary">Every run waiting for a signature, in the lane of the gate it is waiting at — including yours.</field>
+        <field name="icon">clipboard-check</field>
+        <field name="kind">lesson</field>
+        <field name="sidebar_key">pb_sidebar.item_approvals</field>
+        <field name="duration_min">7</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="True"/>
+        <field name="after_key">dashboard</field>
+        <field name="outline_what">Three lanes — Officer review, {{hrTierName}}, {{gmTierName}} — with a card per submitted run, the net at stake across all of them, and a list of what has already been decided.</field>
+        <field name="outline_why">The Pay Runs board shows every run there is; this screen shows only the ones a human still has to answer for. It is the queue, and the number in its header is the part of that queue that will not move until you move it.</field>
+        <field name="outline_when">Every morning of payroll week, and before you tell anybody a run is stuck — the lane it is in names who is holding it.</field>
+        <field name="outline_prereq">One of the payroll approval groups. Without one the leaf is not in your sidebar at all, which is the honest form of "you cannot approve".</field>
+    </record>
+
+    <record id="station_approvals_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_approvals"/>
+        <field name="sequence">10</field>
+        <field name="name">Approving from the lane without opening the run. The card shows a total and a payslip count; the flags are on the payslips, and the total is what a wrong payslip hides inside.</field>
+    </record>
+
+    <record id="station_approvals_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_approvals"/>
+        <field name="sequence">20</field>
+        <field name="name">Reading an empty lane as a broken screen. Two of the three lanes are empty on most days — that is what a month looks like when nothing is stuck.</field>
+    </record>
+
+    <record id="station_approvals_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_approvals"/>
+        <field name="sequence">30</field>
+        <field name="name">Rejecting instead of asking. A rejection returns the whole batch to draft and is recorded with your name on it; a question in the corridor costs nobody two days.</field>
+    </record>
+
+    <record id="station_employees" model="learn.station">
+        <field name="key">employees</field>
+        <field name="name">Employees</field>
+        <field name="line">people</field>
+        <field name="section">payroll</field>
+        <field name="sequence">140</field>
+        <field name="summary">Everyone payroll can pay — with the two facts that decide whether they will actually be paid.</field>
+        <field name="icon">users</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_employees</field>
+        <field name="duration_min">5</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">The people roster: headcount, running contracts, contracts expiring within thirty days, new hires, the monthly wage bill, and a payroll-ready mark on each person.</field>
+        <field name="outline_why">Payroll-ready is the whole point of this screen. Somebody with no bank account computes perfectly and is not paid, and you find that out either here, in a minute, or on {{payDay}}, from them.</field>
+        <field name="outline_when">Before a run rather than after it, and whenever somebody joins, leaves or changes department.</field>
+        <field name="outline_prereq">The Payroll Officer group or above — the leaf is gated, because a wage list is not something everybody in a company should be able to read.</field>
+    </record>
+
+    <record id="station_employees_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_employees"/>
+        <field name="sequence">10</field>
+        <field name="name">Reading the wage column as take-home pay. It is the registered contract base — the figure insurance is charged on — and nobody is paid exactly that in any month with overtime in it.</field>
+    </record>
+
+    <record id="station_employees_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_employees"/>
+        <field name="sequence">20</field>
+        <field name="name">Fixing a person's pay here. This screen holds who they are and what they were hired on; what they were paid last month is a payslip, and the two are corrected in different places.</field>
+    </record>
+
+    <record id="station_employees_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_employees"/>
+        <field name="sequence">30</field>
+        <field name="name">Using bulk mode without reading the count. It is the one control here that changes many records at once, and "12 selected" is the only thing standing between a helpful edit and twelve wrong ones.</field>
+    </record>
+
+    <record id="station_contracts" model="learn.station">
+        <field name="key">contracts</field>
+        <field name="name">Contracts</field>
+        <field name="line">people</field>
+        <field name="section">payroll</field>
+        <field name="sequence">150</field>
+        <field name="summary">The agreements payroll is actually paid from — and the expiry dates that quietly end them.</field>
+        <field name="icon">file-text</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_contracts</field>
+        <field name="duration_min">5</field>
+        <field name="required" eval="False"/>
+        <field name="star" eval="False"/>
+        <field name="after_key">employees</field>
+        <field name="outline_what">Every contract with its type, its period and its wage: running, expiring within thirty days, draft and expired, plus the wage bill and the average wage across them.</field>
+        <field name="outline_why">A person is not a contract. Payroll computes from the contract, so a contract still in draft pays nothing however complete the employee record is — and a contract that expired mid-month is a proration nobody asked for.</field>
+        <field name="outline_when">In the week before a run, on the expiring filter, and whenever somebody is promoted, transferred or renewed.</field>
+        <field name="outline_prereq">The Payroll Officer group or above, and the signed paperwork — this screen records an agreement that was made somewhere else.</field>
+    </record>
+
+    <record id="station_contracts_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_contracts"/>
+        <field name="sequence">10</field>
+        <field name="name">Leaving a renewal in draft over the run date. The employee is on the roster, their contract is not running, and the run simply computes without them.</field>
+    </record>
+
+    <record id="station_contracts_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_contracts"/>
+        <field name="sequence">20</field>
+        <field name="name">Editing a running contract's wage to correct one month. That changes the insurance base going forward and corrects nothing that has already been paid — the past is a retro line.</field>
+    </record>
+
+    <record id="station_insights" model="learn.station">
+        <field name="key">insights</field>
+        <field name="name">Insights</field>
+        <field name="line">insights</field>
+        <field name="section">payroll</field>
+        <field name="sequence">160</field>
+        <field name="summary">The board that answers the questions a payroll month asks every time.</field>
+        <field name="icon">trending-up</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_analytics</field>
+        <field name="duration_min">5</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">Executive analytics over the runs that have been computed: the headline net, the cost story over three, six or twelve months, the department leaderboard, the statutory split and a workforce pulse.</field>
+        <field name="outline_why">It is built from the payslips themselves rather than from a separate reporting copy, so a figure here and a figure on a payslip cannot disagree. Every number is a door back into the screen that produced it.</field>
+        <field name="outline_when">After a run reaches done, at month end, and any time somebody senior asks a question that starts with "why is payroll".</field>
+        <field name="outline_prereq">An analytics group, and at least two completed runs — a trend needs a second point before it is a trend.</field>
+    </record>
+
+    <record id="station_insights_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_insights"/>
+        <field name="sequence">10</field>
+        <field name="name">Comparing a total against a total. Headcount moves between months, so the honest comparison is cost per head — two extra people explain most of what looks like a rise.</field>
+    </record>
+
+    <record id="station_insights_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_insights"/>
+        <field name="sequence">20</field>
+        <field name="name">Reading a board figure without its window. Three months and twelve months tell different stories about the same company, and the chip that decides which is easy to leave where somebody else left it.</field>
+    </record>
+
+    <record id="station_insights_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_insights"/>
+        <field name="sequence">30</field>
+        <field name="name">Using it to check a run before approving. This board reads runs that are done; the questions before approval are on the run itself.</field>
+    </record>
+
+    <record id="station_explorer" model="learn.station">
+        <field name="key">explorer</field>
+        <field name="name">Explorer</field>
+        <field name="line">insights</field>
+        <field name="section">payroll</field>
+        <field name="sequence">170</field>
+        <field name="summary">For the question the board did not anticipate: pick a measure, break it down, filter it.</field>
+        <field name="icon">compass</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_explorer</field>
+        <field name="duration_min">5</field>
+        <field name="required" eval="False"/>
+        <field name="star" eval="False"/>
+        <field name="after_key">insights</field>
+        <field name="outline_what">A question builder over the same payroll facts: one measure, one breakdown, one comparison, and any number of filters shown as removable tags above the result.</field>
+        <field name="outline_why">Boards answer anticipated questions and real ones are rarely anticipated. This is where "net pay by division for the divisions that ran mid-cycle" gets answered without anybody exporting a spreadsheet — and it reconciles with the payslips, which a spreadsheet stops doing the moment it is saved.</field>
+        <field name="outline_when">When the board has answered everything it can and the question is still open, and when somebody needs a figure broken down a way nobody built a screen for.</field>
+        <field name="outline_prereq">An analytics group and a computed run. Knowing which measure you actually want helps more than any filter.</field>
+    </record>
+
+    <record id="station_explorer_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_explorer"/>
+        <field name="sequence">10</field>
+        <field name="name">Quoting a figure without its filters. The tags above the result are part of the answer — the same measure with one tag removed is a different number and looks identical when it is pasted into an email.</field>
+    </record>
+
+    <record id="station_explorer_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_explorer"/>
+        <field name="sequence">20</field>
+        <field name="name">Expecting it to explain WHY. It tells you a division is 12% above the rest; the reason is in that division's configuration and its payslips, and the Explorer will not pretend otherwise.</field>
+    </record>
+
+    <record id="station_workforcean" model="learn.station">
+        <field name="key">workforcean</field>
+        <field name="name">Workforce Analytics</field>
+        <field name="line">insights</field>
+        <field name="section">payroll</field>
+        <field name="sequence">180</field>
+        <field name="summary">The same months read as people rather than as money: who was paid, who joined, who left.</field>
+        <field name="icon">bar-chart</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_workforce_insights</field>
+        <field name="duration_min">4</field>
+        <field name="required" eval="False"/>
+        <field name="star" eval="False"/>
+        <field name="after_key">insights</field>
+        <field name="outline_what">Headcount paid month by month, joiners and leavers, cost per head, attendance exceptions and overtime — all read off the payroll that was actually run.</field>
+        <field name="outline_why">"Employees paid" is not "employees employed", and the gap between them is where a missing payslip lives. A month where headcount is flat and cost per head jumps is a different problem from one where both move.</field>
+        <field name="outline_when">At month end beside Insights, and whenever a run's headcount does not match what you expected.</field>
+        <field name="outline_prereq">An analytics group, and at least two runs to compare.</field>
+    </record>
+
+    <record id="station_workforcean_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_workforcean"/>
+        <field name="sequence">10</field>
+        <field name="name">Reading the headcount line as a hiring chart. It counts people who were PAID, so a step in it can equally be a run that left somebody out.</field>
+    </record>
+
+    <record id="station_workforcean_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_workforcean"/>
+        <field name="sequence">20</field>
+        <field name="name">Taking attendance exceptions as somebody else's problem. Each one becomes an input, and the ones nobody resolved are the flags on next month's payslips.</field>
+    </record>
+
+    <record id="station_govreports" model="learn.station">
+        <field name="key">govreports</field>
+        <field name="name">Government Reports</field>
+        <field name="line">compliance</field>
+        <field name="section">payroll</field>
+        <field name="sequence">190</field>
+        <field name="summary">The statutory filings for this company's country, one month at a time.</field>
+        <field name="icon">file-text</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_govt_reports</field>
+        <field name="duration_min">4</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">A front door over the filing wizards: the report tiles this company's country has, grouped by the authority that asks for them, prefilled with the company and the month you chose.</field>
+        <field name="outline_why">Filings have deadlines set by law rather than by the company, and they are read by somebody outside it. This screen is where you find out which ones apply to you without asking who knows.</field>
+        <field name="outline_when">After the month's runs are done and before the authority's deadline — a filing built on an unfinished month is a filing that will have to be corrected.</field>
+        <field name="outline_prereq">Completed runs for the month, and the country's own paperwork rules — Payobook prepares the file, it does not submit it for you.</field>
+    </record>
+
+    <record id="station_govreports_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_govreports"/>
+        <field name="sequence">10</field>
+        <field name="name">Generating from a month whose runs are not all done. The tiles read what has been computed, so an unfinished run is a filing that is short by however many payslips are still in the pipeline.</field>
+    </record>
+
+    <record id="station_govreports_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_govreports"/>
+        <field name="sequence">20</field>
+        <field name="name">Reading "coming soon" as a fault. The tiles are per country, and a country with none simply has no filings built yet — which is better said than faked with a form nobody can submit.</field>
+    </record>
+
 </odoo>

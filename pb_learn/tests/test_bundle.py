@@ -12,6 +12,11 @@ TOKEN_RE = re.compile(r"\{\{([a-zA-Z][a-zA-Z0-9_]*)\}\}")
 SAME_IN_BOTH = {
     "Payobook", "BHXH", "BHYT", "BHTN", "Hoa Sen Retail Co.", "Hà Nội",
     "TPHCM", "F&B", "HOASEN_RETAIL_END", "Excel", "SFTP", "Zoho People",
+    # The Explorer's own name. pb_sidebar ships it untranslated and the cockpit
+    # prints it untranslated, so translating it in the Journey would send a
+    # learner looking for a leaf that says something else. A product name, not
+    # a sentence — which is the only thing this set is for.
+    "Explorer",
 }
 
 # Subtrees that are FACTS rather than prose, so "same in both languages" is the

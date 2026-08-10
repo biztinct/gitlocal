@@ -83,6 +83,19 @@ SIDEBAR_KEYS = {
     'structures':   'pb_sidebar.item_structures',
     'statutory':    'pb_sidebar.item_statutory',
     'integrations': 'pb_sidebar.item_integrations',
+    # Overview / People / Insights / Compliance (Phase C1). All eight are OWL
+    # client actions; only Dashboard and Government Reports also carry an
+    # action_xmlid, so for the other six the TAG is what identifies the screen.
+    # contract.json::c1-sidebar-leaves pins the ids and ::c1-client-action-tags
+    # pins the tags.
+    'dashboard':    'pb_sidebar.item_dashboard',
+    'approvals':    'pb_sidebar.item_approvals',
+    'employees':    'pb_sidebar.item_employees',
+    'contracts':    'pb_sidebar.item_contracts',
+    'insights':     'pb_sidebar.item_analytics',
+    'explorer':     'pb_sidebar.item_explorer',
+    'workforcean':  'pb_sidebar.item_workforce_insights',
+    'govreports':   'pb_sidebar.item_govt_reports',
 }
 
 # The ONE screen with no leaf. The import wizard is a flow, not a destination:
@@ -756,23 +769,40 @@ def gen_columns(data, tr):
 
 
 def gen_sidebar_item(data, tr):
-    """The Journey's front door.
+    """The Journey's front door: its own SECTION, and the leaf inside it.
 
-    Generated, not hand-written, because the leaf's NAME is content and content
-    ships in both languages. Everything else on the record is wiring, and the
-    wiring is declared beside the name so the two cannot drift apart.
+    Generated, not hand-written, because both NAMES are content and content
+    ships in both languages. Everything else on the two records is wiring, and
+    the wiring is declared beside the names so the two cannot drift apart.
+
+    The section is emitted FIRST because the leaf refs it. Phase C1 moved the
+    leaf out of `pb_sidebar.sec_payrun`: the map now teaches Overview, People,
+    Insights and Compliance as well, and a learner looking for the People
+    lessons would have gone hunting inside Pay Run.
     """
-    leaf = data['sidebarLeaf']
-    doc = Xml("The Journey's front door: the pb.sidebar.item that opens it.",
-              "groups_id is deliberately EMPTY. A gated leaf hides itself from "
-              "users who cannot use it, which is right for a working screen and "
-              "wrong for a learning one: someone who cannot open Run Payroll is "
-              "exactly the person who needs to read what it is before asking "
-              "for access. The Journey marks those stations 'not in your menu' "
-              "instead of hiding them.")
+    sec = data['sidebar']['section']
+    leaf = data['sidebar']['leaf']
+    doc = Xml("The Journey's front door: the pb.sidebar.section it lives in "
+              "and the pb.sidebar.item that opens it.",
+              "groups_id on the leaf is deliberately EMPTY. A gated leaf hides "
+              "itself from users who cannot use it, which is right for a "
+              "working screen and wrong for a learning one: someone who cannot "
+              "open Run Payroll is exactly the person who needs to read what it "
+              "is before asking for access. The Journey marks those stations "
+              "'not in your menu' instead of hiding them.")
+    # technical_key is REQUIRED on pb.sidebar.section — a section without one
+    # does not load at all.
+    doc.rec('pb.sidebar.section', sec['xmlid'], [
+        ('name', en_of(sec['name'])),
+        ('technical_key', sec['technicalKey']),
+        ('sequence', sec['sequence']),
+        ('show_label', bool(sec['showLabel'])),
+    ])
+    tr.add('pb.sidebar.section', 'name', sec['xmlid'],
+           en_of(sec['name']), vi_of(sec['name']))
     doc.rec('pb.sidebar.item', leaf['xmlid'], [
         ('name', en_of(leaf['name'])),
-        ('section_id', ('ref', leaf['section'])),
+        ('section_id', ('ref', sec['xmlid'])),
         ('sequence', leaf['sequence']),
         # pb_sidebar renders a FIXED icon set; an unknown name draws a plain
         # circle, so this is one of the names it knows.

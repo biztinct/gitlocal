@@ -137,7 +137,18 @@ class LearnStation(models.Model):
         # that name it (lines.setup). learn.mission._selection_line mirrors this
         # exactly — tests/test_mission.py::test_13 fails if the two drift, and a
         # mission on a line the map does not draw is simply unreachable.
-        return [('payrun', self.env._('Pay run line')),
+        #
+        # Phase C1 added four more the same way. The ORDER here is not the
+        # reading order: the map draws lines in journey.js's LINE_ORDER, because
+        # where a heading sits on a page is a presentation decision and this is
+        # a storage vocabulary. Adding a row here without the matching
+        # `lines.<key>` chrome string renders the key itself as a heading —
+        # tests/test_bundle.py::test_09 is the guard.
+        return [('overview', self.env._('Overview line')),
+                ('payrun', self.env._('Pay run line')),
+                ('people', self.env._('People line')),
+                ('insights', self.env._('Insights line')),
+                ('compliance', self.env._('Compliance line')),
                 ('setup', self.env._('Setup line'))]
 
     @api.model

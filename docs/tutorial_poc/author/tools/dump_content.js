@@ -57,7 +57,7 @@ const out = {
     qa: grab("QA"),
     columns: grab("COLUMNS"),
     practiceAnchors: grab("PRACTICE_ANCHORS"),
-    sidebarLeaf: grab("SIDEBAR_LEAF"),
+    sidebar: grab("SIDEBAR"),
     /* product facts, for the checks that read them */
     tenantDefaults: grab("TENANT_DEFAULTS"),
     menu: grab("MENU"),

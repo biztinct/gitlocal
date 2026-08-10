@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Learn — in-app learning',
-    'version': '19.0.6.0.0',
+    'version': '19.0.7.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
     'description': """
-Payobook Learn — Phase A: the Pay Run section.
-==============================================
+Payobook Learn — the in-app learning system.
+============================================
 
 One content model feeds every learning surface: the Guided Journey (a client
 action), the always-on Coach (mounted once in the web client) and the practice
-missions. Phase A covers the seven Pay Run sidebar leaves plus the import
-wizard sub-screen.
+missions.
+
+Phase A covers the seven Pay Run sidebar leaves plus the import wizard
+sub-screen; Phase B adds the four Setup screens and the demo world's live
+capstone; Phase C1 adds Overview (Dashboard, Approvals), People (Employees,
+Contracts), Insights (Insights, Explorer, Workforce Analytics) and Compliance
+(Government Reports) — and promotes the Journey out of the Pay Run section into
+a Learning section of its own.
 
 Design: docs/tutorial_poc/design_v2.html
 Authoring surface: docs/tutorial_poc/author/ (content is generated from it,

@@ -809,4 +809,300 @@
         <field name="feedback">Let's rethink that. The instinct is right and the date is wrong: today means 20 July, and the decree does not say 20 July — so the declaration would record a legal start the company cannot evidence. Create the record now if you like; put 01/08 in the effective date, and tell whoever is reviewing July that the rates on this screen are next month's.</field>
     </record>
 
+    <record id="lesson_la" model="learn.lesson">
+        <field name="key">LA</field>
+        <field name="station_id" ref="station_approvals"/>
+        <field name="sequence">10</field>
+        <field name="name">Approve like it's your signature</field>
+        <field name="goal">Decide on a run the way somebody who will be asked about it decides: flags first, a sample after, and a variance you can explain in one sentence before you sign.</field>
+        <field name="duration_min">9</field>
+    </record>
+
+    <record id="lesson_la_step_00" model="learn.step">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">10</field>
+        <field name="kicker">What &amp; why</field>
+        <field name="title">This screen is a queue, not a board</field>
+        <field name="body">The Pay Runs board shows every run there is. This one shows only the runs a human still has to answer for — and the chip in the corner counts the ones waiting on &lt;b&gt;you&lt;/b&gt;. Everything else here is somebody else's signature, shown so you know who to ask rather than so you can do it for them.</field>
+        <field name="screen">approvals</field>
+        <field name="anchor">pa-hero</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_la_step_01" model="learn.step">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">20</field>
+        <field name="kicker">The number that matters</field>
+        <field name="title">Net at stake is money that has not been paid yet</field>
+        <field name="body">Three counts, one per gate, and then &lt;b&gt;612,480,000 ₫&lt;/b&gt; — the net of every run in the pipeline. It is worth reading as what it is: money that is one or more signatures away from leaving the company's account, and that can still be stopped by anybody who finds a reason to.</field>
+        <field name="tip">After the last gate that sentence stops being true. A correction to a completed run is a retro line in the next one, never an edit to this one.</field>
+        <field name="screen">approvals</field>
+        <field name="anchor">pa-kpis</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_la_step_02" model="learn.step">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">30</field>
+        <field name="kicker">Reading the lanes</field>
+        <field name="title">A lane is a gate, and an empty one is not a fault</field>
+        <field name="body">Officer review, then {{hrTierName}}, then {{gmTierName}}. A run sits in the lane of the gate it is waiting at, so the lane &lt;b&gt;names the person to chase&lt;/b&gt;. Two of the three are empty here, and that is what most days look like — a lane fills when work reaches it and empties when somebody signs.</field>
+        <field name="tip">A card offers Approve and Reject only at the gate you hold. If you cannot see them, you are looking at somebody else's work, and pressing harder will not help.</field>
+        <field name="screen">approvals</field>
+        <field name="anchor">pa-lanes</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_la_step_03" model="learn.step">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">40</field>
+        <field name="kicker">The strategy</field>
+        <field name="title">Nobody reads forty-eight payslips, and nobody should</field>
+        <field name="body">Reading top to bottom is how a flagged payslip gets approved at six in the evening. The engine has already told you which ones it could not settle on its own — start there, then &lt;b&gt;sample&lt;/b&gt; two or three it did not flag. A flag marks the unusual, not the wrong, so a clean slip can still be incorrect and a flagged one can be perfectly fine.</field>
+        <field name="tip">Sampling is not a shortcut. It is how you find out whether the flags are the only problem — and if a sampled slip is wrong, the flags were never the point.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-chips</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_la_step_04" model="learn.step">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">50</field>
+        <field name="kicker">Before &amp; after</field>
+        <field name="title">Explain the variance, or you are not ready to sign</field>
+        <field name="body">July is 612,480,000 ₫ against June's 596,110,000 ₫. Toggle the two and say, out loud, why they differ — one more employee, and one payslip with 3,100,000 ₫ more overtime on it than last month. If you cannot finish that sentence, the gap is not small; it is unexamined.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-breakdown</field>
+        <field name="visual">morph</field>
+        <field name="moment_which">runJuneJuly</field>
+    </record>
+
+    <record id="lesson_la_step_04_line_00" model="learn.step.line">
+        <field name="step_id" ref="lesson_la_step_04"/>
+        <field name="sequence">10</field>
+        <field name="role">morph_before</field>
+        <field name="label">June 2026</field>
+        <field name="value">head|596,110,000 ₫</field>
+    </record>
+
+    <record id="lesson_la_step_04_line_01" model="learn.step.line">
+        <field name="step_id" ref="lesson_la_step_04"/>
+        <field name="sequence">20</field>
+        <field name="role">morph_before</field>
+        <field name="label">47 employees · every gate said yes</field>
+        <field name="value">detail</field>
+    </record>
+
+    <record id="lesson_la_step_04_line_02" model="learn.step.line">
+        <field name="step_id" ref="lesson_la_step_04"/>
+        <field name="sequence">30</field>
+        <field name="role">morph_after</field>
+        <field name="label">July 2026</field>
+        <field name="value">head|612,480,000 ₫</field>
+    </record>
+
+    <record id="lesson_la_step_04_line_03" model="learn.step.line">
+        <field name="step_id" ref="lesson_la_step_04"/>
+        <field name="sequence">40</field>
+        <field name="role">morph_after</field>
+        <field name="label">48 employees · one payslip flagged, still unanswered</field>
+        <field name="value">detail</field>
+    </record>
+
+    <record id="lesson_la_step_04_line_04" model="learn.step.line">
+        <field name="step_id" ref="lesson_la_step_04"/>
+        <field name="sequence">50</field>
+        <field name="role">morph_after</field>
+        <field name="label">16,370,000 ₫ more, which is 2.7% on one extra employee. That is a comfortable-looking number, and comfortable-looking numbers are where a single wrong payslip hides best: Hùng's 3,100,000 ₫ of extra overtime sits inside it, and nothing about the total says so.</field>
+        <field name="value">delta</field>
+    </record>
+
+    <record id="lesson_la_step_05" model="learn.step">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">60</field>
+        <field name="kicker">The hard part</field>
+        <field name="title">A rejection is testimony, and the reason is required</field>
+        <field name="body">Rejecting sends the &lt;b&gt;whole run&lt;/b&gt; back to draft — all 48 payslips together, never one — and records three things against it: who rejected it, when, and &lt;b&gt;why in writing&lt;/b&gt;. The product requires that reason because without it the officer who has to fix the run is guessing at what you saw, and will probably resubmit the same thing.</field>
+        <field name="tip">"Payslip NV0031 — overtime is 382% of June, verify against the timesheet" is a reason somebody can act on. "Wrong" is a reason somebody has to interpret.</field>
+        <field name="screen">approvals</field>
+        <field name="anchor">pa-reject</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_la_step_06" model="learn.step">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">70</field>
+        <field name="kicker">Before you act</field>
+        <field name="title">Approving is a signature, and it moves real money</field>
+        <field name="body">Nothing about the button says so, which is why this step does. Pressing Approve moves 48 payslips one gate closer to being paid, together — there is no way to approve some of them — and the gate after yours checks totals rather than lines. If a wrong line is going to be caught, this is one of the last places it can be.</field>
+        <field name="consequence">Affects the whole run, all 48 payslips together. It moves from your gate to the next one. Reversible: &lt;b&gt;yes, for now&lt;/b&gt; — a later reviewer can still reject it back to draft, and that stops being true at done, after which a correction is a retro line. Verify first: every flagged payslip opened, a few unflagged ones sampled, and a one-sentence explanation of the variance against last month.</field>
+        <field name="screen">approvals</field>
+        <field name="anchor">pa-lanes</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_la_step_07" model="learn.step">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">80</field>
+        <field name="kicker">Afterwards</field>
+        <field name="title">Whatever you decide is written down with your name on it</field>
+        <field name="body">Approvals and rejections land in the same list, and a rejection keeps its written reason where the next person can read it. That is not surveillance — it is the reason a payroll month can be defended six months later, when nobody remembers the conversation and the record is all there is.</field>
+        <field name="screen">approvals</field>
+        <field name="anchor">pa-recent</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_la_quiz" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_la"/>
+        <field name="sequence">10</field>
+        <field name="kind">choice</field>
+        <field name="prompt">A run is waiting at your gate. The total is 2.7% above last month, one payslip is flagged and nobody has opened it, and payday is {{payDay}}. What do you do?</field>
+    </record>
+
+    <record id="lesson_la_quiz_opt_0" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_la_quiz"/>
+        <field name="sequence">10</field>
+        <field name="label">Approve — 2.7% against last month is well within normal</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. A total that looks reasonable is not evidence that every slip inside it is: one payslip with 3,100,000 ₫ of extra overtime sits comfortably inside a 2.7% move. The flag was raised about one employee, and approving without opening it is answering that question with silence.</field>
+    </record>
+
+    <record id="lesson_la_quiz_opt_1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_la_quiz"/>
+        <field name="sequence">20</field>
+        <field name="label">Open the flagged payslip, and decide once you can say in one sentence why the total moved</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Yes. That sentence is the whole test, and it takes minutes: one more employee, and one payslip with far more overtime than last month. Once you can say it you can approve with your eyes open — or reject with something the officer can act on.</field>
+    </record>
+
+    <record id="lesson_la_quiz_opt_2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_la_quiz"/>
+        <field name="sequence">30</field>
+        <field name="label">Reject it so the officer re-checks everything before payday</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. Rejecting sends all 48 payslips back to draft and puts a reason on the permanent record — and "please check everything" is not a reason anybody can act on. A rejection is testimony about a problem you found, not a way of asking somebody to go looking for one.</field>
+    </record>
+
+    <record id="lesson_lw" model="learn.lesson">
+        <field name="key">LW</field>
+        <field name="station_id" ref="station_dashboard"/>
+        <field name="sequence">10</field>
+        <field name="name">Welcome to your command centre</field>
+        <field name="goal">Read the Dashboard the way the first ten minutes of a payroll day needs it read — and know where everything else in Payobook lives.</field>
+        <field name="duration_min">8</field>
+    </record>
+
+    <record id="lesson_lw_step_00" model="learn.step">
+        <field name="lesson_id" ref="lesson_lw"/>
+        <field name="sequence">10</field>
+        <field name="kicker">What &amp; why</field>
+        <field name="title">The state of payroll, before you choose anything</field>
+        <field name="body">This is the one screen that answers &lt;b&gt;"where is payroll right now"&lt;/b&gt; without a filter, a period or a division being picked first. The line under your name is the live run: which one it is, how many payslips it holds, and how many are still waiting on a signature.</field>
+        <field name="tip">Read it before your inbox. An email about payroll is somebody's version of this line; this is the line.</field>
+        <field name="screen">dashboard</field>
+        <field name="anchor">dash-hero</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_lw_step_01" model="learn.step">
+        <field name="lesson_id" ref="lesson_lw"/>
+        <field name="sequence">20</field>
+        <field name="kicker">Reading the band</field>
+        <field name="title">Four numbers, and only one of them is a queue</field>
+        <field name="body">Headcount, monthly payroll, pending approval, active configurations. Three of those &lt;b&gt;describe the company&lt;/b&gt; and will read almost the same tomorrow. &lt;b&gt;Pending approval&lt;/b&gt; is different: it is work that has stopped, and it is the only number here that somebody has to do something about.</field>
+        <field name="tip">It counts the company's pending sign-offs, at every gate — not yours. How many are yours is a question the Approvals screen answers.</field>
+        <field name="screen">dashboard</field>
+        <field name="anchor">dash-kpis</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_lw_step_02" model="learn.step">
+        <field name="lesson_id" ref="lesson_lw"/>
+        <field name="sequence">30</field>
+        <field name="kicker">What makes this product different</field>
+        <field name="title">Pay is computed from a rulebook you can read</field>
+        <field name="body">Payobook does not hide its arithmetic behind fixed salary structures. Every line on every payslip comes from a named component in a &lt;b&gt;formula configuration&lt;/b&gt; — one per division — written the way a spreadsheet is written and readable by the person who has to explain it. This card is the way in; the Formula Engine lesson is where you take one apart.</field>
+        <field name="tip">That is why "why is my pay this number" has an answer here rather than a promise to look into it.</field>
+        <field name="screen">dashboard</field>
+        <field name="anchor">dash-formula</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_lw_step_03" model="learn.step">
+        <field name="lesson_id" ref="lesson_lw"/>
+        <field name="sequence">40</field>
+        <field name="kicker">The doors</field>
+        <field name="title">Nothing on this screen is a second way of doing anything</field>
+        <field name="body">The buttons and cards here open the same screens the sidebar opens. &lt;b&gt;Run Payroll&lt;/b&gt; from the hero is the same wizard as the Run Payroll leaf — same rules, same gates, same consequences. A dashboard that had its own shortcut to computing a run would be a second place for a run to be created, and there would be no way to be sure which one made the month.</field>
+        <field name="screen">dashboard</field>
+        <field name="anchor">dash-runpayroll</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_lw_step_04" model="learn.step">
+        <field name="lesson_id" ref="lesson_lw"/>
+        <field name="sequence">50</field>
+        <field name="kicker">The shape of a month</field>
+        <field name="title">Payroll is a loop, not a task</field>
+        <field name="body">Each row here is one month that was imported, computed, reviewed, approved by every gate and paid. The same loop, every month, in the same order — and the reason a run has a &lt;b&gt;state&lt;/b&gt; rather than a tick is that the loop can stop at any point in it and somebody has to know where.</field>
+        <field name="screen">dashboard</field>
+        <field name="anchor">rep-dash-runs</field>
+        <field name="visual">pipeline</field>
+        <field name="moment_chain">payrun</field>
+    </record>
+
+    <record id="lesson_lw_step_05" model="learn.step">
+        <field name="lesson_id" ref="lesson_lw"/>
+        <field name="sequence">60</field>
+        <field name="kicker">Where everything lives</field>
+        <field name="title">Six sections, and you only work in two of them</field>
+        <field name="body">&lt;b&gt;Overview&lt;/b&gt; is where you land and where approvals queue. &lt;b&gt;Pay Run&lt;/b&gt; is the month's work, top to bottom. &lt;b&gt;People&lt;/b&gt; holds who can be paid, &lt;b&gt;Insights&lt;/b&gt; answers questions about what was paid, and &lt;b&gt;Setup&lt;/b&gt; is read often and changed rarely. A leaf that is not in your sidebar is one your groups do not open — the Journey still describes it, because the person who cannot open a screen is exactly the person who needs to know what it is.</field>
+        <field name="tip">The &lt;b&gt;Learning&lt;/b&gt; section is this one. Everything you are reading now lives there, and it stays there while you work.</field>
+        <field name="screen">dashboard</field>
+        <field name="anchor">rep-nav</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_lw_step_06" model="learn.step">
+        <field name="lesson_id" ref="lesson_lw"/>
+        <field name="sequence">70</field>
+        <field name="kicker">How to get help</field>
+        <field name="title">There is a Coach on every screen, and it will not act for you</field>
+        <field name="body">The launcher in the bottom-right corner opens on &lt;b&gt;any&lt;/b&gt; screen in Payobook, and it answers about the screen you are standing on: what it is, what to do next here, what a tile counts, and what a control would do before you press it. It guides — you act. It never computes a run, approves a payslip or changes a record, and it never invents a rate: every answer it gives is something a person wrote and a test checks.</field>
+        <field name="tip">If it has nothing written for a screen it says so. "I do not have lessons for this screen yet" is a better answer than a confident one about the wrong screen.</field>
+        <field name="screen">dashboard</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_lw_quiz" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_lw"/>
+        <field name="sequence">10</field>
+        <field name="kind">choice</field>
+        <field name="prompt">The Dashboard says 3 pending approval. You hold the {{hrTierName}} gate. What does that number tell you about your own morning?</field>
+    </record>
+
+    <record id="lesson_lw_quiz_opt_0" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_lw_quiz"/>
+        <field name="sequence">10</field>
+        <field name="label">Three runs are waiting for my signature</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. The tile counts every sign-off the company is waiting on, at every gate — most of them belong to somebody else. Acting on it as a personal queue means chasing runs that were never yours and missing the ones that were.</field>
+    </record>
+
+    <record id="lesson_lw_quiz_opt_1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_lw_quiz"/>
+        <field name="sequence">20</field>
+        <field name="label">Three runs are waiting for somebody's signature, and Approvals will tell me how many are mine</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Exactly. The Dashboard reports the state; the queue that is yours has its own screen, and its header counts only what your groups let you act on. Reading the state first and the queue second is the order the whole product is built in.</field>
+    </record>
+
+    <record id="lesson_lw_quiz_opt_2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_lw_quiz"/>
+        <field name="sequence">30</field>
+        <field name="label">Payroll is behind schedule</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. Runs sitting at a gate mid-month is what a working approval chain looks like — the number only means "behind" once you know which gate each one is at and how long it has been there, and neither of those is on this tile.</field>
+    </record>
+
 </odoo>

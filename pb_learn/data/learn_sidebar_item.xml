@@ -2,14 +2,21 @@
 <!-- GENERATED FILE. Do not edit.
          Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
          Hand edits are erased on the next run and fail the CI check. -->
-<!-- The Journey's front door: the pb.sidebar.item that opens it. -->
-<!-- groups_id is deliberately EMPTY. A gated leaf hides itself from users who cannot use it, which is right for a working screen and wrong for a learning one: someone who cannot open Run Payroll is exactly the person who needs to read what it is before asking for access. The Journey marks those stations 'not in your menu' instead of hiding them. -->
+<!-- The Journey's front door: the pb.sidebar.section it lives in and the pb.sidebar.item that opens it. -->
+<!-- groups_id on the leaf is deliberately EMPTY. A gated leaf hides itself from users who cannot use it, which is right for a working screen and wrong for a learning one: someone who cannot open Run Payroll is exactly the person who needs to read what it is before asking for access. The Journey marks those stations 'not in your menu' instead of hiding them. -->
 <odoo>
+
+    <record id="sec_learn" model="pb.sidebar.section">
+        <field name="name">Learning</field>
+        <field name="technical_key">learn</field>
+        <field name="sequence">50</field>
+        <field name="show_label" eval="True"/>
+    </record>
 
     <record id="item_learn_journey" model="pb.sidebar.item">
         <field name="name">Learn</field>
-        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
-        <field name="sequence">90</field>
+        <field name="section_id" ref="sec_learn"/>
+        <field name="sequence">10</field>
         <field name="icon">compass</field>
         <field name="action_xmlid">pb_learn.action_learn_journey</field>
         <field name="action_tag">learn_journey</field>

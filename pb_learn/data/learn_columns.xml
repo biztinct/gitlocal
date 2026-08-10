@@ -445,4 +445,244 @@
         <field name="body">Rows that arrived but have not been taken into payroll yet. A count that is climbing is the clearest single sign of a broken sync — those rows are somebody's attendance, waiting.</field>
     </record>
 
+    <record id="col_dashboard_headcount" model="learn.column">
+        <field name="screen">dashboard</field>
+        <field name="key">headcount</field>
+        <field name="sequence">10</field>
+        <field name="label">Headcount</field>
+        <field name="body">Everybody the company currently employs, whether or not they were in the last run. It describes the company rather than the month, so it will read almost the same tomorrow — a figure to notice when it MOVES, not one to act on today.</field>
+    </record>
+
+    <record id="col_dashboard_monthly_payroll" model="learn.column">
+        <field name="screen">dashboard</field>
+        <field name="key">monthly_payroll</field>
+        <field name="sequence">20</field>
+        <field name="label">Monthly payroll</field>
+        <field name="body">The personnel cost of the current month, as computed so far. It is a cost figure rather than a payment figure: money still sitting in an unapproved run is counted here and has not left the company.</field>
+    </record>
+
+    <record id="col_dashboard_pending_approval" model="learn.column">
+        <field name="screen">dashboard</field>
+        <field name="key">pending_approval</field>
+        <field name="sequence">30</field>
+        <field name="label">Pending approval</field>
+        <field name="body">How many runs are waiting on a signature, at any gate, across the whole company. It is not your personal queue — how many are YOURS is a question the Approvals screen answers, and confusing the two means chasing work that was never yours.</field>
+    </record>
+
+    <record id="col_dashboard_active_configurations" model="learn.column">
+        <field name="screen">dashboard</field>
+        <field name="key">active_configurations</field>
+        <field name="sequence">40</field>
+        <field name="label">Active configurations</field>
+        <field name="body">How many formula configurations are switched on — normally one per division and cycle. A number that has grown without anybody adding a division is worth opening: an old configuration left active can still be selected by a run.</field>
+    </record>
+
+    <record id="col_approvals_at_officer_review" model="learn.column">
+        <field name="screen">approvals</field>
+        <field name="key">at_officer_review</field>
+        <field name="sequence">10</field>
+        <field name="label">At Officer review</field>
+        <field name="body">Runs sitting at the first gate, waiting for the Payroll Officer to sign. A run only reaches this lane by being submitted, so anything still in draft is not counted here and is not waiting for anybody.</field>
+    </record>
+
+    <record id="col_approvals_at_hr_review" model="learn.column">
+        <field name="screen">approvals</field>
+        <field name="key">at_hr_review</field>
+        <field name="sequence">20</field>
+        <field name="label">At HR review</field>
+        <field name="body">Runs the Officer has already passed, waiting at {{hrTierName}}. The lane names the tier that has to act next, which makes it the answer to "who do I chase" rather than a status word.</field>
+    </record>
+
+    <record id="col_approvals_at_finance_approval" model="learn.column">
+        <field name="screen">approvals</field>
+        <field name="key">at_finance_approval</field>
+        <field name="sequence">30</field>
+        <field name="label">At Finance approval</field>
+        <field name="body">The last gate before done. A run here has been read twice already, which is exactly why the reading at this tier is about totals rather than lines — and why a wrong line has to have been caught earlier.</field>
+    </record>
+
+    <record id="col_approvals_net_at_stake" model="learn.column">
+        <field name="screen">approvals</field>
+        <field name="key">net_at_stake</field>
+        <field name="sequence">40</field>
+        <field name="label">Net at stake</field>
+        <field name="body">The net of every run in the pipeline added together — money that is one or more signatures away from leaving the company's account and can still be stopped by anybody who finds a reason. After the last gate that stops being true.</field>
+    </record>
+
+    <record id="col_employees_headcount" model="learn.column">
+        <field name="screen">employees</field>
+        <field name="key">headcount</field>
+        <field name="sequence">10</field>
+        <field name="label">Headcount</field>
+        <field name="body">Everybody on the roster within the filters currently active. It counts people the company employs, which is not the same as people the last run paid — that count lives on Workforce Analytics, and the gap between them is where a missing payslip hides.</field>
+    </record>
+
+    <record id="col_employees_running_contracts" model="learn.column">
+        <field name="screen">employees</field>
+        <field name="key">running_contracts</field>
+        <field name="sequence">20</field>
+        <field name="label">Running contracts</field>
+        <field name="body">Contracts in force today. Payroll computes from the contract, so somebody on the roster whose contract is still in draft is on this screen and will not be in the run — which is why this number is worth comparing with headcount.</field>
+    </record>
+
+    <record id="col_employees_expiring_30" model="learn.column">
+        <field name="screen">employees</field>
+        <field name="key">expiring_30</field>
+        <field name="sequence">30</field>
+        <field name="label">Expiring in 30 days</field>
+        <field name="body">Contracts that end within the next month. Each one is either a renewal somebody has to sign or a leaver somebody has to settle, and both are cheaper to handle now than as a surprise proration on a payslip.</field>
+    </record>
+
+    <record id="col_employees_new_this_month" model="learn.column">
+        <field name="screen">employees</field>
+        <field name="key">new_this_month</field>
+        <field name="sequence">40</field>
+        <field name="label">New this month</field>
+        <field name="body">People who joined inside the current period. They are the most likely rows to be prorated and the most likely to have bank details missing, so they are worth reading one by one rather than as a count.</field>
+    </record>
+
+    <record id="col_employees_monthly_wage_bill" model="learn.column">
+        <field name="screen">employees</field>
+        <field name="key">monthly_wage_bill</field>
+        <field name="sequence">50</field>
+        <field name="label">Monthly wage bill</field>
+        <field name="body">The registered contract bases added together — what the company has agreed to pay, before overtime, allowances or deductions. It is also the base insurance is charged on, which is why it moves when a contract is renewed rather than when a month is busy.</field>
+    </record>
+
+    <record id="col_employees_payroll_ready" model="learn.column">
+        <field name="screen">employees</field>
+        <field name="key">payroll_ready</field>
+        <field name="sequence">60</field>
+        <field name="label">Payroll-ready</field>
+        <field name="body">The share of people who have everything needed to actually be paid: a running contract, a wage on it and usable bank details. Anybody outside this share computes perfectly and does not receive the money, which is the failure with the longest gap between cause and symptom.</field>
+    </record>
+
+    <record id="col_contracts_running" model="learn.column">
+        <field name="screen">contracts</field>
+        <field name="key">running</field>
+        <field name="sequence">10</field>
+        <field name="label">Running</field>
+        <field name="body">Contracts in force today, which is the set payroll will compute from. A contract that starts next week is not here yet and a person on it is not in this month's run either.</field>
+    </record>
+
+    <record id="col_contracts_draft" model="learn.column">
+        <field name="screen">contracts</field>
+        <field name="key">draft</field>
+        <field name="sequence">20</field>
+        <field name="label">Draft</field>
+        <field name="body">Contracts that have been prepared and not put in force. A draft pays nothing at all — it is the state to hunt for in the week before a run, because the employee is on every other screen and simply absent from the payslips.</field>
+    </record>
+
+    <record id="col_contracts_expired" model="learn.column">
+        <field name="screen">contracts</field>
+        <field name="key">expired</field>
+        <field name="sequence">30</field>
+        <field name="label">Expired</field>
+        <field name="body">Contracts whose end date has passed. Each is either a leaver who still needs settling in Full &amp; Final or a renewal that was never signed, and the second one is paid up to the end date and then stops.</field>
+    </record>
+
+    <record id="col_contracts_average_wage" model="learn.column">
+        <field name="screen">contracts</field>
+        <field name="key">average_wage</field>
+        <field name="sequence">40</field>
+        <field name="label">Average wage</field>
+        <field name="body">The wage bill divided by the number of contracts in the current filters. It is a scoped average, so it moves when you change a chip without anything having changed in the database — useful for comparing divisions, misleading as a headline.</field>
+    </record>
+
+    <record id="col_insights_net_payroll" model="learn.column">
+        <field name="screen">insights</field>
+        <field name="key">net_payroll</field>
+        <field name="sequence">10</field>
+        <field name="label">Net payroll</field>
+        <field name="body">The headline: what actually left, or will leave, the bank account for the run this board is reading. It is read off the payslips themselves rather than a reporting copy, so it cannot disagree with the payslips underneath it.</field>
+    </record>
+
+    <record id="col_insights_cost_story" model="learn.column">
+        <field name="screen">insights</field>
+        <field name="key">cost_story</field>
+        <field name="sequence">20</field>
+        <field name="label">Cost story</field>
+        <field name="body">The same measure over three, six or twelve months. The window chip decides which story it tells, and a figure quoted without saying which window it came from is a figure somebody will contradict with the same screen.</field>
+    </record>
+
+    <record id="col_insights_statutory_split" model="learn.column">
+        <field name="screen">insights</field>
+        <field name="key">statutory_split</field>
+        <field name="sequence">30</field>
+        <field name="label">Statutory split</field>
+        <field name="body">How much of the company's payroll cost is the law rather than salary: the employee leg deducted from payslips beside the employer leg paid on top. The second one never appears in anybody's net, so it is invisible in every conversation about pay unless somebody puts it on the table.</field>
+    </record>
+
+    <record id="col_explorer_measure" model="learn.column">
+        <field name="screen">explorer</field>
+        <field name="key">measure</field>
+        <field name="sequence">10</field>
+        <field name="label">Measure</field>
+        <field name="body">What is being counted — net pay, gross, a contribution, a headcount. It is the first thing to choose and the most common thing to get wrong: most wrong answers here are the right filter applied to the wrong measure.</field>
+    </record>
+
+    <record id="col_explorer_break_down_by" model="learn.column">
+        <field name="screen">explorer</field>
+        <field name="key">break_down_by</field>
+        <field name="sequence">20</field>
+        <field name="label">Break down by</field>
+        <field name="body">The dimension the rows are grouped into — division, department, cycle, month. Changing it does not change the total, only how the same total is divided up, which is the quickest way to check that a number is what you think it is.</field>
+    </record>
+
+    <record id="col_explorer_where" model="learn.column">
+        <field name="screen">explorer</field>
+        <field name="key">where</field>
+        <field name="sequence">30</field>
+        <field name="label">Where</field>
+        <field name="body">Every filter currently applied, shown as a removable tag. The tags are part of the answer: the same measure with one tag removed is a different figure, and the two look identical once they have been pasted into an email.</field>
+    </record>
+
+    <record id="col_workforcean_employees_paid" model="learn.column">
+        <field name="screen">workforcean</field>
+        <field name="key">employees_paid</field>
+        <field name="sequence">10</field>
+        <field name="label">Employees paid</field>
+        <field name="body">How many people the runs in scope actually produced a payslip for. It is not headcount: somebody employed all month whose contract sat in draft is counted on People and not here, and that difference is the point of the tile.</field>
+    </record>
+
+    <record id="col_workforcean_joiners" model="learn.column">
+        <field name="screen">workforcean</field>
+        <field name="key">joiners</field>
+        <field name="sequence">20</field>
+        <field name="label">Joiners</field>
+        <field name="body">People who first appear in a run inside this period. Almost all of them are prorated, which means almost all of them are a question somebody will ask about their first payslip.</field>
+    </record>
+
+    <record id="col_workforcean_leavers" model="learn.column">
+        <field name="screen">workforcean</field>
+        <field name="key">leavers</field>
+        <field name="sequence">30</field>
+        <field name="label">Leavers</field>
+        <field name="body">People whose last run falls in this period. Each one needs settling in Full &amp; Final AND excluding from the ordinary monthly run — a leaver in both is paid twice, and recovering that is a legal conversation rather than a payroll one.</field>
+    </record>
+
+    <record id="col_workforcean_cost_per_head" model="learn.column">
+        <field name="screen">workforcean</field>
+        <field name="key">cost_per_head</field>
+        <field name="sequence">40</field>
+        <field name="label">Cost per head</field>
+        <field name="body">The run's cost divided by the people it paid. It is the only figure on this screen that survives a headcount change, which makes it the honest way to compare two months — a total against a total mostly measures how many people were in each.</field>
+    </record>
+
+    <record id="col_govreports_period" model="learn.column">
+        <field name="screen">govreports</field>
+        <field name="key">period</field>
+        <field name="sequence">10</field>
+        <field name="label">Period</field>
+        <field name="body">The month being filed for. It is a month rather than a date range because the authorities ask for months, and a filing generated before every run in that month is done is short by however many payslips are still in the pipeline.</field>
+    </record>
+
+    <record id="col_govreports_country" model="learn.column">
+        <field name="screen">govreports</field>
+        <field name="key">country</field>
+        <field name="sequence">20</field>
+        <field name="label">Country</field>
+        <field name="body">Which country's filing set is on display. The tiles are decided by the active company's country rather than by what Payobook can produce, and the chips only appear when a company runs payroll in more than one.</field>
+    </record>
+
 </odoo>

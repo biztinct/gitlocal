@@ -483,6 +483,107 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   language templates — noted in the code rather than worked around, because
   translating it here would be inventing a product string.
 
+### Run C1 (Overview / People / Insights / Compliance + the Learn section)
+
+- **`test_07` in test_anchor_registry.py has been FAILING since Run B1, and
+  could not be seen.** It asserts `assertIn(key, self.foreign)` for every
+  entry in `SHARED_WITH_PB_COACH`, and B1 added the seven `fs-*` — which are
+  covered by the WILDCARD entry `"fs-*"`, not by literal keys. A literal
+  membership test on a dict whose keys include wildcards reports seven
+  perfectly-documented anchors as undeclared. Fixed to call `_is_foreign()`,
+  the helper three other assertions in the same file already use. **The class
+  of bug: a test written on a machine with no test runner is a test nobody has
+  ever seen pass.** Everything in this module that can be mirrored offline now
+  is — `docs/tutorial_poc/author/` has no runner either, but the resolver, the
+  registry, the screen-matcher passes and the asset guards can all be replayed
+  in Python/Node against the same inputs, and doing so is what caught this.
+- **A SECTION NAME AND A LEAF NAME CANNOT BOTH BE "Learn".** The handover
+  specified the new `pb.sidebar.section` as "Learn" / "Học tập", and the leaf
+  inside it has been "Learn" / "Học cùng Payobook" since Phase A. One msgid,
+  two msgstrs — the generator's conflict guard refuses it, exactly as it did
+  for the chrome key in A2. Resolved the A2 way: the ENGLISH is made distinct.
+  The section is **"Learning" / "Học tập"**, which is already a string in this
+  module (the chrome key `learn`, the topbar suffix) with precisely the
+  Vietnamese the section wants, so the two MERGE into one .po entry rather than
+  fighting over it. Deviation from the handover's literal wording, forced by
+  the rule the handover itself cites.
+- **`gen_sidebar_item` now emits TWO records and the section must come first.**
+  `pb.sidebar.section` requires `technical_key` — a section without one does
+  not load at all — and the leaf `ref`s the section, so order inside the file
+  is load order. The leaf's `section_id` moves from `pb_sidebar.sec_payrun` to
+  `pb_learn.sec_learn` on upgrade because the generated data is `noupdate="0"`;
+  no migration step is needed, but the leaf DOES move for existing tenants and
+  the deploy note says so.
+- **The map's reading order is a FRONTEND constant, not the station sequence.**
+  The generator numbers stations with one counter running across every line in
+  declaration order, so a new line has to be APPENDED to `STATIONS` or every
+  station before it is renumbered for no content reason. That makes the storage
+  order (payrun, setup, overview, people, insights, compliance) wrong as a
+  reading order. `journey.js` now holds `LINE_ORDER` — overview, payrun,
+  people, insights, compliance, setup — and any line missing from it is still
+  drawn, after the ones that are: a section must never be able to vanish from
+  the map because somebody forgot a second file. `LINE_ICON` replaced the
+  `lineKey === "daily" ? "zap" : "plug"` ternary, which would have drawn a plug
+  beside five of the six headings.
+- **`hr.contract` is the third contested model, and the mechanism absorbed it
+  without a line of new code.** Employees declares `hr.employee,hr.contract`
+  and Contracts declares `hr.contract`, so the model is now a matcher for
+  NEITHER — same ruling as `hr.integration.connector` in B1, and the same for
+  `hr.payslip.run`, which Pay Runs and Approvals both claim. All three screens
+  still resolve exactly by tag or xml-id; what is given up is the bare list
+  view of a contract, where "I do not have lessons for this screen" is the
+  honest answer. The contested set is now three, and every one of them is a
+  pair of leaves that are both RIGHT for the sidebar.
+- **`ANCHOR_RE`'s prefix list is now eight longer, and the two-letter prefixes
+  are the point.** `pb_people`, `pb_contracts` and `pb_govt_reports` share the
+  `ppl-*` CLASS vocabulary in their templates — `ppl-head`, `ppl-kpis`,
+  `ppl-roster` are literally the same class names on three different cockpits.
+  Anchor KEYS are therefore namespaced per SCREEN (`pe-`, `ct-`, `gr-`), which
+  is what stops a lesson pointing at the Employees roster and landing on the
+  Contracts one. A prefix missing from `ANCHOR_RE` is not a loud failure — the
+  anchor simply stops being linted — so adding it is part of adding a screen.
+- **`rep-dash-kpis` was retired rather than kept.** The Dashboard replica now
+  draws the REAL `dash-hero` / `dash-runpayroll` / `dash-kpis` / `dash-formula`
+  attributes, because LW names them and a lesson step whose anchor is not in
+  the DOM renders a centred card instead of a spotlight. `rep-dash-runs`
+  stays practice-only and honest: the product's card there is ONE latest-run
+  summary and the replica draws three months, because a lesson about the
+  monthly loop needs to show a loop.
+- **A lesson step may legitimately carry NO anchor.** LW's last step is about
+  the Coach launcher, which is mounted by the WebClient and is not part of any
+  replica — pointing at it from inside the Journey would be pointing at a
+  control the lesson has covered with its own overlay. `Spot.show(null, …)`
+  centres the card, which is the right shape for a step whose subject is not on
+  the screen. The alternative — adding a `data-coach` to pb_learn's own
+  `coach.xml` — would have put a fourth kind into the registry for one step.
+- **Every figure on the new replicas is derived from `board`, `recentRuns`,
+  `statutory`, `ledgers` or `payslip()`, and the approval lanes are the proof.**
+  `PRACTICE.approvals` filters the SAME board rows the Pay Runs replica draws,
+  so the July run is at `level0` on three screens and two of the three lanes
+  are EMPTY. Drawing them empty is honest — pb_approval renders "No runs here."
+  for exactly that state — and it removed the temptation to invent a second
+  submitted run with a made-up net. LA's variance material is
+  612,480,000 / 596,110,000 / 3,100,000, all three of which already existed.
+- **`PRACTICE.people.wageBill` IS `statutory.insuranceBase`.** The sum of the
+  registered contract bases and the base the contributions are charged on are
+  the same 570,000,000 ₫ described twice; declaring it twice would have let the
+  People band and the Statutory band disagree about the same company.
+- **"Net paid" was already taken.** The Pay Runs board's KPI is "Net paid" →
+  "Đã chi"; the Insights headline's own caption in `insights.xml` is "net
+  payroll", so the column ships as "Net payroll" / "Lương thực chi". Third time
+  the one-msgstr rule has decided a label in this module — the fix is always to
+  read what the PRODUCT calls it and use that.
+- **`Explorer` is a proper noun and is now in `SAME_IN_BOTH`.** pb_sidebar
+  ships the leaf name untranslated and the cockpit prints it untranslated;
+  translating it in the Journey would send a learner looking for a leaf that
+  says something else. It is the only new string in 296 where EN == VI.
+- **Two existing intents were EDITED, not appended: `approve` and `reject` both
+  gained `approvals` in their screen list.** Everything else in this run is an
+  append — the .po diff is 0 removed, 0 changed, 296 added — and these two are
+  the deliberate exception, because the Approvals cockpit is where approving
+  now actually happens and a capability-aware answer that is unreachable on the
+  screen the action lives on is content nobody can find.
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5
@@ -499,3 +600,21 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   Vietnamese value missing until the module is upgraded again. Activate the
   language first, then install, then verify with one `learn.string` read under
   `with_context(lang='vi_VN')`.
+- **Phase C1 MOVES the Journey leaf in the sidebar.** `-u pb_learn` creates
+  `pb_learn.sec_learn` ("Learning", sequence 50, between Compliance and
+  Planning) and rewrites `item_learn_journey.section_id` onto it. Existing
+  tenants will find the Learn leaf has left the Pay Run section — that is the
+  intended change, not a data loss, and nothing in `pb_sidebar` needs touching.
+  Verify after the upgrade: the sidebar shows a Learning section with one leaf,
+  and the Pay Run section no longer ends with it.
+- **The web asset bundle carries the new replicas.** `engine/screens.js` and
+  `journey/journey.js` both changed, so if the eight new practice screens do
+  not appear after `-u pb_learn`, purge the `ir_attachment` asset rows and
+  restart — the standing Odoo-19 gotcha, unchanged.
+- **Phase C1 touches eight templates in other modules** (pb_dashboard is read
+  only; pb_approval, pb_people, pb_contracts, pb_insights, pb_explorer,
+  pb_workforce_insights and pb_govt_reports gained additive `data-coach`
+  attributes). Those modules need `-u` as well, or the anchors the Coach's
+  Show-me points at are not in the served templates: `-u pb_approval -u
+  pb_people -u pb_contracts -u pb_insights -u pb_explorer -u
+  pb_workforce_insights -u pb_govt_reports -u pb_learn`.

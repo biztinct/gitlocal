@@ -688,6 +688,241 @@ const PRACTICE = {
       staged: c.reduce((t, x) => t + x.staged, 0),
     };
   },
+
+  /* --------------------------------------------------- Overview (Phase C1)
+     NOT A SECOND SET OF NUMBERS. Everything below reads `board`, `recentRuns`,
+     `statutory`, `ledgers` and the four employees above, because the Overview,
+     People and Insights screens are the SAME payroll seen from further back. A
+     Dashboard that disagreed with the Pay Runs board underneath it would teach
+     a learner that the top of the product is decorative, which is the one thing
+     a command centre cannot be.
+
+     THE APPROVAL LANES ARE DERIVED FROM `board`, and that is the whole design.
+     The July Retail run is at level0 on the Dashboard, on the Pay Runs board
+     and here; the two lanes to its right are EMPTY, and drawing them empty is
+     honest — the product renders "No runs here." for exactly this state, and a
+     quiet Tuesday is most of what a payroll month looks like. */
+  get approvals() {
+    const lane = (col) => this.board.filter((r) => r.col === col);
+    const lanes = [
+      { key: "level0", runs: lane("level0") },
+      { key: "level1", runs: lane("level1") },
+      { key: "level2", runs: lane("level2") },
+    ];
+    return {
+      lanes,
+      /* Decided, not waiting: the two runs that have already passed every gate.
+         Both are `done` on the board above, and their nets are the board's. */
+      recent: this.board.filter((r) => r.col === "done"),
+      /* `net at stake` is money that has NOT been paid and can still be
+         stopped. Summed from the lanes, so it cannot disagree with them. */
+      get kpis() {
+        const at = (k) => (lanes.find((l) => l.key === k) || { runs: [] }).runs;
+        return {
+          officer: at("level0").length,
+          hr: at("level1").length,
+          finance: at("level2").length,
+          net: lanes.reduce(
+            (t, l) => t + l.runs.reduce((s, r) => s + r.net, 0), 0),
+        };
+      },
+    };
+  },
+
+  /* ------------------------------------------------------ People (Phase C1)
+     A wage here is the REGISTERED CONTRACT BASE, which is also the insurance
+     base — one number, one meaning, wherever it is printed. The company-wide
+     wage bill is `statutory.insuranceBase`: the sum of the registered bases is
+     exactly what both that band and this one are describing. */
+  people: {
+    draftContracts: 1,
+    expiring: 1,
+    newHires: 1,
+    /* Đức has no bank account on file. Everything else about him is ready and
+       his pay still will not land, which is why payroll-readiness is its own
+       column rather than a footnote on the wage. */
+    notReady: 1,
+    get kpis() {
+      const head = RUN.employees;
+      return {
+        headcount: head,
+        running: head - this.draftContracts,
+        expiring: this.expiring,
+        newHires: this.newHires,
+        wageBill: PRACTICE.statutory.insuranceBase,
+        readyPct: Math.round((head - this.notReady) / head * 100),
+      };
+    },
+    /* Four of forty-eight, exactly as the Payslips replica shows four slips of
+       a forty-eight-slip run. The KPI band counts the company; the roster is a
+       sample small enough to read. */
+    rows: [
+      { emp: EMP.mai, job: B("Store supervisor", "Giám sát cửa hàng"), ready: true },
+      { emp: EMP.hung, job: B("Sales associate", "Nhân viên bán hàng"), ready: true,
+        expiresIn: 18 },
+      { emp: EMP.trang, job: B("Area manager", "Quản lý khu vực"), ready: true },
+      { emp: EMP.duc, job: B("Stock keeper", "Nhân viên kho"), ready: false,
+        blocker: B("No bank account on file", "Chưa có tài khoản ngân hàng") },
+    ],
+  },
+
+  /* Contracts. A person is not a contract: the same four people, read as the
+     agreements payroll is actually paid from. */
+  contracts: {
+    get kpis() {
+      const p = PRACTICE.people;
+      const head = RUN.employees;
+      return {
+        running: head - p.draftContracts,
+        expiring: p.expiring,
+        draft: p.draftContracts,
+        expired: 0,
+        wageBill: PRACTICE.statutory.insuranceBase,
+        avgWage: Math.round(PRACTICE.statutory.insuranceBase / head),
+      };
+    },
+    rows: [
+      { emp: EMP.mai, kind: B("Indefinite term", "Không xác định thời hạn"),
+        period: B("From 01/03/2023", "Từ 01/03/2023"),
+        badge: B("Running", "Đang hiệu lực") },
+      { emp: EMP.hung, kind: B("12-month term", "Có thời hạn 12 tháng"),
+        period: B("01/08/2025 → 31/07/2026", "01/08/2025 → 31/07/2026"),
+        badge: B("Expiring", "Sắp hết hạn"), expiresIn: 18 },
+      { emp: EMP.trang, kind: B("Indefinite term", "Không xác định thời hạn"),
+        period: B("From 15/06/2021", "Từ 15/06/2021"),
+        badge: B("Running", "Đang hiệu lực") },
+      { emp: EMP.duc, kind: B("Probation", "Thử việc"),
+        period: B("From 01/07/2026", "Từ 01/07/2026"),
+        badge: B("Draft", "Nháp") },
+    ],
+  },
+
+  /* ---------------------------------------------------- Insights (Phase C1)
+     Three months of net read off `recentRuns` in the order they were paid, a
+     statutory split read off `statutory`, and a pulse whose every figure is a
+     count something else in this fixture already holds. */
+  get insights() {
+    const months = [...this.recentRuns].reverse();
+    const s = this.statutory;
+    const w = this.workforce;
+    return {
+      months,
+      headline: RUN.totalNet,
+      /* The month-on-month move, computed rather than restated. It is the same
+         2.7% m2's anomaly card discusses, and it comes out of the same two
+         numbers. */
+      get deltaPct() {
+        const a = months[months.length - 2].net;
+        const b = months[months.length - 1].net;
+        return Math.round((b - a) / a * 1000) / 10;
+      },
+      departments: [
+        { label: RUN.division, v: RUN.totalNet, heads: RUN.employees },
+        { label: B("F&B", "F&B"), v: 214300000, heads: 21 },
+      ],
+      statutory: [
+        { label: B("Employee leg", "Phần người lao động"), v: s.employeeLeg },
+        { label: B("Employer leg", "Phần doanh nghiệp"), v: s.employerLeg },
+      ],
+      pulse: [
+        { label: B("Attendance exceptions", "Ngoại lệ chấm công"), v: w.exceptionTotal },
+        { label: B("Payslips flagged", "Phiếu bị gắn cờ"), v: RUN.flagged },
+        { label: B("Joiners this month", "Vào mới tháng này"), v: w.kpis.joiners },
+        { label: B("Leavers this month", "Thôi việc tháng này"), v: w.kpis.leavers },
+      ],
+    };
+  },
+
+  /* Explorer. ONE question, asked properly: net pay by division for July, with
+     the filters that scope it shown as removable tags — because a figure read
+     without its filters is a figure read out of scope. */
+  get explorer() {
+    const rows = this.insights.departments;
+    return {
+      measure: B("Net pay", "Thực nhận"),
+      dimension: B("Division", "Bộ phận"),
+      filters: [
+        { k: B("Period", "Kỳ lương"), v: B("July 2026", "Tháng 7/2026") },
+        { k: B("Run state", "Trạng thái đợt"), v: B("Any", "Tất cả") },
+      ],
+      rows,
+      get total() { return rows.reduce((t, r) => t + r.v, 0); },
+    };
+  },
+
+  /* Workforce Analytics. Employees PAID, not employed — the count comes off the
+     runs, which is why it can differ from the headcount on People. */
+  get workforce() {
+    const months = [...this.recentRuns].reverse();
+    /* Bùi Anh Tuấn, the joiner on the proration ledger. Leavers are counted
+       from the Full & Final rows rather than declared twice. */
+    const joiners = 1;
+    const leavers = this.ledgers.fullfinal.rows.length;
+    const exceptions = [
+      { label: B("Missing clock-out", "Thiếu chấm công ra"), v: 4 },
+      { label: B("Unapproved overtime", "Tăng ca chưa duyệt"), v: 3 },
+    ];
+    return {
+      months,
+      exceptions,
+      exceptionTotal: exceptions.reduce((t, e) => t + e.v, 0),
+      leaveDays: 9,
+      kpis: {
+        paid: RUN.employees,
+        joiners,
+        leavers,
+        /* Cost per head, from the run's own net. It is the only figure on this
+           screen that survives a headcount change without being re-read. */
+        perHead: Math.round(RUN.totalNet / RUN.employees),
+      },
+      /* Overtime by person, from the same July inputs the payslips are computed
+         from. Hùng is at the top of it, which is the flag seen from a
+         different screen. */
+      overtime: [
+        { emp: EMP.hung, v: EMP.hung.otJul },
+        { emp: EMP.mai, v: EMP.mai.otJul },
+        { emp: EMP.trang, v: EMP.trang.otJul },
+      ],
+    };
+  },
+
+  /* ------------------------------------------------- Compliance (Phase C1)
+     The VN filing catalogue, mirrored from pb_govt_reports/models/
+     pb_govt_reports.py::_CATALOG. These are PRODUCT FACTS — each tile opens a
+     real wizard — so contract.json pins them, and the fixture never invents a
+     filing that does not exist.
+
+     Vietnam is the only country with tiles in this catalogue today, and the
+     replica shows exactly that: a country chip row, and an honest "coming soon"
+     for the country that has none. */
+  govreports: {
+    country: B("Vietnam", "Việt Nam"),
+    period: B("July 2026", "Tháng 7/2026"),
+    countries: [B("Vietnam", "Việt Nam"), B("Singapore", "Singapore")],
+    groups: [
+      {
+        label: B("Social Insurance (BHXH)", "Bảo hiểm xã hội (BHXH)"), icon: "shield-check",
+        reports: [
+          { en: "Sickness & Maternity", vi: "BHXH630 · Ốm đau / Thai sản" },
+          { en: "Participant Schedule", vi: "BHXHDSTK01-DV_595 · Mẫu 595" },
+          { en: "Dossier Cover Sheet", vi: "Bảng kê hồ sơ D01-TS" },
+        ],
+      },
+      {
+        label: B("Labour Changes", "Biến động lao động"), icon: "users",
+        reports: [
+          { en: "Headcount Increase", vi: "Báo tăng lao động" },
+          { en: "Headcount Decrease", vi: "Báo giảm lao động" },
+        ],
+      },
+    ],
+    get kpis() {
+      return {
+        filings: this.groups.reduce((t, g) => t + g.reports.length, 0),
+        groups: this.groups.length,
+      };
+    },
+  },
 };
 
 /* =============================================================================
@@ -699,8 +934,9 @@ const PRACTICE = {
    ========================================================================== */
 const MENU = [
   {
-    key: "overview", label: B("Overview", "Tổng quan"), items: [
+    key: "overview", label: B("Overview", "Tổng quan"), scope: true, items: [
       { id: "dashboard", icon: "grid", label: B("Dashboard", "Bảng điều khiển") },
+      { id: "approvals", icon: "clipboard-check", label: B("Approvals", "Phê duyệt") },
     ],
   },
   {
@@ -720,6 +956,29 @@ const MENU = [
       { id: "structures", icon: "layers", label: B("Salary Structures", "Cấu trúc lương") },
       { id: "statutory", icon: "shield-check", label: B("Statutory (Insurance & Tax)", "Bảo hiểm & Thuế") },
       { id: "integrations", icon: "database", label: B("Integrations", "Tích hợp") },
+    ],
+  },
+  /* Phase C1. The order below is the order pb_sidebar draws these sections
+     (People 30, Insights 40, Compliance 45) — Workforce and Planning sit
+     between them in the product and are deliberately NOT taught yet, so they
+     are not drawn here either: a replica menu that shows a section with no
+     station behind it is a promise the map does not keep. */
+  {
+    key: "people", label: B("People", "Nhân sự"), scope: true, items: [
+      { id: "employees", icon: "users", label: B("Employees", "Nhân viên") },
+      { id: "contracts", icon: "file-text", label: B("Contracts", "Hợp đồng") },
+    ],
+  },
+  {
+    key: "insights", label: B("Insights", "Phân tích"), scope: true, items: [
+      { id: "insights", icon: "trending-up", label: B("Insights", "Phân tích") },
+      { id: "explorer", icon: "compass", label: B("Explorer", "Explorer") },
+      { id: "workforcean", icon: "bar-chart", label: B("Workforce Analytics", "Phân tích nhân sự") },
+    ],
+  },
+  {
+    key: "compliance", label: B("Compliance", "Tuân thủ"), scope: true, items: [
+      { id: "govreports", icon: "file-text", label: B("Government Reports", "Báo cáo cơ quan nhà nước") },
     ],
   },
 ];
