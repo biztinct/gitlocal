@@ -14,11 +14,11 @@
           </div>
           <div class="ppl-head-actions">
             <button class="pbim-btn outline" t-on-click="newTax"><t t-out="ic('plus',15)"/> Tax table</button>
-            <button class="pbim-btn primary" t-on-click="newPolicy"><t t-out="ic('plus',16)"/> Insurance policy</button>
+            <button class="pbim-btn primary" data-coach="st-new" t-on-click="newPolicy"><t t-out="ic('plus',16)"/> Insurance policy</button>
           </div>
         </div>
 
-        <div class="ppl-kpis">
+        <div class="ppl-kpis" data-coach="st-kpis">
           <div class="pbim-stat"><span class="pbim-stat-ic green"><t t-out="ic('receipt',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.contributions)"/><span class="l">Contributions</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('user',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.emp_leg)"/><span class="l">Employee leg</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('briefcase',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.comp_leg)"/><span class="l">Employer leg</span></div></div>
@@ -30,8 +30,8 @@
         <div class="sta-cols">
           <div class="pbim-panel">
             <div class="pbim-panel-h"><h2 class="pbim-h2">Active insurance rates</h2>
-              <span t-if="state.policy" class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="state.policy.effective"/></span></div>
-            <div t-if="state.policy" class="pbim-tablewrap">
+              <span t-if="state.policy" class="pbim-chip" data-coach="st-effective"><t t-out="ic('calendar',13)"/> <t t-esc="state.policy.effective"/></span></div>
+            <div t-if="state.policy" class="pbim-tablewrap" data-coach="st-rates">
               <table class="pbim-table">
                 <thead><tr><th>Scheme</th><th>Employee</th><th>Employer</th><th>Ceiling</th></tr></thead>
                 <tbody>
@@ -51,7 +51,7 @@
           <div class="pbim-panel">
             <div class="pbim-panel-h"><h2 class="pbim-h2">Tax brackets</h2>
               <span t-if="state.tax" class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="state.tax.year"/></span></div>
-            <div t-if="state.tax and state.tax.slabs.length" class="pbim-tablewrap sta-slabs">
+            <div t-if="state.tax and state.tax.slabs.length" class="pbim-tablewrap sta-slabs" data-coach="st-slabs">
               <table class="pbim-table">
                 <thead><tr><th>From</th><th>To</th><th>Rate</th></tr></thead>
                 <tbody>
@@ -73,7 +73,7 @@
               <button t-attf-class="pbim-segbtn {{ state.view === 'policies' ? 'on' : '' }}" t-on-click="() => this.setView('policies')">Insurance policies <t t-esc="state.policies.length"/></button>
               <button t-attf-class="pbim-segbtn {{ state.view === 'tax' ? 'on' : '' }}" t-on-click="() => this.setView('tax')">Tax tables <t t-esc="state.tax_tables.length"/></button>
             </div>
-            <div class="pbim-chips">
+            <div class="pbim-chips" data-coach="st-filters">
               <button t-attf-class="pbim-fchip {{ state.showActive ? 'on' : '' }}" t-on-click="toggleActive">Active only</button>
               <t t-if="state.view === 'tax'">
                 <button t-foreach="years" t-as="y" t-key="y" t-attf-class="pbim-fchip {{ state.year === y ? 'on' : '' }}" t-on-click="() => this.setYear(y)">
@@ -83,7 +83,7 @@
             </div>
           </div>
 
-          <div t-if="state.view === 'policies'" class="ppl-roster">
+          <div t-if="state.view === 'policies'" class="ppl-roster" data-coach="st-roster">
             <div t-foreach="filteredPolicies" t-as="p" t-key="p.id" class="ppl-card" t-on-click="() => this.openPolicy(p.id)">
               <div class="ppl-av"><t t-out="ic('checkCircle',20)"/></div>
               <div class="ppl-id"><div class="nm" t-esc="p.name"/><div class="jb"><t t-esc="p.code"/> · effective <t t-esc="p.effective or '—'"/></div></div>

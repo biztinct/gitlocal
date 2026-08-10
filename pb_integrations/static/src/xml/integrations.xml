@@ -12,12 +12,12 @@
             <h1 class="pbim-h1">Integrations</h1>
             <p class="pbim-sub">External HR / payroll connectors, their sync status and mappings.</p>
           </div>
-          <button class="pbim-btn primary itg-connect" style="margin-left:auto;align-self:center" t-on-click="connectSystem">
+          <button class="pbim-btn primary itg-connect" data-coach="ig-connect" style="margin-left:auto;align-self:center" t-on-click="connectSystem">
             <t t-out="ic('plug',16)"/> Connect a system
           </button>
         </div>
 
-        <div class="ppl-kpis">
+        <div class="ppl-kpis" data-coach="ig-kpis">
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('plug',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.connectors"/><span class="l">Connectors</span></div></div>
           <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.connected"/><span class="l">Connected</span></div></div>
           <div t-attf-class="pbim-stat {{ state.kpis.errors ? 'err' : '' }}"><span class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.errors"/><span class="l">Errors</span></div></div>
@@ -26,7 +26,7 @@
           <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('database',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.staged"/><span class="l">Staged records</span></div></div>
         </div>
 
-        <div class="pbim-panel ppl-filters">
+        <div class="pbim-panel ppl-filters" data-coach="ig-filters">
           <div class="ppl-filter-row">
             <div class="pbim-chips">
               <button t-foreach="statusChips" t-as="c" t-key="c.id"
@@ -55,7 +55,7 @@
           </div>
         </div>
 
-        <div t-if="filtered.length" class="ppl-roster">
+        <div t-if="filtered.length" class="ppl-roster" data-coach="ig-roster">
           <div t-foreach="filtered" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openConnector(c.id)">
             <div class="ppl-av"><t t-out="ic(c.icon,20)"/></div>
             <div class="ppl-id">
