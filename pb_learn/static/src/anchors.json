@@ -357,6 +357,11 @@
       "screen": "integrations",
       "file": "pb_integrations/static/src/xml/integrations.xml",
       "desc": "The connector cards, with the last-sync time and the staged count. A connector that stopped still says connected — the sync time is the tell."
+    },
+    "st-newpolicy-date": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory_wizards.xml",
+      "desc": "The effective date on the new-policy wizard. It is the company's record of when a rate change legally started — read by auditors and by the statutory reports, and NOT a switch: the cockpit displays the latest-dated active policy the moment it is saved."
     }
   },
   "pattern": {},
@@ -397,7 +402,8 @@
       "pb_formula_studio/static/src/xml/studio.xml",
       "pb_statutory/static/src/xml/statutory.xml",
       "pb_structures/static/src/xml/structures.xml",
-      "pb_integrations/static/src/xml/integrations.xml"
+      "pb_integrations/static/src/xml/integrations.xml",
+      "pb_statutory/static/src/xml/statutory_wizards.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

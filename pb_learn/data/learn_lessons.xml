@@ -538,7 +538,8 @@
         <field name="sequence">20</field>
         <field name="kicker">The inventory</field>
         <field name="title">Every line on a payslip is a component here</field>
-        <field name="body">Ten components, in four kinds: &lt;b&gt;inputs&lt;/b&gt; (base salary), &lt;b&gt;earnings&lt;/b&gt; (allowances, overtime), &lt;b&gt;deductions&lt;/b&gt; (BHXH, BHYT, BHTN, thuế TNCN) and &lt;b&gt;totals&lt;/b&gt; (gross, taxable, net). Nothing on a payslip comes from anywhere else — if a line exists, it is one of these, and if a line is missing, its component is.</field>
+        <field name="body">Ten components in four kinds — &lt;b&gt;inputs&lt;/b&gt; (base salary), &lt;b&gt;earnings&lt;/b&gt; (allowances, overtime), &lt;b&gt;deductions&lt;/b&gt; (BHXH, BHYT, BHTN, thuế TNCN) and &lt;b&gt;totals&lt;/b&gt; (gross, taxable, net) — and below them the &lt;b&gt;parameters&lt;/b&gt; those formulas reference. Nothing on a payslip comes from anywhere else: if a line exists it is one of these, and if a line is wrong the number behind it is one of these too.</field>
+        <field name="tip">&lt;b&gt;EESI&lt;/b&gt;, &lt;b&gt;EEHI&lt;/b&gt; and &lt;b&gt;EEUI&lt;/b&gt; are the contribution rates, and they live HERE — on the configuration. The Statutory screen declares what the company contributes; this is what actually charges it.</field>
         <field name="screen">formula</field>
         <field name="anchor">fs-components</field>
         <field name="visual">none</field>
@@ -691,8 +692,9 @@
         <field name="lesson_id" ref="lesson_l6"/>
         <field name="sequence">50</field>
         <field name="kicker">The connection</field>
-        <field name="title">Watch a rate become a payslip line</field>
-        <field name="body">The &lt;b&gt;1.5%&lt;/b&gt; on the BHYT row and the &lt;b&gt;−180,000 ₫&lt;/b&gt; on Mai's July payslip are the same fact, twice: 1.5% of her registered base of 12,000,000 ₫. Every deduction on every slip traces back to a cell on this table — which is why a single edit here moves thousands of lines at once.</field>
+        <field name="title">Check the declared rate against the charged one</field>
+        <field name="body">The &lt;b&gt;1.5%&lt;/b&gt; on the BHYT row is what the company &lt;b&gt;declares&lt;/b&gt;. The &lt;b&gt;−180,000 ₫&lt;/b&gt; on Mai's July slip is what her division's configuration actually &lt;b&gt;charged&lt;/b&gt; — 1.5% of her registered base of 12,000,000 ₫. Today they agree, and this line is how you check that. They are two records, though: editing the rate here would not move that đồng by itself.</field>
+        <field name="tip">The number that priced that line is a parameter on Retail's configuration — &lt;b&gt;EEHI&lt;/b&gt;, at the bottom of the component list in Formula Engine. That is where a rate actually moves a payslip.</field>
         <field name="screen">statutory</field>
         <field name="anchor">st-rates</field>
         <field name="visual">trace</field>
@@ -705,8 +707,8 @@
         <field name="sequence">60</field>
         <field name="kicker">The mechanics</field>
         <field name="title">A rate change is a new record, not an edit</field>
-        <field name="body">There is &lt;b&gt;no version history&lt;/b&gt; on a policy. When a decree changes a rate you create a &lt;b&gt;new policy record&lt;/b&gt; with its own code — codes are unique per company — and its own &lt;b&gt;effective date&lt;/b&gt;, then end-date the outgoing one. The roster below is what that looks like afterwards: 2025 ended and archived, 2026 active.</field>
-        <field name="tip">Payobook picks the policy with the latest effective date among those still active. Not the newest record, not the last one edited — the effective date is the field that decides.</field>
+        <field name="body">There is &lt;b&gt;no version history&lt;/b&gt; on a policy. When a decree changes a rate you create a &lt;b&gt;new policy record&lt;/b&gt; with its own code — codes are unique per company — and its own &lt;b&gt;effective date&lt;/b&gt;. The old record stays as the evidence of what was declared before it; archiving it takes it off this list, which is why the roster shows the live declarations rather than the whole history.</field>
+        <field name="tip">The rates table above shows the ACTIVE policy with the latest effective date. It does not compare that date to today and it does not read the end date — so a policy dated from next month is displayed the moment it is saved.</field>
         <field name="screen">statutory</field>
         <field name="anchor">st-roster</field>
         <field name="visual">none</field>
@@ -716,9 +718,9 @@
         <field name="lesson_id" ref="lesson_l6"/>
         <field name="sequence">70</field>
         <field name="kicker">Before you act</field>
-        <field name="title">The date is the whole of the risk</field>
-        <field name="body">A new policy dated from the first of next month is safe. One dated from today, while a month is still open, is not: the current policy is chosen by &lt;b&gt;latest effective date&lt;/b&gt;, so any run that recomputes — after a rejection, after an import fix — would pick up rates that were not in force for its own period.</field>
-        <field name="consequence">Affects every future payslip in &lt;b&gt;every division&lt;/b&gt; — one policy serves the whole company, not one configuration. Reversible: &lt;b&gt;partly&lt;/b&gt; — the new record can be archived, but any run recomputed while it was in force keeps the figures it produced until it is recomputed again. Verify first: that no run is still open for a period before the effective date.</field>
+        <field name="title">Declaring a rate is half the job</field>
+        <field name="body">Saving a new policy changes what this screen, the contribution analytics and the statutory reports say. It changes &lt;b&gt;no payslip&lt;/b&gt;. The rate that prices pay is a parameter on each division's formula configuration, so a rate change is two pieces of work: declare it here, and change it there. Until both are done the two disagree — and it is this screen, not the payslip, that is telling the truth about the company's intention.</field>
+        <field name="consequence">Affects what is &lt;b&gt;declared and reported&lt;/b&gt;, company-wide: this cockpit, the contribution analytics and the statutory reports. It does not reprice a single payslip on its own. Reversible: &lt;b&gt;yes&lt;/b&gt; — archive the record and the previous declaration is displayed again, because nothing downstream has been recomputed from it. Verify first: that you know which configurations have to change too, and who is going to change them.</field>
         <field name="screen">statutory</field>
         <field name="anchor">st-new</field>
         <field name="visual">none</field>
@@ -788,15 +790,15 @@
         <field name="sequence">10</field>
         <field name="label">Edit the rate on the policy that is in force now</field>
         <field name="is_correct" eval="False"/>
-        <field name="feedback">Let's rethink that. There is no version history to fall back on — the old rate is simply gone. And if anything sends July back to draft, the recompute charges an August rate to a July payslip, which is a compliance error nobody will see until it is filed.</field>
+        <field name="feedback">Let's rethink that. There is no version history to fall back on — the old declared rate is simply gone, and with it the record of what the company was declaring while July was being paid. That record is exactly what an inspection asks to see.</field>
     </record>
 
     <record id="lesson_l6_quiz_opt_1" model="learn.quiz.option">
         <field name="quiz_id" ref="lesson_l6_quiz"/>
         <field name="sequence">20</field>
-        <field name="label">Create a new policy record effective 01/08, and end-date the current one on 31/07</field>
+        <field name="label">Create a new policy record dated 01/08, and plan the configuration change with it</field>
         <field name="is_correct" eval="True"/>
-        <field name="feedback">Yes. July keeps the rates that were in force in July, August gets the new ones, and the change is on the record with a date and a code against it. Both halves are needed: without the end date on the old policy, two policies are active with nothing to choose between them.</field>
+        <field name="feedback">Yes. The date records what the decree says, the old record stays as evidence of what was declared before it, and — the half people forget — the rate that actually prices pay is a parameter on each division's configuration, so somebody has to change that too before August runs.</field>
     </record>
 
     <record id="lesson_l6_quiz_opt_2" model="learn.quiz.option">
@@ -804,7 +806,7 @@
         <field name="sequence">30</field>
         <field name="label">Create the new policy now with today's date so nothing is forgotten</field>
         <field name="is_correct" eval="False"/>
-        <field name="feedback">Let's rethink that. The instinct is right and the date is wrong: from today means from 20 July, and the current policy is whichever active one has the latest effective date. Write the record now if you like — with 01/08 in the effective date field.</field>
+        <field name="feedback">Let's rethink that. The instinct is right and the date is wrong: today means 20 July, and the decree does not say 20 July — so the declaration would record a legal start the company cannot evidence. Create the record now if you like; put 01/08 in the effective date, and tell whoever is reviewing July that the rates on this screen are next month's.</field>
     </record>
 
 </odoo>

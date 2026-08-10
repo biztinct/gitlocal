@@ -18,11 +18,18 @@
    change never resurrects a stale sentence.
    ========================================================================== */
 
-const KEY = "pbLearnLive";
+/* Namespaced per database AND per user. One browser profile routinely holds
+   two Payobook sessions — a prospect's demo account and whoever set it up for
+   them — and a bare key would hand one of them the other's half-finished
+   capstone, pointing at a run they cannot see. */
+function storageKey() {
+    const info = window.odoo?.session_info || {};
+    return `pbLearnLive:${info.db || "?"}:${info.uid || "?"}`;
+}
 
 function read() {
     try {
-        const raw = window.localStorage.getItem(KEY);
+        const raw = window.localStorage.getItem(storageKey());
         return raw ? JSON.parse(raw) : null;
     } catch {
         // A locked-down profile must not break the runner; it just cannot resume.
@@ -33,9 +40,9 @@ function read() {
 function persist(value) {
     try {
         if (value) {
-            window.localStorage.setItem(KEY, JSON.stringify(value));
+            window.localStorage.setItem(storageKey(), JSON.stringify(value));
         } else {
-            window.localStorage.removeItem(KEY);
+            window.localStorage.removeItem(storageKey());
         }
     } catch {
         // Same: not being able to remember is survivable, throwing is not.

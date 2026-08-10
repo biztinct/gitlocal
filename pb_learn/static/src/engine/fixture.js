@@ -101,11 +101,38 @@ const TENANT_DEFAULTS = {
 };
 
 /* =============================================================================
-   0b. THE STATUTORY RECORDS — the rules the law writes, as the product holds them.
+   0b. THE STATUTORY RECORDS — and the TWO PLACES a rate lives.
    -----------------------------------------------------------------------------
-   These mirror TWO real models, and the mirror is the point: everything the
-   payslip rule below deducts is read from here, so a lesson about the policy
-   screen and a lesson about a payslip line cannot disagree about a rate.
+   THE MOST IMPORTANT FACT IN THIS FILE, because the content got it wrong once
+   and confidently:
+
+     A `vietnam.insurance.policy` record does NOT price a payslip.
+
+   It is the company's DECLARED statutory rates. Everything that reads it reads
+   it to DISPLAY or to REPORT: the Statutory cockpit
+   (pb_statutory/models/pb_statutory.py:54-76), the contribution analytics
+   (pb_hr_payroll_vietnam/models/hr_formula_config_analytics_vietnam.py:49-76),
+   the employee cost estimate (hr_employee_vietnam.py:235-259) and the
+   insurance analytics wizard. Grep the rate fields and that is the whole list.
+
+   The rates that actually PRICE a payslip are PARAMETER CONSTANTS on each
+   division's formula configuration. In the demo world BHYT is
+   `EEHI = 0.015` (pb_demo/models/demo_catalog.py:62) and the component that
+   charges it is `HIEMP = -ROUND(MIN(BASIC,CAPLO)*EEHI)` (:107). Change the
+   policy record and not one đồng moves; change EEHI and every future payslip
+   in that division does.
+
+   THAT SEPARATION IS DESIGN, NOT AN OVERSIGHT: pay never changes because a
+   reference table changed. It changes when somebody edits a configuration, and
+   that edit is traceable, previewable and simulatable. The job the Statutory
+   screen really does is DECLARE and RECONCILE — and the reconciliation is the
+   lesson: when the declared rate and the configured rate disagree, payroll is
+   running on a rate the company is not declaring.
+
+   So this fixture holds the rates ONCE, in VN_RATES, and hands the same
+   numbers to both places — because that is what a correctly run company looks
+   like, and because the trace in L6 is a check that they still agree rather
+   than a claim that one causes the other.
 
      vietnam.insurance.policy   name · code · effective_date · end_date ·
                                 active · si/hi/ui employee+employer rates ·
@@ -115,11 +142,21 @@ const TENANT_DEFAULTS = {
 
    THERE IS NO VERSION CHAIN ON EITHER MODEL, and the content must never teach
    one. A rate change is a NEW RECORD with its own `code` (unique per company —
-   `code_company_uniq`) and its own `effective_date`; the old record is
-   end-dated. The cockpit picks the CURRENT policy as the latest effective_date
-   among active=True (pb_statutory/models/pb_statutory.py). `contract.json`
-   pins all four of those facts.
+   `code_company_uniq`) and its own `effective_date`. The cockpit picks the
+   policy to display as the LATEST effective_date among active=True — it does
+   NOT consult end_date, and it does not compare the date to today, so a
+   future-dated policy is displayed the moment it is saved. `contract.json`
+   pins that query.
    ========================================================================== */
+
+/* The statutory reality, declared once. Both the policy record below and the
+   configuration's parameter constants read from it. */
+const VN_RATES = {
+  SI: { employee: 8, employer: 17.5, ceiling: 20000000 },
+  HI: { employee: 1.5, employer: 3, ceiling: 20000000 },
+  UI: { employee: 1, employer: 1, ceiling: 20000000 },
+};
+
 const POLICY = {
   name: B("Insurance policy 2026", "Chính sách bảo hiểm 2026"),
   code: "VN-INS-2026",
@@ -129,12 +166,9 @@ const POLICY = {
   /* `key` is the product's own scheme key (pb_statutory CONTRIB_MAP: SI / HI /
      UI), not a display label — the cockpit rows are keyed by it. */
   rows: [
-    { key: "SI", label: B("BHXH — social insurance", "BHXH — bảo hiểm xã hội"),
-      employee: 8, employer: 17.5, ceiling: 20000000 },
-    { key: "HI", label: B("BHYT — health insurance", "BHYT — bảo hiểm y tế"),
-      employee: 1.5, employer: 3, ceiling: 20000000 },
-    { key: "UI", label: B("BHTN — unemployment insurance", "BHTN — bảo hiểm thất nghiệp"),
-      employee: 1, employer: 1, ceiling: 20000000 },
+    { key: "SI", label: B("BHXH — social insurance", "BHXH — bảo hiểm xã hội"), ...VN_RATES.SI },
+    { key: "HI", label: B("BHYT — health insurance", "BHYT — bảo hiểm y tế"), ...VN_RATES.HI },
+    { key: "UI", label: B("BHTN — unemployment insurance", "BHTN — bảo hiểm thất nghiệp"), ...VN_RATES.UI },
   ],
   /* Totals are DERIVED, exactly as `total_employee_rate` is a computed field on
      the real record. A hand-typed total beside the rows it sums is the first
@@ -176,12 +210,16 @@ const TAX = {
 
    The rule set, deliberately the simplest one that is still true of the worked
    example:
-     · insurance = the three EMPLOYEE rates on the POLICY above, each charged on
-       the REGISTERED BASE and rounded to the đồng, then added up. Charged on
-       the base, never on gross — that single fact is L3's spine. Reading the
-       rates off the policy rather than restating them is what lets L6 trace a
-       cell on the statutory screen to a line on a payslip and be telling the
-       truth about both.
+     · insurance = the three EMPLOYEE rates the CONFIGURATION carries as
+       parameter constants (CONFIG_PARAMS below), each charged on the
+       REGISTERED BASE and rounded to the đồng, then added up. Charged on the
+       base, never on gross — that single fact is L3's spine.
+
+       It reads CONFIG_PARAMS and not POLICY on purpose, and the distinction is
+       the one the product actually makes: a payslip is priced by its division's
+       configuration. The two hold the same numbers here because VN_RATES feeds
+       both — which is what makes L6's trace a RECONCILIATION a learner can
+       perform, rather than a causation the product does not implement.
      · taxable   = gross − insurance − the TAX table's personal deduction
                           − its dependant deduction per dependant
      · PIT       = the first band's rate on the taxable amount, floored at zero.
@@ -202,8 +240,23 @@ const RELIEF_SELF = TAX.personalDeduction;
 const RELIEF_DEPENDANT = TAX.dependentDeduction;
 const PIT_FIRST_BRACKET = TAX.slabs[0].rate / 100;
 
+/* What the division's configuration charges — the parameter constants a real
+   config carries (EESI / EEHI / EEUI in the demo world). Same numbers as the
+   declared policy, from one declaration, because a correctly run company keeps
+   them in step. `rates` overrides them for the what-if in RATE_CHANGE. */
+const CONFIG_PARAMS = {
+  EESI: VN_RATES.SI.employee,
+  EEHI: VN_RATES.HI.employee,
+  EEUI: VN_RATES.UI.employee,
+};
+
+const PARAM_OF = { SI: "EESI", HI: "EEHI", UI: "EEUI" };
+
 function employeeRate(key, rows) {
-  return (rows || POLICY.rows).find((r) => r.key === key).employee / 100;
+  if (rows) {
+    return rows.find((r) => r.key === key).employee / 100;
+  }
+  return CONFIG_PARAMS[PARAM_OF[key]] / 100;
 }
 
 function payslip({ base, allowance = 0, ot = 0, dependants = 0, rates }) {
@@ -544,6 +597,16 @@ const PRACTICE = {
       { l: "H", code: "TNCT", kind: "total", label: B("Taxable income", "Thu nhập chịu thuế") },
       { l: "I", code: "TNCN", kind: "deduction", label: B("Personal income tax", "Thuế TNCN") },
       { l: "J", code: "THUCNHAN", kind: "total", label: B("Net pay", "Thực nhận") },
+      /* THE PARAMETER CONSTANTS. These are the numbers that actually price the
+         insurance lines — `BHYT = −ROUND(MIN(LCB, CAPLO) × EEHI)` — and they
+         live HERE, on the configuration, not on the statutory policy. L6 sends
+         the learner to this list to see where a rate really moves a payslip. */
+      { l: "K", code: "EESI", kind: "param", label: B("BHXH rate (employee)", "Tỷ lệ BHXH (NLĐ)"),
+        value: CONFIG_PARAMS.EESI },
+      { l: "L", code: "EEHI", kind: "param", label: B("BHYT rate (employee)", "Tỷ lệ BHYT (NLĐ)"),
+        value: CONFIG_PARAMS.EEHI },
+      { l: "M", code: "EEUI", kind: "param", label: B("BHTN rate (employee)", "Tỷ lệ BHTN (NLĐ)"),
+        value: CONFIG_PARAMS.EEUI },
     ],
     /* The component the editor card is open on. */
     selected: "TNCN",
@@ -554,7 +617,10 @@ const PRACTICE = {
        { k: "total", t: "TNCT" }],
       [{ k: "total", t: "TNCT" }, { k: "op", t: "=" }, { k: "total", t: "GROSS" },
        { k: "op", t: "−" }, { k: "deduction", t: "BHXH + BHYT + BHTN" },
-       { k: "op", t: "−" }, { k: "input", t: "11,000,000" }],
+       /* Read from the tax table, never typed: the relief figure on a chip and
+          the relief figure in the arithmetic are the same number or the screen
+          is arguing with itself. */
+       { k: "op", t: "−" }, { k: "input", t: TAX.personalDeduction.toLocaleString("en-US") }],
     ],
     dependsOn: ["GROSS", "BHXH", "BHYT", "BHTN"],
     usedBy: ["THUCNHAN"],

@@ -201,6 +201,28 @@ class TestMission(TransactionCase):
             self.assertTrue((res['note'] or {}).get(lang),
                             "the refusal says nothing in %s" % lang)
 
+        # THE OTHER HALF OF THE GATE, and the half a group check alone would
+        # miss: the demo GROUP is not enough, the active company has to be the
+        # demo company too. Without this a customer tenant that had installed
+        # pb_demo and handed somebody the group would run live missions against
+        # its own payroll records.
+        demo_group = self.env.ref('pb_demo.group_payobook_demo',
+                                  raise_if_not_found=False)
+        if demo_group:
+            other = self.env['res.company'].create({'name': 'Not The Demo Co'})
+            grouped = Users.create({
+                'name': 'Grouped Elsewhere', 'login': 'live_wrongco_test',
+                'company_id': other.id, 'company_ids': [(6, 0, [other.id])],
+                'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                                      demo_group.id])]})
+            env2 = self.env(user=grouped)
+            self.assertFalse(env2['learn.live'].gate_open(),
+                             "the demo group alone opened live missions in a "
+                             "company that is not the demo company")
+            res2 = env2['learn.mission'].live_check(live[0].key, step.key)
+            self.assertFalse(res2['ok'],
+                             "a demo-group user in another company passed a live check")
+
     def test_12c_a_fixture_mission_can_never_be_checked_on_the_server(self):
         """The inverse isolation, and it matters as much as the gate.
 

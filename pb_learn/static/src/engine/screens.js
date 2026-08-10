@@ -42,12 +42,17 @@ const SLASH = " / ";
 /* A formula component's kind decides its chip colour and its label. The Studio
    colours them the same way, which is what makes a formula readable at a
    glance: red is money leaving, green is money arriving, amber is a subtotal. */
-const CHIP_TONE = { input: "b", earning: "ok", deduction: "danger", total: "a", op: "" };
+const CHIP_TONE = { input: "b", earning: "ok", deduction: "danger", total: "a",
+                   param: "", op: "" };
 const KIND_LABEL = {
     input: B("Input", "Đầu vào"),
     earning: B("Earning", "Thu nhập"),
     deduction: B("Deduction", "Khấu trừ"),
     total: B("Total", "Tổng"),
+    // The parameter constants. Drawn last and drawn plainly, because they are
+    // not lines on a payslip — they are the NUMBERS the lines are priced from,
+    // and they are the answer to "where does a rate actually live".
+    param: B("Parameter", "Tham số"),
 };
 
 /* ------------------------------------------------------------------- helpers */
@@ -454,8 +459,10 @@ export const SCREENS = {
                 <span class="lrn-avatar">${esc(k.l)}</span>
                 <span><span class="lrn-nm">${esc(k.code)}</span><br>
                     <span class="lrn-sub2">${esc(tx(k.label))}</span></span>
-                <span class="lrn-rr"><span class="lrn-chip ${CHIP_TONE[k.kind]}"
-                    >${esc(tx(KIND_LABEL[k.kind]))}</span></span>
+                <span class="lrn-rr">${k.value === undefined ? ""
+                    : `<b class="lrn-money">${P(k.value)}</b>`}
+                    <span class="lrn-chip ${CHIP_TONE[k.kind]}"
+                        >${esc(tx(KIND_LABEL[k.kind]))}</span></span>
             </div>`).join("");
 
         const formula = c.formula.map((line) => `

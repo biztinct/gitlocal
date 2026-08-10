@@ -1397,15 +1397,15 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">It re-prices every future payslip in &lt;b&gt;every division&lt;/b&gt; — one insurance policy serves the whole company, not one configuration. For a BHYT employee share moving from 1.5% to 2.0%, Mai alone loses 57,000 ₫ of net a month, and every other employee loses their own version of that.</field>
+        <field name="body">On its own — &lt;b&gt;nothing&lt;/b&gt;. This record is what the company DECLARES: it is read by this cockpit, by the contribution analytics and by the statutory reports, and by nothing that computes pay. The rate that prices a payslip is a parameter on each division's &lt;b&gt;formula configuration&lt;/b&gt;, and changing one does not change the other.</field>
     </record>
 
     <record id="intent_changerate_b020" model="learn.intent.block">
         <field name="intent_id" ref="intent_changerate"/>
         <field name="sequence">20</field>
         <field name="capability">any</field>
-        <field name="kind">warn</field>
-        <field name="body">Do not edit the policy that is in force. There is no version history to fall back on, and if an open run recomputes it will be charged rates that were not in force for its own period.</field>
+        <field name="kind">ok</field>
+        <field name="body">That is deliberate, and it is worth saying out loud: pay does not move because a reference table moved. It moves when somebody edits a configuration — an edit that can be previewed, simulated and pointed at afterwards.</field>
     </record>
 
     <record id="intent_changerate_b030" model="learn.intent.block">
@@ -1425,30 +1425,38 @@
     <record id="intent_changerate_b030_s01" model="learn.intent.step">
         <field name="block_id" ref="intent_changerate_b030"/>
         <field name="sequence">20</field>
-        <field name="text">Set its effective date to the first day the change applies — after every open period</field>
-        <field name="anchor">st-effective</field>
+        <field name="text">Date it from the day the decree applies — this field is the legal record, not a switch</field>
+        <field name="anchor">st-newpolicy-date</field>
     </record>
 
     <record id="intent_changerate_b030_s02" model="learn.intent.step">
         <field name="block_id" ref="intent_changerate_b030"/>
         <field name="sequence">30</field>
-        <field name="text">End-date the outgoing policy, so exactly one is in force on any day</field>
-        <field name="anchor">st-roster</field>
+        <field name="text">Know that this screen shows the new rates the moment you save, so tell anyone reviewing an open run</field>
+        <field name="anchor">st-rates</field>
     </record>
 
     <record id="intent_changerate_b030_s03" model="learn.intent.step">
         <field name="block_id" ref="intent_changerate_b030"/>
         <field name="sequence">40</field>
-        <field name="text">Read the effect on one real payslip before you save</field>
-        <field name="anchor">ps-breakdown</field>
+        <field name="text">Change the rate parameter on every affected formula configuration, and simulate before activating</field>
+        <field name="anchor">fs-components</field>
     </record>
 
     <record id="intent_changerate_b040" model="learn.intent.block">
         <field name="intent_id" ref="intent_changerate"/>
         <field name="sequence">40</field>
         <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Do not edit the policy that is in force. There is no version history to fall back on — the old declared rate is simply gone, and with it the evidence of what the company was declaring while last month was paid.</field>
+    </record>
+
+    <record id="intent_changerate_b050" model="learn.intent.block">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="sequence">50</field>
+        <field name="capability">any</field>
         <field name="kind">source</field>
-        <field name="body">The insurance policy record: its rates, its effective date and its end date.</field>
+        <field name="body">The insurance policy record, and the rate parameters on the division's formula configuration.</field>
     </record>
 
     <record id="intent_whichpolicy" model="learn.intent">
@@ -1505,7 +1513,7 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">The one with the &lt;b&gt;latest effective date&lt;/b&gt; among the policies that are still active. Not the most recently created record and not the last one edited — the effective date is the field that decides, which is why it is the field to check first.</field>
+        <field name="body">The one with the &lt;b&gt;latest effective date&lt;/b&gt; among the policies that are still active. Two things it does NOT do, and both surprise people: it does not compare that date to today, so a policy dated from next month is displayed as soon as it is saved; and it does not read the end date at all.</field>
     </record>
 
     <record id="intent_whichpolicy_b020" model="learn.intent.block">
@@ -1530,7 +1538,7 @@
         <field name="sequence">40</field>
         <field name="capability">any</field>
         <field name="kind">warn</field>
-        <field name="body">Two active policies with no end date between them is not reported as an error. It simply resolves to one of them, and you find out which from a payslip.</field>
+        <field name="body">Whichever policy is displayed, it is a DECLARATION. It is not what priced the payslips you are looking at — that came from the rate parameters on each division's formula configuration. If the two disagree, the payslips are not wrong; the declaration and the configuration are simply out of step, and somebody has to decide which one is behind.</field>
     </record>
 
     <record id="intent_whichpolicy_b050" model="learn.intent.block">

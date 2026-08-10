@@ -75,8 +75,12 @@ def _live_gate(env):
         in_group = False
     if not in_group:
         return {'ok': False, 'note': _NOT_DEMO}
-    names = {c.name for c in user.company_ids} | {env.company.name}
-    if DEMO_COMPANY_NAME not in names:
+    # The ACTIVE company only, not the union of everything the user may switch
+    # to. The refusal says "your session is somewhere else", and a union would
+    # make that sentence false for a user who merely HAS the demo company in
+    # their list while working in another — the predicate would then pass while
+    # the screen in front of them belonged to a different company entirely.
+    if env.company.name != DEMO_COMPANY_NAME:
         return {'ok': False, 'note': _NOT_DEMO}
     return None
 
@@ -100,23 +104,38 @@ def _my_division(env):
 
 
 def _my_june_run(env):
-    """The user's own June 2026 demo run, or an empty recordset.
+    """The run THIS user created for their own division in June 2026.
 
-    Scoped by pb_division, which pb_payruns computes and STORES from the first
-    payslip's formula configuration (hr_payslip_run.py:106-125) — so it is only
-    populated once the run has slips. A run that exists but has not computed
-    therefore has no division yet, which is why `june_run_computed` also asks
-    for a slip count rather than trusting the division match alone.
+    Three scopes, and the third one is the load-bearing one:
+
+      is_demo + June dates   the one open month in the demo world.
+      pb_division            their assignment. Computed and STORED by
+                             pb_payruns from the first payslip's formula
+                             config (hr_payslip_run.py:106-125), so it is only
+                             populated once the run HAS slips — which is why
+                             `june_run_computed` counts slips as well.
+      create_uid == me       THE CAPSTONE'S HONESTY. The demo generator seeds
+                             an open June run for every division before anybody
+                             signs up. Without this clause a prospect would
+                             open the mission and watch step one tick itself
+                             green off somebody else's record — the mission
+                             would congratulate them for work they had not
+                             done, which is worse than not shipping it.
+
+    No sudo: the demo user's record rules already grant read across the demo
+    world (pb_demo/security/pb_demo_security.xml:23-32), and the gate has
+    already established that this IS a demo user. Reading as themselves means
+    the predicate can never see further than the screen they are looking at.
     """
     division = _my_division(env)
     if not division:
         return env['hr.payslip.run'].browse()
-    Run = env['hr.payslip.run'].sudo()
-    return Run.search([
+    return env['hr.payslip.run'].search([
         ('is_demo', '=', True),
         ('date_start', '>=', JUNE_START),
         ('date_end', '<=', JUNE_END),
         ('pb_division', '=', division),
+        ('create_uid', '=', env.uid),
     ], order='id desc', limit=1)
 
 
@@ -144,7 +163,7 @@ def _p_june_run_computed(env):
     run = _my_june_run(env)
     if not run:
         return {'ok': False, 'note': _NO_RUN}
-    count = env['hr.payslip'].sudo().search_count([('payslip_run_id', '=', run.id)])
+    count = env['hr.payslip'].search_count([('payslip_run_id', '=', run.id)])
     if not count:
         return {'ok': False, 'note': _B(
             "The run exists but has no payslips yet. Press Compute in the wizard.",
@@ -195,17 +214,6 @@ LIVE_PREDICATES = {
 
 
 # --------------------------------------------------------- live values
-def _fmt(env, number):
-    """Group thousands the way the reader's language does."""
-    lang = (env.context.get('lang') or env.user.lang or 'en_US')
-    grouped = '{:,.0f}'.format(number or 0)
-    return grouped.replace(',', '.') if lang.startswith('vi') else grouped
-
-
-def _money(env, number):
-    return '%s ₫' % _fmt(env, number)
-
-
 def _v_division_name(env):
     user = env.user
     return user._pb_demo_division_label() if hasattr(user, 'pb_demo_division') else None
@@ -220,33 +228,17 @@ def _v_june_run_state(env):
     return note['vi'] if lang.startswith('vi') else note['en']
 
 
-def _v_june_net_total(env):
-    run = _my_june_run(env)
-    return _money(env, run.pb_total_net) if run and run.pb_total_net else None
-
-
-def _v_flagged_count(env):
-    """Flagged means the same thing it means on the review screen: a payslip
-    whose net is not positive. Read through pb_payslip_review's own aggregate so
-    there is one definition of the word, not two."""
-    run = _my_june_run(env)
-    if not run or 'pb.payslip.review' not in env:
-        return None
-    slips = env['hr.payslip'].sudo().search([('payslip_run_id', '=', run.id)])
-    if not slips:
-        return None
-    totals = env['pb.payslip.review'].sudo()._slip_totals(slips.ids)
-    flagged = [s for s in slips.ids
-               if (totals.get(s, {}).get('net') or 0) <= 0]
-    return _fmt(env, len(flagged))
-
-
 def _v_active_policy_rates(env):
     """The employee / employer split on the policy actually in force — the same
     latest-effective-active rule the statutory cockpit applies."""
     if 'vietnam.insurance.policy' not in env:
         return None
-    policy = env['vietnam.insurance.policy'].sudo().search(
+    # ('active', '=', True) EXPLICITLY, exactly as pb_statutory.py:57 writes
+    # it. The ORM's active_test would usually do it, but a caller with
+    # active_test=False in context would otherwise get a different policy here
+    # than the cockpit shows — and the whole value of this answer is that it
+    # says what the screen says.
+    policy = env['vietnam.insurance.policy'].search(
         [('company_id', 'in', env.companies.ids or [env.company.id]),
          ('active', '=', True)], order='effective_date desc', limit=1)
     if not policy:
@@ -259,24 +251,15 @@ def _v_active_policy_rates(env):
         pair(policy.ui_employee_rate, policy.ui_employer_rate))
 
 
-def _v_pit_relief(env):
-    if 'vietnam.tax.table' not in env:
-        return None
-    table = env['vietnam.tax.table'].sudo().search(
-        [('company_id', 'in', env.companies.ids or [env.company.id])],
-        order='tax_year desc', limit=1)
-    if not table:
-        return None
-    return '%s / %s' % (_money(env, table.personal_deduction),
-                        _money(env, table.dependent_deduction))
-
-
+# THREE KEYS ARE DELIBERATELY ABSENT. june_net_total, flagged_count and
+# pit_relief were written, implemented and consumed by nothing — a whitelist
+# entry no sentence uses is a read path with no reader, and flagged_count in
+# particular reached into another cockpit's SQL aggregate to define a word this
+# module does not otherwise own. They come back when content needs them, with
+# the content in the same commit.
 LIVE_VALUES = {
-    'june_net_total': _v_june_net_total,
     'june_run_state': _v_june_run_state,
     'active_policy_rates': _v_active_policy_rates,
-    'pit_relief': _v_pit_relief,
-    'flagged_count': _v_flagged_count,
     'division_name': _v_division_name,
 }
 
@@ -328,9 +311,20 @@ class LearnLive(models.AbstractModel):
     # -- values -----------------------------------------------------------
     @api.model
     def values(self, keys):
-        """{key: rendered string} for the keys that resolve. Absent keys are
-        OMITTED rather than blanked: a caller can then tell 'no answer' from
-        'the answer is empty', and the fallback sentence takes over."""
+        """{key: rendered string} for the keys that resolve.
+
+        GATED IN FULL, exactly like the predicates. Live values are a demo-world
+        affordance in Phase B: outside it every key is omitted, `render` falls
+        back to the authored sentence, and a real tenant reads the static text
+        it has always read. That is the DESIGNED behaviour, not a degradation —
+        the two live sites both ship a fallback that says the same thing without
+        the live figure.
+
+        Absent keys are OMITTED rather than blanked, so a caller can tell 'no
+        answer' from 'the answer is empty'.
+        """
+        if _live_gate(self.env) is not None:
+            return {}
         out = {}
         for key in keys or []:
             fn = LIVE_VALUES.get(key)

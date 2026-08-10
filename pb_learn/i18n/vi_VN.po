@@ -67,6 +67,13 @@ msgstr ""
 "48 phiếu lương, 48 phiếu đã tính, 1 phiếu cần soát xét. Con số thứ ba mới là con số cần tới bạn."
 
 #. module: pb_learn
+#: model:learn.step,tip:pb_learn.lesson_l5_step_01
+msgid ""
+"<b>EESI</b>, <b>EEHI</b> and <b>EEUI</b> are the contribution rates, and they live HERE — on the configuration. The Statutory screen declares what the company contributes; this is what actually charges it."
+msgstr ""
+"<b>EESI</b>, <b>EEHI</b> và <b>EEUI</b> là các tỷ lệ đóng bảo hiểm, và chúng nằm Ở ĐÂY — trên cấu hình. Màn hình Bảo hiểm & Thuế khai báo mức doanh nghiệp đóng; còn đây mới là nơi thật sự tính ra khoản đó."
+
+#. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_03
 msgid ""
 "<b>Match</b> points a row at the right employee. <b>Retry</b> re-reads it after you correct the file. <b>Skip</b> drops it — which is legitimate for a duplicate row and quietly wrong for an employee, because a skipped employee is simply absent from the run."
@@ -148,9 +155,9 @@ msgstr "Một nghị định nâng phần đóng BHYT của người lao động
 #. module: pb_learn
 #: model:learn.mission,summary:pb_learn.mission_m4
 msgid ""
-"A decree raises the health-insurance rate. Create the new policy the way the product actually supports, date it so no open month is touched, and see what it costs one employee."
+"A decree raises the health-insurance rate. Declare it the way the product actually supports, date it so the record says what the decree says — and find out why declaring it is only half the job."
 msgstr ""
-"Một nghị định nâng tỷ lệ bảo hiểm y tế. Hãy tạo chính sách mới theo đúng cách sản phẩm hỗ trợ, đặt ngày sao cho không kỳ nào đang mở bị ảnh hưởng, và xem nó khiến một nhân viên mất bao nhiêu."
+"Một nghị định nâng tỷ lệ bảo hiểm y tế. Hãy khai báo theo đúng cách sản phẩm hỗ trợ, đặt ngày sao cho bản ghi nói đúng những gì nghị định nói — và hiểu vì sao khai báo mới chỉ là một nửa công việc."
 
 #. module: pb_learn
 #: model:learn.glossary.term,definition:pb_learn.gloss_retro
@@ -219,13 +226,6 @@ msgid ""
 "A meal allowance has been agreed for Retail. Add it as a component, wire it into gross, and prove it before anybody is paid by it."
 msgstr ""
 "Bán lẻ vừa thống nhất một khoản phụ cấp ăn ca. Hãy thêm nó thành một thành phần, nối vào tổng thu nhập, và chứng minh nó trước khi có ai được trả theo nó."
-
-#. module: pb_learn
-#: model:learn.step,body:pb_learn.lesson_l6_step_06
-msgid ""
-"A new policy dated from the first of next month is safe. One dated from today, while a month is still open, is not: the current policy is chosen by <b>latest effective date</b>, so any run that recomputes — after a rejection, after an import fix — would pick up rates that were not in force for its own period."
-msgstr ""
-"Một chính sách mới có hiệu lực từ ngày đầu tháng sau là an toàn. Một chính sách có hiệu lực từ hôm nay, trong khi một kỳ vẫn đang mở, thì không: chính sách hiện hành được chọn theo <b>ngày hiệu lực mới nhất</b>, nên bất kỳ đợt nào tính lại — sau khi bị từ chối, sau khi sửa dữ liệu nhập — sẽ nhận phải tỷ lệ chưa có hiệu lực trong kỳ của chính nó."
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l3_step_02
@@ -328,13 +328,6 @@ msgstr ""
 "Ảnh hưởng tới mọi phiếu lương tương lai được tính bằng cấu hình này — cả bộ phận, không phải một nhân viên, và không chỉ một tháng. Hoàn tác: <b>một phần</b> — cấu hình có thể sửa lại, nhưng đợt lương đã tính theo bản đã đổi vẫn giữ nguyên con số cho tới khi được tính lại. Kiểm tra trước: bảng phụ thuộc cho bất cứ thứ gì bạn đổi tên, và một lần mô phỏng trên tháng trước."
 
 #. module: pb_learn
-#: model:learn.step,consequence:pb_learn.lesson_l6_step_06
-msgid ""
-"Affects every future payslip in <b>every division</b> — one policy serves the whole company, not one configuration. Reversible: <b>partly</b> — the new record can be archived, but any run recomputed while it was in force keeps the figures it produced until it is recomputed again. Verify first: that no run is still open for a period before the effective date."
-msgstr ""
-"Ảnh hưởng tới mọi phiếu lương tương lai của <b>mọi bộ phận</b> — một chính sách phục vụ cả công ty, không phải một cấu hình. Hoàn tác: <b>một phần</b> — bản ghi mới có thể lưu trữ lại, nhưng đợt nào đã tính lại trong lúc nó có hiệu lực vẫn giữ nguyên con số cho tới khi được tính lại lần nữa. Kiểm tra trước: không còn đợt nào đang mở cho kỳ trước ngày hiệu lực."
-
-#. module: pb_learn
 #: model:learn.step,consequence:pb_learn.lesson_l4_step_04
 msgid ""
 "Affects the period this batch names, for every row it holds. Reversible: <b>partly</b> — you can import a correction, but rows already read into a computed run leave payslips that must be recomputed. Verify first: the period on the batch, that Need attention is zero, and that every Skip you used was a duplicate and not a person."
@@ -349,6 +342,13 @@ msgstr ""
 "Ảnh hưởng cả đợt lương, không phải một phiếu: cả 48 phiếu cùng quay về Nháp. Hoàn tác: <b>được</b> — đợt sẽ được tính lại và trình lại qua đúng chuỗi đó, và chưa có gì được chi. Kiểm tra trước: vấn đề có thực sự nằm ở cả đợt không, hay chỉ là một phiếu mà bạn có thể trao đổi riêng."
 
 #. module: pb_learn
+#: model:learn.step,consequence:pb_learn.lesson_l6_step_06
+msgid ""
+"Affects what is <b>declared and reported</b>, company-wide: this cockpit, the contribution analytics and the statutory reports. It does not reprice a single payslip on its own. Reversible: <b>yes</b> — archive the record and the previous declaration is displayed again, because nothing downstream has been recomputed from it. Verify first: that you know which configurations have to change too, and who is going to change them."
+msgstr ""
+"Ảnh hưởng tới phần <b>khai báo và báo cáo</b> trên toàn công ty: màn hình này, phần phân tích chi phí bảo hiểm và các báo cáo bắt buộc. Tự nó không tính lại một phiếu lương nào. Hoàn tác: <b>được</b> — lưu trữ bản ghi là bản khai báo trước đó hiển thị trở lại, vì chưa có gì phía sau được tính lại từ nó. Kiểm tra trước: bạn đã biết những cấu hình nào cũng phải sửa, và ai sẽ sửa chúng."
+
+#. module: pb_learn
 #: model:learn.station,outline_when:pb_learn.station_payslips
 msgid ""
 "After computing and before submitting for approval, and again whenever an employee asks why their pay is what it is."
@@ -361,13 +361,6 @@ msgid ""
 "After done, a correction is a retro line and never an edit. That is not a restriction — it is what keeps a reported month reportable."
 msgstr ""
 "Sau khi Hoàn tất, mọi hiệu chỉnh là một dòng hồi tố chứ không bao giờ là sửa trực tiếp. Đó không phải hạn chế — đó là thứ giữ cho một kỳ đã báo cáo vẫn báo cáo được."
-
-#. module: pb_learn
-#: model:learn.mission.step,hint:pb_learn.mission_m4_step_06
-msgid ""
-"Afterwards the roster should read like a timeline: 2025 ended, 2026 ending on 31/07, August active from 01/08."
-msgstr ""
-"Sau đó danh sách nên đọc ra như một dòng thời gian: bản 2025 đã kết thúc, bản 2026 kết thúc 31/07, bản tháng 8 hiệu lực từ 01/08."
 
 #. module: pb_learn
 #: model:learn.station,outline_what:pb_learn.station_proration
@@ -429,6 +422,13 @@ msgstr ""
 #: model:learn.mission,consequence_title:pb_learn.mission_m2
 msgid "Approving moves 48 payslips one gate closer to being paid"
 msgstr "Phê duyệt đưa 48 phiếu lương tiến gần thêm một cổng tới lúc được chi"
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_m4_step_07
+msgid ""
+"Archiving takes it out of the active set, so the rates table falls back to the 2026 declaration and the roster stops listing it. That is the whole undo, and it is clean precisely because nothing was ever computed from it — a mistake in a declaration costs a correction, not a recompute."
+msgstr ""
+"Lưu trữ sẽ đưa nó ra khỏi nhóm đang bật, nên bảng tỷ lệ quay lại bản khai báo 2026 và danh sách cũng thôi liệt kê nó. Đó là toàn bộ việc hoàn tác, và nó gọn gàng chính vì chưa có gì được tính từ nó — sai sót trong một bản khai báo chỉ tốn một lần đính chính, không tốn một lần tính lại."
 
 #. module: pb_learn
 #: model:learn.station,outline_when:pb_learn.station_fullfinal
@@ -671,6 +671,13 @@ msgid "Categories"
 msgstr "Nhóm quy tắc"
 
 #. module: pb_learn
+#: model:learn.intent.step,text:pb_learn.intent_changerate_b030_s03
+msgid ""
+"Change the rate parameter on every affected formula configuration, and simulate before activating"
+msgstr ""
+"Sửa tham số tỷ lệ trên mọi cấu hình công thức bị ảnh hưởng, và mô phỏng trước khi kích hoạt"
+
+#. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m4_did_01
 msgid ""
 "Changed the one rate the decree changed, and left the employer share and the other two schemes alone."
@@ -709,6 +716,11 @@ msgstr ""
 "Kiểm tra cấu hình và số nhân viên đủ điều kiện ở bảng phạm vi, rồi tính. Tính chỉ tạo bản nháp — chưa có gì được chi, gửi hay phê duyệt."
 
 #. module: pb_learn
+#: model:learn.step,title:pb_learn.lesson_l6_step_04
+msgid "Check the declared rate against the charged one"
+msgstr "Đối chiếu tỷ lệ khai báo với tỷ lệ đã tính"
+
+#. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_syncbroken_b020_s02
 msgid "Check the eligible count in Run Payroll before you compute — it is the second alarm"
 msgstr ""
@@ -720,6 +732,11 @@ msgid ""
 "Check the source period on each line. That field is what lets a closed month stay closed and still be reported correctly later."
 msgstr ""
 "Kiểm tra kỳ gốc trên từng dòng. Chính trường đó giúp một kỳ đã đóng vẫn luôn đóng mà sau này vẫn báo cáo đúng."
+
+#. module: pb_learn
+#: model:learn.mission.step,instruction:pb_learn.mission_m4_step_04
+msgid "Check what the payslip is still charging"
+msgstr "Kiểm tra xem phiếu lương vẫn đang tính bao nhiêu"
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_livechecking
@@ -737,13 +754,6 @@ msgid ""
 "Chose the division, and with it the formula configuration every payslip in the run was computed by."
 msgstr ""
 "Chọn bộ phận, và cùng với nó là cấu hình công thức mà mọi phiếu lương trong đợt được tính theo."
-
-#. module: pb_learn
-#: model:learn.mission.step,detail:pb_learn.mission_m4_step_07
-msgid ""
-"Clear the end date on the 2026 policy and archive the August one, and the current policy is what it was this morning. Do it once here, because on a real tenant the undo is only this clean while no run has recomputed in between — after that, the records are back but the payslips are not."
-msgstr ""
-"Xoá ngày kết thúc trên chính sách 2026 và lưu trữ bản tháng 8, thế là chính sách hiện hành trở lại đúng như sáng nay. Hãy làm một lần ở đây, vì trên hệ thống thật việc hoàn tác chỉ gọn như vậy khi chưa có đợt nào tính lại ở giữa — sau đó thì bản ghi quay về được, còn phiếu lương thì không."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_payslips_mistake_2
@@ -787,6 +797,13 @@ msgid ""
 "Committing with rows unresolved does not lose them quietly — it produces payslips that are missing or wrong, and those are found by the employees rather than by you."
 msgstr ""
 "Ghi nhận khi còn dòng chưa xử lý không làm chúng biến mất êm thấm — nó tạo ra những phiếu lương thiếu hoặc sai, và người phát hiện sẽ là nhân viên chứ không phải bạn."
+
+#. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_m4_step_07
+msgid ""
+"Compare that with a configuration change, which is reversible in the records and not in the payslips it has already produced. That difference is why the two are separate."
+msgstr ""
+"Hãy so với một lần sửa cấu hình: bản ghi thì hoàn tác được, còn những phiếu lương nó đã tạo ra thì không. Chính khác biệt đó là lý do hai thứ này tách rời nhau."
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_import_completed
@@ -976,8 +993,8 @@ msgstr "Tạo một bản ghi chính sách bảo hiểm mới với mã riêng"
 
 #. module: pb_learn
 #: model:learn.quiz.option,label:pb_learn.lesson_l6_quiz_opt_1
-msgid "Create a new policy record effective 01/08, and end-date the current one on 31/07"
-msgstr "Tạo bản ghi chính sách mới hiệu lực 01/08, và đặt ngày kết thúc 31/07 cho bản hiện tại"
+msgid "Create a new policy record dated 01/08, and plan the configuration change with it"
+msgstr "Tạo bản ghi chính sách mới ghi ngày 01/08, và lên kế hoạch sửa cấu hình cùng lúc"
 
 #. module: pb_learn
 #: model:learn.mission.option,label:pb_learn.mission_m4_step_01_opt_samecode
@@ -1006,9 +1023,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_statutory_mistake_1
 msgid ""
-"Creating the new policy but leaving its effective date at today while a month is still open. The current policy is chosen by latest effective date, so a run that recomputes gets rates that were not in force for its period."
+"Creating the new policy but dating it from today rather than from the day the decree applies. The effective date is the company's record of when the change legally started, and a date nobody can point at a decree for is the first thing an inspection asks about."
 msgstr ""
-"Tạo chính sách mới nhưng để ngày hiệu lực là hôm nay trong khi một kỳ vẫn đang mở. Chính sách hiện hành được chọn theo ngày hiệu lực mới nhất, nên một đợt tính lại sẽ nhận tỷ lệ chưa có hiệu lực trong kỳ của nó."
+"Tạo chính sách mới nhưng đặt ngày hiệu lực là hôm nay thay vì ngày nghị định bắt đầu áp dụng. Ngày hiệu lực là ghi nhận của doanh nghiệp về thời điểm thay đổi bắt đầu có hiệu lực pháp lý, và một cái ngày không chỉ ra được văn bản nào là thứ đầu tiên đoàn kiểm tra hỏi tới."
 
 #. module: pb_learn
 #: model:learn.glossary.term,term:pb_learn.gloss_cycle
@@ -1028,11 +1045,17 @@ msgstr ""
 "Dữ liệu tự về là dữ liệu không ai phải gõ lại, mà phần lớn phiếu lương sai đều bắt đầu từ một dòng gõ tay. Phần quan trọng là lịch sử đồng bộ: một đầu nối đã ngừng chạy trông y hệt một đầu nối đang chạy tốt."
 
 #. module: pb_learn
+#: model:learn.intent.step,text:pb_learn.intent_changerate_b030_s01
+msgid "Date it from the day the decree applies — this field is the legal record, not a switch"
+msgstr ""
+"Đặt ngày theo ngày nghị định áp dụng — ô này là ghi nhận pháp lý, không phải một cái công tắc"
+
+#. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m4_did_02
 msgid ""
-"Dated it from the first of the next month, so no run that is still open can recompute onto rates that were not in force for its period."
+"Dated it from the day the decree applies, so the record evidences a legal start rather than the day somebody happened to type it."
 msgstr ""
-"Đặt hiệu lực từ ngày đầu tháng kế tiếp, để không đợt nào còn mở có thể tính lại theo tỷ lệ chưa có hiệu lực trong kỳ của nó."
+"Đặt ngày hiệu lực đúng ngày nghị định áp dụng, để bản ghi chứng minh một mốc pháp lý chứ không phải ngày ai đó tình cờ gõ vào."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_prorata_b010
@@ -1045,6 +1068,18 @@ msgstr ""
 #: model:learn.string,value:pb_learn.str_debrieftitle
 msgid "Debrief"
 msgstr "Tổng kết"
+
+#. module: pb_learn
+#: model:learn.step,title:pb_learn.lesson_l6_step_06
+msgid "Declaring a rate is half the job"
+msgstr "Khai báo một tỷ lệ mới chỉ là một nửa công việc"
+
+#. module: pb_learn
+#: model:learn.station.mistake,name:pb_learn.station_statutory_mistake_2
+msgid ""
+"Declaring the new rate and stopping there. The number that prices a payslip is a parameter on the division's formula configuration, so until that is changed too the run still charges the old rate — correctly, and against a declaration that now says otherwise."
+msgstr ""
+"Khai báo tỷ lệ mới rồi dừng ở đó. Con số tính ra tiền trên phiếu lương là một tham số trong cấu hình công thức của bộ phận, nên tới khi tham số đó cũng được sửa thì đợt lương vẫn tính theo tỷ lệ cũ — tính đúng, nhưng lệch với bản khai báo vừa thay đổi."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_structures_mistake_1
@@ -1093,11 +1128,11 @@ msgstr ""
 "Đừng xoá một cấu trúc đang hiện số nhân viên bằng không. Bằng không nghĩa là hôm nay không ai được trả theo nó, chứ không phải không gì tham chiếu tới nó — phiếu lương ba năm trước vẫn tham chiếu, và một báo cáo trên các tháng đó vẫn cần nó."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_changerate_b020
+#: model:learn.intent.block,body:pb_learn.intent_changerate_b040
 msgid ""
-"Do not edit the policy that is in force. There is no version history to fall back on, and if an open run recomputes it will be charged rates that were not in force for its own period."
+"Do not edit the policy that is in force. There is no version history to fall back on — the old declared rate is simply gone, and with it the evidence of what the company was declaring while last month was paid."
 msgstr ""
-"Đừng sửa chính sách đang có hiệu lực. Không có lịch sử phiên bản nào để quay lại, và nếu một đợt đang mở tính lại thì nó sẽ chịu tỷ lệ chưa có hiệu lực trong kỳ của chính nó."
+"Đừng sửa chính sách đang có hiệu lực. Không có lịch sử phiên bản nào để quay lại — mức đã khai báo trước đó đơn giản là mất, và mất theo cả bằng chứng về mức mà doanh nghiệp đang khai báo khi tháng trước được trả lương."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_syncbroken_b030
@@ -1176,9 +1211,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_statutory_mistake_0
 msgid ""
-"Editing the rate on the policy that is currently in force. There is no version history to fall back on: the old rate is simply gone, and any run that recomputes picks up the new one."
+"Editing the rate on the policy that is currently in force. There is no version history to fall back on — the old declared rate is simply gone, and with it the evidence of what the company was declaring last month."
 msgstr ""
-"Sửa tỷ lệ ngay trên chính sách đang có hiệu lực. Không có lịch sử phiên bản nào để quay lại: tỷ lệ cũ đơn giản là biến mất, và bất kỳ đợt lương nào tính lại sẽ lấy tỷ lệ mới."
+"Sửa tỷ lệ ngay trên chính sách đang có hiệu lực. Không có lịch sử phiên bản nào để quay lại — tỷ lệ đã khai báo trước đó đơn giản là biến mất, và mất theo cả bằng chứng về việc tháng trước doanh nghiệp đang khai báo mức nào."
 
 #. module: pb_learn
 #: model:learn.glossary.term,term:pb_learn.gloss_effectivedate
@@ -1211,16 +1246,6 @@ msgstr ""
 #: model:learn.column,label:pb_learn.col_statutory_employer_leg
 msgid "Employer leg"
 msgstr "Phần doanh nghiệp"
-
-#. module: pb_learn
-#: model:learn.intent.step,text:pb_learn.intent_changerate_b030_s02
-msgid "End-date the outgoing policy, so exactly one is in force on any day"
-msgstr "Đặt ngày kết thúc cho chính sách cũ, để mỗi ngày chỉ có đúng một bản hiệu lực"
-
-#. module: pb_learn
-#: model:learn.mission.note,body:pb_learn.mission_m4_did_04
-msgid "Ended the outgoing policy, so exactly one policy is in force on any given day."
-msgstr "Kết thúc chính sách cũ, để mỗi ngày chỉ có đúng một chính sách đang hiệu lực."
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_integrations_errors
@@ -1279,13 +1304,6 @@ msgid "Every pay run on one board, in the column of the approval stage it is wai
 msgstr "Mọi đợt tính lương trên một bảng, nằm ở cột của bước phê duyệt mà nó đang chờ."
 
 #. module: pb_learn
-#: model:learn.station,outline_why:pb_learn.station_statutory
-msgid ""
-"Every payslip in every division reads these numbers. A wrong rate here is not one wrong payslip — it is all of them, in the same direction, with a filing deadline attached."
-msgstr ""
-"Mọi phiếu lương của mọi bộ phận đều đọc những con số này. Một tỷ lệ sai ở đây không phải một phiếu lương sai — mà là tất cả, sai cùng một hướng, và kèm theo một hạn nộp báo cáo."
-
-#. module: pb_learn
 #: model:learn.station,summary:pb_learn.station_payruns
 msgid "Every run on one board, moving draft → Officer → HR → GM → done."
 msgstr "Mọi đợt lương trên một bảng, đi từ Nháp → Chuyên viên tính lương → HR → TGĐ → Hoàn tất."
@@ -1296,6 +1314,13 @@ msgid ""
 "Every step below happens in Payobook itself, on records other people can see. Nothing here is a replica, and nothing here is undone for you when you leave."
 msgstr ""
 "Mọi bước dưới đây diễn ra ngay trong Payobook, trên những bản ghi người khác cũng nhìn thấy. Không có bản mô phỏng nào ở đây, và cũng không có gì được tự hoàn tác khi bạn thoát."
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_m4_check_03
+msgid ""
+"Everyone reading this screen has been told the rates now shown are next month's — reviewers of an open run included."
+msgstr ""
+"Mọi người đọc màn hình này đã được báo rằng tỷ lệ đang hiển thị là của tháng sau — kể cả những người đang soát xét một đợt còn mở."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_04
@@ -1474,13 +1499,6 @@ msgstr ""
 "Theo nó đi qua các cổng tới Hoàn tất — đúng hành trình đó, và đúng những khoảng chờ đó, chính là thứ làm nên một tuần tính lương."
 
 #. module: pb_learn
-#: model:learn.station.mistake,name:pb_learn.station_statutory_mistake_2
-msgid ""
-"Forgetting to end-date the outgoing policy. Two open-ended active policies is not an error the system reports — it just quietly resolves to one of them."
-msgstr ""
-"Quên đặt ngày kết thúc cho chính sách cũ. Hai chính sách cùng bật và cùng để ngỏ ngày kết thúc không phải lỗi mà hệ thống báo — nó chỉ lặng lẽ chọn ra một cái."
-
-#. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_formula
 #: model:learn.station,name:pb_learn.station_formula
 msgid "Formula Engine"
@@ -1507,6 +1525,13 @@ msgid ""
 "Forty-eight slips is more than anyone reads carefully. The engine has already told you which ones it could not settle on its own — start there, and sample a few of the rest. Reading top to bottom is how a flagged slip gets approved at 6pm."
 msgstr ""
 "Bốn mươi tám phiếu là nhiều hơn mức bất kỳ ai đọc kỹ được. Hệ thống đã nói cho bạn biết những phiếu nào nó không tự quyết được — hãy bắt đầu từ đó, rồi lấy mẫu vài phiếu còn lại. Đọc lần lượt từ trên xuống chính là cách một phiếu bị gắn cờ được duyệt lúc 6 giờ chiều."
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_m4_did_03
+msgid ""
+"Found out that the declaration alone changes no payslip, and that the rate which does live in each division's configuration."
+msgstr ""
+"Phát hiện ra rằng chỉ khai báo thôi thì không phiếu lương nào đổi, và tỷ lệ thực sự tính ra tiền nằm trong cấu hình của từng bộ phận."
 
 #. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m2_did_00
@@ -1579,13 +1604,6 @@ msgid ""
 "HR review, then finance approval, then done. Only a completed run offers the bank file, the journals and the payments — those buttons appear exactly when every gate has said yes, and that is the whole point of the chain."
 msgstr ""
 "HR soát xét, rồi Tài chính phê duyệt, rồi Hoàn tất. Chỉ đợt đã Hoàn tất mới hiện tệp chi lương, bút toán và các khoản thanh toán — các nút đó xuất hiện đúng lúc mọi cổng đã đồng ý, và đó chính là ý nghĩa của cả chuỗi."
-
-#. module: pb_learn
-#: model:learn.mission,anomaly_body:pb_learn.mission_m4
-msgid ""
-"Half a percentage point on Mai's registered base of 12,000,000 ₫ is 60,000 ₫ of extra BHYT — so it is natural to tell her that her pay drops by 60,000. It does not: it drops by 57,000. Insurance is deducted BEFORE the tax relief, so her taxable income falls by the same 60,000 and her thuế TNCN falls 3,000 with it. The number a payroll desk quotes from memory is almost always the contribution, and the number the employee sees is always the net. Quoting the wrong one is how a correct change becomes an argument on {{payDay}}."
-msgstr ""
-"Nửa điểm phần trăm trên mức đóng đã đăng ký 12.000.000 ₫ của Mai là 60.000 ₫ BHYT tăng thêm — nên rất tự nhiên khi nói với cô ấy rằng lương giảm 60.000. Không phải vậy: nó giảm 57.000. Bảo hiểm được trừ TRƯỚC các khoản giảm trừ thuế, nên thu nhập chịu thuế của cô ấy cũng giảm đúng 60.000 và thuế TNCN giảm theo 3.000. Con số mà bộ phận lương nói theo trí nhớ hầu như luôn là khoản đóng, còn con số nhân viên nhìn thấy luôn là thực nhận. Nói nhầm con số là cách một thay đổi đúng biến thành một cuộc tranh cãi vào {{payDay}}."
 
 #. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_checkfinal_b020_s00
@@ -1792,6 +1810,13 @@ msgid "If rejecting: a written reason that names what to change, not just what i
 msgstr "Nếu từ chối: một lý do bằng văn bản nêu rõ cần sửa gì, không chỉ nêu cái gì sai."
 
 #. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_m4_step_04
+msgid ""
+"If the configuration is changed too, her BHYT becomes 240,000 ₫ and her net falls 57,000 — not 60,000, because insurance comes off before the tax relief. But none of that happens from this screen."
+msgstr ""
+"Nếu cấu hình cũng được sửa, BHYT của cô ấy thành 240.000 ₫ và thực nhận giảm 57.000 — không phải 60.000, vì bảo hiểm được trừ trước các khoản giảm trừ thuế. Nhưng không điều nào trong số đó xảy ra từ màn hình này."
+
+#. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_fixerror_b030
 msgid ""
 "If the run is already done, do not reopen it. The month has been reported from; use a retro adjustment so the correction lands in the current run with the source period on record."
@@ -1804,13 +1829,6 @@ msgid ""
 "If the run is still in draft, do not use retro at all — fix the input and recompute. Retro is for the past you cannot reopen, not for the present you have not finished."
 msgstr ""
 "Nếu đợt còn ở trạng thái Nháp thì đừng dùng hồi tố — hãy sửa đầu vào và tính lại. Hồi tố dành cho quá khứ bạn không mở lại được, không dành cho hiện tại bạn chưa làm xong."
-
-#. module: pb_learn
-#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_00
-msgid ""
-"If you have not done the practice run yet, it is worth eight minutes: the same judgement, on a fixture where a wrong answer costs a sentence rather than a record."
-msgstr ""
-"Nếu bạn chưa làm bài thực hành thì rất đáng dành tám phút: cùng một phán đoán, trên dữ liệu giả lập, nơi trả lời sai chỉ tốn một câu nhắc chứ không tốn một bản ghi."
 
 #. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_import
@@ -1912,9 +1930,9 @@ msgstr "Sửa một cấu hình đang chạy có an toàn không?"
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m4_step_03
 msgid ""
-"It is 20 July. June's run is still being corrected and July's is awaiting approval — either could be recomputed this week."
+"It is 20 July and the decree applies from 1 August. This field is the company's record of when the change legally started — it is read by auditors and by the statutory reports, and it is not read by anything that computes pay."
 msgstr ""
-"Hôm nay là 20/7. Đợt tháng 6 vẫn đang được sửa và đợt tháng 7 đang chờ phê duyệt — cả hai đều có thể bị tính lại trong tuần này."
+"Hôm nay là 20/7 và nghị định áp dụng từ 1/8. Ô này là ghi nhận của doanh nghiệp về thời điểm thay đổi bắt đầu có hiệu lực pháp lý — kiểm toán và các báo cáo bắt buộc đọc nó, còn những thứ tính ra tiền lương thì không."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_editlive_b010
@@ -1985,13 +2003,6 @@ msgstr ""
 "Nó rời trạng thái Nháp và vào chuỗi: Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_changerate_b010
-msgid ""
-"It re-prices every future payslip in <b>every division</b> — one insurance policy serves the whole company, not one configuration. For a BHYT employee share moving from 1.5% to 2.0%, Mai alone loses 57,000 ₫ of net a month, and every other employee loses their own version of that."
-msgstr ""
-"Nó tính lại giá cho mọi phiếu lương tương lai của <b>mọi bộ phận</b> — một chính sách bảo hiểm phục vụ cả công ty, không phải một cấu hình. Với phần BHYT của người lao động tăng từ 1,5% lên 2,0%, riêng Mai đã mất 57.000 ₫ thực nhận mỗi tháng, và mỗi nhân viên khác đều mất phần tương ứng của họ."
-
-#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_journals
 msgid "Journals"
 msgstr "Bút toán"
@@ -2019,6 +2030,13 @@ msgstr ""
 #: model:learn.step.line,label:pb_learn.lesson_l3_step_05_line_00
 msgid "June 2026"
 msgstr "Tháng 6/2026"
+
+#. module: pb_learn
+#: model:learn.intent.step,text:pb_learn.intent_changerate_b030_s02
+msgid ""
+"Know that this screen shows the new rates the moment you save, so tell anyone reviewing an open run"
+msgstr ""
+"Biết rằng màn hình này hiển thị tỷ lệ mới ngay khi bạn lưu, nên hãy báo cho ai đang soát xét một đợt còn mở"
 
 #. module: pb_learn
 #: model:pb.sidebar.item,name:pb_learn.item_learn_journey
@@ -2139,9 +2157,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.mission.option,recovery:pb_learn.mission_m4_step_03_opt_jan
 msgid ""
-"Let's rethink that. Backdating to January would make the new rate the one in force for every month of the year — including four that have already been paid and reported. A retro line pays a difference; a backdated policy silently rewrites what the difference was."
+"Let's rethink that. Backdating to January declares that the company has been contributing at the new rate all year — for four months that have already been paid, reported and filed at the old one. That is not a tidier record, it is a false one, and it is the kind an inspection finds by comparing the declaration with the returns."
 msgstr ""
-"Hãy nghĩ lại một chút. Lùi về tháng 1 sẽ khiến tỷ lệ mới trở thành tỷ lệ có hiệu lực cho mọi tháng trong năm — kể cả bốn tháng đã chi và đã báo cáo. Một dòng hồi tố chi phần chênh; một chính sách lùi ngày thì âm thầm viết lại chính phần chênh đó."
+"Hãy nghĩ lại một chút. Lùi về tháng 1 là khai rằng doanh nghiệp đã đóng theo tỷ lệ mới suốt cả năm — trong khi bốn tháng đã chi, đã báo cáo và đã nộp theo tỷ lệ cũ. Đó không phải một bản ghi gọn gàng hơn, mà là một bản ghi sai sự thật, và đúng loại mà đoàn kiểm tra phát hiện khi đối chiếu bản khai với các tờ khai đã nộp."
 
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l5_quiz_opt_0
@@ -2163,13 +2181,6 @@ msgid ""
 "Let's rethink that. F&B's July attendance has not been committed yet, so the eligible count would come back far short of its headcount — and computing on it would create a run that looks finished and is missing most of its people."
 msgstr ""
 "Hãy nghĩ lại một chút. Chấm công tháng 7 của F&B chưa được ghi nhận, nên số nhân viên đủ điều kiện sẽ thiếu rất nhiều so với sĩ số — và tính trên đó sẽ tạo ra một đợt lương trông như đã xong nhưng thiếu phần lớn nhân sự."
-
-#. module: pb_learn
-#: model:learn.mission.option,recovery:pb_learn.mission_m4_step_03_opt_today
-msgid ""
-"Let's rethink that. From today means from 20 July — and July is not finished. If the run is rejected and recomputed, its payslips are charged an August rate for a July month, and nothing warns anybody: the figures simply come out slightly different from the ones already reviewed."
-msgstr ""
-"Hãy nghĩ lại một chút. Từ hôm nay nghĩa là từ ngày 20/7 — mà tháng 7 chưa xong. Nếu đợt bị từ chối rồi tính lại, các phiếu sẽ chịu tỷ lệ của tháng 8 cho một kỳ tháng 7, và không có cảnh báo nào cả: con số chỉ đơn giản khác đi một chút so với bản đã soát xét."
 
 #. module: pb_learn
 #: model:learn.mission.option,recovery:pb_learn.mission_m1_step_01_opt_it
@@ -2235,11 +2246,18 @@ msgstr ""
 "Hãy nghĩ lại một chút. Mã là duy nhất trong mỗi công ty, nên cách này bị từ chối ngay — và đó là điều may, vì trùng mã chính là cách hai chính sách trở nên không phân biệt được trong báo cáo. Cho bản ghi mới một mã riêng thì cặp bản ghi sẽ đọc ra như một lịch sử."
 
 #. module: pb_learn
+#: model:learn.mission.option,recovery:pb_learn.mission_m4_step_03_opt_today
+msgid ""
+"Let's rethink that. The decree says 1 August, so a record dated 20 July declares a legal start the company cannot evidence — and the statutory reports built from it will say July ran at the new rate when it did not. Dating it correctly costs nothing: this screen shows the new rates from the moment you save either way, which is why the people reviewing July need telling rather than the field needing bending."
+msgstr ""
+"Hãy nghĩ lại một chút. Nghị định nói ngày 1/8, nên một bản ghi đề ngày 20/7 là khai một mốc pháp lý mà doanh nghiệp không chứng minh được — và các báo cáo bắt buộc lập từ đó sẽ nói tháng 7 chạy theo tỷ lệ mới, trong khi không phải vậy. Ghi đúng ngày chẳng tốn gì: đằng nào màn hình này cũng hiển thị tỷ lệ mới ngay khi bạn lưu, nên thứ cần làm là báo cho những người đang soát xét tháng 7, chứ không phải bẻ cong cái ngày."
+
+#. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l6_quiz_opt_2
 msgid ""
-"Let's rethink that. The instinct is right and the date is wrong: from today means from 20 July, and the current policy is whichever active one has the latest effective date. Write the record now if you like — with 01/08 in the effective date field."
+"Let's rethink that. The instinct is right and the date is wrong: today means 20 July, and the decree does not say 20 July — so the declaration would record a legal start the company cannot evidence. Create the record now if you like; put 01/08 in the effective date, and tell whoever is reviewing July that the rates on this screen are next month's."
 msgstr ""
-"Hãy nghĩ lại một chút. Ý thức cẩn thận là đúng, chỉ có ngày là sai: từ hôm nay nghĩa là từ 20/7, và chính sách hiện hành là chính sách còn bật có ngày hiệu lực mới nhất. Cứ tạo bản ghi ngay bây giờ cũng được — nhưng điền 01/08 vào ô ngày hiệu lực."
+"Hãy nghĩ lại một chút. Ý thức cẩn thận là đúng, chỉ có ngày là sai: hôm nay là 20/7, mà nghị định không nói 20/7 — nên bản khai báo sẽ ghi một mốc pháp lý mà doanh nghiệp không chứng minh được. Cứ tạo bản ghi ngay bây giờ cũng được; hãy điền 01/08 vào ngày hiệu lực, và báo cho người đang soát xét tháng 7 rằng tỷ lệ trên màn hình này là của tháng sau."
 
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l3_quiz_opt_2
@@ -2258,9 +2276,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l6_quiz_opt_0
 msgid ""
-"Let's rethink that. There is no version history to fall back on — the old rate is simply gone. And if anything sends July back to draft, the recompute charges an August rate to a July payslip, which is a compliance error nobody will see until it is filed."
+"Let's rethink that. There is no version history to fall back on — the old declared rate is simply gone, and with it the record of what the company was declaring while July was being paid. That record is exactly what an inspection asks to see."
 msgstr ""
-"Hãy nghĩ lại một chút. Không có lịch sử phiên bản nào để quay lại — tỷ lệ cũ đơn giản là mất. Và nếu có gì đó đưa tháng 7 về Nháp, lần tính lại sẽ áp tỷ lệ của tháng 8 lên phiếu lương tháng 7 — một lỗi tuân thủ không ai thấy cho tới lúc nộp báo cáo."
+"Hãy nghĩ lại một chút. Không có lịch sử phiên bản nào để quay lại — mức đã khai báo trước đó đơn giản là mất, và mất theo cả bằng chứng về mức mà doanh nghiệp đang khai báo trong lúc trả lương tháng 7. Chính bản ghi đó là thứ đoàn kiểm tra yêu cầu được xem."
 
 #. module: pb_learn
 #: model:learn.screen,blurb:pb_learn.screen_payslips
@@ -2289,13 +2307,6 @@ msgstr ""
 #: model:learn.mission.note,body:pb_learn.mission_m2_did_03
 msgid "Made the call — and, if you rejected, wrote a reason the officer can actually act on."
 msgstr "Ra quyết định — và nếu bạn từ chối, đã viết một lý do mà chuyên viên thực sự xử lý được."
-
-#. module: pb_learn
-#: model:learn.mission.step,detail:pb_learn.mission_m4_step_04
-msgid ""
-"Mai's BHYT goes from 180,000 ₫ to 240,000 ₫, her insurance total from 1,260,000 to 1,320,000, her taxable income from 2,020,000 down to 1,960,000, her thuế TNCN from 101,000 to 98,000 — and her net from 12,919,000 ₫ to 12,862,000 ₫."
-msgstr ""
-"BHYT của Mai đi từ 180.000 ₫ lên 240.000 ₫, tổng bảo hiểm từ 1.260.000 lên 1.320.000, thu nhập chịu thuế từ 2.020.000 xuống 1.960.000, thuế TNCN từ 101.000 xuống 98.000 — và thực nhận từ 12.919.000 ₫ còn 12.862.000 ₫."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_bhxh_b040
@@ -2505,8 +2516,8 @@ msgstr ""
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m4_step_07
-msgid "Now undo it: archive the new policy and reopen the old one"
-msgstr "Giờ hãy hoàn tác: lưu trữ chính sách mới và mở lại bản cũ"
+msgid "Now undo it: archive the August policy"
+msgstr "Giờ hãy hoàn tác: lưu trữ chính sách tháng 8"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_07
@@ -2524,6 +2535,13 @@ msgstr ""
 #: model:learn.column,label:pb_learn.col_retro_oldest_source_period
 msgid "Oldest source period"
 msgstr "Kỳ gốc xa nhất"
+
+#. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_changerate_b010
+msgid ""
+"On its own — <b>nothing</b>. This record is what the company DECLARES: it is read by this cockpit, by the contribution analytics and by the statutory reports, and by nothing that computes pay. The rate that prices a payslip is a parameter on each division's <b>formula configuration</b>, and changing one does not change the other."
+msgstr ""
+"Tự nó thì — <b>không gì cả</b>. Bản ghi này là mức doanh nghiệp KHAI BÁO: nó được màn hình này, phần phân tích chi phí bảo hiểm và các báo cáo bắt buộc đọc vào, còn những thứ tính ra tiền lương thì không. Tỷ lệ tính ra tiền trên phiếu lương là một tham số trong <b>cấu hình công thức</b> của từng bộ phận, và sửa bên này không làm đổi bên kia."
 
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_ml1_step_06
@@ -2578,13 +2596,6 @@ msgid "One flag, and why it is not an error"
 msgstr "Một cờ cảnh báo, và vì sao đó không phải lỗi"
 
 #. module: pb_learn
-#: model:learn.mission,consequence_scope:pb_learn.mission_m4
-msgid ""
-"One insurance policy serves the whole company. Every payslip computed after the effective date, in every division, uses these rates — this is not a per-configuration setting."
-msgstr ""
-"Một chính sách bảo hiểm phục vụ cả công ty. Mọi phiếu lương được tính sau ngày hiệu lực, ở mọi bộ phận, đều dùng các tỷ lệ này — đây không phải thiết lập riêng cho từng cấu hình."
-
-#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_checknote
 msgid "One judgement call. A wrong answer is a way back, never a mark against you."
 msgstr ""
@@ -2610,13 +2621,6 @@ msgid ""
 "One policy is active — 2026, effective 01/01/2026 — and one is archived, ended on 31/12/2025. That pair is what a correctly applied rate change leaves behind."
 msgstr ""
 "Một chính sách đang hiệu lực — bản 2026, hiệu lực từ 01/01/2026 — và một bản đã lưu trữ, kết thúc ngày 31/12/2025. Cặp bản ghi đó chính là dấu vết mà một lần đổi tỷ lệ đúng cách để lại."
-
-#. module: pb_learn
-#: model:learn.mission.step,detail:pb_learn.mission_m4_step_05
-msgid ""
-"One policy serves every division, so this is not a change to Retail. The card names the scope, the way back and the thing to check, and the mission will not move until you have seen all three."
-msgstr ""
-"Một chính sách phục vụ mọi bộ phận, nên đây không phải thay đổi riêng cho Bán lẻ. Thẻ này nêu rõ phạm vi, lối quay lại và thứ cần kiểm tra, và nhiệm vụ sẽ không đi tiếp cho tới khi bạn đã xem cả ba."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l1_step_04
@@ -2801,13 +2805,6 @@ msgstr ""
 "Một phần, và ranh giới rất quan trọng. Phiếu lương nháp có thể xoá và tính lại bao nhiêu lần tuỳ ý. Trình phê duyệt thì không thể âm thầm hoàn tác: từ đó đợt lương chỉ đi tiếp bằng cách được duyệt, hoặc bị từ chối trả về Nháp kèm lý do bằng văn bản — đúng chuỗi mà một kỳ lương thật đi qua."
 
 #. module: pb_learn
-#: model:learn.mission,consequence_reversible:pb_learn.mission_m4
-msgid ""
-"Partly. The new record can be archived and the old one reopened, but any run that recomputed while the new rates were in force keeps the figures it produced until somebody recomputes it again."
-msgstr ""
-"Một phần. Bản ghi mới có thể lưu trữ lại và bản cũ mở lại, nhưng đợt lương nào đã tính lại trong lúc tỷ lệ mới có hiệu lực vẫn giữ nguyên con số cho tới khi có người tính lại lần nữa."
-
-#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_lines_payrun
 msgid "Pay Run"
 msgstr "Chạy lương"
@@ -2854,13 +2851,6 @@ msgstr "Payobook"
 #: model:learn.string,value:pb_learn.str_coachname
 msgid "Payobook Coach"
 msgstr "Trợ lý Payobook"
-
-#. module: pb_learn
-#: model:learn.step,tip:pb_learn.lesson_l6_step_05
-msgid ""
-"Payobook picks the policy with the latest effective date among those still active. Not the newest record, not the last one edited — the effective date is the field that decides."
-msgstr ""
-"Payobook chọn chính sách có ngày hiệu lực mới nhất trong số các chính sách còn bật. Không phải bản ghi mới tạo nhất, cũng không phải bản sửa gần nhất — ngày hiệu lực mới là trường quyết định."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l1_step_03
@@ -3050,9 +3040,11 @@ msgid "Read the dependency panel for anything you are renaming or removing"
 msgstr "Đọc bảng phụ thuộc cho bất cứ thứ gì bạn định đổi tên hoặc xoá"
 
 #. module: pb_learn
-#: model:learn.intent.step,text:pb_learn.intent_changerate_b030_s03
-msgid "Read the effect on one real payslip before you save"
-msgstr "Đọc tác động trên một phiếu lương thật trước khi lưu"
+#: model:learn.mission.step,hint:pb_learn.mission_m4_step_06
+msgid ""
+"Read the effective-date chip above the rates table after you save. If it says 01/08, the screen is already showing August's declaration to everybody who opens it."
+msgstr ""
+"Sau khi lưu, hãy đọc chip ngày hiệu lực phía trên bảng tỷ lệ. Nếu nó hiện 01/08 thì màn hình đã hiển thị bản khai báo của tháng 8 cho mọi người mở nó."
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l1_step_03
@@ -3079,18 +3071,6 @@ msgid "Read the flagged payslips first"
 msgstr "Đọc các phiếu bị gắn cờ trước"
 
 #. module: pb_learn
-#: model:learn.mission.note,body:pb_learn.mission_m4_did_03
-msgid ""
-"Read the impact on a real payslip before saving, and found that the net effect is smaller than the contribution change."
-msgstr ""
-"Xem tác động trên một phiếu lương thật trước khi lưu, và thấy phần thực nhận thay đổi ít hơn phần đóng thay đổi."
-
-#. module: pb_learn
-#: model:learn.mission.step,instruction:pb_learn.mission_m4_step_04
-msgid "Read the impact on one real payslip"
-msgstr "Đọc tác động trên một phiếu lương thật"
-
-#. module: pb_learn
 #: model:learn.screen,next_step:pb_learn.screen_integrations
 msgid ""
 "Read the last-sync time on every connector, not just its status. Connected describes the credentials; the sync time describes the data, and a connector that stopped looks exactly like one that is working."
@@ -3103,6 +3083,13 @@ msgid ""
 "Read the policy and the tax table the way an inspector would, and know exactly how to apply a rate change without touching a month that is already open."
 msgstr ""
 "Đọc chính sách bảo hiểm và biểu thuế theo cách một đoàn kiểm tra sẽ đọc, và biết chính xác cách áp dụng một thay đổi tỷ lệ mà không đụng tới kỳ đang mở."
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_m4_step_05
+msgid ""
+"Read the scope line twice. It is company-wide and it reprices nothing — the two facts people find hardest to hold together on this screen, and the reason the next step goes looking at a payslip that has not moved."
+msgstr ""
+"Hãy đọc dòng phạm vi hai lần. Nó có hiệu lực trên toàn công ty nhưng không tính lại khoản nào — hai điều mà người ta khó giữ cùng lúc nhất ở màn hình này, và cũng là lý do bước kế tiếp đi xem một phiếu lương chưa hề thay đổi."
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_02
@@ -3396,8 +3383,15 @@ msgstr "Soát trước những phiếu hệ thống gắn cờ, rồi lấy mẫ
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m4_step_06
-msgid "Save the new policy, and end-date the old one"
-msgstr "Lưu chính sách mới, và đặt ngày kết thúc cho bản cũ"
+msgid "Save the new policy and read the roster"
+msgstr "Lưu chính sách mới và đọc lại danh sách"
+
+#. module: pb_learn
+#: model:learn.step,body:pb_learn.lesson_l6_step_06
+msgid ""
+"Saving a new policy changes what this screen, the contribution analytics and the statutory reports say. It changes <b>no payslip</b>. The rate that prices pay is a parameter on each division's formula configuration, so a rate change is two pieces of work: declare it here, and change it there. Until both are done the two disagree — and it is this screen, not the payslip, that is telling the truth about the company's intention."
+msgstr ""
+"Lưu một chính sách mới sẽ thay đổi những gì màn hình này, phần phân tích chi phí bảo hiểm và các báo cáo bắt buộc nói ra. Nó không làm thay đổi <b>một phiếu lương nào</b>. Tỷ lệ tính ra tiền là một tham số trong cấu hình công thức của từng bộ phận, nên đổi tỷ lệ là hai phần việc: khai báo ở đây, và sửa ở đó. Khi chưa làm đủ cả hai thì hai bên còn lệch — và chính màn hình này, chứ không phải phiếu lương, mới đang nói đúng ý định của doanh nghiệp."
 
 #. module: pb_learn
 #: model:learn.step,tip:pb_learn.lesson_l3_step_04
@@ -3439,18 +3433,6 @@ msgstr "Xem chính xác lương tháng lẻ ngày được tính theo tỷ lệ 
 msgid ""
 "Sent the run into the approval chain, where it now waits at a gate that belongs to somebody else."
 msgstr "Đưa đợt lương vào chuỗi phê duyệt, nơi nó đang chờ ở một cổng thuộc về người khác."
-
-#. module: pb_learn
-#: model:learn.mission.step,detail:pb_learn.mission_m4_step_06
-msgid ""
-"Set 31/07/2026 as the end date on the 2026 policy. Two active policies with no end date between them is not an error the system reports — it simply resolves to one of them, and you will not know which until a payslip tells you."
-msgstr ""
-"Đặt 31/07/2026 làm ngày kết thúc cho chính sách 2026. Hai chính sách cùng bật mà không có ngày kết thúc không phải lỗi hệ thống báo — nó chỉ đơn giản chọn lấy một bản, và bạn sẽ không biết là bản nào cho tới khi một phiếu lương nói cho bạn biết."
-
-#. module: pb_learn
-#: model:learn.intent.step,text:pb_learn.intent_changerate_b030_s01
-msgid "Set its effective date to the first day the change applies — after every open period"
-msgstr "Đặt ngày hiệu lực là ngày đầu tiên thay đổi có hiệu lực — sau mọi kỳ đang mở"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m4_step_02
@@ -3652,13 +3634,6 @@ msgstr ""
 "Trình duyệt là bạn tuyên bố rằng các cờ cảnh báo đã được trả lời. Nếu còn cờ nào chưa, hãy quay lại — đợt lương vẫn nằm đó."
 
 #. module: pb_learn
-#: model:learn.mission.step,hint:pb_learn.mission_m4_step_04
-msgid ""
-"Subtract the two nets before you read on: the answer is 57,000, and the reason it is not 60,000 is the whole point of this step."
-msgstr ""
-"Hãy trừ hai con số thực nhận trước khi đọc tiếp: đáp số là 57.000, và lý do nó không phải 60.000 chính là điều bước này muốn dạy."
-
-#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_suggested
 msgid "Suggested for this screen"
 msgstr "Gợi ý cho màn hình này"
@@ -3715,9 +3690,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l5_step_01
 msgid ""
-"Ten components, in four kinds: <b>inputs</b> (base salary), <b>earnings</b> (allowances, overtime), <b>deductions</b> (BHXH, BHYT, BHTN, thuế TNCN) and <b>totals</b> (gross, taxable, net). Nothing on a payslip comes from anywhere else — if a line exists, it is one of these, and if a line is missing, its component is."
+"Ten components in four kinds — <b>inputs</b> (base salary), <b>earnings</b> (allowances, overtime), <b>deductions</b> (BHXH, BHYT, BHTN, thuế TNCN) and <b>totals</b> (gross, taxable, net) — and below them the <b>parameters</b> those formulas reference. Nothing on a payslip comes from anywhere else: if a line exists it is one of these, and if a line is wrong the number behind it is one of these too."
 msgstr ""
-"Mười thành phần, thuộc bốn loại: <b>đầu vào</b> (lương cơ bản), <b>thu nhập</b> (phụ cấp, tăng ca), <b>khấu trừ</b> (BHXH, BHYT, BHTN, thuế TNCN) và <b>các tổng</b> (tổng thu nhập, thu nhập chịu thuế, thực nhận). Không dòng nào trên phiếu lương đến từ nơi khác — có dòng nào thì nó là một trong số này, và thiếu dòng nào thì thiếu thành phần của nó."
+"Mười thành phần thuộc bốn loại — <b>đầu vào</b> (lương cơ bản), <b>thu nhập</b> (phụ cấp, tăng ca), <b>khấu trừ</b> (BHXH, BHYT, BHTN, thuế TNCN) và <b>các tổng</b> (tổng thu nhập, thu nhập chịu thuế, thực nhận) — và bên dưới là các <b>tham số</b> mà những công thức đó tham chiếu tới. Không dòng nào trên phiếu lương đến từ nơi khác: có dòng nào thì nó là một trong số này, và dòng nào sai thì con số đứng sau nó cũng nằm trong số này."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_pointnothere
@@ -3725,11 +3700,18 @@ msgid "That control is not on this screen right now, so I will not pretend to po
 msgstr "Nút đó hiện không có trên màn hình này, nên tôi sẽ không giả vờ chỉ vào nó."
 
 #. module: pb_learn
-#: model:learn.mission.step,hint:pb_learn.mission_m4_step_07
+#: model:learn.intent.block,body:pb_learn.intent_changerate_b020
 msgid ""
-"That last sentence is the real lesson of this mission: the records are reversible and the payslips they produced are not."
+"That is deliberate, and it is worth saying out loud: pay does not move because a reference table moved. It moves when somebody edits a configuration — an edit that can be previewed, simulated and pointed at afterwards."
 msgstr ""
-"Chính câu cuối đó là bài học thật của nhiệm vụ này: bản ghi thì hoàn tác được, còn những phiếu lương chúng đã tạo ra thì không."
+"Đó là chủ ý, và rất đáng nói rõ: tiền lương không thay đổi chỉ vì một bảng tham chiếu thay đổi. Nó thay đổi khi có người sửa một cấu hình — một lần sửa có thể xem trước, mô phỏng và truy lại được về sau."
+
+#. module: pb_learn
+#: model:learn.mission,consequence_verify:pb_learn.mission_m4
+msgid ""
+"That the date is the one the decree gives, and that you know which formula configurations have to change with it. Declaring a rate nobody has configured leaves the two disagreeing, and the payslips are the ones that will look wrong."
+msgstr ""
+"Rằng ngày hiệu lực đúng là ngày nghị định nêu, và bạn đã biết những cấu hình công thức nào phải sửa theo. Khai báo một tỷ lệ mà chưa ai cấu hình sẽ khiến hai bên lệch nhau, và phiếu lương mới là thứ trông có vẻ sai."
 
 #. module: pb_learn
 #: model:learn.mission,consequence_verify:pb_learn.mission_ml1
@@ -3737,13 +3719,6 @@ msgid ""
 "That the division the wizard has selected is the one assigned to you. It is preselected and moved to the front of the list for exactly this reason, and the mission verifies against your assignment rather than against whatever the wizard happens to be showing."
 msgstr ""
 "Rằng bộ phận mà trình hướng dẫn đang chọn đúng là bộ phận được gán cho bạn. Nó được chọn sẵn và đưa lên đầu danh sách chính vì lý do này, và nhiệm vụ xác minh theo phần được gán cho bạn chứ không theo thứ mà trình hướng dẫn đang hiển thị."
-
-#. module: pb_learn
-#: model:learn.mission,consequence_verify:pb_learn.mission_m4
-msgid ""
-"That the effective date falls after every period that is still open. June and July are both unfinished here, so anything earlier than 01/08 can reach a month it has no business reaching."
-msgstr ""
-"Rằng ngày hiệu lực rơi vào sau mọi kỳ còn đang mở. Ở đây cả tháng 6 và tháng 7 đều chưa xong, nên bất kỳ ngày nào sớm hơn 01/08 đều có thể chạm tới một kỳ mà nó không được phép chạm."
 
 #. module: pb_learn
 #: model:learn.mission,consequence_verify:pb_learn.mission_m1
@@ -3772,16 +3747,18 @@ msgid "The 4.6 that was typed as 46"
 msgstr "Con số 4,6 bị gõ thành 46"
 
 #. module: pb_learn
-#: model:learn.mission,anomaly_title:pb_learn.mission_m4
-msgid "The 60,000 that is only 57,000"
-msgstr "Con số 60.000 hoá ra chỉ là 57.000"
-
-#. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l6_step_04
 msgid ""
-"The <b>1.5%</b> on the BHYT row and the <b>−180,000 ₫</b> on Mai's July payslip are the same fact, twice: 1.5% of her registered base of 12,000,000 ₫. Every deduction on every slip traces back to a cell on this table — which is why a single edit here moves thousands of lines at once."
+"The <b>1.5%</b> on the BHYT row is what the company <b>declares</b>. The <b>−180,000 ₫</b> on Mai's July slip is what her division's configuration actually <b>charged</b> — 1.5% of her registered base of 12,000,000 ₫. Today they agree, and this line is how you check that. They are two records, though: editing the rate here would not move that đồng by itself."
 msgstr ""
-"Con số <b>1,5%</b> ở dòng BHYT và khoản <b>−180.000 ₫</b> trên phiếu lương tháng 7 của Mai là cùng một sự việc, nói hai lần: 1,5% của mức đóng đã đăng ký 12.000.000 ₫. Mọi khoản khấu trừ trên mọi phiếu đều truy được về một ô trong bảng này — và vì vậy một lần sửa ở đây làm thay đổi hàng nghìn dòng cùng lúc."
+"Con số <b>1,5%</b> ở dòng BHYT là mức doanh nghiệp <b>khai báo</b>. Khoản <b>−180.000 ₫</b> trên phiếu tháng 7 của Mai là mức mà cấu hình của bộ phận cô ấy <b>đã tính</b> — 1,5% trên mức đóng đã đăng ký 12.000.000 ₫. Hôm nay hai bên khớp nhau, và đường nối này chính là cách bạn kiểm tra điều đó. Nhưng đây là hai bản ghi khác nhau: chỉ sửa tỷ lệ ở đây thì đồng bạc kia không nhúc nhích."
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_m4_step_06
+msgid ""
+"The August record is now the one the rates table shows, because it has the latest effective date among the active policies — the table does not compare that date to today. The 2026 record stays on the list as the evidence of what was declared before it."
+msgstr ""
+"Bản ghi tháng 8 giờ là bản mà bảng tỷ lệ hiển thị, vì nó có ngày hiệu lực mới nhất trong số các chính sách đang bật — bảng này không so ngày đó với hôm nay. Bản ghi 2026 vẫn ở lại danh sách như bằng chứng cho mức đã khai báo trước đó."
 
 #. module: pb_learn
 #: model:learn.glossary.term,definition:pb_learn.gloss_formulaconfig
@@ -3999,13 +3976,6 @@ msgstr ""
 "Các đầu nối mà dữ liệu tính lương đi vào qua đó — hệ thống nhân sự, máy chấm công, ngân hàng — kèm ánh xạ trường và lịch sử đồng bộ."
 
 #. module: pb_learn
-#: model:learn.mission.step,hint:pb_learn.mission_m4_step_03
-msgid ""
-"The current policy is the active one with the latest effective date. Ask which periods that sentence puts at risk."
-msgstr ""
-"Chính sách hiện hành là bản đang bật có ngày hiệu lực mới nhất. Hãy tự hỏi câu đó đặt những kỳ nào vào rủi ro."
-
-#. module: pb_learn
 #: model:learn.glossary.term,definition:pb_learn.gloss_effectivedate
 msgid ""
 "The date a policy starts applying. Payobook uses the latest effective date among the active policies, so this field — not the order records were created in — decides which rates a payslip is computed with."
@@ -4013,9 +3983,16 @@ msgstr ""
 "Ngày một chính sách bắt đầu được áp dụng. Payobook lấy chính sách có ngày hiệu lực mới nhất trong số các chính sách đang bật, nên chính trường này — chứ không phải thứ tự tạo bản ghi — quyết định phiếu lương được tính theo tỷ lệ nào."
 
 #. module: pb_learn
-#: model:learn.step,title:pb_learn.lesson_l6_step_06
-msgid "The date is the whole of the risk"
-msgstr "Ngày hiệu lực chính là toàn bộ rủi ro"
+#: model:learn.mission.step,detail:pb_learn.mission_m4_step_04
+msgid ""
+"The declaration now says 2.0%. Mai's BHYT line still says −180,000 ₫, which is 1.5% of her registered base — because that line is priced by a parameter on Retail's configuration, not by the record you just wrote. This is the reconciliation the Statutory screen exists for, and right now it fails."
+msgstr ""
+"Bản khai báo giờ nói 2,0%. Dòng BHYT của Mai vẫn là −180.000 ₫, tức 1,5% trên mức đóng đã đăng ký — vì dòng đó được tính bằng một tham số trong cấu hình của Bán lẻ, không phải bằng bản ghi bạn vừa tạo. Đây chính là phép đối chiếu mà màn hình Bảo hiểm & Thuế sinh ra để làm, và ngay lúc này nó đang lệch."
+
+#. module: pb_learn
+#: model:learn.mission,anomaly_title:pb_learn.mission_m4
+msgid "The declaration that changed nothing"
+msgstr "Bản khai báo không làm thay đổi điều gì"
 
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m4_step_02
@@ -4075,9 +4052,8 @@ msgstr ""
 
 #. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m4_check_02
-msgid ""
-"The effective date is after every open period, and you have checked which periods are open."
-msgstr "Ngày hiệu lực nằm sau mọi kỳ đang mở, và bạn đã kiểm tra xem những kỳ nào đang mở."
+msgid "The effective date is the one the decree gives, and you can point at the decree."
+msgstr "Ngày hiệu lực đúng là ngày nghị định nêu, và bạn chỉ ra được văn bản đó."
 
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_l2_step_06
@@ -4093,6 +4069,13 @@ msgstr "Phiếu bị gắn cờ vẫn chưa được xác minh. Phê duyệt, ha
 #: model:learn.step,kicker:pb_learn.lesson_l5_step_02
 msgid "The formula"
 msgstr "Công thức"
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_m4_check_04
+msgid ""
+"The formula configurations that price the affected lines are on somebody's list, with a date, or the declaration and the payroll stay out of step."
+msgstr ""
+"Các cấu hình công thức tính những dòng bị ảnh hưởng đã nằm trong danh sách việc của ai đó, kèm thời hạn, nếu không thì bản khai báo và bảng lương sẽ còn lệch nhau."
 
 #. module: pb_learn
 #: model:learn.lesson,name:pb_learn.lesson_l5
@@ -4156,9 +4139,10 @@ msgid "The insurance calculation is broken and should be reported"
 msgstr "Phần tính bảo hiểm bị lỗi và cần được báo lại"
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_changerate_b040
-msgid "The insurance policy record: its rates, its effective date and its end date."
-msgstr "Bản ghi chính sách bảo hiểm: các tỷ lệ, ngày hiệu lực và ngày kết thúc của nó."
+#: model:learn.intent.block,body:pb_learn.intent_changerate_b050
+msgid ""
+"The insurance policy record, and the rate parameters on the division's formula configuration."
+msgstr "Bản ghi chính sách bảo hiểm, và các tham số tỷ lệ trên cấu hình công thức của bộ phận."
 
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_l5_step_01
@@ -4209,6 +4193,20 @@ msgid "The mechanics"
 msgstr "Cơ chế thật"
 
 #. module: pb_learn
+#: model:learn.mission,anomaly_body:pb_learn.mission_m4
+msgid ""
+"The natural next sentence after saving this record is \"so August's payslips will charge 2%\". They will not. Nothing downstream reads this record to compute with — the rate that prices the BHYT line is a parameter on each division's formula configuration, and it is still at 1.5%. The mission ends with the declaration correct and the payroll unchanged, and that gap is the point: it is not a bug, it is the reason pay never moves because a reference table moved. Somebody now has to change twelve configurations, preview them, and simulate them — and the person who assumed otherwise finds out on {{payDay}}."
+msgstr ""
+"Câu nói tự nhiên ngay sau khi lưu bản ghi này là \"vậy phiếu lương tháng 8 sẽ tính 2%\". Không phải vậy. Không có gì phía sau đọc bản ghi này để tính — tỷ lệ tính ra dòng BHYT là một tham số trong cấu hình công thức của từng bộ phận, và nó vẫn đang là 1,5%. Nhiệm vụ kết thúc với bản khai báo đã đúng còn bảng lương thì chưa đổi, và chính khoảng cách đó mới là điều cần nhớ: đây không phải lỗi, mà là lý do khiến tiền lương không bao giờ thay đổi chỉ vì một bảng tham chiếu thay đổi. Giờ phải có người sửa mười hai cấu hình, xem trước và mô phỏng chúng — còn ai đã đinh ninh điều ngược lại thì sẽ biết vào {{payDay}}."
+
+#. module: pb_learn
+#: model:learn.step,tip:pb_learn.lesson_l6_step_04
+msgid ""
+"The number that priced that line is a parameter on Retail's configuration — <b>EEHI</b>, at the bottom of the component list in Formula Engine. That is where a rate actually moves a payslip."
+msgstr ""
+"Con số đã tính ra dòng đó là một tham số trong cấu hình của Bán lẻ — <b>EEHI</b>, nằm cuối danh sách thành phần trong Công thức lương. Đó mới là nơi một tỷ lệ thật sự làm thay đổi phiếu lương."
+
+#. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_reject_b020_s02
 msgid "The officer corrects the input, recomputes and resubmits through the same chain"
 msgstr "Chuyên viên sửa dữ liệu đầu vào, tính lại và trình lại qua đúng chuỗi đó"
@@ -4221,9 +4219,9 @@ msgstr "Điều khiến nhiều người bất ngờ"
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_whichpolicy_b010
 msgid ""
-"The one with the <b>latest effective date</b> among the policies that are still active. Not the most recently created record and not the last one edited — the effective date is the field that decides, which is why it is the field to check first."
+"The one with the <b>latest effective date</b> among the policies that are still active. Two things it does NOT do, and both surprise people: it does not compare that date to today, so a policy dated from next month is displayed as soon as it is saved; and it does not read the end date at all."
 msgstr ""
-"Bản có <b>ngày hiệu lực mới nhất</b> trong số các chính sách còn đang bật. Không phải bản ghi mới tạo nhất, cũng không phải bản sửa gần nhất — ngày hiệu lực mới là trường quyết định, nên đó là trường cần kiểm tra đầu tiên."
+"Bản có <b>ngày hiệu lực mới nhất</b> trong số các chính sách còn đang bật. Có hai điều nó KHÔNG làm, và cả hai đều khiến người ta bất ngờ: nó không so ngày đó với hôm nay, nên một chính sách ghi hiệu lực từ tháng sau sẽ hiển thị ngay khi vừa lưu; và nó hoàn toàn không đọc ngày kết thúc."
 
 #. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_ml1_step_01
@@ -4238,11 +4236,6 @@ msgid ""
 "The other import surfaces exist for specific tools and older habits. This one scores the file before it writes, which is the difference between finding a bad row now and finding it on {{payDay}}."
 msgstr ""
 "Các màn hình nhập liệu khác tồn tại cho những công cụ riêng và thói quen cũ. Luồng này chấm điểm tệp trước khi ghi, và đó là khác biệt giữa việc phát hiện một dòng sai ngay bây giờ và phát hiện nó vào {{payDay}}."
-
-#. module: pb_learn
-#: model:learn.mission.note,body:pb_learn.mission_m4_check_03
-msgid "The outgoing policy has an end date, so two policies are never in force at once."
-msgstr "Chính sách cũ đã có ngày kết thúc, để không bao giờ có hai chính sách cùng hiệu lực."
 
 #. module: pb_learn
 #: model:learn.column,body:pb_learn.col_statutory_employee_leg
@@ -4317,6 +4310,13 @@ msgid "The proration audit rows for this run, and the division's standard workin
 msgstr "Các dòng soát xét ngày công của đợt lương này, và ngày công chuẩn của bộ phận."
 
 #. module: pb_learn
+#: model:learn.step,tip:pb_learn.lesson_l6_step_05
+msgid ""
+"The rates table above shows the ACTIVE policy with the latest effective date. It does not compare that date to today and it does not read the end date — so a policy dated from next month is displayed the moment it is saved."
+msgstr ""
+"Bảng tỷ lệ ở trên hiển thị chính sách đang BẬT có ngày hiệu lực mới nhất. Nó không so ngày đó với hôm nay và cũng không đọc ngày kết thúc — nên một chính sách ghi hiệu lực từ tháng sau sẽ hiển thị ngay khi vừa lưu."
+
+#. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_m4_step_00
 msgid ""
 "The rates table at the top always shows the CURRENT policy: the active one with the latest effective date."
@@ -4377,6 +4377,13 @@ msgid ""
 "The run is now in <b>draft</b> on the Pay Runs board. From here it travels through the Payroll Officer tier, {{hrTierName}}, {{gmTierName}} and then done. Each gate belongs to one group; nobody can skip one, and a rejection at any of them returns the run to draft with a written reason."
 msgstr ""
 "Đợt lương giờ ở trạng thái <b>Nháp</b> trên bảng Đợt tính lương. Từ đây nó đi qua vòng Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}} rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền; không ai bỏ qua được cổng nào, và bị từ chối ở bất kỳ cổng nào cũng đưa đợt về Nháp kèm lý do bằng văn bản."
+
+#. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_00
+msgid ""
+"The run this mission watches is the one YOU create. Your division already has a June run sitting there from the demo build, and the mission deliberately ignores it — otherwise step one would tick itself green for work you had not done."
+msgstr ""
+"Đợt lương mà nhiệm vụ này theo dõi là đợt do CHÍNH BẠN tạo. Bộ phận của bạn đã có sẵn một đợt tháng 6 từ lúc dựng bản demo, và nhiệm vụ cố ý bỏ qua đợt đó — nếu không thì bước đầu tiên sẽ tự động xanh cho phần việc bạn chưa hề làm."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_needreview_b040
@@ -4610,9 +4617,9 @@ msgstr "Cần nâng mức đóng bảo hiểm của họ cho khớp thu nhập c
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l6_step_05
 msgid ""
-"There is <b>no version history</b> on a policy. When a decree changes a rate you create a <b>new policy record</b> with its own code — codes are unique per company — and its own <b>effective date</b>, then end-date the outgoing one. The roster below is what that looks like afterwards: 2025 ended and archived, 2026 active."
+"There is <b>no version history</b> on a policy. When a decree changes a rate you create a <b>new policy record</b> with its own code — codes are unique per company — and its own <b>effective date</b>. The old record stays as the evidence of what was declared before it; archiving it takes it off this list, which is why the roster shows the live declarations rather than the whole history."
 msgstr ""
-"Chính sách <b>không có lịch sử phiên bản</b>. Khi một nghị định thay đổi tỷ lệ, bạn tạo một <b>bản ghi chính sách mới</b> với mã riêng — mã là duy nhất trong mỗi công ty — và <b>ngày hiệu lực</b> riêng, rồi đặt ngày kết thúc cho bản cũ. Danh sách bên dưới cho thấy kết quả: bản 2025 đã kết thúc và lưu trữ, bản 2026 đang hiệu lực."
+"Chính sách <b>không có lịch sử phiên bản</b>. Khi một nghị định thay đổi tỷ lệ, bạn tạo một <b>bản ghi chính sách mới</b> với mã riêng — mã là duy nhất trong mỗi công ty — và <b>ngày hiệu lực</b> riêng. Bản cũ ở lại như bằng chứng cho những gì đã khai báo trước đó; lưu trữ nó sẽ đưa nó ra khỏi danh sách này, nên danh sách ở đây hiển thị các bản khai báo còn hiệu lực chứ không phải toàn bộ lịch sử."
 
 #. module: pb_learn
 #: model:learn.intent,simpler:pb_learn.intent_bhxh
@@ -4662,6 +4669,13 @@ msgid ""
 "This is the step that stops being reversible in the easy way. After it, the run moves only by being approved at each gate, or by being rejected back to draft with a written reason."
 msgstr ""
 "Đây là bước mà việc hoàn tác không còn dễ dàng nữa. Sau bước này, đợt lương chỉ đi tiếp bằng cách được duyệt ở từng cổng, hoặc bị từ chối trả về Nháp kèm lý do bằng văn bản."
+
+#. module: pb_learn
+#: model:learn.station,outline_why:pb_learn.station_statutory
+msgid ""
+"This is what the company DECLARES it contributes, and it is what the cockpit, the contribution analytics and the statutory reports read. It is not what prices a payslip — that is a parameter in each division's formula configuration — so the real work here is keeping the two in agreement. When they disagree, payroll is running on a rate the company is not declaring."
+msgstr ""
+"Đây là mức mà doanh nghiệp KHAI BÁO là mình đóng, và cũng là mức mà màn hình này, phần phân tích chi phí bảo hiểm và các báo cáo bắt buộc đọc vào. Nó không phải thứ tính ra tiền trên phiếu lương — thứ đó là một tham số trong cấu hình công thức của từng bộ phận — nên việc thật sự ở đây là giữ hai bên khớp nhau. Khi chúng lệch nhau, hệ thống lương đang chạy theo một tỷ lệ mà doanh nghiệp không hề khai báo."
 
 #. module: pb_learn
 #: model:learn.mission,consequence_title:pb_learn.mission_ml1
@@ -4787,13 +4801,6 @@ msgid "Trần Văn Hùng. Overtime 4,200,000 ₫ this month against 1,100,000 �
 msgstr "Trần Văn Hùng. Tăng ca 4.200.000 ₫ tháng này so với 1.100.000 ₫ tháng 6."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whichpolicy_b040
-msgid ""
-"Two active policies with no end date between them is not reported as an error. It simply resolves to one of them, and you find out which from a payslip."
-msgstr ""
-"Hai chính sách cùng bật mà không có ngày kết thúc phân định thì không bị báo lỗi. Hệ thống chỉ chọn lấy một bản, và bạn biết là bản nào qua một phiếu lương."
-
-#. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_m4_step_02
 msgid ""
 "Two of the three numbers on offer are already on this screen somewhere. That is the trap, not a coincidence."
@@ -4842,11 +4849,6 @@ msgstr "Được dùng bởi"
 #: model:learn.string,value:pb_learn.str_livewaiting
 msgid "Waiting for you to do this in Payobook"
 msgstr "Đang chờ bạn thao tác trong Payobook"
-
-#. module: pb_learn
-#: model:learn.step,title:pb_learn.lesson_l6_step_04
-msgid "Watch a rate become a payslip line"
-msgstr "Xem một tỷ lệ trở thành dòng phiếu lương"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m2_step_07
@@ -4932,6 +4934,13 @@ msgid "What should I do next here?"
 msgstr "Tôi nên làm gì tiếp theo ở đây?"
 
 #. module: pb_learn
+#: model:learn.mission,consequence_scope:pb_learn.mission_m4
+msgid ""
+"What this cockpit shows, and what the contribution analytics and the statutory reports read — company-wide. It reprices <b>nothing</b>: the rate that prices a payslip is a parameter on each division's formula configuration, and this record is not it."
+msgstr ""
+"Những gì màn hình này hiển thị, và những gì phần phân tích chi phí bảo hiểm cùng các báo cáo bắt buộc đọc vào — trên toàn công ty. Nó <b>không</b> tính lại bất cứ khoản nào: tỷ lệ tính ra tiền trên phiếu lương là một tham số trong cấu hình công thức của từng bộ phận, và bản ghi này không phải thứ đó."
+
+#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_scope
 msgid "What this touches"
 msgstr "Thao tác này ảnh hưởng tới đâu"
@@ -4955,6 +4964,13 @@ msgstr "Bạn đã làm gì"
 #: model:learn.string,value:pb_learn.str_prereq
 msgid "What you need first"
 msgstr "Cần gì trước"
+
+#. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_m4_step_03
+msgid ""
+"Whatever date you type, this screen starts showing the new rates the moment you save. So the date is not a switch — it is a statement about the law, and it has to be true."
+msgstr ""
+"Dù bạn gõ ngày nào, màn hình này cũng bắt đầu hiển thị tỷ lệ mới ngay khi bạn lưu. Nên ngày hiệu lực không phải một cái công tắc — nó là một tuyên bố về pháp luật, và nó phải đúng."
 
 #. module: pb_learn
 #: model:learn.station,outline_when:pb_learn.station_statutory
@@ -5053,6 +5069,13 @@ msgid "Which policy applies today?"
 msgstr "Hôm nay chính sách nào đang áp dụng?"
 
 #. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whichpolicy_b040
+msgid ""
+"Whichever policy is displayed, it is a DECLARATION. It is not what priced the payslips you are looking at — that came from the rate parameters on each division's formula configuration. If the two disagree, the payslips are not wrong; the declaration and the configuration are simply out of step, and somebody has to decide which one is behind."
+msgstr ""
+"Dù bản nào đang hiển thị thì đó cũng là một BẢN KHAI BÁO. Nó không phải thứ đã tính ra các phiếu lương bạn đang xem — những phiếu đó đến từ các tham số tỷ lệ trên cấu hình công thức của từng bộ phận. Nếu hai bên lệch nhau thì phiếu lương không sai; chỉ là bản khai báo và cấu hình đang không đồng bộ, và phải có người quyết định bên nào đang chậm."
+
+#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_whocan
 msgid "Who can:"
 msgstr "Ai làm được:"
@@ -5117,6 +5140,13 @@ msgstr ""
 "Ở cổng này thì được: người soát xét kế tiếp vẫn có thể từ chối và trả về Nháp. Điều đó không còn đúng khi đã Hoàn tất, sau đó mọi hiệu chỉnh là một dòng hồi tố chứ không bao giờ là sửa trực tiếp."
 
 #. module: pb_learn
+#: model:learn.mission,consequence_reversible:pb_learn.mission_m4
+msgid ""
+"Yes. Archive the record and the previous declaration is displayed again — nothing downstream has been recomputed from it, because nothing downstream reads it to compute with."
+msgstr ""
+"Được. Lưu trữ bản ghi là bản khai báo trước đó hiển thị trở lại — chưa có gì phía sau được tính lại từ nó, vì không có gì phía sau đọc nó để tính."
+
+#. module: pb_learn
 #: model:learn.mission,consequence_reversible:pb_learn.mission_m1
 msgid ""
 "Yes. Drafts can be recomputed or deleted, nothing is paid or sent, and no employee sees anything until the whole run reaches done."
@@ -5138,18 +5168,18 @@ msgstr ""
 "Đúng vậy. Bảo hiểm bám theo hợp đồng, thuế bám theo tháng. Đây là điều duy nhất giải thích được phần lớn thắc mắc về biến động mà bộ phận lương nhận được, và nói được nó một cách rõ ràng còn giá trị hơn bất kỳ báo cáo nào."
 
 #. module: pb_learn
-#: model:learn.quiz.option,feedback:pb_learn.lesson_l6_quiz_opt_1
-msgid ""
-"Yes. July keeps the rates that were in force in July, August gets the new ones, and the change is on the record with a date and a code against it. Both halves are needed: without the end date on the old policy, two policies are active with nothing to choose between them."
-msgstr ""
-"Đúng vậy. Tháng 7 giữ đúng tỷ lệ đã có hiệu lực trong tháng 7, tháng 8 nhận tỷ lệ mới, và thay đổi được ghi lại kèm ngày và mã. Cần cả hai vế: nếu không đặt ngày kết thúc cho chính sách cũ, sẽ có hai chính sách cùng hiệu lực mà không có căn cứ nào để chọn."
-
-#. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l2_quiz_opt_1
 msgid ""
 "Yes. The column a run is sitting in is the answer to who can move it. Chasing the right person is the only thing that shortens the wait, and it is also the fastest way to find out whether they are stuck on something you can resolve."
 msgstr ""
 "Đúng vậy. Cột mà đợt lương đang nằm chính là câu trả lời cho việc ai có thể đẩy nó đi. Hỏi đúng người là cách duy nhất rút ngắn thời gian chờ, và cũng là cách nhanh nhất để biết họ đang vướng điều gì mà bạn có thể gỡ."
+
+#. module: pb_learn
+#: model:learn.quiz.option,feedback:pb_learn.lesson_l6_quiz_opt_1
+msgid ""
+"Yes. The date records what the decree says, the old record stays as evidence of what was declared before it, and — the half people forget — the rate that actually prices pay is a parameter on each division's configuration, so somebody has to change that too before August runs."
+msgstr ""
+"Đúng vậy. Ngày hiệu lực ghi đúng những gì nghị định nêu, bản ghi cũ ở lại làm bằng chứng cho mức đã khai báo trước đó, và — phần mà người ta hay quên — tỷ lệ thực sự tính ra tiền là một tham số trong cấu hình của từng bộ phận, nên phải có người sửa cả chỗ đó trước khi tháng 8 chạy lương."
 
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l5_quiz_opt_1
@@ -5167,8 +5197,8 @@ msgstr ""
 
 #. module: pb_learn
 #: model:learn.mission,consequence_title:pb_learn.mission_m4
-msgid "You are about to change what every division deducts"
-msgstr "Bạn sắp thay đổi khoản khấu trừ của mọi bộ phận"
+msgid "You are about to change what the company declares"
+msgstr "Bạn sắp thay đổi điều doanh nghiệp khai báo"
 
 #. module: pb_learn
 #: model:learn.mission,consequence_title:pb_learn.mission_m1
@@ -5188,11 +5218,6 @@ msgid ""
 "You can say in one sentence why the total is what it is, before anybody at a later gate asks you."
 msgstr ""
 "Bạn nói được trong một câu vì sao tổng lại là con số đó, trước khi có ai ở cổng phía sau hỏi bạn."
-
-#. module: pb_learn
-#: model:learn.mission.note,body:pb_learn.mission_m4_check_04
-msgid "You can state the effect on one employee's NET, not just on the contribution."
-msgstr "Bạn nói được tác động lên THỰC NHẬN của một nhân viên, chứ không chỉ lên khoản đóng."
 
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m2_step_05

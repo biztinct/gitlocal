@@ -357,6 +357,82 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   or a UI label — 110 declared, 109 read by the JS, the rest being `lines.*` and
   `brand`.
 
+### Phase B review fixes
+
+- **THE BIG ONE: `vietnam.insurance.policy` DOES NOT PRICE A PAYSLIP.** Phase B
+  shipped, confidently, that "every payslip in every division reads these
+  numbers" and that a rate change "re-prices every future payslip". False.
+  Grep the rate fields and every reader is a DISPLAY, an ANALYTIC or a REPORT:
+  the Statutory cockpit (pb_statutory.py:54-76), the contribution analytics
+  (hr_formula_config_analytics_vietnam.py:49-76), the employee cost estimate
+  (hr_employee_vietnam.py:235-259) and the insurance analytics wizard.
+  `hr.formula.config.vn_insurance_policy_id` and
+  `hr.employee.vn_insurance_policy_id` are plain Many2ones with no compute
+  behind them.
+  What prices the BHYT line is a **parameter constant on the division's formula
+  configuration** — `EEHI = 0.015` (demo_catalog.py:62), charged by
+  `HIEMP = -ROUND(MIN(BASIC,CAPLO)*EEHI)` (:107).
+  The rewrite frames it as the product actually behaves: the policy is what the
+  company DECLARES, the configuration is what CHARGES, and the Statutory
+  screen's real job is **reconciliation**. That is better teaching than the
+  false version — L6's trace became "check the declared rate against the
+  charged one", and m4's anomaly became "the declaration that changed nothing".
+  `contract.json::statutory-declares-config-prices` pins both halves.
+- **The fixture had the same coupling and now models the truth.** `VN_RATES`
+  is declared once; `POLICY` (the declared record) and `CONFIG_PARAMS` (the
+  pricing constants) both read it, and `payslip()` reads CONFIG_PARAMS. Same
+  numbers, two sources — which is what a correctly run company looks like and
+  what makes the trace a check a learner can perform. Mai's canonical vector is
+  unchanged to the đồng.
+- **The cockpit's selection rule is narrower than it reads.**
+  `search([('company_id','in',co_ids), ('active','=',True)], order='effective_date desc', limit=1)`
+  — it does **not** consult `end_date` and it does **not** compare the date to
+  today, so a future-dated policy is displayed the moment it is saved. Content
+  that taught "end-date the outgoing policy" was teaching an affordance that
+  does not exist (the new-policy wizard has no end-date field at all). m4's
+  effective-date judgement now rests on the honest ground: the date is the
+  legal record, immediate is still wrong because it declares a start the
+  company cannot evidence and because the screen starts showing next month's
+  rates to everyone reviewing an open run.
+- **PRODUCT BUG CANDIDATE — do not fix from pb_learn.** `pb_statutory`'s policy
+  and tax rosters search `[]` with no `active_test=False`
+  (pb_statutory.py:149,161), so ARCHIVED records never appear even though the
+  card renders an `active` badge that could say "Archived". The roster is
+  therefore live declarations only, not a history. L6 step 5 now says that.
+  Raise separately against pb_statutory.
+- **A capstone predicate must be scoped to the CREATOR.** `june_run_computed`
+  matched on is_demo + June + division — and the demo generator seeds exactly
+  such a run for every division before anybody signs up, so step one ticked
+  itself green off somebody else's record. `('create_uid','=',env.uid)` closes
+  it; mL1's brief now says which run is being watched and why the seeded one is
+  ignored. The class of bug: a predicate that describes a STATE rather than an
+  ACT will pass on a state somebody else produced.
+- **A whitelist entry with no reader is a read path nobody asked for.** Three
+  live-value keys shipped implemented and unconsumed; `flagged_count` reached
+  into `pb.payslip.review._slip_totals` — another cockpit's raw SQL — to define
+  a word this module does not own. Removed. They come back with the content
+  that needs them, in the same commit.
+- **`learn.live.values()` is now gated in full**, like the predicates. Live
+  values are demo-world-only in Phase B; everywhere else `render()` falls back
+  to the authored sentence, which is the designed behaviour and is why both
+  live sites ship a fallback that reads correctly without the live figure.
+- **Gate on `env.company.name` only.** The union over `company_ids` made the
+  refusal text false: a user who merely HAS the demo company in their list
+  while working in another would have passed, with a different company's screen
+  in front of them.
+- **`_contested_models` is `ormcache`d**, because `_matchers` runs once per
+  screen and it walked every screen — one bundle build was a quadratic sweep of
+  the sidebar. `learn.screen` now clears the registry cache on write, mirroring
+  `learn.station._invalidate_learn_bundle`.
+- **localStorage keys need the db and the uid.** `pbLearnLive` alone hands one
+  browser profile's second session the other's half-finished capstone, pointing
+  at a run it cannot see.
+- **Left as-is, deliberately:** the round-robin division assignment has a
+  benign signup race (two simultaneous signups can share a division — the
+  capstone still works, and the alternative is a lock on a cosmetic property);
+  `get_defaults` re-sorts the remaining five divisions alphabetically rather
+  than preserving catalogue order (cosmetic).
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5

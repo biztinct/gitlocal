@@ -54,24 +54,18 @@ export class LiveHost extends Component {
         });
 
         this.mission = null;       // the learn.mission dict from the bundle
+        this.missions = null;      // null = not loaded yet, [] = loaded, empty
         this.screens = [];         // learn.screen records, for nav deep links
         this._timer = null;
 
+        // NOT fetched on mount. This component is on every screen for every
+        // user, and almost none of them will ever run a capstone — two bundle
+        // round-trips on every page load to render nothing is a cost the whole
+        // product pays for a feature one tenant uses. Loaded the first time a
+        // mission is actually running, and re-checked on every state change so
+        // a mission started after mount still finds its content.
         onWillStart(async () => {
-            // Both fetched once. The bundle is the same one the Journey reads,
-            // so the mission a learner started there is the mission that runs
-            // here — one content source, not two.
-            try {
-                const bundle = await this.orm.call("learn.station", "get_bundle", []);
-                RT.tokens = bundle.tokens || RT.tokens;
-                RT.chrome = bundle.chrome || RT.chrome;
-                this.missions = bundle.missions || [];
-                const coach = await this.orm.call("learn.intent", "coach_bundle", []);
-                this.screens = coach.screens || [];
-            } catch {
-                this.missions = [];
-            }
-            this._sync();
+            await this._sync();
         });
 
         this._unsubscribe = LiveState.subscribe(() => this._sync());
@@ -82,8 +76,29 @@ export class LiveHost extends Component {
     }
 
     // ------------------------------------------------------------ plumbing
-    _sync() {
+    /** Fetch the content this runner needs, once, and only if it is needed. */
+    async _load() {
+        if (this.missions) {
+            return;
+        }
+        try {
+            const bundle = await this.orm.call("learn.station", "get_bundle", []);
+            RT.tokens = bundle.tokens || RT.tokens;
+            RT.chrome = bundle.chrome || RT.chrome;
+            this.missions = bundle.missions || [];
+            const coach = await this.orm.call("learn.intent", "coach_bundle", []);
+            this.screens = coach.screens || [];
+        } catch {
+            // A runner that cannot load must not break the screen it sits on.
+            this.missions = [];
+        }
+    }
+
+    async _sync() {
         const cur = LiveState.current;
+        if (cur) {
+            await this._load();
+        }
         this.state.running = !!cur;
         this.state.step = cur ? cur.step : 0;
         this.state.minimised = !!(cur && cur.minimised);
