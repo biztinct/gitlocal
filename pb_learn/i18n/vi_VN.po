@@ -4904,6 +4904,11 @@ msgstr ""
 "Bắt đầu một đợt nhập để dùng luồng có hướng dẫn — nó chấm điểm tệp và cho bạn sửa các dòng trước khi ghi bất cứ gì. Một đợt dừng trước bước ghi nhận thì chưa thay đổi gì cả."
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_starthere
+msgid "Start here"
+msgstr "Bắt đầu từ đây"
+
+#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_startimport
 msgid "Start import"
 msgstr "Bắt đầu nhập"

@@ -24,12 +24,18 @@
 .lrn-fab {
     position: fixed;
     right: 24px;
-    /* THE STACK, bottom-right, measured off the two controls that were already
-       there — CSS only, because neither of them may be modified:
+    /* THE STACK, bottom-right, measured off the controls that are actually
+       there — CSS only, because none of them may be modified:
          PayAI pill      .payai-floating-pill   bottom 24px, ~48px tall
          pb_coach FAB    .pbc-launcher          bottom 92px, 48px tall
          this launcher                          bottom 160px
-       A demo user sees all three; that is the decision, not an accident. */
+       Three controls while pb_coach is installed, and TWO once it is not —
+       Phase C2 retires it. The offset is therefore decided at runtime from
+       whether the pb_coach SERVICE exists (first_login.js sets
+       body.pb-coach-absent), so both deploy states render correctly and there
+       is no moment where the corner has a hole in it. The default is the
+       three-control stack: a wrong guess that leaves a gap is better than one
+       that overlaps a live button. */
     bottom: 160px;
     display: flex;
     align-items: center;
@@ -295,8 +301,13 @@
     /* Narrow viewport: the same stack, tighter. The label is dropped rather
        than wrapped — a two-line pill in the corner covers more than it helps. */
     .lrn-fab { right: 14px; bottom: 148px; padding: 0; min-width: 46px; width: 46px; border-radius: 50%; }
+    body.pb-coach-absent .lrn-fab { bottom: 86px; }
     .lrn-fablabel { display: none; }
 }
+
+/* pb_coach uninstalled: its 92px slot is empty, so this launcher drops into it
+   and the corner reads as two controls rather than two and a hole. */
+body.pb-coach-absent .lrn-fab { bottom: 92px; }
 
 @media (prefers-reduced-motion: reduce) {
     .lrn-fab { transition: none; }

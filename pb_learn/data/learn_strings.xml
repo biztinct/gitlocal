@@ -585,6 +585,11 @@
         <field name="value">Grounded in:</field>
     </record>
 
+    <record id="str_starthere" model="learn.string">
+        <field name="key">startHere</field>
+        <field name="value">Start here</field>
+    </record>
+
     <record id="str_startimport" model="learn.string">
         <field name="key">startImport</field>
         <field name="value">Start import</field>

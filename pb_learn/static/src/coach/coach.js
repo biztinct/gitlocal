@@ -27,6 +27,7 @@ import { useBus, useService } from "@web/core/utils/hooks";
 import { RT, T, tx, esc, ic } from "../engine/runtime";
 import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
+import { markLauncherStack, maybeGreet } from "./first_login";
 
 /* Shared with the Journey: one language preference for the whole system. */
 const LOCAL_PREFS = "pbLearnPrefs";
@@ -81,6 +82,12 @@ export class CoachHost extends Component {
         onMounted(() => {
             this._resolveScreen();
             document.addEventListener("keydown", this._onKey);
+            // Two pieces of CHROME the Coach happens to be the right host for,
+            // because it is the one component mounted on every screen. Both
+            // live in first_login.js; neither can throw, and neither is allowed
+            // to delay the drawer.
+            markLauncherStack(this.env);
+            maybeGreet(this.env, this.orm, this.action);
         });
         onWillUnmount(() => document.removeEventListener("keydown", this._onKey));
     }

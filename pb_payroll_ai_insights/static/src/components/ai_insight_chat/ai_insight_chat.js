@@ -17,8 +17,20 @@ export class AiInsightChat extends Component {
 
     setup() {
         this.notification = useService("notification");
-        this.coach = useService("pb_coach");
         this.actionService = useService("action");
+        // OPTIONAL, not required — and the distinction is the whole of the
+        // Phase C2 retirement seam. Asking for the coach through the service
+        // hook THROWS when that service is missing, so this component could not
+        // be constructed at all on a database where pb_coach is not installed,
+        // which is the state this module is being moved towards. The symptom
+        // would be a chat pill that simply never appears.
+        //
+        // PayAI now opens pb_learn lessons. This lookup survives only so that a
+        // legacy `start_tour` envelope — a conversation rendered from history,
+        // written before the retarget — still does something while pb_coach is
+        // still around. contract.json::payai-has-no-hard-coach-dependency is
+        // the guard, and it greps for the hook form, so do not write it here.
+        this.coach = (this.env.services && this.env.services.pb_coach) || null;
         this.chatBodyRef = useRef("chatBody");
         this.inputRef = useRef("chatInput");
 
@@ -150,11 +162,39 @@ export class AiInsightChat extends Component {
         } catch (e) { return null; }
     }
 
-    // --- Coach action (launch a guided tour the AI recommended) ---
+    // --- The "Show me" button: open the lesson the AI recommended ---
+    //
+    // The server's `_sanitize_action` only ever emits `open_lesson`, so that is
+    // the path this takes. `start_tour` is still handled — but only when the
+    // pb_coach service actually exists — because a conversation rendered from
+    // history can carry an envelope written before the retarget, and a button
+    // that does nothing when clicked is worse than one that was never drawn.
     runAction(action) {
-        if (!action || action.type !== "start_tour" || !this.coach) return;
-        this.closePanel();
-        this.coach.start(action.tour, { mode: "interactive" });
+        if (!action) return;
+        if (action.type === "open_lesson" && action.lesson) {
+            this.closePanel();
+            // GUARDED, because the module that owns this action is not a
+            // declared dependency of PayAI yet — the manifest is edited once,
+            // at deploy time, in the same commit that drops pb_coach. Until
+            // then a database with PayAI and without pb_learn would answer a
+            // click with a raw "action not found" traceback, and the honest
+            // failure for an offer nobody can keep is to say so.
+            try {
+                this.actionService.doAction("pb_learn.action_learn_journey", {
+                    additionalContext: { lesson: action.lesson },
+                });
+            } catch (e) {
+                this.notification.add(
+                    "The guided lessons are not installed on this database.",
+                    { type: "warning" }
+                );
+            }
+            return;
+        }
+        if (action.type === "start_tour" && this.coach) {
+            this.closePanel();
+            this.coach.start(action.tour, { mode: "interactive" });
+        }
     }
 
     async clearHistory() {

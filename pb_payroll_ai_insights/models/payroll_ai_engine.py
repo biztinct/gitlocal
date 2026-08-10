@@ -102,20 +102,24 @@ PAY RUNS & PAYSLIPS: Pay Runs lists every run (April/May are Done, June is live/
 
 DEMO NOTE: this is a shared, read-only demo — payslips you generate are temporary and may be reset by another demo user.
 
-You can OFFER TO SHOW the user by launching a guided tour via an optional "action". Available tours:
-- "hero_path"    : the full end-to-end product tour
-- "tour_payrun"  : run a pay run (division -> compute -> review)
-- "tour_formula" : explore the formula engine
-- "tour_payslips": pay runs & payslips / approvals
+You can OFFER TO SHOW the user by opening a guided LESSON via an optional "action". Available lessons:
+- "LW": Welcome to your command centre — the Dashboard, the monthly loop, where everything lives
+- "L1": Run Payroll — your first pay run (division -> compute -> review -> submit)
+- "L5": The formula is the payslip — read a division's formula configuration end to end
+- "L3": Read a payslip like an auditor — gross to net, line by line
+- "L4": Import with confidence — the confidence score, and fixing rows before they commit
+- "LA": Approve like it is your signature — the approval queue, sampling, variance, rejecting well
+- "L2": The board and the gates — the Pay Runs board and the approval chain
+- "L6": Statutory — the insurance rates, the tax table, and applying a rate change
 
 ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
 {
   "response": "<concise step-by-step answer; newlines and numbered steps are fine>",
   "insights": [],
   "follow_up_questions": ["<2-3 helpful next questions>"],
-  "action": { "type": "start_tour", "tour": "<one tour id above>", "label": "Show me" }
+  "action": { "type": "open_lesson", "lesson": "<one lesson key above>", "label": "Show me" }
 }
-Include "action" ONLY when a listed tour clearly matches the request; otherwise omit it or set it to null. Never invent menus, buttons or tour ids that are not listed above."""
+Include "action" ONLY when a listed lesson clearly matches the request; otherwise omit it or set it to null. Never invent menus, buttons or lesson keys that are not listed above."""
 
 
 class PayrollAIEngine(models.Model):
@@ -298,21 +302,68 @@ Remember to use the PayAI color palette and choose the best chart type for this 
             _logger.error("Knowledge query error: %s", e)
             raise
 
-    # Tour ids the frontend coach knows about — used to validate the LLM's action.
-    _KNOWN_TOURS = ('hero_path', 'tour_payrun', 'tour_formula', 'tour_payslips')
+    # ------------------------------------------------------------------
+    # THE ACTION ENVELOPE
+    #
+    # PayAI may offer to SHOW the user something. Until Phase C2 that meant
+    # starting a pb_coach tour; it now means opening a pb_learn lesson, and the
+    # difference is not cosmetic. A tour was a spotlight walk over the live
+    # product in English with nothing recorded at the end. A lesson runs over
+    # the practice replica, ships in both languages, ends on a judgement check
+    # and stores completion per learner — and, unlike a tour, it exists as a
+    # DATABASE RECORD this whitelist can be validated against.
+    #
+    # `_KNOWN_LESSONS` is a whitelist and nothing else: the LLM chooses from it,
+    # it never authors a key. An unknown key is dropped rather than passed
+    # through, because a button that opens nothing is worse than no button.
+    _KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6')
+
+    # The old tour ids, and the lesson each became. Kept because the SYSTEM
+    # PROMPT and the model behind it may lag a deploy — a cached conversation,
+    # a slow provider rollout, a fine-tune that learned the old vocabulary — and
+    # an envelope that only understood the new form would silently drop every
+    # "Show me" for as long as that lasted.
+    #
+    #   hero_path      -> LW   the Dashboard welcome; LW is its direct successor
+    #   tour_payrun    -> L1   run a pay run, division to submit
+    #   tour_formula   -> L5   read a division's formula configuration
+    #   tour_payslips  -> L3   read a payslip line by line
+    #   tour_import    -> L4   the import confidence score and fixing rows
+    #   tour_mapping   -> L5   NOT L4: the mid/end mapping wizard pairs COMPONENTS
+    #                          across two formula configurations, which is L5's
+    #                          subject. L4 is about attendance files and would
+    #                          send the asker to the wrong desk.
+    _TOUR_TO_LESSON = {
+        'hero_path': 'LW',
+        'tour_payrun': 'L1',
+        'tour_formula': 'L5',
+        'tour_payslips': 'L3',
+        'tour_import': 'L4',
+        'tour_mapping': 'L5',
+    }
 
     def _sanitize_action(self, action):
-        """Only allow well-formed start_tour actions for tours we actually ship."""
+        """Accept both envelope forms; ALWAYS emit `open_lesson`.
+
+        Two inputs, one output. `start_tour` with an old tour id is converted
+        through `_TOUR_TO_LESSON`; `open_lesson` is validated against the
+        whitelist. Anything else — a type nobody ships, a lesson key nobody
+        wrote, a non-dict — returns None, and the chat renders no button at all.
+        """
         if not isinstance(action, dict):
             return None
-        if action.get('type') != 'start_tour':
+        kind = action.get('type')
+        if kind == 'open_lesson':
+            lesson = action.get('lesson')
+        elif kind == 'start_tour':
+            lesson = self._TOUR_TO_LESSON.get(action.get('tour'))
+        else:
             return None
-        tour = action.get('tour')
-        if tour not in self._KNOWN_TOURS:
+        if lesson not in self._KNOWN_LESSONS:
             return None
         return {
-            'type': 'start_tour',
-            'tour': tour,
+            'type': 'open_lesson',
+            'lesson': lesson,
             'label': (action.get('label') or 'Show me')[:40],
         }
 

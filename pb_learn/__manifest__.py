@@ -82,6 +82,9 @@ never hand-edited here).
             # The always-on Coach, mounted in the web client shell so it
             # reaches every screen without per-screen work.
             'pb_learn/static/src/coach/coach.scss',
+            # The demo first-login greeting and the launcher-stack body class.
+            # Loaded before coach.js, which imports both.
+            'pb_learn/static/src/coach/first_login.js',
             'pb_learn/static/src/coach/coach.js',
             'pb_learn/static/src/coach/coach.xml',
             # The live capstone's docked card. Mounted through the same
