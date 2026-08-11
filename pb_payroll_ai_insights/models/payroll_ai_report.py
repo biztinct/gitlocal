@@ -120,6 +120,21 @@ class PayrollAIReport(models.TransientModel):
                 return {}
         return {}
 
+    def _section_access(self, query_result):
+        """The narrative half of a report section, when access decided it.
+
+        The query layer runs with the READER's access rights (Phase D1), so a
+        section can legitimately come back refused. Rendering it as an empty
+        chart with no explanation would be the report quietly asserting that
+        there is nothing there. The refusal sentence becomes the section's
+        narrative instead, and the flag keeps `_generate_section_narratives`
+        from overwriting it with prose about an empty list.
+        """
+        if query_result.get('access_refused'):
+            return {'narrative': query_result.get('message', ''),
+                    'access_refused': True}
+        return {'narrative': '', 'access_refused': False}
+
     def _build_report_sections(self):
         """Build data for each enabled report section."""
         data_query = self.env['payroll.data.query']
@@ -134,7 +149,7 @@ class PayrollAIReport(models.TransientModel):
                     'icon': 'fa-money',
                     'data': salary_data.get('data', {}),
                     'query_type': salary_data.get('query_type', ''),
-                    'narrative': '',
+                    **self._section_access(salary_data),
                 })
             except Exception as e:
                 _logger.warning("PayAI Report: salary section failed: %s", e)
@@ -147,7 +162,7 @@ class PayrollAIReport(models.TransientModel):
                     'icon': 'fa-users',
                     'data': headcount_data.get('data', {}),
                     'query_type': headcount_data.get('query_type', ''),
-                    'narrative': '',
+                    **self._section_access(headcount_data),
                 })
             except Exception as e:
                 _logger.warning("PayAI Report: headcount section failed: %s", e)
@@ -160,7 +175,7 @@ class PayrollAIReport(models.TransientModel):
                     'icon': 'fa-line-chart',
                     'data': trend_data.get('data', {}),
                     'query_type': trend_data.get('query_type', ''),
-                    'narrative': '',
+                    **self._section_access(trend_data),
                 })
             except Exception as e:
                 _logger.warning("PayAI Report: trend section failed: %s", e)
@@ -173,7 +188,7 @@ class PayrollAIReport(models.TransientModel):
                     'icon': 'fa-line-chart',
                     'data': forecast_data.get('data', {}),
                     'query_type': forecast_data.get('query_type', ''),
-                    'narrative': '',
+                    **self._section_access(forecast_data),
                 })
             except Exception as e:
                 _logger.warning("PayAI Report: forecast section failed: %s", e)
@@ -186,7 +201,7 @@ class PayrollAIReport(models.TransientModel):
                     'icon': 'fa-clock-o',
                     'data': att_data.get('data', {}),
                     'query_type': att_data.get('query_type', ''),
-                    'narrative': '',
+                    **self._section_access(att_data),
                 })
             except Exception:
                 pass  # Module may not be installed
@@ -199,7 +214,7 @@ class PayrollAIReport(models.TransientModel):
                     'icon': 'fa-calendar-times-o',
                     'data': leave_data.get('data', {}),
                     'query_type': leave_data.get('query_type', ''),
-                    'narrative': '',
+                    **self._section_access(leave_data),
                 })
             except Exception:
                 pass
@@ -249,6 +264,10 @@ class PayrollAIReport(models.TransientModel):
             return
 
         for section in sections:
+            if section.get('access_refused'):
+                # Its narrative is the refusal, and its data is empty by
+                # construction — nothing to send, nothing to say about it.
+                continue
             try:
                 prompt = f"""You are writing an executive payroll report section. Write a 3-4 sentence analytical narrative for this section:
 
