@@ -435,8 +435,42 @@ class LearnIntent(models.Model):
 
     # -------------------------------------------------------- the resolver
     @api.model
-    def _score(self, question, intent, screen_key):
-        """Exact > substring > reverse-substring > topic overlap."""
+    def _ambiguous_words(self):
+        """Topic words that appear in MORE THAN ONE intent's phrases.
+
+        Length was standing in for specificity in the single-shared-word rule
+        below, and it is a poor proxy. `change` is six characters and appears
+        in the phrases of four different intents — "will this change", "what
+        happens if i change this rate", "is it safe to change the formula",
+        "who can change a salary" — so a question sharing only that word
+        scored 40 against all four, cleared the floor, and was answered by
+        whichever sorted first. On the live database that made "how do I change
+        the office wifi password" resolve to "who can change a salary".
+
+        A word half the corpus uses carries no signal about WHICH intent is
+        meant, whatever its length. Derived from the content rather than
+        hand-listed, so it stays true as content is added — the same principle
+        as `_contested_models`: ambiguity is computed from the records, not
+        declared beside them.
+        """
+        owner, ambiguous = {}, set()
+        for intent in self.sudo().search([]):
+            words = set()
+            for phrase in intent.phrase_ids:
+                words |= _topic_words(phrase.text)
+            for word in words:
+                if owner.setdefault(word, intent.id) != intent.id:
+                    ambiguous.add(word)
+        return ambiguous
+
+    @api.model
+    def _score(self, question, intent, screen_key, ambiguous=None):
+        """Exact > substring > reverse-substring > topic overlap.
+
+        `ambiguous` is passed in by `_resolve_hook`, which computes it once per
+        question rather than once per candidate — uncached it would otherwise
+        walk every phrase in the module for every intent being scored.
+        """
         nq = _norm(question)
         if not nq:
             return 0
@@ -454,13 +488,20 @@ class LearnIntent(models.Model):
         if best < 60:
             # Topic overlap, but never on one shared common word: that is how a
             # tax-advice question ends up answered with a UI tour.
+            if ambiguous is None:
+                ambiguous = self._ambiguous_words()
             qw = _topic_words(question)
             for phrase in intent.phrase_ids:
                 shared = qw & _topic_words(phrase.text)
                 if len(shared) >= 2:
                     best = max(best, 55)
-                elif len(shared) == 1 and len(next(iter(shared))) >= 6:
-                    best = max(best, 40)
+                elif len(shared) == 1:
+                    word = next(iter(shared))
+                    # Long AND discriminating. Either alone is not enough: the
+                    # length test alone let `change` through, and dropping the
+                    # length test would let any rare short word through.
+                    if len(word) >= 6 and word not in ambiguous:
+                        best = max(best, 40)
         if best and screen_key and intent._covers_screen(screen_key) \
                 and (intent.screens or '*') != '*':
             best += _ON_SCREEN_BONUS
@@ -475,7 +516,9 @@ class LearnIntent(models.Model):
         candidates, it may not author a reply. Everything the learner reads
         stays a block someone wrote and a test can check.
         """
-        scored = [(self._score(question, i, screen_key), i.key) for i in candidates]
+        ambiguous = self._ambiguous_words()
+        scored = [(self._score(question, i, screen_key, ambiguous), i.key)
+                  for i in candidates]
         scored = [s for s in scored if s[0] >= _SCORE_FLOOR]
         if not scored:
             return None
