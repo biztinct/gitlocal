@@ -500,6 +500,59 @@ class TestCoach(TransactionCase):
         self.assertFalse(thin, "Columns with thin or untranslated definitions:\n  "
                                + "\n  ".join(thin))
 
+    # ------------------------------------------------- the language toggle
+    def test_20b_the_language_toggle_re_renders_the_open_drawer(self):
+        """Found in Chrome on the live deploy, not by any test here.
+
+        The toggle flipped the preference and persisted it, and the open
+        drawer stayed in the old language until a full page reload. The
+        payload was never at fault — every answer carries both languages.
+
+        OWL re-renders a component when a reactive key it READ DURING RENDER
+        changes. `state.lang` was assigned by the toggle and read by nothing in
+        the render path: every visible string goes through `T()`/`tx()`, which
+        read `RT.lang` — a plain module object OWL cannot observe. So the
+        assignment changed a value nobody was subscribed to.
+
+        journey.js has always worked because its `langLabel` reads
+        `this.state.lang`. Asserted at source because the server cannot observe
+        a browser re-render, and asserted on the two getters that RENDER —
+        presence of the assignment was never what was missing.
+        """
+        base = get_module_path('pb_learn')
+        with open(os.path.join(base, 'static', 'src', 'coach', 'coach.js'),
+                  encoding='utf-8') as fh:
+            coach = fh.read()
+        with open(os.path.join(base, 'static', 'src', 'journey', 'journey.js'),
+                  encoding='utf-8') as fh:
+            journey = fh.read()
+
+        def body(src, marker, stop):
+            return src.split(marker)[1].split(stop)[0]
+
+        toggle = body(coach, 'toggleLang() {', '\n    }')
+        self.assertIn('this.state.lang =', toggle,
+                      "the toggle does not write the reactive copy at all")
+
+        # The two getters that are evaluated during render. Reading
+        # `state.lang` in either is what subscribes the component; reading only
+        # RT.lang is the bug that shipped.
+        label = body(coach, 'get langLabel() {', '\n    }')
+        self.assertIn('this.state.lang', label,
+                      "langLabel reads RT.lang, which OWL cannot observe — the "
+                      "drawer will not re-render on a language flip")
+        drawer = body(coach, 'get bodyHTML() {', '\n    /**')
+        self.assertIn('this.state.lang', drawer,
+                      "bodyHTML never reads state.lang, so the answer blocks "
+                      "keep the old language until a page reload")
+
+        # The mechanism is journey.js's, and it has to stay that way — if the
+        # Journey's own toggle is ever rewritten, this pairing is the note
+        # that says the Coach copied it.
+        self.assertIn('this.state.lang', body(journey, 'get langLabel() {', '\n    }'),
+                      "journey.js changed its language mechanism; the Coach "
+                      "mirrors it and both need re-checking together")
+
     # -------------------------------------------- the composer, and its fence
     # Phases A–C had no composer at all, and these two tests asserted its
     # ABSENCE. Phase D2 adds one, so the assertion moves rather than

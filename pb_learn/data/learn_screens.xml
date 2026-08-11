@@ -193,7 +193,7 @@
         <field name="blurb">The same months read as people: headcount paid, joiners and leavers, attendance exceptions and cost per head.</field>
         <field name="next_step">Read the headcount line as employees PAID, not employed. A step in it is a joiner wave, a leaver wave — or a run that left somebody out, which is the one worth checking.</field>
         <field name="sidebar_key">pb_sidebar.item_workforce_insights</field>
-        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whichtool'), ref('intent_whatpage'), ref('intent_prorata')])]"/>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whichtool'), ref('intent_whatpage'), ref('intent_whatnext')])]"/>
     </record>
 
     <record id="screen_govreports" model="learn.screen">

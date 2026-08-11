@@ -67,7 +67,13 @@ Append new gotchas at the bottom as they are hit; never delete entries.
 - **No local odoo-bin exists** on this machine. Unit tests are WRITTEN and must import
   cleanly, but cannot be executed locally. Verification = `python3 -m py_compile` on all
   .py, XML well-formedness, `node tools/dump_content.js`, `python3 tools/gen_learn_data.py --check`,
-  `python3 tools/check_contract.py`. Runtime/server validation happens at deploy.
+  `python3 tools/check_contract.py`, **`python3 tools/simulate_resolver.py`**.
+  Runtime/server validation happens at deploy — and the deploy round proved how
+  much that costs: five resolver failures survived four phases of local
+  verification because nothing local ran the resolver against the real record
+  set. `simulate_resolver.py` closes that specific gap; the list of what it
+  still cannot see is at the bottom of the file and is worth re-reading before
+  trusting a green local run.
 
 ## Known Odoo-19 gotchas that WILL bite this work
 
@@ -1218,6 +1224,80 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   not a guarantee", with the reason the composer is safe anyway stated beside
   it. That is the standard: **name the residual where the mechanism is, not
   only in the report somebody reads once.**
+
+### Deploy round (first real-database execution, and what it found)
+
+Twenty modules deployed, EXIT=0. The suite ran against a production clone for
+the first time: **178 tests, 173 pass, 5 fail** — all five in the resolver, none
+of them findable by anything that had ever run before. Plus one runtime bug
+found in Chrome that no server-side test could ever have seen.
+
+- **THE BIG ONE: A SIX-LETTER WORD WAS BUYING A CONFIDENT ANSWER.** `_score`
+  awarded 40 — twice the floor — for ONE shared topic word of length ≥ 6. The
+  word `change` appears in the phrases of four different intents ("will this
+  change", "what happens if i change this rate", "is it safe to change the
+  formula", "who can change a salary"), so **"how do I change the office wifi
+  password" resolved to "who can change a salary"** on the Payslips screen and
+  to `affectrun` on Import. Four tests failed on it (`test_coach::test_10`,
+  `::test_22`, `test_composer::test_02`, `::test_02b`).
+  The code's own comment said "never on one shared common word" and then did
+  exactly that — LENGTH was standing in for SPECIFICITY, and it is a bad
+  proxy. The fix computes the ambiguous set from the content:
+  `_ambiguous_words()` returns every topic word appearing in more than one
+  intent's phrases (89 of them today), and the single-word path now requires
+  long **and** discriminating. Same principle as `_contested_models` — ambiguity
+  is derived from the records, never declared beside them.
+  Computed once per `resolve()` and passed into `_score`, because per-candidate
+  it would walk every phrase in the module for every intent scored.
+- **THE OFFLINE MIRROR PASSED WHERE THE DATABASE FAILED, AND THAT IS ITS OWN
+  BUG.** Phase D shipped a "resolver simulation" that checked two properties:
+  labels self-resolve, and no shipped phrase trips the advice guard. Both held.
+  It could not have caught any of the five failures, because
+  **it never asked a question that was supposed to MISS**, it never modelled
+  `learn.column.match` (which consults BOTH languages), and it never checked a
+  screen's suggestion chips against that screen. A mirror that only reflects
+  the cases you already believe in is not a mirror.
+  Now a committed tool: `docs/tutorial_poc/author/tools/simulate_resolver.py`,
+  run against the GENERATED records (78 chips, 70 labels × language, 6 miss
+  probes, 11 advice probes, the column glossary in both languages). Proved by
+  negative control to reproduce all five failures exactly — `prorata on
+  contracts -> whopays`, `prorata on workforcean -> None`, and the wifi probe
+  matching `whopays`/`affectrun` — before the fixes, and to pass after.
+  **Two traps found while building it, both worth the line:** the chip scan
+  first reported `0 suggestion chips` because the generator emits bare
+  `ref('intent_x')` with no module prefix and the regex demanded one — a mirror
+  written to catch a bug that did not contain the bug. Every counter is now
+  asserted non-zero, the same "found nothing means broken, not passing" rule
+  the `model-scope` checker uses. And reverting the ambiguous-word rule in the
+  MODULE left the simulation green, because `score()`/`resolve()` are
+  reimplemented there rather than lifted: `MIRRORED_MARKERS` now asserts the
+  module still contains the constructs being mirrored and exits 2 if not.
+  **The rule: a mirror must be able to FAIL for the reason the real thing
+  fails, and you only know it can by making it.**
+- **A SUGGESTION CHIP IS A PROMISE THE SCREEN MAKES.** `prorata` was chipped on
+  five screens and scoped to three. On `contracts` it lost to `whopays`, which
+  had the on-screen bonus there; on `workforcean` it resolved to nothing at
+  all. Fixed by SCOPING, not scoring, and decided per screen from the answer:
+  **contracts gains the scope** — that screen's own next_step raises proration
+  by name ("a contract that ends mid-month is a proration nobody asked for"),
+  so the question is the direct follow-up to what the screen tells you to look
+  for. **workforcean loses the chip** — it counts people, and an answer about
+  one person's base times a factor belongs to no question asked there; the
+  third chip is now `whatnext`, which renders that screen's own genuinely
+  useful next_step, matching what govreports does for the same reason.
+- **THE LANGUAGE TOGGLE PERSISTED AND DID NOT RE-RENDER.** Found in Chrome, and
+  unfindable from the server: the bilingual payload was always correct and a
+  page reload always showed it. OWL re-renders a component when a reactive key
+  it READ DURING RENDER changes — and `state.lang` was assigned by the toggle
+  and read by nothing in the render path, because every visible string goes
+  through `T()`/`tx()`, which read `RT.lang`, a plain module object OWL cannot
+  observe. journey.js has always worked for one reason: its `langLabel` reads
+  `this.state.lang`. Adopted verbatim — `state.lang` set first, then read in
+  both `langLabel` and `bodyHTML`.
+  **The rule: persisting a preference and re-rendering on it are two separate
+  pieces of work, and writing a reactive value nobody reads is neither.**
+  `test_coach::test_20b` pins both getters AND the journey getter it copies, so
+  a rewrite of the Journey's mechanism forces the pair to be re-checked.
 
 ### Product-hardening tickets (raise separately; do NOT fix from pb_learn)
 

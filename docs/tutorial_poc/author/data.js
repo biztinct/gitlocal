@@ -2601,7 +2601,13 @@ const SCREEN_CTX = {
              "Vẫn những tháng đó nhưng đọc theo con người: số người được trả lương, người vào và người nghỉ, ngoại lệ chấm công và chi phí bình quân đầu người."),
     next: B("Read the headcount line as employees PAID, not employed. A step in it is a joiner wave, a leaver wave — or a run that left somebody out, which is the one worth checking.",
             "Hãy đọc đường sĩ số là số người ĐƯỢC TRẢ LƯƠNG, không phải số người đang làm việc. Một bậc nhảy trên đó là một nhóm người mới vào, một nhóm người nghỉ việc — hoặc một kỳ lương đã bỏ sót ai đó, và đó mới là điều đáng kiểm tra."),
-    chips: ["whichtool", "whatpage", "prorata"],
+    // `prorata` was the third chip here and was filler: it is scoped to the
+    // payslip-arithmetic screens, so it resolved to nothing at all on this
+    // one — a suggested question that answers with a miss. `whatnext` renders
+    // this screen's own next_step, which is the genuinely useful thing to read
+    // here (employees PAID, not employed), and is the same third chip
+    // govreports uses for the same reason.
+    chips: ["whichtool", "whatpage", "whatnext"],
   },
   govreports: {
     blurb: B("The statutory filings this company's country asks for, grouped by authority and prefilled for one month.",
@@ -2852,7 +2858,14 @@ const QA = [
   },
 
   {
-    id: "prorata", screens: ["proration", "payslips", "fullfinal"],
+    // `contracts` is here because the Contracts screen's own next_step raises
+    // proration by name — "a contract that ends mid-month is a proration
+    // nobody asked for" — so "how was this part-month salary worked out" is
+    // the direct follow-up to the thing that screen tells you to look for, and
+    // this answer is what that reader needs. It is NOT on workforcean: that
+    // screen counts people, and an answer about one person's base times a
+    // factor does not belong to a question anybody asks there.
+    id: "prorata", screens: ["proration", "payslips", "fullfinal", "contracts"],
     label: B("How was this part-month salary worked out?", "Lương tháng lẻ ngày này được tính ra sao?"),
     match: ["prorated", "part month", "joined mid month", "tinh theo ngay cong", "ngày công lẻ"],
     showMe: ["lg-rows"],

@@ -961,7 +961,7 @@
     <record id="intent_prorata" model="learn.intent">
         <field name="key">prorata</field>
         <field name="label">How was this part-month salary worked out?</field>
-        <field name="screens">proration,payslips,fullfinal</field>
+        <field name="screens">proration,payslips,fullfinal,contracts</field>
         <field name="dynamic">none</field>
         <field name="show_me">lg-rows</field>
         <field name="offer" eval="True"/>

@@ -342,6 +342,14 @@ export class CoachHost extends Component {
 
     // -------------------------------------------------------------- rendering
     get bodyHTML() {
+        // THE SUBSCRIPTION. Read during render, so flipping the language
+        // re-renders the whole drawer — the answer, the grounded line, the
+        // suggestions and the chrome — from the other language slot of the
+        // payload we already hold. Without this read the assignment in
+        // toggleLang() changes a value nobody is watching. Do not "tidy" it
+        // away: `tx()` below reads RT.lang, which OWL cannot see.
+        const lang = this.state.lang;
+        void lang;
         if (!this.state.ready) {
             return markup(`<p class="lrn-note">${esc(T("noAnswerBody"))}</p>`);
         }
@@ -546,9 +554,25 @@ export class CoachHost extends Component {
        Two independent toggles for one setting is a bug waiting to happen: the
        learner flips the Coach to Vietnamese, opens a lesson, and it is in
        English again. Both surfaces read and write the same localStorage key. */
+    /* THE ORDER MATTERS, AND SO DOES WHO READS `state.lang`.
+       Found in Chrome on the live deploy: the toggle flipped the preference,
+       persisted it, and left the open drawer in the old language until a full
+       page reload. The payload was never the problem — both languages are in
+       every answer already.
+
+       OWL re-renders a component when a reactive key it READ DURING RENDER
+       changes. `state.lang` was being assigned here and read by nothing in
+       the render path: every visible string goes through `T()`/`tx()`, which
+       read `RT.lang` — a plain module object, not reactive. So the assignment
+       changed a value nobody was subscribed to and nothing re-rendered.
+
+       journey.js has always worked for exactly one reason: its `langLabel`
+       getter reads `this.state.lang`, which subscribes the component during
+       render. Same mechanism adopted here — `state.lang` is set FIRST, and
+       `bodyHTML` and `langLabel` both read it. */
     toggleLang() {
-        RT.lang = RT.lang === "en" ? "vi" : "en";
-        this.state.lang = RT.lang;
+        this.state.lang = this.state.lang === "en" ? "vi" : "en";
+        RT.lang = this.state.lang;
         try {
             const p = JSON.parse(window.localStorage.getItem(LOCAL_PREFS) || "{}");
             p.lang = RT.lang;
@@ -570,7 +594,11 @@ export class CoachHost extends Component {
     }
 
     get langLabel() {
-        return RT.lang === "en" ? "Tiếng Việt" : "English";
+        // `state.lang`, not RT.lang — this getter is rendered in the drawer
+        // header, so reading the reactive copy is what subscribes the
+        // component. Exactly what journey.js:1160 does, and the reason its
+        // toggle has always re-rendered live while this one did not.
+        return this.state.lang === "en" ? "Tiếng Việt" : "English";
     }
 
     /* Drawer chrome, through the same tx() path as everything else. Hard-coded
