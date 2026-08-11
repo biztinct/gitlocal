@@ -7,3 +7,6 @@ from . import test_mission
 from . import test_tenant_override
 from . import test_progress_security
 from . import test_retirement
+# Phase D2.
+from . import test_composer
+from . import test_questions

@@ -37,7 +37,85 @@ _DEMO_ACCESS = [
     ('hr.api.transformation.rule', 1, 0, 0, 0),
     ('hr.formula.config', 1, 0, 0, 0),
     ('hr.formula.rule', 1, 0, 0, 0),
+    # --- Phase D addendum B: the four optional HR domains ---------------
+    #
+    # PayAI's data queries stopped running under superuser rights (Phase D1),
+    # which is right, and made these four questions unanswerable for a demo
+    # account — attendance, leave, recruitment and timesheets used to return
+    # the whole company only because the escalation ignored the demo user's
+    # actual rights. Restoring them through real grants is the same answer
+    # arrived at honestly. READ ONLY: a prospect may look at attendance, never
+    # write it.
+    #
+    # Every row is skipped silently when the model is absent (the loop below
+    # searches ir.model first), so a database without hr_recruitment or
+    # hr_timesheet installed is unaffected.
+    ('hr.attendance', 1, 0, 0, 0),
+    ('hr.leave', 1, 0, 0, 0),
+    ('hr.leave.type', 1, 0, 0, 0),
+    ('hr.applicant', 1, 0, 0, 0),
+    ('hr.recruitment.stage', 1, 0, 0, 0),
+    ('account.analytic.line', 1, 0, 0, 0),
 ]
+
+# Read-all record rules for the demo group, created only where the demo user
+# would OTHERWISE be narrowed by a rule they already match. Rules for one model
+# across different groups are OR-combined, so each of these widens.
+#
+# WHY ONLY TWO. Read off the shipped rules rather than assumed:
+#
+#   hr.attendance  base.group_user IMPLIES hr_attendance.group_hr_attendance_
+#                  own_reader (hr_attendance/security/hr_attendance_security
+#                  .xml:14-16), whose rule is [('employee_id.user_id','=',
+#                  user.id)] (:82). Every demo user matches it, and a demo
+#                  account is not an employee — so the honest result without a
+#                  widening rule is an empty attendance report. NEEDS ONE.
+#   hr.leave       three rules scoped to base.group_user restrict to own leave
+#                  (hr_holidays: hr_leave_rule_employee / _update / _unlink).
+#                  Same conclusion. NEEDS ONE.
+#   hr.applicant   every narrowing rule is scoped to an hr_recruitment group a
+#                  demo user does not hold; what remains is the GLOBAL company
+#                  rule, which already gives the whole demo company. A rule
+#                  here would be dead configuration — a read path nobody asked
+#                  for, which this project has a standing rule against.
+#   account.analytic.line  same shape: all four timesheet rules are scoped to
+#                  hr_timesheet groups the demo user does not hold.
+#
+# If either of those two ever gains a demo-scoped group, re-derive this table
+# rather than adding to it.
+_DEMO_READ_RULES = [
+    ('hr.attendance', 'Demo: all attendance (read)'),
+    ('hr.leave', 'Demo: all leave (read)'),
+]
+
+
+def _grant_demo_read_rules(env, demo):
+    """Create/refresh the demo group's read-all rules. Idempotent.
+
+    In the hook rather than in ``pb_demo_security.xml`` for the reason
+    ``_grant_demo_access`` is: an ``ir.rule`` in XML needs ``model_id`` to
+    resolve at load time, so a database without hr_attendance or hr_holidays
+    would fail to install pb_demo outright. Here an absent model is a skipped
+    row.
+    """
+    Model, Rule = env['ir.model'], env['ir.rule']
+    for name, label in _DEMO_READ_RULES:
+        mdl = Model.search([('model', '=', name)], limit=1)
+        if not mdl:
+            continue
+        vals = {
+            'name': label,
+            'model_id': mdl.id,
+            'groups': [(6, 0, [demo.id])],
+            'domain_force': "[(1, '=', 1)]",
+            'perm_read': True,
+            'perm_write': False,
+            'perm_create': False,
+            'perm_unlink': False,
+        }
+        rec = Rule.search([('name', '=', label)], limit=1)
+        rec.write(vals) if rec else Rule.create(vals)
+        _logger.info('pb_demo: demo read rule ensured for %s.', name)
 
 
 def _grant_demo_access(env, demo):
@@ -61,6 +139,7 @@ def post_init_demo(env):
     if not demo:
         return
     _grant_demo_access(env, demo)
+    _grant_demo_read_rules(env, demo)
     items = env['pb.sidebar.item'].search([])
     locked = shown = 0
     for it in items:

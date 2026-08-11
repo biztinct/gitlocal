@@ -261,19 +261,19 @@
       ]
     },
     {
-      "id": "coach-cannot-act",
+      "id": "coach-answers-from-records-only",
       "kind": "absent",
-      "why": "The Coach's standing promise is that it never performs an action. Asserted as an ABSENCE because that is the shape of the promise: no provider, no composer, no product method in the answer path. A future port of health_learn's composer would arrive as exactly these names.",
+      "why": "REPLACES 'coach-cannot-act', whose expect list pinned 'def _compose', 'def _provider' and 'generate_text' as absent. Phase D2 adds a flag-gated composer, so those three are now legitimately present and pinning them would only teach the next author to delete the check. What is still absent, and is the part that was always load-bearing: a FOREIGN provider registry (health19's), a direct import of any provider package, and raw SQL. The Coach reaches a model through one seam it can be denied, and reaches the database through the ORM or not at all. The composer's own fences are pinned by composer-is-flag-gated and composer-corpus-reads-learn-content-only.",
       "files": [
         "pb_learn/models/learn_intent.py",
-        "pb_learn/models/learn_station.py"
+        "pb_learn/models/learn_station.py",
+        "pb_learn/models/learn_question.py"
       ],
       "expect": [
         "hr.ai.provider.config",
         "hr_development_ai",
-        "generate_text",
-        "def _compose",
-        "def _provider"
+        "ai_providers",
+        "cr.execute"
       ],
       "fixture": [],
       "taughtIn": [
@@ -978,17 +978,109 @@
       ]
     },
     {
-      "id": "people-leaves-exclude-the-final-approver",
+      "id": "people-leaves-and-the-implication-ladder",
       "kind": "contains",
-      "why": "The whosees answer names who can read a wage roster, and Phase C1 included the final approver. The Employees and Contracts leaves carry officer, manager and super_admin only — a final approver signs for a total and still does not get the salary list, which is a deliberate separation and better teaching than the version that blurred it.",
-      "file": "pb_sidebar/data/pb_sidebar_data.xml",
+      "why": "REPLACES 'people-leaves-exclude-the-final-approver', which pinned a claim that was FALSE. The Employees and Contracts leaves do carry officer, manager and super_admin only — but pb_sidebar filters on `user.all_group_ids`, which INCLUDES implied groups, and group_payroll_final_approver implies group_payroll_analytics_manager which implies group_payroll_base_manager. A final approver therefore sees the wage roster, and the old content taught the opposite. What is pinned now is the mechanism the corrected answer rests on: the two implication lines and the all_group_ids filter. Cut any one of them and whosees becomes wrong again, in the other direction.",
+      "files": [
+        "pb_sidebar/data/pb_sidebar_data.xml",
+        "pb_sidebar/models/pb_sidebar.py",
+        "pb_hr_payroll_base/security/payroll_base_security_enhanced.xml"
+      ],
       "expect": [
         "<record id=\"item_employees\" model=\"pb.sidebar.item\">",
-        "<record id=\"item_contracts\" model=\"pb.sidebar.item\">"
+        "<record id=\"item_contracts\" model=\"pb.sidebar.item\">",
+        "user_groups = user.all_group_ids",
+        "item.groups_id & user_groups",
+        "<record id=\"group_payroll_analytics_manager\" model=\"res.groups\">",
+        "(4, ref('group_payroll_analytics_user')), (4, ref('group_payroll_base_manager'))",
+        "<record id=\"group_payroll_final_approver\" model=\"res.groups\">",
+        "(4, ref('group_payroll_analytics_manager'))"
       ],
       "fixture": [],
       "taughtIn": [
-        "intent whosees"
+        "intent whosees (all three paragraphs)",
+        "ledger: Run D2 addendum A"
+      ]
+    },
+    {
+      "id": "composer-is-flag-gated",
+      "kind": "contains",
+      "why": "The composer is the only path in this module where a learner reads a sentence no author wrote. Four fences make that acceptable and all four are pinned here: it is OFF unless a system parameter says otherwise; the advice deny-list is re-asked inside it, not only in resolve() — resolve returns the compliance intent only if that record exists, so on a database where it is missing an advice question would otherwise fall through retrieval, past the column glossary and into a language model; the model is instructed to emit a literal NO_ANSWER rather than guess; and the answer is badged so the reader knows what they are holding.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "COMPOSE_FLAG = 'pb_learn.compose_enabled'",
+        "if not self._compose_enabled():",
+        "if _is_advice(question):",
+        "NO_ANSWER",
+        "'source_kind': 'composed'",
+        "_QUESTION_CAP",
+        "_REPLY_CAP"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "chrome string composedAnswer",
+        "tests/test_composer.py"
+      ]
+    },
+    {
+      "id": "composer-corpus-reads-learn-content-only",
+      "kind": "absent",
+      "within": "_corpus",
+      "why": "The whole safety argument for sending anything to a provider at all. The corpus is this module's own tutorial text; a join to anything the payroll product owns would put an employee's pay into a prompt. Scoped to the method with `within` rather than to the file, because learn_intent.py legitimately NAMES a product model elsewhere — _matchers explains that the Pay Runs leaf is matched by one — and a file-wide check would either fail on a docstring or force the docstring to stop being useful.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "hr.payslip",
+        "hr.contract",
+        "hr.employee",
+        "res.users",
+        "cr.execute",
+        "read_group"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "models/learn_intent.py::_compose header comment"
+      ]
+    },
+    {
+      "id": "composer-scrubs-the-fixture-names",
+      "kind": "contains",
+      "why": "The scrub list in learn_intent.py names the six people in the practice fixture, because a learner reading a lesson about Mai's payslip and then asking the Coach about it types her name into the one free-text field in this system. A renamed character would leave the list stale and silent — this check makes it break the build instead. It is a reduction and not a guarantee: what makes the composer safe is that the corpus holds no records at all.",
+      "files": [
+        "docs/tutorial_poc/author/practice-data.js",
+        "pb_learn/models/learn_intent.py"
+      ],
+      "expect": [
+        "Nguyễn Thị Mai",
+        "Trần Văn Hùng",
+        "Lê Thu Trang",
+        "Phạm Minh Đức",
+        "Bùi Anh Tuấn",
+        "Đỗ Thị Lan",
+        "FIXTURE_NAMES = ("
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "models/learn_intent.py::FIXTURE_NAMES",
+        "tests/test_composer.py::the scrub battery"
+      ]
+    },
+    {
+      "id": "questions-are-opt-in-twice",
+      "kind": "contains",
+      "why": "Phase A2 ruled that the Coach must not log the learner's question text, and that ruling is still the DEFAULT — learn.question changes it only for a tenant who switches collection on AND a learner who agrees. Both gates are re-asked server-side in record(), because the browser's checks are a courtesy and this method is reachable by RPC from anything holding a session. The text is scrubbed on the way in even after consent, and it expires.",
+      "file": "pb_learn/models/learn_question.py",
+      "expect": [
+        "COLLECT_FLAG = 'pb_learn.collect_questions'",
+        "if not self._collect_enabled():",
+        "if not self.env['learn.consent']._questions_granted():",
+        "self.env['learn.intent']._scrub(",
+        "RETENTION_DAYS = 180",
+        "def _gc_questions"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "chrome strings consentTitle / consentBody / consentYes / consentNo",
+        "tests/test_questions.py"
       ]
     }
   ],

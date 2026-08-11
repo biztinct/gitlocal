@@ -17,9 +17,21 @@
    lesson, ask something else. There is no path from a question to a product
    method. `tests/test_coach.py` asserts that rather than trusting it.
 
-   It never invents a domain fact either. There is no composer and no model:
-   if the spine has no answer it says what it CAN answer here, by name. A
-   fluent invention about a contribution rate would be worse than a miss.
+   It never invents a domain fact either. Every answer is retrieved from a
+   record an author wrote, with ONE fenced exception added in Phase D: when a
+   tenant switches the composer on, an answer may be COMPOSED by a model from
+   this module's own tutorial text — never from database records — and it
+   arrives badged as such so the reader knows which kind of answer they hold.
+   Off by default; with the flag off this file behaves exactly as it did in
+   Phase C.
+
+   WHAT IT SENDS ABOUT YOU
+   -----------------------
+   The question text is never stored unless BOTH the tenant has switched
+   collection on AND you have said yes to the prompt in this drawer. Until
+   then the only thing logged is which screen you were on and whether there
+   was an answer — see `ask()` below, where the Phase A2 ruling is spelled
+   out and still holds as the default.
    ========================================================================== */
 import { Component, markup, onMounted, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { useBus, useService } from "@web/core/utils/hooks";
@@ -37,6 +49,10 @@ const LOCAL_PREFS = "pbLearnPrefs";
 export const COACH_ACTIONS = new Set([
     "c-close", "c-ask", "c-suggest", "c-show", "c-simpler", "c-lesson", "c-back",
     "c-lang",
+    // Phase D2. Two buttons, one decision, asked once. Neither reaches a
+    // product method — they write this learner's own consent row and nothing
+    // else, which is why they belong in this set rather than outside it.
+    "c-consent-yes", "c-consent-no",
 ]);
 
 export class CoachHost extends Component {
@@ -58,6 +74,11 @@ export class CoachHost extends Component {
             simpler: false,
             history: [],         // {q, answered} — so "ask another" keeps context
             lang: RT.lang,
+            // Phase D2 — question mining. `askConsent` is only ever set true
+            // by the SERVER saying both that collection is on and that this
+            // learner has not been asked yet.
+            askConsent: false,
+            pendingQ: null,      // {q, matched} held until a yes; dropped on a no
         });
 
         this.bundle = null;
@@ -167,6 +188,12 @@ export class CoachHost extends Component {
         this.state.answer = null;
         this.state.simpler = false;
         this.state.question = "";
+        // A question held pending a consent answer does not survive the
+        // drawer closing. Closing without answering is not a yes, and text
+        // kept across a close would eventually be stored against a question
+        // the person had moved on from.
+        this.state.askConsent = false;
+        this.state.pendingQ = null;
     }
 
     onInput(ev) {
@@ -186,7 +213,8 @@ export class CoachHost extends Component {
         this.state.busy = true;
         this.state.simpler = false;
         try {
-            const answer = await this.orm.call("learn.intent", "ask", [q, this.state.screen]);
+            const answer = await this.orm.call(
+                "learn.intent", "ask", [q, this.state.screen, RT.lang]);
             this.state.answer = answer;
             this.state.history.push({ q, answered: !!answer.matched });
             // NEVER the question text. health_learn logs the first 40
@@ -202,10 +230,60 @@ export class CoachHost extends Component {
             // piece of content. WHICH question they asked becomes a Phase D
             // opt-in on its own deletable model.
             this._log(answer.matched ? "coach_hit" : "coach_miss", answer.key || "");
+            await this._maybeStore(q, !!answer.matched);
         } catch {
             this.state.answer = null;
         } finally {
             this.state.busy = false;
+        }
+    }
+
+    /** Phase D2 — store the question, or ask for permission to, or neither.
+     *
+     *  Three states and only one of them sends text. The server re-checks
+     *  both gates in `learn.question.record`, so what happens here is a
+     *  courtesy that saves a round trip — never the control. */
+    async _maybeStore(q, matched) {
+        try {
+            const state = await this.orm.call("learn.consent", "questions_state", []);
+            if (state === "granted") {
+                await this.orm.call("learn.question", "record",
+                    [q, this.state.screen, matched, RT.lang]);
+                return;
+            }
+            if (state === "declined") {
+                return;
+            }
+            // 'unset'. Only prompt when there is something to consent TO: a
+            // dialog about a collection that is switched off costs attention
+            // and implies the collection is happening.
+            const should = await this.orm.call("learn.consent", "should_ask_questions", []);
+            if (should) {
+                // HELD, NOT SENT. The text stays in this tab until the answer
+                // is yes; a no drops it and it is never transmitted for
+                // storage at all.
+                this.state.pendingQ = { q, matched };
+                this.state.askConsent = true;
+            }
+        } catch {
+            // Consent plumbing must never break the answer it rides along
+            // with. Failing closed means nothing is stored, which is the
+            // right direction to fail in.
+        }
+    }
+
+    async decideConsent(granted) {
+        this.state.askConsent = false;
+        const pending = this.state.pendingQ;
+        this.state.pendingQ = null;
+        try {
+            await this.orm.call("learn.consent", "set_questions", [!!granted]);
+            if (granted && pending) {
+                await this.orm.call("learn.question", "record",
+                    [pending.q, this.state.screen, pending.matched, RT.lang]);
+            }
+        } catch {
+            // Same rule: a failed write leaves nothing stored.
         }
     }
 
@@ -267,7 +345,29 @@ export class CoachHost extends Component {
         } else {
             parts.push(this._suggestHTML());
         }
+        // BELOW the answer, deliberately. The person opened the drawer because
+        // they were stuck; the answer is what they came for, and a consent card
+        // above it is a toll gate on help. Asked once, either way.
+        if (this.state.askConsent) {
+            parts.push(this._consentHTML());
+        }
         return markup(parts.join(""));
+    }
+
+    /** Asked once per learner, and only when the tenant has switched
+     *  collection on. Both buttons are terminal: a decline is remembered
+     *  server-side, so this card cannot come back and nag. */
+    _consentHTML() {
+        return `<div class="lrn-cconsent">
+            <div class="lrn-clabel">${ic("shield-check")}${esc(T("consentTitle"))}</div>
+            <p class="lrn-note">${esc(T("consentBody"))}</p>
+            <div class="lrn-ctools">
+                <button class="lrn-btn sm" data-act="c-consent-yes"
+                    >${ic("check")}${esc(T("consentYes"))}</button>
+                <button class="lrn-btn sm ghost" data-act="c-consent-no"
+                    >${ic("ban")}${esc(T("consentNo"))}</button>
+            </div>
+        </div>`;
     }
 
     /** The Coach says what screen it is grounded on, every time. If it is a
@@ -323,13 +423,16 @@ export class CoachHost extends Component {
             ? `<div class="lrn-cblock p simpler">${esc(tx(a.simpler))}</div>` : "";
 
         // The learner is entitled to know which KIND of answer they are
-        // reading. There is only one kind that is not a curated intent: a
-        // definition out of the column glossary. (health_learn also badges a
-        // model-composed answer; Phase A ships no composer, so that badge
-        // would be a promise about a path that does not exist.)
+        // reading. Two are not a curated intent: a definition out of the
+        // column glossary, and — only when a tenant has switched the composer
+        // on — one a model wrote from this module's own material. The second
+        // badge is the more important of the two, because it is the only
+        // answer in the drawer that no author has read.
         const badge = a.source_kind === "column"
             ? `<span class="lrn-chip b">${ic("book-open")}${esc(T("columnAnswer"))}</span>`
-            : "";
+            : a.source_kind === "composed"
+                ? `<span class="lrn-chip b">${ic("sparkles")}${esc(T("composedAnswer"))}</span>`
+                : "";
         return `<div class="lrn-canswer">
             ${badge}
             <h4>${esc(tx(a.label))}</h4>
@@ -425,6 +528,10 @@ export class CoachHost extends Component {
             this.state.answer = null;
         } else if (act === "c-lang") {
             this.toggleLang();
+        } else if (act === "c-consent-yes") {
+            this.decideConsent(true);
+        } else if (act === "c-consent-no") {
+            this.decideConsent(false);
         }
     }
 

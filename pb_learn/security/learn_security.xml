@@ -97,4 +97,47 @@
         <field name="perm_unlink" eval="False"/>
     </record>
 
+    <!-- ================================================================
+         Phase D2 — consent, and the questions it permits
+         ================================================================ -->
+
+    <!-- Consent is learner data and nobody else's business, INCLUDING an
+         author's. The other learner-owned tables here give authors a read
+         rule so they can measure the content; there is deliberately no such
+         rule below, because "who agreed to be recorded" is not a content
+         signal, and a list of the people who declined is a list nobody
+         should be able to assemble. -->
+    <record id="rule_learn_consent_own" model="ir.rule">
+        <field name="name">Learn consent: own row only</field>
+        <field name="model_id" ref="model_learn_consent"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- A learner sees the questions they asked, and can delete any of them.
+         That is the whole point of the model being ordinary rather than
+         append-only: consent that cannot be walked back is not consent. -->
+    <record id="rule_learn_question_own" model="ir.rule">
+        <field name="name">Learn questions: own rows only</field>
+        <field name="model_id" ref="model_learn_question"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Authors read everything and may DELETE anything — the one place in
+         this module where an author gets unlink on learner data, and it is
+         deliberate: the table exists to be triaged into content and then
+         emptied. No write: an author who can edit a recorded question can
+         edit it into something the learner never asked. -->
+    <record id="rule_learn_question_author" model="ir.rule">
+        <field name="name">Learn questions: authors read and delete</field>
+        <field name="model_id" ref="model_learn_question"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_learn_author'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
 </odoo>

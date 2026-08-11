@@ -301,6 +301,30 @@ body.pb-coach-absent .lrn-fab { bottom: 92px; }
 
 .lrn-cmiss p { margin: 0 0 6px; }
 
+/* Phase D2 — the consent card. Quiet on purpose: it sits BELOW the answer
+   and must read as a question being asked, not as a banner demanding an
+   answer before the drawer will work. Solid colours only, no gradient. */
+.lrn-cconsent {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid var(--vuf-line-soft, #F1F0F7);
+    border-radius: 10px;
+    background: var(--vuf-surface-2, #FAFAFD);
+
+    .lrn-clabel {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: none;
+        font-size: 12px;
+        letter-spacing: 0;
+        color: var(--vuf-text, #1F2937);
+    }
+    .lrn-ic { width: 14px; height: 14px; color: var(--vuf-primary, #1565C0); }
+    p { margin: 0; }
+    .lrn-ctools { margin-top: 10px; padding-top: 0; border-top: 0; }
+}
+
 /* On a phone the drawer takes the bottom sheet, still without a backdrop. */
 @media (max-width: 640px) {
     .lrn-drawer {

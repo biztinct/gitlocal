@@ -8,13 +8,27 @@ lets it promise never to invent a rate, a threshold or a tax figure.
 The resolver is deterministic retrieval. `_resolve_hook` is the one seam where
 an LLM could be plugged in later; note its contract, which is the whole point:
 it returns an intent KEY chosen from the candidates, never text. A model may
-choose what to say; it may not say it. Phase A ships NO model at all — the hook
-is the deterministic scorer and nothing else, and there is no composer.
+choose what to say; it may not say it.
+
+PHASE D adds ONE exception, and it is fenced: the composer (`_compose`). It is
+off unless a system parameter turns it on, it is reached only after curated
+retrieval and the column glossary have both missed, the advice deny-list runs
+before it, and the only material it is given is this module's own tutorial
+text — never a database record. What it writes is badged so the reader knows
+which kind of answer they are holding.
+
+NOTE TO THE NEXT READER: `contract.json::coach-answers-from-records-only`
+greps this file whole, prose included, for the tokens that must never appear
+here — a product model name, raw SQL, or another module's provider registry.
+Say "a product model" rather than naming one, as everything below does.
 """
+import logging
 import re
 import unicodedata
 
 from odoo import api, fields, models, tools
+
+_logger = logging.getLogger(__name__)
 
 # Words that carry no topic. Without this, "what should I do to pay less BHXH"
 # matched "what does this page do" on the word "what" alone and the Coach
@@ -88,6 +102,80 @@ def _norm(text):
 
 def _topic_words(text):
     return {w for w in _norm(text).split() if w and w not in _STOP and len(w) > 1}
+
+
+# ======================================================================
+# THE COMPOSER'S CONSTANTS — see LearnIntent._compose
+# ======================================================================
+# Off unless this is explicitly set true. Absent means off, which is what an
+# upgraded tenant gets and what every test that does not set it gets.
+COMPOSE_FLAG = 'pb_learn.compose_enabled'
+
+_CORPUS_CAP = 12000
+_QUESTION_CAP = 400
+_REPLY_CAP = 1500
+
+
+def _ascii(text):
+    """Tone marks stripped, đ folded, case PRESERVED.
+
+    `_norm` is for matching and destroys the string. This one is for building
+    the second form of a name a learner might type: somebody in a hurry types
+    "Nguyen Thi Mai", and a scrub list that only knows the accented spelling
+    lets the unaccented one through — which is the spelling most likely to be
+    typed on a shop-floor keyboard.
+    """
+    s = (text or '').replace('đ', 'd').replace('Đ', 'D')
+    s = unicodedata.normalize('NFD', s)
+    return ''.join(c for c in s if unicodedata.category(c) != 'Mn')
+
+
+# The people in the practice fixture. A learner reading a lesson about Mai's
+# payslip and then asking the Coach about it types her name, and that name
+# would otherwise travel to a hosted provider.
+#
+# THIS IS A REDUCTION, NOT A GUARANTEE, and it is important not to oversell
+# it: the demo world holds thousands of generated names and this list holds
+# six. What makes the composer safe is that the CORPUS contains no records at
+# all — the scrub is a second fence around the one free-text field a person
+# can type anything into.
+#
+# `contract.json::composer-scrubs-the-fixture-names` pins these against the
+# fixture, so a renamed character breaks the build rather than quietly
+# leaving the list stale.
+FIXTURE_NAMES = (
+    'Nguyễn Thị Mai', 'Trần Văn Hùng', 'Lê Thu Trang', 'Phạm Minh Đức',
+    'Bùi Anh Tuấn', 'Đỗ Thị Lan',
+)
+
+_NAME_RE = re.compile(
+    '|'.join(sorted(
+        {re.escape(v) for n in FIXTURE_NAMES for v in (n, _ascii(n))},
+        key=len, reverse=True)),
+    re.IGNORECASE)
+
+# Digit groups written the way money is written — 4.200.000 or 4,200,000.
+# Applied through a callback so that a bare "10,5" (a rate, in Vietnamese
+# decimal notation) survives: a rate is not personal data, and scrubbing it
+# would make the question meaningless while protecting nobody.
+_GROUPED_DIGITS = re.compile(r'\b\d{1,3}(?:[.,]\d{3})+\b')
+
+# A number wearing a currency mark is money whatever its size, so this one runs
+# BEFORE the grouped-digit rule — otherwise the digits are replaced first and
+# the mark is left stranded beside the placeholder ("[amount] ₫"), which reads
+# like a redaction that missed.
+_CURRENCY_AMOUNT = re.compile(
+    r'\b\d[\d.,]*\s*(?:₫|vnd|vnđ|đ)\b', re.IGNORECASE)
+
+# Anything that looks like it identifies a person or a record, scrubbed from
+# the question before it leaves this server. These four are health_learn's,
+# unchanged; the two payroll-grade ones above are new here.
+_SCRUB = (
+    (re.compile(r'\b[\w.+-]+@[\w-]+\.[\w.]+\b'), '[email]'),
+    (re.compile(r'(?:\+?84|0)\d[\d\s.-]{7,}\d'), '[phone]'),
+    (re.compile(r'#\d{2,}'), '[record]'),
+    (re.compile(r'\b\d{6,}\b'), '[number]'),
+)
 
 
 class LearnScreen(models.Model):
@@ -450,18 +538,29 @@ class LearnIntent(models.Model):
         return payload
 
     @api.model
-    def ask(self, question, screen_key=None):
+    def ask(self, question, screen_key=None, lang=None):
         """The Coach's one entry point.
 
-        Order matters. Curated intents first, then the column glossary, then an
-        honest miss — each fallback is strictly less certain than the one
-        before it, so the most reliable answer always wins.
+        Order matters, and each fallback is strictly less certain than the one
+        before it, so the most reliable answer always wins:
 
-        THERE IS NO THIRD FALLBACK. health_learn has a composer here — an LLM
-        over its own corpus — and Phase A deliberately does not port it. The
-        honest miss is always an acceptable outcome on a payroll system; a
-        fluent invention about a contribution rate is not. Every sentence a
-        learner reads is a record someone wrote and a test can check.
+          1. curated intents      a record someone wrote
+          2. the column glossary  a record someone wrote
+          3. the composer         a model, over records someone wrote — and
+                                  only when a system parameter says so
+          4. the honest miss      what the Coach CAN answer here, by name
+
+        Phases A–C had no step 3 at all, and the honest miss is still always an
+        acceptable outcome: a fluent invention about a contribution rate is
+        not. What step 3 changes is only the case where several written pieces
+        together answer a question no single intent covers. It is off by
+        default; with the flag off this method behaves exactly as it did in
+        Phase C, because `_compose` returns None before doing anything.
+
+        `lang` is the language the COACH is displaying ('en' / 'vi'), which is
+        not necessarily the session language — the drawer has its own toggle.
+        It is used only to pick which language of our own material the composer
+        is given; nothing else reads it.
         """
         key = self.resolve(question, screen_key)
         if key:
@@ -487,16 +586,206 @@ class LearnIntent(models.Model):
         if column:
             return self._column_answer(column, screen_key)
 
+        composed = self._compose(question, screen_key, lang)
+        if composed:
+            return composed
+
         return {
             'matched': False,
             'capability': self._capability(screen_key),
             'suggest': self._suggestions(screen_key),
         }
 
+    # ==================================================================
+    # THE COMPOSER — a model over OUR OWN CONTENT, and nothing else
+    # ==================================================================
+    # WHAT IS AND IS NOT SENT
+    # -----------------------
+    # Sent: the learner's question (scrubbed — see `_scrub`) and this module's
+    # own tutorial text for the screen they are on. NOT sent: any employee,
+    # payslip, contract or pay-run record. The corpus is built from learn.*
+    # tables only, so there is no pay data in the request whatever provider is
+    # configured, and `contract.json::composer-corpus-reads-learn-content-only`
+    # asserts that against the source rather than trusting this paragraph.
+    #
+    # The question itself is free text a person typed, so it is scrubbed: a
+    # help box on a payroll screen receives "why is <a colleague>'s net only
+    # 4.200.000" more often than anybody would like.
+    #
+    # SOFT DEPENDENCY, on purpose. PayAI owns the provider abstraction. A hard
+    # dependency would make pb_learn uninstallable without it and would be a
+    # second provider registry to keep in step; if it is absent, or nothing is
+    # configured, the composer is simply unavailable and the Coach gives the
+    # honest miss it gave in Phase C.
 
-    # NOTE: health_learn has a composer here (_scrub / _provider / _corpus /
-    # _compose — an LLM over its own material). It is deliberately NOT ported.
-    # See the docstring on ask(): Phase A answers only from stored blocks.
+    @api.model
+    def _compose_enabled(self):
+        """The flag. Absent or falsey means OFF, which is every tenant until
+        somebody decides otherwise."""
+        raw = self.env['ir.config_parameter'].sudo().get_param(COMPOSE_FLAG)
+        return str(raw or '').strip().lower() in ('1', 'true', 'yes', 'on')
+
+    @api.model
+    def _scrub(self, question):
+        """Remove person- and record-shaped references before the question
+        leaves this server, and bound its length."""
+        out = question or ''
+        out = _NAME_RE.sub('[name]', out)
+        out = _CURRENCY_AMOUNT.sub('[amount]', out)
+        out = _GROUPED_DIGITS.sub(
+            lambda m: ('[amount]'
+                       if sum(c.isdigit() for c in m.group(0)) >= 5
+                       else m.group(0)),
+            out)
+        for pattern, replacement in _SCRUB:
+            out = pattern.sub(replacement, out)
+        return out[:_QUESTION_CAP]
+
+    @api.model
+    def _provider(self):
+        """The configured provider, or None. Never raises.
+
+        Resolved through the registry rather than by importing PayAI, so this
+        module still installs and still answers on a database without it.
+
+        The method ladder is deliberate: PayAI's own callers ask for
+        `get_provider_instance`, which is NOT a method on that model in this
+        repo — four call sites over there are silently dead because of it. The
+        composer asks for that name first so it works the day somebody adds it,
+        and falls back to `get_provider`, which exists.
+        """
+        if 'payroll.ai.config' not in self.env:
+            return None
+        try:
+            config = self.env['payroll.ai.config'].sudo().get_active_config()
+            if not config:
+                return None
+            for name in ('get_provider_instance', 'get_provider'):
+                factory = getattr(config, name, None)
+                if factory:
+                    return factory() or None
+        except Exception:                                     # noqa: BLE001
+            _logger.info("Learn coach: no usable provider", exc_info=True)
+        return None
+
+    @api.model
+    def _corpus(self, screen_key, lang):
+        """Everything WE have written about this screen, as plain text.
+
+        Reads learn.* content tables and nothing else. A join to anything the
+        payroll product owns would put pay data in a prompt, which is the one
+        thing this method exists not to do.
+        """
+        env = self.with_context(lang=lang)
+        parts = []
+        Screen = env.env['learn.screen'].sudo()
+        screen = Screen.search([('key', '=', screen_key)], limit=1) if screen_key else None
+        if screen:
+            parts.append('SCREEN: %s — %s' % (screen.name, screen.blurb or ''))
+            if screen.next_step:
+                parts.append('NEXT: %s' % screen.next_step)
+            station = env.env['learn.station'].sudo().search(
+                [('key', '=', screen_key)], limit=1)
+            if station:
+                parts.append('STATION: %s — %s' % (station.name, station.summary or ''))
+                for lesson in station.lesson_ids:
+                    for step in lesson.step_ids:
+                        parts.append('- %s: %s' % (step.title, step.body or ''))
+                for mistake in station.mistake_ids:
+                    parts.append('MISTAKE: %s' % mistake.name)
+            for col in env.env['learn.column'].sudo().search(
+                    [('screen', '=', screen_key)]):
+                parts.append('COLUMN %s: %s' % (col.label, col.body))
+        for intent in env.search([]).filtered(
+                lambda i: not screen_key or i._covers_screen(screen_key)):
+            for block in intent.block_ids:
+                if block.capability == 'any' and block.body:
+                    parts.append('%s: %s' % (intent.label, block.body))
+        for term in env.env['learn.glossary.term'].sudo().search([]):
+            parts.append('TERM %s: %s' % (term.term, term.definition))
+        return '\n'.join(parts)[:_CORPUS_CAP]
+
+    @api.model
+    def _compose(self, question, screen_key, lang=None):
+        """Compose an answer from our own material, or return None.
+
+        Returns None on ANY doubt — flag off, an advice question, no provider,
+        no corpus, an empty reply, a NO_ANSWER, a suspiciously long one. The
+        honest miss is always an acceptable outcome; a fluent invention is not.
+        """
+        if not self._compose_enabled():
+            return None
+
+        # THE DENY-LIST RUNS BEFORE THE COMPOSER, AND NOT ONLY INSIDE
+        # `resolve`. It does run there — but `resolve` returns the `compliance`
+        # intent only if that record exists, and returns None if it does not.
+        # On a database where the intent is missing or deactivated, an advice
+        # question would fall straight past retrieval and the column glossary
+        # and reach a language model, which is the single worst destination for
+        # "how do I pay less BHXH" on this system. Re-asked here so the guard
+        # cannot depend on a record being present.
+        if _is_advice(question):
+            return None
+
+        provider = self._provider()
+        if not provider:
+            return None
+        corpus_lang = 'vi_VN' if (lang or '').lower().startswith('vi') else 'en_US'
+        corpus = self._corpus(screen_key, corpus_lang)
+        if not corpus.strip():
+            return None
+        scrubbed = self._scrub(question)
+        prompt = (
+            "You are the in-app help assistant for Payobook, a payroll "
+            "system. Answer the question USING ONLY the material below, which "
+            "is the product's own tutorial content.\n"
+            "If the material does not contain the answer, reply with exactly: "
+            "NO_ANSWER.\n"
+            "Never invent or repeat a contribution rate, a tax threshold, a "
+            "relief amount, a deadline or any other number that is not written "
+            "in the material. Never give tax, legal or compliance advice. "
+            "Never claim to have performed an action: you cannot compute a "
+            "run, approve a payslip or change a record.\n"
+            "Answer in at most four sentences, plainly, in the same language "
+            "as the question.\n\n"
+            "MATERIAL:\n%s\n\nQUESTION: %s\nANSWER:" % (corpus, scrubbed))
+        try:
+            reply = provider.generate_text(prompt, max_tokens=300, temperature=0.2)
+        except Exception:                                     # noqa: BLE001
+            _logger.info("Learn coach: composer call failed", exc_info=True)
+            return None
+        reply = (reply or '').strip()
+        if not reply or 'NO_ANSWER' in reply or len(reply) > _REPLY_CAP:
+            return None
+
+        from .learn_station import _zip_bilingual
+        # ONE language, shown in both. A composed answer is whatever the model
+        # wrote; translating it here would be a second model call inventing a
+        # second chance to be wrong, and shipping an empty Vietnamese side
+        # would blank the drawer for the reader who most needs it. The prompt
+        # asks for the question's language and the badge says the answer was
+        # composed, which is the honest version of this compromise.
+        tree = {
+            'key': 'composed',
+            'label': scrubbed,
+            'simpler': '',
+            'blocks': [{'capability': 'any', 'kind': 'p', 'body': reply,
+                        'steps': []}],
+        }
+        payload = _zip_bilingual(tree, tree)
+        payload.update({
+            'matched': True,
+            'capability': self._capability(screen_key),
+            'show_me': [],
+            'practice_key': '',
+            # Badged so the drawer can say so. A composed answer is written by
+            # a model FROM our material — the reader is entitled to know which
+            # kind of answer they are reading, which is the same reason the
+            # column glossary carries a badge.
+            'source_kind': 'composed',
+        })
+        return payload
+
     @api.model
     def _column_answer(self, column, screen_key):
         """A column definition, shaped like any other answer."""

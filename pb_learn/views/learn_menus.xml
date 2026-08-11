@@ -55,4 +55,10 @@
               action="action_learn_event"
               sequence="40"/>
 
+    <menuitem id="menu_learn_question"
+              name="Stored questions"
+              parent="menu_learn_content"
+              action="action_learn_question"
+              sequence="50"/>
+
 </odoo>

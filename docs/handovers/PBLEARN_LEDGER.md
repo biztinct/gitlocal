@@ -981,6 +981,153 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   `payroll_ai_config.py`'s escalation reads the provider credentials and is
   correct.
 
+### Run D2 (composer + question mining + three addenda)
+
+- **THE BIG ONE: `get_provider_instance()` IS NOT A METHOD ON
+  `payroll.ai.config`, AND FOUR CALL SITES HAVE BEEN CALLING IT.**
+  `payroll_ai_config.py:153` defines `get_provider`; nothing defines
+  `get_provider_instance`. It is called at `payroll_ai_pulse.py:338`,
+  `payroll_ai_conversation.py:212` and `payroll_ai_report.py:260,291` — every
+  one inside a `try/except` that swallows the AttributeError, so the failures
+  are SILENT and permanent:
+  the PDF report's AI narratives never generate, its executive summary always
+  prints "Executive summary generation failed.", the Pulse anomaly summaries
+  are never written, and voice input always answers "Voice feature requires
+  OpenAI provider with Whisper support". Four shipped features that have never
+  worked, none of which logs anything. **Product ticket, not fixed here** —
+  it is a PayAI behaviour change needing its own verification, and D2 is a
+  pb_learn commit. The composer copes by asking for
+  `get_provider_instance` first and falling back to `get_provider`, so it works
+  today and keeps working the day somebody adds the alias.
+  **The class of bug: a soft `except Exception` around a method call turns a
+  typo into a feature that is merely always off.**
+- **The handover named the model `pb.payroll.ai.config`; it is
+  `payroll.ai.config`** (payroll_ai_config.py:14). No `pb.` prefix. Corrected
+  silently would have meant a composer that could never find a provider, on a
+  path whose designed failure mode is to return None quietly — i.e. it would
+  have looked exactly like "no provider configured" forever.
+- **`coach-cannot-act` could not survive the composer, and deleting it was the
+  wrong fix.** It pinned `def _compose`, `def _provider` and `generate_text` as
+  ABSENT from learn_intent.py. Those are now legitimately present, and a check
+  that fails for a correct reason teaches the next author to delete checks. It
+  is replaced by `coach-answers-from-records-only`, which keeps the part that
+  was always load-bearing — no FOREIGN provider registry, no direct provider
+  import, no raw SQL — plus two new checks that fence the composer itself.
+  **A check that has to change when the design changes should be REWRITTEN to
+  the new promise, never removed.**
+- **`region()`/`within` is what made the corpus check possible.**
+  learn_intent.py legitimately names a product model in prose — `_matchers`
+  explains that the Pay Runs leaf is matched by one — so a file-wide `absent`
+  check would either fail on a docstring or force the docstring to stop being
+  useful. `composer-corpus-reads-learn-content-only` is scoped
+  `"within": "_corpus"`. First use of `within` on an `absent` check in this
+  project; it works, and it is the right tool whenever the honest scope of a
+  promise is one method.
+- **THE DENY-LIST HAD A HOLE THAT ONLY THE COMPOSER COULD FALL THROUGH.**
+  `resolve()` refuses an advice question by returning the `compliance` intent —
+  `'compliance' if self.search_count(...) else None`. On a database where that
+  record is missing or deactivated it returns **None**, which falls past
+  retrieval, past the column glossary, and (before D2) into the honest miss,
+  which was harmless. With a composer at the end of that chain, "how do I pay
+  less BHXH" would have reached a language model. `_compose` re-asks
+  `_is_advice` as its second statement. **A guard that depends on a RECORD
+  existing is not a guard; it is a default.**
+- **A refusal template must not make the topic its subject — and a composed
+  answer must not pretend to be bilingual.** `_zip_bilingual(tree, tree)` puts
+  the model's one language on both sides. Translating it would be a second
+  model call inventing a second chance to be wrong; shipping an empty
+  Vietnamese side would blank the drawer for the reader who most needs it. The
+  prompt asks for the question's language, `ask()` now takes the COACH's
+  language (not the session's — the drawer has its own toggle) to pick which
+  language of our own material to send, and the badge says the answer was
+  composed. That is the honest version of the compromise, and it is the one
+  place in this module where EN and VI are deliberately the same string.
+- **The scrub is a REDUCTION, not a guarantee, and saying so is part of
+  shipping it.** Six fixture names are scrubbed; the demo world holds
+  thousands. What makes the composer safe is that the corpus contains no
+  records at all. Both spellings of every name are matched (`_ascii` folds tone
+  marks but preserves case) because the unaccented spelling is the one most
+  likely to be typed in a hurry. A rate SURVIVES the scrub on purpose:
+  "what does 10,5% mean" with the number removed is not a question anybody can
+  answer, and 10.5 is not personal data.
+- **Order the money rules or the redaction looks like it missed.** The
+  currency-marked rule has to run BEFORE the grouped-digits rule; the other way
+  round, `12.000.000 ₫` becomes `[amount] ₫` — a stranded currency mark beside
+  a placeholder, which reads worse than no redaction.
+- **`learn.question` is not a reversal of the Phase A2 ruling, and the
+  difference is four properties `learn.event` cannot have.** Ordinary rather
+  than append-only, opt-in twice, scrubbed on the way IN even after consent,
+  and expiring. The key-only behaviour stays the default forever. Both gates
+  are re-asked server-side in `record()` — the browser's checks save a round
+  trip and are not the control, because the method is reachable by RPC from
+  anything holding a session.
+- **Consent is the one piece of learner data an AUTHOR does not get.**
+  Progress, events and confidence all have an author read-rule; `learn.consent`
+  deliberately does not. Who agreed to be recorded is not a content signal, and
+  a list of everyone who declined is one nobody should be able to assemble.
+  Authors get read AND unlink on `learn.question` (the table exists to be
+  triaged and then emptied) but never write — an author who can edit a recorded
+  question can edit it into one nobody asked.
+- **The consent prompt makes three promises and a test checks the code keeps
+  them.** `test_04d` asserts that the retention window stated in the prompt is
+  the same integer as `RETENTION_DAYS`. A prompt that promises 180 days beside
+  a cron that keeps rows forever is the worst possible version of this feature,
+  and it is the version that survives a refactor unless something compares the
+  two.
+- **A held question does not survive the drawer closing.** Closing without
+  answering the consent card is not a yes, and text kept across a close would
+  eventually be stored against a question the person had moved on from.
+- **ADDENDUM A — the whosees claim was false and the OLD CHECK PINNED IT.**
+  `pb_sidebar/models/pb_sidebar.py:73` filters on `user.all_group_ids`, which
+  includes implied groups, and `group_payroll_final_approver` implies
+  `group_payroll_analytics_manager` (payroll_base_security_enhanced.xml:172)
+  which implies `group_payroll_base_manager` (:165). A final approver
+  therefore DOES see the wage roster. `people-leaves-exclude-the-final-approver`
+  had pinned only the two leaf records — true, and true of a screen whose
+  meaning the check never touched. Replaced by
+  `people-leaves-and-the-implication-ladder`, which pins the two implication
+  lines and the `all_group_ids` filter as well, so cutting any one of them
+  breaks the build. **A contract check that pins the EVIDENCE but not the
+  MECHANISM will happily agree with a false claim.** The rewritten content
+  teaches the ladder, names the consequence (approving a total and reading
+  salaries are not separated, and separating them is work somebody has to do),
+  and names who is genuinely excluded: analytics-only readers, base users and
+  country-toggle holders.
+- **ADDENDUM B — the demo grants went in the HOOK, not in the XML.** An
+  `ir.rule` in `pb_demo_security.xml` needs `model_id` to resolve at load
+  time, so a database without hr_attendance or hr_holidays would fail to
+  install pb_demo outright. `_grant_demo_read_rules` sits beside
+  `_grant_demo_access`, which exists for exactly that reason, and both run on
+  every upgrade via `_pb_demo_rewire`.
+  **Only TWO of the four models need a rule, and the other two would be dead
+  configuration.** Read off the shipped rules: `base.group_user` IMPLIES
+  `hr_attendance.group_hr_attendance_own_reader`
+  (hr_attendance_security.xml:14-16) whose rule is own-records-only (:82), and
+  hr_holidays scopes three own-only rules to `base.group_user` — so both narrow
+  a demo user and both need widening. `hr.applicant` and
+  `account.analytic.line` have every narrowing rule scoped to a group the demo
+  user does not hold, leaving only the global company rule, which already gives
+  the whole demo company. They get an ACL row and no rule.
+- **ADDENDUM C — `payroll_ai_pulse.py` escalation stays, as a ticket.**
+  Cron-context escalation is defensible: a scheduled job runs as no particular
+  user. The issue is downstream — the alerts it produces are shown to users and
+  nothing gates which user sees an alert derived from which company's payslips.
+
+### Product-hardening tickets (raise separately; do NOT fix from pb_learn)
+
+1. **pb_statutory rosters search `[]` with no `active_test=False`**
+   (pb_statutory.py:149,161) — archived records never appear even though the
+   card renders an `active` badge. Raised in the Phase B review.
+2. **Two sidebar leaves claim `hr.integration.connector`**, two claim
+   `hr.payslip.run`, two claim `hr.contract` — correct for the sidebar,
+   unusable for the Coach, absorbed by `_contested_models`. Raised in B1/C1.
+3. **`payroll.ai.pulse` runs elevated and its alerts are ungated** — see
+   addendum C above.
+4. **`payroll.ai.config.get_provider_instance()` does not exist**, and four
+   call sites swallow the AttributeError, silently disabling PDF narratives,
+   the executive summary, Pulse summaries and voice input. See the top of Run
+   D2. Highest value of the four: the fix is a three-line alias.
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5
@@ -1015,6 +1162,37 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   Show-me points at are not in the served templates: `-u pb_approval -u
   pb_people -u pb_contracts -u pb_insights -u pb_explorer -u
   pb_workforce_insights -u pb_govt_reports -u pb_learn`.
+
+#### Phase D — what to do at deploy time
+
+```
+-u pb_learn -u pb_demo -u pb_payroll_ai_insights
+```
+
+1. **`vi_VN` active BEFORE the upgrade**, as always — and note it now matters
+   for `pb_payroll_ai_insights` too, which gained its first `i18n/vi_VN.po` in
+   D1. Verify one refusal and one consent string under
+   `with_context(lang='vi_VN')`.
+2. **pb_demo regains four read grants on upgrade.** `_pb_demo_rewire` runs
+   `post_init_demo` on every `-u`, so the ACL rows and the two read-all rules
+   appear without a manual step. Verify by asking PayAI, as a demo account,
+   "how was attendance last month" — it answered nothing between D1 and this
+   deploy.
+3. **The composer ships OFF and must stay off until somebody decides.**
+   `ir.config_parameter` `pb_learn.compose_enabled` — absent is off. To switch
+   on: set it to `True` AND configure a PayAI provider. There is no UI for the
+   flag on purpose; turning on a path that lets a model write to a learner is
+   a decision worth making at the parameter table.
+4. **Question mining ships OFF and needs BOTH switches.**
+   `pb_learn.collect_questions` = `True`, and then each learner is asked once
+   in the drawer. With the parameter false the prompt never appears. The
+   retention cron (`pb_learn.cron_learn_question_gc`) is created active and
+   runs daily; it deletes nothing until there is something to delete.
+5. **Asset bundle:** coach.js and coach.scss both changed, so if the composed
+   badge or the consent card do not appear, purge the `ir_attachment` asset
+   rows and restart — the standing Odoo-19 gotcha, unchanged.
+6. **`ask()` gained a third argument** (`lang`), defaulted, so a stale browser
+   tab calling the two-argument form keeps working through the transition.
 
 #### Phase C2 — the pb_coach retirement, in two deploys
 
