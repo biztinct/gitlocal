@@ -178,6 +178,37 @@ class TestBundle(TransactionCase):
                          "Selection fields declared as a static list — these will NOT "
                          "translate:\n  " + "\n  ".join(offenders))
 
+    def test_10_vietnamese_never_says_web_browser(self):
+        """`trình duyệt` is Vietnamese for "web browser".
+
+        Used as a noun for the act of submitting — "mọi đợt đã trình duyệt" — it
+        reads as a piece of software, and it is the SHORTER form, so it is the
+        one a writer reaches for under time pressure. It has now been written
+        three times across the module's life and caught twice by review, which
+        is exactly when a rule becomes a test.
+
+        THE MATCH HAS TO BE NARROW. `trình phê duyệt` (the act of submitting for
+        approval) and `trình duyệt lên` do not contain the standalone noun, and
+        `trình duyệt web` legitimately does — so the check looks for the two
+        words with nothing but whitespace between them and no `phê` in front,
+        then allows the handful of forms where the noun is genuinely meant.
+        """
+        # Case-insensitive: the noun is just as wrong at the start of a
+        # sentence, where it is also capitalised and hardest to spot.
+        bad_form = re.compile(r'(?<!phê )trình\s+duyệt(?!\s+web)', re.I)
+        offenders = []
+        for path, pair in walk_strings(self.bundle):
+            vi = (pair.get('vi') or '')
+            for m in bad_form.finditer(vi):
+                start = max(0, m.start() - 30)
+                offenders.append('%s: …%s…' % (path, vi[start:m.end() + 30]))
+        self.assertFalse(
+            offenders,
+            "%d Vietnamese string(s) use `trình duyệt` — which means WEB BROWSER. "
+            "The act of submitting is `trình phê duyệt`, and submitting a run is "
+            "`trình đợt lương lên duyệt`:\n  %s"
+            % (len(offenders), "\n  ".join(offenders[:20])))
+
     def test_09_every_station_line_has_a_label(self):
         """A line with no chrome string renders its own key as a heading.
 

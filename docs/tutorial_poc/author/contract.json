@@ -878,6 +878,118 @@
         "stations payruns and approvals (mistakes)",
         "the pipeline visual's branch caption in CHAINS.payrun"
       ]
+    },
+    {
+      "id": "dashboard-pending-counts-payslips",
+      "kind": "contains",
+      "why": "LW's understanding check turns on this tile, and Phase C1 described it as 'every sign-off the company is waiting on, at every gate' — which is wrong three ways. It counts payroll.analytics rows in state 'ready', falling back to hr.payslip at level1/level2: PAYSLIPS not runs, HR and Finance only, never the Officer gate. A learner taught the false version reads 48 — one ordinary batch — as forty-eight runs, and a normal Tuesday as a crisis. The two lines are pinned together because the fallback is what actually renders on a database with no analytics rows, which is most of them.",
+      "file": "pb_dashboard/models/pb_dashboard.py",
+      "expect": [
+        "pending = safe(lambda: env['payroll.analytics'].search_count([('state', '=', 'ready')]))",
+        "pending = safe(lambda: env['hr.payslip'].search_count([('state', 'in', ['level1', 'level2'])]))"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "LW step 2 tip",
+        "LW's understanding check (all three options)",
+        "column dashboard/pending_approval"
+      ]
+    },
+    {
+      "id": "insights-hero-is-the-latest-run",
+      "kind": "contains",
+      "why": "The Insights hero has NO state filter — `_runs()` orders by date and returns whatever is newest, so a draft computed an hour ago is the headline and the state chip beside it is the only thing that says so. The department leaderboard is the opposite: it waits for a DONE run. Phase C1 taught 'analytics over the runs that are done' and 'built from the payslips themselves so it cannot disagree with a payslip' — both false, and the second one mattered most, because the board reads the STORED per-run roll-ups. If a state filter is ever added to _runs, the hero stops being able to show a draft and the whole read-the-chip lesson becomes noise.",
+      "file": "pb_insights/models/pb_insights.py",
+      "expect": [
+        "def _runs(self, date_from=None, limit=None):",
+        "runs = Run.search(dom, order='date_end desc, id desc', limit=_RUN_SCAN)",
+        "done = runs.filtered(lambda r: r.state == 'done')[:1]",
+        "'net': run.pb_total_net or 0.0,",
+        "def _snapshots(self):"
+      ],
+      "fixture": [
+        "PRACTICE.insights"
+      ],
+      "taughtIn": [
+        "station insights (what / why / third mistake)",
+        "screen insights blurb + next",
+        "column insights/net_payroll",
+        "intent whichtool"
+      ]
+    },
+    {
+      "id": "explorer-explains-why",
+      "kind": "contains",
+      "why": "Phase C1 taught that no analytics screen explains WHY. The Explorer does, and it is the only one: `narrate` builds an exactly-reconciling variance waterfall between two comparable periods with an anomaly rail, and `drill` goes from any cell to the employees behind it — read from hr_payslip_line JOIN hr_payslip rather than from the fact tables, so the drill doubles as the audit trail. Teaching a capability away is worse than not teaching it: it sends somebody to export a spreadsheet for an answer the product already has.",
+      "file": "pb_explorer/models/pb_explorer.py",
+      "expect": [
+        "def narrate(self, spec=None):",
+        "water = self._waterfall(spec, pair)",
+        "anomalies = self._anomalies(spec, pair)",
+        "def drill(self, spec=None, series_key=None, category_key=None, page=0):",
+        "FROM pb_fact_{tbl}"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "station explorer (why + mistake)",
+        "screen explorer blurb",
+        "intent whichtool"
+      ]
+    },
+    {
+      "id": "people-ready-pct-is-bank-only",
+      "kind": "contains",
+      "why": "Two different tests share one word on this screen. The KPI is with_bank over headcount; the per-ROW tick also requires a running contract. Phase C1 gave the tile the row's stricter definition, which makes it possible to read 100% payroll-ready off a band while somebody on a draft contract is about to be missing from the run — the exact failure the tile exists to warn about.",
+      "file": "pb_people/models/pb_people.py",
+      "expect": [
+        "'ready_pct': round(100 * with_bank / headcount) if headcount else 0,",
+        "'ready': bool(c and state == 'open' and bank),"
+      ],
+      "fixture": [
+        "PRACTICE.people"
+      ],
+      "taughtIn": [
+        "column employees/payroll_ready",
+        "intent payrollready",
+        "the employees replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "govt-reports-coming-soon-is-an-install",
+      "kind": "contains",
+      "why": "'Coming soon' means the country's own payroll module is NOT INSTALLED — `available` is the wizard model being present in the registry — not that Payobook has no filings for that country. Five countries carry catalogues. Phase C1 taught 'has not been built yet', which turns an install question for an administrator into a product limitation nobody can act on.",
+      "files": [
+        "pb_govt_reports/models/pb_govt_reports.py",
+        "pb_hr_payroll_singapore/wizards/cpf_submission_wizard.py"
+      ],
+      "expect": [
+        "available = bool(wizard_model) and wizard_model in self.env",
+        "'SG': {'wizard_model': 'cpf.submission.wizard'",
+        "'TH': {'wizard_model': 'social.security.wizard'",
+        "_name = 'cpf.submission.wizard'"
+      ],
+      "fixture": [
+        "PRACTICE.govreports"
+      ],
+      "taughtIn": [
+        "station govreports (second mistake)",
+        "intent whichfilings",
+        "the govreports replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "people-leaves-exclude-the-final-approver",
+      "kind": "contains",
+      "why": "The whosees answer names who can read a wage roster, and Phase C1 included the final approver. The Employees and Contracts leaves carry officer, manager and super_admin only — a final approver signs for a total and still does not get the salary list, which is a deliberate separation and better teaching than the version that blurred it.",
+      "file": "pb_sidebar/data/pb_sidebar_data.xml",
+      "expect": [
+        "<record id=\"item_employees\" model=\"pb.sidebar.item\">",
+        "<record id=\"item_contracts\" model=\"pb.sidebar.item\">"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "intent whosees"
+      ]
     }
   ],
   "anchorLint": {

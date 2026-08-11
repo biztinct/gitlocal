@@ -18,6 +18,13 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whichfilings_b040
+msgid ""
+"\"Coming soon\" on a country means its payroll module is not INSTALLED here — not that the filings do not exist. Vietnam, Singapore, Thailand, Cambodia and Malaysia are all in the catalogue, and a country's tiles appear as soon as the module holding its wizard is installed. So that message is an installation question for whoever administers the system, not a limit of the product. Either way Payobook prepares the file — it does not submit it for you."
+msgstr ""
+"Dòng \"sắp có\" ở một quốc gia nghĩa là mô-đun tính lương của quốc gia đó chưa được CÀI ở đây — chứ không phải các biểu mẫu không tồn tại. Việt Nam, Singapore, Thái Lan, Campuchia và Malaysia đều có trong danh mục, và biểu mẫu của một quốc gia sẽ xuất hiện ngay khi mô-đun chứa trình lập báo cáo của nó được cài. Vậy nên thông báo đó là câu hỏi về cài đặt dành cho người quản trị hệ thống, không phải giới hạn của sản phẩm. Dù thế nào thì Payobook cũng chỉ lập tệp — chứ không nộp thay bạn."
+
+#. module: pb_learn
 #: model:learn.station,outline_why:pb_learn.station_workforcean
 msgid ""
 "\"Employees paid\" is not \"employees employed\", and the gap between them is where a missing payslip lives. A month where headcount is flat and cost per head jumps is a different problem from one where both move."
@@ -391,9 +398,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.screen,blurb:pb_learn.screen_explorer
 msgid ""
-"A question builder over the same payroll facts: one measure, one breakdown, and the filters that scope them."
+"A question builder over derived fact tables that reconcile to the payslip lines: one measure, one breakdown, the filters that scope them — and a waterfall that explains a movement."
 msgstr ""
-"Công cụ đặt câu hỏi trên cùng dữ liệu lương: một chỉ tiêu, một chiều tách, và các bộ lọc giới hạn phạm vi."
+"Công cụ đặt câu hỏi trên các bảng dữ liệu dẫn xuất khớp với từng dòng phiếu lương: một chỉ tiêu, một chiều tách, các bộ lọc giới hạn phạm vi — và một biểu đồ phân rã giải thích biến động."
 
 #. module: pb_learn
 #: model:learn.station,outline_what:pb_learn.station_explorer
@@ -608,14 +615,7 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_la_step_07
 msgid "Afterwards"
-msgstr "Sau khi ký"
-
-#. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whichtool_b030
-msgid ""
-"All three read the same payslips, so they cannot disagree with each other or with a payslip. That is the point of building them over the payroll rather than over a reporting copy of it."
-msgstr ""
-"Cả ba đều đọc cùng những phiếu lương đó, nên chúng không thể lệch nhau và cũng không thể lệch với một phiếu lương. Đó chính là lý do chúng được dựng trên chính dữ liệu lương chứ không trên một bản sao báo cáo."
+msgstr "Sau khi quyết"
 
 #. module: pb_learn
 #: model:learn.station,outline_prereq:pb_learn.station_explorer
@@ -797,7 +797,7 @@ msgstr "Ở vòng Tài chính"
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_approvals_at_hr_review
 msgid "At HR review"
-msgstr "Ở vòng HR soát xét"
+msgstr "Ở vòng HR"
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_approvals_at_officer_review
@@ -978,9 +978,9 @@ msgstr "Trước khi bạn làm việc này"
 #. module: pb_learn
 #: model:learn.station,outline_why:pb_learn.station_explorer
 msgid ""
-"Boards answer anticipated questions and real ones are rarely anticipated. This is where \"net pay by division for the divisions that ran mid-cycle\" gets answered without anybody exporting a spreadsheet — and it reconciles with the payslips, which a spreadsheet stops doing the moment it is saved."
+"Boards answer anticipated questions and real ones are rarely anticipated. This is where \"net pay by division for the divisions that ran mid-cycle\" gets answered without anybody exporting a spreadsheet — and it reconciles with the payslips, which a spreadsheet stops doing the moment it is saved. It is also the only analytics screen that explains a MOVEMENT: a variance waterfall between two periods that adds up exactly, and a drill from any cell down to the employees behind it."
 msgstr ""
-"Bảng phân tích trả lời những câu hỏi đã lường trước, còn câu hỏi thật thì hiếm khi được lường trước. Đây là nơi \"thực nhận theo bộ phận, chỉ các bộ phận chạy giữa kỳ\" được trả lời mà không ai phải xuất bảng tính — và nó luôn khớp với phiếu lương, điều mà một bảng tính hết đúng ngay khi vừa được lưu."
+"Bảng phân tích trả lời những câu hỏi đã lường trước, còn câu hỏi thật thì hiếm khi được lường trước. Đây là nơi \"thực nhận theo bộ phận, chỉ các bộ phận chạy giữa kỳ\" được trả lời mà không ai phải xuất bảng tính — và nó luôn khớp với phiếu lương, điều mà một bảng tính hết đúng ngay khi vừa được lưu. Đây cũng là màn hình phân tích duy nhất giải thích được một BIẾN ĐỘNG: biểu đồ phân rã chênh lệch giữa hai kỳ khớp chính xác, và từ bất kỳ ô nào cũng đi sâu xuống tới những nhân viên đứng sau nó."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_expirysoon_b030
@@ -1062,8 +1062,10 @@ msgstr "Tính trên mức đã đăng ký, tới một mức trần"
 
 #. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_whichfilings_b020_s01
-msgid "Check every run in that month has reached done before generating anything"
-msgstr "Kiểm tra mọi đợt lương của tháng đó đã đạt Hoàn tất trước khi kết xuất bất cứ gì"
+msgid ""
+"Check every run in that month has reached done before generating anything — on the Pay Runs board, not here"
+msgstr ""
+"Kiểm tra mọi đợt lương của tháng đó đã đạt Hoàn tất trước khi kết xuất bất cứ gì — trên bảng Đợt tính lương, không phải ở đây"
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_livechecknow
@@ -1194,13 +1196,6 @@ msgstr ""
 "Ghi nhận khi còn dòng chưa xử lý không làm chúng biến mất êm thấm — nó tạo ra những phiếu lương thiếu hoặc sai, và người phát hiện sẽ là nhân viên chứ không phải bạn."
 
 #. module: pb_learn
-#: model:learn.screen,next_step:pb_learn.screen_insights
-msgid ""
-"Compare cost per head rather than total against total — headcount moves between months, and two extra people explain most of what looks like a rise. Every figure here opens the screen it came from."
-msgstr ""
-"Hãy so chi phí bình quân đầu người thay vì đem tổng so với tổng — sĩ số thay đổi giữa các tháng, và thêm hai người là đủ giải thích phần lớn cái vẻ \"tăng\" đó. Mọi con số ở đây đều mở ra màn hình đã tạo ra nó."
-
-#. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_m4_step_07
 msgid ""
 "Compare that with a configuration change, which is reversible in the records and not in the payslips it has already produced. That difference is why the two are separate."
@@ -1215,9 +1210,9 @@ msgstr "So tổng của đợt với tháng trước và nói được vì sao n
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_insights_mistake_0
 msgid ""
-"Comparing a total against a total. Headcount moves between months, so the honest comparison is cost per head — two extra people explain most of what looks like a rise."
+"Comparing a total against a total. Headcount moves between months, so the honest comparison is cost per head — one more employee explains most of what looks like a rise."
 msgstr ""
-"Đem một con số tổng so với một con số tổng. Sĩ số thay đổi giữa các tháng, nên phép so trung thực là chi phí bình quân đầu người — thêm hai người là đủ giải thích phần lớn cái vẻ \"tăng\" đó."
+"Đem một con số tổng so với một con số tổng. Sĩ số thay đổi giữa các tháng, nên phép so trung thực là chi phí bình quân đầu người — thêm một nhân viên là đủ giải thích phần lớn cái vẻ \"tăng\" đó."
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_import_completed
@@ -1441,7 +1436,7 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_workforcean_cost_per_head
 msgid "Cost per head"
-msgstr "Chi phí bình quân"
+msgstr "Chi phí bình quân đầu người"
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_insights_cost_story
@@ -1717,7 +1712,7 @@ msgstr ""
 msgid ""
 "Editing a running contract's wage to correct one month. That changes the insurance base going forward and corrects nothing that has already been paid — the past is a retro line."
 msgstr ""
-"Sửa mức lương trên một hợp đồng đang hiệu lực để chỉnh cho một tháng. Việc đó thay đổi mức đóng bảo hiểm từ nay về sau và không sửa được gì đã trả — quá khứ phải xử lý bằng một dòng hồi tố."
+"Sửa mức lương trên một hợp đồng đang hiệu lực để chỉnh cho một tháng. Việc đó thay đổi mức lương đóng bảo hiểm từ nay về sau và không sửa được gì đã trả — quá khứ phải xử lý bằng một dòng hồi tố."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_retroq_b030
@@ -1890,14 +1885,14 @@ msgstr ""
 msgid ""
 "Every submitted run in the lane of the gate it is waiting at, with the net at stake across all of them."
 msgstr ""
-"Mọi đợt đã trình duyệt, nằm ở làn của cổng nó đang chờ, kèm tổng số tiền đang treo trên tất cả."
+"Mọi đợt đã trình phê duyệt, nằm ở làn của cổng nó đang chờ, kèm tổng số tiền đang treo trên tất cả."
 
 #. module: pb_learn
 #: model:learn.column,body:pb_learn.col_employees_headcount
 msgid ""
-"Everybody on the roster within the filters currently active. It counts people the company employs, which is not the same as people the last run paid — that count lives on Workforce Analytics, and the gap between them is where a missing payslip hides."
+"Everybody on the roster within the filters currently active — on the practice company, all 48. It counts people the company EMPLOYS, which is not the same as people the last run PAID: that count lives on Workforce Analytics, and the gap between the two is where a missing payslip hides."
 msgstr ""
-"Toàn bộ những người trong danh sách theo bộ lọc đang chọn. Nó đếm số người công ty đang thuê, khác với số người đợt lương gần nhất đã trả — con số đó nằm ở Phân tích nhân sự, và khoảng chênh giữa hai bên chính là chỗ một phiếu lương bị thiếu đang ẩn."
+"Toàn bộ những người trong danh sách theo bộ lọc đang chọn — trên công ty thực hành là đủ 48 người. Nó đếm số người công ty ĐANG THUÊ, khác với số người mà đợt lương gần nhất ĐÃ TRẢ: con số đó nằm ở Phân tích nhân sự, và khoảng chênh giữa hai bên chính là chỗ một phiếu lương bị thiếu đang ẩn."
 
 #. module: pb_learn
 #: model:learn.column,body:pb_learn.col_dashboard_headcount
@@ -1949,9 +1944,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_lw_quiz_opt_1
 msgid ""
-"Exactly. The Dashboard reports the state; the queue that is yours has its own screen, and its header counts only what your groups let you act on. Reading the state first and the queue second is the order the whole product is built in."
+"Exactly. The Dashboard reports a company-wide state in payslips; the queue that is YOURS is counted in runs, on its own screen, by the gate your groups let you act on. Reading the state first and the queue second is the order the whole product is built in."
 msgstr ""
-"Chính xác. Bảng điều khiển báo cáo hiện trạng; còn hàng đợi của riêng bạn có màn hình riêng, và tiêu đề của nó chỉ đếm những gì nhóm quyền của bạn cho phép xử lý. Đọc hiện trạng trước rồi mới tới hàng đợi là đúng trật tự mà cả sản phẩm này được dựng lên."
+"Chính xác. Bảng điều khiển báo cáo hiện trạng toàn công ty theo số phiếu lương; còn hàng đợi CỦA BẠN được đếm theo đợt, trên màn hình riêng của nó, theo đúng cổng mà nhóm quyền của bạn cho phép xử lý. Đọc hiện trạng trước rồi mới tới hàng đợi là đúng trật tự mà cả sản phẩm này được dựng lên."
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_runpayroll_exceptions
@@ -1961,16 +1956,16 @@ msgstr "Ngoại lệ"
 #. module: pb_learn
 #: model:learn.screen,blurb:pb_learn.screen_insights
 msgid ""
-"Executive analytics over the runs that are done: the cost story, the department leaderboard and the statutory split."
+"Executive analytics from the stored per-run roll-ups: the cost story, the department leaderboard, the statutory split and the analytics snapshots."
 msgstr ""
-"Phân tích tổng hợp trên các đợt lương đã hoàn tất: diễn biến chi phí, xếp hạng bộ phận và cơ cấu đóng bắt buộc."
+"Phân tích tổng hợp dựng từ các số tổng đã lưu theo từng đợt: diễn biến chi phí, xếp hạng bộ phận, cơ cấu đóng bắt buộc và các ảnh chụp phân tích."
 
 #. module: pb_learn
 #: model:learn.station,outline_what:pb_learn.station_insights
 msgid ""
-"Executive analytics over the runs that have been computed: the headline net, the cost story over three, six or twelve months, the department leaderboard, the statutory split and a workforce pulse."
+"Executive analytics over the runs this company has: the headline net for the LATEST run whatever state it is in, the cost story over three, six or twelve months, a department leaderboard read from the latest DONE run, the statutory split, a workforce pulse and the analytics snapshots panel."
 msgstr ""
-"Phân tích tổng hợp trên các đợt lương đã tính: số thực chi nổi bật, diễn biến chi phí theo ba, sáu hay mười hai tháng, xếp hạng bộ phận, cơ cấu đóng bắt buộc và nhịp nhân sự."
+"Phân tích tổng hợp trên các đợt lương của công ty: số thực chi nổi bật của đợt GẦN NHẤT bất kể đang ở trạng thái nào, diễn biến chi phí theo ba, sáu hay mười hai tháng, xếp hạng bộ phận đọc từ đợt ĐÃ HOÀN TẤT gần nhất, cơ cấu đóng bắt buộc, nhịp nhân sự và bảng ảnh chụp phân tích."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_payslips_mistake_1
@@ -1978,13 +1973,6 @@ msgid ""
 "Expecting insurance to move when overtime does. BHXH, BHYT and BHTN are charged on the registered base, which overtime does not change."
 msgstr ""
 "Trông đợi bảo hiểm thay đổi khi tăng ca thay đổi. BHXH, BHYT và BHTN tính trên mức lương đóng BH đã đăng ký, mà tăng ca không làm thay đổi mức đó."
-
-#. module: pb_learn
-#: model:learn.station.mistake,name:pb_learn.station_explorer_mistake_1
-msgid ""
-"Expecting it to explain WHY. It tells you a division is 12% above the rest; the reason is in that division's configuration and its payslips, and the Explorer will not pretend otherwise."
-msgstr ""
-"Trông đợi nó giải thích VÌ SAO. Nó cho biết một bộ phận cao hơn phần còn lại 12%; còn lý do nằm trong cấu hình và các phiếu lương của bộ phận đó, và Explorer sẽ không giả vờ ngược lại."
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_contracts_expired
@@ -2018,6 +2006,13 @@ msgid "Explorer"
 msgstr "Explorer"
 
 #. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whichtool_b040
+msgid ""
+"Explorer does explain <b>why</b>, and it is the only one that does: it builds a variance waterfall between two comparable periods that reconciles exactly, with an anomaly rail beside it — and any cell drills straight through to the employees behind it, read from the payslip lines rather than from the facts, so the drill doubles as the audit trail for the number."
+msgstr ""
+"Explorer có giải thích <b>vì sao</b>, và là công cụ duy nhất làm được: nó dựng một biểu đồ phân rã biến động giữa hai kỳ so sánh được, khớp chính xác từng đồng, kèm một dải cảnh báo bất thường bên cạnh — và bấm vào ô nào cũng đi thẳng xuống danh sách nhân viên đứng sau ô đó, đọc từ chính các dòng phiếu lương chứ không từ bảng dẫn xuất, nên bước đi sâu ấy cũng chính là vết kiểm toán cho con số."
+
+#. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_whosees_b030
 msgid ""
 "Exporting it moves the data somewhere none of that applies. A spreadsheet of salaries has no groups on it and no way to be taken back."
@@ -2048,7 +2043,7 @@ msgstr ""
 "Lọc theo bước phê duyệt, không phải theo tháng. Cột mà đợt lương nằm chính là cổng nó đang chờ."
 
 #. module: pb_learn
-#: model:learn.intent.step,text:pb_learn.intent_payrollready_b030_s00
+#: model:learn.intent.step,text:pb_learn.intent_payrollready_b040_s00
 msgid "Filter the roster to the people who are not ready"
 msgstr "Lọc danh sách theo những người chưa sẵn sàng"
 
@@ -2149,7 +2144,7 @@ msgid "Fix it at the source, or import the month's file by hand through the guid
 msgstr "Sửa từ hệ thống nguồn, hoặc nhập tệp của tháng bằng tay qua luồng có hướng dẫn"
 
 #. module: pb_learn
-#: model:learn.intent.step,text:pb_learn.intent_payrollready_b030_s02
+#: model:learn.intent.step,text:pb_learn.intent_payrollready_b040_s02
 msgid "Fix it on the employee or the contract, not on the payslip afterwards"
 msgstr "Sửa trên hồ sơ nhân viên hoặc hợp đồng, đừng sửa trên phiếu lương về sau"
 
@@ -2215,6 +2210,18 @@ msgstr "Cấu hình công thức"
 #: model:learn.intent,label:pb_learn.intent_configvsstructure
 msgid "Formula configuration or salary structure?"
 msgstr "Cấu hình công thức hay cấu trúc lương?"
+
+#. module: pb_learn
+#: model:learn.quiz.option,label:pb_learn.lesson_lw_quiz_opt_1
+msgid ""
+"Forty-eight payslips are waiting somewhere in the HR and Finance tiers, and Approvals will tell me how many are mine"
+msgstr ""
+"Có bốn mươi tám phiếu lương đang chờ đâu đó trong vòng HR và Tài chính, và màn hình Phê duyệt sẽ cho biết bao nhiêu là của tôi"
+
+#. module: pb_learn
+#: model:learn.quiz.option,label:pb_learn.lesson_lw_quiz_opt_0
+msgid "Forty-eight runs are waiting for my signature"
+msgstr "Có bốn mươi tám đợt lương đang chờ chữ ký của tôi"
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l3_step_01
@@ -2330,12 +2337,12 @@ msgstr ""
 #: model:learn.column,label:pb_learn.col_dashboard_headcount
 #: model:learn.column,label:pb_learn.col_employees_headcount
 msgid "Headcount"
-msgstr "Nhân sự"
+msgstr "Sĩ số"
 
 #. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_variance_b030_s00
-msgid "Headcount first — two extra people explain most of what looks like a rise"
-msgstr "Xem sĩ số trước — thêm hai người là đủ giải thích phần lớn cái vẻ tăng đó"
+msgid "Headcount first — one more employee explains most of what looks like a rise"
+msgstr "Xem sĩ số trước — thêm một nhân viên là đủ giải thích phần lớn cái vẻ tăng đó"
 
 #. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_checkfinal_b020_s00
@@ -2381,12 +2388,19 @@ msgstr "Tôi sửa một sai sót thế nào?"
 #. module: pb_learn
 #: model:learn.intent,label:pb_learn.intent_rejectright
 msgid "How do I write a rejection reason?"
-msgstr "Viết lý do trả lại đợt lương thế nào cho đúng?"
+msgstr "Viết lý do từ chối thế nào cho đúng?"
 
 #. module: pb_learn
 #: model:learn.intent,label:pb_learn.intent_pitcalc
 msgid "How is thuế TNCN worked out?"
 msgstr "Thuế TNCN được tính thế nào?"
+
+#. module: pb_learn
+#: model:learn.column,body:pb_learn.col_dashboard_pending_approval
+msgid ""
+"How many PAYSLIPS are waiting at the HR or Finance tier, company-wide — not runs, and not the Officer gate, which this tile does not count at all. It is a state, not your queue: how many are YOURS is a question the Approvals screen answers, in runs, and confusing the two means chasing work that was never yours."
+msgstr ""
+"Có bao nhiêu PHIẾU LƯƠNG đang chờ ở vòng HR hoặc Tài chính, trên toàn công ty — không phải số đợt lương, và cũng không tính cổng Chuyên viên, ô này hoàn toàn không đếm cổng đó. Đây là một hiện trạng, không phải hàng đợi của bạn: bao nhiêu là CỦA BẠN thì màn hình Phê duyệt mới trả lời, và trả lời theo số đợt; nhầm lẫn hai thứ khiến bạn đi giục những phần việc vốn không phải của mình."
 
 #. module: pb_learn
 #: model:learn.column,body:pb_learn.col_integrations_connected
@@ -2497,13 +2511,6 @@ msgid ""
 "How many rows the importer read out of the source. If this is not the row count of your file, the file was truncated or a sheet was missed — and that is a better thing to find here than after the compute."
 msgstr ""
 "Số dòng mà trình nhập liệu đọc được từ nguồn. Nếu con số này không bằng số dòng trong tệp của bạn thì tệp đã bị cắt hoặc bỏ sót một sheet — và phát hiện điều đó ở đây tốt hơn nhiều so với phát hiện sau khi đã tính lương."
-
-#. module: pb_learn
-#: model:learn.column,body:pb_learn.col_dashboard_pending_approval
-msgid ""
-"How many runs are waiting on a signature, at any gate, across the whole company. It is not your personal queue — how many are YOURS is a question the Approvals screen answers, and confusing the two means chasing work that was never yours."
-msgstr ""
-"Có bao nhiêu đợt lương đang chờ chữ ký, ở bất kỳ cổng nào, trên toàn công ty. Đây không phải hàng đợi của riêng bạn — bao nhiêu đợt là CỦA BẠN thì màn hình Phê duyệt mới trả lời, và nhầm lẫn hai thứ này khiến bạn đi giục những phần việc vốn không phải của mình."
 
 #. module: pb_learn
 #: model:learn.column,body:pb_learn.col_payruns_pay_runs
@@ -2625,13 +2632,6 @@ msgid ""
 "If the run is still in draft, do not use retro at all — fix the input and recompute. Retro is for the past you cannot reopen, not for the present you have not finished."
 msgstr ""
 "Nếu đợt còn ở trạng thái Nháp thì đừng dùng hồi tố — hãy sửa đầu vào và tính lại. Hồi tố dành cho quá khứ bạn không mở lại được, không dành cho hiện tại bạn chưa làm xong."
-
-#. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whichfilings_b040
-msgid ""
-"If your country's group says the filings are coming soon, that is the truth rather than a fault: the tiles exist per country, and one with none has not been built yet. Payobook prepares the file either way — it does not submit it for you."
-msgstr ""
-"Nếu phần dành cho quốc gia của bạn ghi rằng biểu mẫu sắp có, thì đó là sự thật chứ không phải lỗi: các biểu mẫu là theo từng quốc gia, và quốc gia chưa có biểu mẫu nào thì đơn giản là chưa được xây dựng. Dù thế nào thì Payobook cũng chỉ lập tệp — chứ không nộp thay bạn."
 
 #. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_import
@@ -2760,11 +2760,18 @@ msgid "Is this variance normal?"
 msgstr "Biến động thế này có bình thường không?"
 
 #. module: pb_learn
+#: model:learn.station,outline_why:pb_learn.station_insights
+msgid ""
+"It answers the questions a payroll month asks every time, fast, because it reads the STORED per-run roll-ups rather than re-adding payslip lines. That is also the thing to know about it: the hero and the leaderboard do not have the same scope — the hero shows the latest run and prints its state beside itself, and the leaderboard waits for a run to be done. Read the state chip before you quote the number."
+msgstr ""
+"Nó trả lời nhanh những câu hỏi mà tháng lương nào cũng đặt ra, vì nó đọc các số TỔNG HỢP đã lưu sẵn theo từng đợt chứ không cộng lại từng dòng phiếu lương. Và đây cũng là điều cần biết về nó: phần đầu và bảng xếp hạng không cùng phạm vi — phần đầu hiển thị đợt gần nhất và in kèm trạng thái của chính đợt đó, còn bảng xếp hạng thì chờ tới khi có đợt đã hoàn tất. Hãy đọc chip trạng thái trước khi trích con số."
+
+#. module: pb_learn
 #: model:learn.step,tip:pb_learn.lesson_lw_step_01
 msgid ""
-"It counts the company's pending sign-offs, at every gate — not yours. How many are yours is a question the Approvals screen answers."
+"It counts <b>payslips</b> waiting at {{hrTierName}} or {{gmTierName}}, across the whole company — not runs, not the Officer gate, and not yours in particular. How many are yours is a question the Approvals screen answers."
 msgstr ""
-"Nó đếm toàn bộ các lượt chờ ký của công ty, ở mọi cổng — không phải riêng của bạn. Bao nhiêu trong đó là của bạn thì màn hình Phê duyệt mới trả lời."
+"Nó đếm số <b>phiếu lương</b> đang chờ ở {{hrTierName}} hoặc {{gmTierName}}, trên toàn công ty — không phải số đợt lương, không tính cổng Chuyên viên, và cũng không phải riêng phần của bạn. Bao nhiêu trong đó là của bạn thì màn hình Phê duyệt mới trả lời."
 
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m4_step_03
@@ -2779,13 +2786,6 @@ msgid ""
 "It is allowed, and it reaches further than it looks: every payslip computed by this configuration from now on, for the whole division — and any run still in draft that gets recomputed, including one for a month you thought was finished with."
 msgstr ""
 "Được phép, và tác động xa hơn vẻ ngoài của nó: mọi phiếu lương do cấu hình này tính từ giờ trở đi, cho cả bộ phận — và bất kỳ đợt nào còn ở Nháp mà được tính lại, kể cả đợt của một tháng bạn tưởng đã xong."
-
-#. module: pb_learn
-#: model:learn.station,outline_why:pb_learn.station_insights
-msgid ""
-"It is built from the payslips themselves rather than from a separate reporting copy, so a figure here and a figure on a payslip cannot disagree. Every number is a door back into the screen that produced it."
-msgstr ""
-"Nó được dựng từ chính các phiếu lương chứ không từ một bản sao báo cáo riêng, nên một con số ở đây và một con số trên phiếu lương không thể lệch nhau. Mỗi con số đều là cánh cửa quay lại màn hình đã tạo ra nó."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_02
@@ -2823,9 +2823,9 @@ msgstr "Đó là mục đầu tiên trong phần Chạy lương ở thanh bên."
 #. module: pb_learn
 #: model:learn.station,outline_why:pb_learn.station_dashboard
 msgid ""
-"It is the only screen that answers \"what is the state of payroll right now\" without you choosing a filter first. Everything on it is a door — a figure you can open rather than a figure you have to write down."
+"It is the only screen that answers \"what is the state of payroll right now\" without you choosing a filter first. The tiles report it; the buttons and the run rows beside them are the doors into the screens those figures came from."
 msgstr ""
-"Đây là màn hình duy nhất trả lời được \"hiện trạng công việc lương lúc này ra sao\" mà bạn không phải chọn bộ lọc trước. Mọi thứ trên đó đều là một cánh cửa — con số để mở ra xem tiếp, không phải con số để chép lại."
+"Đây là màn hình duy nhất trả lời được \"hiện trạng công việc lương lúc này ra sao\" mà bạn không phải chọn bộ lọc trước. Các ô chỉ số báo cáo hiện trạng đó; còn các nút và các dòng đợt lương bên cạnh mới là cửa dẫn vào những màn hình đã sinh ra các con số ấy."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_confidence_b010
@@ -2881,9 +2881,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_la_step_04
 msgid ""
-"July is 612,480,000 ₫ against June's 596,110,000 ₫. Toggle the two and say, out loud, why they differ — one more employee, and one payslip with 3,100,000 ₫ more overtime on it than last month. If you cannot finish that sentence, the gap is not small; it is unexamined."
+"July is 612,480,000 ₫ against June's 596,110,000 ₫ — run totals, which live on the board and the KPI band rather than on the slip in front of you. This step stands here anyway, because the answer does: toggle the two and say, out loud, why they differ — one more employee, and one payslip with 3,100,000 ₫ more overtime on it than last month. If you cannot finish that sentence, the gap is not small; it is unexamined."
 msgstr ""
-"Tháng 7 là 612.480.000 ₫ so với 596.110.000 ₫ của tháng 6. Hãy chuyển qua lại hai bên và nói thành lời vì sao chúng khác nhau — thêm một nhân viên, và một phiếu lương có tăng ca nhiều hơn tháng trước 3.100.000 ₫. Nếu bạn chưa nói trọn được câu đó thì khoảng chênh này không phải nhỏ; nó chỉ là chưa được soi tới."
+"Tháng 7 là 612.480.000 ₫ so với 596.110.000 ₫ của tháng 6 — đây là tổng của cả đợt, nằm trên bảng và dải chỉ số chứ không nằm trên phiếu lương trước mặt bạn. Bước này vẫn đứng ở đây, vì câu trả lời nằm ở đây: hãy chuyển qua lại hai bên và nói thành lời vì sao chúng khác nhau — thêm một nhân viên, và một phiếu lương có tăng ca nhiều hơn tháng trước 3.100.000 ₫. Nếu bạn chưa nói trọn được câu đó thì khoảng chênh này không phải nhỏ; nó chỉ là chưa được soi tới."
 
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m1_step_01
@@ -2904,6 +2904,13 @@ msgid ""
 "Know that this screen shows the new rates the moment you save, so tell anyone reviewing an open run"
 msgstr ""
 "Biết rằng màn hình này hiển thị tỷ lệ mới ngay khi bạn lưu, nên hãy báo cho ai đang soát xét một đợt còn mở"
+
+#. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whichtool_b030
+msgid ""
+"Knowing WHERE each one reads from is what stops you comparing two numbers that were never the same number. <b>Insights</b> reads the stored per-run roll-ups, plus the analytics snapshots panel. <b>Explorer</b> reads derived fact tables, rebuilt from the payslips and reconciled to them. <b>Workforce Analytics</b> reads the attendance, overtime and leave models. Three lineages, one payroll."
+msgstr ""
+"Biết mỗi công cụ ĐỌC TỪ ĐÂU là điều giúp bạn không đem so hai con số vốn chưa bao giờ là cùng một con số. <b>Phân tích</b> đọc các số tổng đã lưu theo từng đợt, cộng thêm bảng ảnh chụp phân tích. <b>Explorer</b> đọc các bảng dữ liệu dẫn xuất, được dựng lại từ phiếu lương và đối chiếu khớp với phiếu lương. <b>Phân tích nhân sự</b> đọc dữ liệu chấm công, tăng ca và nghỉ phép. Ba nguồn gốc, một hệ thống lương."
 
 #. module: pb_learn
 #: model:pb.sidebar.item,name:pb_learn.item_learn_journey
@@ -2991,6 +2998,13 @@ msgstr ""
 #: model:learn.intent,label:pb_learn.intent_practice
 msgid "Let me practise this safely"
 msgstr "Cho tôi thực hành an toàn"
+
+#. module: pb_learn
+#: model:learn.quiz.option,feedback:pb_learn.lesson_lw_quiz_opt_0
+msgid ""
+"Let's rethink that, twice over. The tile counts <b>payslips</b>, not runs — 48 of them is one ordinary batch — and it counts them company-wide, at {{hrTierName}} and {{gmTierName}} together. Reading a payslip count as a run count is how a normal Tuesday reads like a crisis."
+msgstr ""
+"Hãy nghĩ lại một chút, và có hai điều cần nghĩ lại. Ô đó đếm <b>phiếu lương</b>, không phải đợt lương — 48 phiếu chỉ là một lô bình thường — và đếm trên toàn công ty, gộp cả {{hrTierName}} lẫn {{gmTierName}}. Đọc số phiếu như thể số đợt chính là cách một ngày thứ Ba bình thường trông như một cuộc khủng hoảng."
 
 #. module: pb_learn
 #: model:learn.mission.option,recovery:pb_learn.mission_m4_step_02_opt_onefive
@@ -3098,6 +3112,13 @@ msgstr ""
 "Hãy nghĩ lại một chút. Khi bạn đã duyệt, cổng kế tiếp kiểm tra các tổng chứ không kiểm tra từng dòng — nên email của bạn đang chạy đua với một đợt lương đã đi tiếp, và nếu nó tới muộn thì hiệu chỉnh sẽ là một dòng hồi tố chứ không còn là sửa lỗi."
 
 #. module: pb_learn
+#: model:learn.quiz.option,feedback:pb_learn.lesson_lw_quiz_opt_2
+msgid ""
+"Let's rethink that. Payslips sitting at a gate mid-month is what a working approval chain looks like — the number only means \"behind\" once you know which gate they are at and how long they have been there, and this tile carries neither."
+msgstr ""
+"Hãy nghĩ lại một chút. Giữa tháng có phiếu lương nằm chờ ở các cổng chính là hình ảnh của một chuỗi phê duyệt đang hoạt động — con số này chỉ có nghĩa là \"chậm\" khi bạn biết chúng đang ở cổng nào và đã nằm đó bao lâu, mà ô này không mang theo điều nào trong hai điều đó."
+
+#. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l2_quiz_opt_0
 msgid ""
 "Let's rethink that. Recomputing does not move a run through a gate — approving does. It would also change figures the reviewer has already read, so they would have to start again."
@@ -3110,13 +3131,6 @@ msgid ""
 "Let's rethink that. Rejecting CANCELS all 48 payslips and puts a reason on the permanent record — and \"please check everything\" is not a reason anybody can act on. Worse, the officer cannot simply pick the run back up: reopening it as a draft is a {{gmTierName}} action. A rejection is testimony about a problem you found, not a way of asking somebody to go looking for one."
 msgstr ""
 "Hãy nghĩ lại một chút. Từ chối sẽ HUỶ cả 48 phiếu lương và ghi một lý do vào hồ sơ vĩnh viễn — mà \"vui lòng kiểm tra lại toàn bộ\" thì không phải lý do ai xử lý được. Tệ hơn, chuyên viên không thể tự nhặt đợt lương đó lên làm tiếp: mở lại nó thành bản nháp là thao tác của vòng {{gmTierName}}. Từ chối là lời chứng về một vấn đề bạn đã phát hiện, không phải cách nhờ người khác đi tìm xem có vấn đề gì không."
-
-#. module: pb_learn
-#: model:learn.quiz.option,feedback:pb_learn.lesson_lw_quiz_opt_2
-msgid ""
-"Let's rethink that. Runs sitting at a gate mid-month is what a working approval chain looks like — the number only means \"behind\" once you know which gate each one is at and how long it has been there, and neither of those is on this tile."
-msgstr ""
-"Hãy nghĩ lại một chút. Giữa tháng có vài đợt nằm chờ ở các cổng chính là hình ảnh của một chuỗi phê duyệt đang hoạt động — con số này chỉ có nghĩa là \"chậm\" khi bạn biết từng đợt đang ở cổng nào và đã nằm đó bao lâu, mà ô này không cho biết điều nào trong hai điều đó."
 
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l4_quiz_opt_2
@@ -3173,13 +3187,6 @@ msgid ""
 "Let's rethink that. The score is not a pass mark; the five rows are five people. Committing now means five payslips that are missing or wrong, discovered by the employees rather than by you."
 msgstr ""
 "Hãy nghĩ lại một chút. Điểm tin cậy không phải điểm đạt; năm dòng đó là năm con người. Ghi nhận lúc này nghĩa là năm phiếu lương thiếu hoặc sai, và người phát hiện ra sẽ là nhân viên chứ không phải bạn."
-
-#. module: pb_learn
-#: model:learn.quiz.option,feedback:pb_learn.lesson_lw_quiz_opt_0
-msgid ""
-"Let's rethink that. The tile counts every sign-off the company is waiting on, at every gate — most of them belong to somebody else. Acting on it as a personal queue means chasing runs that were never yours and missing the ones that were."
-msgstr ""
-"Hãy nghĩ lại một chút. Ô đó đếm mọi lượt ký mà cả công ty đang chờ, ở mọi cổng — phần lớn thuộc về người khác. Coi nó như hàng đợi của riêng mình nghĩa là đi giục những đợt vốn không phải của bạn và bỏ sót đúng những đợt là của bạn."
 
 #. module: pb_learn
 #: model:learn.quiz.option,feedback:pb_learn.lesson_l6_quiz_opt_0
@@ -3298,6 +3305,11 @@ msgid "Monthly wage bill"
 msgstr "Quỹ lương tháng"
 
 #. module: pb_learn
+#: model:learn.step,title:pb_learn.lesson_lw_step_03
+msgid "Most doors here lead where the sidebar leads"
+msgstr "Phần lớn cửa ở đây dẫn tới đúng nơi thanh bên dẫn"
+
+#. module: pb_learn
 #: model:learn.station,outline_why:pb_learn.station_import
 msgid ""
 "Most wrong payslips start as a wrong row in a file. Fixing it here costs minutes; fixing it after approval costs a retro line and a conversation."
@@ -3343,13 +3355,6 @@ msgstr "Cần soát xét"
 msgid ""
 "Need review is not an error count — it is the engine asking a question about a specific employee."
 msgstr "Cần soát xét không phải số lỗi — đó là hệ thống đang hỏi một câu về một nhân viên cụ thể."
-
-#. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whichtool_b040
-msgid ""
-"Neither of them explains WHY. They tell you a division is above the rest; the reason is in that division's configuration and its payslips, and no analytics screen will pretend otherwise."
-msgstr ""
-"Không công cụ nào trong số đó giải thích VÌ SAO. Chúng cho biết một bộ phận cao hơn phần còn lại; còn lý do nằm trong cấu hình và các phiếu lương của bộ phận đó, và không màn hình phân tích nào giả vờ ngược lại."
 
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_approvals_net_at_stake
@@ -3516,11 +3521,6 @@ msgstr ""
 "Không khoản nào được chi khi chưa đủ chữ ký, và bảng này làm quy trình minh bạch và kiểm toán được. Nó trả lời đúng câu hỏi mà tuần tính lương thực sự đặt ra: cái gì đang tắc, và tắc ở cổng của ai."
 
 #. module: pb_learn
-#: model:learn.step,title:pb_learn.lesson_lw_step_03
-msgid "Nothing on this screen is a second way of doing anything"
-msgstr "Không thứ gì trên màn hình này là một cách làm thứ hai"
-
-#. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_reject_b030
 msgid ""
 "Nothing was paid, but this is blunter than it looks: the batch is cancelled, not handed back, and it takes a second person at the {{gmTierName}} tier before the officer can even start. A reason like \"wrong\" costs all of that and a day of guessing."
@@ -3575,6 +3575,13 @@ msgstr ""
 #: model:learn.column,label:pb_learn.col_retro_oldest_source_period
 msgid "Oldest source period"
 msgstr "Kỳ gốc xa nhất"
+
+#. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_payrollready_b010
+msgid ""
+"On a ROW it means both things are present: a running contract, and bank details the payment file can use. Miss either and the payslip still computes perfectly and the money still does not arrive. The tick tells you which one is missing — hover it."
+msgstr ""
+"Trên một DÒNG, nó nghĩa là có đủ cả hai thứ: một hợp đồng đang hiệu lực, và thông tin ngân hàng mà tệp chi lương dùng được. Thiếu một trong hai thì phiếu lương vẫn tính hoàn hảo và tiền vẫn không tới nơi. Dấu tích cho biết đang thiếu thứ nào — hãy rê chuột lên nó."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_changerate_b010
@@ -3985,13 +3992,6 @@ msgstr ""
 "Dấu sẵn sàng tính lương mới là ý nghĩa của màn hình này. Một người chưa có tài khoản ngân hàng vẫn được tính lương hoàn hảo mà không nhận được tiền, và bạn biết điều đó hoặc ở đây trong một phút, hoặc vào {{payDay}}, do chính họ báo."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_payrollready_b010
-msgid ""
-"Payroll-ready means everything needed to pay this person is present — a running contract, a wage on it, and bank details the payment file can use. Miss any one and the payslip still computes perfectly and the money still does not arrive."
-msgstr ""
-"Sẵn sàng tính lương nghĩa là mọi thứ cần để trả cho người này đều đã có — một hợp đồng đang hiệu lực, mức lương trên hợp đồng đó, và thông tin ngân hàng mà tệp chi lương dùng được. Thiếu bất kỳ thứ nào thì phiếu lương vẫn tính hoàn hảo và tiền vẫn không tới nơi."
-
-#. module: pb_learn
 #: model:learn.column,label:pb_learn.col_payslips_payslips
 #: model:learn.column,label:pb_learn.col_runpayroll_payslips
 #: model:learn.screen,name:pb_learn.screen_payslips
@@ -4147,6 +4147,13 @@ msgstr ""
 "Trích một con số mà bỏ quên bộ lọc của nó. Các thẻ phía trên kết quả là một phần của câu trả lời — cùng chỉ tiêu đó, gỡ một thẻ đi là một con số khác, mà khi dán vào email thì trông y hệt nhau."
 
 #. module: pb_learn
+#: model:learn.station.mistake,name:pb_learn.station_insights_mistake_2
+msgid ""
+"Quoting the headline without its state chip. The hero is the LATEST run in any state — a draft that nobody has reviewed appears here the moment it is computed, and it reads exactly like a paid month unless you look at the chip beside it."
+msgstr ""
+"Trích con số nổi bật mà bỏ qua chip trạng thái. Phần đầu lấy đợt GẦN NHẤT ở bất kỳ trạng thái nào — một đợt còn Nháp chưa ai soát vẫn xuất hiện ở đây ngay khi vừa tính xong, và nhìn vào không khác gì một tháng đã chi, trừ khi bạn nhìn cái chip bên cạnh."
+
+#. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l3_step_01
 msgid "Read Need review first, always"
 msgstr "Luôn đọc Cần soát xét trước tiên"
@@ -4294,7 +4301,7 @@ msgstr "Đọc các phiếu bị gắn cờ trước"
 msgid ""
 "Read the headcount line as employees PAID, not employed. A step in it is a joiner wave, a leaver wave — or a run that left somebody out, which is the one worth checking."
 msgstr ""
-"Hãy đọc đường sĩ số là số người ĐƯỢC TRẢ LƯƠNG, không phải số người đang làm việc. Một bậc nhảy trên đó là một đợt vào mới, một đợt nghỉ việc — hoặc một đợt lương bỏ sót người, và đó mới là điều đáng kiểm tra."
+"Hãy đọc đường sĩ số là số người ĐƯỢC TRẢ LƯƠNG, không phải số người đang làm việc. Một bậc nhảy trên đó là một nhóm người mới vào, một nhóm người nghỉ việc — hoặc một kỳ lương đã bỏ sót ai đó, và đó mới là điều đáng kiểm tra."
 
 #. module: pb_learn
 #: model:learn.screen,next_step:pb_learn.screen_integrations
@@ -4325,13 +4332,20 @@ msgstr ""
 "Hãy đọc dòng phạm vi hai lần. Nó có hiệu lực trên toàn công ty nhưng không tính lại khoản nào — hai điều mà người ta khó giữ cùng lúc nhất ở màn hình này, và cũng là lý do bước kế tiếp đi xem một phiếu lương chưa hề thay đổi."
 
 #. module: pb_learn
+#: model:learn.screen,next_step:pb_learn.screen_insights
+msgid ""
+"Read the state chip beside the headline before you quote it — the hero is the latest run whatever state it is in, while the leaderboard below waits for a done one. Then compare cost per head rather than total against total: headcount moves between months, and one more employee explains most of what looks like a rise."
+msgstr ""
+"Hãy đọc chip trạng thái bên cạnh con số nổi bật trước khi trích nó — phần đầu lấy đợt gần nhất bất kể trạng thái, trong khi bảng xếp hạng bên dưới chờ đợt đã hoàn tất. Rồi hãy so chi phí bình quân đầu người thay vì đem tổng so với tổng: sĩ số thay đổi giữa các tháng, và thêm một nhân viên là đủ giải thích phần lớn cái vẻ \"tăng\" đó."
+
+#. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_02
 #: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_02
 msgid "Read what Compute is about to do"
 msgstr "Đọc xem nút Tính sắp làm gì"
 
 #. module: pb_learn
-#: model:learn.intent.step,text:pb_learn.intent_payrollready_b030_s01
+#: model:learn.intent.step,text:pb_learn.intent_payrollready_b040_s01
 msgid "Read what each one is missing — the row says which fact it is"
 msgstr "Đọc từng người đang thiếu gì — dòng đó ghi rõ thiếu dữ kiện nào"
 
@@ -4360,9 +4374,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_govreports_mistake_1
 msgid ""
-"Reading \"coming soon\" as a fault. The tiles are per country, and a country with none simply has no filings built yet — which is better said than faked with a form nobody can submit."
+"Reading \"coming soon\" as \"Payobook does not do this country\". It means the country's own payroll module is not INSTALLED on this database — Vietnam, Singapore, Thailand, Cambodia and Malaysia all have filings in the catalogue, and each one appears the moment the module that owns its wizard is there. It is an install question, and the answer is a conversation with whoever administers the system."
 msgstr ""
-"Hiểu dòng \"sắp có\" như một lỗi. Các biểu mẫu là theo từng quốc gia, và quốc gia chưa có biểu mẫu nào thì đơn giản là chưa được xây dựng — nói rõ như vậy vẫn tốt hơn dựng ra một biểu mẫu không ai nộp được."
+"Hiểu dòng \"sắp có\" thành \"Payobook không hỗ trợ quốc gia này\". Nó chỉ có nghĩa là mô-đun tính lương của quốc gia đó chưa được CÀI trên cơ sở dữ liệu này — Việt Nam, Singapore, Thái Lan, Campuchia và Malaysia đều đã có biểu mẫu trong danh mục, và mỗi bộ sẽ xuất hiện ngay khi mô-đun chứa trình lập báo cáo của nó được cài. Đây là chuyện cài đặt, và câu trả lời nằm ở người quản trị hệ thống."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_insights_mistake_1
@@ -4659,7 +4673,7 @@ msgstr "Đang hiệu lực"
 #. module: pb_learn
 #: model:learn.column,label:pb_learn.col_employees_running_contracts
 msgid "Running contracts"
-msgstr "Hợp đồng hiệu lực"
+msgstr "Hợp đồng đang hiệu lực"
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_runpayroll_mistake_1
@@ -4990,6 +5004,13 @@ msgstr ""
 "Ở cổng này thì chặn được chứ không lùi lại được: người soát xét kế tiếp vẫn có thể từ chối, và điều đó huỷ cả lô — còn mở lại một đợt đã bị từ chối thành bản nháp là thao tác của vòng {{gmTierName}}. Khi đã Hoàn tất thì đến cách đó cũng không còn, và mọi hiệu chỉnh trở thành một dòng hồi tố."
 
 #. module: pb_learn
+#: model:learn.station.mistake,name:pb_learn.station_explorer_mistake_1
+msgid ""
+"Stopping at the table. The waterfall and the drill are where the answer usually is — the table tells you a division moved, and those two tell you which component moved and which employees carried it."
+msgstr ""
+"Dừng lại ở cái bảng. Câu trả lời thường nằm ở biểu đồ phân rã và ở bước đi sâu — cái bảng chỉ cho biết một bộ phận có biến động, còn hai thứ kia mới cho biết thành phần nào biến động và những nhân viên nào gánh phần đó."
+
+#. module: pb_learn
 #: model:learn.column,label:pb_learn.col_structures_structures
 msgid "Structures"
 msgstr "Cấu trúc"
@@ -5039,7 +5060,7 @@ msgstr ""
 msgid ""
 "Submitting is you saying the flags have been answered. If any of them have not, go back — the run will still be there."
 msgstr ""
-"Trình duyệt là bạn tuyên bố rằng các cờ cảnh báo đã được trả lời. Nếu còn cờ nào chưa, hãy quay lại — đợt lương vẫn nằm đó."
+"Trình lên phê duyệt là bạn tuyên bố rằng các cờ cảnh báo đã được trả lời. Nếu còn cờ nào chưa, hãy quay lại — đợt lương vẫn nằm đó."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_suggested
@@ -5192,9 +5213,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.quiz,prompt:pb_learn.lesson_lw_quiz
 msgid ""
-"The Dashboard says 3 pending approval. You hold the {{hrTierName}} gate. What does that number tell you about your own morning?"
+"The Dashboard says <b>48</b> pending approval, and you hold the {{hrTierName}} gate. What does that number tell you about your own morning?"
 msgstr ""
-"Bảng điều khiển hiện 3 lượt chờ phê duyệt. Bạn là người giữ cổng {{hrTierName}}. Con số đó nói gì về buổi sáng của riêng bạn?"
+"Bảng điều khiển hiện <b>48</b> lượt chờ phê duyệt, và bạn là người giữ cổng {{hrTierName}}. Con số đó nói gì về buổi sáng của riêng bạn?"
 
 #. module: pb_learn
 #: model:learn.glossary.term,definition:pb_learn.gloss_formulaconfig
@@ -5347,9 +5368,9 @@ msgstr "Bảng phân tích trả lời những câu hỏi mà tháng lương nà
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_lw_step_03
 msgid ""
-"The buttons and cards here open the same screens the sidebar opens. <b>Run Payroll</b> from the hero is the same wizard as the Run Payroll leaf — same rules, same gates, same consequences. A dashboard that had its own shortcut to computing a run would be a second place for a run to be created, and there would be no way to be sure which one made the month."
+"The buttons and cards open screens you could have opened anyway. <b>Run Payroll</b> from the hero is the same wizard as the Run Payroll leaf — same rules, same gates, same consequences — and that matters: a dashboard with its own shortcut to computing a run would be a second place a run could be created, with no way to be sure which one made the month. The two <b>Analytics</b> buttons are the exception, and worth knowing about: they open an older reporting screen that has no sidebar leaf at all, so it is the one door here you cannot find your way back to from the menu."
 msgstr ""
-"Các nút và thẻ ở đây mở đúng những màn hình mà thanh bên mở. <b>Chạy bảng lương</b> ở phần đầu chính là trình hướng dẫn của mục Chạy bảng lương — cùng quy tắc, cùng cổng kiểm soát, cùng hậu quả. Một bảng điều khiển có lối tắt riêng để tính lương sẽ tạo ra nơi thứ hai sinh ra đợt lương, và khi đó không cách nào biết chắc tháng này được tạo từ nơi nào."
+"Các nút và thẻ ở đây mở những màn hình mà đằng nào bạn cũng mở được. <b>Chạy bảng lương</b> ở phần đầu chính là trình hướng dẫn của mục Chạy bảng lương — cùng quy tắc, cùng cổng kiểm soát, cùng hậu quả — và điều đó quan trọng: một bảng điều khiển có lối tắt riêng để tính lương sẽ tạo ra nơi thứ hai sinh ra đợt lương, và khi đó không cách nào biết chắc tháng này được tạo từ nơi nào. Hai nút <b>Analytics</b> là ngoại lệ, và rất đáng biết: chúng mở một màn hình báo cáo thế hệ cũ hoàn toàn không có mục nào trên thanh bên, nên đó là cánh cửa duy nhất ở đây mà bạn không tìm lại được từ menu."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l2_step_03
@@ -5397,9 +5418,9 @@ msgstr "Các cột là bước phê duyệt, không phải tháng"
 #. module: pb_learn
 #: model:learn.screen,blurb:pb_learn.screen_dashboard
 msgid ""
-"The command centre: the live run, four numbers that describe the company, and a door into each part of the product."
+"The command centre: the live run, four numbers that describe the company, and a card for each part of the product worth opening today."
 msgstr ""
-"Trung tâm điều hành: đợt lương đang chạy, bốn con số mô tả cả công ty, và một lối vào cho từng phần của sản phẩm."
+"Trung tâm điều hành: đợt lương đang chạy, bốn con số mô tả cả công ty, và một thẻ cho từng phần của sản phẩm đáng mở hôm nay."
 
 #. module: pb_learn
 #: model:learn.station,outline_what:pb_learn.station_dashboard
@@ -5663,13 +5684,6 @@ msgid "The hard part"
 msgstr "Phần khó"
 
 #. module: pb_learn
-#: model:learn.column,body:pb_learn.col_insights_net_payroll
-msgid ""
-"The headline: what actually left, or will leave, the bank account for the run this board is reading. It is read off the payslips themselves rather than a reporting copy, so it cannot disagree with the payslips underneath it."
-msgstr ""
-"Con số nổi bật: số tiền thực sự đã rời, hoặc sẽ rời, tài khoản ngân hàng cho đợt lương mà bảng này đang đọc. Nó được đọc thẳng từ chính các phiếu lương chứ không từ một bản sao báo cáo, nên không thể lệch với các phiếu lương nằm dưới."
-
-#. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_confidence_b040
 msgid "The import wizard's review step and its validation counts."
 msgstr "Bước soát xét của trình nhập liệu và các số liệu kiểm tra của nó."
@@ -5790,6 +5804,13 @@ msgstr ""
 "Tổng thực nhận của mọi đợt đang trong quy trình cộng lại — số tiền chỉ còn cách tài khoản công ty một hoặc vài chữ ký, và bất kỳ ai tìm ra lý do đều còn kịp chặn lại. Sau cổng cuối cùng thì điều đó không còn đúng nữa."
 
 #. module: pb_learn
+#: model:learn.column,body:pb_learn.col_insights_net_payroll
+msgid ""
+"The net of the LATEST run this company has, in whatever state that run is in — a draft computed an hour ago counts. It comes from the run's own stored roll-up rather than from re-adding its payslip lines, which is what makes the board fast; the state chip beside it is the part that tells you whether the figure is money that moved or money that might."
+msgstr ""
+"Số thực nhận của đợt lương GẦN NHẤT mà công ty có, ở bất kỳ trạng thái nào — một bản nháp vừa tính cách đây một giờ vẫn được tính. Con số này lấy từ số tổng đã lưu sẵn của chính đợt đó chứ không phải cộng lại từng dòng phiếu lương, và đó là điều làm bảng này nhanh; còn chip trạng thái bên cạnh mới là thứ cho biết đây là tiền đã chi hay tiền có thể sẽ chi."
+
+#. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_la_step_01
 msgid "The number that matters"
 msgstr "Con số đáng chú ý"
@@ -5862,7 +5883,7 @@ msgid "The pay run's approval chain and your group membership."
 msgstr "Chuỗi phê duyệt của đợt lương và nhóm quyền của bạn."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_payrollready_b040
+#: model:learn.intent.block,body:pb_learn.intent_payrollready_b050
 msgid "The payroll-ready mark on the employee roster, and the contract behind it."
 msgstr "Dấu sẵn sàng tính lương trên danh sách nhân viên, và hợp đồng đứng sau nó."
 
@@ -5879,6 +5900,13 @@ msgid ""
 "The people roster: headcount, running contracts, contracts expiring within thirty days, new hires, the monthly wage bill, and a payroll-ready mark on each person."
 msgstr ""
 "Danh sách nhân sự: sĩ số, hợp đồng đang hiệu lực, hợp đồng hết hạn trong ba mươi ngày, người mới vào, quỹ lương tháng, và dấu sẵn sàng tính lương trên từng người."
+
+#. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_payrollready_b020
+msgid ""
+"The percentage in the KPI band is NOT that test. It counts bank details only, over headcount — so it can read 100% while somebody on a draft contract is still going to be missing from the run. The band is a trend; the rows are the answer."
+msgstr ""
+"Tỷ lệ phần trăm ở dải chỉ số KHÔNG dùng phép thử đó. Nó chỉ đếm thông tin ngân hàng, chia cho sĩ số — nên nó vẫn có thể hiện 100% trong khi một người đang ở hợp đồng nháp sẽ vắng mặt trong đợt lương. Dải chỉ số cho thấy xu hướng; các dòng mới cho câu trả lời."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l1_step_02
@@ -6126,9 +6154,9 @@ msgstr "Hình dạng của một tháng"
 #. module: pb_learn
 #: model:learn.column,body:pb_learn.col_employees_payroll_ready
 msgid ""
-"The share of people who have everything needed to actually be paid: a running contract, a wage on it and usable bank details. Anybody outside this share computes perfectly and does not receive the money, which is the failure with the longest gap between cause and symptom."
+"The share of people with BANK DETAILS on file — that one fact, over headcount, and nothing else. The tick on each row is stricter than the tile above it: a row is ready only with a running contract AND bank details, so the percentage can read 100% while a person on a draft contract still will not be paid. Read the rows for the answer and the tile for the trend."
 msgstr ""
-"Tỷ lệ những người đã có đủ mọi thứ để thực sự nhận được lương: hợp đồng đang hiệu lực, mức lương trên hợp đồng và thông tin ngân hàng dùng được. Ai nằm ngoài tỷ lệ này vẫn được tính lương hoàn hảo mà không nhận được tiền — kiểu lỗi có khoảng cách dài nhất giữa nguyên nhân và triệu chứng."
+"Tỷ lệ những người ĐÃ CÓ THÔNG TIN NGÂN HÀNG trong hồ sơ — đúng một dữ kiện đó, chia cho sĩ số, không tính gì thêm. Dấu tích trên từng dòng lại chặt hơn ô chỉ số phía trên: một dòng chỉ được coi là sẵn sàng khi vừa có hợp đồng đang hiệu lực VỪA có thông tin ngân hàng, nên tỷ lệ vẫn có thể hiện 100% trong khi một người đang ở hợp đồng nháp thì vẫn không được trả lương. Hãy đọc các dòng để có câu trả lời, còn ô chỉ số thì để nhìn xu hướng."
 
 #. module: pb_learn
 #: model:learn.column,body:pb_learn.col_importwizard_confidence_score
@@ -6203,6 +6231,13 @@ msgstr ""
 "Thanh trạng thái ở đây là bước của chính phiếu này, không phải lúc nào cũng trùng với bước của cả đợt. Sự khác biệt đó quan trọng khi một phiếu bị tách ra để hỏi trong khi phần còn lại của lô đã đi tiếp."
 
 #. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whichtool_b060
+msgid ""
+"The stored run roll-ups behind Insights, the derived fact tables behind Explorer, and the attendance models behind Workforce Analytics."
+msgstr ""
+"Các số tổng đã lưu theo đợt đứng sau Phân tích, các bảng dữ liệu dẫn xuất đứng sau Explorer, và các mô hình chấm công đứng sau Phân tích nhân sự."
+
+#. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_la_step_03
 msgid "The strategy"
 msgstr "Cách làm"
@@ -6232,11 +6267,6 @@ msgstr ""
 #: model:learn.step,kicker:pb_learn.lesson_l6_step_03
 msgid "The tax table"
 msgstr "Biểu thuế"
-
-#. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whichtool_b050
-msgid "The three analytics cockpits, all built over the computed payslips."
-msgstr "Ba màn hình phân tích, đều dựng trên các phiếu lương đã tính."
 
 #. module: pb_learn
 #: model:learn.column,body:pb_learn.col_fullfinal_settled
@@ -6400,7 +6430,7 @@ msgstr ""
 "Đây là nhiệm vụ tổng kết chạy trên dữ liệu thật của môi trường demo Payobook, nên chỉ mở được với tài khoản demo — nhiệm vụ thực hành ở trên dạy đúng phán đoán đó, một cách an toàn, ở bất kỳ đâu."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_payrollready_b020
+#: model:learn.intent.block,body:pb_learn.intent_payrollready_b030
 msgid ""
 "This is the failure with the longest gap between cause and symptom: the run looks finished, the reports reconcile, and the person tells you on {{payDay}}."
 msgstr ""
@@ -6493,18 +6523,6 @@ msgstr ""
 "Ba con số: có bao nhiêu phiếu lương, bao nhiêu phiếu tính sạch, và bao nhiêu phiếu hệ thống muốn có người xem. Con số thứ ba là <b>Cần soát xét</b>, và nó không phải số lỗi. Cờ cảnh báo là hệ thống nói rằng nó thấy điều gì đó bất thường và muốn bạn xác nhận đó là có chủ ý."
 
 #. module: pb_learn
-#: model:learn.quiz.option,label:pb_learn.lesson_lw_quiz_opt_0
-msgid "Three runs are waiting for my signature"
-msgstr "Có ba đợt lương đang chờ chữ ký của tôi"
-
-#. module: pb_learn
-#: model:learn.quiz.option,label:pb_learn.lesson_lw_quiz_opt_1
-msgid ""
-"Three runs are waiting for somebody's signature, and Approvals will tell me how many are mine"
-msgstr ""
-"Có ba đợt đang chờ chữ ký của ai đó, và màn hình Phê duyệt sẽ cho biết bao nhiêu là của tôi"
-
-#. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_00
 msgid ""
 "Three stages, and a batch that stops before the last one has changed nothing at all. That is the whole design: you are allowed to load a bad file, look at it, and walk away, and the system is exactly as it was."
@@ -6567,9 +6585,9 @@ msgstr "Truy ngược về dữ liệu đầu vào đã tạo ra nó — chấm 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_dashboard_mistake_1
 msgid ""
-"Treating it as a report and exporting the numbers. Every tile is a link into the screen that produced it — copying the figure loses the working behind it, which is the part somebody will ask about."
+"Treating it as a report and copying the numbers out. The KPI tiles only REPORT — it is the buttons and the run rows that open the screen a figure came from, and a figure copied away from its working loses the part somebody will ask about."
 msgstr ""
-"Coi nó như một báo cáo rồi xuất số ra ngoài. Mỗi ô đều là đường dẫn vào màn hình đã tạo ra nó — chép con số ra là mất phần tính toán phía sau, mà đó mới là phần sẽ có người hỏi tới."
+"Coi nó như một báo cáo rồi chép số ra ngoài. Các ô chỉ số chỉ để BÁO CÁO — chính các nút và các dòng đợt lương mới mở ra màn hình đã sinh ra con số, và một con số bị chép rời khỏi phần tính toán của nó sẽ mất đúng phần mà sau này có người hỏi tới."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_tryagain
@@ -6653,13 +6671,6 @@ msgid ""
 "Using bulk mode without reading the count. It is the one control here that changes many records at once, and \"12 selected\" is the only thing standing between a helpful edit and twelve wrong ones."
 msgstr ""
 "Dùng chế độ chọn nhiều mà không đọc con số. Đây là nút duy nhất ở đây thay đổi nhiều bản ghi cùng lúc, và dòng \"đã chọn 12\" là thứ duy nhất ngăn giữa một chỉnh sửa hữu ích và mười hai chỉnh sửa sai."
-
-#. module: pb_learn
-#: model:learn.station.mistake,name:pb_learn.station_insights_mistake_2
-msgid ""
-"Using it to check a run before approving. This board reads runs that are done; the questions before approval are on the run itself."
-msgstr ""
-"Dùng nó để kiểm tra một đợt lương trước khi phê duyệt. Bảng này đọc các đợt đã Hoàn tất; những câu hỏi trước phê duyệt nằm trên chính đợt lương đó."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_dashboard_mistake_2
@@ -6764,6 +6775,13 @@ msgstr "Đây là gì"
 #: model:learn.step,kicker:pb_learn.lesson_lw_step_02
 msgid "What makes this product different"
 msgstr "Điều làm sản phẩm này khác biệt"
+
+#. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whichtool_b050
+msgid ""
+"What none of them can do is tell you a number is WRONG. A waterfall explains where a movement came from; whether that movement should have happened is a question for the division's configuration and the payslips themselves."
+msgstr ""
+"Điều mà không công cụ nào làm được là nói cho bạn biết một con số SAI. Biểu đồ phân rã giải thích một biến động đến từ đâu; còn biến động đó có nên xảy ra hay không lại là câu hỏi dành cho cấu hình của bộ phận và cho chính các phiếu lương."
 
 #. module: pb_learn
 #: model:learn.intent,label:pb_learn.intent_checkfinal
@@ -6996,9 +7014,9 @@ msgstr "Ai đóng bao nhiêu — và phần lớn hơn không phải của bạn
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_whosees_b010
 msgid ""
-"Whoever holds one of the payroll groups the leaf is gated on — a payroll officer, a payroll manager, a final approver or an administrator. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all."
+"Whoever holds one of the three payroll groups these leaves are gated on — a payroll officer, a payroll manager or a super administrator. Note who is NOT on that list: a final approver signs for money and still does not get the wage roster, because approving a total and reading everybody's salary are different permissions. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all."
 msgstr ""
-"Những ai giữ một trong các nhóm quyền lương mà mục này bị chặn theo — chuyên viên tính lương, quản lý lương, người phê duyệt cuối hoặc quản trị viên. Người khác không thấy một màn hình bị làm mờ; họ không hề có mục đó trong thanh bên của mình."
+"Những ai giữ một trong ba nhóm quyền lương mà các mục này bị chặn theo — chuyên viên tính lương, quản lý lương hoặc quản trị viên cấp cao. Hãy để ý ai KHÔNG có trong danh sách đó: người phê duyệt cuối ký cho những khoản tiền mà vẫn không có danh sách lương, vì duyệt một con số tổng và đọc lương của từng người là hai quyền khác nhau. Người khác không thấy một màn hình bị làm mờ; họ không hề có mục đó trong thanh bên của mình."
 
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_l3_step_02

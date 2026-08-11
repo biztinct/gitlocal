@@ -331,12 +331,15 @@ export const SCREENS = {
                     esc(tx(B("Add employee", "Thêm nhân viên")))}</button>
             </div>
             <div class="lrn-grid g6" data-coach="pe-kpis">
-                ${kpiTile("users", "", N(k.headcount), B("Headcount", "Nhân sự"))}
-                ${kpiTile("check-circle", "pos", N(k.running), B("Running contracts", "Hợp đồng hiệu lực"))}
+                ${kpiTile("users", "", N(k.headcount), B("Headcount", "Sĩ số"))}
+                ${kpiTile("check-circle", "pos", N(k.running), B("Running contracts", "Hợp đồng đang hiệu lực"))}
                 ${kpiTile("alert-triangle", "warn", N(k.expiring), B("Expiring in 30 days", "Hết hạn trong 30 ngày"))}
                 ${kpiTile("user-plus", "", N(k.newHires), B("New this month", "Vào mới tháng này"))}
                 ${kpiTile("receipt", "", M(k.wageBill), B("Monthly wage bill", "Quỹ lương tháng"))}
                 ${kpiTile("check", "pos", P(k.readyPct), B("Payroll-ready", "Sẵn sàng tính lương"))}
+                <!-- The tile is bank-details-over-headcount; the per-row tick
+                     below also requires a running contract. Two different
+                     tests, one word — see the payroll_ready column. -->
             </div>
             <div class="lrn-tabs" data-coach="pe-filters">
                 ${[B("All", "Tất cả"), B("Running", "Đang hiệu lực"),
@@ -347,8 +350,8 @@ export const SCREENS = {
                 <h3>${ic("users")}${esc(tx(B("Employees", "Nhân viên")))}</h3>
                 <div class="lrn-rows" data-coach="pe-roster">${rows}</div>
                 <p class="lrn-note">${esc(tx(B(
-                    "The wage shown is the registered contract base — the figure insurance is charged on, not what the person will be paid this month.",
-                    "Mức lương hiển thị là lương cơ bản đã đăng ký theo hợp đồng — mức dùng để tính bảo hiểm, không phải số người đó thực nhận trong tháng.")))}</p>
+                    "Headcount counts everybody this practice company employs — all 48 — while the four rows below are a sample you can read. The wage shown is the registered contract base, the figure insurance is charged on, not what the person will be paid this month.",
+                    "Sĩ số đếm toàn bộ nhân sự của công ty thực hành này — đủ 48 người — còn bốn dòng bên dưới là một mẫu đủ nhỏ để đọc. Mức lương hiển thị là lương cơ bản đã đăng ký theo hợp đồng, tức mức dùng để tính bảo hiểm, không phải số người đó thực nhận trong tháng.")))}</p>
             </div>`;
     },
 
@@ -421,14 +424,20 @@ export const SCREENS = {
                 <b>${esc(M(x.v))}</b></div>`).join("");
         const pulse = d.pulse.map((x) => `
             <span class="lrn-statpill"><b>${N(x.v)}</b>${esc(tx(x.label))}</span>`).join("");
-        const heroSub = tx(RUN.name) + DOT + P(d.deltaPct) + SP
-            + tx(B("against last month", "so với tháng trước"));
+        // THE HERO IS ONE RUN, and it says so. pb_insights takes the LATEST run
+        // whatever state it is in and prints its name and state chip beside the
+        // figure; the leaderboard below spans every division in the period. A
+        // hero labelled just "Net" above a table that sums two divisions reads
+        // as a board that does not add up.
+        const heroSub = tx(B("Latest run", "Đợt gần nhất")) + DOT + tx(d.headlineScope)
+            + DOT + P(d.deltaPct) + SP + tx(B("against last month", "so với tháng trước"));
 
         return `
             <div class="lrn-herocta" data-coach="in-hero">
                 ${ic("trending-up")}
                 <span><b>${esc(M(d.headline))}</b><br>
                     <span class="lrn-sub2">${esc(heroSub)}</span></span>
+                ${statusChip("payrun", d.headlineState)}
                 <span class="lrn-chip b">${esc(tx(B("Net payroll", "Lương thực chi")))}</span>
             </div>
             <div class="lrn-panel" data-coach="in-trend">
@@ -442,6 +451,9 @@ export const SCREENS = {
                 <div class="lrn-panel">
                     <h3>${ic("layers")}${esc(tx(B("Department leaderboard", "Xếp hạng bộ phận")))}</h3>
                     <div class="lrn-rows">${depts}</div>
+                    <p class="lrn-note">${esc(tx(B(
+                        "Every division in the period — which is a wider scope than the headline above, and the reason the two do not add up to each other.",
+                        "Mọi bộ phận trong kỳ — phạm vi rộng hơn con số nổi bật ở trên, và đó là lý do hai bên không cộng lại bằng nhau.")))}</p>
                 </div>
                 <div class="lrn-panel">
                     <h3>${ic("shield-check")}${esc(tx(B("Statutory split", "Cơ cấu đóng bắt buộc")))}</h3>
@@ -546,7 +558,7 @@ export const SCREENS = {
                 <div class="lrn-calc">${chart}</div>
                 <p class="lrn-note">${esc(tx(B(
                     "Paid, not employed. A step in this line is a joiner wave, a leaver wave — or a run that did not include everybody.",
-                    "Là được TRẢ LƯƠNG, không phải đang làm việc. Một bậc nhảy trên đường này là một đợt vào mới, một đợt nghỉ việc — hoặc một đợt lương đã bỏ sót người.")))}</p>
+                    "Là được TRẢ LƯƠNG, không phải đang làm việc. Một bậc nhảy trên đường này là một nhóm người mới vào, một nhóm người nghỉ việc — hoặc một kỳ lương đã bỏ sót ai đó.")))}</p>
             </div>
             <div class="lrn-grid g2 top" data-coach="wa-duo">
                 <div class="lrn-panel">
@@ -565,7 +577,7 @@ export const SCREENS = {
     govreports() {
         const g = PRACTICE.govreports;
         const chips = g.countries.map((c, i) =>
-            `<button aria-selected="${i === 0}">${esc(tx(c))}</button>`).join("");
+            `<button aria-selected="${i === g.selected}">${esc(tx(c))}</button>`).join("");
         const groups = g.groups.map((grp) => {
             const tiles = grp.reports.map((r) => `
                 <div class="lrn-row">
@@ -583,6 +595,25 @@ export const SCREENS = {
         }).join("");
         const head = tx(g.country) + DOT + tx(g.period);
 
+        // ONE STATE OR THE OTHER, never both. The product is a t-if/t-else on
+        // `available`: a country whose payroll module is installed shows its
+        // tiles, and one whose module is not shows the empty card INSTEAD.
+        // Drawing them together taught a screen that cannot exist — and taught
+        // it on the one screen whose lesson is about reading an empty state
+        // correctly. `available` follows the selected country chip.
+        const available = g.selected === 0;
+        const body = available
+            ? `<div class="lrn-grid g2 top" data-coach="gr-grid">${groups}</div>`
+            : `<div class="lrn-panel" data-coach="gr-empty">
+                <h3>${ic("globe")}${esc(tx(B("Coming soon", "Sắp có")))}</h3>
+                <p class="lrn-note">${esc(tx(B(
+                    "Government reports for this country are coming soon.",
+                    "Các báo cáo cơ quan nhà nước cho quốc gia này sắp có.")))}</p>
+                <p class="lrn-note">${esc(tx(B(
+                    "It means this country's own payroll module is not installed on this database — not that the filings do not exist. Five countries are in the catalogue, and a country's tiles appear as soon as the module holding its wizard is there.",
+                    "Điều đó nghĩa là mô-đun tính lương của quốc gia này chưa được cài trên cơ sở dữ liệu — chứ không phải các biểu mẫu không tồn tại. Danh mục đã có năm quốc gia, và biểu mẫu của một quốc gia sẽ xuất hiện ngay khi mô-đun chứa trình lập báo cáo của nó có mặt.")))}</p>
+            </div>`;
+
         return `
             <div class="lrn-strip" data-coach="gr-head">
                 <span class="lrn-chip">${ic("file-text")}${esc(head)}</span>
@@ -591,14 +622,7 @@ export const SCREENS = {
                     "Các báo cáo bắt buộc của công ty này, theo từng tháng một.")))}</span>
             </div>
             <div class="lrn-tabs" data-coach="gr-countries">${chips}</div>
-            <div class="lrn-grid g2 top" data-coach="gr-grid">${groups}</div>
-            <div class="lrn-panel" data-coach="gr-empty">
-                <h3>${ic("globe")}${esc(tx(B(
-                    "Another country on this company", "Một quốc gia khác trong công ty này")))}</h3>
-                <p class="lrn-note">${esc(tx(B(
-                    "Singapore has no tiles here yet, and saying so is the point: a filing that has not been built is better named than faked. The chips above exist only when a company runs payroll in more than one country.",
-                    "Singapore chưa có biểu mẫu nào ở đây, và nói thẳng ra như vậy mới đúng: một báo cáo chưa được xây dựng thì nên nêu rõ hơn là dựng giả. Các chip phía trên chỉ xuất hiện khi công ty chạy lương ở nhiều hơn một quốc gia.")))}</p>
-            </div>`;
+            ${body}`;
     },
 
     /* ------------------------------------------------------- Run Payroll */

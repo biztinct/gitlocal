@@ -2477,8 +2477,8 @@
     <record id="intent_variance_b030_s00" model="learn.intent.step">
         <field name="block_id" ref="intent_variance_b030"/>
         <field name="sequence">10</field>
-        <field name="text">Headcount first — two extra people explain most of what looks like a rise</field>
-        <field name="anchor">wa-kpis</field>
+        <field name="text">Headcount first — one more employee explains most of what looks like a rise</field>
+        <field name="anchor">ps-kpis</field>
     </record>
 
     <record id="intent_variance_b030_s01" model="learn.intent.step">
@@ -2544,7 +2544,7 @@
 
     <record id="intent_rejectright_p06" model="learn.intent.phrase">
         <field name="intent_id" ref="intent_rejectright"/>
-        <field name="text">Viết lý do trả lại đợt lương thế nào cho đúng?</field>
+        <field name="text">Viết lý do từ chối thế nào cho đúng?</field>
     </record>
 
     <record id="intent_rejectright_b010" model="learn.intent.block">
@@ -2633,7 +2633,7 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">Payroll-ready means everything needed to pay this person is present — a running contract, a wage on it, and bank details the payment file can use. Miss any one and the payslip still computes perfectly and the money still does not arrive.</field>
+        <field name="body">On a ROW it means both things are present: a running contract, and bank details the payment file can use. Miss either and the payslip still computes perfectly and the money still does not arrive. The tick tells you which one is missing — hover it.</field>
     </record>
 
     <record id="intent_payrollready_b020" model="learn.intent.block">
@@ -2641,40 +2641,48 @@
         <field name="sequence">20</field>
         <field name="capability">any</field>
         <field name="kind">warn</field>
-        <field name="body">This is the failure with the longest gap between cause and symptom: the run looks finished, the reports reconcile, and the person tells you on {{payDay}}.</field>
+        <field name="body">The percentage in the KPI band is NOT that test. It counts bank details only, over headcount — so it can read 100% while somebody on a draft contract is still going to be missing from the run. The band is a trend; the rows are the answer.</field>
     </record>
 
     <record id="intent_payrollready_b030" model="learn.intent.block">
         <field name="intent_id" ref="intent_payrollready"/>
         <field name="sequence">30</field>
         <field name="capability">any</field>
-        <field name="kind">steps</field>
-    </record>
-
-    <record id="intent_payrollready_b030_s00" model="learn.intent.step">
-        <field name="block_id" ref="intent_payrollready_b030"/>
-        <field name="sequence">10</field>
-        <field name="text">Filter the roster to the people who are not ready</field>
-        <field name="anchor">pe-filters</field>
-    </record>
-
-    <record id="intent_payrollready_b030_s01" model="learn.intent.step">
-        <field name="block_id" ref="intent_payrollready_b030"/>
-        <field name="sequence">20</field>
-        <field name="text">Read what each one is missing — the row says which fact it is</field>
-        <field name="anchor">pe-roster</field>
-    </record>
-
-    <record id="intent_payrollready_b030_s02" model="learn.intent.step">
-        <field name="block_id" ref="intent_payrollready_b030"/>
-        <field name="sequence">30</field>
-        <field name="text">Fix it on the employee or the contract, not on the payslip afterwards</field>
-        <field name="anchor">ct-roster</field>
+        <field name="kind">warn</field>
+        <field name="body">This is the failure with the longest gap between cause and symptom: the run looks finished, the reports reconcile, and the person tells you on {{payDay}}.</field>
     </record>
 
     <record id="intent_payrollready_b040" model="learn.intent.block">
         <field name="intent_id" ref="intent_payrollready"/>
         <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_payrollready_b040_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_payrollready_b040"/>
+        <field name="sequence">10</field>
+        <field name="text">Filter the roster to the people who are not ready</field>
+        <field name="anchor">pe-filters</field>
+    </record>
+
+    <record id="intent_payrollready_b040_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_payrollready_b040"/>
+        <field name="sequence">20</field>
+        <field name="text">Read what each one is missing — the row says which fact it is</field>
+        <field name="anchor">pe-roster</field>
+    </record>
+
+    <record id="intent_payrollready_b040_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_payrollready_b040"/>
+        <field name="sequence">30</field>
+        <field name="text">Fix it on the employee or the contract, not on the payslip afterwards</field>
+        <field name="anchor">ct-roster</field>
+    </record>
+
+    <record id="intent_payrollready_b050" model="learn.intent.block">
+        <field name="intent_id" ref="intent_payrollready"/>
+        <field name="sequence">50</field>
         <field name="capability">any</field>
         <field name="kind">source</field>
         <field name="body">The payroll-ready mark on the employee roster, and the contract behind it.</field>
@@ -2963,7 +2971,7 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">Whoever holds one of the payroll groups the leaf is gated on — a payroll officer, a payroll manager, a final approver or an administrator. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all.</field>
+        <field name="body">Whoever holds one of the three payroll groups these leaves are gated on — a payroll officer, a payroll manager or a super administrator. Note who is NOT on that list: a final approver signs for money and still does not get the wage roster, because approving a total and reading everybody's salary are different permissions. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all.</field>
     </record>
 
     <record id="intent_whosees_b020" model="learn.intent.block">
@@ -3060,24 +3068,32 @@
         <field name="intent_id" ref="intent_whichtool"/>
         <field name="sequence">30</field>
         <field name="capability">any</field>
-        <field name="kind">ok</field>
-        <field name="body">All three read the same payslips, so they cannot disagree with each other or with a payslip. That is the point of building them over the payroll rather than over a reporting copy of it.</field>
+        <field name="kind">p</field>
+        <field name="body">Knowing WHERE each one reads from is what stops you comparing two numbers that were never the same number. &lt;b&gt;Insights&lt;/b&gt; reads the stored per-run roll-ups, plus the analytics snapshots panel. &lt;b&gt;Explorer&lt;/b&gt; reads derived fact tables, rebuilt from the payslips and reconciled to them. &lt;b&gt;Workforce Analytics&lt;/b&gt; reads the attendance, overtime and leave models. Three lineages, one payroll.</field>
     </record>
 
     <record id="intent_whichtool_b040" model="learn.intent.block">
         <field name="intent_id" ref="intent_whichtool"/>
         <field name="sequence">40</field>
         <field name="capability">any</field>
-        <field name="kind">warn</field>
-        <field name="body">Neither of them explains WHY. They tell you a division is above the rest; the reason is in that division's configuration and its payslips, and no analytics screen will pretend otherwise.</field>
+        <field name="kind">ok</field>
+        <field name="body">Explorer does explain &lt;b&gt;why&lt;/b&gt;, and it is the only one that does: it builds a variance waterfall between two comparable periods that reconciles exactly, with an anomaly rail beside it — and any cell drills straight through to the employees behind it, read from the payslip lines rather than from the facts, so the drill doubles as the audit trail for the number.</field>
     </record>
 
     <record id="intent_whichtool_b050" model="learn.intent.block">
         <field name="intent_id" ref="intent_whichtool"/>
         <field name="sequence">50</field>
         <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">What none of them can do is tell you a number is WRONG. A waterfall explains where a movement came from; whether that movement should have happened is a question for the division's configuration and the payslips themselves.</field>
+    </record>
+
+    <record id="intent_whichtool_b060" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichtool"/>
+        <field name="sequence">60</field>
+        <field name="capability">any</field>
         <field name="kind">source</field>
-        <field name="body">The three analytics cockpits, all built over the computed payslips.</field>
+        <field name="body">The stored run roll-ups behind Insights, the derived fact tables behind Explorer, and the attendance models behind Workforce Analytics.</field>
     </record>
 
     <record id="intent_whichfilings" model="learn.intent">
@@ -3154,8 +3170,7 @@
     <record id="intent_whichfilings_b020_s01" model="learn.intent.step">
         <field name="block_id" ref="intent_whichfilings_b020"/>
         <field name="sequence">20</field>
-        <field name="text">Check every run in that month has reached done before generating anything</field>
-        <field name="anchor">pk-tabs</field>
+        <field name="text">Check every run in that month has reached done before generating anything — on the Pay Runs board, not here</field>
     </record>
 
     <record id="intent_whichfilings_b020_s02" model="learn.intent.step">
@@ -3178,7 +3193,7 @@
         <field name="sequence">40</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">If your country's group says the filings are coming soon, that is the truth rather than a fault: the tiles exist per country, and one with none has not been built yet. Payobook prepares the file either way — it does not submit it for you.</field>
+        <field name="body">"Coming soon" on a country means its payroll module is not INSTALLED here — not that the filings do not exist. Vietnam, Singapore, Thailand, Cambodia and Malaysia are all in the catalogue, and a country's tiles appear as soon as the module holding its wizard is installed. So that message is an installation question for whoever administers the system, not a limit of the product. Either way Payobook prepares the file — it does not submit it for you.</field>
     </record>
 
     <record id="intent_whichfilings_b050" model="learn.intent.block">

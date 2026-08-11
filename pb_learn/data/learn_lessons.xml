@@ -870,7 +870,7 @@
         <field name="sequence">50</field>
         <field name="kicker">Before &amp; after</field>
         <field name="title">Explain the variance, or you are not ready to sign</field>
-        <field name="body">July is 612,480,000 ₫ against June's 596,110,000 ₫. Toggle the two and say, out loud, why they differ — one more employee, and one payslip with 3,100,000 ₫ more overtime on it than last month. If you cannot finish that sentence, the gap is not small; it is unexamined.</field>
+        <field name="body">July is 612,480,000 ₫ against June's 596,110,000 ₫ — run totals, which live on the board and the KPI band rather than on the slip in front of you. This step stands here anyway, because the answer does: toggle the two and say, out loud, why they differ — one more employee, and one payslip with 3,100,000 ₫ more overtime on it than last month. If you cannot finish that sentence, the gap is not small; it is unexamined.</field>
         <field name="screen">payslips</field>
         <field name="anchor">ps-breakdown</field>
         <field name="visual">morph</field>
@@ -1010,7 +1010,7 @@
         <field name="kicker">Reading the band</field>
         <field name="title">Four numbers, and only one of them is a queue</field>
         <field name="body">Headcount, monthly payroll, pending approval, active configurations. Three of those &lt;b&gt;describe the company&lt;/b&gt; and will read almost the same tomorrow. &lt;b&gt;Pending approval&lt;/b&gt; is different: it is work that has stopped, and it is the only number here that somebody has to do something about.</field>
-        <field name="tip">It counts the company's pending sign-offs, at every gate — not yours. How many are yours is a question the Approvals screen answers.</field>
+        <field name="tip">It counts &lt;b&gt;payslips&lt;/b&gt; waiting at {{hrTierName}} or {{gmTierName}}, across the whole company — not runs, not the Officer gate, and not yours in particular. How many are yours is a question the Approvals screen answers.</field>
         <field name="screen">dashboard</field>
         <field name="anchor">dash-kpis</field>
         <field name="visual">none</field>
@@ -1032,8 +1032,8 @@
         <field name="lesson_id" ref="lesson_lw"/>
         <field name="sequence">40</field>
         <field name="kicker">The doors</field>
-        <field name="title">Nothing on this screen is a second way of doing anything</field>
-        <field name="body">The buttons and cards here open the same screens the sidebar opens. &lt;b&gt;Run Payroll&lt;/b&gt; from the hero is the same wizard as the Run Payroll leaf — same rules, same gates, same consequences. A dashboard that had its own shortcut to computing a run would be a second place for a run to be created, and there would be no way to be sure which one made the month.</field>
+        <field name="title">Most doors here lead where the sidebar leads</field>
+        <field name="body">The buttons and cards open screens you could have opened anyway. &lt;b&gt;Run Payroll&lt;/b&gt; from the hero is the same wizard as the Run Payroll leaf — same rules, same gates, same consequences — and that matters: a dashboard with its own shortcut to computing a run would be a second place a run could be created, with no way to be sure which one made the month. The two &lt;b&gt;Analytics&lt;/b&gt; buttons are the exception, and worth knowing about: they open an older reporting screen that has no sidebar leaf at all, so it is the one door here you cannot find your way back to from the menu.</field>
         <field name="screen">dashboard</field>
         <field name="anchor">dash-runpayroll</field>
         <field name="visual">none</field>
@@ -1078,23 +1078,23 @@
         <field name="lesson_id" ref="lesson_lw"/>
         <field name="sequence">10</field>
         <field name="kind">choice</field>
-        <field name="prompt">The Dashboard says 3 pending approval. You hold the {{hrTierName}} gate. What does that number tell you about your own morning?</field>
+        <field name="prompt">The Dashboard says &lt;b&gt;48&lt;/b&gt; pending approval, and you hold the {{hrTierName}} gate. What does that number tell you about your own morning?</field>
     </record>
 
     <record id="lesson_lw_quiz_opt_0" model="learn.quiz.option">
         <field name="quiz_id" ref="lesson_lw_quiz"/>
         <field name="sequence">10</field>
-        <field name="label">Three runs are waiting for my signature</field>
+        <field name="label">Forty-eight runs are waiting for my signature</field>
         <field name="is_correct" eval="False"/>
-        <field name="feedback">Let's rethink that. The tile counts every sign-off the company is waiting on, at every gate — most of them belong to somebody else. Acting on it as a personal queue means chasing runs that were never yours and missing the ones that were.</field>
+        <field name="feedback">Let's rethink that, twice over. The tile counts &lt;b&gt;payslips&lt;/b&gt;, not runs — 48 of them is one ordinary batch — and it counts them company-wide, at {{hrTierName}} and {{gmTierName}} together. Reading a payslip count as a run count is how a normal Tuesday reads like a crisis.</field>
     </record>
 
     <record id="lesson_lw_quiz_opt_1" model="learn.quiz.option">
         <field name="quiz_id" ref="lesson_lw_quiz"/>
         <field name="sequence">20</field>
-        <field name="label">Three runs are waiting for somebody's signature, and Approvals will tell me how many are mine</field>
+        <field name="label">Forty-eight payslips are waiting somewhere in the HR and Finance tiers, and Approvals will tell me how many are mine</field>
         <field name="is_correct" eval="True"/>
-        <field name="feedback">Exactly. The Dashboard reports the state; the queue that is yours has its own screen, and its header counts only what your groups let you act on. Reading the state first and the queue second is the order the whole product is built in.</field>
+        <field name="feedback">Exactly. The Dashboard reports a company-wide state in payslips; the queue that is YOURS is counted in runs, on its own screen, by the gate your groups let you act on. Reading the state first and the queue second is the order the whole product is built in.</field>
     </record>
 
     <record id="lesson_lw_quiz_opt_2" model="learn.quiz.option">
@@ -1102,7 +1102,7 @@
         <field name="sequence">30</field>
         <field name="label">Payroll is behind schedule</field>
         <field name="is_correct" eval="False"/>
-        <field name="feedback">Let's rethink that. Runs sitting at a gate mid-month is what a working approval chain looks like — the number only means "behind" once you know which gate each one is at and how long it has been there, and neither of those is on this tile.</field>
+        <field name="feedback">Let's rethink that. Payslips sitting at a gate mid-month is what a working approval chain looks like — the number only means "behind" once you know which gate they are at and how long they have been there, and this tile carries neither.</field>
     </record>
 
 </odoo>
