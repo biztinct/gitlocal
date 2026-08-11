@@ -200,7 +200,7 @@ const I18N = {
     noAnswerBody: "Nothing written here covers that question. Here is what I can answer on this screen.",
     /* -- storing questions: asked once, remembered either way ------------- */
     consentTitle: "Help improve the guide?",
-    consentBody: "If you allow it, the question you just asked is stored so we can see what the guide does not cover yet. Names and amounts are removed before anything is saved, stored questions are deleted after 180 days, and you can delete yours at any time. Say no and nothing is stored — the Coach works exactly the same either way.",
+    consentBody: "If you allow it, the question you just asked is stored so we can see what the guide does not cover yet. Names and amounts are removed before anything is saved, and the stored question carries your name — that is how you can find and delete yours at any time. Stored questions are deleted after 180 days. Say no and nothing is stored — the Coach works exactly the same either way.",
     consentYes: "Yes, store my questions",
     consentNo: "No, do not store them",
     /* -- the practice replica -------------------------------------------- */
@@ -348,7 +348,7 @@ const I18N = {
     noAnswerBody: "Không có nội dung nào ở đây bao phủ câu hỏi đó. Đây là những gì tôi trả lời được trên màn hình này.",
     /* -- storing questions: asked once, remembered either way ------------- */
     consentTitle: "Giúp chúng tôi cải thiện tài liệu hướng dẫn?",
-    consentBody: "Nếu bạn đồng ý, câu hỏi bạn vừa đặt sẽ được lưu lại để chúng tôi biết tài liệu còn thiếu những gì. Tên riêng và số tiền đều được loại bỏ trước khi lưu, câu hỏi đã lưu sẽ bị xoá sau 180 ngày, và bạn có thể xoá câu hỏi của mình bất cứ lúc nào. Nếu bạn từ chối thì không có gì được lưu — Trợ lý vẫn hoạt động y như vậy.",
+    consentBody: "Nếu bạn đồng ý, câu hỏi bạn vừa đặt sẽ được lưu lại để chúng tôi biết tài liệu còn thiếu những gì. Tên riêng và số tiền đều được loại bỏ trước khi lưu, và câu hỏi được lưu kèm tên của bạn — nhờ vậy bạn có thể tìm và xoá câu hỏi của mình bất cứ lúc nào. Câu hỏi đã lưu sẽ bị xoá sau 180 ngày. Nếu bạn từ chối thì không có gì được lưu — Trợ lý vẫn hoạt động y như vậy.",
     consentYes: "Đồng ý, hãy lưu câu hỏi của tôi",
     consentNo: "Không, đừng lưu lại",
     /* -- the practice replica -------------------------------------------- */

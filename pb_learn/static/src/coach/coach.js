@@ -244,6 +244,13 @@ export class CoachHost extends Component {
      *  both gates in `learn.question.record`, so what happens here is a
      *  courtesy that saves a round trip — never the control. */
     async _maybeStore(q, matched) {
+        // The tenant switch, read once with the bundle. With mining off this
+        // returns before any RPC at all — which is what makes "with the flag
+        // off the Coach behaves exactly as it did in Phase C" true of the
+        // NETWORK as well as of the answer. A stale bundle fails closed.
+        if (!this.bundle?.collect_questions) {
+            return;
+        }
         try {
             const state = await this.orm.call("learn.consent", "questions_state", []);
             if (state === "granted") {

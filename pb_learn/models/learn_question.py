@@ -28,6 +28,7 @@ Turning this on is a decision a tenant makes, twice.
 import logging
 
 from odoo import api, fields, models
+from odoo.exceptions import AccessError
 
 _logger = logging.getLogger(__name__)
 
@@ -138,14 +139,48 @@ class LearnQuestion(models.Model):
     def _collect_enabled(self):
         return _flag_on(self.env, COLLECT_FLAG)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """THE CONTROL. `record()` is a convenience; this is the gate.
+
+        `record` checked both flags and then called `create` — which left
+        `create` itself reachable by RPC, gated by neither, from anything
+        holding a session. `learn.question` has `perm_create` for every
+        internal user (it has to: the learner creates their own row), so
+        "call create directly" was a complete bypass of the tenant flag, the
+        learner's consent AND the scrub.
+        Enforcing it here means every path in and out of this table passes the
+        same two gates, whatever calls it and whenever somebody adds a second
+        caller.
+        """
+        if not self._collect_enabled():
+            raise AccessError(self.env._(
+                "Storing coach questions is switched off for this database."))
+        if not self.env['learn.consent']._questions_granted():
+            raise AccessError(self.env._(
+                "Coach questions are only stored for learners who have agreed "
+                "to it."))
+        for vals in vals_list:
+            # Scrubbed HERE, not only in `record`, for the same reason the
+            # gates are: a caller that skipped `record` skipped the scrub.
+            text = self.env['learn.intent']._scrub(
+                vals.get('question') or '').strip()[:200]
+            if not text:
+                raise AccessError(self.env._(
+                    "There is nothing left to store once the question is "
+                    "scrubbed."))
+            vals['question'] = text
+        return super().create(vals_list)
+
     @api.model
     def record(self, question, screen=None, matched=False, lang=None):
         """The frontend's only write into this table.
 
-        BOTH gates are re-asked here. The browser checks them too, so that it
-        does not send text it knows will be dropped — but a check in the
-        browser is a courtesy, not a control: this method is reachable by RPC
-        from anything holding a session, and it is the one that has to say no.
+        BOTH gates are re-asked here — and again in `create`, which is where
+        they actually bite. The checks below are kept so that the ordinary
+        path REFUSES QUIETLY (returns False) rather than raising at a learner
+        who has simply not agreed: a declined consent is a normal state, not
+        an error, and a traceback in the drawer would make it look like one.
         """
         if not self._collect_enabled():
             return False

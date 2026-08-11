@@ -1032,6 +1032,14 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   less BHXH" would have reached a language model. `_compose` re-asks
   `_is_advice` as its second statement. **A guard that depends on a RECORD
   existing is not a guard; it is a default.**
+  **CORRECTION (D2 review): this bullet used "how do I pay less BHXH" as its
+  worked example while `_is_advice` DID NOT CATCH THAT STRING.** The
+  re-asking of the guard was real and correct; the guard being re-asked was
+  not doing the job the sentence claimed for it. Fixed in the review round —
+  see the D2 review entry below. The general lesson survives intact and is
+  worth more than the example: **an illustration written from intent rather
+  than from execution is a claim, and this ledger's standard is that claims
+  get executed before they get written.**
 - **A refusal template must not make the topic its subject — and a composed
   answer must not pretend to be bilingual.** `_zip_bilingual(tree, tree)` puts
   the model's one language on both sides. Translating it would be a second
@@ -1054,6 +1062,14 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   currency-marked rule has to run BEFORE the grouped-digits rule; the other way
   round, `12.000.000 ₫` becomes `[amount] ₫` — a stranded currency mark beside
   a placeholder, which reads worse than no redaction.
+  **CORRECTION (D2 review): the ordering was right and the REGEX was wrong, so
+  the outcome this bullet claimed to have avoided is exactly the outcome that
+  shipped.** `_CURRENCY_AMOUNT` ended in `\b`, and `₫` is not a word character,
+  so the boundary demanded a word character AFTER the currency mark — which at
+  the end of a sentence there never is. The rule failed on its own worked
+  example and the grouped-digit rule cleaned up behind it. See the D2 review
+  entry below. The bullet is left standing because the ordering point is still
+  true; what it must no longer be read as is evidence that the case works.
 - **`learn.question` is not a reversal of the Phase A2 ruling, and the
   difference is four properties `learn.event` cannot have.** Ordinary rather
   than append-only, opt-in twice, scrubbed on the way IN even after consent,
@@ -1112,6 +1128,96 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   Cron-context escalation is defensible: a scheduled job runs as no particular
   user. The issue is downstream — the alerts it produces are shown to users and
   nothing gates which user sees an alert derived from which company's payslips.
+
+### Phase D review fixes (the program's last round)
+
+- **THE BIG ONE: A DENY-LIST OF PHRASINGS DENIES THE PHRASINGS ITS AUTHOR
+  THOUGHT OF.** The reviewer broke `_ADVICE_MARKERS` by rephrasing, five times,
+  on the first attempt: `how do I pay less BHXH` (the marker is `pay less
+  tax`), `làm sao giảm BHXH` (the marker is `giam dong bhxh`, needing đóng),
+  `how do I reduce the BHXH base` (the marker is `reduce bhxh legally`), `how
+  do I not pay BHXH for probation staff`, `tips to lower employer
+  contributions`. Every one obviously in scope; every one waved through, into
+  a composer.
+  The fix is a TOKEN PAIR beside the marker list: a statutory subject
+  (`bhxh bhyt bhtn pit tncn thue "bao hiem" contribution insurance`) standing
+  with a minimisation verb (`less lower reduce cut avoid save skip "not pay"
+  giam tranh bot ne "khong dong"`). Neither half is suspicious alone — "what
+  does BHXH mean" is the question this system exists for — and their
+  CO-OCCURRENCE is what no amount of rewording removes.
+  Single words are matched as whole TOKENS, never substrings: `ne` inside
+  "net" or `bot` inside "bottom" would have refused half the module.
+  **The rule this leaves behind: a safety guard written as a list of examples
+  is a list of examples. Write the PROPERTY, then test the examples against
+  it.**
+- **KNOWN AND ACCEPTED OVER-CAPTURE, disclosed rather than discovered later:**
+  "why is my insurance contribution lower this month" pairs `insurance` with
+  `lower` and is refused. It is a fair question. The refusal is not a dead end
+  — `compliance` explains where the rates live and who owns the policy, which
+  is a reasonable answer to it — and on a statutory obligation, over-refusing
+  is the direction to err in.
+- **`_CURRENCY_AMOUNT` ENDED IN `\b` AND `₫` IS NOT A WORD CHARACTER.** So the
+  boundary required a word character to FOLLOW the currency mark, which at the
+  end of a sentence there never is: `12.000.000 ₫` scrubbed to `[amount] ₫`.
+  The rule failed on the exact input it was written for, and the D2 ledger
+  bullet about rule ordering claimed that outcome had been avoided. `(?!\w)`
+  is what was meant. **A trailing `\b` after a non-word character is always a
+  bug; it reads like a boundary and behaves like a requirement.**
+- **THE TEST WAS TOO WEAK TO SEE IT.** `assertIn('[amount]', out)` passes on
+  `[amount] ₫`. Every scrub case is now asserted on the WHOLE output string,
+  which is the only form that can see a redaction that half-worked. **An
+  assertion about a sanitiser must state the exact output, because the failure
+  mode of a sanitiser is a partial success.**
+- **`+84 912 345 678` walked through the phone rule**, because health_learn's
+  pattern demanded a digit IMMEDIATELY after the country code — and the spaced
+  international form is the one people paste out of a contact card. One
+  optional separator. Unmentioned anywhere in the D2 report, which is its own
+  finding: **the three patterns inherited from health_learn were reviewed for
+  what they added and not for what they already missed.**
+- **`create()` WAS THE BYPASS, AND `record()` WAS NEVER THE CONTROL.** Every
+  internal user holds `perm_create` on `learn.question` — they must, the
+  learner creates their own row — so calling `create` directly over RPC skipped
+  the tenant flag, the learner's consent AND the scrub, all three of which
+  lived in `record`. The gates are in `create` now; `record` keeps its copies
+  only so the ordinary path refuses QUIETLY (a declined consent is a normal
+  state, not an error, and a traceback in the drawer would make it look like
+  one). **The rule: put the gate on the ORM method, not on the convenience
+  wrapper, and then ask what else can reach the table.**
+- **CONSENT COPY MUST NAME THE ATTRIBUTION.** The row carries `user_id` — it
+  has to, because the delete-your-own affordance the prompt offers is only
+  possible because of it — and the prompt did not say so. A notice that reads
+  as though the storage were anonymous while the table names you is the wrong
+  kind of reassuring. Both languages now say the stored question carries your
+  name and that this is how you find and delete yours. `test_04d` asserts the
+  disclosure AND that `user_id` is still required, so the copy and the model
+  cannot drift apart.
+  **Residual, accepted and disclosed:** an author reading the table can
+  enumerate who asked what. That is inherent in attributed storage with a
+  delete-own affordance, it is consented to explicitly, and the alternative
+  (anonymous rows) removes the learner's ability to find their own. Consent
+  itself remains unreadable to authors.
+- **The drawer made two RPCs after every answer to discover that a switched-off
+  feature was still off.** `collect_questions` rides along with the bundle the
+  Coach already fetches, and `_maybeStore` returns before any call. Without it
+  the "behaves exactly as Phase C" claim was true of the ANSWER and false of
+  the NETWORK. It is a hint, never a control: a stale bundle can only fail
+  closed.
+- **A BLOCKLIST OF SIX MODEL NAMES HAD THE SAME WEAKNESS AS THE DENY-LIST.**
+  `composer-corpus-reads-learn-content-only` was an `absent` check naming six
+  product models — protection against the six somebody thought of. Rewritten as
+  a new checker kind, `model-scope`: parse the file, find the method, collect
+  every `self.env['x.y']` literal inside it, require each to start with an
+  allowed prefix, and FAIL if none is found at all (so hiding the reads behind
+  a variable breaks the build rather than passing silently). Proved by negative
+  control: pointing `_corpus` at a payslip table fails the check with
+  `_corpus() reads 'hr.payslip', which is outside learn.` and exit 1.
+  **First `model-scope` check in the project; use it wherever the promise is a
+  namespace rather than a list.**
+- **What the review said we should keep doing:** the fixture-name residual in
+  D2 was disclosed in the code, in the ledger and in the report — "a reduction,
+  not a guarantee", with the reason the composer is safe anyway stated beside
+  it. That is the standard: **name the residual where the mechanism is, not
+  only in the report somebody reads once.**
 
 ### Product-hardening tickets (raise separately; do NOT fix from pb_learn)
 
@@ -1193,6 +1299,33 @@ Append new gotchas at the bottom as they are hit; never delete entries.
    rows and restart — the standing Odoo-19 gotcha, unchanged.
 6. **`ask()` gained a third argument** (`lang`), defaulted, so a stale browser
    tab calling the two-argument form keeps working through the transition.
+
+**F5 — RUN THE DATABASE-BOUND TESTS. This is a deploy-time REQUIREMENT, not a
+suggestion.** There is no odoo-bin on the development machine, so the offline
+replay harness executes only what can be executed without one; everything else
+reports SKIP and has therefore never run anywhere. As of the Phase D review
+round that is **4 methods in D1 and 22 in D2** — including every access-control
+assertion in the program.
+
+```
+odoo-bin -d <db> -u pb_learn,pb_demo,pb_payroll_ai_insights \
+         --test-enable --test-tags /pb_learn,/pb_payroll_ai_insights --stop-after-init
+```
+
+The files, and what is unverified until they run:
+
+| file | never-executed methods | what they are the only proof of |
+|---|---|---|
+| `pb_payroll_ai_insights/tests/test_data_access.py` | `test_03`, `test_04`, `test_04b`, `test_04c` | the individual-salary group gate actually gates — that an officer gets the aggregate and a manager gets the list |
+| `pb_learn/tests/test_questions.py` | `test_01`–`test_08` (all but `test_04c`, `test_04f`) | both consent gates, the `create()` bypass fix, the record rules, delete-own, author-delete-any, the retention cron |
+| `pb_learn/tests/test_composer.py` | `test_03` | a curated intent still beating the composer, with real content loaded |
+
+Two offline passes are known to be VACUOUS rather than meaningful and must be
+re-read on the server: `test_composer::test_04d` iterates the intent table,
+which is empty offline, so it asserts nothing there. The standalone resolver
+simulation covers the same ground against the generated XML (265 phrases, 85
+column labels, 35 labels × 2 languages) and is the evidence until the suite
+runs.
 
 #### Phase C2 — the pb_coach retirement, in two deploys
 

@@ -2646,9 +2646,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_consentbody
 msgid ""
-"If you allow it, the question you just asked is stored so we can see what the guide does not cover yet. Names and amounts are removed before anything is saved, stored questions are deleted after 180 days, and you can delete yours at any time. Say no and nothing is stored — the Coach works exactly the same either way."
+"If you allow it, the question you just asked is stored so we can see what the guide does not cover yet. Names and amounts are removed before anything is saved, and the stored question carries your name — that is how you can find and delete yours at any time. Stored questions are deleted after 180 days. Say no and nothing is stored — the Coach works exactly the same either way."
 msgstr ""
-"Nếu bạn đồng ý, câu hỏi bạn vừa đặt sẽ được lưu lại để chúng tôi biết tài liệu còn thiếu những gì. Tên riêng và số tiền đều được loại bỏ trước khi lưu, câu hỏi đã lưu sẽ bị xoá sau 180 ngày, và bạn có thể xoá câu hỏi của mình bất cứ lúc nào. Nếu bạn từ chối thì không có gì được lưu — Trợ lý vẫn hoạt động y như vậy."
+"Nếu bạn đồng ý, câu hỏi bạn vừa đặt sẽ được lưu lại để chúng tôi biết tài liệu còn thiếu những gì. Tên riêng và số tiền đều được loại bỏ trước khi lưu, và câu hỏi được lưu kèm tên của bạn — nhờ vậy bạn có thể tìm và xoá câu hỏi của mình bất cứ lúc nào. Câu hỏi đã lưu sẽ bị xoá sau 180 ngày. Nếu bạn từ chối thì không có gì được lưu — Trợ lý vẫn hoạt động y như vậy."
 
 #. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_import

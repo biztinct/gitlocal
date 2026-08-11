@@ -28,6 +28,7 @@ WHEN IT FAILS there are two correct responses and one wrong one:
 """
 
 import argparse
+import ast
 import json
 import os
 import re
@@ -198,12 +199,66 @@ def check_po(root, chk):
     return problems, None
 
 
+def check_model_scope(root, chk):
+    """Every model a METHOD reaches must be inside an allowed namespace.
+
+    An `absent` list is a list of the models somebody thought to ban, which is
+    the same weakness the advice deny-list had: it protects against the six
+    names in it and against nothing else. This asks the general question
+    instead — parse the file, find the method, collect every `self.env['x.y']`
+    literal inside it, and require each one to start with an allowed prefix.
+
+    Written for the composer's corpus builder, where the guarantee is not
+    "these six product models are absent" but "nothing outside learn.* is
+    read at all", and where the difference is whether an employee's pay can
+    reach a prompt.
+    """
+    text = read(root, chk["file"])
+    if text is None:
+        return None, "file not found: %s" % chk["file"]
+    try:
+        tree = ast.parse(text)
+    except SyntaxError as exc:
+        return None, "could not parse %s: %s" % (chk["file"], exc)
+    target = None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name == chk["within"]:
+            target = node
+            break
+    if target is None:
+        return None, "symbol not found: %s" % chk["within"]
+
+    prefixes = tuple(chk["expect"])
+    found, problems = set(), []
+    for node in ast.walk(target):
+        if not isinstance(node, ast.Subscript):
+            continue
+        key = node.slice
+        if not (isinstance(key, ast.Constant) and isinstance(key.value, str)):
+            continue
+        name = key.value
+        # A model name, not a dict key: dotted, unspaced, lowercase-ish.
+        if "." not in name or " " in name:
+            continue
+        found.add(name)
+        if not name.startswith(prefixes):
+            problems.append(
+                "%s() reads '%s', which is outside %s"
+                % (chk["within"], name, "/".join(prefixes)))
+    if not found:
+        problems.append(
+            "%s() names no model at all — the scan found nothing to check, "
+            "which means it is broken rather than passing" % chk["within"])
+    return problems, None
+
+
 KINDS = {
     "contains": check_contains,
     "selection": check_contains,
     "absent": check_absent,
     "xmlids": check_xmlids,
     "po": check_po,
+    "model-scope": check_model_scope,
 }
 
 # Payobook anchors follow a screen-prefix convention, which is what makes them
