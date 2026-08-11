@@ -879,6 +879,108 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   approver signs for a total and still does not get the salary roster, which is
   a deliberate separation worth naming.
 
+### Run D1 (PayAI data-egress hardening)
+
+- **THE FINAL APPROVER IS ALREADY A PAYROLL MANAGER, so the handover's "manager
+  OR final approver" is one group with extra steps** —
+  `group_payroll_final_approver` implies `group_payroll_analytics_manager`
+  (payroll_base_security_enhanced.xml:172) which implies
+  `group_payroll_base_manager` (:165). Both are named in
+  `INDIVIDUAL_SALARY_GROUPS` anyway, because the gate is a statement about WHO
+  MAY SEE A NAMED PERSON'S PAY and the two roles are separately meaningful; if
+  the implication is ever cut, the gate keeps its meaning instead of silently
+  narrowing. **But the same implication makes a pb_learn content claim false:**
+  `whosees` says a final approver "signs for a total and still does not get the
+  wage roster", and the Employees leaf is gated on officer/manager/super_admin —
+  every one of which a final approver HAS by implication. Odoo flattens implied
+  groups onto the user, so that leaf IS in their sidebar. Content fix, not a D1
+  fix; raise against pb_learn. Same class as the Phase B statutory error and the
+  Phase C rejection error: a plausible mechanism nobody executed.
+- **A refusal must not be handed to the model to paraphrase.** The obvious
+  implementation returns the refusal from `query_for_message` and lets
+  `_process_data_query` json.dumps it into the prompt like any other result —
+  which spends a token asking a provider to restate our own sentence, lets it
+  soften or contradict the one sentence in the flow that has to be exact, and
+  puts "this user was refused" plus the question that earned it on the wire to
+  an external provider. `access_refused` short-circuits BEFORE the prompt is
+  built (payroll_ai_engine.py), and `test_05` asserts the ORDER of the two, not
+  merely the presence of the check.
+- **A GATE IS NOT A SUBSTITUTION.** Below the individual gate the caller gets
+  the aggregate answer — which is a different answer to the question that was
+  asked, and saying so is the whole difference between a gate and a quiet swap.
+  The note rides on `access_note` and is appended to the narrative in Python,
+  in BOTH return paths of `_process_data_query` including the JSON-parse
+  fallback: a user whose detail was withheld has to be told so precisely when
+  the model's output was malformed, which is not the rare branch.
+- **`ir.module.module` under superuser was a privilege escalation for a
+  question the registry answers better.** The soft-dependency probe now reads
+  `_OPTIONAL_MODULE_MODELS` — model presence in `self.env`, plus a field the
+  optional module adds where the model is generic (`account.analytic.line`
+  exists without hr_timesheet; `employee_id` on it does not). What the caller
+  actually needs is for `self.env[model]` not to raise, which is exactly what
+  this tests, and it needs no rights at all.
+- **FOURTH OCCURRENCE of "a source-level assertion greps its own prose", caught
+  before it shipped this time.** The absent-token test greps the WHOLE of
+  `payroll_data_query.py`, comments included — deliberately, because a
+  commented-out escalation is a template — so the module docstring cannot
+  contain the literal even to explain the rule. It says "the escalation" and
+  carries a NOTE TO THE NEXT READER saying why. The test file names the literal
+  by concatenation (`'.' + 'sudo' + '('`) so the same scan pointed at the tests
+  would not fire on the test that enforces it.
+- **A refused HALF must not be merged as an empty one.** `_query_department_data`
+  merges salary and headcount; two zeroes in a department table read as "nobody
+  works here", which is a different and much worse answer than "you may not see
+  this". It returns the refusal instead. `_query_trend_data` is deliberately
+  the one `_query_*` with NO guard — it owns no query, and wrapping it would
+  only produce a refusal named after the wrong topic; `test_02` asserts that
+  exact exception rather than "all of them".
+- **A refusal template must never make the topic its grammatical SUBJECT.**
+  The first draft capitalised the fragment and read "Individual employee
+  salaries **is** outside what your role is allowed to read" — plural topics,
+  singular verb, in a sentence whose whole job is to sound like a person. The
+  topic is the OBJECT now ("your role is not allowed to read %(topic)s") and
+  nothing capitalises it, which also removes the `.upper()` on a Vietnamese
+  first letter.
+- **PayAI had no i18n directory at all**, so `_()` was decoration. Phase D1 adds
+  `pb_payroll_ai_insights/i18n/vi_VN.po` — 18 entries, generated from the AST of
+  the source rather than retyped, so a reworded refusal fails generation rather
+  than losing its Vietnamese. `test_06` re-derives the literal list from the AST
+  on every run and refuses a missing, empty or identical-to-English msgstr;
+  `test_06b` ports the `trình duyệt` regex, because that rule now applies to a
+  second module.
+- **The vi_VN.po is a DEPLOY-ORDER dependency, same as pb_learn's.** The .po is
+  loaded at install/upgrade only: activate vi_VN, then `-u
+  pb_payroll_ai_insights`, or every refusal reaches a Vietnamese reader in
+  English.
+- **THE DEMO WORLD KEEPS EVERY PAYROLL PATH AND LOSES THE FOUR OPTIONAL ONES.**
+  Read off the rules rather than assumed: `pb_demo/hooks.py:19-40` grants the
+  demo group read on hr.employee, hr.contract, hr.payslip, hr.payslip.line and
+  their department/job models, and `pb_demo_security.xml:23-42` adds
+  `[(1,'=',1)]` rules on the payslip objects. hr.employee's only rule is the
+  GLOBAL multi-company one (hr/security/hr_security.xml
+  `hr_employee_comp_rule`), and hr.contract's group-scoped rules belong to
+  hr_contract groups a demo user does not hold — so only the global
+  multi-company rule applies and the demo user sees every contract in their
+  company. Salary, headcount, department, overtime, deduction, cost, trend,
+  periods, summary and forecast are therefore unchanged for demo users.
+  **What changes: attendance, leave, recruitment and timesheets.** pb_demo
+  grants NO access to hr.attendance (whose ACL has no `base.group_user` row at
+  all — hr_attendance/security/ir.model.access.csv), hr.applicant or
+  account.analytic.line, and hr.leave's `base.group_user` row is paired with an
+  own-records-only rule that a demo user (who is not an employee) matches
+  nothing under. Those four questions used to return the whole company's data
+  because of the escalation; they now return a refusal or an empty set, which
+  is CORRECT and is also a visible demo regression if those modules are
+  installed. The fix belongs in pb_demo — four rows in `_DEMO_ACCESS` plus
+  read-all rules — not in a gate that would have to lie to avoid it.
+- **Remaining escalation in this module, deliberately out of D1 scope:**
+  `payroll_ai_pulse.py:110,173,222,288,321` still runs elevated. It is a CRON
+  anomaly scanner, so running as no particular user is defensible — but the
+  alerts it produces ARE shown to users, and nothing gates which user sees an
+  alert derived from which company's payslips. Raise separately.
+  `payroll_ai_config.py`'s escalation reads the provider credentials and is
+  correct.
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5

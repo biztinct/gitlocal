@@ -1,0 +1,106 @@
+# Translation of Payobook (pb_payroll_ai_insights) into Vietnamese.
+# Phase D1: PayAI's data queries run with the asker's access rights, so a
+# refusal is now something a user READS, verbatim — no model rewrites it.
+# Every sentence a refusal can print ships in both languages, and
+# tests/test_data_access.py asserts that this file covers every one of them.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "One thing I left out: I can't list individual salaries for your role. Reading a named person's pay needs the Payroll Manager or the Payroll Final Approver group; below that I answer in aggregate only. What you have above is the same payroll, without the names."
+msgstr "Một điều tôi đã lược bớt: tôi không thể liệt kê lương của từng người với vai trò của bạn. Để xem lương đích danh của một người cần nhóm Quản lý lương (Payroll Manager) hoặc Người phê duyệt cuối (Payroll Final Approver); dưới mức đó tôi chỉ trả lời ở dạng tổng hợp. Phần trên vẫn là bảng lương đó, chỉ là không có tên."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "that payroll data"
+msgstr "dữ liệu lương đó"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "Not available with your access"
+msgstr "Không khả dụng với quyền của bạn"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "I can't answer that one for you — your role is not allowed to read %(topic)s, and PayAI answers with your own access rights rather than around them.\n\nIn Payobook this data sits behind the payroll roles — a Payroll Officer, a Payroll Manager or a Payroll Super Administrator can see it. Ask one of them for the figure, or ask whoever administers roles in your company to add you."
+msgstr "Tôi không thể trả lời câu này cho bạn — vai trò của bạn không được phép xem %(topic)s, và PayAI trả lời theo đúng quyền của bạn chứ không đi vòng qua nó.\n\nTrong Payobook, dữ liệu này nằm sau các vai trò lương — Chuyên viên tính lương, Quản lý lương hoặc Quản trị viên cấp cao mới xem được. Hãy hỏi một trong những người đó để lấy con số, hoặc nhờ người phụ trách phân quyền trong công ty cấp quyền cho bạn."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "attendance records"
+msgstr "dữ liệu chấm công"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "leave and time-off records"
+msgstr "dữ liệu nghỉ phép"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the recruitment pipeline"
+msgstr "quy trình tuyển dụng"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "timesheet entries"
+msgstr "các dòng chấm giờ dự án"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the wages on employment contracts"
+msgstr "mức lương ghi trên hợp đồng lao động"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the employee list"
+msgstr "danh sách nhân viên"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the overtime lines on payslips"
+msgstr "các dòng làm thêm giờ trên phiếu lương"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the deduction and contribution lines on payslips"
+msgstr "các dòng khấu trừ và đóng góp trên phiếu lương"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "payslip totals"
+msgstr "các số tổng trên phiếu lương"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the payslip history"
+msgstr "lịch sử phiếu lương"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the department-level payroll summary"
+msgstr "bảng tổng hợp lương theo phòng ban"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "individual employee salaries"
+msgstr "lương của từng nhân viên"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the payroll overview"
+msgstr "bức tranh tổng quan về lương"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
+msgid "the payroll history a forecast is built from"
+msgstr "dữ liệu lịch sử lương dùng để lập dự báo"

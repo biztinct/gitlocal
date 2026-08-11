@@ -216,6 +216,29 @@ class PayrollAIEngine(models.Model):
         data_engine = self.env['payroll.data.query']
         payroll_data = data_engine.query_for_message(message, context)
 
+        # Step 1b: a refusal is an ANSWER, and it stops here.
+        #
+        # The query layer runs with the asker's access rights (Phase D1), so
+        # "you may not read this" is a normal outcome. Passing it on to the
+        # provider would spend a token asking a model to paraphrase our own
+        # refusal, and would let it soften or contradict the sentence — the one
+        # sentence in this flow that has to be exact. It also keeps the fact
+        # that a refusal happened off the wire entirely.
+        if payroll_data.get('access_refused'):
+            return {
+                'response': payroll_data.get('message', ''),
+                'chart': None,
+                'insights': [],
+                'follow_up_questions': [],
+                'intent': 'payroll_data',
+                'access_refused': True,
+            }
+
+        # A partial gate (individual salaries withheld, aggregate returned) is
+        # NOT a refusal: the question was answered one level up. The note is
+        # appended deterministically below rather than left to the model.
+        access_note = payroll_data.get('access_note') or ''
+
         # Step 2: Build the prompt with actual data
         data_prompt = f"""The user asked: "{message}"
 
@@ -248,7 +271,8 @@ Remember to use the PayAI color palette and choose the best chart type for this 
             result = provider._parse_json_response(raw_response)
 
             return {
-                'response': result.get('response', 'Here is the data analysis.'),
+                'response': self._with_access_note(
+                    result.get('response', 'Here is the data analysis.'), access_note),
                 'chart': result.get('chart', None),
                 'insights': result.get('insights', []),
                 'follow_up_questions': result.get('follow_up_questions', []),
@@ -259,13 +283,26 @@ Remember to use the PayAI color palette and choose the best chart type for this 
             _logger.warning("Failed to parse chart response: %s", e)
             # Fallback: return raw text response
             return {
-                'response': raw_response if 'raw_response' in dir() else str(e),
+                'response': self._with_access_note(
+                    raw_response if 'raw_response' in dir() else str(e), access_note),
                 'chart': None,
                 'insights': [],
                 'follow_up_questions': [],
                 'intent': 'payroll_data',
                 'drilldown_model': payroll_data.get('drilldown_model', ''),
             }
+
+    @api.model
+    def _with_access_note(self, response, access_note):
+        """Append the gate note to a narrative the model wrote.
+
+        Both return paths of `_process_data_query` go through here, including
+        the parse-failure fallback — a user whose individual detail was
+        withheld must be told so even when the chart JSON did not parse.
+        """
+        if not access_note:
+            return response
+        return '%s\n\n%s' % (response or '', access_note)
 
     def _process_knowledge_query(self, provider, message, conversation_history):
         """Process a payroll knowledge question."""

@@ -1,12 +1,92 @@
 # -*- coding: utf-8 -*-
+"""PayAI's data query layer — and the boundary it now respects.
+
+WHAT CHANGED IN PHASE D1 AND WHY
+--------------------------------
+NOTE TO THE NEXT READER: ``tests/test_data_access.py`` pins the ABSENCE of the
+superuser-escalation call from this file, and it greps the whole file, prose
+included. Do not write that literal here even to explain it — say "the
+escalation", as everything below does.
+
+Every query below used to run under superuser rights. That made PayAI a way to read
+payroll data the asking user is not allowed to read: a chat box that answers
+"what does everyone earn" for somebody whose sidebar deliberately has no wage
+roster in it. Worse, ``_query_individual_data`` posted employee names, job
+titles and salaries to an EXTERNAL model provider on behalf of any user who
+typed the word "name".
+
+The queries now run as the asker. Two consequences are deliberate:
+
+* Record rules apply, so a multi-company user sees the companies in their
+  ACTIVE company selection rather than every company on the database. A
+  figure PayAI reports is now the same figure the corresponding cockpit
+  reports for that user — which it demonstrably was not before.
+* A user with no read access at all gets a REFUSAL rather than a traceback,
+  and the refusal names who can see the data instead of pretending it does
+  not exist. Refusals never reach the model provider: the engine
+  short-circuits on ``access_refused`` (payroll_ai_engine.py), so a user who
+  cannot read the data does not spend a token asking about it either.
+
+The individual-salary path carries a second, stricter gate on top of the ORM:
+reading a named person's pay needs the Payroll Manager or Payroll Final
+Approver group. Below that the aggregate answer is returned with the gate
+note attached — the same payroll, no names.
+"""
 
 from odoo import models, fields, api, _
+from odoo.exceptions import AccessError
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import functools
 import json
 import logging
 
 _logger = logging.getLogger(__name__)
+
+# The groups that may see ONE NAMED PERSON's pay. Not a claim about the ORM —
+# the ORM gate is the ORM's job and still runs; this is the product's own
+# statement about individually-identifying salary data leaving for a provider.
+INDIVIDUAL_SALARY_GROUPS = (
+    'pb_hr_payroll_base.group_payroll_base_manager',
+    'pb_hr_payroll_base.group_payroll_final_approver',
+)
+
+# Optional modules, and the model whose PRESENCE IN THE REGISTRY proves the
+# module is installed. The old check read ``ir.module.module`` under sudo,
+# which is a privilege escalation for a question the registry already answers —
+# and answers better: what the query actually needs is for ``self.env[model]``
+# not to raise, which is exactly what this tests.
+_OPTIONAL_MODULE_MODELS = {
+    'hr_attendance': ('hr.attendance', None),
+    'hr_holidays': ('hr.leave', None),
+    'hr_recruitment': ('hr.applicant', None),
+    # account.analytic.line exists without hr_timesheet; the employee link is
+    # what that module adds, and what _query_timesheet_data reads.
+    'hr_timesheet': ('account.analytic.line', 'employee_id'),
+}
+
+
+def _guarded(topic):
+    """Turn an AccessError into an answer.
+
+    Dropping the escalation means the ORM can now say no, and it says no by
+    raising — which in PayAI's chat surfaced as "I apologize, but I
+    encountered an error: ..." with an Odoo exception string in it. Every
+    query path is wrapped so that the refusal is a normal response in the
+    normal shape, in the reader's language, naming who can see the data.
+    """
+    def deco(fn):
+        @functools.wraps(fn)
+        def wrapper(self, *args, **kwargs):
+            try:
+                return fn(self, *args, **kwargs)
+            except AccessError:
+                _logger.info(
+                    "PayAI: refused '%s' for uid %s — the asker's access rights "
+                    "do not cover it.", topic, self.env.uid)
+                return self._access_refused_response(topic)
+        return wrapper
+    return deco
 
 
 class PayrollDataQuery(models.Model):
@@ -14,6 +94,8 @@ class PayrollDataQuery(models.Model):
     Data query layer for PayAI.
     Translates user intent into ORM queries against payroll data.
     Returns structured data suitable for chart generation.
+
+    Every query runs with the ASKER's access rights. See the module docstring.
     """
 
     _name = 'payroll.data.query'
@@ -23,14 +105,89 @@ class PayrollDataQuery(models.Model):
 
     @api.model
     def _is_module_installed(self, module_name):
-        """Check if an Odoo module is installed (soft dependency)."""
-        try:
-            return self.env['ir.module.module'].sudo().search_count([
-                ('name', '=', module_name),
-                ('state', '=', 'installed'),
-            ]) > 0
-        except Exception:
+        """Check if an Odoo module is installed (soft dependency).
+
+        Answered from the registry, not from ``ir.module.module`` — see
+        ``_OPTIONAL_MODULE_MODELS``. An unknown module name is reported as not
+        installed, which is the safe direction: the caller then returns the
+        "install it from Apps" response instead of touching a model that may
+        not exist.
+        """
+        model_name, needs_field = _OPTIONAL_MODULE_MODELS.get(
+            module_name, (None, None))
+        if not model_name or model_name not in self.env:
             return False
+        if needs_field and needs_field not in self.env[model_name]._fields:
+            return False
+        return True
+
+    # --- Refusals ---
+
+    def _refusal_topic(self, topic):
+        """The thing that was asked for, named in the reader's language.
+
+        Built inside the method so every literal is a real ``_()`` call the
+        translation tooling can extract — a dict of bare strings wrapped at
+        the call site is invisible to it.
+        """
+        return {
+            'attendance': _('attendance records'),
+            'leave': _('leave and time-off records'),
+            'recruitment': _('the recruitment pipeline'),
+            'timesheet': _('timesheet entries'),
+            'salary': _('the wages on employment contracts'),
+            'headcount': _('the employee list'),
+            'overtime': _('the overtime lines on payslips'),
+            'deduction': _('the deduction and contribution lines on payslips'),
+            'cost': _('payslip totals'),
+            'periods': _('the payslip history'),
+            'department': _('the department-level payroll summary'),
+            'individual': _('individual employee salaries'),
+            'summary': _('the payroll overview'),
+            'forecast': _('the payroll history a forecast is built from'),
+        }.get(topic) or _('that payroll data')
+
+    def _access_refused_response(self, topic):
+        """A refusal in the normal answer shape.
+
+        Honest about what happened, and it names who CAN see the data rather
+        than leaving the reader to guess whether the figure exists.
+        """
+        # The topic is deliberately the OBJECT of the sentence, never its
+        # subject: "individual employee salaries" and "attendance records" are
+        # plural and "the payroll overview" is singular, and a template that
+        # makes any of them the subject gets the verb wrong for the others in
+        # both languages. Nothing capitalises the fragment either.
+        return {
+            'query_type': 'access_refused',
+            'title': _('Not available with your access'),
+            'data': [],
+            'access_refused': True,
+            'message': _(
+                "I can't answer that one for you — your role is not allowed to "
+                "read %(topic)s, and PayAI answers with your own access rights "
+                "rather than around them.\n\n"
+                "In Payobook this data sits behind the payroll roles — a "
+                "Payroll Officer, a Payroll Manager or a Payroll Super "
+                "Administrator can see it. Ask one of them for the figure, or "
+                "ask whoever administers roles in your company to add you."
+            ) % {'topic': self._refusal_topic(topic)},
+            'suggested_chart': None,
+        }
+
+    def _individual_gate_note(self):
+        """The note that rides along with the aggregate answer.
+
+        Not a refusal — the question was answered, one level up. Saying so is
+        the difference between a gate and a silent substitution.
+        """
+        return _(
+            "One thing I left out: I can't list individual salaries for your "
+            "role. Reading a named person's pay needs the Payroll Manager or "
+            "the Payroll Final Approver group; below that I answer in "
+            "aggregate only. What you have above is the same payroll, without "
+            "the names."
+        )
 
     def _module_not_installed_response(self, module_name, feature_name):
         """Return a helpful response when a required module is not installed."""
@@ -146,9 +303,10 @@ class PayrollDataQuery(models.Model):
     # Soft-Dependency Query Methods (optional modules)
     # =========================================================================
 
+    @_guarded('attendance')
     def _query_attendance_data(self, message, context):
         """Query attendance data — check-ins, working hours, late arrivals."""
-        Attendance = self.env['hr.attendance'].sudo()
+        Attendance = self.env['hr.attendance']
 
         # Default to last 30 days to keep data volume manageable
         today = fields.Date.today()
@@ -193,9 +351,10 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.attendance',
         }
 
+    @_guarded('leave')
     def _query_leave_data(self, message, context):
         """Query leave/time-off data — by type, department, status."""
-        Leave = self.env['hr.leave'].sudo()
+        Leave = self.env['hr.leave']
 
         # Get all leaves from this year
         year_start = fields.Date.today().replace(month=1, day=1)
@@ -239,9 +398,10 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.leave',
         }
 
+    @_guarded('recruitment')
     def _query_recruitment_data(self, message, context):
         """Query recruitment pipeline — applicants by stage, department."""
-        Applicant = self.env['hr.applicant'].sudo()
+        Applicant = self.env['hr.applicant']
 
         applicants = Applicant.search([])
 
@@ -279,9 +439,10 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.applicant',
         }
 
+    @_guarded('timesheet')
     def _query_timesheet_data(self, message, context):
         """Query timesheet data — hours by project and employee."""
-        Timesheet = self.env['account.analytic.line'].sudo()
+        Timesheet = self.env['account.analytic.line']
 
         # Last 30 days
         today = fields.Date.today()
@@ -332,9 +493,10 @@ class PayrollDataQuery(models.Model):
     # Core Query Methods (always available)
     # =========================================================================
 
+    @_guarded('salary')
     def _query_salary_data(self, message, context):
         """Query salary/compensation data grouped by department."""
-        Contract = self.env['hr.contract'].sudo()
+        Contract = self.env['hr.contract']
 
         domain = [('state', '=', 'open')]
         if context.get('department_id'):
@@ -380,9 +542,10 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.contract',
         }
 
+    @_guarded('headcount')
     def _query_headcount_data(self, message, context):
         """Query headcount data."""
-        Employee = self.env['hr.employee'].sudo()
+        Employee = self.env['hr.employee']
 
         domain = [('active', '=', True)]
         if context.get('department_id'):
@@ -409,9 +572,10 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.employee',
         }
 
+    @_guarded('overtime')
     def _query_overtime_data(self, message, context):
         """Query overtime data from payslip lines."""
-        PayslipLine = self.env['hr.payslip.line'].sudo()
+        PayslipLine = self.env['hr.payslip.line']
 
         # Look for overtime-related salary rules
         today = fields.Date.today()
@@ -447,9 +611,10 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.payslip.line',
         }
 
+    @_guarded('deduction')
     def _query_deduction_data(self, message, context):
         """Query deduction/contribution data."""
-        PayslipLine = self.env['hr.payslip.line'].sudo()
+        PayslipLine = self.env['hr.payslip.line']
 
         today = fields.Date.today()
         first_of_month = today.replace(day=1)
@@ -484,9 +649,10 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.payslip.line',
         }
 
+    @_guarded('cost')
     def _query_payroll_cost_data(self, message, context):
         """Query total payroll cost data."""
-        Payslip = self.env['hr.payslip'].sudo()
+        Payslip = self.env['hr.payslip']
 
         today = fields.Date.today()
         first_of_month = today.replace(day=1)
@@ -533,13 +699,26 @@ class PayrollDataQuery(models.Model):
         }
 
     def _query_trend_data(self, message, context):
-        """Query trend data — delegates to payroll cost trend."""
+        """Query trend data — delegates to payroll cost trend.
+
+        Deliberately NOT guarded: it owns no query of its own, and the
+        delegate is guarded. Wrapping it would only mean a refusal named
+        after the wrong topic.
+        """
         return self._query_payroll_cost_data(message, context)
 
+    @_guarded('department')
     def _query_department_data(self, message, context):
         """Query department-level summary."""
         salary_data = self._query_salary_data(message, context)
         headcount_data = self._query_headcount_data(message, context)
+
+        # A refused half must not be merged as an empty one: two zeroes in a
+        # department table read as "nobody works here", which is a different
+        # and much worse answer than "you may not see this".
+        for part in (salary_data, headcount_data):
+            if part.get('access_refused'):
+                return part
 
         # Merge data
         dept_map = {}
@@ -570,10 +749,32 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.employee',
         }
 
+    @_guarded('individual')
     def _query_individual_data(self, message, context):
-        """Query individual employee data."""
-        Employee = self.env['hr.employee'].sudo()
-        Contract = self.env['hr.contract'].sudo()
+        """Query individual employee data — NAMES, TITLES AND SALARIES.
+
+        This is the one path in PayAI that sends individually-identifying pay
+        to an external model provider, so it carries a group gate on top of
+        the ORM's. Below the gate the caller gets the aggregate answer plus a
+        note saying what was withheld and why — a substitution the reader can
+        see is better than a shorter list they cannot account for.
+        """
+        if not any(self.env.user.has_group(g) for g in INDIVIDUAL_SALARY_GROUPS):
+            aggregate = self._query_salary_data(message, context)
+            if aggregate.get('access_refused'):
+                # The harder refusal wins: they may not see the wage table at
+                # all, so there is no aggregate to fall back to.
+                return aggregate
+            aggregate = dict(aggregate)
+            aggregate['individual_data_withheld'] = True
+            aggregate['access_note'] = self._individual_gate_note()
+            _logger.info(
+                "PayAI: individual salary detail withheld from uid %s — "
+                "neither payroll manager nor final approver.", self.env.uid)
+            return aggregate
+
+        Employee = self.env['hr.employee']
+        Contract = self.env['hr.contract']
 
         # Try to extract employee name from message
         employees = Employee.search([('active', '=', True)], limit=20)
@@ -603,9 +804,10 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.employee',
         }
 
+    @_guarded('periods')
     def _query_payroll_periods(self, message, context):
         """Query payroll periods — which months have payslips been generated."""
-        Payslip = self.env['hr.payslip'].sudo()
+        Payslip = self.env['hr.payslip']
 
         payslips = Payslip.search([], order='date_from asc')
 
@@ -643,10 +845,11 @@ class PayrollDataQuery(models.Model):
             'drilldown_model': 'hr.payslip',
         }
 
+    @_guarded('summary')
     def _query_general_summary(self, context):
         """Generate a general payroll summary."""
-        Employee = self.env['hr.employee'].sudo()
-        Contract = self.env['hr.contract'].sudo()
+        Employee = self.env['hr.employee']
+        Contract = self.env['hr.contract']
 
         active_employees = Employee.search_count([('active', '=', True)])
         active_contracts = Contract.search_count([('state', '=', 'open')])
@@ -688,12 +891,13 @@ class PayrollDataQuery(models.Model):
     # Forecast / Prediction Query
     # =========================================================================
 
+    @_guarded('forecast')
     def _query_forecast_data(self, message, context):
         """
         Gather 12 months of historical payroll cost data for AI-powered forecasting.
         The AI engine will use this data to predict the next 3 months.
         """
-        Payslip = self.env['hr.payslip'].sudo()
+        Payslip = self.env['hr.payslip']
 
         today = fields.Date.today()
         # Get data for last 12 months
