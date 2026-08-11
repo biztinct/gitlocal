@@ -403,11 +403,12 @@ const PRACTICE = {
        the Officer. It is at level0 on the Dashboard, on this board and in every
        lesson that mentions it: one run cannot be in two states, and a learner
        who sees it in two learns that the board is decorative. */
-    { name: RUN.name, employees: 48, net: 612480000, col: "level0" },
+    { name: RUN.name, employees: 48, net: 612480000, col: "level0", cur: true },
     /* F&B is still in DRAFT, and that is the same fact m1's division decision
        turns on: its July attendance has not been committed, so nobody has
        submitted it. */
-    { name: B("F&B — July 2026", "F&B — Tháng 7/2026"), employees: 21, net: 214300000, col: "draft" },
+    { name: B("F&B — July 2026", "F&B — Tháng 7/2026"), employees: 21, net: 214300000, col: "draft",
+      cur: true },
     { name: B("Retail — June 2026", "Bán lẻ — Tháng 6/2026"), employees: 47, net: 596110000, col: "done" },
     { name: B("Retail — May 2026", "Bán lẻ — Tháng 5/2026"), employees: 47, net: 590870000, col: "done" },
   ],
@@ -800,9 +801,20 @@ const PRACTICE = {
     const months = [...this.recentRuns].reverse();
     const s = this.statutory;
     const w = this.workforce;
+    /* THE HERO AND THE LEADERBOARD DO NOT HAVE THE SAME SCOPE, and the replica
+       has to show that rather than smooth it over. pb_insights' hero is the
+       LATEST RUN — `_runs()` carries no state filter — so it is ONE division's
+       month, and the product prints the run's name and its state chip beside
+       the figure for exactly this reason. The department leaderboard is every
+       division in the period. A Retail-only total labelled "Net" above a table
+       that sums Retail AND F&B is how a learner concludes the board does not
+       add up, so the hero states what it is the net OF. */
+    const current = this.board.filter((r) => r.cur);
     return {
       months,
       headline: RUN.totalNet,
+      headlineScope: RUN.name,
+      headlineState: (this.board.find((r) => r.name === RUN.name) || {}).col,
       /* The month-on-month move, computed rather than restated. It is the same
          2.7% m2's anomaly card discusses, and it comes out of the same two
          numbers. */
@@ -811,10 +823,10 @@ const PRACTICE = {
         const b = months[months.length - 1].net;
         return Math.round((b - a) / a * 1000) / 10;
       },
-      departments: [
-        { label: RUN.division, v: RUN.totalNet, heads: RUN.employees },
-        { label: B("F&B", "F&B"), v: 214300000, heads: 21 },
-      ],
+      /* Both divisions of the current period, read off `board`. No re-typed
+         F&B literal anywhere: change a board row and the leaderboard, its
+         headcounts and the Explorer's total all move with it. */
+      departments: current.map((r) => ({ label: r.name, v: r.net, heads: r.employees })),
       statutory: [
         { label: B("Employee leg", "Phần người lao động"), v: s.employeeLeg },
         { label: B("Employer leg", "Phần doanh nghiệp"), v: s.employerLeg },
@@ -832,6 +844,10 @@ const PRACTICE = {
      the filters that scope it shown as removable tags — because a figure read
      without its filters is a figure read out of scope. */
   get explorer() {
+    /* The same two board rows the leaderboard uses. The Explorer legitimately
+       spans divisions where the hero does not — that difference of scope is
+       the whole of the whichtool answer, so the fixture has to make it
+       visible rather than accidental. */
     const rows = this.insights.departments;
     return {
       measure: B("Net pay", "Thực nhận"),
@@ -849,9 +865,19 @@ const PRACTICE = {
      runs, which is why it can differ from the headcount on People. */
   get workforce() {
     const months = [...this.recentRuns].reverse();
-    /* Bùi Anh Tuấn, the joiner on the proration ledger. Leavers are counted
-       from the Full & Final rows rather than declared twice. */
-    const joiners = 1;
+    /* DERIVED where a derivation exists, DECLARED where it does not — and said
+       out loud either way, because a number whose provenance is invisible is
+       the one a learner cannot check.
+         joiners  : the one Joiner row on the proration ledger (Bùi Anh Tuấn).
+         leavers  : the Full & Final rows, counted rather than declared twice.
+         the rest : DECLARED INPUTS. There is no attendance model behind this
+                    fixture — no clock-ins, no leave requests — so these are
+                    the practice company's given facts, in the same way an
+                    employee's base salary is. They are consumed by the pulse
+                    on Insights, which reads this block instead of holding a
+                    second copy. */
+    const joiners = this.ledgers.proration.rows.filter(
+      (r) => r.badge.en === "Joiner").length;
     const leavers = this.ledgers.fullfinal.rows.length;
     const exceptions = [
       { label: B("Missing clock-out", "Thiếu chấm công ra"), v: 4 },
@@ -861,6 +887,7 @@ const PRACTICE = {
       months,
       exceptions,
       exceptionTotal: exceptions.reduce((t, e) => t + e.v, 0),
+      /* Declared input, like the two exception counts above it. */
       leaveDays: 9,
       kpis: {
         paid: RUN.employees,
@@ -894,9 +921,17 @@ const PRACTICE = {
     country: B("Vietnam", "Việt Nam"),
     period: B("July 2026", "Tháng 7/2026"),
     countries: [B("Vietnam", "Việt Nam"), B("Singapore", "Singapore")],
+    /* WHICH CHIP IS ACTIVE, and therefore which of the two states the screen is
+       in. The product is a t-if/t-else on `available`: tiles OR the empty card,
+       never both. 0 = Vietnam, whose module is installed here. */
+    selected: 0,
     groups: [
       {
-        label: B("Social Insurance (BHXH)", "Bảo hiểm xã hội (BHXH)"), icon: "shield-check",
+        /* The catalogue's own icon for this group is `checkCircle`
+           (pb_govt_reports.py::_CATALOG); the replica's sprite spells the same
+           icon `check-circle`. Same glyph, two naming conventions — mirrored
+           rather than re-chosen. */
+        label: B("Social Insurance (BHXH)", "Bảo hiểm xã hội (BHXH)"), icon: "check-circle",
         reports: [
           { en: "Sickness & Maternity", vi: "BHXH630 · Ốm đau / Thai sản" },
           { en: "Participant Schedule", vi: "BHXHDSTK01-DV_595 · Mẫu 595" },

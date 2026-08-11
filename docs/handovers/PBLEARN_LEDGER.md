@@ -783,6 +783,102 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   hand-written asset rewritten inside a content commit has to be named in the
   commit, because the generated-file diff cannot show it.**
 
+### Phase C content-fidelity round (review round 2)
+
+- **A KPI TILE IS A QUERY, AND THE QUERY IS THE TEACHING.** Phase C1 described
+  the Dashboard's "Pending approval" as "every sign-off the company is waiting
+  on, at every gate". It is `payroll.analytics` rows in state `ready`, falling
+  back to `hr.payslip` at `level1`/`level2` (pb_dashboard/models/
+  pb_dashboard.py:44-47): **payslips, not runs; HR and Finance only, never the
+  Officer gate.** The lesson's understanding check turned on that number, so a
+  learner was being taught to read 48 — one ordinary batch — as forty-eight
+  runs, and a normal Tuesday as a crisis. The quiz survives as a judgement (the
+  Dashboard reports a company state, the Approvals screen counts YOUR queue) but
+  every figure in it changed. **RULE: before writing about a tile, read the
+  method that fills it. The caption is not the definition.**
+- **The Insights board does NOT read the payslips.** It reads the STORED per-run
+  roll-ups (`pb_total_net`), plus a `payroll.analytics` snapshots panel — which
+  is why it is fast, and why "built from the payslips themselves, so a figure
+  here and a figure on a payslip cannot disagree" was both false and the most
+  quotable sentence in the station. Worse, `_runs()` has **no state filter**: the
+  hero is the latest run in ANY state, so a draft computed an hour ago is the
+  headline and the state chip beside it is the only thing that says so. The
+  leaderboard is the opposite — it waits for a DONE run. Two different scopes on
+  one screen, and the content now teaches the difference instead of averaging it.
+- **Teaching a capability AWAY is worse than not teaching it.** `whichtool` said
+  no analytics screen explains WHY. The Explorer does, and it is the only one:
+  `narrate()` builds an exactly-reconciling variance waterfall with an anomaly
+  rail, and `drill()` goes from any cell to the employees behind it — read from
+  `hr_payslip_line JOIN hr_payslip` rather than from the fact tables, so the
+  drill doubles as the audit trail. The corrected answer is the **lineage**, and
+  the lineage is better teaching than the false symmetry it replaces: Insights =
+  stored roll-ups + analytics snapshots · Explorer = derived fact tables
+  reconciled to payslip lines · Workforce = the attendance and overtime models.
+  Three lineages, one payroll — which is what stops somebody comparing two
+  numbers that were never the same number.
+- **`trình duyệt` came back, and this time it is a TEST.** The ledger's Phase B
+  ruling was written down and the shorter, wrong form was still reached for
+  twice more — once in a Phase C1 blurb, once in a Phase B string the round-1
+  audit had missed. Prose does not stop this; `test_bundle::test_10` does. The
+  regex has to be narrow enough to leave `trình phê duyệt` and `trình duyệt web`
+  alone, and case-insensitive, because at the start of a sentence the noun is
+  capitalised and hardest to see: `(?<!phê )trình\s+duyệt(?!\s+web)`, `re.I`.
+  **A convention that has been broken three times is not a convention, it is a
+  missing test.**
+- **"Nothing here is a second way of doing anything" was one button too
+  absolute.** Two controls on the Dashboard open the legacy
+  `pb_hr_payroll_analytics` screen, which has **no sidebar leaf at all** — so it
+  is the one door on that screen a learner cannot find their way back to from
+  the menu. Naming the exception is more useful than the tidy rule: the rule
+  taught them to trust every door, and the exception is the door that surprises
+  them.
+- **The KPI band has ZERO click handlers.** "Every tile is a link into the screen
+  that produced it" was aspirational; the tiles report, and the buttons and run
+  rows are the doors. Checked by counting `t-on-click` inside `pbd-kpis` rather
+  than by reading the design intent.
+- **A REPLICA MUST NOT BE MORE COHERENT THAN THE PRODUCT, and it must not be
+  less.** Two failures in one screen: the Insights hero displayed a Retail-only
+  total labelled "Net" above a leaderboard summing Retail AND F&B (a board that
+  visibly does not add up), and the govreports replica drew `gr-grid` AND
+  `gr-empty` at once when the product is a `t-if`/`t-else` on `available` — on
+  the one screen whose lesson is about reading an empty state correctly. The
+  hero now carries its own scope and state chip; the leaderboard derives from
+  the board rows; govreports draws one state, selected by a `selected` index on
+  the fixture.
+- **The last re-typed literal in the fixture is gone.** F&B's `214300000 / 21`
+  appeared in the insights block AND on the board. Everything scoped to "this
+  period" now filters `board` on a `cur` flag, so a board row is the single
+  place a division's month is stated. What CANNOT be derived — three attendance
+  counts and the leave days, because there is no attendance model behind a JS
+  fixture — is now labelled **declared input** in a comment beside it. A number
+  whose provenance is invisible is the one a learner cannot check.
+- **"Coming soon" is an INSTALL question, not a product limit.** `available` is
+  `wizard_model in self.env` — the country's own payroll module is not installed
+  on this database. Five countries carry catalogues and `cpf.submission.wizard`
+  exists in the tree. The old wording ("has not been built yet") turned a
+  five-minute conversation with an administrator into a limitation nobody can
+  act on.
+- **Two tests share one word on the People screen.** `ready_pct` is
+  `with_bank / headcount`; the per-ROW tick also requires a running contract. The
+  column had been given the row's stricter definition, which makes it possible to
+  read 100% payroll-ready off a band while somebody on a draft contract is about
+  to be missing from the run — the exact failure the tile exists to warn about.
+- **`SHARED_WITH_PB_COACH` had stopped meaning what it says.** `fs-simulate` and
+  `dash-runpayroll` are in a product template and named by a lesson, and **no
+  tour points at either** — so there is nothing shared about them. Listing them
+  made the set mean "promoted" rather than "shared", and a set whose name has
+  drifted from its contents is one nobody can reason about at the next
+  promotion. `fs-simulate` needed a second, honest name — `PROMOTED_FROM_WILDCARD`
+  — because a `foreign` WILDCARD (`fs-*`) still matches it while making no claim
+  about that specific anchor; `dash-runpayroll`'s literal `foreign` entry was
+  simply dropped.
+- **A column label is a lookup key, and so is a sidebar group list.** "Active
+  configs" (not "configurations") because `learn.column` matches BY LABEL; and
+  `whosees` dropped the final approver because the People leaves carry officer,
+  manager and super_admin only. The second one improved the teaching: a final
+  approver signs for a total and still does not get the salary roster, which is
+  a deliberate separation worth naming.
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5

@@ -562,7 +562,8 @@
     "wa-kpis": {
       "screen": "workforcean",
       "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
-      "desc": "Employees paid, joiners and leavers, and the cost per head. Employees PAID, not employed — the difference is the point."
+      "desc": "Employees paid, joiners and leavers, and the cost per head. Employees PAID, not employed — the difference is the point.",
+      "reserved": true
     },
     "wa-chart": {
       "screen": "workforcean",
@@ -612,13 +613,12 @@
     "dash-hero": "pb_dashboard / pb_coach hero_path. ALSO ours from Phase C1: LW names it, the registry owns it, and neither module may rename it alone.",
     "dash-kpis": "pb_dashboard / pb_coach hero_path. ALSO ours from Phase C1, same rule.",
     "dash-formula": "pb_dashboard / pb_coach hero_path. ALSO ours from Phase C1, same rule.",
-    "dash-runpayroll": "pb_dashboard. ALSO ours from Phase C1 — no tour points at this one, so it is promoted on the fs-simulate terms: in the template, named by a lesson, owned by the registry.",
     "payai-pill": "pb_payroll_ai_insights — the PayAI launcher",
     "find-panel": "pb_formula_studio command layer",
     "palette": "pb_formula_studio command layer",
     "shortcuts": "pb_formula_studio",
     "snippets": "pb_formula_studio",
-    "fs-*": "pb_formula_studio — the Formula Studio tours. SEVEN of these are PROMOTED into `product` above (fs-config, fs-components, fs-formula, fs-namesletters, fs-deps, fs-preview, fs-simulate): pb_learn's L5 names them, so the registry owns them and a rename breaks a build rather than a lesson. pb_coach's hero_path and tour_formula point at six of the seven, so — exactly like pw-division and pw-compute — neither module may rename one alone. Everything else matching fs-* is still someone else's.",
+    "fs-*": "pb_formula_studio — the Formula Studio tours. SIX of these are PROMOTED into `product` above (fs-config, fs-components, fs-formula, fs-namesletters, fs-deps, fs-preview): pb_learn's L5 names them and pb_coach's hero_path and tour_formula point at them, so — exactly like pw-division and pw-compute — neither module may rename one alone. fs-simulate is ALSO promoted but is NOT shared: it is in studio.xml and no tour uses it, so it is an ordinary product entry. Everything else matching fs-* is still someone else's.",
     "grid-*": "pb_formula_studio — the grid studio tours",
     "imp-*": "pb_hr_payroll_formula — the multi-sheet import wizard tour",
     "map-*": "pb_hr_payroll_formula — the component-mapping wizard tour"

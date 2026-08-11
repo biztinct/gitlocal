@@ -466,7 +466,7 @@
         <field name="key">pending_approval</field>
         <field name="sequence">30</field>
         <field name="label">Pending approval</field>
-        <field name="body">How many runs are waiting on a signature, at any gate, across the whole company. It is not your personal queue — how many are YOURS is a question the Approvals screen answers, and confusing the two means chasing work that was never yours.</field>
+        <field name="body">How many PAYSLIPS are waiting at the HR or Finance tier, company-wide — not runs, and not the Officer gate, which this tile does not count at all. It is a state, not your queue: how many are YOURS is a question the Approvals screen answers, in runs, and confusing the two means chasing work that was never yours.</field>
     </record>
 
     <record id="col_dashboard_active_configs" model="learn.column">
@@ -514,7 +514,7 @@
         <field name="key">headcount</field>
         <field name="sequence">10</field>
         <field name="label">Headcount</field>
-        <field name="body">Everybody on the roster within the filters currently active. It counts people the company employs, which is not the same as people the last run paid — that count lives on Workforce Analytics, and the gap between them is where a missing payslip hides.</field>
+        <field name="body">Everybody on the roster within the filters currently active — on the practice company, all 48. It counts people the company EMPLOYS, which is not the same as people the last run PAID: that count lives on Workforce Analytics, and the gap between the two is where a missing payslip hides.</field>
     </record>
 
     <record id="col_employees_running_contracts" model="learn.column">
@@ -554,7 +554,7 @@
         <field name="key">payroll_ready</field>
         <field name="sequence">60</field>
         <field name="label">Payroll-ready</field>
-        <field name="body">The share of people who have everything needed to actually be paid: a running contract, a wage on it and usable bank details. Anybody outside this share computes perfectly and does not receive the money, which is the failure with the longest gap between cause and symptom.</field>
+        <field name="body">The share of people with BANK DETAILS on file — that one fact, over headcount, and nothing else. The tick on each row is stricter than the tile above it: a row is ready only with a running contract AND bank details, so the percentage can read 100% while a person on a draft contract still will not be paid. Read the rows for the answer and the tile for the trend.</field>
     </record>
 
     <record id="col_contracts_running" model="learn.column">
@@ -594,7 +594,7 @@
         <field name="key">net_payroll</field>
         <field name="sequence">10</field>
         <field name="label">Net payroll</field>
-        <field name="body">The headline: what actually left, or will leave, the bank account for the run this board is reading. It is read off the payslips themselves rather than a reporting copy, so it cannot disagree with the payslips underneath it.</field>
+        <field name="body">The net of the LATEST run this company has, in whatever state that run is in — a draft computed an hour ago counts. It comes from the run's own stored roll-up rather than from re-adding its payslip lines, which is what makes the board fast; the state chip beside it is the part that tells you whether the figure is money that moved or money that might.</field>
     </record>
 
     <record id="col_insights_cost_story" model="learn.column">

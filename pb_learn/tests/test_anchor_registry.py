@@ -48,25 +48,42 @@ XML_COMMENT_RE = re.compile(r'<!--.*?-->', re.S)
 #   pw-division / pw-compute  are pointed at by pb_coach's tour_payrun AND by
 #   this module. Genuinely shared; neither may rename one alone.
 #
-#   the seven fs-*            were PROMOTED out of the `fs-*` wildcard in Phase
+#   the six fs-*              were PROMOTED out of the `fs-*` wildcard in Phase
 #   B1, because L5 names them and an anchor a lesson points at has to be one a
-#   test can check. Six are also in pb_coach's hero_path and tour_formula, so
-#   they are shared on exactly the pw-* terms; fs-simulate is in studio.xml and
-#   no tour uses it. pb_learn adds NOTHING to studio.xml — promotion is a claim
-#   about ownership of a name, not a change to somebody else's template.
+#   test can check. All six are in pb_coach's hero_path and tour_formula, so
+#   they are shared on exactly the pw-* terms. pb_learn adds NOTHING to
+#   studio.xml — promotion is a claim about ownership of a name, not a change
+#   to somebody else's template.
 #
-#   the four dash-*           were promoted in Phase C1 on the same terms. LW is
-#   hero_path's successor and names all four; hero_path itself still points at
-#   dash-hero, dash-kpis and dash-formula, so those three are genuinely shared
-#   and neither module may rename one alone. dash-runpayroll is the fs-simulate
-#   case: in the template, named by a lesson, pointed at by no tour. pb_learn
-#   adds NOTHING to pb_dashboard.xml either.
+#   the three dash-*          were promoted in Phase C1 on the same terms: LW is
+#   hero_path's successor and hero_path still points at dash-hero, dash-kpis and
+#   dash-formula, so neither module may rename one alone. pb_learn adds NOTHING
+#   to pb_dashboard.xml either.
+#
+# NOT HERE, deliberately: `fs-simulate` and `dash-runpayroll`. Both are in a
+# product template and named by a lesson, and NO TOUR POINTS AT EITHER — so
+# there is nothing shared about them. Listing them made this set mean "promoted"
+# rather than "shared with pb_coach", and a set whose name stops matching its
+# contents is one nobody can reason about when the next anchor is promoted.
+# They are ordinary `product` entries, checked by test_01 like every other.
 SHARED_WITH_PB_COACH = {
     'pw-division', 'pw-compute',
     'fs-config', 'fs-components', 'fs-formula', 'fs-namesletters', 'fs-deps',
-    'fs-preview', 'fs-simulate',
-    'dash-hero', 'dash-kpis', 'dash-formula', 'dash-runpayroll',
+    'fs-preview',
+    'dash-hero', 'dash-kpis', 'dash-formula',
 }
+
+# Anchors the registry owns OUTRIGHT that a `foreign` WILDCARD still matches.
+# `fs-simulate` is in studio.xml, L5 names it, and no tour points at it — so it
+# is not shared with anybody; it is simply inside a family (`fs-*`) whose other
+# members are. The wildcard cannot be narrowed without listing pb_formula_studio's
+# entire anchor set here, which would be a copy of somebody else's template.
+#
+# Kept separate from SHARED_WITH_PB_COACH on purpose: that set means "pb_coach
+# points at this too", and test_07 asserts the claim in both directions. A name
+# in here makes no claim about another module at all, so test_07 must NOT
+# require a `foreign` entry for it.
+PROMOTED_FROM_WILDCARD = {'fs-simulate'}
 
 
 def _read(module_and_path):
@@ -220,7 +237,7 @@ class TestAnchorRegistry(TransactionCase):
     def test_06_registry_does_not_claim_a_foreign_anchor(self):
         claimed = []
         for key in self._all_declared():
-            if key in SHARED_WITH_PB_COACH:
+            if key in SHARED_WITH_PB_COACH or key in PROMOTED_FROM_WILDCARD:
                 continue
             if self._is_foreign(key):
                 claimed.append('%s -> owned by %s' % (key, self.foreign.get(key, 'another module')))

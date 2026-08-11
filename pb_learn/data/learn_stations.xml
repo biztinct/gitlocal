@@ -402,7 +402,7 @@
         <field name="required" eval="True"/>
         <field name="star" eval="True"/>
         <field name="outline_what">The command centre: who you are, which run is live, four numbers that describe the company, and a card for each part of the product worth opening today.</field>
-        <field name="outline_why">It is the only screen that answers "what is the state of payroll right now" without you choosing a filter first. Everything on it is a door — a figure you can open rather than a figure you have to write down.</field>
+        <field name="outline_why">It is the only screen that answers "what is the state of payroll right now" without you choosing a filter first. The tiles report it; the buttons and the run rows beside them are the doors into the screens those figures came from.</field>
         <field name="outline_when">First thing, every day of payroll week, and any time you have been away long enough to have lost the thread.</field>
         <field name="outline_prereq">Nothing. This is the one screen everybody can open, and it is deliberately the least gated in the product.</field>
     </record>
@@ -416,7 +416,7 @@
     <record id="station_dashboard_mistake_1" model="learn.station.mistake">
         <field name="station_id" ref="station_dashboard"/>
         <field name="sequence">20</field>
-        <field name="name">Treating it as a report and exporting the numbers. Every tile is a link into the screen that produced it — copying the figure loses the working behind it, which is the part somebody will ask about.</field>
+        <field name="name">Treating it as a report and copying the numbers out. The KPI tiles only REPORT — it is the buttons and the run rows that open the screen a figure came from, and a figure copied away from its working loses the part somebody will ask about.</field>
     </record>
 
     <record id="station_dashboard_mistake_2" model="learn.station.mistake">
@@ -545,8 +545,8 @@
         <field name="duration_min">5</field>
         <field name="required" eval="True"/>
         <field name="star" eval="False"/>
-        <field name="outline_what">Executive analytics over the runs that have been computed: the headline net, the cost story over three, six or twelve months, the department leaderboard, the statutory split and a workforce pulse.</field>
-        <field name="outline_why">It is built from the payslips themselves rather than from a separate reporting copy, so a figure here and a figure on a payslip cannot disagree. Every number is a door back into the screen that produced it.</field>
+        <field name="outline_what">Executive analytics over the runs this company has: the headline net for the LATEST run whatever state it is in, the cost story over three, six or twelve months, a department leaderboard read from the latest DONE run, the statutory split, a workforce pulse and the analytics snapshots panel.</field>
+        <field name="outline_why">It answers the questions a payroll month asks every time, fast, because it reads the STORED per-run roll-ups rather than re-adding payslip lines. That is also the thing to know about it: the hero and the leaderboard do not have the same scope — the hero shows the latest run and prints its state beside itself, and the leaderboard waits for a run to be done. Read the state chip before you quote the number.</field>
         <field name="outline_when">After a run reaches done, at month end, and any time somebody senior asks a question that starts with "why is payroll".</field>
         <field name="outline_prereq">An analytics group, and at least two completed runs — a trend needs a second point before it is a trend.</field>
     </record>
@@ -554,7 +554,7 @@
     <record id="station_insights_mistake_0" model="learn.station.mistake">
         <field name="station_id" ref="station_insights"/>
         <field name="sequence">10</field>
-        <field name="name">Comparing a total against a total. Headcount moves between months, so the honest comparison is cost per head — two extra people explain most of what looks like a rise.</field>
+        <field name="name">Comparing a total against a total. Headcount moves between months, so the honest comparison is cost per head — one more employee explains most of what looks like a rise.</field>
     </record>
 
     <record id="station_insights_mistake_1" model="learn.station.mistake">
@@ -566,7 +566,7 @@
     <record id="station_insights_mistake_2" model="learn.station.mistake">
         <field name="station_id" ref="station_insights"/>
         <field name="sequence">30</field>
-        <field name="name">Using it to check a run before approving. This board reads runs that are done; the questions before approval are on the run itself.</field>
+        <field name="name">Quoting the headline without its state chip. The hero is the LATEST run in any state — a draft that nobody has reviewed appears here the moment it is computed, and it reads exactly like a paid month unless you look at the chip beside it.</field>
     </record>
 
     <record id="station_explorer" model="learn.station">
@@ -584,7 +584,7 @@
         <field name="star" eval="False"/>
         <field name="after_key">insights</field>
         <field name="outline_what">A question builder over the same payroll facts: one measure, one breakdown, one comparison, and any number of filters shown as removable tags above the result.</field>
-        <field name="outline_why">Boards answer anticipated questions and real ones are rarely anticipated. This is where "net pay by division for the divisions that ran mid-cycle" gets answered without anybody exporting a spreadsheet — and it reconciles with the payslips, which a spreadsheet stops doing the moment it is saved.</field>
+        <field name="outline_why">Boards answer anticipated questions and real ones are rarely anticipated. This is where "net pay by division for the divisions that ran mid-cycle" gets answered without anybody exporting a spreadsheet — and it reconciles with the payslips, which a spreadsheet stops doing the moment it is saved. It is also the only analytics screen that explains a MOVEMENT: a variance waterfall between two periods that adds up exactly, and a drill from any cell down to the employees behind it.</field>
         <field name="outline_when">When the board has answered everything it can and the question is still open, and when somebody needs a figure broken down a way nobody built a screen for.</field>
         <field name="outline_prereq">An analytics group and a computed run. Knowing which measure you actually want helps more than any filter.</field>
     </record>
@@ -598,7 +598,7 @@
     <record id="station_explorer_mistake_1" model="learn.station.mistake">
         <field name="station_id" ref="station_explorer"/>
         <field name="sequence">20</field>
-        <field name="name">Expecting it to explain WHY. It tells you a division is 12% above the rest; the reason is in that division's configuration and its payslips, and the Explorer will not pretend otherwise.</field>
+        <field name="name">Stopping at the table. The waterfall and the drill are where the answer usually is — the table tells you a division moved, and those two tell you which component moved and which employees carried it.</field>
     </record>
 
     <record id="station_workforcean" model="learn.station">
@@ -661,7 +661,7 @@
     <record id="station_govreports_mistake_1" model="learn.station.mistake">
         <field name="station_id" ref="station_govreports"/>
         <field name="sequence">20</field>
-        <field name="name">Reading "coming soon" as a fault. The tiles are per country, and a country with none simply has no filings built yet — which is better said than faked with a form nobody can submit.</field>
+        <field name="name">Reading "coming soon" as "Payobook does not do this country". It means the country's own payroll module is not INSTALLED on this database — Vietnam, Singapore, Thailand, Cambodia and Malaysia all have filings in the catalogue, and each one appears the moment the module that owns its wizard is there. It is an install question, and the answer is a conversation with whoever administers the system.</field>
     </record>
 
 </odoo>

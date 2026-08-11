@@ -130,7 +130,7 @@
         <field name="key">dashboard</field>
         <field name="sequence">130</field>
         <field name="name">Dashboard</field>
-        <field name="blurb">The command centre: the live run, four numbers that describe the company, and a door into each part of the product.</field>
+        <field name="blurb">The command centre: the live run, four numbers that describe the company, and a card for each part of the product worth opening today.</field>
         <field name="next_step">Read the line under your name first — it names the live run and how much of it is still waiting. Then open the section the work is actually in; nothing on this screen is a second way of doing anything.</field>
         <field name="sidebar_key">pb_sidebar.item_dashboard</field>
         <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_wherelives'), ref('intent_whatnext'), ref('intent_practice')])]"/>
@@ -170,8 +170,8 @@
         <field name="key">insights</field>
         <field name="sequence">170</field>
         <field name="name">Insights</field>
-        <field name="blurb">Executive analytics over the runs that are done: the cost story, the department leaderboard and the statutory split.</field>
-        <field name="next_step">Compare cost per head rather than total against total — headcount moves between months, and two extra people explain most of what looks like a rise. Every figure here opens the screen it came from.</field>
+        <field name="blurb">Executive analytics from the stored per-run roll-ups: the cost story, the department leaderboard, the statutory split and the analytics snapshots.</field>
+        <field name="next_step">Read the state chip beside the headline before you quote it — the hero is the latest run whatever state it is in, while the leaderboard below waits for a done one. Then compare cost per head rather than total against total: headcount moves between months, and one more employee explains most of what looks like a rise.</field>
         <field name="sidebar_key">pb_sidebar.item_analytics</field>
         <field name="suggest_ids" eval="[(6, 0, [ref('intent_whichtool'), ref('intent_variance'), ref('intent_whatpage'), ref('intent_whatnext')])]"/>
     </record>
@@ -180,7 +180,7 @@
         <field name="key">explorer</field>
         <field name="sequence">180</field>
         <field name="name">Explorer</field>
-        <field name="blurb">A question builder over the same payroll facts: one measure, one breakdown, and the filters that scope them.</field>
+        <field name="blurb">A question builder over derived fact tables that reconcile to the payslip lines: one measure, one breakdown, the filters that scope them — and a waterfall that explains a movement.</field>
         <field name="next_step">Choose the measure before the filters — most wrong answers here are the right filter on the wrong measure. And quote the tags with the number: the same measure with one tag removed is a different figure that looks identical in an email.</field>
         <field name="sidebar_key">pb_sidebar.item_explorer</field>
         <field name="suggest_ids" eval="[(6, 0, [ref('intent_whichtool'), ref('intent_whatpage'), ref('intent_whatnext')])]"/>
