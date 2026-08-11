@@ -24,10 +24,36 @@ test nobody runs.
 import ast
 import os
 
+from odoo.addons.pb_learn.models.learn_intent import _is_advice
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
 FLAG = 'pb_learn.compose_enabled'
+
+# Every one of these was DEMONSTRATED past the Phase D deny-list in review, and
+# every one is obviously a request for help reducing a statutory obligation.
+# The first five are the reviewer's; the rest are the same shapes in Vietnamese
+# and in the phrasings the fix has to survive.
+ADVICE = (
+    "how do I pay less BHXH",
+    "làm sao giảm BHXH",
+    "how do I reduce the BHXH base",
+    "how do I not pay BHXH for probation staff",
+    "tips to lower employer contributions",
+    "lam sao de giam bhxh",
+    "cach giam bao hiem xa hoi",
+    "meo giam dong bao hiem",
+    "khong dong bhxh cho nhan vien thu viec duoc khong",
+    "tranh dong bhyt",
+    "how can we cut the insurance base",
+    "any way to save on PIT",
+    "how do we avoid contributions for interns",
+    # Still caught by the original marker list — kept so a rewrite of the
+    # markers in favour of the pair rule cannot quietly drop them.
+    "how do we pay less tax on salaries",
+    "how do we under declare the insurance base",
+    "làm sao để giảm đóng bhxh",
+)
 
 
 class _StubProvider:
@@ -153,9 +179,7 @@ class TestComposer(TransactionCase):
         compliance = self.Intent.search([('key', '=', 'compliance')])
         compliance.write({'active': False})
         try:
-            for question in ("how do we pay less tax on salaries",
-                             "làm sao để giảm đóng bhxh",
-                             "how do we under declare the insurance base"):
+            for question in ADVICE:
                 res = self.Intent.ask(question, 'payslips')
                 self.assertNotEqual(
                     res.get('source_kind'), 'composed',
@@ -166,24 +190,88 @@ class TestComposer(TransactionCase):
         finally:
             compliance.write({'active': True})
 
+    def test_04b_the_guard_catches_the_phrasings_the_marker_list_missed(self):
+        """The Phase D review broke the deny-list by rephrasing, five times.
+
+        A list of exact markers is a list of the phrasings that occurred to its
+        author; every string below is obviously in scope and every one walked
+        through. `_is_advice` now also pairs a statutory SUBJECT with a
+        minimisation VERB, which is what all five have in common and what no
+        amount of rewording removes.
+        """
+        for question in ADVICE:
+            self.assertTrue(
+                _is_advice(question),
+                "the deny-list does not catch: %r" % question)
+
+    def test_04c_neither_half_of_the_pair_is_suspicious_alone(self):
+        """The guard has to stay narrow or it eats the questions this system
+        exists for. A statutory word with no minimiser is the core use case;
+        a minimiser with no statutory subject is somebody asking about a
+        discount."""
+        for question in ("what does BHXH mean", "what is BHXH", "bhxh la gi",
+                         "what is the BHYT rate", "what is insurance",
+                         "bao hiem y te la gi", "who pays BHTN",
+                         "what is a contribution register",
+                         "thue tncn tinh the nao",
+                         "how do I pay less", "reduce it", "lower the number",
+                         "how do I skip a row in the import",
+                         "how do I save the payslip",
+                         "what is the lower bracket"):
+            self.assertFalse(
+                _is_advice(question),
+                "a legitimate question was refused as advice: %r" % question)
+
+    def test_04d_no_shipped_trigger_phrase_trips_the_guard_except_compliances_own(self):
+        """A widened guard that swallows the module's own trigger phrases makes
+        the intents it swallows unreachable. The ONE phrase that must trip it
+        belongs to the refusal itself."""
+        tripped = []
+        for intent in self.Intent.search([]):
+            for phrase in intent.phrase_ids:
+                if _is_advice(phrase.text):
+                    tripped.append('%s: %s' % (intent.key, phrase.text))
+        self.assertTrue(
+            all(t.startswith('compliance:') for t in tripped),
+            "the guard swallowed a phrase belonging to another intent: %s"
+            % [t for t in tripped if not t.startswith('compliance:')])
+
     # -- 4. what leaves this server ---------------------------------------
     def test_05_the_scrub_removes_people_and_money(self):
+        """Asserted on the WHOLE output, not by substring.
+
+        The Phase D version of this test checked `assertIn('[amount]', out)`,
+        which "12.000.000 ₫" -> "[amount] ₫" passes — a redaction that visibly
+        missed, waved through by an assertion too weak to see it. Every case
+        below states the exact string the provider would receive.
+        """
         cases = [
-            ("why is Nguyễn Thị Mai's net only 4.200.000", ('[name]', '[amount]')),
-            ("tai sao luong cua Nguyen Thi Mai chi con 4,200,000", ('[name]', '[amount]')),
-            ("mail me at ha.nguyen+pay@payobook.com about #10421", ('[email]', '[record]')),
-            ("call 0912 345 678 about it", ('[phone]',)),
-            ("Đỗ Thị Lan earned 12.000.000 ₫", ('[name]', '[amount]')),
-            ("employee 1234567 is wrong", ('[number]',)),
+            ("why is Nguyễn Thị Mai's net only 4.200.000",
+             "why is [name]'s net only [amount]"),
+            ("tai sao luong cua Nguyen Thi Mai chi con 4,200,000",
+             "tai sao luong cua [name] chi con [amount]"),
+            ("mail me at ha.nguyen+pay@payobook.com about #10421",
+             "mail me at [email] about [record]"),
+            ("employee 1234567 is wrong", "employee [number] is wrong"),
+            # F2 — the currency mark must go WITH the number it belongs to.
+            ("12.000.000 ₫", "[amount]"),
+            ("Đỗ Thị Lan earned 12.000.000 ₫", "[name] earned [amount]"),
+            ("12.000.000 đồng", "[amount]"),
+            ("500.000 VND", "[amount]"),
+            # F3 — the spaced international form is the one people paste.
+            ("+84 912 345 678", "[phone]"),
+            ("0912 345 678", "[phone]"),
+            ("+84912345678", "[phone]"),
+            ("call +84-912-345-678 now", "call [phone] now"),
         ]
-        for raw, wanted in cases:
-            out = self.Intent._scrub(raw)
-            for token in wanted:
-                self.assertIn(token, out, "%r survived in %r" % (token, out))
-        for name in ('Mai', 'Nguyễn', 'Nguyen', '4.200.000', '4,200,000',
-                     '@payobook.com', '12.000.000'):
-            joined = ' '.join(self.Intent._scrub(raw) for raw, _w in cases)
-            self.assertNotIn(name, joined, "%r reached the prompt" % name)
+        for raw, expected in cases:
+            self.assertEqual(self.Intent._scrub(raw), expected,
+                             "scrub of %r" % raw)
+        joined = ' '.join(self.Intent._scrub(raw) for raw, _e in cases)
+        for leaked in ('Mai', 'Nguyễn', 'Nguyen', 'Lan', '4.200.000',
+                       '4,200,000', '@payobook.com', '12.000.000', '500.000',
+                       '₫', 'đồng', '912', '84'):
+            self.assertNotIn(leaked, joined, "%r reached the prompt" % leaked)
 
     def test_05b_a_rate_survives_the_scrub(self):
         """Scrubbing a rate would protect nobody and destroy the question.

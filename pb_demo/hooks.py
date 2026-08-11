@@ -97,6 +97,16 @@ def _grant_demo_read_rules(env, demo):
     resolve at load time, so a database without hr_attendance or hr_holidays
     would fail to install pb_demo outright. Here an absent model is a skipped
     row.
+
+    THE COST OF NOT BEING XML, STATED: these rules carry no ``ir.model.data``
+    row, so uninstalling pb_demo does not remove them. The demo GROUP is
+    removed, which empties each rule's ``groups`` m2m — and in Odoo a rule with
+    no groups is GLOBAL. That sounds alarming and is not: global rules are
+    AND-combined, and the domain here is ``[(1, '=', 1)]``, so what is left
+    behind is a condition that is always true, applied to everybody, changing
+    nothing for anybody. It is litter, not a hole. (An orphan whose domain
+    NARROWED would be the opposite, and is the reason to check this before
+    adding a second rule to the table.)
     """
     Model, Rule = env['ir.model'], env['ir.rule']
     for name, label in _DEMO_READ_RULES:

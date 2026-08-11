@@ -1024,21 +1024,17 @@
     },
     {
       "id": "composer-corpus-reads-learn-content-only",
-      "kind": "absent",
+      "kind": "model-scope",
       "within": "_corpus",
-      "why": "The whole safety argument for sending anything to a provider at all. The corpus is this module's own tutorial text; a join to anything the payroll product owns would put an employee's pay into a prompt. Scoped to the method with `within` rather than to the file, because learn_intent.py legitimately NAMES a product model elsewhere — _matchers explains that the Pay Runs leaf is matched by one — and a file-wide check would either fail on a docstring or force the docstring to stop being useful.",
+      "why": "The whole safety argument for sending anything to a provider at all: the corpus is this module's own tutorial text, and a join to anything the payroll product owns would put an employee's pay into a prompt. REWRITTEN from an `absent` list of six product model names to the GENERAL assertion, because a blocklist protects against the names somebody thought of and against nothing else — the same weakness the advice deny-list was found to have in the Phase D review. Every model the method reaches must be in the learn.* namespace, and the check fails if it finds no model at all, so a rewrite that hides the reads behind a variable breaks the build instead of passing silently. Scoped to the method because learn_intent.py legitimately NAMES a product model elsewhere — _matchers explains that the Pay Runs leaf is matched by one.",
       "file": "pb_learn/models/learn_intent.py",
       "expect": [
-        "hr.payslip",
-        "hr.contract",
-        "hr.employee",
-        "res.users",
-        "cr.execute",
-        "read_group"
+        "learn."
       ],
       "fixture": [],
       "taughtIn": [
-        "models/learn_intent.py::_compose header comment"
+        "models/learn_intent.py::_compose header comment",
+        "tests/test_composer.py::test_06b (the same assertion, DB-bound)"
       ]
     },
     {

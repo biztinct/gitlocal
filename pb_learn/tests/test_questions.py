@@ -96,6 +96,51 @@ class TestQuestionMining(TransactionCase):
         self.assertFalse(self.Question.record('how do I submit a run', 'payruns'))
         self.assertFalse(self.Question.search_count([]))
 
+    # -- 1b. create() is the control, not record() ------------------------
+    def test_03c_a_direct_create_is_refused_when_either_gate_is_shut(self):
+        """`record()` was a convenience with the gates in it, which left
+        `create` reachable by RPC and gated by nothing.
+
+        Every internal user has `perm_create` on this model — they must, the
+        learner creates their own row — so "call create instead of record" was
+        a complete bypass of the tenant flag, the learner's consent and the
+        scrub. The gate lives in `create` now.
+        """
+        self._collect(False)
+        self._consent(True)
+        with self.assertRaises(AccessError,
+                               msg="create() stored a question on a tenant "
+                                   "that never switched collection on"):
+            self.Question.create({'question': 'straight past record()',
+                                  'screen': 'payruns'})
+        self._collect(True)
+        self._consent(False)
+        with self.assertRaises(AccessError,
+                               msg="create() stored a declined learner's "
+                                   "question"):
+            self.Question.create({'question': 'straight past record()',
+                                  'screen': 'payruns'})
+
+    def test_03d_a_direct_create_is_scrubbed_when_the_gates_are_open(self):
+        """The scrub was in `record()` too, so the bypass carried a name into
+        the table verbatim."""
+        self._collect(True)
+        self._consent(True)
+        self.Question.search([]).unlink()
+        self.Question.create({
+            'question': "why is Nguyễn Thị Mai's net only 4.200.000",
+            'screen': 'payslips'})
+        stored = self.Question.search([], limit=1).question
+        self.assertNotIn('Nguyễn Thị Mai', stored)
+        self.assertNotIn('4.200.000', stored)
+        self.assertIn('[name]', stored)
+
+    def test_03e_a_create_that_scrubs_to_nothing_is_refused(self):
+        self._collect(True)
+        self._consent(True)
+        with self.assertRaises(AccessError):
+            self.Question.create({'question': '   ', 'screen': 'payruns'})
+
     # -- 2. the prompt is asked once --------------------------------------
     def test_04_the_drawer_is_only_told_to_ask_when_there_is_something_to_ask(self):
         self.Consent.search([('user_id', '=', self.env.uid)]).unlink()
@@ -128,6 +173,40 @@ class TestQuestionMining(TransactionCase):
             self.assertNotEqual(
                 en, vi, "%s reaches a Vietnamese reader in English" % key)
 
+    def test_04e_the_bundle_carries_the_tenant_switch(self):
+        """The server half of the short-circuit.
+
+        Without it the drawer has to ASK whether asking is allowed, which is
+        the round trip the short-circuit exists to remove.
+        """
+        self._collect(False)
+        bundle = self.env['learn.intent'].coach_bundle()
+        self.assertIn('collect_questions', bundle,
+                      "the bundle does not carry the tenant switch, so the "
+                      "drawer has to ask for it")
+        self.assertFalse(bundle['collect_questions'])
+        self._collect(True)
+        self.assertTrue(self.env['learn.intent'].coach_bundle()['collect_questions'])
+
+    def test_04f_the_drawer_returns_before_any_rpc_when_collection_is_off(self):
+        """The client half, asserted on the source — the server cannot observe
+        a round trip the browser chose not to make.
+
+        Two RPCs after every answer, on every tenant, forever, to discover
+        each time that a feature nobody switched on is still off, is not
+        "behaves exactly as it did in Phase C" by any reading of it.
+        """
+        import os
+        from odoo.modules.module import get_module_path
+        with open(os.path.join(get_module_path('pb_learn'), 'static', 'src',
+                               'coach', 'coach.js'), encoding='utf-8') as fh:
+            src = fh.read()
+        body = src.split('async _maybeStore(')[1].split('\n    async ')[0]
+        self.assertLess(
+            body.index('collect_questions'), body.index('this.orm.call('),
+            "the drawer asks the server before checking the flag it was "
+            "already given")
+
     def test_04d_the_consent_body_states_what_it_promises(self):
         """The prompt makes three promises the code has to keep: the text is
         scrubbed, the rows expire, and they can be deleted. A prompt that
@@ -143,6 +222,15 @@ class TestQuestionMining(TransactionCase):
         for promise in ('remove', 'delete'):
             self.assertIn(promise, body.lower(),
                           "the prompt does not mention: %s" % promise)
+        # The row carries user_id, and the prompt has to say so. The delete-own
+        # affordance the prompt offers is only possible BECAUSE of the
+        # attribution — a consent notice that describes the storage as
+        # anonymous while the table names you is the wrong kind of reassuring.
+        self.assertIn('your name', body.lower(),
+                      "the prompt does not disclose that the stored question "
+                      "is attributed to the learner")
+        self.assertTrue(self.Question._fields['user_id'].required,
+                        "the prompt promises attribution the model does not keep")
 
     # -- 3. the scrub applies after consent too ---------------------------
     def test_05_a_name_or_an_amount_never_becomes_a_row(self):

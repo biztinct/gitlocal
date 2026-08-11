@@ -107,7 +107,7 @@
 
     <record id="str_consentbody" model="learn.string">
         <field name="key">consentBody</field>
-        <field name="value">If you allow it, the question you just asked is stored so we can see what the guide does not cover yet. Names and amounts are removed before anything is saved, stored questions are deleted after 180 days, and you can delete yours at any time. Say no and nothing is stored — the Coach works exactly the same either way.</field>
+        <field name="value">If you allow it, the question you just asked is stored so we can see what the guide does not cover yet. Names and amounts are removed before anything is saved, and the stored question carries your name — that is how you can find and delete yours at any time. Stored questions are deleted after 180 days. Say no and nothing is stored — the Coach works exactly the same either way.</field>
     </record>
 
     <record id="str_consentno" model="learn.string">

@@ -77,10 +77,56 @@ _ADVICE_MARKERS = (
     'tron thue', 'khai thap', 'giam dong bhxh', 'lach',
 )
 
+# THE MARKER LIST WAS A LIST OF SENTENCES SOMEBODY HAD ALREADY THOUGHT OF, and
+# a deny-list of exact phrasings is a deny-list of the phrasings that occurred
+# to its author. Five of them were demonstrated in review, every one obviously
+# in scope and every one missed:
+#
+#   "how do I pay less BHXH"          — 'pay less tax' needs the word tax
+#   "làm sao giảm BHXH"               — 'giam dong bhxh' needs the word đóng
+#   "how do I reduce the BHXH base"   — 'reduce bhxh legally' needs 'legally'
+#   "how do I not pay BHXH for probation staff"
+#   "tips to lower employer contributions"
+#
+# So the guard is now a TOKEN PAIR as well: a statutory subject standing beside
+# a minimisation verb. Neither half is suspicious alone — "what does BHXH mean"
+# is the question this system exists for, and "how do I pay less" without a
+# statutory subject is somebody asking about a discount. Together they are a
+# request for help reducing a statutory obligation, however it is phrased.
+#
+# Single-word tokens are matched as WHOLE TOKENS, not as substrings. `ne`
+# (Vietnamese for dodge) inside "net", or `bot` inside "bottom", would refuse
+# half the payroll questions in the module.
+#
+# KNOWN AND ACCEPTED OVER-CAPTURE: "why is my insurance contribution lower this
+# month" pairs `insurance` with `lower` and is refused. It is a fair question,
+# and the refusal is not a dead end — the `compliance` intent explains where
+# the rates live and who owns the policy, which is a reasonable answer to it.
+# On a statutory obligation, over-refusing is the direction to err in.
+_STATUTORY_WORDS = frozenset((
+    'bhxh', 'bhyt', 'bhtn', 'pit', 'tncn', 'thue',
+    'contribution', 'contributions', 'insurance',
+))
+_STATUTORY_PHRASES = ('bao hiem',)
+
+_MINIMISE_WORDS = frozenset((
+    'less', 'lower', 'reduce', 'cut', 'avoid', 'save', 'skip',
+    'giam', 'tranh', 'bot', 'ne',
+))
+_MINIMISE_PHRASES = ('not pay', 'khong dong')
+
+
+def _has_token(nq, tokens, words, phrases):
+    return bool(tokens & words) or any(p in nq for p in phrases)
+
 
 def _is_advice(question):
     nq = _norm(question)
-    return any(m in nq for m in _ADVICE_MARKERS)
+    if any(m in nq for m in _ADVICE_MARKERS):
+        return True
+    tokens = set(nq.split())
+    return (_has_token(nq, tokens, _STATUTORY_WORDS, _STATUTORY_PHRASES)
+            and _has_token(nq, tokens, _MINIMISE_WORDS, _MINIMISE_PHRASES))
 
 
 _SCORE_FLOOR = 20
@@ -162,17 +208,30 @@ _GROUPED_DIGITS = re.compile(r'\b\d{1,3}(?:[.,]\d{3})+\b')
 
 # A number wearing a currency mark is money whatever its size, so this one runs
 # BEFORE the grouped-digit rule — otherwise the digits are replaced first and
-# the mark is left stranded beside the placeholder ("[amount] ₫"), which reads
-# like a redaction that missed.
+# the mark is left stranded beside the placeholder.
+#
+# THE TRAILING BOUNDARY MUST NOT BE `\b`. `₫` is not a word character, so `\b`
+# after it requires a word character to follow — which at the end of a sentence
+# there never is. The rule therefore failed on exactly the input it was written
+# for ("12.000.000 ₫") and the grouped-digit rule cleaned up the digits behind
+# it, producing "[amount] ₫": a redaction that visibly missed. `(?!\w)` asserts
+# "not followed by a word character", which is what was meant.
+#
+# `đồng` is spelled out before `đ` so the longer form wins the alternation
+# outright rather than by backtracking.
 _CURRENCY_AMOUNT = re.compile(
-    r'\b\d[\d.,]*\s*(?:₫|vnd|vnđ|đ)\b', re.IGNORECASE)
+    r'\b\d[\d.,]*\s*(?:₫|vnđ|vnd|đồng|dong|đ)(?!\w)', re.IGNORECASE)
 
 # Anything that looks like it identifies a person or a record, scrubbed from
 # the question before it leaves this server. These four are health_learn's,
 # unchanged; the two payroll-grade ones above are new here.
+# A Vietnamese number is written "+84 912 345 678" as often as "+84912345678",
+# and health_learn's pattern demanded a digit IMMEDIATELY after the country
+# code — so the spaced international form, which is the one people paste out of
+# a contact card, walked straight through. One optional separator fixes it.
 _SCRUB = (
     (re.compile(r'\b[\w.+-]+@[\w-]+\.[\w.]+\b'), '[email]'),
-    (re.compile(r'(?:\+?84|0)\d[\d\s.-]{7,}\d'), '[phone]'),
+    (re.compile(r'(?:\+?84|0)[\s.-]?\d[\d\s.-]{7,}\d'), '[phone]'),
     (re.compile(r'#\d{2,}'), '[record]'),
     (re.compile(r'\b\d{6,}\b'), '[number]'),
 )
@@ -865,6 +924,14 @@ class LearnIntent(models.Model):
         bundle = _zip_bilingual(build('en_US'), build('vi_VN'))
         bundle['tokens'] = self.env['learn.tenant.override'].resolved_tokens()
         bundle['chrome'] = self.env['learn.station']._content_bundle()['chrome']
+        # Shipped with the bundle the drawer already fetches, so that a tenant
+        # who never switched question mining on pays NOTHING for it: without
+        # this the Coach made two consent round-trips after every single
+        # answer, which is not "behaves exactly as Phase C" by any reading.
+        # It is a hint, not a control — `learn.question.create` is the gate,
+        # and a stale bundle can only ever fail closed (nothing is stored
+        # until the tab reloads).
+        bundle['collect_questions'] = self.env['learn.question']._collect_enabled()
         return bundle
 
 
