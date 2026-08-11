@@ -500,37 +500,52 @@ class TestCoach(TransactionCase):
         self.assertFalse(thin, "Columns with thin or untranslated definitions:\n  "
                                + "\n  ".join(thin))
 
-    # ------------------------------------------------------- NO composer
-    # health_learn ends its answer chain with a composer: an LLM over its own
-    # corpus, used when no single intent covers the question. Payobook Phase A
-    # deliberately does not have one, and these tests are how that stays true.
+    # -------------------------------------------- the composer, and its fence
+    # Phases A–C had no composer at all, and these two tests asserted its
+    # ABSENCE. Phase D2 adds one, so the assertion moves rather than
+    # disappearing: what is protected now is not that no model can be reached,
+    # but that reaching one requires a decision somebody made on purpose.
     #
-    # This is not squeamishness about models. It is that the failure mode here
-    # is a fluent sentence about a contribution rate that nobody wrote and no
-    # test can check, read by someone who is about to approve a month of
-    # salaries. An honest miss is always an acceptable outcome on this system.
+    # The reasoning that kept the composer out for three phases has not
+    # changed, and is why it ships OFF: the failure mode is a fluent sentence
+    # about a contribution rate that nobody wrote and no test can check, read
+    # by someone who is about to approve a month of salaries. An honest miss is
+    # always an acceptable outcome on this system. Full battery in
+    # tests/test_composer.py.
 
-    def test_21_there_is_no_composer_and_no_provider_seam(self):
-        """Asserted by reflection, not by reading the file.
+    def test_21_the_composer_exists_and_is_off_by_default(self):
+        """The seam is present; the door is shut.
 
-        A future port of health_learn's composer would arrive as exactly these
-        method names, and it must not arrive quietly.
+        `hasattr` is the wrong question now — the right one is what happens on
+        a database where nobody has set the parameter, which is every database
+        immediately after an upgrade.
         """
         for name in ('_compose', '_provider', '_corpus', '_scrub'):
-            self.assertFalse(hasattr(self.Intent, name),
-                             "learn.intent grew %s — Phase A ships no LLM path, and "
-                             "adding one is a design decision, not a refactor" % name)
+            self.assertTrue(hasattr(self.Intent, name),
+                            "learn.intent lost %s — the composer seam is gone" % name)
+        self.env['ir.config_parameter'].sudo().set_param(
+            'pb_learn.compose_enabled', False)
+        self.assertFalse(self.Intent._compose_enabled(),
+                         "the composer is enabled on a database that never asked "
+                         "for it")
+        self.assertIsNone(
+            self.Intent._compose("anything at all", 'payslips'),
+            "the composer produced an answer with the flag off")
 
-    def test_21b_no_provider_is_imported_anywhere_in_the_module(self):
+    def test_21b_no_foreign_provider_is_imported_anywhere_in_the_module(self):
         """The seam is an import as much as a method.
 
         Scanned as source rather than by reflection: an import inside a
         function body is invisible to hasattr and would still ship the
-        dependency.
+        dependency. `generate_text` has left this list — the composer calls it,
+        which is the whole point of having one seam — but the PACKAGES stay
+        banned: the provider is resolved through the registry so that a
+        database without PayAI still installs, still answers, and simply has no
+        composer.
         """
         base = get_module_path('pb_learn')
         banned = ('hr.ai.provider.config', 'hr_development_ai', 'ai_providers',
-                  'generate_text')
+                  'from odoo.addons.pb_payroll_ai_insights')
         offenders = []
         for root, _dirs, files in os.walk(os.path.join(base, 'models')):
             for name in files:
@@ -542,11 +557,14 @@ class TestCoach(TransactionCase):
                     if token in src:
                         offenders.append('%s -> %s' % (name, token))
         self.assertFalse(offenders,
-                         "An AI provider reached the answer path:\n  " + "\n  ".join(offenders))
+                         "A provider package reached the answer path:\n  "
+                         + "\n  ".join(offenders))
 
     def test_22_an_unanswerable_question_falls_back_honestly(self):
-        """With no composer there is exactly one fallback left, and it must
-        never break and never invent."""
+        """With the composer off there is exactly one fallback left, and it
+        must never break and never invent."""
+        self.env['ir.config_parameter'].sudo().set_param(
+            'pb_learn.compose_enabled', False)
         res = self.Intent.ask("how do I change the office wifi password", 'payslips')
         self.assertFalse(res['matched'], "matched a question it has no content for")
         self.assertTrue(res['suggest'], "an honest miss offered nothing to ask instead")

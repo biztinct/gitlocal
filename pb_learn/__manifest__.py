@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Learn — in-app learning',
-    'version': '19.0.7.0.0',
+    'version': '19.0.8.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
@@ -19,6 +19,14 @@ capstone; Phase C1 adds Overview (Dashboard, Approvals), People (Employees,
 Contracts), Insights (Insights, Explorer, Workforce Analytics) and Compliance
 (Government Reports) — and promotes the Journey out of the Pay Run section into
 a Learning section of its own.
+
+Phase D adds two things, both OFF by default and both a decision somebody has
+to make: a COMPOSER (an answer assembled by a model from this module's own
+tutorial text, never from database records — `ir.config_parameter`
+`pb_learn.compose_enabled`) and opt-in QUESTION MINING (`learn.question`,
+gated on `pb_learn.collect_questions` AND each learner's own consent, scrubbed
+on the way in, deleted after 180 days). With both switched off the Coach
+behaves exactly as it did in Phase C.
 
 Design: docs/tutorial_poc/design_v2.html
 Authoring surface: docs/tutorial_poc/author/ (content is generated from it,
@@ -62,6 +70,8 @@ never hand-edited here).
         'data/learn_columns.xml',
         # Practice missions. They run on the REPLICA only.
         'data/learn_missions.xml',
+        # Hand-written: retention for the opt-in question table (Phase D2).
+        'data/learn_question_cron.xml',
         # Hand-written: module wiring, not content.
         'views/learn_actions.xml',
         # Generated too — the leaf's NAME is content and ships in both

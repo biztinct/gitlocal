@@ -10,3 +10,5 @@ from . import learn_live
 from . import learn_mission
 from . import learn_tenant_override
 from . import learn_progress
+# Phase D2. learn.question.record delegates the scrub to learn.intent.
+from . import learn_question

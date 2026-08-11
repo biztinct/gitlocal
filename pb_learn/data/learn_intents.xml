@@ -2971,31 +2971,47 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">Whoever holds one of the three payroll groups these leaves are gated on — a payroll officer, a payroll manager or a super administrator. Note who is NOT on that list: a final approver signs for money and still does not get the wage roster, because approving a total and reading everybody's salary are different permissions. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all.</field>
+        <field name="body">Whoever holds one of the three payroll groups these leaves are gated on — a payroll officer, a payroll manager or a super administrator. Read that as a &lt;b&gt;ladder&lt;/b&gt;, not a list: a role carries every group it implies, so a super administrator is also a manager and a manager is also an officer. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all.</field>
     </record>
 
     <record id="intent_whosees_b020" model="learn.intent.block">
         <field name="intent_id" ref="intent_whosees"/>
         <field name="sequence">20</field>
         <field name="capability">any</field>
-        <field name="kind">ok</field>
-        <field name="body">That is the right shape for this data. A wage list answers questions nobody asked about colleagues, and hiding the door is a stronger promise than disabling a button on it.</field>
+        <field name="kind">p</field>
+        <field name="body">The ladder has a consequence worth knowing before you rely on it. A &lt;b&gt;final approver&lt;/b&gt; is not named on these leaves, and sees the roster anyway: that role implies the analytics manager, which implies the payroll manager. So approving a total and reading everybody's salary are &lt;b&gt;not&lt;/b&gt; separated here. If your company needs them separated — a person who signs for the money without seeing the names — that is a change somebody has to make, not a promise the shipped roles already keep.</field>
     </record>
 
     <record id="intent_whosees_b030" model="learn.intent.block">
         <field name="intent_id" ref="intent_whosees"/>
         <field name="sequence">30</field>
         <field name="capability">any</field>
-        <field name="kind">warn</field>
-        <field name="body">Exporting it moves the data somewhere none of that applies. A spreadsheet of salaries has no groups on it and no way to be taken back.</field>
+        <field name="kind">p</field>
+        <field name="body">Who is genuinely outside it: a payroll analytics user, whose role implies only the base payroll user, so they get the boards without the names; a payroll base user, who has their own payslip and nothing else; and anyone whose only payroll group is a country toggle. None of them can open Employees or Contracts from the menu.</field>
     </record>
 
     <record id="intent_whosees_b040" model="learn.intent.block">
         <field name="intent_id" ref="intent_whosees"/>
         <field name="sequence">40</field>
         <field name="capability">any</field>
+        <field name="kind">ok</field>
+        <field name="body">That is the right shape for this data. A wage list answers questions nobody asked about colleagues, and hiding the door is a stronger promise than disabling a button on it.</field>
+    </record>
+
+    <record id="intent_whosees_b050" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="sequence">50</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Exporting it moves the data somewhere none of that applies. A spreadsheet of salaries has no groups on it and no way to be taken back.</field>
+    </record>
+
+    <record id="intent_whosees_b060" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whosees"/>
+        <field name="sequence">60</field>
+        <field name="capability">any</field>
         <field name="kind">source</field>
-        <field name="body">The groups on the People sidebar leaves, and your own group membership.</field>
+        <field name="body">The groups on the People sidebar leaves, the chain of implied groups those roles are declared with, and your own group membership.</field>
     </record>
 
     <record id="intent_whichtool" model="learn.intent">

@@ -85,6 +85,11 @@
         <field name="value">Commit import</field>
     </record>
 
+    <record id="str_composedanswer" model="learn.string">
+        <field name="key">composedAnswer</field>
+        <field name="value">Composed from the guide</field>
+    </record>
+
     <record id="str_compute" model="learn.string">
         <field name="key">compute</field>
         <field name="value">Compute payslips</field>
@@ -98,6 +103,26 @@
     <record id="str_confidencescore" model="learn.string">
         <field name="key">confidenceScore</field>
         <field name="value">confidence score</field>
+    </record>
+
+    <record id="str_consentbody" model="learn.string">
+        <field name="key">consentBody</field>
+        <field name="value">If you allow it, the question you just asked is stored so we can see what the guide does not cover yet. Names and amounts are removed before anything is saved, stored questions are deleted after 180 days, and you can delete yours at any time. Say no and nothing is stored — the Coach works exactly the same either way.</field>
+    </record>
+
+    <record id="str_consentno" model="learn.string">
+        <field name="key">consentNo</field>
+        <field name="value">No, do not store them</field>
+    </record>
+
+    <record id="str_consenttitle" model="learn.string">
+        <field name="key">consentTitle</field>
+        <field name="value">Help improve the guide?</field>
+    </record>
+
+    <record id="str_consentyes" model="learn.string">
+        <field name="key">consentYes</field>
+        <field name="value">Yes, store my questions</field>
     </record>
 
     <record id="str_consequence" model="learn.string">

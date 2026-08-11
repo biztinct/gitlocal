@@ -1238,6 +1238,11 @@ msgid "Components"
 msgstr "Thành phần"
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_composedanswer
+msgid "Composed from the guide"
+msgstr "Tổng hợp từ tài liệu hướng dẫn"
+
+#. module: pb_learn
 #: model:learn.mission,summary:pb_learn.mission_m1
 msgid ""
 "Compute Retail's July payroll, handle the anomaly the data is hiding, and send it into the approval chain."
@@ -2013,7 +2018,7 @@ msgstr ""
 "Explorer có giải thích <b>vì sao</b>, và là công cụ duy nhất làm được: nó dựng một biểu đồ phân rã biến động giữa hai kỳ so sánh được, khớp chính xác từng đồng, kèm một dải cảnh báo bất thường bên cạnh — và bấm vào ô nào cũng đi thẳng xuống danh sách nhân viên đứng sau ô đó, đọc từ chính các dòng phiếu lương chứ không từ bảng dẫn xuất, nên bước đi sâu ấy cũng chính là vết kiểm toán cho con số."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whosees_b030
+#: model:learn.intent.block,body:pb_learn.intent_whosees_b050
 msgid ""
 "Exporting it moves the data somewhere none of that applies. A spreadsheet of salaries has no groups on it and no way to be taken back."
 msgstr ""
@@ -2376,6 +2381,11 @@ msgstr ""
 "Bảo hiểm y tế — người lao động 1,5% và doanh nghiệp 3%, trên cùng mức lương đóng BH như BHXH."
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_consenttitle
+msgid "Help improve the guide?"
+msgstr "Giúp chúng tôi cải thiện tài liệu hướng dẫn?"
+
+#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_showhint
 msgid "Hint"
 msgstr "Gợi ý"
@@ -2632,6 +2642,13 @@ msgid ""
 "If the run is still in draft, do not use retro at all — fix the input and recompute. Retro is for the past you cannot reopen, not for the present you have not finished."
 msgstr ""
 "Nếu đợt còn ở trạng thái Nháp thì đừng dùng hồi tố — hãy sửa đầu vào và tính lại. Hồi tố dành cho quá khứ bạn không mở lại được, không dành cho hiện tại bạn chưa làm xong."
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_consentbody
+msgid ""
+"If you allow it, the question you just asked is stored so we can see what the guide does not cover yet. Names and amounts are removed before anything is saved, stored questions are deleted after 180 days, and you can delete yours at any time. Say no and nothing is stored — the Coach works exactly the same either way."
+msgstr ""
+"Nếu bạn đồng ý, câu hỏi bạn vừa đặt sẽ được lưu lại để chúng tôi biết tài liệu còn thiếu những gì. Tên riêng và số tiền đều được loại bỏ trước khi lưu, câu hỏi đã lưu sẽ bị xoá sau 180 ngày, và bạn có thể xoá câu hỏi của mình bất cứ lúc nào. Nếu bạn từ chối thì không có gì được lưu — Trợ lý vẫn hoạt động y như vậy."
 
 #. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_import
@@ -3448,6 +3465,11 @@ msgstr ""
 #: model:learn.string,value:pb_learn.str_live_nosuchstep
 msgid "No step '%(step)s' in mission '%(mission)s'."
 msgstr "Không có bước '%(step)s' trong nhiệm vụ '%(mission)s'."
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_consentno
+msgid "No, do not store them"
+msgstr "Không, đừng lưu lại"
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_affectrun_b010
@@ -5143,7 +5165,7 @@ msgstr ""
 "Đó là chủ ý, và rất đáng nói rõ: tiền lương không thay đổi chỉ vì một bảng tham chiếu thay đổi. Nó thay đổi khi có người sửa một cấu hình — một lần sửa có thể xem trước, mô phỏng và truy lại được về sau."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whosees_b020
+#: model:learn.intent.block,body:pb_learn.intent_whosees_b040
 msgid ""
 "That is the right shape for this data. A wage list answers questions nobody asked about colleagues, and hiding the door is a stronger promise than disabling a button on it."
 msgstr ""
@@ -5673,9 +5695,11 @@ msgstr ""
 "Nguyên tắc vàng gói trong một câu: sửa đầu vào, đừng bao giờ sửa kết quả. Phiếu lương là một kết quả — sửa kết quả sẽ để nguyên dữ liệu sai phía sau, và lần tính lại kế tiếp âm thầm mang lỗi quay lại."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whosees_b040
-msgid "The groups on the People sidebar leaves, and your own group membership."
-msgstr "Các nhóm quyền trên những mục Nhân sự ở thanh bên, và nhóm quyền của chính bạn."
+#: model:learn.intent.block,body:pb_learn.intent_whosees_b060
+msgid ""
+"The groups on the People sidebar leaves, the chain of implied groups those roles are declared with, and your own group membership."
+msgstr ""
+"Các nhóm quyền trên những mục Nhân sự ở thanh bên, chuỗi nhóm bao hàm mà các vai trò đó được khai báo, và nhóm quyền của chính bạn."
 
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_l2_step_04
@@ -5715,6 +5739,13 @@ msgstr "Danh mục thành phần"
 #: model:learn.step,kicker:pb_learn.lesson_l1_step_06
 msgid "The judgement"
 msgstr "Phần cần phán đoán"
+
+#. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whosees_b020
+msgid ""
+"The ladder has a consequence worth knowing before you rely on it. A <b>final approver</b> is not named on these leaves, and sees the roster anyway: that role implies the analytics manager, which implies the payroll manager. So approving a total and reading everybody's salary are <b>not</b> separated here. If your company needs them separated — a person who signs for the money without seeing the names — that is a change somebody has to make, not a promise the shipped roles already keep."
+msgstr ""
+"Bậc thang này có một hệ quả nên biết trước khi bạn dựa vào nó. <b>Người phê duyệt cuối</b> không được nêu tên trên các mục này, nhưng vẫn xem được danh sách: vai trò đó bao hàm quản lý phân tích lương, mà quản lý phân tích lương lại bao hàm quản lý lương. Vậy nên ở đây, việc duyệt một con số tổng và việc đọc lương của từng người <b>không</b> hề được tách ra. Nếu công ty bạn cần tách hai việc đó — một người ký cho khoản tiền mà không nhìn thấy tên ai — thì đó là việc phải làm thêm, chứ không phải điều mà bộ vai trò mặc định đã hứa."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_whichlane_b010
@@ -7002,6 +7033,13 @@ msgid "Who can:"
 msgstr "Ai làm được:"
 
 #. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whosees_b030
+msgid ""
+"Who is genuinely outside it: a payroll analytics user, whose role implies only the base payroll user, so they get the boards without the names; a payroll base user, who has their own payslip and nothing else; and anyone whose only payroll group is a country toggle. None of them can open Employees or Contracts from the menu."
+msgstr ""
+"Ai thực sự nằm ngoài: người dùng phân tích lương — vai trò này chỉ bao hàm người dùng lương cơ bản, nên họ có các bảng số liệu mà không có tên; người dùng lương cơ bản, chỉ có phiếu lương của chính mình; và bất kỳ ai mà nhóm quyền lương duy nhất là một công tắc bật theo quốc gia. Không ai trong số đó mở được Nhân viên hay Hợp đồng từ thanh bên."
+
+#. module: pb_learn
 #: model:learn.intent,label:pb_learn.intent_whichlane
 msgid "Who is holding this run up?"
 msgstr "Ai đang giữ đợt lương này lại?"
@@ -7014,9 +7052,9 @@ msgstr "Ai đóng bao nhiêu — và phần lớn hơn không phải của bạn
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_whosees_b010
 msgid ""
-"Whoever holds one of the three payroll groups these leaves are gated on — a payroll officer, a payroll manager or a super administrator. Note who is NOT on that list: a final approver signs for money and still does not get the wage roster, because approving a total and reading everybody's salary are different permissions. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all."
+"Whoever holds one of the three payroll groups these leaves are gated on — a payroll officer, a payroll manager or a super administrator. Read that as a <b>ladder</b>, not a list: a role carries every group it implies, so a super administrator is also a manager and a manager is also an officer. Everybody else does not see a greyed-out screen; they do not have the leaf in their sidebar at all."
 msgstr ""
-"Những ai giữ một trong ba nhóm quyền lương mà các mục này bị chặn theo — chuyên viên tính lương, quản lý lương hoặc quản trị viên cấp cao. Hãy để ý ai KHÔNG có trong danh sách đó: người phê duyệt cuối ký cho những khoản tiền mà vẫn không có danh sách lương, vì duyệt một con số tổng và đọc lương của từng người là hai quyền khác nhau. Người khác không thấy một màn hình bị làm mờ; họ không hề có mục đó trong thanh bên của mình."
+"Những ai giữ một trong ba nhóm quyền lương mà các mục này bị chặn theo — chuyên viên tính lương, quản lý lương hoặc quản trị viên cấp cao. Hãy hiểu đó là một <b>bậc thang</b> chứ không phải một danh sách: một vai trò mang theo mọi nhóm mà nó bao hàm, nên quản trị viên cấp cao cũng là quản lý lương và quản lý lương cũng là chuyên viên tính lương. Người khác không thấy một màn hình bị làm mờ; họ không hề có mục đó trong thanh bên của mình."
 
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_l3_step_02
@@ -7075,6 +7113,11 @@ msgid ""
 "Yes — you hold every gate. That is worth using carefully rather than often: a chain where one person can sign every tier records one opinion four times, and the point of the tiers is that they are four different reads."
 msgstr ""
 "Có — bạn giữ mọi cổng. Điều đó nên được dùng một cách thận trọng chứ không nên dùng thường xuyên: một chuỗi mà một người ký được mọi vòng chỉ ghi lại một ý kiến bốn lần, trong khi ý nghĩa của các vòng là bốn lần soát khác nhau."
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_consentyes
+msgid "Yes, store my questions"
+msgstr "Đồng ý, hãy lưu câu hỏi của tôi"
 
 #. module: pb_learn
 #: model:learn.mission,consequence_reversible:pb_learn.mission_m4
