@@ -11,11 +11,11 @@
                 <div id="biz_debrand_branding">
                     <block title="Branding" name="biz_debrand_container">
                         <setting id="biz_debrand_brand_name_setting" string="Brand Name"
-                                 help="Product name shown everywhere in place of Odoo.">
+                                 help="Product name shown everywhere in place of the vendor's.">
                             <field name="biz_debrand_brand_name" placeholder="BizApp"/>
                         </setting>
                         <setting id="biz_debrand_brand_website_setting" string="Brand Website"
-                                 help="Replaces odoo.com links across the UI.">
+                                 help="Replaces vendor links across the UI.">
                             <field name="biz_debrand_brand_website" placeholder="https://example.com"/>
                         </setting>
                         <setting id="biz_debrand_theme_color_setting" string="Brand Theme Color"

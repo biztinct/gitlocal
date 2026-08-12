@@ -2,7 +2,7 @@
 # License LGPL-3.
 {
     "name": "Business Debranding",
-    "version": "19.0.2.2.0",
+    "version": "19.0.2.3.0",
     "category": "Debranding",
     "summary": "Portable white-label layer: replaces every user-visible vendor "
                "reference with a configurable brand. No project dependencies.",

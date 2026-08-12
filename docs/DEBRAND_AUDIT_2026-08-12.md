@@ -211,7 +211,25 @@ and covered by `tests/test_rewrite.py`:
    exists. The two menu items that navigated there ("Third-Party Apps", "Theme Store") are
    archived instead.
 
-### Still unverified
-Admin-only screens (Settings → General Settings, the Apps kanban rendering) were checked by RPC
-and database, not visually — the live admin password is not available to this session. Worth one
-pass with a working admin login.
+### Admin-screen pass (done)
+Settings → General Settings and the Apps kanban were then checked visually as `Mitchell Admin`.
+Apps: clean (71 cards, zero vendor references, and the two archived vendor menu items are gone
+from the menu bar). Settings: one hit, and it was **ours** — `biz_debrand`'s own field help read
+*"Product name shown everywhere in place of Odoo."* Reworded, along with *"Replaces odoo.com
+links across the UI."*
+
+### Unrelated defect found while verifying: broken CSS bundle
+The "a css error occurred, using an old style" banner is **not** from this work — it dates to
+**2026-06-17** (11 occurrences in the server log, long before today). Clearing the asset cache
+during this deploy simply forced a recompile and made it visible again.
+
+Cause: `web.assets_web` fails to compile with `Incompatible units: '%' and 'px'`. libsass reports
+no file or line for this error class, so the bundle's 599 SCSS assets were bisected by compiling
+growing prefixes — the smallest failing prefix pinned it to
+`pb_payrun_wizard/static/src/scss/payrun_wizard.scss`.
+
+The real problem was **deploy drift, not code**: line 45 on the live server still read
+`width: min(420px, 76%)` — the mixed-unit Sass trap — while the repo has held the fix
+(`width: 76%; max-width: 420px`) for weeks. The file had simply never been rsynced. A repo-vs-live
+md5 sweep over every SCSS file in `pb_payrun_wizard`, `biz_theme` and `pb_theme` found this as the
+only drifted file. Fixed by deploying the file that was already correct in git.

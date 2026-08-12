@@ -37,13 +37,13 @@ class ResConfigSettings(models.TransientModel):
     biz_debrand_brand_name = fields.Char(
         string="Brand Name",
         config_parameter="biz_debrand.brand_name",
-        help="Product name shown everywhere in place of Odoo "
+        help="Product name shown everywhere in place of the vendor's "
              "(browser title, backend, emails, bot, database manager).",
     )
     biz_debrand_brand_website = fields.Char(
         string="Brand Website",
         config_parameter="biz_debrand.brand_website",
-        help="Replaces odoo.com links across the UI.",
+        help="Replaces vendor links across the UI.",
     )
     biz_debrand_theme_color = fields.Char(
         string="Brand Theme Color",
