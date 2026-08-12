@@ -4,9 +4,9 @@
     "name": "Business Mail Debranding",
     "version": "19.0.1.0.0",
     "category": "Debranding",
-    "summary": "Send-time catch-all that rewrites 'Odoo' in every outgoing "
+    "summary": "Send-time catch-all that rewrites vendor branding in every outgoing "
                "email (subject, body, from, headers), scrubs stored mail "
-               "templates and disables the Odoo periodic digest. Brand is "
+               "templates and disables the stock periodic digest. Brand is "
                "resolved from config parameters — no hardcoded name.",
     "author": "biz_debrand",
     "website": "https://example.com",

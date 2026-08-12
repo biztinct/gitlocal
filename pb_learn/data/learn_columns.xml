@@ -362,7 +362,7 @@
         <field name="key">structures</field>
         <field name="sequence">10</field>
         <field name="label">Structures</field>
-        <field name="body">Legacy Odoo salary structures still held by this company. They are history rather than configuration: new pay logic belongs in a formula configuration, and these exist so old payslips can still be explained.</field>
+        <field name="body">Legacy salary structures still held by this company. They are history rather than configuration: new pay logic belongs in a formula configuration, and these exist so old payslips can still be explained.</field>
     </record>
 
     <record id="col_structures_salary_rules" model="learn.column">

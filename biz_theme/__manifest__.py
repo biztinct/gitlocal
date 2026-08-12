@@ -1,6 +1,6 @@
 {
     'name': 'Biz Theme (Base)',
-    'summary': 'Reusable Odoo 19 CE backend theme base — design tokens, runtime Theme Studio, '
+    'summary': 'Reusable backend theme base — design tokens, runtime Theme Studio, '
                'responsive framework, sidebar rail, VU Form Engine, friendly errors & loading',
     'description': '''
         Biz Theme — brand-agnostic base theme

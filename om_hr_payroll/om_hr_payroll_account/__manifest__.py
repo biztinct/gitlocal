@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 {
-    'name': 'Odoo 19 HR Payroll Accounting',
+    'name': 'HR Payroll Accounting',
     'category': 'Generic Modules/Human Resources',
     'author': 'Odoo Mates, Odoo SA',
     'version': '19.0.1.0.0',

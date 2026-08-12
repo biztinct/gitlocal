@@ -91,7 +91,7 @@ class PbFactRun(models.Model):
              'department instead. Surfaced on the board.')
     untyped_category_count = fields.Integer(
         string='Untyped categories',
-        help="Distinct salary-rule categories with no category_type. Odoo "
+        help="Distinct salary-rule categories with no category_type. The platform "
              "defaults that field to 'allowance' "
              "(pb_hr_payroll_base/models/hr_payroll_structure_base.py:224), so "
              "an untyped category silently reads as an allowance — the count is "
