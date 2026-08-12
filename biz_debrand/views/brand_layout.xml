@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3.
+
+     Publishes the brand to the browser synchronously, before any asset bundle
+     runs. web.layout is the common ancestor of the backend web client, the
+     login/portal/website pages and the report layouts, so one inherit reaches
+     every JS context that biz_debrand_runtime.js is loaded into.
+
+     `request` is None when a report is rendered outside an HTTP request; the
+     guard makes t-att-content falsy there and QWeb simply omits the attribute
+     (the JS falls back to its defaults). -->
+<odoo>
+    <template id="biz_debrand_layout_brand" inherit_id="web.layout" name="Brand metadata">
+        <xpath expr="//head/meta[@charset]" position="after">
+            <meta name="biz-brand"
+                  t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.brand_name')"/>
+            <meta name="biz-brand-website"
+                  t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.brand_website')"/>
+        </xpath>
+    </template>
+</odoo>

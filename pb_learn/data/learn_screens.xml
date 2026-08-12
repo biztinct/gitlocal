@@ -100,7 +100,7 @@
         <field name="key">structures</field>
         <field name="sequence">100</field>
         <field name="name">Salary Structures</field>
-        <field name="blurb">The legacy Odoo salary structures and their rules — kept because historical payslips still reference them.</field>
+        <field name="blurb">The legacy salary structures and their rules — kept because historical payslips still reference them.</field>
         <field name="next_step">Read, do not build. New pay logic belongs in a formula configuration; what is here exists so that payslips from before the migration can still be explained.</field>
         <field name="sidebar_key">pb_sidebar.item_structures</field>
         <field name="suggest_ids" eval="[(6, 0, [ref('intent_configvsstructure'), ref('intent_whysetup'), ref('intent_whatpage')])]"/>

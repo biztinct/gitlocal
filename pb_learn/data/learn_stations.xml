@@ -302,7 +302,7 @@
         <field name="required" eval="False"/>
         <field name="star" eval="False"/>
         <field name="after_key">formula</field>
-        <field name="outline_what">Odoo salary structures and their rules: the older way of computing a payslip, still holding the logic that historical payslips were produced by.</field>
+        <field name="outline_what">Legacy salary structures and their rules: the older way of computing a payslip, still holding the logic that historical payslips were produced by.</field>
         <field name="outline_why">You will meet them the first time you open a payslip from before the migration, and knowing what they are is the difference between reading history and doubting it.</field>
         <field name="outline_when">When reading an old payslip, and when migrating a division onto a formula configuration — the structure is what you are migrating FROM.</field>
         <field name="outline_prereq">A manager tier, and the Formula Engine basics — otherwise it is hard to see what the two are for.</field>

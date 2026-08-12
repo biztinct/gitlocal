@@ -47,7 +47,7 @@ class HrFormulaRule(models.Model):
     salary_rule_id = fields.Many2one(
         'hr.salary.rule',
         string='Linked Salary Rule',
-        help="Optional link to standard Odoo salary rule"
+        help="Optional link to a standard salary rule"
     )
 
     company_id = fields.Many2one(

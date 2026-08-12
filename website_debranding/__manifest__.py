@@ -1,7 +1,7 @@
 # Copyright 2016 Tecnativa, S.L. - Vicent Cubells
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 {
-    "name": "Remove Odoo Branding from Website",
+    "name": "Remove Vendor Branding from Website",
     "version": "19.0.1.0.0",
     "author": "Tecnativa, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/server-brand",

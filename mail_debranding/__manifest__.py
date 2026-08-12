@@ -7,10 +7,9 @@
 
 {
     "name": "Mail Debrand",
-    "summary": """Remove Odoo branding in sent emails
-    Removes anchor <a href odoo.com togheder with it's parent
-    ( for powerd by) form all the templates
-    removes any 'odoo' that are in tempalte texts > 20characters
+    "summary": """Remove vendor branding in sent emails.
+    Removes the "powered by" anchor and its parent from all templates, and
+    strips vendor references from template texts longer than 20 characters.
     """,
     "version": "19.0.1.0.0",
     "category": "Social Network",

@@ -50,7 +50,7 @@ class HrApiDataStore(models.Model):
     )
     employee_id = fields.Many2one(
         'hr.employee', string='Matched Employee',
-        help="Odoo employee this data belongs to (matched after pull)",
+        help="Employee this data belongs to (matched after pull)",
     )
 
     # ==========================================
@@ -318,7 +318,7 @@ class HrApiDataStore(models.Model):
     # EMPLOYEE MATCHING
     # ==========================================
     def action_match_employees(self):
-        """Try to match stored records to Odoo employees."""
+        """Try to match stored records to employee records."""
         matched = 0
         for rec in self.filtered(lambda r: not r.employee_id and r.employee_external_id):
             employee = rec._find_matching_employee()
@@ -337,7 +337,7 @@ class HrApiDataStore(models.Model):
         }
 
     def _find_matching_employee(self):
-        """Find an Odoo employee matching this record's external ID."""
+        """Find an employee record matching this record's external ID."""
         Employee = self.env['hr.employee']
 
         if not self.employee_external_id:

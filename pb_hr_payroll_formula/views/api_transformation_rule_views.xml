@@ -97,7 +97,7 @@
                                 <li><code>employee_data</code> — the employee's own extracted_data dict</li>
                                 <li><code>all_records</code> — dict of {data_type: [records]} for all types</li>
                                 <li><code>period_start</code>, <code>period_end</code> — batch period dates</li>
-                                <li><code>env</code> — Odoo environment</li>
+                                <li><code>env</code> — the server environment</li>
                                 <li><code>employee</code> — hr.employee record (if matched)</li>
                                 <li><code>datetime</code>, <code>date</code>, <code>relativedelta</code></li>
                             </ul>

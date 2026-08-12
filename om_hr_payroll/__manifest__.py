@@ -1,12 +1,12 @@
 # -*- coding:utf-8 -*-
 
 {
-    'name': 'Odoo 19 HR Payroll',
+    'name': 'HR Payroll',
     'category': 'Generic Modules/Human Resources',
     'version': '19.0.1.0.0',
     'sequence': 1,
     'author': 'Odoo Mates, Odoo SA',
-    'summary': 'Payroll For Odoo 19 Community Edition',
+    'summary': 'Generic Payroll system',
     'live_test_url': 'https://www.youtube.com/watch?v=0kaHMTtn7oY',
     'description': "Odoo 19 Payroll, Payroll Odoo 19, Odoo Community Payroll",
     'website': 'https://www.odoomates.tech',

@@ -1,10 +1,10 @@
 # Part of biz_deroute — portable Odoo 19 white-label layer. License LGPL-3.
 {
     'name': 'Biz Deroute',
-    'summary': 'Serve the backend web client at /bizapp instead of /odoo',
+    'summary': 'Serve the backend web client at /bizapp instead of the stock backend prefix',
     'description': """
 Rebrands the backend URL prefix: the web client lives at /bizapp, every
-legacy /odoo URL is 301-redirected, and the client-side router generates
+legacy backend URL is 301-redirected, and the client-side router generates
 /bizapp URLs natively (address bar, history, bookmarks, deep links).
 
 Companion of biz_debrand (cosmetic debranding). Scope is the address bar
