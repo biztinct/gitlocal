@@ -22,6 +22,8 @@ import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
 import { patch } from "@web/core/utils/patch";
 import { registry } from "@web/core/registry";
+import { RPCError } from "@web/core/network/rpc";
+import { UncaughtPromiseError } from "@web/core/errors/error_service";
 import {
     standardErrorDialogProps,
     ErrorDialog as CoreErrorDialog,
@@ -228,3 +230,79 @@ patch(RPCErrorDialog.prototype, {
         this.title = stripOdoo(this.title);
     },
 });
+
+// ---------------------------------------------------------------------------
+// Fallback routing — an UNMAPPED crash must not dump a traceback at the user.
+//
+// The registry above only covers exceptions we named. Anything else — a bare
+// KeyError from a missing model, an Owl lifecycle error — falls through to
+// core's RPCErrorDialog/ErrorDialog, whose template is the "Oops! Something
+// went wrong... share the report with your friendly support service" panel
+// with the full Python stack and server file paths in it. These two handlers
+// send those cases to BizErrorDialog instead, which keeps the raw payload
+// behind debug mode and offers "Copy details" for support.
+// ---------------------------------------------------------------------------
+const errorHandlerRegistry = registry.category("error_handlers");
+const errorNotificationRegistry = registry.category("error_notifications");
+
+/**
+ * True when this server error already has its own presentation and should be
+ * left to core's rpcErrorHandler (sequence 97) — so every specific mapping,
+ * ours or a third party's, keeps working exactly as before.
+ */
+function hasSpecificHandling(originalError) {
+    if (originalError.Component) {
+        return true;
+    }
+    const name = originalError.exceptionName;
+    if (name && (errorNotificationRegistry.contains(name) || errorDialogRegistry.contains(name))) {
+        return true;
+    }
+    const cls = originalError.data?.context?.exception_class;
+    return Boolean(cls && errorDialogRegistry.contains(cls));
+}
+
+export function bizRpcFallbackHandler(env, error, originalError) {
+    if (!(error instanceof UncaughtPromiseError) || !(originalError instanceof RPCError)) {
+        return false;
+    }
+    if (hasSpecificHandling(originalError)) {
+        return false;
+    }
+    error.unhandledRejectionEvent?.preventDefault();
+    env.services.dialog.add(BizErrorDialog, {
+        traceback: error.traceback,
+        // The server labels generic failures with its own vendor name
+        // (odoo/http.py:2589 — a plain literal, not a translated string, so no
+        // server-side debranding reaches it). Strip it here.
+        message: stripOdoo(originalError.message),
+        name: stripOdoo(originalError.name),
+        exceptionName: originalError.exceptionName,
+        data: originalError.data,
+        subType: originalError.subType,
+        code: originalError.code,
+        type: originalError.type,
+        serverHost: error.event?.target?.location.host,
+        model: originalError.model,
+    });
+    return true;
+}
+// Just ahead of core's rpcErrorHandler (97), and only for cases it would have
+// sent to the raw traceback dialog anyway.
+errorHandlerRegistry.add("bizRpcFallbackHandler", bizRpcFallbackHandler, { sequence: 96 });
+
+/**
+ * Client-side crashes: Owl lifecycle errors, uncaught promises, third-party
+ * scripts. Replaces core's defaultHandler outright (same sequence, force) —
+ * it is the last handler in the chain and always showed a traceback.
+ */
+export function bizDefaultHandler(env, error) {
+    env.services.dialog.add(BizErrorDialog, {
+        traceback: error.traceback,
+        message: stripOdoo(error.message),
+        name: stripOdoo(error.name),
+        serverHost: error.event?.target?.location.host,
+    });
+    return true;
+}
+errorHandlerRegistry.add("defaultHandler", bizDefaultHandler, { force: true, sequence: 100 });
