@@ -503,7 +503,15 @@ class PbTenants(models.AbstractModel):
                 'login': tenant.admin_email,
                 'email': tenant.admin_email,
                 'password': password,
+                # The golden template ships this user ARCHIVED so the template DB
+                # cannot be logged into. Every clone inherits that, and Odoo answers
+                # an inactive login with "Wrong login/password" — so without this the
+                # credentials we hand the client are silently useless.
+                'active': True,
             })
+            # res.users.active and res.partner.active are separate columns; an
+            # archived partner keeps the user unusable even once the user is active.
+            admin.partner_id.write({'active': True})
             say('Tenant administrator: %s' % tenant.admin_email)
         say('Credentials generated — shown once on completion, never stored.', 'warn')
         return {'credentials': {'url': self._tenant_url(slug),
