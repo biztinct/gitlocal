@@ -3,6 +3,7 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { ConnectionLostError } from "@web/core/network/rpc";
 import { ic as kitIc } from "@pb_import_kit/js/import_icons";
 import { TIC, tic } from "@pb_tenants/js/pbtn_icons";
 
@@ -127,10 +128,30 @@ export class PbTenants extends Component {
                 w.slug = r.ok
                     ? { st: "ok", msg: "Available", url: r.url }
                     : { st: "bad", msg: r.reason || "Not available", url: "" };
-            } catch {
-                w.slug = { st: "bad", msg: "Could not check — retry.", url: "" };
+            } catch (e) {
+                if (this.state.wiz.form.slug !== slug) { return; }
+                w.slug = { st: "bad", msg: this.errText(e, "Could not check — retry."), url: "" };
             }
         }, 350);
+    }
+
+    /**
+     * Readable one-liner for a failed RPC.
+     *
+     * This used to be a bare `catch {}` painting "Could not check — retry." over
+     * everything, which made a dropped connection and a real server refusal look
+     * identical — and cost an afternoon of diagnosis once. Always keep the cause
+     * visible: on screen if we can name it, in the console regardless.
+     */
+    errText(e, fallback) {
+        console.error("pb_tenants RPC failed:", e);
+        if (!e) { return fallback; }
+        if (e instanceof ConnectionLostError || e.name === "ConnectionLostError") {
+            return "Lost connection to the server — check your network and retry.";
+        }
+        const raw = e.data?.message || e.message || e.data?.arguments?.[0] || "";
+        const msg = String(raw).trim().split("\n")[0];
+        return msg ? (msg.length > 160 ? msg.slice(0, 157) + "…" : msg) : fallback;
     }
 
     get wizValid() {
