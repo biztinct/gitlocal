@@ -25,7 +25,7 @@ import time
 import urllib.request
 import uuid
 from contextlib import contextmanager
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import odoo
 from odoo import SUPERUSER_ID, _, api, fields, models
@@ -52,6 +52,24 @@ PROVISION_STEPS = [
     ('verify', 'Verify & go live'),
 ]
 NIGHTLY_KEEP = 14
+
+IPV4_RE = re.compile(r'^\d{1,3}(?:\.\d{1,3}){3}$')
+# Public resolvers consulted when the host's own resolver fails us — see _resolve().
+FALLBACK_RESOLVERS = ('1.1.1.1', '8.8.8.8')
+# Start nagging about the wildcard certificate this many days before it expires.
+# Manual DNS-01 certificates do NOT auto-renew, so this is the only warning there is.
+TLS_RENEW_WARN_DAYS = 30
+
+# Per-tenant health probes, each run independently: (field, required table, SQL).
+# They used to share a single try/except, so the first schema drift silently
+# zeroed everything after it — Odoo 19 dropped res_users.login_date, which meant
+# the employee count that followed never ran and every tenant reported 0 staff.
+HEALTH_PROBES = (
+    ('user_count', None, "SELECT count(*) FROM res_users WHERE active AND share IS NOT TRUE"),
+    # Odoo 19 moved "when was this user last seen" to res_device_log.last_activity.
+    ('last_login', 'res_device_log', "SELECT max(last_activity) FROM res_device_log"),
+    ('employee_count', 'hr_employee', "SELECT count(*) FROM hr_employee WHERE active"),
+)
 
 
 def _direct(fn):
@@ -163,10 +181,31 @@ class PbTenants(models.AbstractModel):
             return 0, -1
 
     def _resolve(self, host):
+        """Resolve a hostname, falling back to public resolvers.
+
+        The go-live checklist asks "does this name resolve on the public
+        internet?", but socket.gethostbyname() can only answer "does it resolve
+        for *this box*". Those differ: on 2026-08-14 the AWS VPC resolver held a
+        stale negative answer for the wildcard probe for an hour after the
+        registrar was already correct, so the checklist showed an alarming red
+        DNS row against perfectly good infrastructure. Ask someone else before
+        concluding the record is missing.
+        """
         try:
             return socket.gethostbyname(host)
         except OSError:
-            return None
+            pass
+        for resolver in FALLBACK_RESOLVERS:
+            try:
+                out = subprocess.run(
+                    ['dig', '+short', '+time=3', '+tries=1', '@%s' % resolver, host, 'A'],
+                    capture_output=True, text=True, timeout=8).stdout
+            except Exception:
+                continue  # no dig on this box, or it hung — try the next resolver
+            for line in out.split():
+                if IPV4_RE.match(line):  # skip CNAME lines dig also prints
+                    return line
+        return None
 
     def _public_ip(self):
         """The server's public IP = whatever the apex A record points to."""
@@ -241,7 +280,17 @@ class PbTenants(models.AbstractModel):
         probe_host = 'pb-probe-x7.%s' % dom
         wild_ip = self._resolve(probe_host)
         wildcard_dns = bool(ip and wild_ip == ip)
-        wildcard_tls = self._check_wildcard_tls(dom)
+        tls = self._check_wildcard_tls(dom)
+        # A cert that is valid but about to lapse is not "done" — flip the row
+        # amber early, because a manual DNS-01 cert has no other alarm.
+        tls_days = tls['days_left']
+        tls_expiring = bool(tls['ok'] and tls_days is not None and tls_days <= TLS_RENEW_WARN_DAYS)
+        if not tls['ok']:
+            tls_hint = 'Issue a *.%s certificate (DNS-01 challenge) and install it in nginx.' % dom
+        else:
+            tls_hint = ('Certificate expires %s (%d days left). Manual DNS-01 certificates do '
+                        'NOT auto-renew — reissue with certbot (deploy runbook).'
+                        % (tls['expires'], tls_days))
         template_ok = self._db_exists(self._template_db())
         try:
             du = shutil.disk_usage('/')
@@ -259,8 +308,8 @@ class PbTenants(models.AbstractModel):
              'hint': 'Template "%s" not found — build it from the deploy runbook.' % self._template_db()},
             {'key': 'dns', 'label': 'Wildcard DNS  *.%s' % dom, 'ok': wildcard_dns,
              'hint': 'Add at your registrar: A record, host "*", value %s' % (ip or 'server IP')},
-            {'key': 'tls', 'label': 'Wildcard TLS certificate', 'ok': wildcard_tls,
-             'hint': 'Issue a *.%s certificate (DNS-01 challenge) and install it in nginx.' % dom},
+            {'key': 'tls', 'label': 'Wildcard TLS certificate', 'ok': tls['ok'] and not tls_expiring,
+             'hint': tls_hint},
             {'key': 'smtp', 'label': 'Outgoing mail (SMTP)', 'ok': smtp_ok,
              'hint': 'Configure an outgoing mail server so tenant emails can send.'},
             {'key': 'domain_script', 'label': 'Custom-domain automation', 'ok': os.path.exists('/usr/local/bin/pb-domain-attach'),
@@ -280,6 +329,14 @@ class PbTenants(models.AbstractModel):
         }
 
     def _check_wildcard_tls(self, dom):
+        """Inspect the cert nginx actually serves for a *.dom name.
+
+        Returns {'ok': covers the wildcard, 'expires': 'YYYY-MM-DD'|None,
+        'days_left': int|None}. Expiry matters because the wildcard is issued
+        with certbot's manual DNS-01 flow, which has no renewal hook — nothing
+        on this server will renew it, so the cockpit is the reminder.
+        """
+        out = ''
         try:
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
@@ -298,9 +355,20 @@ class PbTenants(models.AbstractModel):
                                      capture_output=True, text=True, timeout=5).stdout
             finally:
                 os.unlink(pem)
-            return ('*.%s' % dom) in out
         except Exception:
-            return False
+            return {'ok': False, 'expires': None, 'days_left': None}
+        res = {'ok': ('*.%s' % dom) in out, 'expires': None, 'days_left': None}
+        m = re.search(r'Not After\s*:\s*(.+)', out)
+        if m:
+            try:
+                # "Nov 12 02:24:43 2026 GMT" — day is space-padded when < 10.
+                end = datetime.strptime(' '.join(m.group(1).split()), '%b %d %H:%M:%S %Y %Z')
+                res['expires'] = end.strftime('%Y-%m-%d')
+                # openssl prints GMT; compare against naive UTC (utcnow() is deprecated).
+                res['days_left'] = (end - datetime.now(timezone.utc).replace(tzinfo=None)).days
+            except ValueError:
+                pass
+        return res
 
     # ================================================================== slug
     @api.model
@@ -507,16 +575,20 @@ class PbTenants(models.AbstractModel):
         vals['db_size'] = self._db_size(t.slug)
         vals['filestore_size'] = self._filestore_size(t.slug)
         try:
+            # The cursor is autocommit, so a failed probe does not poison the ones
+            # after it — but only if each gets its own except. See HEALTH_PROBES.
             with self._pg_cursor(t.slug) as cr:
-                cr.execute("SELECT count(*) FROM res_users WHERE active AND share IS NOT TRUE")
-                vals['user_count'] = cr.fetchone()[0]
-                cr.execute("SELECT max(login_date) FROM res_users")
-                row = cr.fetchone()
-                vals['last_login'] = row and row[0] or False
-                cr.execute("SELECT to_regclass('hr_employee')")
-                if cr.fetchone()[0]:
-                    cr.execute("SELECT count(*) FROM hr_employee WHERE active")
-                    vals['employee_count'] = cr.fetchone()[0]
+                for field, table, sql in HEALTH_PROBES:
+                    try:
+                        if table:
+                            cr.execute("SELECT to_regclass(%s)", (table,))
+                            if not cr.fetchone()[0]:
+                                continue  # module not installed in this tenant
+                        cr.execute(sql)
+                        val = cr.fetchone()[0]
+                        vals[field] = False if val is None else val
+                    except Exception as e:
+                        _logger.warning("Health probe %s failed for %s: %s", field, t.slug, e)
         except Exception as e:
             _logger.warning("Health SQL failed for %s: %s", t.slug, e)
         code, ms = self._probe('%s.%s' % (t.slug, self._base_domain()))
@@ -722,3 +794,24 @@ class PbTenants(models.AbstractModel):
             except Exception as e:
                 _logger.warning("Health refresh failed for %s: %s", t.slug, e)
             self.env.cr.commit()
+        self._warn_cert_expiry()
+
+    def _warn_cert_expiry(self):
+        """Nag the server log when the wildcard cert is close to lapsing.
+
+        The cockpit checklist shows this too, but nobody watches a green
+        checklist — and a manual DNS-01 cert has no renewal cron to fail loudly.
+        """
+        dom = self._base_domain()
+        try:
+            tls = self._check_wildcard_tls(dom)
+        except Exception as e:
+            return _logger.warning("Certificate expiry check failed for *.%s: %s", dom, e)
+        days = tls['days_left']
+        if not tls['ok'] or days is None:
+            return
+        if days <= TLS_RENEW_WARN_DAYS:
+            _logger.warning(
+                "Wildcard TLS certificate for *.%s expires in %d days (%s). Manual DNS-01 "
+                "certificates do NOT auto-renew — reissue it (see docs/SAAS_RUNBOOK.md).",
+                dom, days, tls['expires'])
