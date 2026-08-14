@@ -512,6 +512,13 @@ class PbTenants(models.AbstractModel):
             # res.users.active and res.partner.active are separate columns; an
             # archived partner keeps the user unusable even once the user is active.
             admin.partner_id.write({'active': True})
+            # Without a home action Odoo drops the client into Discuss on first
+            # login, which is a poor first impression of a payroll product.
+            home = env.ref('pb_dashboard.action_pb_dashboard', raise_if_not_found=False)
+            if home:
+                admin.write({'action_id': home.id})
+            else:
+                say('Payroll dashboard action not found — home screen left at the default.', 'warn')
             say('Tenant administrator: %s' % tenant.admin_email)
         say('Credentials generated — shown once on completion, never stored.', 'warn')
         return {'credentials': {'url': self._tenant_url(slug),
