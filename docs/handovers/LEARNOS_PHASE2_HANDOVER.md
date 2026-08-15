@@ -1,8 +1,23 @@
-# LEARNOS Phase 2 — Novice language + glossary everywhere (DRAFT until 1b accepted)
+# LEARNOS Phase 2 — Novice language + glossary everywhere
 
 Read both ledgers + the accepted 1a/1b reports first. Scope: docs/tutorial_poc/author/
 (data.js, practice-data.js, tools) + the glossary-hovercard UI in pb_learn/static/src.
-No engine changes beyond the hovercard renderer. No deploy, no commit.
+No engine changes beyond the hovercard renderer + the one hardening item below. No deploy,
+no commit. Base: commit 6593ad25 (1b accepted; 6 scenarios, 51 steps, 22 sc* chrome keys —
+all provisional-VI and ALL in scope for this rewrite; the 1b review's VI spot-check passed,
+the full audit is this phase's reviewer duty).
+
+## 1b facts for this phase
+- Scenario copy lives in data.js `SCENARIOS` (say.kicker/title/body/tip per step, name,
+  tagline) and the 22 `sc*` I18N chrome keys. `scenariosLead` is authored but referenced
+  nowhere — use it (Journey scenarios row lead-in) or delete it, your call, disclosed.
+- Hovercard pass must also cover scenario cards (overlay + Try cards render bodies via tx()).
+- **Hardening item (binding, small):** `tx()` in engine/runtime.js interpolates
+  `learn.tenant.override` values UNESCAPED into raw-HTML body positions (tenant-admin →
+  learner XSS surface). Escape token substitution output (HTML-entity the value at
+  interpolation time). Add a unit check to the replay harness proving `<script>` in a token
+  value renders inert. Content bodies themselves remain trusted generated HTML — only the
+  TOKEN values get escaped.
 
 ## Why
 The current copy is written for payroll-literate readers. The product promise is that a
