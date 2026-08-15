@@ -193,9 +193,14 @@ function ensureCard() {
 }
 
 function hideCard() {
-    if (cardEl) {
+    // Returns whether anything was actually hidden, so the Escape handler can
+    // swallow the key ONLY when it did work — one press closes the card, the
+    // next one exits the lesson (deploy validation, defect 2).
+    if (cardEl && !cardEl.hidden) {
         cardEl.hidden = true;
+        return true;
     }
+    return false;
 }
 
 /** The card's inner HTML for one entry. Exported so the replay harness can
@@ -279,8 +284,9 @@ export function installGlossary() {
         }
     }, true);
     document.addEventListener("keydown", (ev) => {
-        if (ev.key === "Escape") {
-            hideCard();
+        if (ev.key === "Escape" && hideCard()) {
+            ev.stopPropagation();
+            ev.preventDefault();
         }
     }, true);
     window.addEventListener("scroll", hideCard, true);

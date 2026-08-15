@@ -187,6 +187,11 @@ function askWelcome() {
            can be dismissed at all. */
         const onKey = (ev) => {
             if (ev.key === "Escape") {
+                // A transient layer that closes on a key SWALLOWS that key —
+                // the learner meant "close the card", not "and also exit
+                // whatever is behind it".
+                ev.stopPropagation();
+                ev.preventDefault();
                 answer("later");
             }
         };
@@ -201,14 +206,14 @@ function askWelcome() {
                 return;
             }
             done = true;
-            document.removeEventListener("keydown", onKey);
+            document.removeEventListener("keydown", onKey, true);
             el.removeEventListener("click", onClick);
             el.remove();
             resolve(choice === "go" ? "go" : "later");
         }
 
         el.addEventListener("click", onClick);
-        document.addEventListener("keydown", onKey);
+        document.addEventListener("keydown", onKey, true);
         document.body.appendChild(el);
         const go = el.querySelector(".lrn-welcome-go");
         if (go) {
