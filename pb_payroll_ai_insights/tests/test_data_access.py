@@ -274,7 +274,10 @@ class TestDataQueryAccess(TransactionCase):
     def test_05c_a_refused_report_section_says_so_instead_of_rendering_empty(self):
         self.assertIn('_section_access', self.report_src,
                       "the PDF report no longer surfaces a refusal")
-        body = self.report_src.split('def _generate_section_narratives')[1]
+        # The refusal skip lives in module-level redact_sections() since the
+        # Phase-6 one-mapping refactor — refused sections never reach either
+        # provider loop (deploy finding: the old anchor went stale).
+        body = self.report_src.split('def redact_sections')[1]
         self.assertIn("section.get('access_refused')", body,
                       "a refused section is sent to the provider for a narrative "
                       "about an empty list, overwriting the refusal")
