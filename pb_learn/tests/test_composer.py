@@ -295,10 +295,18 @@ class TestComposer(TransactionCase):
         self.assertEqual(len(self.Intent._scrub('x' * 5000)), 400)
 
     def test_06_the_corpus_is_our_own_content_and_is_bounded(self):
+        # LEARNOS PHASE 4 RE-ANCHORED THE BOUND. It was the literal 12000, and
+        # 12000 was the bug: the glossary is larger than that on its own and
+        # was appended last, so no glossary term had ever reached a prompt. The
+        # bound is now read from the constant rather than retyped, and the
+        # measurement that decides the constant is `test_explain::test_04d`.
+        from odoo.addons.pb_learn.models.learn_intent import _CORPUS_CAP
         corpus = self.Intent._corpus('payslips', 'en_US')
         self.assertTrue(corpus.strip(), "no corpus for a screen with a station")
-        self.assertLessEqual(len(corpus), 12000)
+        self.assertLessEqual(len(corpus), _CORPUS_CAP)
         self.assertIn('SCREEN:', corpus)
+        self.assertIn('TERM ', corpus,
+                      "the glossary is being cut off again — see test_explain")
 
     def test_06b_the_corpus_builder_touches_no_product_model(self):
         """Asserted on the AST, so a string built by concatenation cannot hide.

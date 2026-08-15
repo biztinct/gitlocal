@@ -8,3 +8,4 @@ access_confidence_user,learn.confidence own,model_learn_confidence,base.group_us
 access_learn_consent_own,learn.consent own,model_learn_consent,base.group_user,1,1,1,0
 access_learn_question_own,learn.question own,model_learn_question,base.group_user,1,0,1,1
 access_learn_question_author,learn.question author,model_learn_question,group_learn_author,1,0,0,1
+access_learn_companion_author,learn.companion.settings author,model_learn_companion_settings,group_learn_author,1,1,1,1

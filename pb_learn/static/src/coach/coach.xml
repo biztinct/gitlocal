@@ -45,6 +45,16 @@
                      fire and cost three rounds to notice, while data-act has worked
                      from the first build — so use the path that is already proven
                      rather than the one that should work. -->
+                <!-- LEARNOS Phase 4 — "Explain this screen". In the HEADER
+                     rather than in the body, because it has to be reachable
+                     while an answer is already showing: the commonest use is
+                     "that was not what I meant, what IS this screen". It
+                     disappears off the map, where it would have nothing to
+                     explain. Same delegated data-act path as its neighbours. -->
+                <button t-if="covered" class="lrn-btn sm ghost" data-act="c-explain"
+                        t-att-title="explainHintText" t-att-aria-label="explainLabel">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-info"/></svg>
+                </button>
                 <button class="lrn-btn sm ghost" data-act="c-lang">
                     <span t-esc="langLabel"/>
                 </button>

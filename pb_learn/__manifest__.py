@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Learn — in-app learning',
-    'version': '19.0.9.0.0',
+    'version': '19.0.10.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
@@ -95,6 +95,9 @@ never hand-edited here).
         'data/learn_sidebar_item.xml',
         'views/learn_learner_views.xml',
         'views/learn_override_views.xml',
+        # LEARNOS Phase 4 — the composer switch. Before the menus, which ref
+        # its action.
+        'views/learn_companion_views.xml',
         'views/learn_menus.xml',
     ],
     'assets': {

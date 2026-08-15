@@ -749,9 +749,31 @@ def _check_show_me(key, targets, scenario_steps, problems):
                             'has no such step' % (key, step_key, sc_key))
 
 
+def _check_offer(key, mode, target, scenario_modes, problems):
+    """A `watch` / `try` target is a scenario KEY that supports that mode.
+
+    Validated exactly like `show_me` and for the same reason: the button is an
+    offer, and an offer the engine cannot keep is worse than no button. The
+    MODE half matters as much as the key — `sc_import` is a Watch of the real
+    importer with no replica behind it, so a `try` pointing at it would draw a
+    control that starts nothing.
+    """
+    if not target:
+        return
+    if target not in scenario_modes:
+        problems.append('intent %s: %s points at a scenario that does not '
+                        'exist: %s' % (key, mode, target))
+    elif mode not in scenario_modes[target]:
+        problems.append('intent %s: %s points at %s, which does not declare '
+                        'that mode (it has: %s)'
+                        % (key, mode, target, ', '.join(scenario_modes[target])
+                           or 'none'))
+
+
 def content_intents(data, bi, live, scenarios=None):
     scenario_steps = {sc['key']: {st['key'] for st in sc['steps']}
                       for sc in (scenarios or [])}
+    scenario_modes = {sc['key']: list(sc['modes']) for sc in (scenarios or [])}
     problems = []
     out = []
     for intent in data['qa']:
@@ -760,12 +782,20 @@ def content_intents(data, bi, live, scenarios=None):
         screens = intent.get('screens')
         show_me = [a.strip() for a in (intent.get('showMe') or []) if a.strip()]
         _check_show_me(key, show_me, scenario_steps, problems)
+        # LEARNOS Phase 4 — "answers that teach". An intent MAY offer to show
+        # the same ground as a walkthrough, in either of two ways.
+        watch = (intent.get('watch') or '').strip()
+        try_ = (intent.get('try') or '').strip()
+        _check_offer(key, 'watch', watch, scenario_modes, problems)
+        _check_offer(key, 'try', try_, scenario_modes, problems)
         node = {
             'key': key,
             'label': bi.p('%s label' % where, intent['label']),
             'screens': '*' if screens == '*' else ','.join(screens or []),
             'dynamic': DYNAMIC_KIND.get(intent.get('dynamic'), 'none'),
             'show_me': show_me,
+            'watch': watch,
+            'try': try_,
             'simpler': bi.p('%s simpler' % where, intent.get('simpler')),
             'practice_key': intent.get('practice') or '',
             # A refusal stays reachable but is never advertised.
@@ -1104,16 +1134,43 @@ def content_scenarios(data, bi):
     return out
 
 
+GLOBAL_SUGGEST_LIMIT = 6
+
+
 def content_global_suggest(intents):
     """What the Coach can answer ANYWHERE.
 
     The old server ran `search([('screens','=','*'), ('offer','=',True)],
     order='key', limit=6)`. Computed here so the browser and the ask() miss
     path cannot disagree about it, and so the list is diffable.
+
+    THE LIMIT IS A SILENT DROP, SO IT IS A BUILD FAILURE. The order is
+    alphabetical by KEY, so the seventh global intent somebody writes does not
+    push itself off the list — it pushes off whichever key sorts last, which
+    today is `whatpage`, the single most useful thing the Coach can answer on a
+    screen it does not cover.
+
+    A printed NOTE was the first attempt and the Phase 4 review was right to
+    reject it: the pool is EXACTLY at the limit today, so the very next global
+    intent silently costs `whatpage`, and a line in generator output is not
+    something anybody reads on the run where it first appears. Refusing makes
+    the author choose out loud — de-globalize an intent, or raise the limit
+    knowing what it costs.
     """
     pool = [i for i in intents if i['screens'] == '*' and i['offer']]
     pool.sort(key=lambda i: i['key'])
-    return [{'key': i['key'], 'label': i['label']} for i in pool[:6]]
+    if len(pool) > GLOBAL_SUGGEST_LIMIT:
+        kept = [i['key'] for i in pool[:GLOBAL_SUGGEST_LIMIT]]
+        dropped = [i['key'] for i in pool[GLOBAL_SUGGEST_LIMIT:]]
+        print('GLOBAL SUGGEST: %d intents are scoped to every screen and the '
+              'screenless Coach shows %d. The list is sorted by KEY, so these '
+              'would be dropped silently: %s'
+              % (len(pool), GLOBAL_SUGGEST_LIMIT, ', '.join(dropped)))
+        print('  kept: %s' % ', '.join(kept))
+        print('  Scope one of them to the screens it belongs on, or raise '
+              'GLOBAL_SUGGEST_LIMIT in this file and say why.')
+        raise SystemExit(9)
+    return [{'key': i['key'], 'label': i['label']} for i in pool]
 
 
 def gen_content(data, bi, live):

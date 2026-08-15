@@ -220,6 +220,26 @@ missing test", contract checker discipline, anchor registry discipline). Read th
 - (Deploy backlog, out of LEARNOS scope) Local-ahead-never-deployed modules: pb_demo 1.5.0,
   pb_pay_delivery 1.0.2, pb_demo_portal, pb_website. Pre-existing UI bug: Timecards empty
   state renders literal `_t("With hours only")`.
+- (Phase 4) **The first provider call is the one nobody audits** — every redaction control
+  sat in the handler while `_classify_intent` sent the raw question one call earlier. Audit
+  the CALL ORDER, not the handler. A guard applied to one tier of a scale and not its
+  neighbour is not applied (ambiguous filter now covers both overlap tiers). A tie at the
+  acceptance boundary is a coin toss wearing a badge — tie-at-floor is a miss.
+- (Phase 4) **Fixing a dead provider call is switching ON an egress path** — payroll_ai_report's
+  two get_provider_instance sites stay dead, pinned by an exact-count test, until Phase 6
+  pairs the repair with redaction. Redaction residuals are STATED in ai_redaction.py's
+  module docstring (history prior-turn names, raw current-message on 3 paths, dict keys,
+  bare 7-8 digit amounts, mixed-diacritic partials) — an unstated residual is a lie of
+  omission.
+- (Phase 4) A structural check that greps literals or offsets survives a conditional
+  wrapper — fail-open is worse than absent. The AST-parent walk (test_explain::test_02a:
+  refuse any If/IfExp/BoolOp ancestor naming the flag) is the reusable form. A probe that
+  would pass anyway is a line, not a test: every must-miss probe carries the score it
+  reaches with its rule disabled, verified by executing the control.
+- (Phase 4) global_suggest overflow is now generator exit 9 naming the casualty. 9th
+  absent-token occurrence (docstring naming get_provider_instance). pb_learn manifest
+  19.0.10.0.0 (new transient model). PRODUCT TICKET: Pay Runs kanban still offers Bank
+  file + Email where the cockpit offers Pay & Deliver.
 - (Phase 2, accepted nits for later touch) live_mission.js still `esc(tx())` on step.detail
   (no glossary cards, literal <b> tags there); glossify idempotence guard keys on the
   literal `data-gloss=`; gloss_scan payload ignores matchTerm (over-fails only); the 17-28
