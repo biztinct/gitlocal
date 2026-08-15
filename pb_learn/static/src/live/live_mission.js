@@ -29,7 +29,7 @@
    server can answer. Stops on ack, on completion, on leaving and on unmount.
    There is no polling anywhere else in this module.
    ========================================================================== */
-import { Component, onWillStart, onWillUnmount, useState } from "@odoo/owl";
+import { Component, markup, onWillStart, onWillUnmount, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 import { RT, T, tx, esc, ic } from "../engine/runtime";
@@ -263,7 +263,13 @@ export class LiveHost extends Component {
         return T("step") + " " + (this.state.step + 1) + " " + T("of") + " " + this.steps.length;
     }
 
+    // t-out renders a plain string as TEXT — the card must be handed markup()
+    // or it paints its own source. Same rule as coach.js / journey.js.
     get bodyHTML() {
+        return markup(this._bodyStr());
+    }
+
+    _bodyStr() {
         const step = this.current;
         if (!step) {
             return "";

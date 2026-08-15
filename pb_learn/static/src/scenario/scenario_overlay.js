@@ -42,7 +42,7 @@
    :375-380), deleted with its module in this phase — read it out of git if the
    plumbing here ever needs re-deriving.
    ========================================================================== */
-import { Component, onMounted, onWillUnmount, useRef, useState } from "@odoo/owl";
+import { Component, markup, onMounted, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
@@ -86,7 +86,13 @@ export class ScenarioOverlay extends Component {
         this._loop = this._loop.bind(this);
 
         onMounted(() => {
-            window.addEventListener("keydown", this._onKey);
+            // ON `document`, NOT `window` — and this is not a style choice.
+            // Something between document and window stops keydown propagation
+            // (Odoo's own hotkey service owns Escape), so a window-BUBBLE
+            // listener never runs and the overlay's whole keyboard interface
+            // — Escape, ArrowRight, ArrowLeft — is silently dead. coach.js:129
+            // and journey.js:125 both bind `document` for exactly this reason.
+            document.addEventListener("keydown", this._onKey);
             this._raf = requestAnimationFrame(this._loop);
         });
         onWillUnmount(() => {
@@ -97,7 +103,7 @@ export class ScenarioOverlay extends Component {
             this._detachClick();
             this._clearTimer();
             this._clearTyper();
-            window.removeEventListener("keydown", this._onKey);
+            document.removeEventListener("keydown", this._onKey);
         });
     }
 
@@ -533,7 +539,24 @@ export class ScenarioOverlay extends Component {
         return T("scRealBadge");
     }
 
+    // t-out RENDERS A PLAIN STRING AS TEXT. Every one of these getters builds
+    // markup out of esc()'d fragments, exactly as coach.js and journey.js do,
+    // and every one of them must hand OWL a markup() value or the card paints
+    // its own source. The three public getters below are the only thing the
+    // template touches; the _*Str builders keep the logic.
+    get headerHTML() {
+        return markup(this._headerStr());
+    }
+
     get bodyHTML() {
+        return markup(this._bodyStr());
+    }
+
+    get toolsHTML() {
+        return markup(this._toolsStr());
+    }
+
+    _bodyStr() {
         // THE RENDER-TIME SUBSCRIPTION, for the same reason coach.js has one:
         // every visible string goes through T()/tx(), which read RT.lang — a
         // plain module object OWL cannot observe. Reading the SERVICE's
@@ -593,7 +616,7 @@ export class ScenarioOverlay extends Component {
         return parts.join("");
     }
 
-    get toolsHTML() {
+    _toolsStr() {
         if (this.state.done) {
             return `<div class="lrn-ctools">
                 <button class="lrn-btn sm pri" data-act="s-leave"
@@ -624,7 +647,7 @@ export class ScenarioOverlay extends Component {
         </div>`;
     }
 
-    get headerHTML() {
+    _headerStr() {
         const s = this.scenario;
         if (!s) {
             return "";
