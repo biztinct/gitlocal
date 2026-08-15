@@ -8,8 +8,9 @@
             <div class="pbd-hero" data-coach="dash-hero">
                 <div class="pbd-hero-l">
                     <div class="pbd-eyebrow" t-esc="state.d.company + ' · Payroll command centre'"/>
-                    <h1>Good afternoon, <t t-esc="state.d.user"/></h1>
-                    <div class="pbd-sub">
+                    <h1><t t-esc="greeting()"/>, <t t-esc="state.d.user"/></h1>
+                    <div class="pbd-sub" t-if="isEmpty">No payroll data yet — let's get you set up</div>
+                    <div class="pbd-sub" t-else="">
                         <t t-esc="state.d.run.name"/> · <t t-esc="state.d.run.done"/>/<t t-esc="state.d.run.slips"/> payslips done ·
                         <t t-esc="state.d.kpis.pending"/> awaiting approval
                     </div>
@@ -22,10 +23,49 @@
                 </div>
             </div>
 
+            <!-- Empty-state setup panel. Sits BETWEEN the hero and the KPI
+                 strip so every data-coach anchor below stays exactly where it
+                 was; the KPIs and cards still render, showing honest zeros. -->
+            <div class="pbd-setup" t-if="isEmpty">
+                <div class="pbd-setup-head">
+                    <span class="pbd-setup-ic"><t t-out="icon('flag',18)"/></span>
+                    <div>
+                        <div class="pbd-setup-t">Let's set up your payroll</div>
+                        <div class="pbd-setup-s">Your workspace is ready. Three small steps and you'll see your first payslip.</div>
+                    </div>
+                </div>
+                <div class="pbd-steps">
+                    <div class="pbd-step" t-if="hasLearn">
+                        <span class="pbd-step-ic"><t t-out="icon('compass',18)"/></span>
+                        <div class="pbd-step-x">
+                            <div class="pbd-step-t">Learn the basics</div>
+                            <div class="pbd-step-s">A 2-minute guided look around</div>
+                        </div>
+                        <button class="pbd-btn" t-on-click="() => this.openLearn()">Start tour</button>
+                    </div>
+                    <div class="pbd-step">
+                        <span class="pbd-step-ic"><t t-out="icon('user-plus',18)"/></span>
+                        <div class="pbd-step-x">
+                            <div class="pbd-step-t">Add your first employee</div>
+                            <div class="pbd-step-s">Name, contract, pay — that is all it takes</div>
+                        </div>
+                        <button class="pbd-btn" t-on-click="() => this.openEmployees()">Add employee</button>
+                    </div>
+                    <div class="pbd-step">
+                        <span class="pbd-step-ic"><t t-out="icon('upload',18)"/></span>
+                        <div class="pbd-step-x">
+                            <div class="pbd-step-t">Import your Excel sheet</div>
+                            <div class="pbd-step-s">Bring everyone in at once</div>
+                        </div>
+                        <button class="pbd-btn" t-on-click="() => this.openImport()">Import data</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- KPI strip -->
             <div class="pbd-kpis" data-coach="dash-kpis">
                 <div class="pbd-kpi k-indigo"><div class="kl">Headcount <t t-out="icon('users',15)"/></div><div class="kv" t-esc="state.d.kpis.headcount"/><div class="ks" t-esc="state.d.kpis.contracts + ' active contracts'"/></div>
-                <div class="pbd-kpi k-green"><div class="kl">Monthly payroll <t t-out="icon('wallet',15)"/></div><div class="kv" t-esc="vnd(state.d.kpis.payroll)"/><div class="ks">personnel cost</div></div>
+                <div class="pbd-kpi k-green"><div class="kl">Monthly payroll <t t-out="icon('wallet',15)"/></div><div class="kv" t-esc="money(state.d.kpis.payroll)"/><div class="ks">personnel cost</div></div>
                 <div class="pbd-kpi k-amber"><div class="kl">Pending approval <t t-out="icon('clock',15)"/></div><div class="kv" t-esc="state.d.kpis.pending"/><div class="ks">awaiting sign-off</div></div>
                 <div class="pbd-kpi k-cyan"><div class="kl">Active configs <t t-out="icon('calculator',15)"/></div><div class="kv" t-esc="state.d.formula.active"/><div class="ks" t-esc="state.d.formula.rules + ' rules'"/></div>
             </div>
@@ -52,16 +92,19 @@
                 <div class="pbd-card">
                     <div class="pbd-card-head">
                         <div><div class="pbd-card-t">Company overview</div><div class="pbd-card-m">All departments · monthly</div></div>
-                        <t t-out="ring(100)"/>
+                        <!-- The 100 was a decoration, not a measurement. With nobody
+                             on the payroll there is nothing to be 100% of, and a red
+                             0 ring would be a different lie — so it draws nothing. -->
+                        <t t-if="!isEmpty and state.d.kpis.headcount" t-out="ring(100)"/>
                     </div>
                     <div class="pbd-pills">
                         <span class="pbd-pill muted"><t t-esc="state.d.kpis.headcount"/> headcount</span>
                         <span class="pbd-pill warn"><t t-esc="state.d.kpis.pending"/> approvals</span>
                     </div>
                     <div class="pbd-mini">
-                        <div><div class="mv" t-esc="vnd(state.d.kpis.payroll)"/><div class="ml">Payroll</div></div>
-                        <div><div class="mv" t-esc="vnd(state.d.kpis.avg)"/><div class="ml">Avg salary</div></div>
-                        <div><div class="mv" t-esc="vnd(state.d.kpis.contributions)"/><div class="ml">Contributions</div></div>
+                        <div><div class="mv" t-esc="money(state.d.kpis.payroll)"/><div class="ml">Payroll</div></div>
+                        <div><div class="mv" t-esc="money(state.d.kpis.avg)"/><div class="ml">Avg salary</div></div>
+                        <div><div class="mv" t-esc="money(state.d.kpis.contributions)"/><div class="ml">Contributions</div></div>
                     </div>
                     <button class="pbd-link" t-on-click="() => this.open('pb_hr_payroll_analytics.action_open_hr_analytics_dashboard')">Open analytics →</button>
                 </div>

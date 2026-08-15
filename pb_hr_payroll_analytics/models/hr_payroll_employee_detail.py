@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import logging
+
+from .hr_analytics_dashboard import _demo_world
 
 _logger = logging.getLogger(__name__)
 
@@ -78,20 +80,32 @@ class HrPayrollEmployeeDetail(models.TransientModel):
             
             _logger.info(f"[Drill-Down] Converted dates: from={date_from}, to={date_to}")
             
+            # Both "no such department" and "no payslips" used to fall through
+            # to `_generate_sample_data`, which INVENTS employees (and creates
+            # them as real hr.employee records). Outside a demo world that is a
+            # fabrication with side effects: say nothing was found instead.
+            demo = _demo_world(self.env)
+
             # Find the department
             department = self.env['hr.department'].search([('name', '=', department_name)], limit=1)
             if not department:
+                if not demo:
+                    _logger.info("[Drill-Down] Department '%s' not found; no data.", department_name)
+                    return self._no_data_notification(department_name)
                 _logger.warning(f"[Drill-Down] Department '{department_name}' not found, using sample data")
                 return self._generate_sample_data(department_name, date_from, date_to)
-            
+
             # Try to get real payroll data
             records_created = self._generate_from_payslips(department, date_from, date_to, country_code)
-            
+
             # If no real data, use sample data
             if records_created == 0:
+                if not demo:
+                    _logger.info("[Drill-Down] No payslip data for '%s'; no data.", department_name)
+                    return self._no_data_notification(department_name)
                 _logger.info(f"[Drill-Down] No payslip data found, generating sample data")
                 return self._generate_sample_data(department_name, date_from, date_to)
-            
+
             # Return action to open pivot view
             return self._get_pivot_action(department_name)
             
@@ -162,10 +176,33 @@ class HrPayrollEmployeeDetail(models.TransientModel):
         return records_created
 
     @api.model
+    def _no_data_notification(self, department_name):
+        """Honest empty answer — creates no records of any kind."""
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Nothing to show'),
+                'message': _('No payroll data for %s yet.') % department_name,
+                'type': 'warning',
+                'sticky': False,
+            },
+        }
+
+    @api.model
     def _generate_sample_data(self, department_name, date_from, date_to):
-        """Generate sample data for demonstration"""
+        """Generate sample data for demonstration.
+
+        DEMO WORLDS ONLY — it creates hr.department and hr.employee records
+        with invented names. `generate_drill_down_data` is the only caller and
+        gates it on `_demo_world`; the guard is repeated here because this
+        method is reachable by RPC on its own.
+        """
+        if not _demo_world(self.env):
+            _logger.info("[Drill-Down] Sample data refused outside a demo world.")
+            return self._no_data_notification(department_name)
         _logger.info(f"[Drill-Down] Generating sample data for {department_name}")
-        
+
         # Sample employee names by department
         employee_samples = {
             'Engineering': ['John Smith', 'Sarah Johnson', 'Michael Chen', 'Emily Davis', 'David Wilson'],

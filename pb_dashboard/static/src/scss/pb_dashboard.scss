@@ -36,6 +36,45 @@
         svg { vertical-align: -.18em; }
     }
 
+    // Empty-tenant setup panel — white surface, left rail accent, solid indigo
+    // buttons. Same vocabulary as .pbd-kpi, one step warmer.
+    .pbd-setup {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
+        padding: 20px 22px; margin-bottom: 20px; position: relative; overflow: hidden;
+        box-shadow: 0 6px 18px rgba(27,23,51,.08);
+        &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--pbd-brand); }
+    }
+    .pbd-setup-head { display: flex; align-items: flex-start; gap: 12px; }
+    .pbd-setup-ic {
+        display: inline-grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px;
+        border-radius: 10px; background: #EEF0FE; color: var(--pbd-brand);
+    }
+    .pbd-setup-t { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+    .pbd-setup-s { color: var(--pbd-muted); font-size: 13px; margin-top: 3px; }
+
+    .pbd-steps { margin-top: 16px; border-top: 1px solid #F0EFF7; }
+    .pbd-step {
+        display: flex; align-items: center; gap: 14px; padding: 14px 2px;
+        border-bottom: 1px solid #F0EFF7;
+        &:last-child { border-bottom: none; padding-bottom: 2px; }
+    }
+    .pbd-step-ic {
+        display: inline-grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px;
+        border-radius: 10px; background: #F4F5FB; color: var(--pbd-brand); border: 1px solid var(--pbd-border);
+    }
+    .pbd-step-x { flex: 1 1 auto; min-width: 0; }
+    .pbd-step-t { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+    .pbd-step-s { font-size: 12.5px; color: var(--pbd-muted); margin-top: 2px; }
+    .pbd-btn {
+        flex: 0 0 auto; background: var(--pbd-brand); color: #fff; border: 1px solid var(--pbd-brand);
+        padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+        &:hover { background: #4338CA; border-color: #4338CA; }
+    }
+    @media (max-width: 640px) {
+        .pbd-step { flex-wrap: wrap; }
+        .pbd-btn { width: 100%; }
+    }
+
     // KPI strip
     .pbd-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
     .pbd-kpi {
