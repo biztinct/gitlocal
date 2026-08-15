@@ -104,6 +104,12 @@ never hand-edited here).
             # scenario cards, which is why it loads with the Journey's own
             # stylesheet rather than beside the overlay's JS.
             'pb_learn/static/src/scenario/scenario.scss',
+            # The glossary hovercard (LEARNOS Phase 2). Its own stylesheet
+            # rather than a block in coach.scss, because the card appears in
+            # three surfaces — the Journey, the Coach drawer and the scenario
+            # overlay — and burying it in one of them makes the other two look
+            # like they borrowed it.
+            'pb_learn/static/src/engine/glossary.scss',
             # The static content plane's loader. Before everything that reads
             # it: the Journey, the Coach and the live runner all compose their
             # own bundle from (the JSON) + (learn.runtime.bootstrap).

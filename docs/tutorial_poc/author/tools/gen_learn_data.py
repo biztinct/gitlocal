@@ -63,6 +63,12 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
+# The Phase 2 language gate. Imported rather than reimplemented, because the
+# jargon table is also the hovercard's match index — one authored table, one
+# set of rules, and no way for the gate and the card to disagree about which
+# terms a learner can reach a definition for.
+import jargon
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 AUTHOR = os.path.dirname(HERE)                       # docs/tutorial_poc/author
 # Three levels, not two: the authoring source sits one directory deeper than
@@ -412,13 +418,43 @@ def content_chrome(data, bi):
 
 
 def content_glossary(data, bi):
+    """Glossary entries, plus the phrase table the hovercard matches on.
+
+    `aliases` is NOT prose and is deliberately not a bilingual pair: it is a
+    per-language LIST of spellings, and a translator has nothing to do to it.
+    Emitting it here rather than deriving it in the browser keeps one rule —
+    the jargon gate and the hovercard read the same authored table, so a term
+    the gate demands is a term the card can actually reach.
+    """
     out = []
     for i, (key, val) in enumerate(data['glossary'].items()):
+        aliases = val.get('aliases') or {}
         out.append({
             'key': key,
             '_seq': (i + 1) * 10,
             'term': bi.p('glossary %s term' % key, val['term']),
             'definition': bi.p('glossary %s definition' % key, val['def']),
+            # Lowercased and de-duplicated at generation time, sorted longest
+            # first, so the renderer never has to think about match order —
+            # a shorter phrase can then never steal a longer one's text.
+            # `matchTerm: {vi: false}` keeps a DISPLAY term out of the match
+            # table for one language. Vietnamese needs it: the product state is
+            # called "Nháp", which is the right thing to print on the card and
+            # the wrong thing to match, because it is a syllable of "bản nháp"
+            # and of "phiếu lương nháp". Display and matching are two jobs, and
+            # this is the one entry where they disagree.
+            'match': {
+                lang: sorted(
+                    {(p or '').strip().lower()
+                     for p in ((([en_of(val['term']) if lang == 'en'
+                                  else vi_of(val['term'])]
+                                 if (val.get('matchTerm') or {}).get(lang, True)
+                                 else [])
+                                + list(aliases.get(lang) or [])))
+                     if (p or '').strip()},
+                    key=lambda p: (-len(p), p))
+                for lang in ('en', 'vi')
+            },
         })
     # learn.glossary.term._order = 'sequence, key'
     out.sort(key=lambda g: (g['_seq'], g['key']))
@@ -1227,9 +1263,28 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('--check', action='store_true',
                     help='exit 1 if regenerating would change any file')
+    ap.add_argument('--warnings', action='store_true',
+                    help='list every sentence in the readability warning band')
     args = ap.parse_args()
 
     data = dump()
+
+    # THE LANGUAGE GATE, before anything is emitted. A sentence nobody can
+    # follow is a content bug in exactly the way a missing Vietnamese value is,
+    # and it is caught in the same place for the same reason: three minutes
+    # earlier than the reader would have caught it.
+    lint_fail, lint_warn, readability, lint_stats = jargon.lint(
+        data, warnings=args.warnings)
+    if lint_fail:
+        print('JARGON LINT: %d failure(s). Every one of these reaches a '
+              'learner who was promised they could start from zero.'
+              % len(lint_fail))
+        for f in lint_fail[:40]:
+            print('  %s' % f)
+        if len(lint_fail) > 40:
+            print('  ... and %d more' % (len(lint_fail) - 40))
+        return 8
+
     tr = Trans()
     live = Live()
     bi = Bi()
@@ -1301,6 +1356,28 @@ def main():
             with open(path, 'w', encoding='utf-8') as fh:
                 fh.write(content)
 
+    def report():
+        """The readability report, printed on every run.
+
+        Drift in this table is the only early warning that content is sliding
+        back towards the register its authors already speak, so it is printed
+        whether or not anything changed — including under --check, where it is
+        the number a reviewer reads in CI output.
+        """
+        print('  jargon: %d curated term(s) — %d glossary, %d banned, %d allowed'
+              % (lint_stats['terms'], lint_stats['glossary_terms'],
+                 lint_stats['banned'], lint_stats['allow']))
+        print('  glossary: %d entries · %d matchable phrases EN · %d VI'
+              % (lint_stats['entries'], lint_stats['matchable_en'],
+                 lint_stats['matchable_vi']))
+        jargon.print_readability(readability)
+        if lint_warn:
+            print('')
+            print('  %d sentence(s) in the %d-%d word warning band:'
+                  % (len(lint_warn), jargon.WARN_WORDS, jargon.HARD_WORDS))
+            for w in lint_warn:
+                print('    %s' % w)
+
     if args.check:
         if changed:
             print('STALE: regenerating would change %d file(s):' % len(changed))
@@ -1309,6 +1386,7 @@ def main():
             print('Run: python3 docs/tutorial_poc/author/tools/gen_learn_data.py')
             return 1
         print('✓ generated data is up to date (%d files)' % len(files))
+        report()
         return 0
 
     print('wrote %d file(s), %d unchanged' % (len(changed), len(files) - len(changed)))
@@ -1318,6 +1396,7 @@ def main():
     print('  %d translatable string(s) in vi_VN.po' % len(tr.entries))
     print('  %d live token site(s): %s' % (
         len(live.sites), ', '.join(sorted({w for w, _l, _k in live.sites})) or '-'))
+    report()
     return 0
 
 
