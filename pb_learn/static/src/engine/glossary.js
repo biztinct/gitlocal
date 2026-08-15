@@ -313,7 +313,17 @@ export function installGlossary() {
     }, true);
     document.addEventListener("keydown", (ev) => {
         if (ev.key === "Escape" && hideCard()) {
-            ev.stopPropagation();
+            // stopIMMEDIATEPropagation, and the difference is the whole ladder.
+            // Every surface's Escape listener is on `document` at capture too,
+            // and `stopPropagation()` does nothing to listeners on the SAME
+            // node — it only stops the event descending further. So when this
+            // one happens to be registered first (load order decides, which is
+            // exactly why the surfaces also ask `glossaryOpen()`), it hid the
+            // card, the Coach's listener ran next, saw a card that was already
+            // hidden, stood down for nobody and closed the drawer: one Escape
+            // took both rungs. Validated live on apex 2026-08-15 — a probe
+            // listener registered after this one still fired.
+            ev.stopImmediatePropagation();
             ev.preventDefault();
         }
     }, true);
