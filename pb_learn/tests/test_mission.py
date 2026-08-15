@@ -317,13 +317,23 @@ class TestMission(TransactionCase):
         printed one would be confidently wrong on a schedule — so no live
         step, note or consequence field may carry a money-shaped number.
         """
+        # The separators are what make a number money-shaped, so they have to
+        # be inside the pattern — but a TRAILING one is punctuation, not part
+        # of the figure. Without the strip, "June 2026," matched as "2026,":
+        # five characters, and the sentence naming the demo world's open month
+        # read as an asserted amount. Strip the trailing separators, then a
+        # number is money-shaped only if five or more characters survive —
+        # which a four-digit year never is, and "12,500,000" always is.
         money = re.compile(r'\d[\d.,]{4,}')
         offenders = []
         for m in self.live:
             for lang in ('en', 'vi'):
                 for b in self._blobs(m, lang):
                     for hit in money.findall(b or ''):
-                        offenders.append('%s [%s] %s' % (m['key'], lang, hit))
+                        figure = hit.rstrip('.,')
+                        if len(figure) < 5:
+                            continue
+                        offenders.append('%s [%s] %s' % (m['key'], lang, figure))
         self.assertFalse(offenders, "A live mission asserts amounts:\n  "
                                     + "\n  ".join(sorted(set(offenders))))
 

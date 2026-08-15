@@ -34,16 +34,46 @@ def one(pair, lang='en'):
 
 
 def walk_pairs(node, path=""):
-    """Yield (path, {en, vi}) for every bilingual leaf under `node`."""
+    """Yield (path, {en, vi}) for every bilingual PROSE leaf under `node`.
+
+    `{en, vi}` is a SHAPE, and Phase 2 gave it a second meaning: a glossary
+    entry's `match` block is `{en: [...aliases], vi: [...aliases]}` — the same
+    two keys carrying lists of match terms rather than a sentence in each
+    language. Every caller here does string work (`.strip()`, a regex), so
+    yielding those crashed four bundle invariants — and a check that raises is
+    a check that is no longer checking, which is the expensive half of the bug.
+
+    A non-string leaf is therefore skipped rather than yielded, and it is NOT
+    skipped silently: `test_bundle.test_04c` asserts that every non-string
+    `{en, vi}` leaf in the corpus is a glossary `match` list, so a prose field
+    that accidentally becomes a list still fails loudly instead of vanishing
+    from the walk.
+    """
     if isinstance(node, dict):
         if set(node.keys()) == {"en", "vi"}:
-            yield path, node
+            if isinstance(node.get("en"), str) and isinstance(node.get("vi"), str):
+                yield path, node
             return
         for k, v in node.items():
             yield from walk_pairs(v, "%s.%s" % (path, k))
     elif isinstance(node, list):
         for i, v in enumerate(node):
             yield from walk_pairs(v, "%s[%d]" % (path, i))
+
+
+def walk_all_pairs(node, path=""):
+    """`walk_pairs` without the prose filter — every `{en, vi}` leaf, string
+    or not. Exists for the one test that audits what the filter removed
+    (`test_bundle.test_04c`); production-shaped checks want `walk_pairs`."""
+    if isinstance(node, dict):
+        if set(node.keys()) == {"en", "vi"}:
+            yield path, node
+            return
+        for k, v in node.items():
+            yield from walk_all_pairs(v, "%s.%s" % (path, k))
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            yield from walk_all_pairs(v, "%s[%d]" % (path, i))
 
 
 def lessons(tree=None):

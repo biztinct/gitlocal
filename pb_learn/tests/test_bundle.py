@@ -19,7 +19,7 @@ import re
 
 from odoo.tests.common import TransactionCase, tagged
 
-from .common import load_content, walk_pairs
+from .common import load_content, walk_all_pairs as _walk_all_pairs, walk_pairs
 
 TOKEN_RE = re.compile(r"\{\{([a-zA-Z][a-zA-Z0-9_]*)\}\}")
 
@@ -137,6 +137,33 @@ class TestBundle(TransactionCase):
         bare = [k for k, v in self.content['chrome'].items()
                 if not isinstance(v, dict)]
         self.assertFalse(bare, "Chrome strings that are not bilingual pairs: %s" % bare)
+
+    def test_04c_the_only_non_prose_pair_is_a_glossary_match(self):
+        """`walk_pairs` skips `{en, vi}` leaves whose values are not strings.
+        This is the check that keeps that skip honest.
+
+        Exactly one structure in the corpus legitimately wears the pair shape
+        without being prose: a glossary entry's `match`, which carries the
+        alias LIST for each language. Anything else that arrives non-string is
+        a prose field that lost its sentence, and it would otherwise leave the
+        walk — and therefore every invariant built on the walk — in silence.
+        """
+        strays = []
+        for path, pair in _walk_all_pairs(self.content):
+            if isinstance(pair.get('en'), str) and isinstance(pair.get('vi'), str):
+                continue
+            if re.fullmatch(r'\.glossary\[\d+\]\.match', path):
+                for lang in ('en', 'vi'):
+                    self.assertTrue(
+                        isinstance(pair[lang], list)
+                        and all(isinstance(a, str) for a in pair[lang]),
+                        "%s [%s] is not a list of alias strings" % (path, lang))
+                continue
+            strays.append('%s -> en=%s vi=%s' % (path, type(pair.get('en')).__name__,
+                                                 type(pair.get('vi')).__name__))
+        self.assertFalse(strays, "Bilingual pairs that are not strings and are not a "
+                                 "glossary match list. These are INVISIBLE to every other "
+                                 "bundle check:\n  " + "\n  ".join(strays))
 
     def test_05_no_unresolved_tokens(self):
         tokens = self.runtime['tokens']
