@@ -67,6 +67,11 @@ export class LearnJourney extends Component {
 
     setup() {
         this.orm = useService("orm");
+        // Scenarios: the Journey hosts TRY (over the replica, where the
+        // missions already run) and hands WATCH and DO to the service, whose
+        // overlay is mounted in the web client shell and survives the
+        // navigation those two modes do.
+        this.sc = useService("learn.scenario");
         this.overlayRef = useRef("overlay");
 
         this.state = useState({
@@ -92,6 +97,14 @@ export class LearnJourney extends Component {
             mHint: false,
             mDone: false,
             mGain: 0,
+            // Phase 1b — a scenario taken in TRY mode, over the replica.
+            // `sNudge` is the gentle correction for a click on the wrong
+            // control: a nudge, never a mark against the learner, and it
+            // clears the moment they get it right.
+            scenarioKey: null,
+            sStep: 0,
+            sNudge: false,
+            sDone: false,
             lang: "en",
             motion: "auto",
             error: "",
@@ -169,6 +182,7 @@ export class LearnJourney extends Component {
         this.bundle = {
             stations: composeStations(content, runtime),
             missions: content.missions || [],
+            scenarios: content.scenarios || [],
             glossary: content.glossary || [],
             chrome: content.chrome || {},
             version: content.version || "",
@@ -230,6 +244,42 @@ export class LearnJourney extends Component {
         return this.mSteps[this.state.mStep] || null;
     }
 
+    get scenarios() {
+        return this.bundle ? (this.bundle.scenarios || []) : [];
+    }
+
+    get scenario() {
+        return this.scenarios.find((s) => s.key === this.state.scenarioKey) || null;
+    }
+
+    get sSteps() {
+        return this.scenario ? this.scenario.steps || [] : [];
+    }
+
+    get sCurrent() {
+        return this.sSteps[this.state.sStep] || null;
+    }
+
+    /** Which replica a Try step stands on.
+     *
+     *  Same rule as a mission's: a step with no `screen` of its own has not
+     *  moved the learner, so it is standing on the last screen the scenario
+     *  navigated to — never a default, which would ask a question about a
+     *  screen the learner is not looking at. */
+    _scenarioScreen(step) {
+        if (step && step.screen) {
+            return step.screen;
+        }
+        for (let i = this.state.sStep - 1; i >= 0; i--) {
+            const prev = this.sSteps[i];
+            if (prev && prev.screen) {
+                return prev.screen;
+            }
+        }
+        const sc = this.scenario;
+        return (sc && sc.entry && sc.entry.screen) || "runpayroll";
+    }
+
     stateOf(key) {
         return (this.progress[key] || {}).state || "not_started";
     }
@@ -283,6 +333,9 @@ export class LearnJourney extends Component {
         if (this.state.view === "mission") {
             return markup(this._missionBody());
         }
+        if (this.state.view === "scenario") {
+            return markup(this._scenarioBody());
+        }
         if (this.state.view === "missions") {
             return markup(this._missionListBody());
         }
@@ -302,17 +355,33 @@ export class LearnJourney extends Component {
         const match = (s) =>
             !q || tx(s.name).toLowerCase().includes(q) || tx(s.summary).toLowerCase().includes(q);
 
-        const ordered = LINE_ORDER.filter((k) => lines[k])
-            .concat(Object.keys(lines).filter((k) => !LINE_ORDER.includes(k)));
+        // Scenarios ride on the same lines as the stations, so a learner meets
+        // "run a pay run, three ways" in the Pay Run section rather than in a
+        // second list somewhere else. A line whose stations are all filtered
+        // out by the search still shows its scenarios if they match.
+        const screnLines = {};
+        for (const sc of this.scenarios) {
+            (screnLines[sc.line] = screnLines[sc.line] || []).push(sc);
+        }
+        const screnMatch = (sc) =>
+            !q || tx(sc.name).toLowerCase().includes(q)
+            || tx(sc.tagline).toLowerCase().includes(q);
+
+        const keys = Object.keys(lines).concat(
+            Object.keys(screnLines).filter((k) => !lines[k]));
+        const ordered = LINE_ORDER.filter((k) => keys.includes(k))
+            .concat(keys.filter((k) => !LINE_ORDER.includes(k)));
         const lineHTML = ordered.map((lineKey) => {
-            const items = lines[lineKey].filter(match);
-            if (!items.length) {
+            const items = (lines[lineKey] || []).filter(match);
+            const screns = (screnLines[lineKey] || []).filter(screnMatch);
+            if (!items.length && !screns.length) {
                 return "";
             }
             return `<section class="lrn-line">
                 <h3 class="lrn-linehead">${ic(LINE_ICON[lineKey] || "map-pin")}
                     ${esc(T("lines." + lineKey))}</h3>
                 <div class="lrn-cards">${items.map((s) => this._cardHTML(s)).join("")}</div>
+                ${this._scenarioRowHTML(screns)}
             </section>`;
         }).join("");
 
@@ -362,7 +431,7 @@ export class LearnJourney extends Component {
                 : "");
         // "Start here" is a PULSE, never an auto-play. The demo greeting opens
         // the map and points; the learner presses the card. A spotlight that
-        // starts by itself is the thing pb_coach's first-run tour did, and the
+        // starts by itself is the thing the retired first-run tour did, and the
         // reason people learned to dismiss it before reading it.
         const start = this.state.suggest && this.state.suggest !== ""
             && (s.lessons || []).some((l) => l.key === this.state.suggest);
@@ -383,6 +452,111 @@ export class LearnJourney extends Component {
                 </span>
             </span>
         </button>`;
+    }
+
+    /* ------------------------------------------------------- scenario cards
+       One row per line, under the stations. A scenario is not a station and
+       does not look like one: the MODE is the affordance, so each way of taking
+       it is its own button with its own promise about who presses. */
+    _scenarioRowHTML(list) {
+        if (!list.length) {
+            return "";
+        }
+        const label = { watch: "scWatch", try: "scTry", do: "scDo" };
+        const hint = { watch: "scWatchHint", try: "scTryHint", do: "scDoHint" };
+        const icon = { watch: "play", try: "flask", do: "target" };
+        const cards = list.map((sc) => {
+            const done = (this.progress[`scenario:${sc.key}`] || {}).state === "done";
+            const modes = (sc.modes || []).map((m) => `
+                <button class="lrn-btn sm ${m === "watch" ? "pri" : ""}"
+                        data-scenario="${esc(sc.key)}" data-mode="${esc(m)}"
+                        title="${esc(T(hint[m] || "scWatchHint"))}"
+                    >${ic(icon[m] || "play")}${esc(T(label[m] || "scWatch"))}</button>`).join("");
+            return `
+            <div class="lrn-scren ${done ? "done" : ""}">
+                <span class="lrn-screnico">${ic(sc.icon)}</span>
+                <span class="lrn-screnmain">
+                    <span class="lrn-screntitle">${esc(tx(sc.name))}
+                        ${done ? ic("check-circle", "ok") : ""}</span>
+                    <p class="lrn-screndesc">${esc(tx(sc.tagline))}</p>
+                    <span class="lrn-screnmodes">${modes}</span>
+                </span>
+            </div>`;
+        }).join("");
+        return `<div class="lrn-screnrow" role="group"
+            aria-label="${esc(T("scenarios"))}">${cards}</div>`;
+    }
+
+    /* ------------------------------------------------------ scenario: TRY
+       The replica, and the learner drives. Nothing here can reach a record:
+       `shellHTML` renders a fixture, and the click bridge below only ever
+       changes which step of the walkthrough is showing. */
+    _scenarioBody() {
+        const sc = this.scenario;
+        if (!sc) {
+            return "";
+        }
+        if (this.state.sDone) {
+            return this._scenarioDoneBody(sc);
+        }
+        const step = this.sCurrent;
+        if (!step) {
+            return "";
+        }
+        const shell = shellHTML(this._scenarioScreen(step),
+                                { guided: true, visible: this.visible });
+        const pct = Math.round((this.state.sStep + 1) / this.sSteps.length * 100);
+        return `${shell}
+        <div class="lrn-playbar" role="group">
+            <span class="lrn-meter"><i style="width:${pct}%"></i></span>
+            <span class="lrn-stepno">${esc(
+                T("step") + " " + (this.state.sStep + 1) + " " + T("of") + " " + this.sSteps.length)}</span>
+            <button class="lrn-btn sm" data-act="s-back"
+                ${this.state.sStep === 0 ? "disabled" : ""}
+                >${ic("chevron-left")}${esc(T("back"))}</button>
+            <button class="lrn-btn sm ghost" data-act="s-exit">${ic("x")}${esc(T("exit"))}</button>
+        </div>`;
+    }
+
+    _scenarioDoneBody(sc) {
+        return `
+        <div class="lrn-quizwrap">
+            <span class="lrn-chip b">${ic("award")}${esc(T("scDone"))}</span>
+            <h2>${esc(tx(sc.name))}</h2>
+            <p class="lrn-lead">${esc(T("scDoneBody"))}</p>
+            <div class="lrn-cta"><button class="lrn-btn pri" data-act="to-map"
+                >${ic("chevron-left")}${esc(T("yourJourney"))}</button></div>
+        </div>`;
+    }
+
+    /** The Try card. An observe step offers Next; a click or input step does
+     *  NOT — the whole point of Try is that the learner finds and presses the
+     *  control, and a Next button beside "press the glowing one" is a way past
+     *  the only thing being taught. */
+    _scenarioCardHTML() {
+        const step = this.sCurrent;
+        if (!step) {
+            return "";
+        }
+        const acts = step.act === "click" || step.act === "input";
+        return `
+        ${step.kicker ? `<div class="lrn-kicker">${esc(tx(step.kicker))}</div>` : ""}
+        <h3>${esc(tx(step.title))}</h3>
+        <div class="lrn-cbody">${tx(step.body)}</div>
+        ${acts ? `<div class="lrn-scwait">
+            <h4>${ic("target")}${esc(T("scYourTurn"))}</h4>
+            <p>${esc(step.act === "input"
+                ? T("scExpected") + ": " + tx(step.value)
+                : T("scPressIt"))}</p>
+        </div>` : ""}
+        ${this.state.sNudge
+            ? `<div class="lrn-scnudge">${ic("info")}${esc(T("scNudge"))}</div>` : ""}
+        ${step.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(step.tip))}</span></div>` : ""}
+        <div class="lrn-ctools">
+            <span class="lrn-chip">${ic("shield-check")}${esc(T("scTryBadge"))}</span>
+            ${acts ? "" : `<button class="lrn-btn sm pri" data-act="s-next"
+                >${esc(T("next"))}${ic("chevron-right")}</button>`}
+        </div>`;
     }
 
     /* ---------------------------------------------------------- outline view */
@@ -798,6 +972,16 @@ export class LearnJourney extends Component {
 
     // ---------------------------------------------------------- post-render fx
     _afterPaint() {
+        if (this.state.view === "scenario") {
+            const step = this.sCurrent;
+            if (!step || this.state.sDone) {
+                Spot.hide();
+                return;
+            }
+            Spot.show(step.anchor, this._scenarioCardHTML());
+            this._markWanted(step);
+            return;
+        }
         if (this.state.view === "mission") {
             const m = this.mission;
             const step = this.mCurrent;
@@ -826,8 +1010,77 @@ export class LearnJourney extends Component {
         }
     }
 
+    /** Ring the control a Try step is waiting for, and only that one.
+     *
+     *  The spotlight already dims around it, but the learner is being asked to
+     *  FIND it: the ring is still there when they look up from the card, and it
+     *  is what the nudge points back at after a wrong click. */
+    _markWanted(step) {
+        const root = this.overlayRef.el && this.overlayRef.el.parentElement;
+        const host = root || document;
+        for (const el of host.querySelectorAll(".lrn-scwant")) {
+            el.classList.remove("lrn-scwant");
+        }
+        if (!step.anchor || step.act === "observe") {
+            return;
+        }
+        const want = host.querySelector(`[data-coach="${step.anchor}"]`);
+        if (want) {
+            want.classList.add("lrn-scwant");
+        }
+    }
+
+    /* -------------------------------------------------- the Try click bridge
+       The MISSING half of a replica: without this, every control on a practice
+       screen is inert and a Try step can only be walked past with Next, which
+       is a lesson with extra steps rather than a rehearsal.
+
+       Two rules, both from the mode matrix:
+         · the expected control advances the walkthrough;
+         · anything else is a NUDGE. Not a failure, not a mark, and never a
+           silent no-op — a replica control that does nothing when you press it
+           teaches the learner that the product is broken.
+       Returns true when the event belonged to a scenario, so the ordinary
+       Journey handlers below do not also fire on it. */
+    _scenarioClick(ev) {
+        if (this.state.view !== "scenario" || this.state.sDone) {
+            return false;
+        }
+        const hit = ev.target.closest("[data-coach], [data-nav]");
+        if (!hit) {
+            return false;
+        }
+        const step = this.sCurrent;
+        if (!step || step.act === "observe") {
+            // Nothing is being asked for. The replica's controls stay inert
+            // rather than pretending to work.
+            return true;
+        }
+        const key = hit.getAttribute("data-coach");
+        if (key && step.anchor && key === step.anchor) {
+            this.state.sNudge = false;
+            this.sNext();
+        } else {
+            this.state.sNudge = true;
+        }
+        return true;
+    }
+
     // -------------------------------------------------------------- behaviour
     onClick(ev) {
+        // FIRST, and it has to be: a Try step's target is a replica control
+        // carrying `data-coach`, and some of those also carry `data-nav`, which
+        // the mission handlers below would read as ordinary replica navigation.
+        const scenarioBtn = ev.target.closest("[data-scenario]");
+        if (scenarioBtn) {
+            ev.preventDefault();
+            this.openScenario(scenarioBtn.dataset.scenario, scenarioBtn.dataset.mode);
+            return;
+        }
+        if (this._scenarioClick(ev)) {
+            ev.preventDefault();
+            return;
+        }
         const stationBtn = ev.target.closest("[data-station]");
         if (stationBtn) {
             this.openStation(stationBtn.dataset.station);
@@ -872,6 +1125,9 @@ export class LearnJourney extends Component {
             "m-cancel": () => this.mBack(),
             "m-retry": () => { this.state.mChoice = null; },
             "live-start": () => this.startLive(),
+            "s-next": () => this.sNext(),
+            "s-back": () => this.sBack(),
+            "s-exit": () => this.sExit(),
             "morph-before": () => { this.state.morphSide = "before"; },
             "morph-after": () => { this.state.morphSide = "after"; },
         }[a];
@@ -889,11 +1145,28 @@ export class LearnJourney extends Component {
     }
 
     _onKey(ev) {
-        if (this.state.view !== "lesson") {
-            return;
-        }
         const typing = /^(INPUT|TEXTAREA)$/.test(ev.target.tagName);
         if (typing) {
+            return;
+        }
+        if (this.state.view === "scenario") {
+            // NO right-arrow on a step that is waiting for a press. The keyboard
+            // must not be a way past the control the walkthrough is asking for
+            // — that is the same promise the missing Next button makes.
+            const step = this.sCurrent;
+            if (ev.key === "Escape") {
+                ev.preventDefault();
+                this.sExit();
+            } else if (ev.key === "ArrowRight" && step && step.act === "observe") {
+                ev.preventDefault();
+                this.sNext();
+            } else if (ev.key === "ArrowLeft") {
+                ev.preventDefault();
+                this.sBack();
+            }
+            return;
+        }
+        if (this.state.view !== "lesson") {
             return;
         }
         if (ev.key === "Escape") {
@@ -930,6 +1203,17 @@ export class LearnJourney extends Component {
         if (suggest && this._stationOfLesson(suggest)) {
             this.state.suggest = suggest;
         }
+        // A scenario deep link. `learn.scenario.begin("…", "try")` opens this
+        // action rather than rendering the replica wherever the learner was
+        // standing, so the Coach drawer, a Journey card and an intent's
+        // `show_me` all reach Try through ONE door.
+        const scKey = typeof ctx.scenario === "string" ? ctx.scenario : "";
+        if (scKey && this.scenarios.some((s) => s.key === scKey)) {
+            const mode = typeof ctx.mode === "string" ? ctx.mode : "try";
+            this.openScenario(scKey, mode);
+            return;
+        }
+
         const key = typeof ctx.lesson === "string" ? ctx.lesson : "";
         if (!key) {
             return;
@@ -954,6 +1238,11 @@ export class LearnJourney extends Component {
         Spot.hide();
         this.state.view = "map";
         this.state.stationKey = null;
+        // A finished scenario leaves its card behind otherwise, and the map
+        // would draw the Try view's leftovers the next time it is opened.
+        this.state.scenarioKey = null;
+        this.state.sDone = false;
+        this.state.sNudge = false;
     }
 
     openStation(key) {
@@ -1162,6 +1451,79 @@ export class LearnJourney extends Component {
         } catch {
             this.state.mGain = 0;
         }
+    }
+
+    // ------------------------------------------------------------ scenarios
+    /** Open a scenario in one of its modes.
+     *
+     *  Try is HOSTED HERE, over the replica. Watch and Do are handed to the
+     *  service, whose overlay lives in the web client shell — its first step
+     *  navigates to the real product, which unmounts this component, so a
+     *  Journey-owned runner could not survive its own first step. */
+    async openScenario(key, mode) {
+        const sc = this.scenarios.find((s) => s.key === key);
+        if (!sc) {
+            return;
+        }
+        const wanted = (sc.modes || []).includes(mode) ? mode : (sc.modes || [])[0];
+        if (wanted !== "try") {
+            await this.sc.load();
+            await this.sc.begin(key, wanted);
+            return;
+        }
+        Spot.hide();
+        this.state.scenarioKey = key;
+        this.state.view = "scenario";
+        this.state.sStep = 0;
+        this.state.sNudge = false;
+        this.state.sDone = false;
+        this.sc.logStart(key, "try");
+    }
+
+    sNext() {
+        this.state.sNudge = false;
+        if (this.state.sStep < this.sSteps.length - 1) {
+            this.state.sStep += 1;
+            this.sc.record(this.state.scenarioKey, {
+                state: "in_progress", step_index: this.state.sStep,
+            });
+            this.sc.log("scenario_step",
+                        `${this.state.scenarioKey}:try:${this.state.sStep}`);
+        } else {
+            this.sFinish();
+        }
+    }
+
+    sBack() {
+        this.state.sNudge = false;
+        if (this.state.sStep > 0) {
+            this.state.sStep -= 1;
+        }
+    }
+
+    sFinish() {
+        Spot.hide();
+        this.state.sDone = true;
+        this.sc.record(this.state.scenarioKey, {
+            state: "done", completed_at: this._nowServer(), lang: this.state.lang,
+        });
+        this.sc.log("scenario_complete", `${this.state.scenarioKey}:try`);
+        // The local copy drives the card's tick without a re-fetch, exactly as
+        // a finished lesson does.
+        this.progress[`scenario:${this.state.scenarioKey}`] = { state: "done" };
+    }
+
+    sExit() {
+        Spot.hide();
+        // Escape on the completion card is a normal close, not an abandon —
+        // the same double-count scenario_service.stop() refuses after done.
+        if (!this.state.sDone) {
+            this.sc.log("scenario_abandon",
+                        `${this.state.scenarioKey}:try:${this.state.sStep}`);
+        }
+        this.state.view = "map";
+        this.state.scenarioKey = null;
+        this.state.sNudge = false;
     }
 
     // -------------------------------------------------------------- settings

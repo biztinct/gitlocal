@@ -54,6 +54,7 @@ const out = {
     missions: grab("MISSIONS"),
     missionSteps: grab("MISSION_STEPS"),
     screenCtx: grab("SCREEN_CTX"),
+    scenarios: grab("SCENARIOS"),
     qa: grab("QA"),
     columns: grab("COLUMNS"),
     practiceAnchors: grab("PRACTICE_ANCHORS"),

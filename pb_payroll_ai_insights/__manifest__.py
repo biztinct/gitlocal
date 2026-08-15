@@ -45,22 +45,25 @@ Inspired by: Power BI Copilot, ThoughtSpot, Julius AI, Tableau Pulse, Zoho Zia
         'web',
         'om_hr_payroll',
         'pb_hr_payroll_base',
-        # PHASE C2 — TO BE REMOVED AT DEPLOY TIME, NOT NOW.
+        # LEARNOS PHASE 1b — the swap the Phase C2 deploy notes described.
         #
-        # Nothing in this module requires pb_coach any more: the action envelope
-        # emits `open_lesson` and opens a pb_learn lesson, and the coach service
-        # is looked up optionally (ai_insight_chat.js) purely so a legacy
-        # `start_tour` envelope from a cached conversation still works while
-        # pb_coach is still installed.
+        # This line used to name the guided-tour module, which no longer exists
+        # in the repository: its six tours are now pb_learn SCENARIOS and the
+        # module is deleted. A manifest that names a missing module makes THIS
+        # one uninstallable, so the two changes are inseparable — the deletion
+        # forces this edit, and it is the only line in this module the phase
+        # touches beyond the envelope's own mapping.
         #
-        # The dependency stays declared until the coordinated uninstall,
-        # because dropping it from the manifest BEFORE pb_coach is uninstalled
-        # would leave the two out of step on a live database — Odoo does not
-        # uninstall a module because a dependant stopped naming it, it just
-        # stops guaranteeing load order. Removing this line and uninstalling
-        # pb_coach happen in the same deploy-time follow-up commit; the ledger's
-        # deploy notes carry the order.
-        'pb_coach',
+        # pb_learn is what belongs here: the action envelope emits
+        # `open_lesson` and `ai_insight_chat.js` opens
+        # `pb_learn.action_learn_journey` BY NAME, which was a soft dependency
+        # guarded in JS precisely because the manifest did not declare it.
+        #
+        # DEPLOY ORDER STILL MATTERS and the ledger carries it: upgrade the
+        # family first, verify, and only then uninstall the retired module from
+        # the database. Odoo does not uninstall a module because a dependant
+        # stopped naming it.
+        'pb_learn',
     ],
     'data': [
         # Security

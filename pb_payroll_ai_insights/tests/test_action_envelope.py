@@ -165,6 +165,35 @@ class TestActionEnvelope(TransactionCase):
                  if l not in self.engine._KNOWN_LESSONS]
         self.assertFalse(rogue, "the compatibility map points outside the whitelist: %s" % rogue)
 
+    def test_10b_the_map_never_names_a_scenario(self):
+        """LEARNOS Phase 1b: every old tour now has a SCENARIO successor too,
+        and the map deliberately still points at the lesson.
+
+        The reason is mechanical rather than editorial, which is why it is a
+        test: `_sanitize_action` emits one shape, `open_lesson`, and the browser
+        opens the Journey with `context.lesson`. A scenario key placed here
+        would travel in a field named `lesson`, miss the whitelist, and be
+        dropped — a "Show me" button that opens nothing, silently, for as long
+        as nobody looked. Re-pointing these is a change to the SANITIZER and to
+        the chat component, not to this dictionary.
+        """
+        try:
+            Content = self.env['learn.content'].sudo()
+        except KeyError:
+            self.skipTest("pb_learn is not installed on this database")
+        scenario_keys = {s['key'] for s in Content.scenarios()}
+        if not scenario_keys:
+            self.skipTest("pb_learn ships no scenarios on this database")
+        # The successors exist — otherwise this test would pass by describing a
+        # world in which nothing had been ported.
+        self.assertIn('sc_welcome', scenario_keys,
+                      "the ported walkthroughs are missing, so this asserts nothing")
+        strays = [(t, l) for t, l in self.engine._TOUR_TO_LESSON.items()
+                  if l in scenario_keys]
+        self.assertFalse(strays,
+                         "the compatibility map names a scenario in a field the "
+                         "envelope calls `lesson`: %s" % strays)
+
     def test_11_the_system_prompt_names_the_lessons_it_offers(self):
         """The prompt is the only thing the model reads.
 

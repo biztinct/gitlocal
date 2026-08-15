@@ -51,6 +51,10 @@ const LOCAL_PREFS = "pbLearnPrefs";
 export const COACH_ACTIONS = new Set([
     "c-close", "c-ask", "c-suggest", "c-show", "c-simpler", "c-lesson", "c-back",
     "c-lang",
+    // Phase 1b. "Show me how" starts a scenario. It reaches no product method
+    // either: the engine it hands off to points, waits and narrates, and the
+    // one press it is capable of making is on an unguarded control in Watch.
+    "c-scenario",
     // Phase D2. Two buttons, one decision, asked once. Neither reaches a
     // product method — they write this learner's own consent row and nothing
     // else, which is why they belong in this set rather than outside it.
@@ -64,6 +68,7 @@ export class CoachHost extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.sc = useService("learn.scenario");
         this.inputRef = useRef("input");
 
         this.state = useState({
@@ -106,6 +111,9 @@ export class CoachHost extends Component {
                     tokens: runtime.tokens || {},
                     collect_questions: !!runtime.collect_questions,
                 };
+                // Same fetch, no second round trip: the scenario service reads
+                // the memoised content plane the drawer has just resolved.
+                await this.sc.load();
                 RT.tokens = this.bundle.tokens || RT.tokens;
                 RT.chrome = this.bundle.chrome || RT.chrome;
                 this.state.ready = true;
@@ -325,10 +333,27 @@ export class CoachHost extends Component {
         return hit ? tx(hit.label) : key;
     }
 
+    /* A `show_me` target may now be a SCENARIO rather than an anchor:
+       `scenario:<key>` or `scenario:<key>#<stepKey>`. The two shapes answer two
+       different questions — "where is that control" and "show me how this is
+       done" — and an intent is allowed to answer the second one, which is what
+       most "how do I…" questions are actually asking.
+
+       THE FRAGMENT IS A STEP KEY, NEVER AN INDEX. An index would keep opening
+       something after a walkthrough gained a step in the middle, just not the
+       step the author meant — the kind of breakage nobody reports because the
+       button still works. The generator refuses a fragment that names no step. */
+    static SCENARIO_TARGET = /^scenario:([a-z0-9_]+)(?:#([a-z0-9_]+))?$/;
+
     /** Point at a real control. Returns honestly when there is nothing to
      *  point at — a Coach that scrolls to nothing is worse than one that says
      *  it cannot. */
     showMe(anchor) {
+        const hit = CoachHost.SCENARIO_TARGET.exec(anchor || "");
+        if (hit) {
+            this.startScenario(hit[1], null, hit[2] || "");
+            return;
+        }
         const found = flashRing(anchor);
         if (!found) {
             this.state.answer = Object.assign({}, this.state.answer, {
@@ -342,6 +367,45 @@ export class CoachHost extends Component {
     openLesson() {
         this.action.doAction("pb_learn.action_learn_journey");
         this.close();
+    }
+
+    /** Start a scenario from the drawer.
+     *
+     *  The drawer CLOSES first: a walkthrough of the screen behind it cannot
+     *  be followed through a panel sitting on top of it, and Watch's first act
+     *  is usually to navigate. `stepKey` comes from a `scenario:<key>#<stepKey>`
+     *  target and is applied AFTER the entry navigation, so an intent can
+     *  answer "why did this pay change" by opening the walkthrough on the
+     *  salary breakdown rather than on the board it starts from. */
+    async startScenario(key, mode, stepKey) {
+        this.close();
+        try {
+            await this.sc.load();
+            const started = await this.sc.begin(key, mode || null);
+            if (!started || !stepKey) {
+                return;
+            }
+            const sc = this.sc.get(key);
+            const index = (sc ? sc.steps : []).findIndex((s) => s.key === stepKey);
+            // A fragment that names no step opens the walkthrough at its
+            // beginning, which is a worse answer and not a broken one.
+            if (index > 0) {
+                this.sc.goTo(index);
+            }
+        } catch {
+            // An unknown or retired key leaves the learner on their screen with
+            // the drawer closed, which is where they already were.
+        }
+    }
+
+    /** The scenarios offered on THIS screen.
+     *
+     *  Resolved off `state.screen`, which is what the three-pass matcher out of
+     *  `learn.runtime.bootstrap` decided the learner is standing on — so the
+     *  Coach and the walkthroughs can never disagree about which cockpit this
+     *  is. Empty is the normal case on most screens and draws nothing. */
+    get screenScenarios() {
+        return this.sc.forScreen(this.state.screen);
     }
 
     async _log(kind, detail) {
@@ -374,6 +438,11 @@ export class CoachHost extends Component {
         if (this.state.answer) {
             parts.push(this._answerHTML(this.state.answer));
         } else {
+            // ABOVE the suggested questions, and only when there are any. A
+            // walkthrough of the screen in front of you is a better first offer
+            // than a list of questions about it — and on the screens that have
+            // none, this draws nothing rather than an empty heading.
+            parts.push(this._scenarioHTML());
             parts.push(this._suggestHTML());
         }
         // BELOW the answer, deliberately. The person opened the drawer because
@@ -412,6 +481,35 @@ export class CoachHost extends Component {
         return `<div class="lrn-cground">${ic("map-pin")}
             <span><b>${esc(T("groundedIn"))}</b> ${esc(tx(s.name))}</span>
             <p class="lrn-note">${esc(tx(s.blurb))}</p></div>`;
+    }
+
+    /** "Show me how" — one row per scenario for this screen, one button per
+     *  mode it declares. The mode IS the offer: watch, try and do are three
+     *  different promises about who presses, so they are three buttons rather
+     *  than a scenario with a setting. */
+    _scenarioHTML() {
+        const list = this.screenScenarios;
+        if (!list.length) {
+            return "";
+        }
+        const label = { watch: "scWatch", try: "scTry", do: "scDo" };
+        const hint = { watch: "scWatchHint", try: "scTryHint", do: "scDoHint" };
+        const rows = list.map((sc) => `
+            <div class="lrn-cscen">
+                <div class="lrn-cscentitle">${ic(sc.icon)}${esc(tx(sc.name))}</div>
+                <div class="lrn-cscenmodes">
+                    ${(sc.modes || []).map((m) => `
+                        <button class="lrn-btn sm ${m === "watch" ? "pri" : ""}"
+                                data-act="c-scenario" data-key="${esc(sc.key)}"
+                                data-mode="${esc(m)}"
+                                title="${esc(T(hint[m] || "scWatchHint"))}"
+                            >${esc(T(label[m] || "scWatch"))}</button>`).join("")}
+                </div>
+            </div>`).join("");
+        return `<div class="lrn-cscens">
+            <div class="lrn-clabel">${esc(T("scenarios"))}</div>
+            ${rows}
+        </div>`;
     }
 
     _suggestHTML() {
@@ -563,6 +661,8 @@ export class CoachHost extends Component {
             this.decideConsent(true);
         } else if (act === "c-consent-no") {
             this.decideConsent(false);
+        } else if (act === "c-scenario") {
+            this.startScenario(el.dataset.key, el.dataset.mode, 0);
         }
     }
 
@@ -589,6 +689,11 @@ export class CoachHost extends Component {
     toggleLang() {
         this.state.lang = this.state.lang === "en" ? "vi" : "en";
         RT.lang = this.state.lang;
+        // And the scenario overlay, which is a SECOND component reading the
+        // same non-reactive RT.lang and would otherwise stay in the old
+        // language until a reload — with a walkthrough running on top of the
+        // screen, which is the worst place for it. Same fix, same reason.
+        this.sc.state.lang = RT.lang;
         try {
             const p = JSON.parse(window.localStorage.getItem(LOCAL_PREFS) || "{}");
             p.lang = RT.lang;

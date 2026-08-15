@@ -175,6 +175,33 @@ const I18N = {
     confGain: "Confidence gained",
     recoveryUsed: "you needed a way back on this run",
     backToMissions: "Back to missions",
+    /* -- scenarios: one story, three ways (LEARNOS Phase 1b) --------------
+       A scenario is authored ONCE and can be taken three ways — Watch it on
+       the real screens, Try it on the practice company, Do it for real with
+       the engine waiting before anything is written. These strings are the
+       chrome of that engine; the steps themselves are in SCENARIOS below. */
+    scenarios: "Show me how",
+    scenariosLead: "One task, three ways: watch it happen, try it where nothing can matter, or do it for real with me waiting.",
+    scWatch: "Watch",
+    scTry: "Try",
+    scDo: "Do it live",
+    scWatchHint: "I drive. Real screens, and I stop at anything that writes.",
+    scTryHint: "You drive, on the practice company.",
+    scDoHint: "You drive, on your own data. I never press anything for you.",
+    scRealBadge: "Real screens",
+    scTryBadge: "Practice company",
+    scYourTurn: "Your turn",
+    scPressIt: "Press the control I am pointing at.",
+    scWaiting: "You press it — I'll wait.",
+    scWaitingBody: "This control writes something real. I will not press it for you, and I will not move on by myself.",
+    scWouldDo: "What this would do",
+    scNudge: "Not that one — try the glowing control.",
+    scTyping: "Typing",
+    scExpected: "Expected",
+    scSkip: "Skip this step",
+    scNotOnScreen: "That control is not on this screen right now, so here is what it does instead of a spotlight pointing at nothing.",
+    scDone: "End of the walkthrough",
+    scDoneBody: "That is the whole scenario. Take it again in another mode whenever you like — the steps are the same, only who presses changes.",
     /* -- the Coach ------------------------------------------------------- */
     coachName: "Payobook Coach",
     stuck: "Stuck?",
@@ -323,6 +350,29 @@ const I18N = {
     confGain: "Mức tự tin tăng thêm",
     recoveryUsed: "bạn đã cần một lối quay lại trong lượt này",
     backToMissions: "Về danh sách nhiệm vụ",
+    /* -- scenarios: one story, three ways (LEARNOS Phase 1b) ------------- */
+    scenarios: "Chỉ tôi cách làm",
+    scenariosLead: "Một việc, ba cách học: xem tôi làm, tự thử ở nơi không có hậu quả, hoặc làm thật với tôi đứng chờ bên cạnh.",
+    scWatch: "Xem",
+    scTry: "Thử",
+    scDo: "Làm thật",
+    scWatchHint: "Tôi thao tác. Trên màn hình thật, và tôi dừng lại ở mọi nút có ghi dữ liệu.",
+    scTryHint: "Bạn thao tác, trên công ty thực hành.",
+    scDoHint: "Bạn thao tác, trên dữ liệu của chính bạn. Tôi không bao giờ bấm hộ bạn.",
+    scRealBadge: "Màn hình thật",
+    scTryBadge: "Công ty thực hành",
+    scYourTurn: "Đến lượt bạn",
+    scPressIt: "Hãy bấm vào nút tôi đang chỉ.",
+    scWaiting: "Bạn bấm nút đó — tôi chờ.",
+    scWaitingBody: "Nút này ghi dữ liệu thật. Tôi sẽ không bấm hộ bạn, và cũng không tự chuyển sang bước sau.",
+    scWouldDo: "Nút này sẽ làm gì",
+    scNudge: "Không phải nút đó — hãy thử nút đang phát sáng.",
+    scTyping: "Đang nhập",
+    scExpected: "Cần nhập",
+    scSkip: "Bỏ qua bước này",
+    scNotOnScreen: "Nút đó hiện không có trên màn hình này, nên tôi mô tả nó ở đây thay vì chỉ vào chỗ trống.",
+    scDone: "Hết phần hướng dẫn",
+    scDoneBody: "Đó là toàn bộ kịch bản. Bạn có thể xem lại theo cách khác bất cứ lúc nào — các bước vẫn thế, chỉ khác ở chỗ ai là người bấm.",
     /* -- the Coach ------------------------------------------------------- */
     coachName: "Trợ lý Payobook",
     stuck: "Cần trợ giúp?",
@@ -2669,7 +2719,12 @@ const QA = [
     id: "whydiff", screens: ["payslips", "proration"],
     label: B("Why is this pay different from last month?", "Vì sao lương này khác tháng trước?"),
     match: ["why is the pay different", "pay changed", "khác tháng trước", "sao lương thay đổi", "luong khac thang truoc"],
-    showMe: ["ps-breakdown"],
+    // UPGRADED IN PHASE 1b, and to a STEP rather than to the scenario: the
+    // walkthrough ends on the salary breakdown, and somebody asking why one
+    // person's pay moved wants that step, not the board it opens on. The
+    // fragment is a step KEY and not an index, so inserting a step in the
+    // middle of the walkthrough cannot silently re-point it somewhere else.
+    showMe: ["scenario:sc_payslips#breakdown", "ps-breakdown"],
     simpler: B("Two things move a monthly salary and one thing usually does not. Overtime moves it, and tax follows the overtime. Insurance normally stays put, because it is worked out from the salary written in the contract rather than from what was actually earned that month.",
                "Có hai thứ làm lương tháng thay đổi và một thứ thường thì không. Tăng ca làm lương thay đổi, và thuế đi theo tăng ca. Bảo hiểm thường đứng yên, vì nó được tính từ mức lương ghi trong hợp đồng chứ không phải từ số thực sự kiếm được trong tháng đó."),
     blocks: [
@@ -2820,7 +2875,10 @@ const QA = [
     id: "confidence", screens: ["import", "importwizard"],
     label: B("What does the confidence score mean?", "Điểm tin cậy nghĩa là gì?"),
     match: ["confidence score", "what does the score mean", "diem tin cay", "điểm tin cậy là gì", "import score"],
-    showMe: ["iw-review"],
+    // UPGRADED IN PHASE 1b. The confidence score is not a control to point
+    // at, it is a process to watch: convert, score, fix, and only then
+    // commit — which is exactly the three steps of sc_import.
+    showMe: ["scenario:sc_import", "iw-review"],
     simpler: B("It is not a mark out of a hundred. It is simply how much of your file the system could read without having to guess — so 96% of fifty rows still means two rows it could not place, and each of those is one person's pay.",
                "Đây không phải điểm trên thang một trăm. Nó chỉ đơn giản là phần dữ liệu trong tệp mà hệ thống đọc được mà không phải đoán — nên 96% của năm mươi dòng vẫn nghĩa là còn hai dòng nó không xếp được, và mỗi dòng đó là lương của một con người."),
     blocks: [
@@ -3143,7 +3201,12 @@ const QA = [
     label: B("Where do I find things in Payobook?", "Tìm các chức năng trong Payobook ở đâu?"),
     match: ["where is everything", "where do i find", "sidebar sections", "what are the sections",
             "tim o dau", "menu nam o dau", "cac nhom muc"],
-    showMe: ["rep-nav"],
+    // UPGRADED IN PHASE 1b, and it fixes a real bug as well as improving the
+    // answer: `rep-nav` is a PRACTICE-ONLY anchor, so on the real Dashboard
+    // this button could only ever report "that control is not on this
+    // screen". "Where does everything live" is a question a walkthrough
+    // answers and a point-at cannot.
+    showMe: ["scenario:sc_welcome", "rep-nav"],
     blocks: [
       { k: "p", v: B("Six sections, and you work in two of them most days. <b>Overview</b> is where you land and where approvals queue. <b>Pay Run</b> is the month's work end to end. <b>People</b> holds who can be paid, <b>Insights</b> answers questions about what was paid, <b>Compliance</b> is the filings, and <b>Setup</b> is read often and changed rarely.",
                      "Sáu nhóm mục, và phần lớn các ngày bạn chỉ làm việc trong hai nhóm. <b>Tổng quan</b> là nơi bạn vào đầu tiên và là nơi các lượt phê duyệt xếp hàng. <b>Chạy lương</b> là toàn bộ công việc của tháng từ đầu tới cuối. <b>Nhân sự</b> giữ thông tin ai có thể được trả lương, <b>Phân tích</b> trả lời các câu hỏi về những gì đã chi, <b>Tuân thủ</b> là các báo cáo bắt buộc, còn <b>Thiết lập</b> thì thường xuyên được đọc và hiếm khi bị sửa.") },
@@ -3846,7 +3909,608 @@ const PRACTICE_ANCHORS = {
 };
 
 /* =============================================================================
-   11. THE JOURNEY'S FRONT DOOR
+   11. SCENARIOS — one story, three ways  (LEARNOS Phase 1b)
+   -----------------------------------------------------------------------------
+   A scenario is a walkthrough of a REAL task, authored once and playable three
+   ways. The steps, the anchors and the words are identical in all three; the
+   only thing that changes is who presses:
+
+     watch  the engine drives the real screens and narrates. It may synthesise
+            a click on an ordinary control, and it NEVER synthesises one on a
+            guarded step — that step becomes an observe with a card explaining
+            what pressing would do.
+     try    the learner drives the PRACTICE replica. A wrong click is a nudge,
+            never a failure. Every click here is safe by construction: there is
+            no server on the other end of a replica.
+     do     the learner drives the REAL product. The engine attaches a one-shot
+            listener and waits. It never presses anything, and on a guarded
+            step it never times out into advancing either.
+
+   THE GUARD RULE, and it is generator-enforced:
+     every `click` step must state `guard` explicitly — true or false. There is
+     no default, because a default is a decision nobody made. `guard: false` is
+     additionally refused when the step's key, anchor or English title names a
+     writing verb (compute, submit, approve, reject, confirm, delete, send,
+     commit, pay, post, generate, activate, archive, cancel, apply). If in
+     doubt, guard: the cost of an unnecessary guard is one extra press by the
+     learner; the cost of a missing one is a pay run computed by a tutorial.
+
+   THESE SIX ARE THE PORTED pb_coach TOURS. hero_path became `sc_welcome`,
+   tour_payrun `sc_payrun`, tour_payslips `sc_payslips`, tour_formula
+   `sc_formula`, tour_import `sc_import`, tour_mapping `sc_mapping`. The anchors
+   are verbatim — they are the same controls in the same templates — and the
+   copy is de-demo-flavoured: no "your 12 division configs", no "editing is off
+   in this shared demo, ask us for a trial", no month named as though it were
+   everybody's open period.
+
+   `modes` is a claim the engine keeps. A scenario is `try`-capable only when
+   every screen its steps stand on is one of the 20 practice replicas AND the
+   replica draws every anchor it points at — which is why the Formula Studio
+   deep-dive is watch-only: the replica has no Grid, and a Try step whose
+   control is not on the replica is a dead end, not a lesson.
+   ========================================================================== */
+const SCENARIOS = [
+  /* ---------------------------------------------------------- sc_welcome
+     hero_path. The whole-product walk: dashboard, the formula engine, a pay
+     run, the copilot. Watch only — it crosses four cockpits, three of which
+     have no replica in the same order, and its job is the first ninety
+     seconds of somebody's first login rather than practice. */
+  {
+    key: "sc_welcome",
+    icon: "compass",
+    line: "overview",
+    modes: ["watch"],
+    screens: ["dashboard", "formula", "runpayroll", "payruns"],
+    name: B("Take the tour", "Đi một vòng Payobook"),
+    tagline: B("Dashboard, the formula engine, a pay run and the copilot — the whole product in one pass.",
+               "Trang tổng quan, bộ máy công thức, một đợt tính lương và trợ lý — toàn bộ sản phẩm trong một lượt."),
+    entry: { nav: "pb_dashboard.action_pb_dashboard" },
+    steps: [
+      {
+        key: "hero", anchor: "dash-hero", nav: "pb_dashboard.action_pb_dashboard",
+        act: "observe",
+        say: {
+          kicker: B("Welcome", "Chào bạn"),
+          title: B("Your command centre", "Trung tâm điều hành của bạn"),
+          body: B("This is the Payobook dashboard. One screen that says who you are, which pay run is live and how much of it is still waiting on somebody.",
+                  "Đây là trang tổng quan Payobook. Một màn hình cho biết bạn là ai, đợt lương nào đang chạy và còn bao nhiêu phần đang chờ người khác."),
+        },
+      },
+      {
+        key: "kpis", anchor: "dash-kpis", act: "observe",
+        say: {
+          title: B("Four numbers that describe the company", "Bốn con số mô tả cả công ty"),
+          body: B("Headcount, monthly payroll, approvals pending and active configurations. They describe the company, not today — read the hero line above for today.",
+                  "Sĩ số, quỹ lương tháng, số việc chờ duyệt và số cấu hình đang bật. Chúng mô tả cả công ty chứ không phải hôm nay — muốn biết hôm nay thì đọc dòng nổi bật ở trên."),
+        },
+      },
+      {
+        key: "engine", anchor: "dash-formula", act: "observe",
+        say: {
+          title: B("Pay is computed from formulas", "Lương được tính bằng công thức"),
+          body: B("Payobook does not compute pay from a fixed salary structure. Every payslip line comes from a named component in a formula configuration you can open and read. Let us go and read one.",
+                  "Payobook không tính lương bằng cấu trúc lương cố định. Mỗi dòng phiếu lương đến từ một thành phần có tên trong một cấu hình công thức mà bạn mở ra đọc được. Chúng ta cùng đi đọc thử một cái."),
+        },
+      },
+      {
+        key: "studio", anchor: "fs-config", nav: "pb_formula_studio.action_pb_formula_studio",
+        act: "observe",
+        say: {
+          kicker: B("Formula Studio", "Xưởng công thức"),
+          title: B("One rulebook per division", "Mỗi bộ phận một bộ quy tắc"),
+          body: B("The name at the top IS the rulebook this division is paid by. A company runs one configuration per division and cycle, and switching here switches everything below.",
+                  "Cái tên ở trên cùng CHÍNH LÀ bộ quy tắc trả lương cho bộ phận này. Mỗi bộ phận và mỗi chu kỳ có một cấu hình riêng, và đổi ở đây là đổi toàn bộ phần bên dưới."),
+        },
+      },
+      {
+        key: "components", anchor: "fs-components", act: "observe",
+        say: {
+          title: B("Every component, one list", "Mọi thành phần trong một danh sách"),
+          body: B("Inputs, earnings, deductions and totals. A payslip line exists because a component here produced it, and the coloured tag says which kind it is.",
+                  "Đầu vào, thu nhập, khấu trừ và các tổng. Một dòng phiếu lương tồn tại vì có một thành phần ở đây sinh ra nó, và thẻ màu cho biết nó thuộc loại nào."),
+        },
+      },
+      {
+        key: "formula", anchor: "fs-formula", act: "observe", timeout: 4000,
+        say: {
+          title: B("The formula, in plain words", "Công thức viết bằng lời"),
+          body: B("No cell references. Components read by their own name, coloured by kind, and every chip is a link to the component behind it.",
+                  "Không có địa chỉ ô. Các thành phần được gọi bằng chính tên của chúng, tô màu theo loại, và mỗi thẻ là một đường dẫn tới thành phần đứng sau nó."),
+        },
+      },
+      {
+        key: "namesletters", anchor: "fs-namesletters", act: "observe", timeout: 4000,
+        say: {
+          title: B("Names or letters", "Tên hay chữ cái"),
+          body: B("Prefer spreadsheet style? Flip to letters (A, B, C…) and back to names. Same formula, your choice of spelling.",
+                  "Bạn quen kiểu bảng tính? Hãy chuyển sang chữ cái (A, B, C…) rồi quay lại tên. Vẫn là công thức đó, chỉ khác cách viết."),
+        },
+      },
+      {
+        key: "deps", anchor: "fs-deps", act: "observe",
+        say: {
+          title: B("What it needs, and what needs it", "Nó cần gì, và ai cần nó"),
+          body: B("Depends on and Used by are the blast radius of a rename or a deletion, written down before you make one.",
+                  "\"Phụ thuộc vào\" và \"Được dùng bởi\" chính là phạm vi ảnh hưởng của một lần đổi tên hay xoá bỏ, được viết ra trước khi bạn làm."),
+        },
+      },
+      {
+        key: "flow", anchor: "fs-flow", act: "observe", timeout: 4000,
+        say: {
+          title: B("Watch it calculate", "Xem nó tính"),
+          body: B("The calculation flow builds the result step by step, down to the final output. Open it full screen to scroll and zoom around a big configuration.",
+                  "Sơ đồ tính toán dựng kết quả từng bước một, cho tới con số cuối cùng. Mở toàn màn hình để cuộn và phóng to khi cấu hình lớn."),
+        },
+      },
+      {
+        key: "preview", anchor: "fs-preview", act: "observe",
+        say: {
+          title: B("Live preview, real arithmetic", "Xem trước trực tiếp, số liệu thật"),
+          body: B("The whole configuration evaluated against one sample employee, line by line. Change a rule and this moves while you watch.",
+                  "Toàn bộ cấu hình được tính trên một nhân viên mẫu, từng dòng một. Sửa một quy tắc là phần này thay đổi ngay trước mắt bạn."),
+        },
+      },
+      {
+        key: "editai", anchor: "fs-editai", act: "observe",
+        say: {
+          title: B("Edit by describing it", "Sửa bằng cách mô tả"),
+          body: B("A formula can be changed by describing the change in plain language. Whether that is switched on is a permission your administrator sets, not a property of the screen.",
+                  "Bạn có thể đổi một công thức bằng cách mô tả thay đổi bằng lời. Việc này có được bật hay không là quyền do quản trị viên của bạn cấp, chứ không phải đặc tính của màn hình."),
+          tip: B("Every edit here changes future payslips, never past ones. A computed payslip keeps the numbers it was computed with.",
+                 "Mọi chỉnh sửa ở đây chỉ ảnh hưởng tới phiếu lương sau này, không đụng tới phiếu cũ. Phiếu đã tính vẫn giữ nguyên các con số lúc tính."),
+        },
+      },
+      {
+        key: "division", anchor: "pw-division", nav: "pb_payrun_wizard.action_pb_payrun_wizard",
+        act: "observe",
+        say: {
+          kicker: B("Run payroll", "Chạy bảng lương"),
+          title: B("Pick a division", "Chọn một bộ phận"),
+          body: B("The wizard loads that division's configuration and the employees eligible for the period. Choosing the division is choosing the rulebook.",
+                  "Trình hướng dẫn sẽ nạp cấu hình của bộ phận đó và những nhân viên đủ điều kiện trong kỳ. Chọn bộ phận chính là chọn bộ quy tắc."),
+        },
+      },
+      {
+        key: "compute", anchor: "pw-compute", act: "observe",
+        say: {
+          title: B("Compute creates drafts", "Tính lương chỉ tạo bản nháp"),
+          body: B("This is the control that generates a draft payslip for every eligible employee — gross, allowances, BHXH and thuế TNCN, net. Drafts only: nothing is paid, sent or approved by pressing it.",
+                  "Đây là nút sinh ra một phiếu lương nháp cho từng nhân viên đủ điều kiện — tổng thu nhập, phụ cấp, BHXH và thuế TNCN, thực nhận. Chỉ là bản nháp: bấm nút này không chi tiền, không gửi và không phê duyệt gì cả."),
+          tip: B("I am not pressing it. This walkthrough only reads; the pay-run scenario is where you press it yourself.",
+                 "Tôi sẽ không bấm nút này. Lượt đi vòng này chỉ để đọc; muốn tự bấm thì hãy mở kịch bản chạy đợt lương."),
+        },
+      },
+      {
+        key: "board", anchor: "pk-kpis", nav: "pb_payruns.action_pb_payruns_kanban",
+        act: "observe",
+        say: {
+          title: B("Every run on one board", "Mọi đợt lương trên một bảng"),
+          body: B("A run travels draft → Payroll Officer → {{hrTierName}} → {{gmTierName}} → done, one column per gate. Each gate is a different role, so nothing is paid on one person's say-so.",
+                  "Một đợt lương đi qua Nháp → Chuyên viên tính lương → {{hrTierName}} → {{gmTierName}} → Hoàn tất, mỗi cổng một cột. Mỗi cổng là một vai trò khác nhau, nên không khoản nào được chi chỉ vì một người nói vậy."),
+        },
+      },
+      {
+        key: "copilot", anchor: "payai-pill", nav: "pb_dashboard.action_pb_dashboard",
+        act: "observe",
+        say: {
+          title: B("And the copilot is always there", "Và trợ lý luôn ở đó"),
+          body: B("Ask it about a number on the screen you are standing on. That is the tour — everything else you can find from the sidebar.",
+                  "Hãy hỏi nó về một con số trên chính màn hình bạn đang đứng. Vậy là xong một vòng — mọi thứ còn lại bạn tìm được từ thanh bên."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_payrun
+     tour_payrun, expanded to the six controls the wizard actually has. All
+     three modes: the replica draws every pw-* anchor, and Do is the point —
+     the learner presses Compute themselves, on their own division. */
+  {
+    key: "sc_payrun",
+    icon: "zap",
+    line: "payrun",
+    modes: ["watch", "try", "do"],
+    screens: ["runpayroll"],
+    name: B("Run a pay run", "Chạy một đợt lương"),
+    tagline: B("Period, division, scope, compute — the four reads and the one press.",
+               "Kỳ lương, bộ phận, phạm vi, tính — bốn lần đọc và một lần bấm."),
+    entry: { nav: "pb_payrun_wizard.action_pb_payrun_wizard", screen: "runpayroll" },
+    steps: [
+      {
+        key: "scope", anchor: "pw-scope", nav: "pb_payrun_wizard.action_pb_payrun_wizard",
+        screen: "runpayroll", act: "observe",
+        say: {
+          kicker: B("Step 1", "Bước 1"),
+          title: B("Which month, and what to call it", "Tháng nào, và gọi đợt này là gì"),
+          body: B("The period decides which month is computed. The batch name is what everybody downstream will search for, so it is worth reading before you move on.",
+                  "Kỳ lương quyết định tháng nào được tính. Tên đợt là thứ mọi người phía sau sẽ dùng để tìm, nên đáng đọc kỹ trước khi đi tiếp."),
+        },
+      },
+      {
+        key: "division", anchor: "pw-division", screen: "runpayroll", act: "observe",
+        say: {
+          kicker: B("Step 2", "Bước 2"),
+          title: B("Choose the division", "Chọn bộ phận"),
+          body: B("Each division has its own formula configuration, one for mid-cycle and one for end-cycle. Choosing the division here is choosing which rulebook computes every payslip in this batch.",
+                  "Mỗi bộ phận có cấu hình công thức riêng, một cho giữa kỳ và một cho cuối kỳ. Chọn bộ phận ở đây chính là chọn bộ quy tắc sẽ tính mọi phiếu lương trong lô này."),
+        },
+      },
+      {
+        key: "summary", anchor: "pw-summary", screen: "runpayroll", act: "observe",
+        say: {
+          kicker: B("Step 3", "Bước 3"),
+          title: B("The last read before anything is computed", "Lần đọc cuối trước khi tính"),
+          body: B("Company, configuration and eligible headcount. If the headcount is not the number you expected, the answer is upstream — a contract, or a person the import missed — and it is much cheaper to find it here.",
+                  "Công ty, cấu hình và số nhân viên đủ điều kiện. Nếu sĩ số không đúng như bạn nghĩ thì nguyên nhân nằm ở phía trên — một hợp đồng, hoặc một người mà đợt nhập liệu bỏ sót — và tìm ra ở đây rẻ hơn nhiều."),
+          tip: B("Nobody is paid because they are on this list. They are paid because a payslip was computed, approved and sent — this is only the first of those.",
+                 "Không ai được trả lương chỉ vì có tên trong danh sách này. Người ta được trả vì một phiếu lương đã được tính, được duyệt và được chi — đây mới là bước đầu tiên trong ba bước đó."),
+        },
+      },
+      {
+        key: "compute", anchor: "pw-compute", screen: "runpayroll",
+        act: "click", guard: true,
+        say: {
+          kicker: B("Step 4", "Bước 4"),
+          title: B("Compute the payslips", "Tính phiếu lương"),
+          body: B("This creates one draft payslip per eligible employee, computed by the configuration named above. Drafts only — nothing is paid, sent or approved — but they are real records with real names on them.",
+                  "Thao tác này tạo một phiếu lương nháp cho mỗi nhân viên đủ điều kiện, tính theo cấu hình đã nêu ở trên. Chỉ là bản nháp — chưa chi, chưa gửi, chưa duyệt — nhưng vẫn là bản ghi thật, mang tên người thật."),
+          tip: B("Computed twice? The wizard replaces the drafts rather than doubling them. What it cannot undo is a run somebody has already submitted.",
+                 "Lỡ tính hai lần? Trình hướng dẫn sẽ thay thế các bản nháp chứ không nhân đôi chúng. Cái nó không sửa được là một đợt lương đã có người trình duyệt."),
+        },
+      },
+      {
+        key: "pills", anchor: "pw-pills", screen: "runpayroll", act: "observe",
+        say: {
+          kicker: B("Step 5", "Bước 5"),
+          title: B("Payslips, computed, need review", "Số phiếu, đã tính, cần soát xét"),
+          body: B("The third number is a question, not an error. The engine flags a payslip when something about it is unusual for this employee, and it wants a person to look — not to fix.",
+                  "Con số thứ ba là một câu hỏi, không phải một lỗi. Hệ thống gắn cờ một phiếu lương khi có gì đó bất thường so với chính nhân viên đó, và nó muốn có người nhìn qua — chứ không phải sửa."),
+        },
+      },
+      {
+        key: "result", anchor: "pw-result", screen: "runpayroll", act: "observe",
+        say: {
+          kicker: B("Step 6", "Bước 6"),
+          title: B("What the compute produced", "Kết quả của lần tính"),
+          body: B("The run's name, its net total and its counts. From here the batch goes to the board, where somebody other than you moves it through its gates.",
+                  "Tên đợt lương, tổng thực chi và các con số đếm. Từ đây lô này đi ra bảng đợt lương, nơi một người khác — không phải bạn — đẩy nó qua các cổng phê duyệt."),
+        },
+      },
+    ],
+  },
+
+  /* --------------------------------------------------------- sc_payslips
+     tour_payslips, taken through to the payslip itself. The old tour stopped
+     at the board and then pointed at the copilot; the anchors for reading a
+     slip line by line have existed since Phase A and this is what they are
+     for. */
+  {
+    key: "sc_payslips",
+    icon: "file-text",
+    line: "payrun",
+    modes: ["watch", "try", "do"],
+    screens: ["payruns", "payslips"],
+    name: B("Read a pay run and its payslips", "Đọc một đợt lương và các phiếu lương"),
+    tagline: B("From the board to one person's net, and the working behind it.",
+               "Từ bảng đợt lương tới số thực nhận của một người, và phần tính toán đứng sau."),
+    entry: { nav: "pb_payruns.action_pb_payruns_kanban", screen: "payruns" },
+    steps: [
+      {
+        key: "kpis", anchor: "pk-kpis", nav: "pb_payruns.action_pb_payruns_kanban",
+        screen: "payruns", act: "observe",
+        say: {
+          kicker: B("The board", "Bảng đợt lương"),
+          title: B("Five numbers over the whole board", "Năm con số trên toàn bảng"),
+          body: B("Total, in pipeline, awaiting YOUR approval, completed and net paid. The third one is the only number here that is your work rather than somebody else's.",
+                  "Tổng số, đang chạy, chờ BẠN duyệt, đã hoàn tất và đã chi. Con số thứ ba là con số duy nhất ở đây thuộc về phần việc của bạn chứ không phải của người khác."),
+        },
+      },
+      {
+        key: "tabs", anchor: "pk-tabs", screen: "payruns", act: "observe",
+        say: {
+          title: B("The tabs filter by gate, not by month", "Các thẻ lọc theo cổng, không theo tháng"),
+          body: B("A run sits in the column of the gate it is waiting at. If a batch you expected is missing, it has usually moved a column rather than disappeared.",
+                  "Một đợt lương nằm ở cột của cổng mà nó đang chờ. Nếu không thấy lô bạn đang tìm thì thường là nó đã chuyển cột chứ không phải biến mất."),
+        },
+      },
+      {
+        key: "card", anchor: "pk-card", screen: "payruns", act: "observe",
+        say: {
+          title: B("One card is one batch", "Một thẻ là một lô"),
+          body: B("Division, period, headcount and net. Which buttons a card offers is decided by the record's own state and your role — never by the card, which is why two people see different footers on the same run.",
+                  "Bộ phận, kỳ lương, sĩ số và số thực chi. Việc một thẻ hiện nút nào là do trạng thái của chính bản ghi và vai trò của bạn quyết định — không phải do cái thẻ, nên hai người nhìn cùng một đợt lương có thể thấy hai bộ nút khác nhau."),
+        },
+      },
+      {
+        key: "runsel", anchor: "ps-runsel", nav: "pb_payslip_review.action_pb_payslip_review",
+        screen: "payslips", act: "observe",
+        say: {
+          kicker: B("Inside a run", "Bên trong một đợt"),
+          title: B("Everything below belongs to this run", "Mọi thứ bên dưới thuộc về đợt này"),
+          body: B("The selector at the top scopes the whole screen. A figure read here without checking it is a figure about a batch you were not looking at.",
+                  "Ô chọn ở trên cùng giới hạn phạm vi của cả màn hình. Đọc một con số ở đây mà không xem ô này là đang đọc con số của một lô khác."),
+        },
+      },
+      {
+        key: "list", anchor: "ps-list", screen: "payslips", act: "observe",
+        say: {
+          title: B("Read the flagged ones first", "Đọc những phiếu bị gắn cờ trước"),
+          body: B("A dot marks a payslip the engine wants read. It is not a broken slip; it is a slip whose numbers moved more than this employee's usually do.",
+                  "Một chấm đánh dấu phiếu lương mà hệ thống muốn có người đọc. Đó không phải phiếu hỏng; đó là phiếu có con số biến động nhiều hơn bình thường của chính nhân viên đó."),
+        },
+      },
+      {
+        key: "status", anchor: "ps-status", screen: "payslips", act: "observe",
+        say: {
+          title: B("A payslip's chain is not the run's", "Chuỗi duyệt của phiếu khác của đợt"),
+          body: B("A payslip travels draft → {{hrTierName}} → {{gmTierName}} → done. The Payroll Officer gate belongs to the RUN, so do not go looking for it here.",
+                  "Một phiếu lương đi qua Nháp → {{hrTierName}} → {{gmTierName}} → Hoàn tất. Cổng Chuyên viên tính lương là của ĐỢT LƯƠNG, nên đừng tìm nó ở đây."),
+        },
+      },
+      {
+        key: "breakdown", anchor: "ps-breakdown", screen: "payslips", act: "observe",
+        say: {
+          title: B("The working behind the net", "Phần tính toán đứng sau số thực nhận"),
+          body: B("Every line with its rule code, in the order the configuration produced them. This is the answer to \"why is this person's pay different this month\" — read the lines, not the total.",
+                  "Từng dòng kèm mã quy tắc, theo đúng thứ tự cấu hình sinh ra chúng. Đây là câu trả lời cho câu hỏi \"vì sao tháng này lương người này khác\" — hãy đọc từng dòng, đừng đọc con số tổng."),
+        },
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------- sc_formula
+     tour_formula. WATCH ONLY, and the reason is structural rather than
+     editorial: half of it happens in the Grid, and the practice replica has
+     no Grid. A Try step whose control the replica does not draw would leave
+     the learner clicking at nothing. */
+  {
+    key: "sc_formula",
+    icon: "calculator",
+    line: "setup",
+    modes: ["watch"],
+    screens: ["formula"],
+    name: B("Explore the formula engine", "Khám phá bộ máy công thức"),
+    tagline: B("Components, formulas, dependencies and the spreadsheet grid behind them.",
+               "Thành phần, công thức, quan hệ phụ thuộc và lưới bảng tính đứng sau chúng."),
+    entry: { nav: "pb_formula_studio.action_pb_formula_studio" },
+    steps: [
+      {
+        key: "config", anchor: "fs-config", nav: "pb_formula_studio.action_pb_formula_studio",
+        act: "observe",
+        say: {
+          kicker: B("Formula Studio", "Xưởng công thức"),
+          title: B("Where every salary rule lives", "Nơi mọi quy tắc lương cư trú"),
+          body: B("A live, visual spreadsheet engine. The switcher at the top chooses which division's configuration you are reading — the shape of the code is PREFIX_DIVISION_CYCLE.",
+                  "Một bộ máy bảng tính trực quan và chạy thật. Ô chuyển ở trên cùng cho biết bạn đang đọc cấu hình của bộ phận nào — mã có dạng TIỀN TỐ_BỘ PHẬN_CHU KỲ."),
+        },
+      },
+      {
+        key: "components", anchor: "fs-components", act: "observe",
+        say: {
+          title: B("Every component, one list", "Mọi thành phần trong một danh sách"),
+          body: B("Inputs, earnings, deductions and totals. Click any component to open it; the coloured type tag tells you what it is at a glance.",
+                  "Đầu vào, thu nhập, khấu trừ và các tổng. Bấm vào thành phần nào là mở thành phần đó; thẻ màu cho biết ngay nó thuộc loại gì."),
+        },
+      },
+      {
+        key: "arrows", anchor: "fs-arrows", act: "observe",
+        say: {
+          title: B("See the dependencies", "Nhìn thấy quan hệ phụ thuộc"),
+          body: B("Turn the arrows on and the connector lines are drawn live between components — what feeds what, across the whole configuration at once.",
+                  "Bật mũi tên lên là các đường nối được vẽ ngay giữa các thành phần — cái nào nuôi cái nào, trên toàn bộ cấu hình cùng lúc."),
+          tip: B("With the arrows on, double-click a connector and the list on the left scrolls to the component it links.",
+                 "Khi đã bật mũi tên, bấm đúp vào một đường nối là danh sách bên trái cuộn tới đúng thành phần mà nó dẫn đến."),
+        },
+      },
+      {
+        key: "card", anchor: "fs-card", act: "observe",
+        say: {
+          title: B("The component card", "Thẻ thành phần"),
+          body: B("Each rule shows its column, its code, its category and a validity check — so you always know whether the arithmetic is sound before you trust it.",
+                  "Mỗi quy tắc hiển thị cột, mã, nhóm và một dấu kiểm tính hợp lệ — nhờ vậy bạn luôn biết phép tính có đúng hay không trước khi tin vào nó."),
+        },
+      },
+      {
+        key: "formula", anchor: "fs-formula", act: "observe", timeout: 4000,
+        say: {
+          title: B("The formula, in plain words", "Công thức viết bằng lời"),
+          body: B("No cryptic cell references — every component reads by its own name, coloured by kind. Click a name inside the formula and the list scrolls straight to it.",
+                  "Không có địa chỉ ô khó hiểu — mỗi thành phần được gọi bằng chính tên của nó, tô màu theo loại. Bấm vào một cái tên trong công thức là danh sách cuộn thẳng tới đó."),
+        },
+      },
+      {
+        key: "namesletters", anchor: "fs-namesletters", act: "observe", timeout: 4000,
+        say: {
+          title: B("Names or letters", "Tên hay chữ cái"),
+          body: B("Flip to letters (A, B, C…) to read a formula beside a spreadsheet, and back to names to explain it to somebody. Same formula either way.",
+                  "Chuyển sang chữ cái (A, B, C…) để đọc công thức song song với bảng tính, rồi quay lại tên khi cần giải thích cho người khác. Vẫn là một công thức."),
+        },
+      },
+      {
+        key: "deps", anchor: "fs-deps", act: "observe",
+        say: {
+          title: B("Full traceability", "Truy vết đầy đủ"),
+          body: B("Depends on and Used by map exactly how this number connects to the rest of payroll. Nothing here is hidden, which is what makes a rename safe to plan.",
+                  "\"Phụ thuộc vào\" và \"Được dùng bởi\" mô tả chính xác con số này nối với phần còn lại của hệ thống lương ra sao. Không có gì bị giấu, nên bạn có thể lên kế hoạch đổi tên một cách an toàn."),
+        },
+      },
+      {
+        key: "flow", anchor: "fs-flow", act: "observe", timeout: 4000,
+        say: {
+          title: B("Watch it calculate", "Xem nó tính"),
+          body: B("The calculation flow shows how a result is built, step by step, down to the final output. Open it full screen — scroll to zoom, drag to pan.",
+                  "Sơ đồ tính toán cho thấy một kết quả được dựng lên từng bước ra sao, cho tới đầu ra cuối cùng. Mở toàn màn hình — cuộn để phóng to, kéo để di chuyển."),
+        },
+      },
+      {
+        key: "preview", anchor: "fs-preview", act: "observe",
+        say: {
+          title: B("Live preview, real numbers", "Xem trước trực tiếp, số liệu thật"),
+          body: B("Every component computes in real time for one sample employee. Tap the sample name to cycle employees and watch the values recalculate.",
+                  "Mọi thành phần được tính ngay lập tức cho một nhân viên mẫu. Bấm vào tên mẫu để đổi sang nhân viên khác và xem các giá trị tính lại."),
+        },
+      },
+      {
+        key: "add", anchor: "fs-add", act: "observe",
+        say: {
+          title: B("Add a component, or a whole sheet", "Thêm một thành phần, hoặc cả một trang tính"),
+          body: B("Need a new allowance or deduction? The plus adds one component. The same control imports an entire Excel sheet, which is scored before anything is saved.",
+                  "Cần thêm một khoản phụ cấp hay khấu trừ? Dấu cộng thêm một thành phần. Cũng chính nút đó nhập cả một trang Excel, và bản nhập được chấm điểm trước khi có gì được lưu."),
+        },
+      },
+      {
+        key: "editai", anchor: "fs-editai", act: "observe",
+        say: {
+          title: B("Edit by describing it", "Sửa bằng cách mô tả"),
+          body: B("Change a formula by describing the change in plain language. Whether editing is available to you at all is a permission, set by your administrator.",
+                  "Đổi một công thức bằng cách mô tả thay đổi bằng lời. Việc bạn có quyền sửa hay không là do quản trị viên cấp."),
+        },
+      },
+      {
+        key: "views", anchor: "fs-views", act: "observe",
+        say: {
+          title: B("Cards, Grid, Test and Settings", "Thẻ, Lưới, Kiểm thử và Thiết lập"),
+          body: B("Four ways to hold the same configuration. Let us open the Grid, which is the one that looks like the spreadsheet this all replaced.",
+                  "Bốn cách nhìn cùng một cấu hình. Chúng ta hãy mở Lưới, cách nhìn giống nhất với bảng tính mà hệ thống này thay thế."),
+        },
+      },
+      {
+        key: "opengrid", anchor: "fs-view-grid", act: "click", guard: false,
+        say: {
+          kicker: B("Your turn", "Đến lượt bạn"),
+          title: B("Open the Grid", "Mở Lưới"),
+          body: B("Every component laid out as spreadsheet columns — column letter, code, formula and its live value. Switching view writes nothing; it is a way of looking.",
+                  "Mọi thành phần được bày ra thành các cột bảng tính — chữ cái cột, mã, công thức và giá trị hiện tại. Đổi cách xem không ghi gì cả; đó chỉ là một cách nhìn."),
+        },
+      },
+      {
+        key: "canvas", anchor: "grid-canvas", act: "observe", timeout: 5000,
+        say: {
+          title: B("The full spreadsheet grid", "Toàn bộ lưới bảng tính"),
+          body: B("Each component is a column; the rows are its name, category, type, formula, live value and validity. Walk it with the arrow keys, A, B, C… straight across.",
+                  "Mỗi thành phần là một cột; các hàng là tên, nhóm, loại, công thức, giá trị hiện tại và tính hợp lệ. Dùng phím mũi tên để đi ngang qua A, B, C…"),
+        },
+      },
+      {
+        key: "fbar", anchor: "grid-fbar", act: "observe", timeout: 4000,
+        say: {
+          title: B("The formula bar", "Thanh công thức"),
+          body: B("Click any formula cell and it loads here. Edit it in the bar or press F2 in the cell — the same validated round trip either way, with live feedback as you type.",
+                  "Bấm vào ô công thức bất kỳ là nó hiện ở đây. Sửa trong thanh này hoặc bấm F2 ngay trong ô — cả hai đều đi qua cùng một vòng kiểm tra, có phản hồi ngay khi bạn gõ."),
+        },
+      },
+      {
+        key: "gridhint", anchor: "grid-hint", act: "observe", timeout: 4000,
+        say: {
+          title: B("Edit, multi-select and drag-fill", "Sửa, chọn nhiều và kéo điền"),
+          body: B("Enter saves, Esc cancels, Ctrl+Z undoes. Shift- or Ctrl-click column headers to set several categories at once, or drag a formula's fill handle sideways to copy it with its references translated.",
+                  "Enter để lưu, Esc để huỷ, Ctrl+Z để hoàn tác. Giữ Shift hoặc Ctrl rồi bấm tiêu đề cột để đặt nhóm cho nhiều cột cùng lúc, hoặc kéo tay cầm điền của một công thức sang ngang để sao chép kèm dịch tham chiếu."),
+        },
+      },
+      {
+        key: "payai", anchor: "fs-payai", act: "observe",
+        say: {
+          title: B("The copilot knows this configuration", "Trợ lý hiểu cấu hình này"),
+          body: B("Ask it to explain a rule or draft a new one. That is Formula Studio — spreadsheet power without a spreadsheet to keep in a folder.",
+                  "Hãy nhờ nó giải thích một quy tắc hoặc phác một quy tắc mới. Đó là Xưởng công thức — sức mạnh bảng tính mà không phải giữ một tệp bảng tính trong thư mục nào cả."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_import
+     tour_import. The multi-sheet importer lives INSIDE a backend wizard that
+     cannot be opened cold, so this scenario navigates nowhere and its steps
+     degrade to centred cards until the learner has the wizard on screen —
+     which is exactly what the tour it replaces did, deliberately. */
+  {
+    key: "sc_import",
+    icon: "inbox",
+    line: "payrun",
+    modes: ["watch"],
+    screens: ["import", "importwizard", "formula"],
+    name: B("Import a sheet with confidence", "Nhập một trang tính có kiểm chứng"),
+    tagline: B("Preview, score and fix — before a single component is saved.",
+               "Xem trước, chấm điểm và sửa — trước khi lưu bất kỳ thành phần nào."),
+    entry: {},
+    steps: [
+      {
+        key: "intro", act: "observe",
+        say: {
+          kicker: B("Import confidence", "Điểm tin cậy khi nhập"),
+          title: B("A workbook is not trusted, it is checked", "Không tin ngay bảng tính, mà kiểm tra nó"),
+          body: B("When you import a workbook of salary rules, Payobook converts every formula and then shows you exactly how clean the result is, before a single component is saved. Open a configuration's importer from Formula Studio and land on the resolution preview to follow along.",
+                  "Khi bạn nhập một bảng tính chứa các quy tắc lương, Payobook chuyển đổi từng công thức rồi cho bạn thấy chính xác kết quả sạch tới mức nào, trước khi lưu bất kỳ thành phần nào. Hãy mở trình nhập của một cấu hình từ Xưởng công thức và dừng ở trang xem trước kết quả để đi theo."),
+        },
+      },
+      {
+        key: "score", anchor: "imp-confidence", act: "observe", timeout: 3000,
+        say: {
+          title: B("A score, not a leap of faith", "Một điểm số, không phải một cú nhắm mắt"),
+          body: B("The percentage comes from how cleanly the formulas resolved, how many references survived intact and how sane the sample numbers look. A row in red references something that could not be mapped and quietly became zero — which is the exact trap this catches.",
+                  "Tỷ lệ phần trăm được tính từ mức độ sạch khi chuyển đổi công thức, số tham chiếu còn nguyên vẹn và độ hợp lý của các con số mẫu. Dòng màu đỏ là dòng tham chiếu tới thứ không ánh xạ được và đã lặng lẽ thành số không — đúng cái bẫy mà bước này bắt được."),
+        },
+      },
+      {
+        key: "fix", anchor: "imp-actions", act: "observe", timeout: 3000,
+        say: {
+          title: B("Fix it before you commit", "Sửa trước khi ghi nhận"),
+          body: B("Pick a fix on any broken row and apply it — the score climbs as you go. Nothing is written until you finish, and abandoning the preview leaves the configuration exactly as it was.",
+                  "Chọn cách sửa cho dòng bị lỗi rồi áp dụng — điểm số tăng dần theo từng lần sửa. Không có gì được ghi cho tới khi bạn kết thúc, và bỏ dở trang xem trước thì cấu hình vẫn y nguyên."),
+          tip: B("Fixing the INPUT here is what stops a wrong payslip later. A row corrected after the commit is a correction somebody has to explain.",
+                 "Sửa ĐẦU VÀO ở đây chính là cách chặn một phiếu lương sai về sau. Một dòng sửa sau khi đã ghi nhận là một khoản hiệu chỉnh mà ai đó sẽ phải giải trình."),
+        },
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------- sc_mapping
+     tour_mapping. Same shape and same reason as sc_import: the mid/end
+     mapping wizard is opened from a configuration, not from a menu. */
+  {
+    key: "sc_mapping",
+    icon: "git-branch",
+    line: "setup",
+    modes: ["watch"],
+    screens: ["formula", "structures"],
+    name: B("Map mid-cycle pay to end-cycle", "Ánh xạ lương giữa kỳ sang cuối kỳ"),
+    tagline: B("Pair the components of two configurations without matching dozens by hand.",
+               "Ghép các thành phần của hai cấu hình mà không phải khớp tay hàng chục dòng."),
+    entry: {},
+    steps: [
+      {
+        key: "intro", act: "observe",
+        say: {
+          kicker: B("Mid to end cycle", "Giữa kỳ sang cuối kỳ"),
+          title: B("Two configurations, one month", "Hai cấu hình, một tháng"),
+          body: B("A division that pays twice a month has a mid-cycle configuration and an end-cycle one, and their components have to line up. Open the mid/end mapping wizard and pick both configurations to follow along.",
+                  "Bộ phận trả lương hai lần một tháng có một cấu hình giữa kỳ và một cấu hình cuối kỳ, và các thành phần của chúng phải khớp nhau. Hãy mở trình ánh xạ giữa kỳ / cuối kỳ và chọn cả hai cấu hình để đi theo."),
+        },
+      },
+      {
+        key: "matched", anchor: "map-intro", act: "observe", timeout: 3000,
+        say: {
+          title: B("Matched by code, then by name", "Khớp theo mã, rồi theo tên"),
+          body: B("Auto-suggest pairs components with the same code first — a perfect match — then falls back to name similarity for the rest, and skips anything you have already mapped. Every suggestion shows its confidence and the reason it was made.",
+                  "Chức năng gợi ý tự động ghép trước các thành phần trùng mã — khớp tuyệt đối — rồi mới dựa vào độ giống tên cho phần còn lại, và bỏ qua những cặp bạn đã ánh xạ. Mỗi gợi ý đều kèm độ tin cậy và lý do được ghép."),
+        },
+      },
+      {
+        key: "accept", anchor: "map-actions", act: "observe", timeout: 3000,
+        say: {
+          title: B("Suggest, review, accept", "Gợi ý, soát lại, chấp nhận"),
+          body: B("Generate the proposals, read them, then accept the confident ones in one go — or take them one at a time. The machine does the tedious first pass; the judgement stays yours.",
+                  "Sinh ra các đề xuất, đọc chúng, rồi chấp nhận một lượt những cặp có độ tin cậy cao — hoặc duyệt từng cặp một. Máy làm giúp lượt rà soát nhàm chán đầu tiên; phần phán đoán vẫn là của bạn."),
+          tip: B("A component left unmapped is not an error. It is a component that exists in one cycle and not the other, and that is a real thing.",
+                 "Một thành phần chưa được ánh xạ không phải là lỗi. Đó là thành phần chỉ có ở một chu kỳ và không có ở chu kỳ kia, và điều đó là bình thường."),
+        },
+      },
+    ],
+  },
+];
+
+/* =============================================================================
+   12. THE JOURNEY'S FRONT DOOR
    -----------------------------------------------------------------------------
    The sidebar SECTION and the leaf inside it. Both are here rather than
    hand-written in the module for one reason: their NAMES are content, and

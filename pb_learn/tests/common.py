@@ -64,3 +64,17 @@ def mission_steps(tree=None):
     for mission in tree['missions']:
         for step in mission.get('steps') or []:
             yield mission, step
+
+
+def scenarios(tree=None):
+    """LEARNOS Phase 1b. `.get`, not `[...]`: the offline replay harness can be
+    pointed at an older content plane and a missing section must read as an
+    empty one rather than a KeyError three tests deep."""
+    tree = tree or load_content()
+    return tree.get('scenarios') or []
+
+
+def scenario_steps(tree=None):
+    for scenario in scenarios(tree):
+        for step in scenario.get('steps') or []:
+            yield scenario, step

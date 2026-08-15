@@ -53,6 +53,8 @@ CONTENT_PATH = 'pb_learn/static/content/learn_content.json'
 _EMPTY = {
     'version': '', 'chrome': {}, 'stations': [], 'missions': [], 'glossary': [],
     'intents': [], 'screens': [], 'columns': [], 'global_suggest': [],
+    # LEARNOS Phase 1b. One authored walkthrough, three ways to take it.
+    'scenarios': [],
 }
 
 
@@ -116,6 +118,10 @@ class LearnContent(models.AbstractModel):
         return _load()['missions']
 
     @api.model
+    def scenarios(self):
+        return _load()['scenarios']
+
+    @api.model
     def glossary(self):
         return _load()['glossary']
 
@@ -155,6 +161,10 @@ class LearnContent(models.AbstractModel):
             return None, None
         step = next((s for s in mission['steps'] if s['key'] == step_key), None)
         return mission, step
+
+    @api.model
+    def scenario(self, key):
+        return next((s for s in self.scenarios() if s['key'] == key), None)
 
     @api.model
     def screen(self, key):
