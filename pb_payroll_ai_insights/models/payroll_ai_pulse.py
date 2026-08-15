@@ -6,7 +6,65 @@ from dateutil.relativedelta import relativedelta
 import json
 import logging
 
+from .ai_redaction import redact_names, restore_names
+
 _logger = logging.getLogger(__name__)
+
+
+def redacted_details(raw):
+    """One alert's `details` as a JSON string with the people taken out.
+
+    Returns (text, mapping). The field is a JSON string written by the
+    detectors below; it is parsed so the names can be found by KEY rather than
+    by pattern-matching prose, and re-serialised. A `details` that is not valid
+    JSON — which nothing here writes, but a migration or a hand edit could — is
+    treated as opaque text and gets the same name-free treatment through the
+    empty mapping plus the generic patterns.
+
+    Module level and not a model method, deliberately: it is the half of the
+    pulse's egress that can be executed without a database, and the offline
+    harness runs the real function rather than a copy of it.
+    """
+    raw = raw or ''
+    if not raw.strip():
+        return '', {}
+    try:
+        parsed = json.loads(raw)
+    except (TypeError, ValueError):
+        redacted, mapping = redact_names({'details': raw})
+        return redacted['details'], mapping
+    redacted, mapping = redact_names(parsed)
+    return json.dumps(redacted, default=str), mapping
+
+
+def pulse_summary_prompt(name, category, severity, metric, baseline,
+                         deviation, details):
+    """The exact string the Pulse sends per alert, as a pure function.
+
+    `details` must ALREADY be redacted. Two of the four detectors put people
+    in it by name — the joiners and the leavers of the week — and until
+    LEARNOS Phase 4 that dict went into this prompt verbatim.
+
+    Everything else here is a title, a word from a selection field or a
+    number. The TITLE is deliberately not redacted: the four detectors build
+    it from a percentage, a count or a DEPARTMENT, never from a person, and a
+    summary about "[person-1] Spike" would be unreadable for no gain.
+    """
+    return f"""You are PayAI, an HR analytics assistant. Write a brief 2-3 sentence executive summary for this payroll anomaly alert:
+
+Alert: {name}
+Category: {category}
+Severity: {severity}
+Current Value: {metric}
+Baseline Value: {baseline}
+Deviation: {deviation}%
+Details: {details}
+
+Names in the details have been replaced with placeholders of the form
+[person-1]. Use those placeholders exactly as they appear. Do not invent real
+names for them.
+
+Write a clear, actionable summary. Include what happened, why it matters, and a recommended action. Keep it concise."""
 
 
 class PayrollAIPulse(models.Model):
@@ -229,6 +287,10 @@ class PayrollAIPulse(models.Model):
             ('date_from', '>=', month_start),
         ])
 
+        # Keyed on the DEPARTMENT name — a record value used as a key, and so
+        # invisible to `redact_names`, which rewrites values only. A department
+        # is not a person, so this is safe; see the note in
+        # `_detect_leave_anomalies` and the residual list in ai_redaction.py.
         dept_overtime = {}
         for ps in payslips:
             dept = ps.employee_id.department_id.name or 'Unassigned'
@@ -297,6 +359,13 @@ class PayrollAIPulse(models.Model):
 
         if len(current_leaves) >= 5:
             # Group by type
+            # A DICTIONARY KEY BUILT FROM A RECORD. `redact_names` rewrites
+            # VALUES and never keys — keys are normally our own field names,
+            # and a payload with renamed keys is one the model cannot read.
+            # These keys are the leave TYPE's name, which is not a person, so
+            # the guarantee holds today. A detector that ever keys this on an
+            # employee would leak straight past the redaction. Same note at
+            # the overtime detector, which keys on the department.
             type_counts = {}
             for lv in current_leaves:
                 lt = lv.holiday_status_id.name or 'Other'
@@ -326,7 +395,24 @@ class PayrollAIPulse(models.Model):
             return False
 
     def _generate_ai_summaries(self):
-        """Generate AI-powered narrative summaries for new alerts."""
+        """Generate AI-powered narrative summaries for new alerts.
+
+        TICKET 4, PULSE HALF (LEARNOS Phase 4). This used to ask
+        `payroll.ai.config` for a provider factory under a name that model has
+        never had, inside a bare `except Exception` — which turned a typo into
+        a feature that was silently, permanently off. Every alert since it
+        shipped has had an empty summary and nothing anywhere said so. The
+        method that exists is `get_provider`, and it is the one called below.
+
+        NOTE TO THE NEXT READER: do not write the old name here, not even to
+        explain this. `tests/test_egress.py` pins its absence from this whole
+        file, comments included, because a commented-out call is a template.
+
+        Fixing it TURNS AN EGRESS PATH ON, which is why the redaction below is
+        part of the same change rather than a follow-up: two of the four
+        detectors list the week's joiners and leavers by name, and the moment
+        this call works those names are on a wire.
+        """
         new_alerts = self.search([('state', '=', 'new'), ('summary', '=', False)])
         if not new_alerts:
             return
@@ -335,28 +421,28 @@ class PayrollAIPulse(models.Model):
             config = self.env['payroll.ai.config'].get_active_config()
             if not config:
                 return
-            provider = config.get_provider_instance()
+            provider = config.get_provider()
             if not provider:
                 return
         except Exception:
+            _logger.info("PayAI Pulse: no usable provider for alert summaries",
+                         exc_info=True)
             return
 
         for alert in new_alerts:
             try:
-                prompt = f"""You are PayAI, an HR analytics assistant. Write a brief 2-3 sentence executive summary for this payroll anomaly alert:
-
-Alert: {alert.name}
-Category: {alert.category}
-Severity: {alert.severity}
-Current Value: {alert.metric_value}
-Baseline Value: {alert.baseline_value}
-Deviation: {alert.deviation_pct}%
-Details: {alert.details or ''}
-
-Write a clear, actionable summary. Include what happened, why it matters, and a recommended action. Keep it concise."""
-
+                details, mapping = redacted_details(alert.details)
+                prompt = pulse_summary_prompt(
+                    alert.name, alert.category, alert.severity,
+                    alert.metric_value, alert.baseline_value,
+                    alert.deviation_pct, details)
                 summary = provider.generate_text(prompt, max_tokens=200, temperature=0.5)
-                alert.write({'summary': summary.strip()})
+                # STORED RESTORED. The database is inside the trust boundary
+                # and the alert is read by people who can already open the
+                # employee records behind it; the wire to the provider is what
+                # was outside. A stored placeholder would also rot — the
+                # mapping is per-call and nothing could resolve it later.
+                alert.write({'summary': restore_names(summary.strip(), mapping)})
             except Exception as e:
                 _logger.warning("PayAI Pulse: AI summary failed for alert %s: %s", alert.id, e)
 

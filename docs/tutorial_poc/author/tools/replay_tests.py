@@ -149,6 +149,76 @@ def _fake_pkg(name, **attrs):
     return m
 
 
+# ---------------------------------------------------------------------------
+# LEARNOS Phase 4 — PayAI's egress tests, executed here for the same reason
+# everything else in this file is: there is no odoo-bin, and a test that has
+# never run is not a test. This is the phase's PRIVACY suite, so "written and
+# unexecuted" would have been the worst possible place for it.
+#
+# `ai_redaction.py` is imported FOR REAL: it has no Odoo import in it, by
+# design, so the module under test is the module that ships. The two prompt
+# builders cannot be imported whole — their files define Odoo models — so they
+# are LIFTED by AST out of the shipped source, which is still the shipped code
+# rather than a copy living in a test.
+# ---------------------------------------------------------------------------
+def load_pure(relpath, modname):
+    """Import a dependency-free module straight off disk, under a given name."""
+    import importlib.util
+    path = os.path.join(REPO, relpath)
+    spec = importlib.util.spec_from_file_location(modname, path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[modname] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+_addons = _fake_pkg("odoo.addons")
+odoo.addons = _addons
+
+# Enough of `odoo.models` / `odoo.api` for a MODEL FILE to import. Two class
+# statements and a decorator are all `learn_intent.py` needs at import time —
+# nothing here pretends to be an ORM, and any method that reaches for one dies
+# on `NoEnv` and is reported as SKIP, which is the behaviour the harness is
+# built around.
+odoo.models.AbstractModel = type("AbstractModel", (), {})
+odoo.models.Model = odoo.models.AbstractModel
+odoo.models.TransientModel = odoo.models.AbstractModel
+odoo.api.model = staticmethod(lambda fn: fn).__func__
+odoo.api.constrains = lambda *a, **k: (lambda fn: fn)
+odoo.api.depends = lambda *a, **k: (lambda fn: fn)
+
+_learn = _fake_pkg("odoo.addons.pb_learn")
+_addons.pb_learn = _learn
+_learn_models = _fake_pkg("odoo.addons.pb_learn.models")
+_learn.models = _learn_models
+# The REAL module, imported whole. Its pure functions — explain_blocks,
+# build_corpus and the two prompt builders — are what LEARNOS Phase 4's offline
+# replay exercises, and they are exercised in the file that ships them.
+_learn_models.learn_intent = load_pure(
+    "pb_learn/models/learn_intent.py",
+    "odoo.addons.pb_learn.models.learn_intent")
+_payai = _fake_pkg("odoo.addons.pb_payroll_ai_insights")
+_addons.pb_payroll_ai_insights = _payai
+_payai_models = _fake_pkg("odoo.addons.pb_payroll_ai_insights.models")
+_payai.models = _payai_models
+_payai_models.ai_redaction = load_pure(
+    "pb_payroll_ai_insights/models/ai_redaction.py",
+    "odoo.addons.pb_payroll_ai_insights.models.ai_redaction")
+_payai_models.payroll_ai_engine = _fake_pkg(
+    "odoo.addons.pb_payroll_ai_insights.models.payroll_ai_engine",
+    **lift("pb_payroll_ai_insights", "models/payroll_ai_engine.py",
+           "data_query_prompt"))
+# The pulse's two module-level functions. `redacted_details` calls into
+# ai_redaction, so the lifted namespace is given the real module's names —
+# lift() compiles the functions alone and does not run the imports above them.
+_pulse_ns = lift("pb_payroll_ai_insights", "models/payroll_ai_pulse.py",
+                 "pulse_summary_prompt", "redacted_details")
+_pulse_ns["json"] = json
+_pulse_ns["redact_names"] = _payai_models.ai_redaction.redact_names
+_pulse_ns["restore_names"] = _payai_models.ai_redaction.restore_names
+_payai_models.payroll_ai_pulse = _fake_pkg(
+    "odoo.addons.pb_payroll_ai_insights.models.payroll_ai_pulse", **_pulse_ns)
+
 _tenants = _fake_pkg("pb_tenants")
 _tenants.__path__ = [os.path.join(REPO, "pb_tenants")]
 _tenants_models = _fake_pkg("pb_tenants.models")
@@ -462,9 +532,20 @@ for addon, pkgname, modname, clsname in (
     ("pb_learn", "pb_learn_tests", "test_assets", "TestAssets"),
     # LEARNOS Phase 3.
     ("pb_learn", "pb_learn_tests", "test_welcome", "TestWelcomeCard"),
+    # LEARNOS Phase 4. `explain_blocks`, `build_corpus` and both prompt
+    # builders are pure over the content tree, so the floor really is replayed
+    # here for three screens in both languages rather than only described.
+    ("pb_learn", "pb_learn_tests", "test_explain", "TestExplainScreen"),
     ("pb_dashboard", "pb_dashboard_tests", "test_activation", "TestActivationSource"),
     ("pb_dashboard", "pb_dashboard_tests", "test_activation", "TestActivationPayload"),
     ("pb_tenants", "pb_tenants.tests", "test_currency", "TestProvisioningCurrency"),
+    # LEARNOS Phase 4 — the egress suite. `TestAiRedaction` is the one that
+    # asserts on the exact prompt string, so it is the one that must never be
+    # a test nobody has run.
+    ("pb_payroll_ai_insights", "pb_payai_tests", "test_redaction",
+     "TestAiRedaction"),
+    ("pb_payroll_ai_insights", "pb_payai_tests", "test_egress",
+     "TestEgressSeams"),
 ):
     print("== %s.%s" % (addon, modname))
     r = run(modname, clsname, addon, pkgname)

@@ -24,6 +24,24 @@
               groups="pb_hr_payroll_base.group_payroll_super_admin,pb_learn.group_learn_author"
               sequence="10"/>
 
+    <!-- LEARNOS Phase 4. The one control that can switch the Coach's composer
+         on.
+
+         groups= lists BOTH gates, so the menu matches what apply() enforces.
+         Odoo ORs a groups= list, so this alone still shows the leaf to an
+         author who is not an administrator — the menu is a hint, not the
+         control, and the AND is re-asked server-side in
+         learn.companion.settings.apply(). Listing both anyway stops the leaf
+         advertising itself to a system administrator who has nothing to do
+         with learning content, and stops the next reader inferring from a
+         one-group menu that one group is the rule. -->
+    <menuitem id="menu_learn_companion"
+              name="Companion settings"
+              parent="menu_learn_config"
+              action="action_learn_companion_settings"
+              groups="pb_learn.group_learn_author,base.group_system"
+              sequence="20"/>
+
     <!-- Author-only: the measurement surfaces.
 
          This used to be "Content" and it used to open the station and lesson

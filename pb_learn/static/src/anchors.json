@@ -453,8 +453,7 @@
     "pe-head": {
       "screen": "employees",
       "file": "pb_people/static/src/xml/people.xml",
-      "desc": "The Employees header and its two actions: Select, which turns on bulk mode, and Add employee.",
-      "reserved": true
+      "desc": "The Employees header and its two actions: Select, which turns on bulk mode, and Add employee. The Add employee button opens the three-step onboarding wizard (pb_people_advanced), which is what the `addperson` intent points at."
     },
     "pe-bulk": {
       "screen": "employees",

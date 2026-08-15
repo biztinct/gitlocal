@@ -63,6 +63,13 @@ export const COACH_ACTIONS = new Set([
     // product method — they write this learner's own consent row and nothing
     // else, which is why they belong in this set rather than outside it.
     "c-consent-yes", "c-consent-no",
+    // LEARNOS Phase 4. "Explain this screen" is a READ: one RPC to
+    // learn.intent.explain_screen, which composes an answer out of the content
+    // plane. It reaches no product method either, which is why it is in this
+    // set rather than an exception to it. The Watch / Try buttons an answer may
+    // now carry are NOT new actions — they are `c-scenario`, the control the
+    // "Show me how" rows have used since Phase 1b.
+    "c-explain",
 ]);
 
 export class CoachHost extends Component {
@@ -344,6 +351,33 @@ export class CoachHost extends Component {
         }
     }
 
+    /** LEARNOS Phase 4 — "Explain this screen".
+     *
+     *  A question nobody has to phrase, so nothing is typed and nothing is
+     *  stored: `_maybeStore` is deliberately NOT called here. There is no
+     *  learner question to mine, and recording the SCREEN somebody pressed a
+     *  button on would be a different collection from the one they consented
+     *  to. The event log gets the press, as it does for every other control.
+     */
+    async explainScreen() {
+        if (this.state.busy || !this.state.screen) {
+            return;
+        }
+        this.state.busy = true;
+        this.state.simpler = false;
+        try {
+            const answer = await this.orm.call(
+                "learn.intent", "explain_screen", [this.state.screen, RT.lang]);
+            this.state.answer = answer;
+            this._log(answer.matched ? "coach_hit" : "coach_miss",
+                      answer.key || "");
+        } catch {
+            this.state.answer = null;
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
     async askIntent(key) {
         // A suggested question is asked with its own label, so the transcript
         // reads like a conversation rather than a menu selection.
@@ -464,6 +498,12 @@ export class CoachHost extends Component {
         if (this.state.answer) {
             parts.push(this._answerHTML(this.state.answer));
         } else {
+            // LEARNOS Phase 4 — the "not sure what to ask?" state. FIRST,
+            // because it is the offer that needs no vocabulary: somebody who
+            // cannot phrase the question can still press one button and be
+            // told what the screen is. The two offers below it need the
+            // learner to already know what they want.
+            parts.push(this._notSureHTML());
             // ABOVE the suggested questions, and only when there are any. A
             // walkthrough of the screen in front of you is a better first offer
             // than a list of questions about it — and on the screens that have
@@ -494,6 +534,42 @@ export class CoachHost extends Component {
                     >${ic("ban")}${esc(T("consentNo"))}</button>
             </div>
         </div>`;
+    }
+
+    /** The opening offer, for the person who cannot phrase the question.
+     *
+     *  Drawn only on a screen the content plane covers, because that is the
+     *  only place `explain_screen` has a floor to build from — off the map it
+     *  would be a button whose one outcome is the miss the drawer is already
+     *  showing. Fail closed, and say nothing rather than offering nothing.
+     */
+    _notSureHTML() {
+        if (!this.covered) {
+            return "";
+        }
+        return `<div class="lrn-cnotsure">
+            <div class="lrn-clabel">${esc(T("notSure"))}</div>
+            <button class="lrn-btn sm pri" data-act="c-explain"
+                    title="${esc(T("explainHint"))}"
+                >${ic("info")}${esc(T("explainScreen"))}</button>
+        </div>`;
+    }
+
+    /** Does this scenario really offer that mode?
+     *
+     *  The payload is already trustworthy — the generator refuses a `try`
+     *  target on a scenario that has no Try, and `_explain_scenarios` reads
+     *  the modes off the record. This asks the loaded scenario anyway, so the
+     *  drawer CANNOT draw a button the engine would refuse to start, whatever
+     *  a stale bundle or a future author sends it. Unknown key, unloaded
+     *  service, missing mode: no button.
+     */
+    _offers(key, mode) {
+        if (!key) {
+            return false;
+        }
+        const sc = this.sc.get(key);
+        return !!sc && (sc.modes || []).includes(mode);
     }
 
     /** The Coach says what screen it is grounded on, every time. If it is a
@@ -567,6 +643,23 @@ export class CoachHost extends Component {
             tools.push(`<button class="lrn-btn sm" data-act="c-show" data-anchor="${esc(a.show_me[0])}"
                 >${ic("eye")}${esc(T("showMe"))}</button>`);
         }
+        // LEARNOS Phase 4 — ANSWERS THAT TEACH. When a walkthrough covers the
+        // same ground, the answer offers it: Watch it happen, or Try it on the
+        // practice company. Not a new action — `c-scenario` is the control the
+        // "Show me how" rows have used since Phase 1b, so there is still
+        // exactly one path from this drawer into the scenario engine.
+        if (this._offers(a.watch, "watch")) {
+            tools.push(`<button class="lrn-btn sm" data-act="c-scenario"
+                data-key="${esc(a.watch)}" data-mode="watch"
+                title="${esc(T("scWatchHint"))}"
+                >${ic("play")}${esc(T("scWatch"))}</button>`);
+        }
+        if (this._offers(a["try"], "try")) {
+            tools.push(`<button class="lrn-btn sm" data-act="c-scenario"
+                data-key="${esc(a["try"])}" data-mode="try"
+                title="${esc(T("scTryHint"))}"
+                >${ic("flask")}${esc(T("scTry"))}</button>`);
+        }
         if (a.simpler) {
             tools.push(`<button class="lrn-btn sm" data-act="c-simpler"
                 >${ic("lightbulb")}${esc(this.state.simpler ? T("less") : T("simpler"))}</button>`);
@@ -583,11 +676,18 @@ export class CoachHost extends Component {
         // on — one a model wrote from this module's own material. The second
         // badge is the more important of the two, because it is the only
         // answer in the drawer that no author has read.
-        const badge = a.source_kind === "column"
-            ? `<span class="lrn-chip b">${ic("book-open")}${esc(T("columnAnswer"))}</span>`
-            : a.source_kind === "composed"
-                ? `<span class="lrn-chip b">${ic("sparkles")}${esc(T("composedAnswer"))}</span>`
-                : "";
+        // Phase 4 adds a THIRD: an explanation the server assembled from this
+        // screen's own blurb, next step and column definitions. It is not a
+        // curated answer to a question anybody asked, so it says so.
+        const BADGES = {
+            column: ["book-open", "columnAnswer"],
+            composed: ["sparkles", "composedAnswer"],
+            screen: ["info", "screenAnswer"],
+        };
+        const badgeSpec = BADGES[a.source_kind];
+        const badge = badgeSpec
+            ? `<span class="lrn-chip b">${ic(badgeSpec[0])}${esc(T(badgeSpec[1]))}</span>`
+            : "";
         return `<div class="lrn-canswer">
             ${badge}
             <h4>${esc(tx(a.label))}</h4>
@@ -689,6 +789,8 @@ export class CoachHost extends Component {
             this.decideConsent(false);
         } else if (act === "c-scenario") {
             this.startScenario(el.dataset.key, el.dataset.mode, 0);
+        } else if (act === "c-explain") {
+            this.explainScreen();
         }
     }
 
@@ -758,6 +860,24 @@ export class CoachHost extends Component {
 
     get askPlaceholder() {
         return T("askPlaceholder");
+    }
+
+    /* The header's explain button. Two getters rather than T() in the
+       template, for the same reason every other string here is one: the
+       template cannot read the reactive language, and `bodyHTML` is what
+       re-renders the drawer when the toggle flips.
+
+       THE SUBSCRIPTION IS DELIBERATE HERE TOO. These render in the header,
+       which is OUTSIDE bodyHTML, so they need their own read of
+       `state.lang` — exactly the bug journey.js taught this module twice. */
+    get explainLabel() {
+        void this.state.lang;
+        return T("explainScreen");
+    }
+
+    get explainHintText() {
+        void this.state.lang;
+        return T("explainHint");
     }
 
     get coachName() {

@@ -201,6 +201,15 @@ body.pb-coach-absent .lrn-fab { bottom: 92px; }
    walkthrough of the screen in front of you is a better first offer than a
    list of questions about it. One button per MODE: watch, try and do are three
    different promises about who presses, not one scenario with a setting. */
+/* LEARNOS Phase 4 — the "not sure what to ask?" opener.
+   Above the walkthroughs and the chips, and visually quieter than both: it is
+   the fallback for somebody who has no question yet, not the headline. */
+.lrn-cnotsure {
+    margin-bottom: 12px;
+
+    .lrn-btn { width: 100%; justify-content: center; }
+}
+
 .lrn-cscens { margin-bottom: 12px; }
 
 .lrn-cscen {
