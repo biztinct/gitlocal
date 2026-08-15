@@ -31,6 +31,8 @@ import re
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
+from .common import load_content, lesson_steps, mission_steps
+
 DATA_COACH_RE = re.compile(r'data-coach="([^"{}#]+)"')
 ATTF_RE = re.compile(r't-attf-data-coach="([^"]*)"')
 # Comments describe anchors as often as code declares them — this file's own
@@ -111,6 +113,7 @@ class TestAnchorRegistry(TransactionCase):
         cls.practice = cls.registry_json['practice']
         cls.foreign = cls.registry_json['foreign']
         cls.scan = cls.registry_json['scan']
+        cls.content = load_content()
 
     # -- helpers ---------------------------------------------------------
     def _all_declared(self):
@@ -197,17 +200,17 @@ class TestAnchorRegistry(TransactionCase):
     def test_04_content_anchors_are_registered(self):
         declared = self._all_declared()
         unknown = []
-        for step in self.env['learn.step'].sudo().search([]):
-            for key in (step.anchor, step.moment_from, step.moment_to):
+        for lesson, step in lesson_steps(self.content):
+            for key in (step['anchor'], step['moment_from'], step['moment_to']):
                 if key and key not in declared and not self._matches_pattern(key):
                     unknown.append('%s (lesson %s step %s)'
-                                   % (key, step.lesson_id.key, step.sequence))
+                                   % (key, lesson['key'], step['title']['en'][:30]))
         # Missions point at controls too, and this direction was blind to them.
-        for mstep in self.env['learn.mission.step'].sudo().search([]):
-            key = mstep.target
+        for mission, mstep in mission_steps(self.content):
+            key = mstep['target']
             if key and key not in declared and not self._matches_pattern(key):
                 unknown.append('%s (mission %s step %s)'
-                               % (key, mstep.mission_id.key, mstep.key))
+                               % (key, mission['key'], mstep['key']))
         self.assertFalse(unknown, "Content points at anchors nothing registers:\n  "
                                   + "\n  ".join(sorted(set(unknown))))
 
@@ -263,20 +266,22 @@ class TestAnchorRegistry(TransactionCase):
         the same as not having the check.
         """
         referenced = set()
-        for step in self.env['learn.step'].sudo().search([]):
-            referenced |= {a for a in (step.anchor, step.moment_from, step.moment_to) if a}
-        for intent in self.env['learn.intent'].sudo().search([]):
-            referenced |= {a.strip() for a in (intent.show_me or '').split(',') if a.strip()}
-        for istep in self.env['learn.intent.step'].sudo().search([]):
-            if istep.anchor:
-                referenced.add(istep.anchor)
+        for _lesson, step in lesson_steps(self.content):
+            referenced |= {a for a in (step['anchor'], step['moment_from'],
+                                       step['moment_to']) if a}
+        for intent in self.content['intents']:
+            referenced |= {a for a in intent['show_me'] if a}
+            for block in intent['blocks']:
+                for istep in block['steps']:
+                    if istep['anchor']:
+                        referenced.add(istep['anchor'])
         # A MISSION STEP'S TARGET is a content reference too, and no test in
         # this module counted it — which is how `pw-result` and `st-effective`
         # read as unreferenced while m1 and m4 have been pointing at them since
         # Phase A. Found by executing this test rather than by writing it.
-        for mstep in self.env['learn.mission.step'].sudo().search([]):
-            if mstep.target:
-                referenced.add(mstep.target)
+        for _mission, mstep in mission_steps(self.content):
+            if mstep['target']:
+                referenced.add(mstep['target'])
 
         undeclared, stale = [], []
         for key, spec in self.product.items():

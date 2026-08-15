@@ -17,6 +17,8 @@ import re
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
+from .common import lessons
+
 
 def _read(module, rel):
     base = get_module_path(module)
@@ -89,12 +91,9 @@ class TestRetirementSeams(TransactionCase):
             engine = self.env['payroll.ai.engine']
         except KeyError:
             self.skipTest("PayAI is not installed on this database")
-        Lesson = self.env['learn.lesson'].sudo()
-        orphans = []
-        for key in engine._KNOWN_LESSONS:
-            lesson = Lesson.search([('key', '=', key)], limit=1)
-            if not lesson or not lesson.station_id:
-                orphans.append(key)
+        carried = {lesson['key'] for _station, lesson in lessons()}
+        self.assertTrue(carried, "the content plane carries no lessons at all")
+        orphans = [key for key in engine._KNOWN_LESSONS if key not in carried]
         self.assertFalse(orphans, "lessons PayAI offers that no station carries: %s" % orphans)
 
     # -- the first-login greeting -----------------------------------------

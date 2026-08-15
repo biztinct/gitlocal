@@ -25,20 +25,23 @@ glossary in both languages — and asserts the same properties the database-boun
 tests assert, so the two can only disagree because of something this file does
 not model, and that list is written down at the bottom.
 
-Reads: pb_learn/data/learn_{intents,screens,columns}.xml and i18n/vi_VN.po —
-the same records the server loads. Not the authoring source, deliberately:
-what the server does is decided by what the generator emitted.
+Reads: pb_learn/static/content/learn_content.json — the same asset the server
+parses and the browser fetches. Not the authoring source, deliberately: what
+the server does is decided by what the generator emitted. (Until LEARNOS Phase
+1a this read data/learn_{intents,screens,columns}.xml and i18n/vi_VN.po; the
+records became one static tree and the Vietnamese arrived beside the English
+instead of through a .po lookup, which is the only thing that changed here.)
 
 Usage:  python3 docs/tutorial_poc/author/tools/simulate_resolver.py [-v]
 Exit 0 = every property holds. Exit 1 = at least one does not.
 """
 import argparse
 import io
+import json
 import os
 import re
 import sys
 import unicodedata
-import xml.etree.ElementTree as ET
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 AUTHOR = os.path.dirname(HERE)
@@ -75,9 +78,11 @@ MIRRORED_MARKERS = (
     'best += _ON_SCREEN_BONUS',
     's[0] >= _SCORE_FLOOR',
     # retrieval order in ask()
-    "self.env['learn.column'].match(",
+    "self._match_column(question, screen_key)",
     # the column glossary reading BOTH languages
     "for lang in ('en_US', 'vi_VN')",
+    # the content plane is the ONLY source the resolver scores over
+    "self.env['learn.content'].intents()",
 )
 
 
@@ -94,7 +99,7 @@ def _load_module_globals():
             % (len(missing), '\n'.join('  - %s' % m for m in missing)))
         sys.exit(2)
     ns = {'re': re, 'unicodedata': unicodedata}
-    exec(src[src.index('_STOP = {'):src.index('class LearnScreen')], ns)
+    exec(src[src.index('_STOP = {'):src.index('class LearnIntent')], ns)
     return ns
 
 
@@ -103,89 +108,37 @@ _norm, _topic_words, _is_advice = G['_norm'], G['_topic_words'], G['_is_advice']
 FLOOR, BONUS = G['_SCORE_FLOOR'], G['_ON_SCREEN_BONUS']
 
 
-def po_map(path):
-    """msgid -> msgstr, full gettext continuation form."""
-    pairs, cur, buf, mid = {}, None, [], [None]
-
-    def flush(kind, text):
-        if kind == 'msgid':
-            mid[0] = text
-        elif mid[0] is not None:
-            pairs.setdefault(mid[0], text)
-
-    for line in io.open(path, encoding='utf-8').read().splitlines():
-        line = line.strip()
-        m = re.match(r'^(msgid|msgstr) "(.*)"$', line)
-        if m:
-            if cur:
-                flush(cur, ''.join(buf))
-            cur, buf = m.group(1), [m.group(2)]
-            continue
-        m = re.match(r'^"(.*)"$', line)
-        if m and cur:
-            buf.append(m.group(1))
-            continue
-        if cur:
-            flush(cur, ''.join(buf))
-            cur, buf = None, []
-    if cur:
-        flush(cur, ''.join(buf))
-    pairs.pop('', None)
-    return pairs
-
-
-def _fields(rec):
-    return {f.get('name'): (f.text or '') for f in rec.findall('field')}
+def one(pair, lang='en'):
+    """One language out of a `{en, vi}` leaf, tolerating '' and a raw string."""
+    if not pair:
+        return ''
+    if isinstance(pair, str):
+        return pair
+    return pair.get(lang) or pair.get('en') or ''
 
 
 def load():
-    po = po_map(os.path.join(ADDON, 'i18n', 'vi_VN.po'))
-    intents, by_id = [], {}
-    root = ET.parse(os.path.join(ADDON, 'data', 'learn_intents.xml')).getroot()
-    for rec in root.iter('record'):
-        if rec.get('model') == 'learn.intent':
-            v = _fields(rec)
-            item = {'id': rec.get('id'), 'key': v.get('key'),
-                    'label': v.get('label', ''),
-                    'screens': v.get('screens', '*'),
-                    'offer': v.get('offer', '1') not in ('0', 'False'),
-                    'phrases': []}
-            intents.append(item)
-            by_id[item['id']] = item
-    for rec in root.iter('record'):
-        if rec.get('model') == 'learn.intent.phrase':
-            v = {f.get('name'): f for f in rec.findall('field')}
-            ref = v['intent_id'].get('ref')
-            if ref in by_id:
-                by_id[ref]['phrases'].append(v['text'].text or '')
-
-    screens = []
-    for rec in ET.parse(
-            os.path.join(ADDON, 'data', 'learn_screens.xml')).getroot().iter('record'):
-        if rec.get('model') == 'learn.screen':
-            v = {f.get('name'): f for f in rec.findall('field')}
-            suggest = []
-            if 'suggest_ids' in v:
-                # The generator emits bare `ref('intent_x')` — same-module refs
-                # carry no prefix. A regex that demanded `pb_learn.` matched
-                # nothing and reported zero chips, which is how a mirror
-                # written to catch a bug can fail to contain the bug.
-                suggest = re.findall(r"ref\('(?:pb_learn\.)?([a-zA-Z0-9_]+)'\)",
-                                     v['suggest_ids'].get('eval') or '')
-            screens.append({'key': (v['key'].text or '') if 'key' in v else '',
-                            'suggest': [by_id[s]['key'] for s in suggest if s in by_id]})
-
-    columns = []
-    for rec in ET.parse(
-            os.path.join(ADDON, 'data', 'learn_columns.xml')).getroot().iter('record'):
-        if rec.get('model') == 'learn.column':
-            v = _fields(rec)
-            columns.append({'screen': v.get('screen'), 'key': v.get('key'),
-                            'label': v.get('label', '')})
-    return po, intents, screens, columns
+    """The static content plane, as the server reads it."""
+    path = os.path.join(ADDON, 'static', 'content', 'learn_content.json')
+    with io.open(path, encoding='utf-8') as fh:
+        tree = json.load(fh)
+    intents = [{'key': i['key'],
+                'label': i['label'],
+                'screens': i.get('screens') or '*',
+                'offer': bool(i.get('offer', True)),
+                'phrases': list(i.get('phrases') or [])}
+               for i in tree.get('intents') or []]
+    by_key = {i['key']: i for i in intents}
+    screens = [{'key': s['key'],
+                'suggest': [c['key'] for c in (s.get('suggest') or [])
+                            if c['key'] in by_key]}
+               for s in tree.get('screens') or []]
+    columns = [{'screen': c['screen'], 'key': c['key'], 'label': c['label']}
+               for c in tree.get('columns') or []]
+    return intents, screens, columns
 
 
-PO, INTENTS, SCREENS, COLUMNS = load()
+INTENTS, SCREENS, COLUMNS = load()
 
 
 # ------------------------------------------------------- mirrored behaviour
@@ -267,8 +220,8 @@ def column_match(question, screen_key):
     for col in COLUMNS:
         if col['screen'] != screen_key:
             continue
-        for label in (col['label'], PO.get(col['label'], '')):
-            nl = _norm(label)
+        for lang in ('en', 'vi'):
+            nl = _norm(one(col['label'], lang))
             if nl and len(nl) > 3 and nl in nq and len(nl) > best_len:
                 best, best_len = col['key'], len(nl)
     return best
@@ -333,7 +286,7 @@ def main():
                 problems.append('chip %s on %s: no such intent' % (key, screen['key']))
                 continue
             chips += 1
-            got = resolve(strip_html(intent['label']), screen['key'])
+            got = resolve(strip_html(one(intent['label'])), screen['key'])
             if got != key:
                 problems.append('chip %s on %s resolves to %s'
                                 % (key, screen['key'], got))
@@ -342,8 +295,8 @@ def main():
     labels = 0
     for intent in INTENTS:
         sk = None if intent['screens'] == '*' else intent['screens'].split(',')[0].strip()
-        for lang, text in (('en', intent['label']),
-                           ('vi', PO.get(intent['label'], ''))):
+        for lang, text in (('en', one(intent['label'], 'en')),
+                           ('vi', one(intent['label'], 'vi'))):
             if not text:
                 continue
             labels += 1
@@ -388,7 +341,7 @@ def main():
             problems.append('the scan found ZERO %s — this simulation is '
                             'broken, not passing' % label)
 
-    print('resolver simulation — against the GENERATED records')
+    print('resolver simulation — against the GENERATED content plane')
     print('  %d intents · %d phrases · %d screens · %d columns · %d ambiguous words'
           % (len(INTENTS), sum(len(i['phrases']) for i in INTENTS),
              len(SCREENS), len(COLUMNS), len(AMBIGUOUS)))
@@ -410,6 +363,10 @@ def main():
 #   * capability gating (_capability reads real groups and the real sidebar);
 #   * the composer (off by default, needs a provider);
 #   * live tokens ({{live:...}}) and tenant slot overrides;
-#   * record rules, and anything that depends on WHICH user is asking.
+#   * record rules, and anything that depends on WHICH user is asking;
+#   * the file-backed accessors themselves — this reads learn_content.json with
+#     json.load, and learn.content reads it with odoo.tools.file_open. If that
+#     helper ever resolved to a different copy of the asset the two would agree
+#     about a file the server is not serving.
 if __name__ == '__main__':
     sys.exit(main())

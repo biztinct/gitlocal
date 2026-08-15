@@ -252,6 +252,82 @@ def check_model_scope(root, chk):
     return problems, None
 
 
+def _bilingual_pairs(node, out):
+    """Every `{en, vi}` leaf in the tree, as en -> {vi, …}."""
+    if isinstance(node, dict):
+        if set(node) == {"en", "vi"}:
+            out.setdefault(node["en"], set()).add(node["vi"])
+            return
+        for value in node.values():
+            _bilingual_pairs(value, out)
+    elif isinstance(node, list):
+        for value in node:
+            _bilingual_pairs(value, out)
+
+
+def _lesson_keys(tree):
+    return {lesson.get("key")
+            for station in tree.get("stations") or []
+            for lesson in station.get("lessons") or []}
+
+
+def check_json_content(root, chk):
+    """Assertions about the STATIC CONTENT PLANE.
+
+    Since LEARNOS Phase 1a the learning content is one generated JSON asset
+    rather than a set of data files, so the checks that used to grep XML have
+    to ask the tree instead. Greping the JSON as text would work today and
+    break the first time the emitter changes its indentation — and worse, a
+    literal like `"key": "L1"` would happily match a station or a mission.
+
+    Three assertion kinds, each the retargeted form of a check that existed:
+
+      sections    the top-level keys both consumers assume are present
+      nonEmpty    …and that are not allowed to be an empty collection, because
+                  an empty section renders as a blank surface rather than an
+                  error
+      lessonKeys  every named lesson is actually written
+      bilingual   an English leaf still carries the Vietnamese the content
+                  ships, wherever in the tree it appears
+      banner      the generated-file marker, because a generated file that does
+                  not say so is one somebody will hand-edit
+    """
+    text = read(root, chk["file"])
+    if text is None:
+        return None, "file not found: %s" % chk["file"]
+    try:
+        tree = json.loads(text)
+    except ValueError as exc:
+        return None, "not valid JSON: %s" % exc
+
+    want = chk["expect"]
+    problems = []
+    for section in want.get("sections") or []:
+        if section not in tree:
+            problems.append("section is gone: %s" % section)
+    for section in want.get("nonEmpty") or []:
+        if not tree.get(section):
+            problems.append("section is empty: %s" % section)
+    if want.get("lessonKeys"):
+        present = _lesson_keys(tree)
+        for key in want["lessonKeys"]:
+            if key not in present:
+                problems.append("lesson no longer written: %s" % key)
+    if want.get("bilingual"):
+        pairs = {}
+        _bilingual_pairs(tree, pairs)
+        for en, vi in want["bilingual"].items():
+            got = pairs.get(en)
+            if not got:
+                problems.append('no bilingual leaf reads "%s" any more' % en)
+            elif vi not in got:
+                problems.append('"%s" now translates to %s, content ships "%s"'
+                                % (en, " / ".join('"%s"' % g for g in sorted(got)), vi))
+    if want.get("banner") and want["banner"] not in (tree.get("__generated__") or ""):
+        problems.append("the generated-file banner is gone")
+    return problems, None
+
+
 KINDS = {
     "contains": check_contains,
     "selection": check_contains,
@@ -259,6 +335,7 @@ KINDS = {
     "xmlids": check_xmlids,
     "po": check_po,
     "model-scope": check_model_scope,
+    "json-content": check_json_content,
 }
 
 # Payobook anchors follow a screen-prefix convention, which is what makes them

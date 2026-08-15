@@ -123,7 +123,8 @@ class LearnQuestion(models.Model):
                               ondelete='cascade')
     company_id = fields.Many2one('res.company', required=True, index=True,
                                  default=lambda self: self.env.company)
-    screen = fields.Char(index=True, help="learn.screen key the Coach was grounded on.")
+    screen = fields.Char(index=True,
+                         help="The content screen key the Coach was grounded on.")
     question = fields.Char(size=200, required=True,
                            help="Scrubbed on the way in — see learn.intent._scrub.")
     matched = fields.Boolean(

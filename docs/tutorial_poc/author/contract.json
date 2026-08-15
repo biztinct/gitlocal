@@ -11,7 +11,7 @@
     "human has to re-read — the checker cannot know whether a renamed state key",
     "invalidates one sentence or a whole lesson."
   ],
-  "schemaVersion": "1.5",
+  "schemaVersion": "1.6",
   "repoRoot": "../../..",
   "checks": [
     {
@@ -261,19 +261,21 @@
       ]
     },
     {
-      "id": "coach-answers-from-records-only",
+      "id": "coach-answers-from-writing-only",
       "kind": "absent",
-      "why": "REPLACES 'coach-cannot-act', whose expect list pinned 'def _compose', 'def _provider' and 'generate_text' as absent. Phase D2 adds a flag-gated composer, so those three are now legitimately present and pinning them would only teach the next author to delete the check. What is still absent, and is the part that was always load-bearing: a FOREIGN provider registry (health19's), a direct import of any provider package, and raw SQL. The Coach reaches a model through one seam it can be denied, and reaches the database through the ORM or not at all. The composer's own fences are pinned by composer-is-flag-gated and composer-corpus-reads-learn-content-only.",
+      "why": "RENAMED from 'coach-answers-from-records-only' in LEARNOS Phase 1a: the answers are no longer RECORDS, they are the static content plane — so a check id that says 'records' would be pinning a promise the module has stopped making, while the promise that mattered is unchanged. What is still absent, and was always the load-bearing part: a FOREIGN provider registry (health19's), a direct import of any provider package, and raw SQL. The Coach reaches a model through one seam it can be denied, and reaches the database through the ORM or not at all. It also may not read the content off the filesystem behind learn.content's back — an open() in the resolver would be a second reader of the asset with its own idea of what is in it. The composer's own fences are pinned by composer-is-flag-gated and composer-corpus-reads-learn-content-only. NOTE TO THE NEXT READER: a bare `open(` was the obvious token for the filesystem half and it is unusable — it is a substring of `gate_open(`, which learn.runtime legitimately calls. The pinned tokens are the two things a second reader would actually have to write.",
       "files": [
         "pb_learn/models/learn_intent.py",
-        "pb_learn/models/learn_station.py",
+        "pb_learn/models/learn_runtime.py",
         "pb_learn/models/learn_question.py"
       ],
       "expect": [
         "hr.ai.provider.config",
         "hr_development_ai",
         "ai_providers",
-        "cr.execute"
+        "cr.execute",
+        "file_open(",
+        "json.load"
       ],
       "fixture": [],
       "taughtIn": [
@@ -282,15 +284,86 @@
       ]
     },
     {
-      "id": "vietnamese-spot-checks",
-      "kind": "po",
-      "why": "The generator refuses to write a translatable with no Vietnamese, so what is left to catch is a translation being silently REPLACED. These four are the ones where that would matter most: the standing promise, the launcher's invitation, the front door, and the name of the flagship screen.",
+      "id": "learn-content-is-static-and-read-only",
+      "kind": "absent",
+      "why": "The Phase 1a safety argument in one check. learn.content is the ONLY reader of the content asset and it only reads: content that a running server can write is content that stops being identical on every tenant, which is the entire reason it left the database. `.create(`, `.write(` and `.unlink(` would be a mutation; `json.dump` or a `'w'` open would be a rewrite of a generated file, which is a build failure by convention and would be a silent one here.",
+      "files": [
+        "pb_learn/models/learn_content.py"
+      ],
+      "expect": [
+        ".create(",
+        ".write(",
+        ".unlink(",
+        "cr.execute",
+        "json.dump",
+        "'w'"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the generated-file banner in every emitted artifact",
+        "docs/tutorial_poc/author/tools/gen_learn_data.py header"
+      ]
+    },
+    {
+      "id": "content-plane-shape",
+      "kind": "json-content",
+      "why": "The asset the browser fetches and the server parses is one file with no schema behind it, so the shape IS the contract. Both consumers assume these sections exist; a generator change that renamed or dropped one would show up as an empty Journey rather than as an error. The banner is pinned too, because a generated file that does not say so is a generated file somebody will hand-edit.",
+      "file": "pb_learn/static/content/learn_content.json",
       "expect": {
-        "pb_learn/i18n/vi_VN.po": {
+        "sections": [
+          "chrome",
+          "stations",
+          "missions",
+          "glossary",
+          "intents",
+          "screens",
+          "columns",
+          "global_suggest",
+          "version",
+          "__generated__"
+        ],
+        "nonEmpty": [
+          "chrome",
+          "stations",
+          "missions",
+          "glossary",
+          "intents",
+          "screens",
+          "columns",
+          "global_suggest"
+        ],
+        "banner": "GENERATED FILE. Do not edit."
+      },
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/models/learn_content.py",
+        "pb_learn/static/src/content/content_loader.js"
+      ]
+    },
+    {
+      "id": "vietnamese-content-spot-checks",
+      "kind": "json-content",
+      "why": "The other half of vietnamese-spot-checks, retargeted to where the content now lives. Every prose leaf in the asset is a bilingual pair, so a silently REPLACED Vietnamese string is still the failure worth catching — and these three are where it would matter most: the launcher's invitation, the front door of the Pay Run desk, and the name of the flagship screen. A missing pair fails the same way, which is the shape check the payload could not otherwise get.",
+      "file": "pb_learn/static/content/learn_content.json",
+      "expect": {
+        "bilingual": {
           "Stuck?": "Cần trợ giúp?",
-          "Learn": "Học cùng Payobook",
           "Run Payroll": "Chạy bảng lương",
           "Payslips": "Phiếu lương"
+        }
+      },
+      "fixture": [],
+      "taughtIn": [
+        "every Vietnamese reader of this module"
+      ]
+    },
+    {
+      "id": "vietnamese-spot-checks",
+      "kind": "po",
+      "why": "RETARGETED in LEARNOS Phase 1a. Three of the four msgids this pinned (\"Stuck?\", \"Run Payroll\", \"Payslips\") are content and no longer travel the .po at all — they ship bilingual in learn_content.json, and vietnamese-content-spot-checks below pins them there. What is left in the .po is what is still a RECORD: the sidebar leaf's name, the front door. The generator refuses to write a translatable with no Vietnamese, so what is being caught here is a translation silently REPLACED.",
+      "expect": {
+        "pb_learn/i18n/vi_VN.po": {
+          "Learn": "Học cùng Payobook"
         }
       },
       "fixture": [],
@@ -801,24 +874,26 @@
     },
     {
       "id": "payai-lesson-keys-are-real",
-      "kind": "contains",
-      "why": "The other half of the envelope: the whitelist names eight lesson keys, and this is where they are checked against the lessons this repo actually ships. A key that is whitelisted and not written is a 'Show me' button that opens the Journey map — the offer made and not kept, which is the exact failure the Coach's honesty rules exist to prevent.",
-      "file": "pb_learn/data/learn_lessons.xml",
-      "expect": [
-        "<field name=\"key\">LW</field>",
-        "<field name=\"key\">L1</field>",
-        "<field name=\"key\">L2</field>",
-        "<field name=\"key\">L3</field>",
-        "<field name=\"key\">L4</field>",
-        "<field name=\"key\">L5</field>",
-        "<field name=\"key\">L6</field>",
-        "<field name=\"key\">LA</field>"
-      ],
+      "kind": "json-content",
+      "why": "RETARGETED in LEARNOS Phase 1a from data/learn_lessons.xml to the static content plane. The other half of PayAI's envelope: the whitelist names eight lesson keys, and this is where they are checked against the lessons this repo actually ships. A key that is whitelisted and not written is a 'Show me' button that opens the Journey map — the offer made and not kept, which is the exact failure the Coach's honesty rules exist to prevent.",
+      "expect": {
+        "lessonKeys": [
+          "LW",
+          "L1",
+          "L2",
+          "L3",
+          "L4",
+          "L5",
+          "L6",
+          "LA"
+        ]
+      },
       "fixture": [],
       "taughtIn": [
         "payroll_ai_engine.py::_KNOWN_LESSONS",
         "payroll_ai_engine.py::_TOUR_TO_LESSON"
-      ]
+      ],
+      "file": "pb_learn/static/content/learn_content.json"
     },
     {
       "id": "payai-has-no-hard-coach-dependency",
@@ -1026,7 +1101,7 @@
       "id": "composer-corpus-reads-learn-content-only",
       "kind": "model-scope",
       "within": "_corpus",
-      "why": "The whole safety argument for sending anything to a provider at all: the corpus is this module's own tutorial text, and a join to anything the payroll product owns would put an employee's pay into a prompt. REWRITTEN from an `absent` list of six product model names to the GENERAL assertion, because a blocklist protects against the names somebody thought of and against nothing else — the same weakness the advice deny-list was found to have in the Phase D review. Every model the method reaches must be in the learn.* namespace, and the check fails if it finds no model at all, so a rewrite that hides the reads behind a variable breaks the build instead of passing silently. Scoped to the method because learn_intent.py legitimately NAMES a product model elsewhere — _matchers explains that the Pay Runs leaf is matched by one.",
+      "why": "The whole safety argument for sending anything to a provider at all: the corpus is this module's own tutorial text, and a join to anything the payroll product owns would put an employee's pay into a prompt. REWRITTEN from an `absent` list of six product model names to the GENERAL assertion, because a blocklist protects against the names somebody thought of and against nothing else — the same weakness the advice deny-list was found to have in the Phase D review. Every model the method reaches must be in the learn.* namespace — since Phase 1a that is exactly one, learn.content, the single audited door onto the static content plane, and the check fails if it finds no model at all, so a rewrite that hides the reads behind a variable breaks the build instead of passing silently. Scoped to the method because learn_intent.py legitimately NAMES a product model elsewhere — _matchers explains that the Pay Runs leaf is matched by one.",
       "file": "pb_learn/models/learn_intent.py",
       "expect": [
         "learn."

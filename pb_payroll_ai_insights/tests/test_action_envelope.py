@@ -142,14 +142,22 @@ class TestActionEnvelope(TransactionCase):
         # the model does not exist at all, and env[...] raises KeyError rather
         # than returning something empty — which would fail this test for the
         # one reason it is not about.
+        #
+        # LEARNOS Phase 1a: a lesson stopped being a RECORD and became an entry
+        # in pb_learn's static content plane, reached through learn.content.
+        # The assertion is unchanged and is still the one the old tour
+        # whitelist could never make — a tour id was a string in another
+        # module's registry, and a lesson key is something this repo ships.
         try:
-            Lesson = self.env['learn.lesson'].sudo()
+            Content = self.env['learn.content'].sudo()
         except KeyError:
             self.skipTest("pb_learn is not installed on this database")
-        if not Lesson.search_count([]):
+        carried = {lesson['key']
+                   for station in Content.stations()
+                   for lesson in station.get('lessons') or []}
+        if not carried:
             self.skipTest("pb_learn ships no lessons on this database")
-        missing = [k for k in self.engine._KNOWN_LESSONS
-                   if not Lesson.search_count([('key', '=', k)])]
+        missing = [k for k in self.engine._KNOWN_LESSONS if k not in carried]
         self.assertFalse(missing, "PayAI offers lessons that do not exist: %s" % missing)
 
     def test_10_every_legacy_mapping_lands_on_a_whitelisted_lesson(self):

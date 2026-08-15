@@ -12,13 +12,14 @@
    WHAT IT WILL NOT DO
    -------------------
    It never claims to have acted, and it has no way to act: every answer is
-   assembled from stored blocks on the server, and the only controls an answer
-   can render are its own — point at a control, say it more simply, open the
+   assembled on the SERVER out of blocks an author wrote, and the only controls
+   an answer can render are its own — point at a control, say it more simply, open the
    lesson, ask something else. There is no path from a question to a product
    method. `tests/test_coach.py` asserts that rather than trusting it.
 
-   It never invents a domain fact either. Every answer is retrieved from a
-   record an author wrote, with ONE fenced exception added in Phase D: when a
+   It never invents a domain fact either. Every answer is retrieved from
+   something an author wrote — since Phase 1a the static content plane rather
+   than a database record — with ONE fenced exception added in Phase D: when a
    tenant switches the composer on, an answer may be COMPOSED by a model from
    this module's own tutorial text — never from database records — and it
    arrives badged as such so the reader knows which kind of answer they hold.
@@ -37,6 +38,7 @@ import { Component, markup, onMounted, onWillStart, onWillUnmount, useRef, useSt
 import { useBus, useService } from "@web/core/utils/hooks";
 
 import { RT, T, tx, esc, ic } from "../engine/runtime";
+import { loadContent, composeScreens } from "../content/content_loader";
 import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
 import { markLauncherStack, maybeGreet } from "./first_login";
@@ -67,7 +69,7 @@ export class CoachHost extends Component {
         this.state = useState({
             open: false,
             ready: false,
-            screen: null,        // learn.screen key, or null when off-map
+            screen: null,        // content screen key, or null when off-map
             busy: false,
             question: "",
             answer: null,        // the payload from learn.intent.ask
@@ -87,9 +89,23 @@ export class CoachHost extends Component {
         onWillStart(async () => {
             this._restoreLang();
             // Fetched once. The drawer must open instantly — a learner who is
-            // stuck does not want to watch a spinner.
+            // stuck does not want to watch a spinner. Since Phase 1a the
+            // screens, their chips and the chrome come from the static content
+            // plane (shared with the Journey: one fetch for the page) and the
+            // one RPC carries only the matchers, the slots and the mining
+            // switch. The composed shape is what `coach_bundle` returned.
             try {
-                this.bundle = await this.orm.call("learn.intent", "coach_bundle", []);
+                const [content, runtime] = await Promise.all([
+                    loadContent(),
+                    this.orm.call("learn.runtime", "bootstrap", []),
+                ]);
+                this.bundle = {
+                    screens: composeScreens(content, runtime),
+                    global_suggest: content.global_suggest || [],
+                    chrome: content.chrome || {},
+                    tokens: runtime.tokens || {},
+                    collect_questions: !!runtime.collect_questions,
+                };
                 RT.tokens = this.bundle.tokens || RT.tokens;
                 RT.chrome = this.bundle.chrome || RT.chrome;
                 this.state.ready = true;

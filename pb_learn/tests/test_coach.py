@@ -4,6 +4,11 @@
 The honesty rules are the point of this file. They are not conventions to be
 remembered — each is asserted, because "the Coach never invents a rate" is only
 true for as long as nothing has quietly made it false.
+
+Phase 1a retarget: the intents, screens and column glossary are the static
+content plane rather than four ORM tables, and the screen MATCHERS moved from
+`learn.screen` to `learn.runtime`. Every property asserted below is the one
+that was asserted before — what changed is where the material is read from.
 """
 import json
 import os
@@ -11,6 +16,8 @@ import re
 
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
+
+from .common import load_content, one
 
 # Questions a payroll officer or an owner might genuinely type into a help box
 # on a payroll system, and that this system must never help with. Every one of
@@ -43,7 +50,15 @@ class TestCoach(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.Intent = cls.env['learn.intent']
-        cls.Screen = cls.env['learn.screen']
+        cls.Content = cls.env['learn.content']
+        cls.Runtime = cls.env['learn.runtime']
+        cls.content = load_content()
+        cls.screens = cls.content['screens']
+        cls.intents = cls.content['intents']
+        cls.screen_keys = [s['key'] for s in cls.screens]
+
+    def matchers(self, screen):
+        return self.Runtime._matchers(screen, self.Runtime._contested_models())
 
     # ------------------------------------------------------------ precision
     def test_01_out_of_scope_questions_resolve_to_nothing(self):
@@ -97,22 +112,23 @@ class TestCoach(TransactionCase):
         not resolve to its own intent is a dead button.
         """
         misses = []
-        for intent in self.Intent.search([]):
-            for lang in ('en_US', 'vi_VN'):
-                label = intent.with_context(lang=lang).label
+        for intent in self.intents:
+            for lang in ('en', 'vi'):
+                label = one(intent['label'], lang)
                 got = self.Intent.resolve(label, None)
-                if got != intent.key:
-                    misses.append('%s [%s] %r -> %s' % (intent.key, lang, label[:50], got))
+                if got != intent['key']:
+                    misses.append('%s [%s] %r -> %s'
+                                  % (intent['key'], lang, label[:50], got))
         self.assertFalse(misses, "Intents unreachable by their own label:\n  "
                                  + "\n  ".join(misses))
 
     def test_04_every_suggested_question_resolves(self):
         misses = []
-        for screen in self.Screen.search([]):
-            for intent in screen.suggest_ids:
-                got = self.Intent.resolve(intent.label, screen.key)
-                if got != intent.key:
-                    misses.append('%s on %s -> %s' % (intent.key, screen.key, got))
+        for screen in self.screens:
+            for chip in screen['suggest']:
+                got = self.Intent.resolve(one(chip['label']), screen['key'])
+                if got != chip['key']:
+                    misses.append('%s on %s -> %s' % (chip['key'], screen['key'], got))
         self.assertFalse(misses, "Suggested questions that do not resolve:\n  "
                                  + "\n  ".join(misses))
 
@@ -168,10 +184,10 @@ class TestCoach(TransactionCase):
         is not finished until every reader gets a true answer.)
         """
         blocks_by_cap = {}
-        intent = self.Intent.search([('key', '=', 'approve')], limit=1)
+        intent = self.Content.intent('approve')
         self.assertTrue(intent, "the approve intent is missing")
-        for block in intent.block_ids:
-            blocks_by_cap.setdefault(block.capability, []).append(block.kind)
+        for block in intent['blocks']:
+            blocks_by_cap.setdefault(block['capability'], []).append(block['kind'])
         for cap in ('no_access', 'operator', 'manager'):
             self.assertIn(cap, blocks_by_cap, "no answer for capability %s" % cap)
         self.assertIn('refusal', blocks_by_cap['no_access'],
@@ -183,12 +199,12 @@ class TestCoach(TransactionCase):
         """A refusal that stops at "you can't" leaves the person stuck, which
         is the exact state the Coach exists to get them out of."""
         bad = []
-        for intent in self.Intent.search([]):
-            caps = {b.capability for b in intent.block_ids if b.kind == 'refusal'}
+        for intent in self.intents:
+            caps = {b['capability'] for b in intent['blocks'] if b['kind'] == 'refusal'}
             for cap in caps:
-                kinds = {b.kind for b in intent.block_ids if b.capability == cap}
+                kinds = {b['kind'] for b in intent['blocks'] if b['capability'] == cap}
                 if not ({'who', 'how'} & kinds):
-                    bad.append('%s [%s]' % (intent.key, cap))
+                    bad.append('%s [%s]' % (intent['key'], cap))
         self.assertFalse(bad, "Refusals with no route forward:\n  " + "\n  ".join(bad))
 
     # -------------------------------------------------------------- honesty
@@ -217,15 +233,15 @@ class TestCoach(TransactionCase):
         from. An answer with no provenance is indistinguishable from a guess."""
         FACTUAL = {'p', 'steps', 'calc', 'calc_kpi', 'ok', 'warn'}
         missing = []
-        for intent in self.Intent.search([]):
-            if intent.dynamic != 'none':
+        for intent in self.intents:
+            if intent['dynamic'] != 'none':
                 continue   # a screen blurb cites the screen it is on
             by_cap = {}
-            for b in intent.block_ids:
-                by_cap.setdefault(b.capability, set()).add(b.kind)
+            for b in intent['blocks']:
+                by_cap.setdefault(b['capability'], set()).add(b['kind'])
             for cap, kinds in by_cap.items():
                 if (kinds & FACTUAL) and 'source' not in kinds:
-                    missing.append('%s [%s]' % (intent.key, cap))
+                    missing.append('%s [%s]' % (intent['key'], cap))
         self.assertFalse(missing, "Factual answers with no 'grounded in' line:\n  "
                                   + "\n  ".join(missing))
 
@@ -271,12 +287,12 @@ class TestCoach(TransactionCase):
         in it.
         """
         empty = []
-        screens = [None] + self.Screen.search([]).mapped('key') + ['not_a_real_screen']
-        for intent in self.Intent.search([]):
+        screens = [None] + self.screen_keys + ['not_a_real_screen']
+        for intent in self.intents:
             for screen in screens:
-                res = self.Intent.ask(intent.label, screen)
+                res = self.Intent.ask(one(intent['label']), screen)
                 if res.get('matched') and not res.get('blocks'):
-                    empty.append('%s on %s' % (intent.key, screen))
+                    empty.append('%s on %s' % (intent['key'], screen))
         self.assertFalse(empty, "Answers that claim to have matched and render "
                                 "an empty card:\n  " + "\n  ".join(empty))
 
@@ -284,9 +300,9 @@ class TestCoach(TransactionCase):
     def test_12_no_unresolved_tokens_in_any_answer(self):
         tokens = self.env['learn.tenant.override'].resolved_tokens()
         leaked = []
-        for intent in self.Intent.search([]):
-            for screen in [None] + self.Screen.search([]).mapped('key'):
-                answer = self.Intent._answer(intent.key, screen)
+        for intent in self.intents:
+            for screen in [None] + self.screen_keys:
+                answer = self.Intent._answer(intent['key'], screen)
                 for block in answer['blocks']:
                     for value in (block.get('body'), ):
                         if not isinstance(value, dict):
@@ -294,7 +310,7 @@ class TestCoach(TransactionCase):
                         for lang in ('en', 'vi'):
                             for key in TOKEN_RE.findall(value.get(lang) or ''):
                                 if key not in tokens:
-                                    leaked.append('%s -> {{%s}}' % (intent.key, key))
+                                    leaked.append('%s -> {{%s}}' % (intent['key'], key))
         self.assertFalse(leaked, "Undeclared tenant slots in answers:\n  "
                                  + "\n  ".join(sorted(set(leaked))))
 
@@ -315,14 +331,15 @@ class TestCoach(TransactionCase):
             return key in declared or key.startswith(patterns)
 
         unknown = []
-        for intent in self.Intent.search([]):
-            for a in (intent.show_me or '').split(','):
-                a = a.strip()
+        for intent in self.intents:
+            for a in intent['show_me']:
                 if a and not known(a):
-                    unknown.append('%s show_me=%s' % (intent.key, a))
-        for step in self.env['learn.intent.step'].search([]):
-            if step.anchor and not known(step.anchor):
-                unknown.append('step %s anchor=%s' % (step.id, step.anchor))
+                    unknown.append('%s show_me=%s' % (intent['key'], a))
+            for block in intent['blocks']:
+                for step in block['steps']:
+                    if step['anchor'] and not known(step['anchor']):
+                        unknown.append('%s step anchor=%s'
+                                       % (intent['key'], step['anchor']))
         self.assertFalse(unknown, "Coach anchors nothing registers:\n  "
                                   + "\n  ".join(sorted(set(unknown))))
 
@@ -337,27 +354,27 @@ class TestCoach(TransactionCase):
         xml-id or model.
         """
         blind = []
-        for screen in self.Screen.search([]):
-            tags, xmlids, models_ = screen._matchers()
+        for screen in self.screens:
+            tags, xmlids, models_ = self.matchers(screen)
             if not (tags or xmlids or models_):
-                blind.append(screen.key)
+                blind.append(screen['key'])
         self.assertFalse(blind, "Screens the Coach can never detect: %s" % blind)
 
     def test_14b_matchers_come_from_the_real_sidebar_leaf(self):
         """Not from a copy. If the leaf's action changes, the Coach follows."""
         checked = 0
-        for screen in self.Screen.search([]):
-            if not screen.sidebar_key:
+        for screen in self.screens:
+            if not screen['sidebar_key']:
                 continue
-            item = self.env.ref(screen.sidebar_key, raise_if_not_found=False)
+            item = self.env.ref(screen['sidebar_key'], raise_if_not_found=False)
             if not item:
                 continue
             checked += 1
-            tags, xmlids, models_ = screen._matchers()
+            tags, xmlids, models_ = self.matchers(screen)
             declared = {(item.sudo().action_xmlid or '').strip()}
             self.assertTrue(
                 declared & set(xmlids) or (item.sudo().action_tag or '') in tags,
-                "%s does not inherit its leaf's own action" % screen.key)
+                "%s does not inherit its leaf's own action" % screen['key'])
         # Seven of the eight Phase A screens name a leaf. The import wizard is
         # a flow, not a destination — it has none, and is resolved by its tag.
         self.assertGreaterEqual(checked, 7,
@@ -366,31 +383,38 @@ class TestCoach(TransactionCase):
     def test_15_refusals_are_reachable_but_never_advertised(self):
         """Offering "ask me how to pay less tax" invites the exact question the
         Coach exists to decline. It must resolve; it must not be suggested."""
-        compliance = self.Intent.search([('key', '=', 'compliance')], limit=1)
+        compliance = self.Content.intent('compliance')
         self.assertTrue(compliance, "the compliance refusal is missing")
-        self.assertFalse(compliance.offer, "the compliance refusal is advertised")
+        self.assertFalse(compliance['offer'], "the compliance refusal is advertised")
         self.assertEqual(self.Intent.resolve("làm sao để giảm đóng bhxh", 'payslips'),
                          'compliance', "the compliance refusal is not reachable")
-        for screen in self.Screen.search([]):
-            self.assertNotIn(compliance, screen.suggest_ids,
-                             "%s suggests the compliance refusal" % screen.key)
+        for screen in self.screens:
+            self.assertNotIn('compliance', [c['key'] for c in screen['suggest']],
+                             "%s suggests the compliance refusal" % screen['key'])
+        # …and the global fallback list must not advertise it either. It is a
+        # different list from the chips and it is what a miss offers, which is
+        # exactly the moment somebody is casting around for a question to ask.
+        self.assertNotIn('compliance',
+                         [c['key'] for c in self.content['global_suggest']],
+                         "the miss fallback advertises the compliance refusal")
 
     def _resolve_screen(self, tag, xmlid, model):
         """Server-side mirror of the frontend's two-pass resolution."""
-        screens = self.Screen.search([])
-        matchers = {s.key: s._matchers() for s in screens}
+        contested = self.Runtime._contested_models()
+        screens = self.screens
+        matchers = {s['key']: self.Runtime._matchers(s, contested) for s in screens}
         for s in screens:                      # pass 0: the leaf's OWN action
-            own_tag, own_xmlid = s._primary()
+            own_tag, own_xmlid = self.Runtime._primary(s)
             if (tag and own_tag and tag == own_tag) or (xmlid and own_xmlid and xmlid == own_xmlid):
-                return s.key
+                return s['key']
         for s in screens:                      # pass 1: any exact matcher
-            tags, xmlids, _models = matchers[s.key]
+            tags, xmlids, _models = matchers[s['key']]
             if (tag and tag in tags) or (xmlid and xmlid in xmlids):
-                return s.key
+                return s['key']
         for s in screens:                      # pass 2: broad model
-            _tags, _xmlids, models_ = matchers[s.key]
+            _tags, _xmlids, models_ = matchers[s['key']]
             if model and model in models_:
-                return s.key
+                return s['key']
         return None
 
     def test_16_each_screen_resolves_to_ITSELF_from_its_own_leaf(self):
@@ -402,16 +426,16 @@ class TestCoach(TransactionCase):
         across ALL screens before any model match is considered.
         """
         wrong = []
-        for screen in self.Screen.search([]):
-            if not screen.sidebar_key:
+        for screen in self.screens:
+            if not screen['sidebar_key']:
                 continue
-            item = self.env.ref(screen.sidebar_key, raise_if_not_found=False)
+            item = self.env.ref(screen['sidebar_key'], raise_if_not_found=False)
             if not item:
                 continue
             item = item.sudo()
             got = self._resolve_screen(item.action_tag, item.action_xmlid, None)
-            if got != screen.key:
-                wrong.append('%s (its own action) -> %s' % (screen.key, got))
+            if got != screen['key']:
+                wrong.append('%s (its own action) -> %s' % (screen['key'], got))
         self.assertFalse(wrong, "Screens that do not resolve to themselves:\n  "
                                 + "\n  ".join(wrong))
 
@@ -422,10 +446,10 @@ class TestCoach(TransactionCase):
         arbitrarily, and the Coach grounds on whichever the search happened to
         return first — wrong, and wrong differently on different databases."""
         model_owners = {}
-        for screen in self.Screen.search([]):
-            _t, _x, models_ = screen._matchers()
+        for screen in self.screens:
+            _t, _x, models_ = self.matchers(screen)
             for m in models_:
-                model_owners.setdefault(m, []).append(screen.key)
+                model_owners.setdefault(m, []).append(screen['key'])
         for model, owners in model_owners.items():
             self.assertEqual(len(owners), 1,
                              "%s is claimed by more than one screen: %s — the "
@@ -443,17 +467,18 @@ class TestCoach(TransactionCase):
         dropped is dropped for exactly that reason.
         """
         raw_owners = {}
-        for screen in self.Screen.search([]):
-            for m in screen._raw_models():
-                raw_owners.setdefault(m, []).append(screen.key)
+        for screen in self.screens:
+            for m in self.Runtime._raw_models(screen):
+                raw_owners.setdefault(m, []).append(screen['key'])
         contested = {m for m, o in raw_owners.items() if len(o) > 1}
-        self.assertEqual(contested, self.Screen._contested_models(),
+        self.assertEqual(contested, self.Runtime._contested_models(),
                          "the contested set does not match what the leaves declare")
-        for screen in self.Screen.search([]):
-            _t, _x, models_ = screen._matchers()
-            dropped = screen._raw_models() - set(models_)
-            self.assertEqual(dropped, screen._raw_models() & contested,
-                             "%s dropped a model that nothing else claims" % screen.key)
+        for screen in self.screens:
+            _t, _x, models_ = self.matchers(screen)
+            raw = self.Runtime._raw_models(screen)
+            self.assertEqual(raw - set(models_), raw & contested,
+                             "%s dropped a model that nothing else claims"
+                             % screen['key'])
 
     # ---------------------------------------------------- column glossary
     def test_18_a_column_question_gets_a_column_answer(self):
@@ -481,22 +506,22 @@ class TestCoach(TransactionCase):
     def test_19_column_matching_is_narrow(self):
         """A loose match would answer "what is the status of this run" with a
         column definition, which is worse than missing."""
-        Column = self.env['learn.column']
-        self.assertIsNotNone(Column.match("what does in pipeline count", 'payruns'))
+        match = self.Intent._match_column
+        self.assertIsNotNone(match("what does in pipeline count", 'payruns'))
         # Wrong screen: the board's columns must not answer on Payslips.
-        self.assertIsNone(Column.match("what does in pipeline count", 'payslips'))
+        self.assertIsNone(match("what does in pipeline count", 'payslips'))
         # No screen at all: nothing to scope by, so no answer.
-        self.assertIsNone(Column.match("what does in pipeline count", None))
+        self.assertIsNone(match("what does in pipeline count", None))
 
     def test_20_every_column_is_written_in_both_languages(self):
         thin = []
-        for col in self.env['learn.column'].search([]):
-            for lang in ('en_US', 'vi_VN'):
-                body = col.with_context(lang=lang).body
+        for col in self.content['columns']:
+            for lang in ('en', 'vi'):
+                body = one(col['body'], lang)
                 if not body or len(body) < 40:
-                    thin.append('%s/%s [%s]' % (col.screen, col.key, lang))
-            if col.with_context(lang='vi_VN').body == col.with_context(lang='en_US').body:
-                thin.append('%s/%s untranslated' % (col.screen, col.key))
+                    thin.append('%s/%s [%s]' % (col['screen'], col['key'], lang))
+            if one(col['body'], 'vi') == one(col['body'], 'en'):
+                thin.append('%s/%s untranslated' % (col['screen'], col['key']))
         self.assertFalse(thin, "Columns with thin or untranslated definitions:\n  "
                                + "\n  ".join(thin))
 

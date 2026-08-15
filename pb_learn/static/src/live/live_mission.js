@@ -11,16 +11,17 @@
    WHAT IT WILL NOT DO, AND HOW YOU CAN TELL
    -----------------------------------------
    It never performs a product action and it never blocks one. There is exactly
-   ONE orm call in this file — `learn.mission.live_check` — and that method is
-   read-only on the server (models/learn_live.py, guarded by a contract check).
-   The card patches no product component, synthesises no click and disables no
-   button: a learner can ignore every word of it and use Payobook normally, and
-   a learner who follows it presses Payobook's own controls.
+   ONE content-bearing orm call in this file — `learn.live.live_check` — and
+   that method is read-only on the server (models/learn_live.py, guarded by a
+   contract check; it lived on `learn.mission` until Phase 1a deleted that
+   model). The card patches no product component, synthesises no click and
+   disables no button: a learner can ignore every word of it and use Payobook
+   normally, and a learner who follows it presses Payobook's own controls.
 
    `nav` deep-links, and that IS an action — a deliberate one, sanctioned
    because the alternative is telling somebody to go and find a screen. It is
-   resolved through the learn.screen record the Coach already grounds on, so the
-   runner and the Coach can never disagree about what a screen is.
+   resolved through the same screen entry the Coach grounds on, so the runner
+   and the Coach can never disagree about what a screen is.
 
    POLLING
    -------
@@ -32,6 +33,7 @@ import { Component, onWillStart, onWillUnmount, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 import { RT, T, tx, esc, ic } from "../engine/runtime";
+import { loadContent, composeScreens } from "../content/content_loader";
 import { LiveState } from "./live_state";
 
 const POLL_MS = 10000;
@@ -53,9 +55,9 @@ export class LiveHost extends Component {
             lang: RT.lang,
         });
 
-        this.mission = null;       // the learn.mission dict from the bundle
+        this.mission = null;       // the mission dict from the content plane
         this.missions = null;      // null = not loaded yet, [] = loaded, empty
-        this.screens = [];         // learn.screen records, for nav deep links
+        this.screens = [];         // composed screens, for nav deep links
         this._timer = null;
 
         // NOT fetched on mount. This component is on every screen for every
@@ -76,18 +78,24 @@ export class LiveHost extends Component {
     }
 
     // ------------------------------------------------------------ plumbing
-    /** Fetch the content this runner needs, once, and only if it is needed. */
+    /** Fetch the content this runner needs, once, and only if it is needed.
+     *
+     *  Two round trips became one RPC plus a shared, memoised asset fetch: the
+     *  Coach is mounted on the same page and has already asked for the content
+     *  plane, so in practice this costs the bootstrap call and nothing else. */
     async _load() {
         if (this.missions) {
             return;
         }
         try {
-            const bundle = await this.orm.call("learn.station", "get_bundle", []);
-            RT.tokens = bundle.tokens || RT.tokens;
-            RT.chrome = bundle.chrome || RT.chrome;
-            this.missions = bundle.missions || [];
-            const coach = await this.orm.call("learn.intent", "coach_bundle", []);
-            this.screens = coach.screens || [];
+            const [content, runtime] = await Promise.all([
+                loadContent(),
+                this.orm.call("learn.runtime", "bootstrap", []),
+            ]);
+            RT.tokens = runtime.tokens || RT.tokens;
+            RT.chrome = content.chrome || RT.chrome;
+            this.missions = content.missions || [];
+            this.screens = composeScreens(content, runtime);
         } catch {
             // A runner that cannot load must not break the screen it sits on.
             this.missions = [];
@@ -148,7 +156,7 @@ export class LiveHost extends Component {
             this.state.checking = true;
         }
         try {
-            const res = await this.orm.call("learn.mission", "live_check",
+            const res = await this.orm.call("learn.live", "live_check",
                                             [this.mission.key, step.key]);
             this.state.result = res;
             // A pass advances; a fail says why and leaves the learner exactly
@@ -214,7 +222,7 @@ export class LiveHost extends Component {
         LiveState.setMinimised(!this.state.minimised);
     }
 
-    /** Deep-link to the screen a step names, through the learn.screen record. */
+    /** Deep-link to the screen a step names, through the composed screen. */
     openScreen() {
         const step = this.current;
         if (!step || !step.nav) {

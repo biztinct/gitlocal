@@ -28,6 +28,8 @@ from odoo.addons.pb_learn.models.learn_intent import _is_advice
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
+from .common import load_content
+
 FLAG = 'pb_learn.compose_enabled'
 
 # Every one of these was DEMONSTRATED past the Phase D deny-list in review, and
@@ -157,7 +159,7 @@ class TestComposer(TransactionCase):
         """
         body = self.src.split('def ask(')[1].split('\n    @api.model')[0]
         at_resolve = body.index('self.resolve(')
-        at_column = body.index("self.env['learn.column'].match(")
+        at_column = body.index('self._match_column(')
         at_compose = body.index('self._compose(')
         at_miss = body.index("'matched': False")
         self.assertLess(at_resolve, at_column, "the column glossary runs before retrieval")
@@ -166,29 +168,32 @@ class TestComposer(TransactionCase):
 
     # -- 3. the deny-list -------------------------------------------------
     def test_04_an_advice_question_never_reaches_the_composer(self):
-        """Even with the flag on, and even with no compliance intent.
+        """Even with the flag on, and even with no compliance intent at all.
 
         `resolve()` refuses advice by returning the `compliance` intent — but
-        only if that record exists. Deactivate it and the refusal returns None,
+        only if that content exists. Take it away and the refusal returns None,
         which falls through retrieval AND the column glossary. Without the
         second guard inside `_compose`, "how do I pay less BHXH" would arrive
         at a language model.
+
+        The intent used to be a record that could be deactivated. It is a dict
+        in a static tree now, so the absence is simulated by patching the
+        lookup — which is a STRONGER version of the same test: it removes the
+        content from every reader at once rather than from a `search` domain.
         """
         provider = self._stub()
         self._on()
-        compliance = self.Intent.search([('key', '=', 'compliance')])
-        compliance.write({'active': False})
-        try:
-            for question in ADVICE:
-                res = self.Intent.ask(question, 'payslips')
-                self.assertNotEqual(
-                    res.get('source_kind'), 'composed',
-                    "an advice question was composed: %r" % question)
-            self.assertEqual(
-                provider.prompts, [],
-                "an advice question was sent to a provider")
-        finally:
-            compliance.write({'active': True})
+        real = type(self.env['learn.content']).intent
+        self.patch(type(self.env['learn.content']), 'intent',
+                   lambda self_, key: None if key == 'compliance' else real(self_, key))
+        for question in ADVICE:
+            res = self.Intent.ask(question, 'payslips')
+            self.assertNotEqual(
+                res.get('source_kind'), 'composed',
+                "an advice question was composed: %r" % question)
+        self.assertEqual(
+            provider.prompts, [],
+            "an advice question was sent to a provider")
 
     def test_04b_the_guard_catches_the_phrasings_the_marker_list_missed(self):
         """The Phase D review broke the deny-list by rephrasing, five times.
@@ -227,10 +232,12 @@ class TestComposer(TransactionCase):
         the intents it swallows unreachable. The ONE phrase that must trip it
         belongs to the refusal itself."""
         tripped = []
-        for intent in self.Intent.search([]):
-            for phrase in intent.phrase_ids:
-                if _is_advice(phrase.text):
-                    tripped.append('%s: %s' % (intent.key, phrase.text))
+        intents = load_content()['intents']
+        self.assertTrue(intents, "the intent corpus is empty — this asserts nothing")
+        for intent in intents:
+            for phrase in intent['phrases']:
+                if _is_advice(phrase):
+                    tripped.append('%s: %s' % (intent['key'], phrase))
         self.assertTrue(
             all(t.startswith('compliance:') for t in tripped),
             "the guard swallowed a phrase belonging to another intent: %s"
@@ -377,10 +384,12 @@ class TestComposer(TransactionCase):
             self.fail("_provider raised %s: %s" % (type(exc).__name__, exc))
 
     def test_11_the_badge_string_ships_in_both_languages(self):
-        String = self.env['learn.string'].sudo()
-        row = String.search([('key', '=', 'composedAnswer')], limit=1)
-        self.assertTrue(row, "the composed badge has no chrome string")
-        en = row.with_context(lang='en_US').value
-        vi = row.with_context(lang='vi_VN').value
-        self.assertTrue(en and vi)
-        self.assertNotEqual(en, vi, "the badge reaches a Vietnamese reader in English")
+        pair = load_content()['chrome'].get('composedAnswer')
+        self.assertTrue(pair, "the composed badge has no chrome string")
+        self.assertTrue(pair['en'] and pair['vi'])
+        self.assertNotEqual(pair['en'], pair['vi'],
+                            "the badge reaches a Vietnamese reader in English")
+        # And the server hands out the same two strings the browser reads.
+        Content = self.env['learn.content']
+        self.assertEqual(Content.chrome_text('composedAnswer', 'en_US'), pair['en'])
+        self.assertEqual(Content.chrome_text('composedAnswer', 'vi_VN'), pair['vi'])

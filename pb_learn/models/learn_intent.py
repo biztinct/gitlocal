@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
-"""The Payobook Coach's content and its resolver.
+"""The Payobook Coach's resolver.
 
-The Coach answers ONLY from stored blocks. There is no path from a question to
-the screen that does not pass through a record an author wrote — which is what
+The Coach answers ONLY from written blocks. There is no path from a question to
+the screen that does not pass through something an author wrote — which is what
 lets it promise never to invent a rate, a threshold or a tax figure.
+
+WHERE THOSE BLOCKS LIVE, SINCE PHASE 1a: the static content plane,
+`pb_learn/static/content/learn_content.json`, reached through
+`self.env['learn.content']`. The intents, screens and column glossary used to
+be ORM records; the promise is unchanged and so is the response contract of
+`ask()` — coach.js was not touched. What changed is that the material is now
+identical on every tenant and cannot be edited into something an author did not
+write.
 
 The resolver is deterministic retrieval. `_resolve_hook` is the one seam where
 an LLM could be plugged in later; note its contract, which is the whole point:
@@ -17,7 +25,7 @@ before it, and the only material it is given is this module's own tutorial
 text — never a database record. What it writes is badged so the reader knows
 which kind of answer they are holding.
 
-NOTE TO THE NEXT READER: `contract.json::coach-answers-from-records-only`
+NOTE TO THE NEXT READER: `contract.json::coach-answers-from-writing-only`
 greps this file whole, prose included, for the tokens that must never appear
 here — a product model name, raw SQL, or another module's provider registry.
 Say "a product model" rather than naming one, as everything below does.
@@ -26,7 +34,7 @@ import logging
 import re
 import unicodedata
 
-from odoo import api, fields, models, tools
+from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
@@ -237,201 +245,51 @@ _SCRUB = (
 )
 
 
-class LearnScreen(models.Model):
-    _name = 'learn.screen'
-    _description = 'Learn screen'
-    _order = 'sequence, key'
-
-    key = fields.Char(required=True, index=True)
-    sequence = fields.Integer(default=10)
-    name = fields.Char(required=True, translate=True)
-    blurb = fields.Text(translate=True, help="What this screen is, in one sentence.")
-    next_step = fields.Text(
-        translate=True,
-        help="The honest answer to 'what should I do next here'.")
-    action_tags = fields.Char(
-        help="Optional manual override. Normally EMPTY: the matchers are read "
-             "from the sidebar leaf named by sidebar_key, so the Coach and the "
-             "sidebar can never disagree about which screen is showing.")
-    sidebar_key = fields.Char(help="xml-id of the leaf, for the visibility check.")
-    live_fallback = fields.Text(
-        translate=True,
-        help="The sentence to show when a {{live:...}} token in next_step cannot "
-             "be resolved — on a tenant that is not the demo world, which is "
-             "every tenant but one.")
-    suggest_ids = fields.Many2many('learn.intent', string='Suggested questions')
-
-    def _next_step_live(self):
-        """next_step with its live tokens resolved, or the authored fallback.
-
-        The second and last live site. `whatnext` is the most-asked question on
-        any screen, and on the demo world the useful answer names the state the
-        prospect's OWN June run is actually in — which no static sentence can.
-        Everywhere else the authored sentence is shown unchanged.
-        """
-        self.ensure_one()
-        return self.env['learn.live'].render(self.next_step or '',
-                                             self.live_fallback or '')
-
-    _sql_constraints = [('key_uniq', 'unique(key)', 'A screen key must be unique.')]
-
-    @staticmethod
-    def _split(val):
-        return {v.strip() for v in (val or '').split(',') if v.strip()}
-
-    def _raw_models(self):
-        """The models this screen's LEAF declares, before any tie-break."""
-        self.ensure_one()
-        if not self.sidebar_key:
-            return set()
-        item = self.env.ref(self.sidebar_key, raise_if_not_found=False)
-        return self._split(item.sudo().match_models) if item else set()
-
-    @api.model
-    @tools.ormcache()
-    def _contested_models(self):
-        """Models that more than one screen's leaf claims.
-
-        `hr.integration.connector` is claimed by BOTH the Import Data leaf and
-        the Integrations leaf (pb_sidebar_data.xml:82 and :196), and BOTH are
-        right for the sidebar: a connector form opened from either place should
-        leave that leaf lit. It is not right for the Coach. A model two screens
-        answer to makes the broad third pass pick whichever the search returned
-        first — wrong, and wrong differently on different databases, which is
-        the exact 'confidently wrong' failure the three-pass resolver exists to
-        prevent.
-
-        So a contested model is not a matcher for EITHER screen. The tags and
-        xml-ids still resolve both cockpits exactly (they are distinct client
-        actions), and what is lost is only the bare list/form view of the
-        contested model — where the honest answer really is "I do not have
-        lessons for this screen", not a coin flip between two that both have
-        content.
-
-        Computed from the live leaves rather than declared, because the contest
-        is a fact about pb_sidebar and a copy of it here would be one more thing
-        to keep in step.
-
-        CACHED, because `_matchers` is called once per screen and this walks
-        every screen: uncached it turned one bundle build into a quadratic
-        sweep of the sidebar. The inputs are two data tables that only change on
-        upgrade, and learn.screen's own write path already clears the registry
-        cache — the same invalidation learn.station relies on.
-        """
-        seen, contested = set(), set()
-        for screen in self.sudo().search([]):
-            for model in screen._raw_models():
-                if model in seen:
-                    contested.add(model)
-                seen.add(model)
-        return contested
-
-    # The cached contest above is derived from these records and from the
-    # sidebar leaves they name, so a change to either has to drop it. Mirrors
-    # learn.station._invalidate_learn_bundle, which clears the same cache for
-    # the same reason.
-    @api.model_create_multi
-    def create(self, vals_list):
-        rec = super().create(vals_list)
-        self.env.registry.clear_cache()
-        return rec
-
-    def write(self, vals):
-        res = super().write(vals)
-        self.env.registry.clear_cache()
-        return res
-
-    def unlink(self):
-        res = super().unlink()
-        self.env.registry.clear_cache()
-        return res
-
-    def _matchers(self):
-        """How to tell that THIS screen is the one on display.
-
-        Read from the sidebar leaf rather than hard-coded here. Not every Pay
-        Run leaf is a client action with a tag — Pay Runs is an act_window
-        matched by xml-id and by hr.payslip.run — so a tag-only map silently
-        fails to detect some screens, and the Coach then tells the learner it
-        has no lessons for a screen it has a full lesson for.
-
-        Reusing the leaf's own declaration means the Coach resolves the screen
-        exactly the way the sidebar decides which leaf to highlight — with the
-        one documented exception in `_contested_models`.
-        """
-        self.ensure_one()
-        tags, xmlids, models_ = set(), set(), set()
-
-        split = self._split
-        tags |= split(self.action_tags)
-        if self.sidebar_key:
-            item = self.env.ref(self.sidebar_key, raise_if_not_found=False)
-            if item:
-                item = item.sudo()
-                tags |= split(item.action_tag) | split(item.match_action_tags)
-                xmlids |= split(item.action_xmlid) | split(item.match_action_xmlids)
-                models_ |= split(item.match_models)
-        return sorted(tags), sorted(xmlids), sorted(models_ - self._contested_models())
-
-    def _primary(self):
-        """The leaf's OWN action — the one that IS this screen.
-
-        A parent leaf legitimately lists its children's actions in
-        match_action_xmlids so the sidebar highlights the parent while a child
-        is open. That is right for the sidebar and wrong for the Coach: opening
-        Cash In Transit grounded it on AR Management, because the parent
-        matched first. The primary pair breaks that tie without changing what
-        the sidebar does.
-        """
-        self.ensure_one()
-        if not self.sidebar_key:
-            return None, None
-        item = self.env.ref(self.sidebar_key, raise_if_not_found=False)
-        if not item:
-            return None, None
-        item = item.sudo()
-        return (item.action_tag or None), (item.action_xmlid or None)
 
 
-class LearnIntent(models.Model):
+# ======================================================================
+# BILINGUAL LEAVES
+# ======================================================================
+# The content plane ships every prose leaf as `{en, vi}` and every raw scalar
+# raw, so the old read-twice-and-zip (`learn_station._zip_bilingual`) is gone
+# with the records it read. What is left is the two places an answer contains
+# something the content could NOT ship: a live value substituted into a
+# sentence, and a composed reply. Both are built here, to the same rule the zip
+# applied — an empty English side stays the empty STRING, because a truthy
+# `{"en": "", "vi": ""}` makes every `field ? render : ""` in the drawer draw an
+# empty card.
+def _pair(en, vi=None):
+    if not en:
+        return ''
+    return {'en': en, 'vi': vi or en}
+
+
+def _one(pair, lang='en_US'):
+    """One language out of a leaf. Tolerates '' and a raw string."""
+    if not pair:
+        return ''
+    if isinstance(pair, str):
+        return pair
+    return pair.get('vi' if str(lang or '').startswith('vi') else 'en') \
+        or pair.get('en') or ''
+
+
+def _covers_screen(intent, screen_key):
+    raw = (intent.get('screens') or '*').strip()
+    if raw == '*':
+        return True
+    return screen_key in [s.strip() for s in raw.split(',') if s.strip()]
+
+
+class LearnIntent(models.AbstractModel):
+    """The Coach's resolver. Abstract since Phase 1a: the intents themselves
+    are static content, and what is left here is behaviour.
+
+    `ask` is the one public entry point and its response contract is unchanged
+    from Phase D — coach.js was not touched for it.
+    """
     _name = 'learn.intent'
-    _description = 'Learn coach intent'
-    _order = 'key'
-
-    key = fields.Char(required=True, index=True)
-    label = fields.Char(required=True, translate=True,
-                        help="The question as a person would ask it.")
-    screens = fields.Char(default='*',
-                          help="'*' or a comma-separated list of learn.screen keys.")
-    dynamic = fields.Selection(
-        selection=lambda self: self._selection_dynamic(), default='none', required=True)
-    show_me = fields.Char(help="Comma-separated anchor keys this answer can point at.")
-    simpler = fields.Text(translate=True, help="The 'explain more simply' rewrite.")
-    practice_key = fields.Char(help="A Phase-3 mission id. Inert until then.")
-    active = fields.Boolean(default=True)
-    offer = fields.Boolean(
-        default=True,
-        help="Show this as a suggested question. A refusal must stay REACHABLE "
-             "but never advertised: offering 'ask me how to pay less tax' invites "
-             "exactly the question the Coach exists to decline.")
-    phrase_ids = fields.One2many('learn.intent.phrase', 'intent_id')
-    block_ids = fields.One2many('learn.intent.block', 'intent_id')
-
-    _sql_constraints = [('key_uniq', 'unique(key)', 'An intent key must be unique.')]
-
-    @api.model
-    def _selection_dynamic(self):
-        return [('none', self.env._('Static blocks')),
-                ('screen_blurb', self.env._("The screen's own description")),
-                ('next_step', self.env._('What to do next here'))]
-
-    # ------------------------------------------------------------------
-    def _covers_screen(self, screen_key):
-        self.ensure_one()
-        raw = (self.screens or '*').strip()
-        if raw == '*':
-            return True
-        return screen_key in [s.strip() for s in raw.split(',') if s.strip()]
+    _description = 'Learn coach resolver'
 
     # -------------------------------------------------------- the resolver
     @api.model
@@ -450,16 +308,16 @@ class LearnIntent(models.Model):
         A word half the corpus uses carries no signal about WHICH intent is
         meant, whatever its length. Derived from the content rather than
         hand-listed, so it stays true as content is added — the same principle
-        as `_contested_models`: ambiguity is computed from the records, not
-        declared beside them.
+        as `_contested_models`: ambiguity is computed from what ships, not
+        declared beside it.
         """
         owner, ambiguous = {}, set()
-        for intent in self.sudo().search([]):
+        for intent in self.env['learn.content'].intents():
             words = set()
-            for phrase in intent.phrase_ids:
-                words |= _topic_words(phrase.text)
+            for phrase in intent.get('phrases') or []:
+                words |= _topic_words(phrase)
             for word in words:
-                if owner.setdefault(word, intent.id) != intent.id:
+                if owner.setdefault(word, intent['key']) != intent['key']:
                     ambiguous.add(word)
         return ambiguous
 
@@ -474,9 +332,10 @@ class LearnIntent(models.Model):
         nq = _norm(question)
         if not nq:
             return 0
+        phrases = intent.get('phrases') or []
         best = 0
-        for phrase in intent.phrase_ids:
-            np = _norm(phrase.text)
+        for phrase in phrases:
+            np = _norm(phrase)
             if not np:
                 continue
             if nq == np:
@@ -491,8 +350,8 @@ class LearnIntent(models.Model):
             if ambiguous is None:
                 ambiguous = self._ambiguous_words()
             qw = _topic_words(question)
-            for phrase in intent.phrase_ids:
-                shared = qw & _topic_words(phrase.text)
+            for phrase in phrases:
+                shared = qw & _topic_words(phrase)
                 if len(shared) >= 2:
                     best = max(best, 55)
                 elif len(shared) == 1:
@@ -502,8 +361,8 @@ class LearnIntent(models.Model):
                     # length test would let any rare short word through.
                     if len(word) >= 6 and word not in ambiguous:
                         best = max(best, 40)
-        if best and screen_key and intent._covers_screen(screen_key) \
-                and (intent.screens or '*') != '*':
+        if best and screen_key and _covers_screen(intent, screen_key) \
+                and (intent.get('screens') or '*') != '*':
             best += _ON_SCREEN_BONUS
         return best
 
@@ -517,7 +376,7 @@ class LearnIntent(models.Model):
         stays a block someone wrote and a test can check.
         """
         ambiguous = self._ambiguous_words()
-        scored = [(self._score(question, i, screen_key, ambiguous), i.key)
+        scored = [(self._score(question, i, screen_key, ambiguous), i['key'])
                   for i in candidates]
         scored = [s for s in scored if s[0] >= _SCORE_FLOOR]
         if not scored:
@@ -527,16 +386,16 @@ class LearnIntent(models.Model):
 
     @api.model
     def resolve(self, question, screen_key=None):
+        Content = self.env['learn.content']
         # The advice guard runs FIRST and does not go through scoring. A
         # deterministic refusal is the only acceptable behaviour here: a
         # retrieval score is a guess, and a guess about how to reduce a
         # statutory obligation is exactly what this system must never make.
         if _is_advice(question):
-            return 'compliance' if self.search_count([('key', '=', 'compliance')]) else None
-        candidates = self.search([]).filtered(
-            lambda i: not screen_key or i._covers_screen(screen_key))
+            return 'compliance' if Content.intent('compliance') else None
+        candidates = [i for i in Content.intents()
+                      if not screen_key or _covers_screen(i, screen_key)]
         return self._resolve_hook(question, screen_key, candidates)
-
 
     # ------------------------------------------------------- capability
     @api.model
@@ -547,7 +406,9 @@ class LearnIntent(models.Model):
         real payroll groups — never from a role name the tutorial keeps a copy
         of. If a group is renamed or a leaf is re-gated, the Coach's answer
         changes with it, because it is asking the same question the product
-        asks.
+        asks. This is the one part of the answer path that MUST stay on the
+        server: a browser holding the static content plane still cannot tell
+        itself it is a manager.
 
         The Payobook ladder, in the order it is tested:
 
@@ -569,11 +430,10 @@ class LearnIntent(models.Model):
         if user.has_group('pb_hr_payroll_base.group_payroll_super_admin'):
             return 'owner'
         if screen_key:
-            screen = self.env['learn.screen'].sudo().search(
-                [('key', '=', screen_key)], limit=1)
-            if screen and screen.sidebar_key:
-                item = self.env.ref(screen.sidebar_key, raise_if_not_found=False)
-                visible = self.env['learn.station']._visible_sidebar_item_ids()
+            screen = self.env['learn.content'].screen(screen_key)
+            if screen and screen.get('sidebar_key'):
+                item = self.env.ref(screen['sidebar_key'], raise_if_not_found=False)
+                visible = self.env['learn.runtime']._visible_sidebar_item_ids()
                 if not item or item.id not in visible:
                     return 'no_access'
         if user.has_group('pb_hr_payroll_base.group_payroll_base_manager') \
@@ -588,56 +448,71 @@ class LearnIntent(models.Model):
         return 'no_access'
 
     # ------------------------------------------------------- answering
-    def _answer_tree(self, capability, screen):
-        """One language's worth of answer. Zipped by _answer below."""
-        self.ensure_one()
-        blocks = [b for b in self.block_ids
-                  if b.capability in ('any', capability)]
-        if not blocks and self.block_ids:
+    @api.model
+    def _render_leaf(self, leaf, fallback=''):
+        """A content leaf with its `{{live:…}}` tokens resolved, per language.
+
+        Per language and not once, because a live VALUE is itself
+        language-aware: a Vietnamese reader gets a Vietnamese division name
+        rather than an English one substituted into a Vietnamese sentence.
+        Unchanged in behaviour from `learn.intent.block._block_dict`, which did
+        the same thing inside each of `_answer`'s two language contexts.
+        """
+        if not leaf:
+            return ''
+        Live = self.env['learn.live']
+        if isinstance(leaf, str):
+            return Live.render(leaf, fallback if isinstance(fallback, str) else '')
+        out = {}
+        for tag, lang in (('en', 'en_US'), ('vi', 'vi_VN')):
+            out[tag] = Live.with_context(lang=lang).render(
+                leaf.get(tag) or '', _one(fallback, lang))
+        return _pair(out['en'], out['vi'])
+
+    @api.model
+    def _blocks_for(self, intent, capability, screen):
+        blocks = [b for b in intent.get('blocks') or []
+                  if b['capability'] in ('any', capability)]
+        if not blocks and intent.get('blocks'):
             # An intent with capability-specific blocks but none for this
             # reader would otherwise answer with silence. Say the most
             # restrictive thing we hold rather than nothing.
-            blocks = [b for b in self.block_ids if b.capability == 'no_access']
-        out = [b._block_dict() for b in blocks]
-        if self.dynamic == 'screen_blurb' and screen:
+            blocks = [b for b in intent['blocks'] if b['capability'] == 'no_access']
+        out = [{
+            'capability': b['capability'],
+            'kind': b['kind'],
+            'body': self._render_leaf(b.get('body'), b.get('live_fallback')),
+            'steps': [{'text': s['text'], 'anchor': s.get('anchor') or ''}
+                      for s in b.get('steps') or []],
+        } for b in blocks]
+        dynamic = intent.get('dynamic') or 'none'
+        if dynamic == 'screen_blurb' and screen:
             out.insert(0, {'capability': 'any', 'kind': 'p',
-                           'body': screen.blurb or '', 'steps': []})
-        elif self.dynamic == 'next_step' and screen:
+                           'body': screen.get('blurb') or '', 'steps': []})
+        elif dynamic == 'next_step' and screen:
             out.insert(0, {'capability': 'any', 'kind': 'p',
-                           'body': screen._next_step_live(), 'steps': []})
-        return {
-            'key': self.key,
-            'label': self.label,
-            'simpler': self.simpler or '',
-            'blocks': out,
-        }
+                           'body': self.env['learn.runtime'].next_step_live(screen),
+                           'steps': []})
+        return out
 
     @api.model
     def _answer(self, intent_key, screen_key):
         """The full bilingual answer payload for one intent."""
-        from .learn_station import _zip_bilingual
-        capability = self._capability(screen_key)
-
-        def build(lang):
-            env = self.with_context(lang=lang)
-            intent = env.search([('key', '=', intent_key)], limit=1)
-            if not intent:
-                return None
-            screen = env.env['learn.screen'].sudo().search(
-                [('key', '=', screen_key)], limit=1) if screen_key else None
-            return intent._answer_tree(capability, screen)
-
-        en, vi = build('en_US'), build('vi_VN')
-        if not en:
+        Content = self.env['learn.content']
+        intent = Content.intent(intent_key)
+        if not intent:
             return None
-        payload = _zip_bilingual(en, vi)
-        intent = self.search([('key', '=', intent_key)], limit=1)
-        payload.update({
+        capability = self._capability(screen_key)
+        screen = Content.screen(screen_key)
+        return {
+            'key': intent['key'],
+            'label': intent['label'],
+            'simpler': intent.get('simpler') or '',
+            'blocks': self._blocks_for(intent, capability, screen),
             'capability': capability,
-            'show_me': [a.strip() for a in (intent.show_me or '').split(',') if a.strip()],
-            'practice_key': intent.practice_key or '',
-        })
-        return payload
+            'show_me': list(intent.get('show_me') or []),
+            'practice_key': intent.get('practice_key') or '',
+        }
 
     @api.model
     def ask(self, question, screen_key=None, lang=None):
@@ -663,6 +538,10 @@ class LearnIntent(models.Model):
         not necessarily the session language — the drawer has its own toggle.
         It is used only to pick which language of our own material the composer
         is given; nothing else reads it.
+
+        PHASE 1a CHANGED THE DATA SOURCE AND NOTHING ELSE. Every shape below,
+        including the zero-blocks downgrade and the two source_kind badges, is
+        what Phase D returned.
         """
         key = self.resolve(question, screen_key)
         if key:
@@ -684,7 +563,7 @@ class LearnIntent(models.Model):
         # "What does Need review mean here?" — a question about a COLUMN, not a
         # procedure. Deterministic: no model needed to look up a written
         # definition.
-        column = self.env['learn.column'].match(question, screen_key)
+        column = self._match_column(question, screen_key)
         if column:
             return self._column_answer(column, screen_key)
 
@@ -705,10 +584,11 @@ class LearnIntent(models.Model):
     # -----------------------
     # Sent: the learner's question (scrubbed — see `_scrub`) and this module's
     # own tutorial text for the screen they are on. NOT sent: any employee,
-    # payslip, contract or pay-run record. The corpus is built from learn.*
-    # tables only, so there is no pay data in the request whatever provider is
-    # configured, and `contract.json::composer-corpus-reads-learn-content-only`
-    # asserts that against the source rather than trusting this paragraph.
+    # payslip, contract or pay-run record. The corpus is built from the static
+    # content plane only, so there is no pay data in the request whatever
+    # provider is configured, and
+    # `contract.json::composer-corpus-reads-learn-content-only` asserts that
+    # against the source rather than trusting this paragraph.
     #
     # The question itself is free text a person typed, so it is scrubbed: a
     # help box on a payroll screen receives "why is <a colleague>'s net only
@@ -774,37 +654,42 @@ class LearnIntent(models.Model):
     def _corpus(self, screen_key, lang):
         """Everything WE have written about this screen, as plain text.
 
-        Reads learn.* content tables and nothing else. A join to anything the
+        Reads the static content plane and nothing else. A join to anything the
         payroll product owns would put pay data in a prompt, which is the one
-        thing this method exists not to do.
+        thing this method exists not to do — and it is the one method in the
+        module whose model scope is checked mechanically rather than read.
         """
-        env = self.with_context(lang=lang)
+        content = self.env['learn.content']
         parts = []
-        Screen = env.env['learn.screen'].sudo()
-        screen = Screen.search([('key', '=', screen_key)], limit=1) if screen_key else None
+        screen = content.screen(screen_key) if screen_key else None
         if screen:
-            parts.append('SCREEN: %s — %s' % (screen.name, screen.blurb or ''))
-            if screen.next_step:
-                parts.append('NEXT: %s' % screen.next_step)
-            station = env.env['learn.station'].sudo().search(
-                [('key', '=', screen_key)], limit=1)
+            parts.append('SCREEN: %s — %s' % (_one(screen['name'], lang),
+                                              _one(screen.get('blurb'), lang)))
+            if screen.get('next_step'):
+                parts.append('NEXT: %s' % _one(screen['next_step'], lang))
+            station = content.station(screen_key)
             if station:
-                parts.append('STATION: %s — %s' % (station.name, station.summary or ''))
-                for lesson in station.lesson_ids:
-                    for step in lesson.step_ids:
-                        parts.append('- %s: %s' % (step.title, step.body or ''))
-                for mistake in station.mistake_ids:
-                    parts.append('MISTAKE: %s' % mistake.name)
-            for col in env.env['learn.column'].sudo().search(
-                    [('screen', '=', screen_key)]):
-                parts.append('COLUMN %s: %s' % (col.label, col.body))
-        for intent in env.search([]).filtered(
-                lambda i: not screen_key or i._covers_screen(screen_key)):
-            for block in intent.block_ids:
-                if block.capability == 'any' and block.body:
-                    parts.append('%s: %s' % (intent.label, block.body))
-        for term in env.env['learn.glossary.term'].sudo().search([]):
-            parts.append('TERM %s: %s' % (term.term, term.definition))
+                parts.append('STATION: %s — %s' % (_one(station['name'], lang),
+                                                   _one(station.get('summary'), lang)))
+                for lesson in station.get('lessons') or []:
+                    for step in lesson.get('steps') or []:
+                        parts.append('- %s: %s' % (_one(step['title'], lang),
+                                                   _one(step.get('body'), lang)))
+                for mistake in (station.get('outline') or {}).get('mistakes') or []:
+                    parts.append('MISTAKE: %s' % _one(mistake, lang))
+            for col in content.screen_columns(screen_key):
+                parts.append('COLUMN %s: %s' % (_one(col['label'], lang),
+                                                _one(col['body'], lang)))
+        for intent in content.intents():
+            if screen_key and not _covers_screen(intent, screen_key):
+                continue
+            for block in intent.get('blocks') or []:
+                if block['capability'] == 'any' and block.get('body'):
+                    parts.append('%s: %s' % (_one(intent['label'], lang),
+                                             _one(block['body'], lang)))
+        for term in content.glossary():
+            parts.append('TERM %s: %s' % (_one(term['term'], lang),
+                                          _one(term['definition'], lang)))
         return '\n'.join(parts)[:_CORPUS_CAP]
 
     @api.model
@@ -820,12 +705,12 @@ class LearnIntent(models.Model):
 
         # THE DENY-LIST RUNS BEFORE THE COMPOSER, AND NOT ONLY INSIDE
         # `resolve`. It does run there — but `resolve` returns the `compliance`
-        # intent only if that record exists, and returns None if it does not.
-        # On a database where the intent is missing or deactivated, an advice
-        # question would fall straight past retrieval and the column glossary
-        # and reach a language model, which is the single worst destination for
-        # "how do I pay less BHXH" on this system. Re-asked here so the guard
-        # cannot depend on a record being present.
+        # intent only if that content exists, and returns None if it does not.
+        # Where the intent is missing, an advice question would fall straight
+        # past retrieval and the column glossary and reach a language model,
+        # which is the single worst destination for "how do I pay less BHXH" on
+        # this system. Re-asked here so the guard cannot depend on the content
+        # being present.
         if _is_advice(question):
             return None
 
@@ -860,22 +745,18 @@ class LearnIntent(models.Model):
         if not reply or 'NO_ANSWER' in reply or len(reply) > _REPLY_CAP:
             return None
 
-        from .learn_station import _zip_bilingual
         # ONE language, shown in both. A composed answer is whatever the model
         # wrote; translating it here would be a second model call inventing a
         # second chance to be wrong, and shipping an empty Vietnamese side
         # would blank the drawer for the reader who most needs it. The prompt
         # asks for the question's language and the badge says the answer was
         # composed, which is the honest version of this compromise.
-        tree = {
+        return {
             'key': 'composed',
-            'label': scrubbed,
+            'label': _pair(scrubbed),
             'simpler': '',
-            'blocks': [{'capability': 'any', 'kind': 'p', 'body': reply,
-                        'steps': []}],
-        }
-        payload = _zip_bilingual(tree, tree)
-        payload.update({
+            'blocks': [{'capability': 'any', 'kind': 'p',
+                        'body': _pair(reply), 'steps': []}],
             'matched': True,
             'capability': self._capability(screen_key),
             'show_me': [],
@@ -885,228 +766,19 @@ class LearnIntent(models.Model):
             # kind of answer they are reading, which is the same reason the
             # column glossary carries a badge.
             'source_kind': 'composed',
-        })
-        return payload
-
-    @api.model
-    def _column_answer(self, column, screen_key):
-        """A column definition, shaped like any other answer."""
-        from .learn_station import _zip_bilingual
-
-        def build(lang):
-            col = column.with_context(lang=lang)
-            return {
-                'key': 'column:%s' % col.key,
-                'label': col.label,
-                'simpler': '',
-                'blocks': [
-                    {'capability': 'any', 'kind': 'p', 'body': col.body, 'steps': []},
-                    {'capability': 'any', 'kind': 'source', 'steps': [],
-                     'body': col.env['learn.screen'].sudo().search(
-                         [('key', '=', screen_key)], limit=1).name or screen_key},
-                ],
-            }
-
-        payload = _zip_bilingual(build('en_US'), build('vi_VN'))
-        payload.update({'matched': True, 'capability': self._capability(screen_key),
-                        'show_me': [], 'practice_key': '', 'source_kind': 'column'})
-        return payload
-
-    @api.model
-    def _suggestions(self, screen_key):
-        """What the Coach can answer here, named. A bare "I don't know" tells
-        the learner nothing about where to go next."""
-        from .learn_station import _zip_bilingual
-        screen = self.env['learn.screen'].sudo().search(
-            [('key', '=', screen_key)], limit=1) if screen_key else None
-
-        def build(lang):
-            env = self.with_context(lang=lang)
-            if screen:
-                intents = env.browse(screen.suggest_ids.ids)
-            else:
-                intents = env.search(
-                    [('screens', '=', '*'), ('offer', '=', True)], limit=6)
-            return [{'key': i.key, 'label': i.label} for i in intents]
-
-        return _zip_bilingual(build('en_US'), build('vi_VN'))
-
-    @api.model
-    def coach_bundle(self):
-        """Screens + suggestions, both languages, fetched once per session so
-        the drawer opens instantly rather than after a round-trip."""
-        from .learn_station import _zip_bilingual
-
-        def build(lang):
-            env = self.env['learn.screen'].with_context(lang=lang).sudo()
-            return {
-                'screens': [{
-                    'key': s.key,
-                    'name': s.name,
-                    'blurb': s.blurb or '',
-                    'next_step': s._next_step_live(),
-                    'action_tags': s._matchers()[0],
-                    'action_xmlids': s._matchers()[1],
-                    'models': s._matchers()[2],
-                    'own_tag': s._primary()[0] or '',
-                    'own_xmlid': s._primary()[1] or '',
-                    'suggest': [{'key': i.key, 'label': i.label} for i in s.suggest_ids],
-                } for s in env.search([])],
-                # What the Coach can answer ANYWHERE. Without this, a screen it
-                # does not cover is a dead end: an honest "no lessons here yet"
-                # and then nothing at all, which leaves the stuck person exactly
-                # as stuck.
-                'global_suggest': [
-                    {'key': i.key, 'label': i.label}
-                    for i in self.with_context(lang=lang).search(
-                        [('screens', '=', '*'), ('offer', '=', True)],
-                        order='key', limit=6)
-                ],
-            }
-
-        bundle = _zip_bilingual(build('en_US'), build('vi_VN'))
-        bundle['tokens'] = self.env['learn.tenant.override'].resolved_tokens()
-        bundle['chrome'] = self.env['learn.station']._content_bundle()['chrome']
-        # Shipped with the bundle the drawer already fetches, so that a tenant
-        # who never switched question mining on pays NOTHING for it: without
-        # this the Coach made two consent round-trips after every single
-        # answer, which is not "behaves exactly as Phase C" by any reading.
-        # It is a hint, not a control — `learn.question.create` is the gate,
-        # and a stale bundle can only ever fail closed (nothing is stored
-        # until the tab reloads).
-        bundle['collect_questions'] = self.env['learn.question']._collect_enabled()
-        return bundle
-
-
-class LearnIntentPhrase(models.Model):
-    """A trigger phrase.
-
-    NOT translatable, deliberately: the prototype's match lists mix English and
-    Vietnamese in one bag, which is correct. A learner types in whichever
-    language they are thinking in — often mid-shift, often without tone marks —
-    and both have to hit the same intent.
-    """
-    _name = 'learn.intent.phrase'
-    _description = 'Learn coach trigger phrase'
-    _order = 'intent_id, id'
-
-    intent_id = fields.Many2one('learn.intent', required=True, ondelete='cascade')
-    text = fields.Char(required=True)
-
-
-class LearnIntentBlock(models.Model):
-    _name = 'learn.intent.block'
-    _description = 'Learn coach answer block'
-    _order = 'sequence, id'
-
-    intent_id = fields.Many2one('learn.intent', required=True, ondelete='cascade')
-    sequence = fields.Integer(default=10)
-    capability = fields.Selection(
-        selection=lambda self: self._selection_capability(),
-        default='any', required=True,
-        help="Which reader this block is for. Read from the REAL gates, not "
-             "from a role name the tutorial keeps its own copy of.")
-    kind = fields.Selection(
-        selection=lambda self: self._selection_kind(), required=True, default='p')
-    body = fields.Text(translate=True)
-    live_fallback = fields.Text(
-        translate=True,
-        help="The sentence to show when a {{live:...}} token in the body cannot "
-             "be resolved. Required by the generator on any body that uses one: "
-             "a half-resolved sentence reads as a fact with a hole in it.")
-    step_ids = fields.One2many('learn.intent.step', 'block_id')
-
-    @api.model
-    def _selection_capability(self):
-        return [
-            ('any', self.env._('Everyone')),
-            ('no_access', self.env._('Cannot see this screen')),
-            ('operator', self.env._('Payroll officer')),
-            ('manager', self.env._('Payroll manager / final approver')),
-            ('owner', self.env._('Payroll super administrator')),
-        ]
-
-    @api.model
-    def _selection_kind(self):
-        return [
-            ('p', self.env._('Paragraph')),
-            ('steps', self.env._('Numbered steps')),
-            ('calc', self.env._('Payslip calculation')),
-            ('calc_kpi', self.env._('Period-on-period variance')),
-            ('ok', self.env._('Confirmation')),
-            ('warn', self.env._('Caution')),
-            ('refusal', self.env._('Your role cannot do this')),
-            ('who', self.env._('Who can')),
-            ('how', self.env._('How to get access')),
-            ('source', self.env._('Grounded in')),
-        ]
-
-    def _block_dict(self):
-        self.ensure_one()
-        return {
-            'capability': self.capability,
-            'kind': self.kind,
-            # Live values are resolved HERE, per language, because this runs
-            # once inside each of _answer's two language contexts — so a
-            # Vietnamese reader gets a Vietnamese division name rather than an
-            # English one substituted into a Vietnamese sentence.
-            'body': self.env['learn.live'].render(self.body or '',
-                                                  self.live_fallback or ''),
-            'steps': [{'text': s.text, 'anchor': s.anchor or ''} for s in self.step_ids],
         }
 
-
-class LearnIntentStep(models.Model):
-    _name = 'learn.intent.step'
-    _description = 'Learn coach answer step'
-    _order = 'sequence, id'
-
-    block_id = fields.Many2one('learn.intent.block', required=True, ondelete='cascade')
-    sequence = fields.Integer(default=10)
-    text = fields.Text(required=True, translate=True)
-    anchor = fields.Char(help="Anchor key to point at. Must be in anchors.json.")
-
-
-class LearnColumn(models.Model):
-    """What a column on a screen actually means.
-
-    WHY THIS IS CURATED AND NOT READ FROM ir.model.fields
-    ----------------------------------------------------
-    Most of what a learner asks about here is not a field at all. "Need
-    review", "In pipeline" and "Awaiting your approval" are COMPUTED tiles on
-    an OWL cockpit — there is no ir.model.fields row behind them to read a
-    help string from, and the fields that do exist carry Odoo's own
-    boilerplate.
-
-    So a schema-driven answer would restate the tile's own caption back at the
-    person who just read it. What answers "what does Need review count?" is
-    domain knowledge: which flag conditions raise it, that a flag is a question
-    rather than an error, and that the fix belongs in the input. That has to be
-    written.
-    """
-    _name = 'learn.column'
-    _description = 'Learn screen column'
-    _order = 'screen, sequence, id'
-
-    screen = fields.Char(required=True, index=True)
-    key = fields.Char(required=True)
-    sequence = fields.Integer(default=10)
-    label = fields.Char(required=True, translate=True,
-                        help="The column header exactly as it appears on screen.")
-    body = fields.Text(required=True, translate=True,
-                       help="One honest sentence: what it is for, and what it is not.")
-
-    _sql_constraints = [
-        ('screen_key_uniq', 'unique(screen, key)', 'One entry per column per screen.'),
-    ]
-
+    # ------------------------------------------------------ column glossary
     @api.model
-    def match(self, question, screen_key):
+    def _match_column(self, question, screen_key):
         """Find the column a question is asking about.
 
         Deliberately narrow: the question must contain the column's label. A
         loose match here would answer "what is the status of this run" with a
         column definition, which is worse than missing.
+
+        BOTH languages are consulted, because a Vietnamese reader types the
+        Vietnamese header.
         """
         if not screen_key:
             return None
@@ -1114,13 +786,46 @@ class LearnColumn(models.Model):
         if not nq:
             return None
         best, best_len = None, 0
-        for col in self.search([('screen', '=', screen_key)]):
+        for col in self.env['learn.content'].screen_columns(screen_key):
             for lang in ('en_US', 'vi_VN'):
-                label = _norm(col.with_context(lang=lang).label)
+                label = _norm(_one(col['label'], lang))
                 if label and len(label) > 3 and label in nq and len(label) > best_len:
                     best, best_len = col, len(label)
         return best
 
-    def _column_dict(self):
-        self.ensure_one()
-        return {'key': self.key, 'label': self.label, 'body': self.body}
+    @api.model
+    def _column_answer(self, column, screen_key):
+        """A column definition, shaped like any other answer."""
+        screen = self.env['learn.content'].screen(screen_key)
+        source = (screen or {}).get('name') or screen_key or ''
+        return {
+            'key': 'column:%s' % column['key'],
+            'label': column['label'],
+            'simpler': '',
+            'blocks': [
+                {'capability': 'any', 'kind': 'p', 'body': column['body'],
+                 'steps': []},
+                {'capability': 'any', 'kind': 'source',
+                 'body': source if isinstance(source, dict) else _pair(source),
+                 'steps': []},
+            ],
+            'matched': True,
+            'capability': self._capability(screen_key),
+            'show_me': [],
+            'practice_key': '',
+            'source_kind': 'column',
+        }
+
+    @api.model
+    def _suggestions(self, screen_key):
+        """What the Coach can answer here, named. A bare "I don't know" tells
+        the learner nothing about where to go next."""
+        content = self.env['learn.content']
+        screen = content.screen(screen_key)
+        if screen:
+            return [{'key': s['key'], 'label': s['label']}
+                    for s in screen.get('suggest') or []]
+        # What the Coach can answer ANYWHERE. Without this, a screen it does
+        # not cover is a dead end: an honest "no lessons here yet" and then
+        # nothing at all, which leaves the stuck person exactly as stuck.
+        return [dict(s) for s in content.global_suggest()]

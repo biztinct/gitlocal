@@ -19,6 +19,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
 import { RT, T, tx, esc, ic, reduced, SP} from "../engine/runtime";
+import { loadContent, composeStations } from "../content/content_loader";
 import { Spot, Trace, setOverlayRoot } from "../engine/spotlight";
 
 /* Where a mission opens when its first step does not say. One entry per
@@ -149,12 +150,33 @@ export class LearnJourney extends Component {
     }
 
     async _loadBundle() {
+        // TWO sources since Phase 1a, and the split is the whole point: the
+        // CONTENT is a static asset every tenant has identical bytes of, and
+        // the one RPC carries only what is irreducibly about this session —
+        // which stations this reader can reach, their slots, their progress.
+        // The bundle assembled here is the shape the views below have read
+        // since Phase A; nothing downstream of this method changed.
+        let content, runtime;
         try {
-            this.bundle = await this.orm.call("learn.station", "get_bundle", []);
+            [content, runtime] = await Promise.all([
+                loadContent(),
+                this.orm.call("learn.runtime", "bootstrap", []),
+            ]);
         } catch (e) {
             this.state.error = e?.message?.data?.message || String(e);
             return;
         }
+        this.bundle = {
+            stations: composeStations(content, runtime),
+            missions: content.missions || [],
+            glossary: content.glossary || [],
+            chrome: content.chrome || {},
+            version: content.version || "",
+            tokens: runtime.tokens || {},
+            progress: runtime.progress || {},
+            confidence: runtime.confidence || {},
+            user: runtime.user || {},
+        };
         RT.tokens = this.bundle.tokens || {};
         RT.chrome = this.bundle.chrome || {};
         this.progress = this.bundle.progress || {};
