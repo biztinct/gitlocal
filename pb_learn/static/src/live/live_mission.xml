@@ -4,7 +4,7 @@
 <!-- The live capstone's docked card.
 
      Bottom-LEFT on purpose. The bottom-right corner already holds three
-     stacked controls (PayAI's pill, pb_coach's FAB, pb_learn's own launcher —
+     stacked controls (PayAI's pill, the retired tour FAB, pb_learn's own launcher —
      see coach.scss), and a fourth would be a pile rather than a stack. This
      card also has to coexist with all of them: a learner running the capstone
      can still open the Coach and ask what a flag means.

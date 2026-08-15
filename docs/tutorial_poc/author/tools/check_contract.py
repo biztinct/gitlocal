@@ -81,8 +81,16 @@ def region(text, symbol):
     a parser that is 100% right and gets disabled the first time a decorator
     breaks it.
     """
+    # ORDER IS THE WHOLE POINT. The bare name is the LAST resort, because in a
+    # well-commented file the first mention of a method is the paragraph at the
+    # top explaining what it does — which is how an `absent` check scoped to one
+    # ES-class method came to be scoped to the file header instead, and reported
+    # every one of its expectations missing. The two middle probes are the JS
+    # method definition at class-body indent, `async` first; a CALL is never
+    # written at that indent without a `this.` in front of it.
     i = -1
-    for probe in ("def %s" % symbol, "%s = " % symbol, symbol):
+    for probe in ("def %s" % symbol, "\n    async %s(" % symbol,
+                  "\n    %s(" % symbol, "%s = " % symbol, symbol):
         i = text.find(probe)
         if i != -1:
             break
@@ -93,8 +101,16 @@ def region(text, symbol):
     # `\n};` is the JS one and it earns its place: without it a top-level object
     # literal has no stop pattern at all in a .js file, so the region runs to
     # EOF and every two-space key in the rest of the file looks like part of it.
+    # The last two are the JS METHOD boundary and they were added for the
+    # scenario engine: `\n};` only ends a top-level object literal, so scoping
+    # to one method of an ES class ran to end-of-file and an `absent` check on
+    # `_enterStep` failed on a call made three methods further down. Both are
+    # written so they cannot fire inside Python — a closing brace at four-space
+    # indent followed by a blank line and either a JSDoc block or another
+    # member is not a shape Python source has.
     for pat in (r"\ndef ", r"\n@api", r"\nclass ", r"\n[A-Z_]{3,} = ",
-                r"\n    def ", r"\n\};"):
+                r"\n    def ", r"\n\};",
+                r"\n    \}\n\n    /\*\*", r"\n    \}\n\n    [A-Za-z_$]+\("):
         m = re.search(pat, tail[40:])
         if m:
             stop = min(stop, m.start() + 40)

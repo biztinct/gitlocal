@@ -683,18 +683,53 @@ def _intent_phrases(intent):
     return phrases
 
 
-def content_intents(data, bi, live):
+SHOW_ME_SCENARIO_RE = re.compile(r'^scenario:([a-z0-9_]+)(?:#([a-z0-9_]+))?$')
+
+
+def _check_show_me(key, targets, scenario_steps, problems):
+    """A `show_me` target is an ANCHOR or, since Phase 1b, a SCENARIO.
+
+    `scenario:<key>` or `scenario:<key>#<step>`, where the step is a step KEY
+    and not an index — an index would silently re-point at a different step the
+    first time a walkthrough gained one in the middle, which is the kind of
+    breakage nobody notices because the button still opens something.
+
+    Anchors are checked by `check_contract.py::anchor_lint`; only the scenario
+    form is checked here, because it names something the generator can see.
+    """
+    for target in targets:
+        if not target.startswith('scenario:'):
+            continue
+        hit = SHOW_ME_SCENARIO_RE.match(target)
+        if not hit:
+            problems.append('intent %s: malformed scenario target %r' % (key, target))
+            continue
+        sc_key, step_key = hit.group(1), hit.group(2)
+        if sc_key not in scenario_steps:
+            problems.append('intent %s: show_me points at a scenario that does '
+                            'not exist: %s' % (key, sc_key))
+        elif step_key and step_key not in scenario_steps[sc_key]:
+            problems.append('intent %s: show_me points at step %r of %s, which '
+                            'has no such step' % (key, step_key, sc_key))
+
+
+def content_intents(data, bi, live, scenarios=None):
+    scenario_steps = {sc['key']: {st['key'] for st in sc['steps']}
+                      for sc in (scenarios or [])}
+    problems = []
     out = []
     for intent in data['qa']:
         key = intent['id']
         where = 'intent %s' % key
         screens = intent.get('screens')
+        show_me = [a.strip() for a in (intent.get('showMe') or []) if a.strip()]
+        _check_show_me(key, show_me, scenario_steps, problems)
         node = {
             'key': key,
             'label': bi.p('%s label' % where, intent['label']),
             'screens': '*' if screens == '*' else ','.join(screens or []),
             'dynamic': DYNAMIC_KIND.get(intent.get('dynamic'), 'none'),
-            'show_me': [a.strip() for a in (intent.get('showMe') or []) if a.strip()],
+            'show_me': show_me,
             'simpler': bi.p('%s simpler' % where, intent.get('simpler')),
             'practice_key': intent.get('practice') or '',
             # A refusal stays reachable but is never advertised.
@@ -723,6 +758,12 @@ def content_intents(data, bi, live):
                     } for k, st in enumerate(b['v'])] if kind == 'steps' else []),
                 })
         out.append(node)
+    if problems:
+        print('INTENTS: %d problem(s). A "Show me" that opens nothing is the '
+              'offer made and not kept.' % len(problems))
+        for p in problems:
+            print('  %s' % p)
+        raise SystemExit(7)
     # learn.intent._order = 'key'
     out.sort(key=lambda i: i['key'])
     return out
@@ -789,6 +830,244 @@ def content_columns(data, bi):
     return out
 
 
+# ============================================================================
+# SCENARIOS — one authored story, three ways to take it (LEARNOS Phase 1b)
+# ============================================================================
+# The engine that plays these is structurally incapable of pressing a guarded
+# control (pb_learn/static/src/scenario/scenario_overlay.js). What the GENERATOR
+# owns is the other half of that promise: an author cannot ship a click step
+# that has not said, out loud, whether pressing it writes.
+
+# Every mode the engine implements. A scenario naming anything else would draw
+# a button that starts nothing.
+SCENARIO_MODES = ('watch', 'try', 'do')
+
+# The verbs that make a control a WRITE. Matched as whole words against the
+# step key, the anchor and the English title — never the body, because a body
+# legitimately explains what a button would do without being that button.
+#
+# This is a SECOND line of defence, not the rule. The rule is that `guard` is
+# mandatory on every click step, so the author has already had to decide; this
+# list only refuses the decisions that are obviously wrong. A guard list written
+# as a list of examples protects against the examples (ledger, Phase D review) —
+# what protects here is that there is no default.
+WRITING_VERBS = (
+    'compute', 'submit', 'approve', 'reject', 'confirm', 'delete', 'send',
+    'commit', 'pay', 'post', 'generate', 'activate', 'archive', 'cancel',
+    'apply', 'run', 'release', 'issue', 'disburse', 'finalize', 'transfer',
+    'remit',
+)
+
+# Real-screen destinations a scenario may navigate to. Every one is an
+# `ir.actions.*` record in a module pb_learn already depends on or that ships
+# with the product; contract.json::scenario-nav-actions-exist re-reads the
+# declaring files, because this map is a promise about somebody else's module.
+SCENARIO_NAV = {
+    'pb_dashboard.action_pb_dashboard',
+    'pb_payrun_wizard.action_pb_payrun_wizard',
+    'pb_payruns.action_pb_payruns_kanban',
+    'pb_payslip_review.action_pb_payslip_review',
+    'pb_formula_studio.action_pb_formula_studio',
+    'pb_import.action_pb_import',
+    'pb_statutory.action_pb_statutory',
+}
+
+
+def _anchor_registry_keys():
+    """Every anchor name the registry knows, and its wildcard prefixes.
+
+    Read from `pb_learn/static/src/anchors.json` — all four kinds, because a
+    scenario legitimately points at controls this module does not own. The six
+    ported tours walk Formula Studio's grid, the multi-sheet importer and the
+    PayAI pill, none of which is pb_learn's template; what matters is that the
+    name is DECLARED somewhere rather than typed from memory.
+    """
+    path = os.path.join(ADDON, 'static/src/anchors.json')
+    with open(path, encoding='utf-8') as fh:
+        reg = json.load(fh)
+    literal, prefixes = set(), set()
+    for block in ('product', 'pattern', 'practice', 'foreign'):
+        for key in reg.get(block) or {}:
+            if key.endswith('*'):
+                prefixes.add(key[:-1])
+            else:
+                literal.add(key)
+    return literal, sorted(prefixes)
+
+
+def _anchor_known(key, literal, prefixes):
+    return key in literal or any(key.startswith(p) for p in prefixes)
+
+
+def _writes(step):
+    """Does this step's control write? Word-boundary, lowercase, three fields."""
+    blob = ' '.join([
+        (step.get('key') or '').replace('_', ' ').replace('-', ' '),
+        (step.get('anchor') or '').replace('-', ' '),
+        en_of((step.get('say') or {}).get('title')),
+    ]).lower()
+    words = set(re.findall(r'[a-z]+', blob))
+    return sorted(v for v in WRITING_VERBS if v in words)
+
+
+def content_scenarios(data, bi):
+    scenarios = data.get('scenarios') or []
+    screens = set(data['screenCtx'])
+    literal, prefixes = _anchor_registry_keys()
+    problems, seen = [], set()
+    out = []
+
+    for sc in scenarios:
+        key = sc['key']
+        where = 'scenario %s' % key
+        if key in seen:
+            problems.append('%s: duplicate key' % where)
+        seen.add(key)
+
+        modes = list(sc.get('modes') or [])
+        bad_modes = [m for m in modes if m not in SCENARIO_MODES]
+        if bad_modes:
+            problems.append('%s: unknown mode(s) %s' % (where, ', '.join(bad_modes)))
+        if not modes:
+            problems.append('%s: no modes — nothing could ever start it' % where)
+
+        # The screens this scenario is OFFERED on — what the Coach's "Show me
+        # how" reads once `screens_runtime` has resolved which cockpit is in
+        # front of the learner. Authored rather than derived: two of the six
+        # ported tours stand on a wizard that has no replica screen and no
+        # sidebar leaf, so a union of the steps' own `screen` values would
+        # offer them nowhere at all.
+        offered = list(sc.get('screens') or [])
+        unknown_screens = [s for s in offered if s not in screens]
+        if unknown_screens:
+            problems.append('%s: offered on screens that do not exist: %s'
+                            % (where, ', '.join(unknown_screens)))
+        if not offered:
+            problems.append('%s: names no screens, so the Coach can never '
+                            'offer it anywhere' % where)
+
+        entry = sc.get('entry') or {}
+        entry_nav = entry.get('nav') or ''
+        entry_screen = entry.get('screen') or ''
+        if entry_nav and entry_nav not in SCENARIO_NAV:
+            problems.append('%s: entry nav is not in SCENARIO_NAV: %s' % (where, entry_nav))
+        if entry_screen and entry_screen not in screens:
+            problems.append('%s: entry screen is not a replica screen: %s'
+                            % (where, entry_screen))
+        # A Do scenario has to LAND somewhere real; a Try scenario has to open
+        # on a replica. Watch is the only mode that may legitimately start
+        # wherever the learner already is — two of the six ported tours do
+        # exactly that, because their wizard cannot be opened cold.
+        if 'do' in modes and not entry_nav:
+            problems.append('%s: supports "do" but names no entry nav — a live '
+                            'walkthrough must open the screen it walks' % where)
+        if 'try' in modes and not entry_screen:
+            problems.append('%s: supports "try" but names no entry screen' % where)
+
+        node = {
+            'key': key,
+            'icon': sc.get('icon') or 'compass',
+            'line': sc.get('line') or 'payrun',
+            'modes': modes,
+            'screens': offered,
+            'name': bi.p('%s name' % where, sc['name']),
+            'tagline': bi.p('%s tagline' % where, sc.get('tagline')),
+            'entry': {'nav': entry_nav, 'screen': entry_screen},
+            'steps': [],
+        }
+
+        step_keys = set()
+        for i, step in enumerate(sc.get('steps') or []):
+            sw = '%s step %s' % (where, step.get('key') or i)
+            skey = step.get('key') or 'step%d' % i
+            if skey in step_keys:
+                problems.append('%s: duplicate step key' % sw)
+            step_keys.add(skey)
+
+            act = step.get('act') or 'observe'
+            if act not in ('observe', 'click', 'input'):
+                problems.append('%s: unknown act %r' % (sw, act))
+
+            anchor = step.get('anchor') or ''
+            if anchor and not _anchor_known(anchor, literal, prefixes):
+                problems.append('%s: anchor %r is in no block of anchors.json'
+                                % (sw, anchor))
+
+            nav = step.get('nav') or ''
+            if nav and nav not in SCENARIO_NAV:
+                problems.append('%s: nav is not in SCENARIO_NAV: %s' % (sw, nav))
+
+            screen = step.get('screen') or ''
+            if screen and screen not in screens:
+                problems.append('%s: screen is not a replica screen: %s' % (sw, screen))
+            if screen and screen not in offered:
+                problems.append('%s: stands on %s, which the scenario does not '
+                                'list in `screens`' % (sw, screen))
+            if 'try' in modes and not (screen or entry_screen):
+                problems.append('%s: try-capable scenario, and this step stands '
+                                'on no replica screen' % sw)
+
+            # THE GUARD RULE. `guard` is mandatory on a click step and there is
+            # no default: a default is a decision nobody made, and the decision
+            # is which controls a tutorial is allowed to press.
+            guard = step.get('guard')
+            if act == 'click':
+                if guard is None:
+                    problems.append(
+                        '%s: a click step must state guard: true or guard: false. '
+                        'True when pressing writes; if in doubt, guard.' % sw)
+                elif guard is False:
+                    verbs = _writes(step)
+                    if verbs:
+                        problems.append(
+                            '%s: guard: false on a control whose name says it %s. '
+                            'A tutorial may not press that for somebody.'
+                            % (sw, '/'.join(verbs)))
+            elif guard:
+                problems.append('%s: guard on a %s step means nothing — guard is '
+                                'about a click the engine might make' % (sw, act))
+
+            if act == 'input':
+                if 'try' not in modes:
+                    problems.append('%s: an input step needs a replica to type '
+                                    'into, and this scenario is not try-capable' % sw)
+                if not step.get('value'):
+                    problems.append('%s: an input step must say what is typed' % sw)
+                if 'do' in modes:
+                    problems.append('%s: input steps are not playable in "do" — '
+                                    'the engine will not type into real records' % sw)
+
+            say = step.get('say') or {}
+            node['steps'].append({
+                'key': skey,
+                'anchor': anchor,
+                'nav': nav,
+                'screen': screen,
+                'act': act,
+                'guard': bool(guard),
+                'timeout': int(step.get('timeout') or 0),
+                'kicker': bi.p('%s kicker' % sw, say.get('kicker')),
+                'title': bi.p('%s title' % sw, say.get('title')),
+                'body': bi.p('%s body' % sw, say.get('body')),
+                'tip': bi.p('%s tip' % sw, say.get('tip')),
+                'value': bi.p('%s value' % sw, step.get('value')),
+            })
+
+        if not node['steps']:
+            problems.append('%s: no steps' % where)
+        out.append(node)
+
+    if problems:
+        print('SCENARIOS: %d problem(s).' % len(problems))
+        for p in problems:
+            print('  %s' % p)
+        raise SystemExit(6)
+
+    # Storage order is declaration order; journey.js groups by line and uses its
+    # own LINE_ORDER for the page, exactly as it does for stations.
+    return out
+
+
 def content_global_suggest(intents):
     """What the Coach can answer ANYWHERE.
 
@@ -803,12 +1082,16 @@ def content_global_suggest(intents):
 
 def gen_content(data, bi, live):
     """The whole static content plane, as one JSON document."""
-    intents = content_intents(data, bi, live)
+    # Scenarios FIRST: an intent's `show_me` may now name one, and a target
+    # that points at a walkthrough nobody wrote is a button that opens nothing.
+    scenarios = content_scenarios(data, bi)
+    intents = content_intents(data, bi, live, scenarios)
     by_key = {i['key']: i for i in intents}
     tree = {
         'chrome': content_chrome(data, bi),
         'stations': content_stations(data, bi),
         'missions': content_missions(data, bi),
+        'scenarios': scenarios,
         'glossary': content_glossary(data, bi),
         'intents': intents,
         'screens': content_screens(data, bi, live, by_key),

@@ -17,12 +17,13 @@ Four directions, because a one-way check rots from the other side:
 misspelling of a real one, and without this direction it just silently points
 at nothing.
 
-(4) is Payobook-specific. pb_coach's tours and PayAI were pointing at
-``data-coach`` anchors years before this module existed. Two of them —
-``pw-division`` and ``pw-compute`` — are genuinely shared, and the registry
-owns those. Everything else in ``foreign`` belongs to somebody else and must
-stay that way; a registry entry that quietly adopts one is how two modules end
-up believing they are allowed to rename the same control.
+(4) is Payobook-specific. Formula Studio, the payroll-formula wizards and PayAI
+were all pointing at ``data-coach`` anchors years before this module existed.
+Seven of Formula Studio's are PROMOTED — the registry owns the NAME while that
+module owns the template — and everything else in ``foreign`` belongs to
+somebody else and must stay that way; a registry entry that quietly adopts one
+is how two modules end up believing they are allowed to rename the same
+control.
 """
 import json
 import os
@@ -31,7 +32,7 @@ import re
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
-from .common import load_content, lesson_steps, mission_steps
+from .common import load_content, lesson_steps, mission_steps, scenario_steps
 
 DATA_COACH_RE = re.compile(r'data-coach="([^"{}#]+)"')
 ATTF_RE = re.compile(r't-attf-data-coach="([^"]*)"')
@@ -41,51 +42,28 @@ ATTF_RE = re.compile(r't-attf-data-coach="([^"]*)"')
 JS_COMMENT_RE = re.compile(r'/\*.*?\*/|(?<!:)//[^\n]*', re.S)
 XML_COMMENT_RE = re.compile(r'<!--.*?-->', re.S)
 
-# Anchors the registry is ALLOWED to own even though a `foreign` entry also
-# matches them. Everything else in anchors.json's `foreign` map is someone
-# else's, and (4) below fails if the registry quietly adopts one.
-#
-# Two groups, for two different reasons:
-#
-#   pw-division / pw-compute  are pointed at by pb_coach's tour_payrun AND by
-#   this module. Genuinely shared; neither may rename one alone.
-#
-#   the six fs-*              were PROMOTED out of the `fs-*` wildcard in Phase
-#   B1, because L5 names them and an anchor a lesson points at has to be one a
-#   test can check. All six are in pb_coach's hero_path and tour_formula, so
-#   they are shared on exactly the pw-* terms. pb_learn adds NOTHING to
-#   studio.xml — promotion is a claim about ownership of a name, not a change
-#   to somebody else's template.
-#
-#   the three dash-*          were promoted in Phase C1 on the same terms: LW is
-#   hero_path's successor and hero_path still points at dash-hero, dash-kpis and
-#   dash-formula, so neither module may rename one alone. pb_learn adds NOTHING
-#   to pb_dashboard.xml either.
-#
-# NOT HERE, deliberately: `fs-simulate` and `dash-runpayroll`. Both are in a
-# product template and named by a lesson, and NO TOUR POINTS AT EITHER — so
-# there is nothing shared about them. Listing them made this set mean "promoted"
-# rather than "shared with pb_coach", and a set whose name stops matching its
-# contents is one nobody can reason about when the next anchor is promoted.
-# They are ordinary `product` entries, checked by test_01 like every other.
-SHARED_WITH_PB_COACH = {
-    'pw-division', 'pw-compute',
-    'fs-config', 'fs-components', 'fs-formula', 'fs-namesletters', 'fs-deps',
-    'fs-preview',
-    'dash-hero', 'dash-kpis', 'dash-formula',
-}
-
 # Anchors the registry owns OUTRIGHT that a `foreign` WILDCARD still matches.
-# `fs-simulate` is in studio.xml, L5 names it, and no tour points at it — so it
-# is not shared with anybody; it is simply inside a family (`fs-*`) whose other
-# members are. The wildcard cannot be narrowed without listing pb_formula_studio's
-# entire anchor set here, which would be a copy of somebody else's template.
 #
-# Kept separate from SHARED_WITH_PB_COACH on purpose: that set means "pb_coach
-# points at this too", and test_07 asserts the claim in both directions. A name
-# in here makes no claim about another module at all, so test_07 must NOT
-# require a `foreign` entry for it.
-PROMOTED_FROM_WILDCARD = {'fs-simulate'}
+# All seven are in pb_formula_studio's studio.xml, all seven are named by L5 or
+# by the sc_formula scenario, and pb_learn adds NOTHING to that template —
+# promotion is a claim about ownership of a NAME, never an edit to somebody
+# else's file. They have to be listed because the `fs-*` wildcard cannot be
+# narrowed without copying pb_formula_studio's entire anchor set into this file,
+# which would be a second, stale copy of their template.
+#
+# THE OTHER SET IS GONE. Until LEARNOS Phase 1b there was a `SHARED_WITH_PB_COACH`
+# beside this one, meaning "the guided-tour module points at this too, so
+# neither of us may rename it alone", and it held pw-division, pw-compute, three
+# dash-* and six of the seven below. That module has been deleted and its tours
+# are pb_learn scenarios now, so every one of those names has exactly one
+# claimant and the `foreign` entries recording the shared claim went with it. A
+# set whose name has stopped matching its contents is one nobody can reason
+# about (ledger, Phase C review round 2) — so it was removed rather than
+# renamed to mean something it never said.
+PROMOTED_FROM_WILDCARD = {
+    'fs-config', 'fs-components', 'fs-formula', 'fs-namesletters', 'fs-deps',
+    'fs-preview', 'fs-simulate',
+}
 
 
 def _read(module_and_path):
@@ -197,6 +175,11 @@ class TestAnchorRegistry(TransactionCase):
                                   + "\n  ".join(missing))
 
     # -- 2. every anchor the content names is registered ------------------
+    # LESSONS AND MISSIONS ONLY. A lesson runs over the replica and a mission
+    # points at the replica's controls, so both may only name something this
+    # module owns or draws. Scenarios are the exception and have their own
+    # direction in test_09 — they walk the real product, including three other
+    # modules' templates, where pointing is not owning.
     def test_04_content_anchors_are_registered(self):
         declared = self._all_declared()
         unknown = []
@@ -240,13 +223,14 @@ class TestAnchorRegistry(TransactionCase):
     def test_06_registry_does_not_claim_a_foreign_anchor(self):
         claimed = []
         for key in self._all_declared():
-            if key in SHARED_WITH_PB_COACH or key in PROMOTED_FROM_WILDCARD:
+            if key in PROMOTED_FROM_WILDCARD:
                 continue
             if self._is_foreign(key):
                 claimed.append('%s -> owned by %s' % (key, self.foreign.get(key, 'another module')))
         self.assertFalse(claimed,
                          "The registry claims anchors another module owns. Renaming one of "
-                         "these breaks a pb_coach tour or PayAI without any test in EITHER "
+                         "these breaks Formula Studio, a payroll wizard or PayAI without any "
+                         "test in EITHER "
                          "module noticing:\n  " + "\n  ".join(claimed))
 
     # -- 5. an anchor is either used or declared unused ---------------------
@@ -282,6 +266,15 @@ class TestAnchorRegistry(TransactionCase):
         for _mission, mstep in mission_steps(self.content):
             if mstep['target']:
                 referenced.add(mstep['target'])
+        # A SCENARIO STEP'S ANCHOR is a content reference on exactly the same
+        # terms, and it arrived with the six ported tours in Phase 1b. Without
+        # this loop a product anchor could be reserved AND spotlit by a
+        # walkthrough at the same time, which is the flag decaying into an
+        # exemption nobody granted — the failure the test's other direction
+        # exists to prevent.
+        for _scenario, step in scenario_steps(self.content):
+            if step.get('anchor'):
+                referenced.add(step['anchor'])
 
         undeclared, stale = [], []
         for key, spec in self.product.items():
@@ -299,21 +292,51 @@ class TestAnchorRegistry(TransactionCase):
                          "a reserved marker that survives its content is an exemption "
                          "nobody decided to grant:\n  " + "\n  ".join(sorted(stale)))
 
-    def test_07_shared_anchors_are_declared_shared_in_both_directions(self):
-        """pw-division and pw-compute are ours AND pb_coach's.
+    def test_07_promoted_anchors_are_still_inside_their_wildcard(self):
+        """The seven fs-* are ours by NAME and pb_formula_studio's by template.
 
-        Written down in both places or it is written down in neither: the next
-        person to touch that template needs to see both claims from either
-        side.
+        Both halves have to stay true or the exemption stops meaning anything:
+        the registry has to own the key (`product`), and a `foreign` wildcard
+        has to still match it — otherwise the name has left the family and the
+        exemption is protecting nothing.
+
+        `_is_foreign`, not a literal lookup: the claim is a WILDCARD. A
+        literal-key assertion here reported seven perfectly-documented anchors
+        as undeclared for two phases, and could not be seen because there is no
+        odoo-bin on the authoring machine.
         """
-        for key in SHARED_WITH_PB_COACH:
+        for key in PROMOTED_FROM_WILDCARD:
             self.assertIn(key, self.product,
-                          "%s is shared with pb_coach but the registry does not own it" % key)
-            # `_is_foreign`, not a literal lookup: a foreign claim may be a
-            # WILDCARD. The seven fs-* are covered by the `fs-*` entry, whose
-            # description names them one by one — a literal-key assertion here
-            # said they were undeclared while the registry documented them
-            # perfectly well, and it could not be caught before this run because
-            # there is no odoo-bin on the authoring machine.
+                          "%s is promoted but the registry does not own it" % key)
             self.assertTrue(self._is_foreign(key),
-                            "%s is owned by pb_coach too but `foreign` does not say so" % key)
+                            "%s is exempted from the foreign check but no foreign "
+                            "entry matches it — drop it from PROMOTED_FROM_WILDCARD"
+                            % key)
+
+    # -- 6. scenarios point at controls that are DECLARED somewhere ---------
+    def test_09_scenario_anchors_are_declared(self):
+        """A scenario step may point at an anchor this module does not own.
+
+        Three of the six ported walkthroughs cross into pb_formula_studio's grid
+        and pb_hr_payroll_formula's wizards, which are other people's templates
+        — pointing is not owning, and requiring a `product` entry for each would
+        make pb_learn claim the right to rename controls in four modules.
+
+        What IS required is that the name is declared in SOME block, so a typo
+        is a failure rather than a spotlight on nothing. The generator enforces
+        the same rule at authoring time; this is the same comparison after
+        generation, which is where a hand-edited content plane would show up.
+        """
+        unknown = []
+        for scenario, step in scenario_steps(self.content):
+            key = step.get('anchor')
+            if not key:
+                continue
+            if (key in self._all_declared() or self._matches_pattern(key)
+                    or self._is_foreign(key)):
+                continue
+            unknown.append('%s (scenario %s step %s)'
+                           % (key, scenario['key'], step['key']))
+        self.assertFalse(unknown,
+                         "Scenario steps point at anchors nothing declares:\n  "
+                         + "\n  ".join(sorted(set(unknown))))

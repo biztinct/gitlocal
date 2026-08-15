@@ -31,9 +31,16 @@ upgrade carries the old links across (see migrations/19.0.9.0.0).
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
 
-# The namespace that tells a mission key from a station key. One namespace, so
-# the frontend's progress map has one shape.
+# The namespaces that tell a mission or a scenario key from a station key. One
+# map, one shape: the frontend reads `progress[key]` and never has to know which
+# kind of thing it completed.
 MISSION_PREFIX = 'mission:'
+# LEARNOS Phase 1b. A scenario is completed like a lesson and is not one: it
+# runs over the real product or over the replica, has no understanding check,
+# and the same authored steps can be taken three different ways. Namespacing it
+# keeps `unique(user_id, key)` meaning what it says — one row per learner per
+# thing — without a second table that would duplicate every rule about scoping.
+SCENARIO_PREFIX = 'scenario:'
 
 
 class LearnProgress(models.Model):
@@ -49,7 +56,8 @@ class LearnProgress(models.Model):
     # the two are different things a learner completes, and giving missions
     # their own table would duplicate every rule about scoping and resume.
     key = fields.Char(required=True, index=True,
-                      help="A learn.content station key, or 'mission:<key>'.")
+                      help="A learn.content station key, 'mission:<key>' or "
+                           "'scenario:<key>'.")
     state = fields.Selection(
         selection=lambda self: self._selection_state(),
         required=True, default='not_started')
@@ -85,20 +93,27 @@ class LearnProgress(models.Model):
 
     @api.model
     def _declared(self, key):
-        """True when the content plane actually ships this station or mission.
+        """True when the content plane ships this station, mission or scenario.
 
         The foreign key used to answer this. Asking the content directly keeps
         the same refusal — an unknown key writes nothing and returns False —
         without a table to join to.
+
+        THE ORDER OF THE TWO PREFIX TESTS DOES NOT MATTER and the namespaces do:
+        a scenario key that fell through to `content.station(key)` would be
+        refused, silently, and the learner's Watch/Try/Do progress would never
+        be written on any tenant — which is a failure with no error anywhere.
         """
         content = self.env['learn.content']
         if (key or '').startswith(MISSION_PREFIX):
             return bool(content.mission(key[len(MISSION_PREFIX):]))
+        if (key or '').startswith(SCENARIO_PREFIX):
+            return bool(content.scenario(key[len(SCENARIO_PREFIX):]))
         return bool(content.station(key))
 
     @api.model
     def record(self, station_key, values):
-        """Upsert this user's progress for one station or mission.
+        """Upsert this user's progress for one station, mission or scenario.
 
         Always writes as the calling user, never sudo: a learner updating their
         own progress is the only write path, and the record rule is what proves
@@ -168,6 +183,16 @@ class LearnEvent(models.Model):
             # stored — so the signal would have been missing without anything
             # saying so.
             ('lesson_deeplink', self.env._('Lesson opened from a deep link')),
+            # LEARNOS Phase 1b — scenarios. The MODE rides in `detail`
+            # (`<key>:<mode>`), because the question these rows exist to answer
+            # is not "did anybody run it" but "which of the three ways do
+            # people actually take, and where do they stop". An undeclared kind
+            # is dropped by `log` rather than raised, so a kind that is missing
+            # from this list is a signal that never arrives and never complains.
+            ('scenario_start', self.env._('Scenario started')),
+            ('scenario_step', self.env._('Scenario step')),
+            ('scenario_complete', self.env._('Scenario completed')),
+            ('scenario_abandon', self.env._('Scenario abandoned')),
         ]
 
     # -- append-only ------------------------------------------------------

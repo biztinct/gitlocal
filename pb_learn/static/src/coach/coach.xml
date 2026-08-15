@@ -7,7 +7,8 @@
      behind the drawer stays readable and clickable, because the whole reason
      someone opens this is that they are stuck on that screen.
 
-     The launcher is bottom-right, stacked ABOVE PayAI's pill and pb_coach's
+     The launcher is bottom-right, stacked ABOVE PayAI's pill and (until the
+     deploy-time uninstall) the retired guided-tour module's
      FAB — see coach.scss. Those two are not modified and not hidden: a demo
      user gets all three, deliberately. -->
 <t t-name="pb_learn.CoachHost">

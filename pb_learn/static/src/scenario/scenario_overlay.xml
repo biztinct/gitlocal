@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- The scenario overlay: the spotlight, the card, nothing else.
+
+     NOTE WHAT IS NOT HERE: no backdrop that takes clicks, no focus trap, no
+     modal. In Do mode the learner has to press the very control the spotlight
+     is drawn around, so the root is `pointer-events: none` and only the card
+     takes a click. The dimming is one box-shadow spread on the hole, which
+     paints and never intercepts.
+
+     The overlay owns its own copy of the icon sprite for the same reason the
+     Coach does: it mounts on every screen, including the ones the Journey is
+     not rendered on, and a surface that borrows somebody else's sprite draws
+     empty circles the day it is opened somewhere new. -->
+<t t-name="pb_learn.ScenarioOverlay">
+    <div class="lrn-scoverlay" t-if="state.active" t-on-click="onClick">
+
+        <t t-call="pb_learn.IconSprite"/>
+
+        <div class="lrn-scspot" t-if="ui.hasTarget" t-att-style="spotStyle"/>
+
+        <div class="lrn-sccard" t-ref="card" role="region" aria-live="polite"
+             t-att-class="{ centred: !ui.hasTarget }"
+             t-att-style="ui.hasTarget ? cardStyle : ''">
+            <div t-out="headerHTML"/>
+            <div class="lrn-scmeter"><i t-attf-style="width:{{progressPct}}%"/></div>
+            <div class="lrn-scbody" t-out="bodyHTML"/>
+            <div t-out="toolsHTML"/>
+        </div>
+    </div>
+</t>
+
+</templates>

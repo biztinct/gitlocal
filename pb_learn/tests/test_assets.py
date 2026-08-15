@@ -17,7 +17,12 @@ from .common import load_content
 # template literals included.
 BRACE_SPACE_RE = re.compile(r"\$\{[^{}]*\}[ ]+(?=\S)")
 
-JS_DIRS = ('static/src/engine', 'static/src/journey', 'static/src/coach')
+# EVERY directory that builds HTML from template literals. `static/src/
+# scenario` arrived in LEARNOS Phase 1b and the overlay it holds is mounted
+# on every screen in the product — a minifier-eaten space there is visible
+# to every user, not only to a learner who opened the Journey.
+JS_DIRS = ('static/src/engine', 'static/src/journey', 'static/src/coach',
+           'static/src/scenario', 'static/src/live')
 
 
 @tagged('post_install', '-at_install')
@@ -138,7 +143,8 @@ class TestAssets(TransactionCase):
             # `ic("…")` scan cannot see, and a missed one renders as a gap.
             used |= set(re.findall(r'\bblock\("([a-z0-9-]+)"', src))
             used |= set(re.findall(r'\bkpiTile\("([a-z0-9-]+)"', src))
-        for tmpl in ('static/src/journey/journey.xml', 'static/src/coach/coach.xml'):
+        for tmpl in ('static/src/journey/journey.xml', 'static/src/coach/coach.xml',
+                     'static/src/scenario/scenario_overlay.xml'):
             with open(os.path.join(base, tmpl), encoding='utf-8') as fh:
                 used |= set(re.findall(r'href="#lrn-i-([a-z0-9-]+)"', fh.read()))
 
@@ -159,6 +165,10 @@ class TestAssets(TransactionCase):
         content = load_content()
         named = {s['icon'] for s in content['stations'] if s['icon']}
         named |= {m['icon'] for m in content['missions'] if m['icon']}
+        # A SCENARIO's icon is the same kind of value for the same reason: an
+        # author chose it, no source literal carries it, and a typo renders as a
+        # card with a hole where its icon should be.
+        named |= {c['icon'] for c in (content.get('scenarios') or []) if c['icon']}
         missing = sorted(named - available)
         self.assertFalse(missing,
                          "Content names icons the sprite does not have: %s" % missing)
@@ -172,7 +182,8 @@ class TestAssets(TransactionCase):
         that looks broken, no error anywhere.
         """
         base = get_module_path('pb_learn')
-        surfaces = ('static/src/journey/journey.xml', 'static/src/coach/coach.xml')
+        surfaces = ('static/src/journey/journey.xml', 'static/src/coach/coach.xml',
+                    'static/src/scenario/scenario_overlay.xml')
         missing = []
         for rel in surfaces:
             with open(os.path.join(base, rel), encoding='utf-8') as fh:

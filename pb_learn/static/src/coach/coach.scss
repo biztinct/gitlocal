@@ -10,10 +10,10 @@
 .lrn-coachhost {
     position: fixed;
     inset: auto 0 0 auto;
-    /* Above the app, below Odoo's own dialogs — and below pb_coach's launcher
-       (1990) so that on a demo tenant the two never fight for the same click.
-       They COEXIST by design (design_v2 §2): PayAI is the data copilot,
-       pb_coach runs the demo tour, this is the learning surface. */
+    /* Above the app, below Odoo's own dialogs — and below the retired
+       guided-tour launcher (1990) so that on a tenant where it is still
+       installed the two never fight for the same click. PayAI is the data
+       copilot; this is the learning surface. */
     z-index: 1040;
     pointer-events: none;   /* only the launcher and drawer are clickable */
 
@@ -27,15 +27,16 @@
     /* THE STACK, bottom-right, measured off the controls that are actually
        there — CSS only, because none of them may be modified:
          PayAI pill      .payai-floating-pill   bottom 24px, ~48px tall
-         pb_coach FAB    .pbc-launcher          bottom 92px, 48px tall
+         retired tour FAB .pbc-launcher         bottom 92px, 48px tall
          this launcher                          bottom 160px
-       Three controls while pb_coach is installed, and TWO once it is not —
-       Phase C2 retires it. The offset is therefore decided at runtime from
-       whether the pb_coach SERVICE exists (first_login.js sets
-       body.pb-coach-absent), so both deploy states render correctly and there
-       is no moment where the corner has a hole in it. The default is the
-       three-control stack: a wrong guess that leaves a gap is better than one
-       that overlaps a live button. */
+       Three controls while that module is still installed, and TWO once it
+       is not. Its files left the repository in LEARNOS Phase 1b and the
+       database uninstall is the deploy step, so BOTH states must still render
+       and there is no moment where the corner has a hole in it. The offset is
+       decided at runtime from whether the SERVICE exists — first_login.js sets
+       body.pb-coach-absent — and the default is the three-control stack: a
+       wrong guess that leaves a gap is better than one that overlaps a live
+       button. */
     bottom: 160px;
     display: flex;
     align-items: center;
@@ -75,7 +76,7 @@
 
 .lrn-fablabel { line-height: 1; }
 
-/* pb_coach uninstalled: its 92px slot is empty, so this launcher drops into it
+/* The tour module uninstalled: its 92px slot is empty, so this launcher drops into it
    and the corner reads as two controls rather than two and a hole.
 
    DECLARED HERE, ABOVE THE MEDIA QUERIES, and the order is the whole point.
@@ -193,6 +194,32 @@ body.pb-coach-absent .lrn-fab { bottom: 92px; }
     letter-spacing: .07em;
     text-transform: uppercase;
     color: var(--vuf-muted, #6B7280);
+}
+
+/* "Show me how" — the scenarios for the screen behind the drawer.
+   Above the suggested questions and visually heavier than them, because a
+   walkthrough of the screen in front of you is a better first offer than a
+   list of questions about it. One button per MODE: watch, try and do are three
+   different promises about who presses, not one scenario with a setting. */
+.lrn-cscens { margin-bottom: 12px; }
+
+.lrn-cscen {
+    margin-bottom: 6px;
+    padding: 9px 11px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-left: 3px solid var(--vuf-primary, #1565C0);
+    border-radius: var(--vuf-r-sm, 10px);
+
+    .lrn-cscentitle {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+    .lrn-ic { width: 14px; height: 14px; flex: 0 0 auto; color: var(--vuf-primary, #1565C0); }
+    .lrn-cscenmodes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
 }
 
 .lrn-cq {

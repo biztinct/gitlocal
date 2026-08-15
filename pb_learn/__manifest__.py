@@ -36,6 +36,15 @@ server through `learn.content`. Fourteen content models and their data files
 are gone. The only learning tables left are learner state: progress, events,
 confidence, consent and stored questions, plus the eight tenant slots.
 
+LEARNOS Phase 1b adds SCENARIOS: one authored walkthrough of a real task that
+can be taken three ways — Watch it on the real screens, Try it on the practice
+replica, Do it live with the engine waiting before anything is written. The six
+guided tours that used to live in a separate module are ported into it and that
+module is gone; `static/src/scenario/` is what replaced it. A step whose press
+WRITES carries a `guard`, and the engine is structurally incapable of pressing
+one: there is a single `.click()` in the module and no code path reaches it
+with a guarded step.
+
 Design: docs/tutorial_poc/design_v2.html
 Authoring surface: docs/tutorial_poc/author/ (content is generated from it,
 never hand-edited here).
@@ -91,11 +100,23 @@ never hand-edited here).
     'assets': {
         'web.assets_backend': [
             'pb_learn/static/src/journey/journey.scss',
+            # Scenario chrome: the overlay on the real product AND the Journey's
+            # scenario cards, which is why it loads with the Journey's own
+            # stylesheet rather than beside the overlay's JS.
+            'pb_learn/static/src/scenario/scenario.scss',
             # The static content plane's loader. Before everything that reads
             # it: the Journey, the Coach and the live runner all compose their
             # own bundle from (the JSON) + (learn.runtime.bootstrap).
             'pb_learn/static/src/content/content_loader.js',
             'pb_learn/static/src/engine/*.js',
+            # The scenario state machine. BEFORE the Journey and the Coach:
+            # both look it up as a service, and the overlay it drives is
+            # registered in main_components rather than through the WebClient
+            # patch — one insertion point per kind of surface, and this one is
+            # core and untouched by pb_sidebar.
+            'pb_learn/static/src/scenario/scenario_service.js',
+            'pb_learn/static/src/scenario/scenario_overlay.js',
+            'pb_learn/static/src/scenario/scenario_overlay.xml',
             'pb_learn/static/src/journey/journey.js',
             'pb_learn/static/src/journey/icons.xml',
             'pb_learn/static/src/journey/journey.xml',

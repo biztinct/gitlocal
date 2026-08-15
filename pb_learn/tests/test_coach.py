@@ -330,9 +330,19 @@ class TestCoach(TransactionCase):
         def known(key):
             return key in declared or key.startswith(patterns)
 
+        # LEARNOS Phase 1b: a `show_me` target may be a SCENARIO instead of an
+        # anchor — `scenario:<key>` or `scenario:<key>#<stepKey>`. Those are not
+        # controls and have nothing to look up here; the generator validates
+        # them against the walkthroughs and their step keys, which is the only
+        # place that comparison can be made. Skipped, and COUNTED, so this test
+        # cannot quietly become a test of nothing if every target is upgraded.
+        scenario_targets = 0
         unknown = []
         for intent in self.intents:
             for a in intent['show_me']:
+                if a.startswith('scenario:'):
+                    scenario_targets += 1
+                    continue
                 if a and not known(a):
                     unknown.append('%s show_me=%s' % (intent['key'], a))
             for block in intent['blocks']:
@@ -342,6 +352,14 @@ class TestCoach(TransactionCase):
                                        % (intent['key'], step['anchor']))
         self.assertFalse(unknown, "Coach anchors nothing registers:\n  "
                                   + "\n  ".join(sorted(set(unknown))))
+        anchor_targets = sum(1 for i in self.intents for a in i['show_me']
+                             if not a.startswith('scenario:'))
+        self.assertGreater(anchor_targets, 0,
+                           "every show_me is a scenario now, so this test checks "
+                           "nothing — move the assertion or delete it")
+        self.assertGreater(scenario_targets, 0,
+                           "no intent points at a walkthrough, so the skip above "
+                           "is protecting a case that does not exist")
 
     def test_14_every_screen_can_actually_be_detected(self):
         """A screen the Coach cannot recognise is a whole screen's content,

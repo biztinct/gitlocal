@@ -162,7 +162,7 @@ export const SCREENS = {
     /* --------------------------------------------------------- Dashboard
        The anchors here are the REAL dashboard's — dash-hero, dash-runpayroll,
        dash-kpis, dash-formula. They have been in pb_dashboard.xml since before
-       this module existed (pb_coach's hero_path points at three of them); Phase
+       this module existed (the retired hero tour pointed at three of them); Phase
        C1 promoted them out of the registry's `foreign` block into `product`,
        because LW names them and an anchor a lesson points at has to be one a
        test can check. pb_learn adds NOTHING to that template.

@@ -361,15 +361,42 @@ Remember to use the PayAI color palette and choose the best chart type for this 
     # an envelope that only understood the new form would silently drop every
     # "Show me" for as long as that lasted.
     #
+    # LEARNOS PHASE 1b: THE TOURS NOW HAVE TWO SUCCESSORS EACH, AND THIS MAP
+    # STILL POINTS AT THE LESSON. The tour module was deleted and its six tours
+    # were ported into pb_learn SCENARIOS — `hero_path` is `sc_welcome`,
+    # `tour_payrun` is `sc_payrun`, `tour_payslips` is `sc_payslips`,
+    # `tour_formula` is `sc_formula`, `tour_import` is `sc_import` and
+    # `tour_mapping` is `sc_mapping` — so for every entry below there is now a
+    # walkthrough that is a closer descendant of the tour than the lesson is.
+    # Every entry still lands on the LESSON, decided per entry and for two
+    # reasons that hold for all six:
+    #
+    #   · THE ENVELOPE CANNOT SAY IT. `_sanitize_action` emits exactly one
+    #     shape, `open_lesson`, and the browser opens the Journey with
+    #     `context.lesson`. Re-pointing an entry at `sc_payrun` would put a
+    #     scenario key in a field named `lesson`, fail the whitelist below, and
+    #     be dropped — a button that opens nothing. A scenario envelope is a
+    #     change to the sanitizer and to `ai_insight_chat.js`, which is a
+    #     separate piece of work with its own trust boundary to re-argue.
+    #   · A LESSON IS THE BETTER LANDING FOR A QUESTION. Somebody arrives here
+    #     by ASKING, and a lesson answers: it is bilingual, it runs where
+    #     nothing can matter, it ends on a judgement check and it records
+    #     completion. A Watch of the real product answers "where is that", which
+    #     is what the Coach's own "Show me how" section now offers on the screen
+    #     the person is already standing on — reached in one press, without a
+    #     language model in the path.
+    #
     #   hero_path      -> LW   the Dashboard welcome; LW is its direct successor
-    #   tour_payrun    -> L1   run a pay run, division to submit
-    #   tour_formula   -> L5   read a division's formula configuration
-    #   tour_payslips  -> L3   read a payslip line by line
+    #                          (sc_welcome is the Watch of the same ground)
+    #   tour_payrun    -> L1   run a pay run, division to submit (sc_payrun)
+    #   tour_formula   -> L5   read a division's formula configuration (sc_formula)
+    #   tour_payslips  -> L3   read a payslip line by line (sc_payslips)
     #   tour_import    -> L4   the import confidence score and fixing rows
+    #                          (sc_import)
     #   tour_mapping   -> L5   NOT L4: the mid/end mapping wizard pairs COMPONENTS
     #                          across two formula configurations, which is L5's
     #                          subject. L4 is about attendance files and would
-    #                          send the asker to the wrong desk.
+    #                          send the asker to the wrong desk. (sc_mapping)
     _TOUR_TO_LESSON = {
         'hero_path': 'LW',
         'tour_payrun': 'L1',

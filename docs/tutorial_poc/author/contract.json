@@ -226,24 +226,25 @@
       ]
     },
     {
-      "id": "shared-anchors-still-shared",
+      "id": "scenario-payrun-anchors",
       "kind": "contains",
-      "why": "pw-division and pw-compute belong to pb_coach's tours AND to this registry. Either module removing one breaks the other silently, in a file neither team reads — the registry's `foreign` block records the shared claim and this is the check behind it.",
+      "why": "pw-division and pw-compute are the two controls a pay run turns on, and three surfaces name them: the wizard template that lays them, the L1 lesson and m1 mission that point at them on the replica, and — since LEARNOS Phase 1b — the sc_payrun scenario, which points at them on the REAL screen in Watch and waits on the compute in Do. This check used to read pb_coach's tour_payrun.js as the second claimant; that module was deleted in 1b and its tours became these scenarios, so the check is retargeted to the authoring source rather than dropped. A control renamed in the template with the scenario still pointing at it is a Do step that waits forever for a press that can never be observed.",
       "files": [
         "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
-        "pb_coach/static/src/js/tours/tour_payrun.js"
+        "docs/tutorial_poc/author/data.js"
       ],
       "expect": [
         "data-coach=\"pw-division\"",
         "data-coach=\"pw-compute\"",
-        "selector: '[data-coach=\"pw-division\"]'",
-        "selector: '[data-coach=\"pw-compute\"]'"
+        "anchor: \"pw-division\"",
+        "anchor: \"pw-compute\""
       ],
       "fixture": [],
       "taughtIn": [
         "L1 step 2 and step 5",
         "mission m1 division and consequence steps",
-        "anchors.json foreign block"
+        "scenario sc_payrun steps division and compute",
+        "anchors.json product block"
       ]
     },
     {
@@ -756,7 +757,7 @@
     {
       "id": "dashboard-anchors",
       "kind": "contains",
-      "why": "pb_learn adds NOTHING to pb_dashboard.xml — LW points at four attributes that were already there, and the registry has now promoted them out of the `foreign` block into `product`. That promotion is a claim about somebody else's template, and three of the four are ALSO pointed at by pb_coach's hero_path, so it is checked at authoring time as well as by the module's own registry test.",
+      "why": "pb_learn adds NOTHING to pb_dashboard.xml — LW points at four attributes that were already there, and the registry has now promoted them out of the `foreign` block into `product`. That promotion is a claim about somebody else's template, and three of the four are ALSO walked by the sc_welcome scenario, which replaced the hero tour that used to be the other claimant, so it is checked at authoring time as well as by the module's own registry test.",
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
       "expect": [
         "data-coach=\"dash-hero\"",
@@ -769,7 +770,7 @@
         "LW steps 1-4",
         "the dashboard replica in engine/screens.js",
         "anchors.json product block",
-        "pb_coach/static/src/js/tours/hero_path.js"
+        "scenario sc_welcome steps hero, kpis, engine"
       ]
     },
     {
@@ -1152,6 +1153,104 @@
       "taughtIn": [
         "chrome strings consentTitle / consentBody / consentYes / consentNo",
         "tests/test_questions.py"
+      ]
+    },
+    {
+      "id": "scenario-nav-actions-exist",
+      "kind": "contains",
+      "why": "SCENARIO_NAV is a promise about somebody else's module: every xmlid a scenario may navigate to must still be declared where we last saw it. A renamed action would otherwise fail silently at runtime as a console.warn and a walkthrough that opens nothing.",
+      "files": [
+        "pb_dashboard/views/pb_dashboard_action.xml",
+        "pb_payrun_wizard/views/pb_payrun_wizard_action.xml",
+        "pb_payruns/views/hr_payslip_run_kanban.xml",
+        "pb_payslip_review/views/pb_payslip_review_action.xml",
+        "pb_formula_studio/views/pb_formula_studio_action.xml",
+        "pb_import/views/pb_import_action.xml",
+        "pb_statutory/views/pb_statutory_action.xml"
+      ],
+      "expect": [
+        "id=\"action_pb_dashboard\"",
+        "id=\"action_pb_payrun_wizard\"",
+        "id=\"action_pb_payruns_kanban\"",
+        "id=\"action_pb_payslip_review\"",
+        "id=\"action_pb_formula_studio\"",
+        "id=\"action_pb_import\"",
+        "id=\"action_pb_statutory\""
+      ],
+      "fixture": [
+        "SCENARIO_NAV (gen_learn_data.py)"
+      ],
+      "taughtIn": [
+        "every scenario entry.nav / step nav"
+      ]
+    },
+    {
+      "id": "scenario-anchors-exist",
+      "kind": "contains",
+      "why": "The six ported walkthroughs point at controls in FOUR other modules — the Formula Studio cockpit and its spreadsheet grid, the multi-sheet importer and the mid/end mapping wizard. pb_learn owns none of those templates and adds nothing to them, so every one of these names is a claim about somebody else's file. The module's own registry test can only prove the name is DECLARED; this is the half that proves it is still THERE. A renamed control here is a Watch step that spotlights nothing and a Do step that waits for a press it can never see.",
+      "files": [
+        "pb_formula_studio/static/src/xml/studio.xml",
+        "pb_formula_studio/static/src/xml/grid_studio.xml",
+        "pb_hr_payroll_formula/wizards/multisheet_wizard_views.xml",
+        "pb_hr_payroll_formula/wizards/payroll_cycle_component_mapping_wizard_views.xml"
+      ],
+      "expect": [
+        "data-coach=\"fs-arrows\"",
+        "data-coach=\"fs-card\"",
+        "data-coach=\"fs-add\"",
+        "data-coach=\"fs-views\"",
+        "data-coach=\"fs-view-grid\"",
+        "data-coach=\"fs-flow\"",
+        "data-coach=\"fs-editai\"",
+        "data-coach=\"fs-payai\"",
+        "data-coach=\"grid-canvas\"",
+        "data-coach=\"grid-fbar\"",
+        "data-coach=\"grid-hint\"",
+        "data-coach=\"imp-confidence\"",
+        "data-coach=\"imp-actions\"",
+        "data-coach=\"map-intro\"",
+        "data-coach=\"map-actions\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "scenario sc_formula",
+        "scenario sc_import",
+        "scenario sc_mapping",
+        "anchors.json foreign wildcards fs-* grid-* imp-* map-*"
+      ]
+    },
+    {
+      "id": "guarded-steps-never-autoclick",
+      "kind": "contains",
+      "within": "_watchAutoClick",
+      "why": "THE PROMISE OF THE WHOLE SCENARIO ENGINE, pinned where it is kept. There is exactly one synthesised press in pb_learn — the `el.click()` in `_watchAutoClick` — and a guarded step must have no code path to it. Two things make that structural rather than careful, and both are pinned here: the function's FIRST statement re-asks the guard and the mode and returns having done nothing if either has changed, and the timer's callback asks again at the moment of the press, because a step can change under an async gap. A guard checked once at the branch is a guard checked once.",
+      "file": "pb_learn/static/src/scenario/scenario_overlay.js",
+      "expect": [
+        "const step = this.step;",
+        "if (!step || step.guard || !this.isWatch) {",
+        "if (!now || now !== step || now.guard || !this.isWatch) {",
+        "el.click();"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the mode-behaviour matrix in LEARNOS_PHASE1B_HANDOVER.md",
+        "pb_learn/tests/test_scenario.py::test_02"
+      ]
+    },
+    {
+      "id": "watch-mode-never-clicks-guarded",
+      "kind": "absent",
+      "within": "_enterStep",
+      "why": "The other end of the same promise, asserted as an ABSENCE because that is its shape: the step-entry method may not press anything itself. It decides — watch-and-unguarded goes to the one function that presses, everything else goes to the listener that waits — and a press written inline here would bypass the re-asked guard entirely while every other check stayed green. NOTE TO THE NEXT READER: the tokens below are pinned as absent, so do not write them in a comment inside this method to explain the rule (ledger: an absent check greps the comments too, and this trap has been sprung three times).",
+      "file": "pb_learn/static/src/scenario/scenario_overlay.js",
+      "expect": [
+        "el.click(",
+        "target.click(",
+        "dispatchEvent("
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the mode-behaviour matrix in LEARNOS_PHASE1B_HANDOVER.md"
       ]
     }
   ],
