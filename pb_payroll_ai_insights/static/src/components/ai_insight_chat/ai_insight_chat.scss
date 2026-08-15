@@ -887,6 +887,100 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
     i { font-size: 13px; }
 }
 
+// ── Read-aloud toggle (LEARNOS Phase 6) ──
+//
+// Same shape as the microphone beside it, quieter until it is ON: it is a
+// preference, not an action, and a control that shouts about itself in the
+// off state is one people switch on to make it stop.
+
+.payai-tts-btn {
+    width: 40px;
+    height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 12px;
+    color: rgba($primary-color, 0.55);
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover { background: rgba($primary-color, 0.06); color: $primary-color; }
+    &.on { color: $primary-color; background: rgba($primary-color, 0.1); }
+
+    i { font-size: 16px; }
+}
+
+// ── Voice consent, asked once ──
+//
+// It sits ABOVE the input area and below the transcript: the person is being
+// asked before anything is recorded, and a card over the answer they came for
+// would be a toll gate on help (the same ruling pb_learn made for its own
+// consent card).
+
+.payai-voice-consent {
+    margin: 0 16px 10px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1.5px solid rgba($primary-color, 0.18);
+    background: rgba($primary-color, 0.04);
+}
+
+.payai-voice-consent-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: $primary-color;
+}
+
+.payai-voice-consent-body {
+    margin: 8px 0 12px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #475467;
+}
+
+.payai-voice-consent-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    button {
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid rgba($primary-color, 0.25);
+    }
+}
+
+.payai-voice-yes {
+    background: $primary-color;
+    border-color: $primary-color !important;
+    color: #fff;
+}
+
+.payai-voice-no {
+    background: transparent;
+    color: $primary-color;
+}
+
+.payai-voice-hint,
+.payai-voice-error {
+    margin: -2px 16px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.payai-voice-hint { color: #475467; }
+.payai-voice-error { color: $danger-color; }
+
 // ============================================
 // RESPONSIVE
 // ============================================

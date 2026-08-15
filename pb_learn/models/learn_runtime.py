@@ -16,8 +16,180 @@ views have always read (`static/src/content/content_loader.js`). Phase A shipped
 two content-bearing calls — `learn.station.get_bundle` and
 `learn.intent.coach_bundle` — and both are gone: the Journey used to wait on a
 round trip that rebuilt 1,260 bilingual leaves out of the ORM on every open.
+
+LEARNOS PHASE 6 ADDS TWO ANSWERS, AND BOTH ARE COMPUTED HERE FOR THE SAME
+REASON: they are about ONE learner and they must not leave the server.
+
+  * `next_best()` — "what should I learn next". A decision over this user's own
+    progress rows and the content plane. No model is asked; no prompt is built;
+    nothing about it is sent anywhere. The reason sentence is AUTHORED, one per
+    rule, in both languages, so the learner is told why this one.
+  * `streak()` — consecutive days with at least one learning event, counted in
+    the learner's own time zone from their own rows.
+
+NO CROSS-USER DATA, ANYWHERE IN EITHER. Neither reads another person's rows,
+neither compares, and there is no ranking, no league and no notification. A
+broken streak resets quietly and nothing says a word about it.
+
+Both are behind their own tenant flags and both are OFF when the flag is
+absent, which is what an untouched database has.
 """
-from odoo import api, models
+from datetime import timedelta
+
+import pytz
+
+from odoo import api, fields, models
+
+from .learn_progress import MISSION_PREFIX
+from .learn_question import _flag_on
+
+# Tenant flags. Absent means off — see `_flag_on` (learn_question.py), which is
+# the same reader the composer and question mining use.
+NEXT_BEST_FLAG = 'pb_learn.next_best_enabled'
+SKILL_TREE_FLAG = 'pb_learn.skill_tree_enabled'
+
+# How far back the streak counter looks. A streak longer than this is still
+# reported as "at least this many", which is well past the point where the
+# number stops being information — the display caps at 7 anyway.
+STREAK_WINDOW_DAYS = 60
+STREAK_CAP = 7
+
+
+# ---------------------------------------------------------------------------
+# THE TWO DECISIONS, AS PURE FUNCTIONS
+#
+# Module level, taking plain data, for the reason the prompt builders in PayAI
+# are: there is no odoo-bin on the authoring machine, and a rule nobody has
+# ever executed is a rule nobody has checked. `tests/test_nextbest.py` runs
+# every row of the decision table and every time-zone edge of the streak
+# against these, offline, with no database anywhere near them.
+# ---------------------------------------------------------------------------
+def reading_order(stations, line_order):
+    """Stations in the order the map draws them.
+
+    A line missing from `line_order` sorts AFTER the ones in it rather than
+    disappearing — the same rule journey.js applies, and for the same reason:
+    a section must never be able to vanish because somebody forgot a file.
+    """
+    order = {key: i for i, key in enumerate(line_order or [])}
+    return sorted(
+        stations,
+        key=lambda s: (order.get(s.get('line'), len(order)),
+                       s.get('sequence') or 0, s.get('key') or ''))
+
+
+def choose_next(stations, missions, progress, line_order,
+                gate_open=False, skip=()):
+    """THE DECISION TABLE. Returns (key, kind, line, reason_key).
+
+    Five rules, tried in order, and the order is the teaching:
+
+      1. RESUME     something is half-done. Nothing else can be more useful
+                    than the thing the learner already started.
+      2. FINISH THE LINE   the section closest to having its REQUIRED work
+                    done, so the map gains a finished row rather than five
+                    half-finished ones.
+      3. REQUIRED   the next station the map asks for, in reading order.
+      4. CAPSTONE   the live mission — offered ONLY when the demo-world gate is
+                    open, because everywhere else it is a mission the learner
+                    could never complete.
+      5. OPTIONAL   the required work is done; here is something useful.
+
+    …and then `none`, which is a real answer: somebody who has finished
+    everything should be told so, not handed a card at random.
+
+    RULES 2 AND 3 COUNT REQUIRED STATIONS ONLY, and that is a decision worth
+    stating rather than a detail. Counting optional ones too was the first
+    draft and it made rule 4 unreachable in practice: with six sections and an
+    optional station in most of them, SOME line is always partly done, so
+    "finish the line" fired forever and the live capstone — the one piece of
+    real work in the whole programme — was never offered until every last
+    outline had been read. A section is finished when it has taught what it
+    says it must; the extras are rule 5's job.
+
+    TIES ARE BROKEN BY READING ORDER, always, so two learners in the same state
+    get the same suggestion and a reload does not shuffle it.
+
+    `skip` is the set of stations this tenant cannot open at all (their leaf's
+    module is not installed). A suggestion nobody can act on is worse than no
+    suggestion.
+    """
+    skip = set(skip or ())
+    ordered = [s for s in reading_order(stations, line_order)
+               if s.get('key') not in skip]
+
+    def state(key):
+        return (progress.get(key) or {}).get('state') or 'not_started'
+
+    # 1. resume
+    for station in ordered:
+        if state(station['key']) == 'in_progress':
+            return station['key'], 'station', station.get('line'), 'nbResume'
+
+    # 2. finish the line the learner is closest to finishing
+    lines = {}
+    for station in ordered:
+        if station.get('required'):
+            lines.setdefault(station.get('line'), []).append(station)
+    best_line, best_ratio = None, 0.0
+    for line, bucket in lines.items():
+        done = sum(1 for s in bucket if state(s['key']) == 'done')
+        if not done or done == len(bucket):
+            continue
+        ratio = done / float(len(bucket))
+        # STRICTLY GREATER, so a tie keeps the FIRST line in reading order —
+        # `ordered` built the buckets, and Python keeps insertion order. Two
+        # learners in the same state get the same suggestion, and so does the
+        # same learner after a reload.
+        if ratio > best_ratio:
+            best_line, best_ratio = line, ratio
+    if best_line is not None:
+        for station in lines[best_line]:
+            if state(station['key']) != 'done':
+                return station['key'], 'station', best_line, 'nbFinishLine'
+
+    # 3. the next required station
+    for station in ordered:
+        if station.get('required') and state(station['key']) != 'done':
+            return station['key'], 'station', station.get('line'), 'nbRequired'
+
+    # 4. the live capstone, and only where it can actually be done
+    if gate_open:
+        for mission in missions or []:
+            if mission.get('kind') != 'live':
+                continue
+            if state(MISSION_PREFIX + mission['key']) != 'done':
+                return mission['key'], 'mission', mission.get('line'), 'nbCapstone'
+
+    # 5. anything left
+    for station in ordered:
+        if state(station['key']) != 'done':
+            return station['key'], 'station', station.get('line'), 'nbOptional'
+
+    return None, 'none', None, 'nbAllDone'
+
+
+def streak_days(days, today):
+    """Consecutive days ending today — or ending yesterday, because the day is
+    not over yet.
+
+    `days` is a set of `date`s in the LEARNER's time zone; `today` is their
+    today. Somebody who learned yesterday and has not opened the app yet this
+    morning still has their streak: ending it at midnight would punish the
+    hour, not the habit. Somebody who last learned two days ago has none, and
+    nothing anywhere says so — a broken streak just is not there.
+    """
+    days = set(days or ())
+    if not days:
+        return 0
+    cursor = today if today in days else today - timedelta(days=1)
+    if cursor not in days:
+        return 0
+    count = 0
+    while cursor in days:
+        count += 1
+        cursor -= timedelta(days=1)
+    return count
 
 
 class LearnRuntime(models.AbstractModel):
@@ -169,6 +341,105 @@ class LearnRuntime(models.AbstractModel):
             out[tag] = Live.render(text.get(tag) or '', fb)
         return out
 
+    # -------------------------------------------- what to learn next (P6)
+    @api.model
+    def next_best(self, skip=None):
+        """One suggestion, with the reason it was chosen, in both languages.
+
+        EVERY MODEL THIS METHOD TOUCHES IS `learn.*`.
+        `contract.json::next-best-reads-learn-only` parses this method and the
+        helpers it calls as `self.x(...)` — one level — and refuses any
+        `self.env['x.y']` outside the namespace. **That is a TRIPWIRE, not
+        containment**, and the difference is worth stating where somebody
+        might rely on it: a read two helpers down, behind a variable, or on
+        another model's method is outside what the scan can see. What makes
+        the promise true is this method being short enough to read; what the
+        check does is stop it drifting by accident.
+        The one delegation that leaves the namespace by design is
+        `learn.live.gate_open()`, which asks the real group and the real
+        company — the same question the capstone's own predicates ask, and the
+        reason the capstone is not offered to somebody who could never finish
+        it.
+
+        Own rows only: `learn.progress.my_progress()` filters on `env.uid` and
+        the record rule filters again underneath it. No other learner's state
+        is read, compared or counted anywhere in this file.
+
+        Returns `{}` when the flag is off, so the surfaces draw nothing rather
+        than a strip explaining that a feature is unavailable.
+        """
+        if not _flag_on(self.env, NEXT_BEST_FLAG):
+            return {}
+        Content = self.env['learn.content']
+        progress = self.env['learn.progress'].my_progress()
+        gate_open = self.env['learn.live'].gate_open()
+        key, kind, line, reason_key = choose_next(
+            Content.stations(), Content.missions(), progress,
+            Content.line_order(), gate_open, skip or self._unreachable_keys())
+        return {
+            'key': key or '',
+            'kind': kind,
+            'line': line or '',
+            'reason_key': reason_key,
+            # The sentence is AUTHORED, one per rule, and shipped in both
+            # languages like every other string a learner reads. Both are sent
+            # because the Journey's own toggle decides which one is shown, and
+            # it can change without another round trip.
+            'reason': {
+                'en': Content.chrome_text(reason_key, 'en_US'),
+                'vi': Content.chrome_text(reason_key, 'vi_VN'),
+            },
+        }
+
+    @api.model
+    def _unreachable_keys(self):
+        """Stations whose sidebar leaf's module is not installed here.
+
+        A suggestion the learner cannot act on is worse than none. Reuses the
+        same `env.ref` probe `bootstrap` uses for `missing`.
+        """
+        out = set()
+        for station in self.env['learn.content'].stations():
+            key = station.get('sidebar_key')
+            if key and not self.env.ref(key, raise_if_not_found=False):
+                out.add(station['key'])
+        return out
+
+    # ------------------------------------------------------- streaks (P6)
+    @api.model
+    def streak(self):
+        """`{'days': n, 'display': '7+'|str(n)}` for THIS learner.
+
+        COMPUTED IN THE LEARNER'S OWN TIME ZONE, and the choice matters: a
+        payroll officer in Ho Chi Minh City who studies at nine in the evening
+        is on the next UTC day, so a UTC count would break their streak every
+        single night. `occurred_at` is stored UTC-naive, as everything in Odoo
+        is; `res.users.tz` is what turns it into a day. A user with no tz set
+        falls back to UTC, which is the same answer Odoo gives everywhere else.
+
+        DERIVED, NEVER STORED. There is no streak column, no "best streak",
+        nothing to lose and nothing to be told off about.
+        """
+        if not _flag_on(self.env, SKILL_TREE_FLAG):
+            return {}
+        tz = pytz.timezone(self.env.user.tz or 'UTC')
+        since = fields.Datetime.subtract(fields.Datetime.now(),
+                                         days=STREAK_WINDOW_DAYS)
+        rows = self.env['learn.event'].search_read(
+            [('user_id', '=', self.env.uid), ('occurred_at', '>=', since)],
+            ['occurred_at'])
+        days = {pytz.utc.localize(r['occurred_at']).astimezone(tz).date()
+                for r in rows if r.get('occurred_at')}
+        today = pytz.utc.localize(fields.Datetime.now()).astimezone(tz).date()
+        count = streak_days(days, today)
+        return {
+            'days': count,
+            # The cap lives here rather than in the page, so the one place that
+            # decides what a long streak looks like is also the place a test
+            # can read.
+            'display': '%d+' % STREAK_CAP if count > STREAK_CAP else str(count),
+        }
+
     # ------------------------------------------------------------ the call
     @api.model
     def bootstrap(self):
@@ -243,4 +514,14 @@ class LearnRuntime(models.AbstractModel):
             # hint, not a control — `learn.question.create` is the gate, and a
             # stale bootstrap can only ever fail closed.
             'collect_questions': self.env['learn.question']._collect_enabled(),
+            # LEARNOS Phase 6. Both ride along with the call the Journey and
+            # the Coach already make, so a tenant with the flags off pays for
+            # neither: `next_best` and `streak` return `{}` before touching a
+            # row, and the surfaces draw nothing at all. No extra round trip
+            # anywhere, which is also why the Coach's "not sure" state can
+            # offer the same suggestion the map does without asking again.
+            'next_best': self.next_best(),
+            'streak': self.streak(),
+            'line_order': Content.line_order(),
+            'skill_tree': _flag_on(self.env, SKILL_TREE_FLAG),
         }

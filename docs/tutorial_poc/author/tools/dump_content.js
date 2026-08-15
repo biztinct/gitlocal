@@ -48,6 +48,7 @@ const out = {
     /* content */
     i18n: grab("I18N"),
     glossary: grab("GLOSSARY"),
+    lineOrder: grab("LINE_ORDER"),
     stations: grab("STATIONS"),
     lessons: grab("LESSONS"),
     morphs: grab("MORPHS"),

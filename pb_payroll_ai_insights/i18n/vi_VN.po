@@ -104,3 +104,93 @@ msgstr "bức tranh tổng quan về lương"
 #: model:ir.model,name:pb_payroll_ai_insights.model_payroll_data_query
 msgid "the payroll history a forecast is built from"
 msgstr "dữ liệu lịch sử lương dùng để lập dự báo"
+
+# LEARNOS Phase 6 — the voice seam. Same contract as the Phase D1
+# refusals above: every sentence a user READS ships in both languages, and
+# tests/test_egress.py::test_04d re-derives this list from the AST of
+# payroll_ai_conversation.py rather than trusting it. test_04f then runs the
+# register rules over both languages — short sentences, no jargon, and the
+# Vietnamese rules the pb_learn gate enforces on its own content.
+# ONE NAME FOR THE THIRD PARTY, in both languages: "an outside company's
+# speech service" / "dịch vụ chuyển giọng nói thành chữ". Two names for one
+# thing in a consent notice is a reader wondering how many there are.
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "PayAI Chat"
+msgstr "Trò chuyện PayAI"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "Send recordings for transcription?"
+msgstr "Gửi bản ghi âm đi để chuyển thành chữ?"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "Hold the microphone and speak. When you let go, the recording goes to an outside company's speech service, which turns it into text. The recording is audio: unlike text, we cannot take names out of it first. The text then waits in the box — nothing is asked or answered until you read it and press send. Say no and the microphone stays off. Everything else works the same."
+msgstr "Bạn giữ nút micrô rồi nói. Khi bạn thả tay, bản ghi âm sẽ được gửi tới dịch vụ chuyển giọng nói thành chữ của một công ty bên ngoài. Đây là âm thanh: khác với chữ, chúng tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "Yes, send my recordings"
+msgstr "Đồng ý, gửi bản ghi âm của tôi"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "No, keep the microphone off"
+msgstr "Không, tắt micrô"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "Hold to speak"
+msgstr "Giữ để nói"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "This is what I heard. Edit it, then press send."
+msgstr "Đây là phần tôi nghe được. Bạn sửa lại nếu cần, rồi bấm gửi."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "Read answers aloud"
+msgstr "Đọc to câu trả lời"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "I could not turn that into text. Please try typing."
+msgstr "Tôi không chuyển được phần đó thành chữ. Bạn thử gõ giúp tôi nhé."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "Voice input is switched off for this database."
+msgstr "Tính năng nhập bằng giọng nói đang tắt trên cơ sở dữ liệu này."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "Voice input needs your agreement first."
+msgstr "Nhập bằng giọng nói cần bạn đồng ý trước."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "No speech service is set up here."
+msgstr "Ở đây chưa cấu hình dịch vụ chuyển giọng nói thành chữ."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "That recording did not arrive in one piece."
+msgstr "Bản ghi âm đó về không nguyên vẹn."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "That recording is too long. Try a shorter one."
+msgstr "Bản ghi âm đó quá dài. Bạn thử ghi ngắn hơn nhé."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "That recording was empty."
+msgstr "Bản ghi âm đó rỗng."
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model,name:pb_payroll_ai_insights.model_payroll_ai_conversation
+msgid "I did not catch anything in that recording."
+msgstr "Tôi không nghe được gì trong bản ghi âm đó."

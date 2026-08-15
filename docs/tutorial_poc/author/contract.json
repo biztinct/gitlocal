@@ -1363,19 +1363,117 @@
     {
       "id": "payai-history-never-goes-out-raw",
       "kind": "contains",
-      "why": "CONVERSATION HISTORY IS AN EARLIER ANSWER WITH THE NAMES PUT BACK INTO IT. `restore_deep` re-inserts real employee names for the reader who is entitled to them, and the next turn used to hand those same messages straight back to the provider on all four paths. Three of the four never build a mapping at all, so they get `generic_scrub`; the data path gets the mapping as well. The per-path count is asserted in tests/test_egress.py::test_01g — what this pins is that both call shapes still exist in the file at all, so deleting one cannot pass on the strength of the other. RESIDUAL, disclosed rather than fixed here: a name from an earlier turn that is absent from the CURRENT query's result is only reached by the generic patterns, because the mapping is per-call. Closing it needs a per-conversation mapping, which is a schema change with its own retention question — Phase 6, beside the voice and PDF-report egress work.",
+      "why": "CONVERSATION HISTORY IS AN EARLIER ANSWER WITH THE NAMES PUT BACK INTO IT. `restore_deep` re-inserts real employee names for the reader who is entitled to them, and the next turn used to hand those same messages straight back to the provider on all four paths. LEARNOS PHASE 6 REWROTE THIS CHECK TO THE NEW PROMISE rather than deleting it (a check that fails for a correct reason teaches the next author to delete checks): the mapping is no longer per-call, it is the CONVERSATION's — loaded from `payroll.ai.conversation.redaction_map`, extended by whatever this query read, saved back — and all four paths redact their history turns through it. With no conversation the mapping is empty and `redact_text` degrades to exactly the generic scrub the three non-data paths used to call, so nothing regresses on a caller with no session. That closes the Phase 4 residual: a person restored into turn 2's answer is removed from turn 3's history even though turn 3 asked about something else. What is still open, and stated in ai_redaction.py rather than here alone: the CURRENT message goes out raw on the knowledge, onboarding and general paths.",
       "files": [
         "pb_payroll_ai_insights/models/payroll_ai_engine.py"
       ],
       "expect": [
         "\"content\": redact_text(msg.get('content', ''), mapping),",
-        "\"content\": generic_scrub(msg.get('content', '')),",
-        "\"content\": generic_scrub(msg.get('content', ''))})"
+        "\"content\": redact_text(msg.get('content', ''), mapping)})",
+        "mapping = self._conversation_mapping(context)"
       ],
       "fixture": [],
       "taughtIn": [
         "pb_payroll_ai_insights/tests/test_egress.py::test_01g",
+        "pb_payroll_ai_insights/tests/test_egress.py::test_01h",
         "ai_redaction.py residual list"
+      ]
+    },
+    {
+      "id": "payai-report-prompt-is-redacted",
+      "kind": "contains",
+      "why": "THE PHASE-4 RULING, ENFORCED AT AUTHORING TIME. `payroll_ai_report`'s two provider calls were dead for four phases because they asked for a factory method that does not exist, and Phase 4 deliberately LEFT them dead: `_generate_section_narratives` puts the salary section's data in a prompt, and that data is a list of employees with their job titles and their wages, so repairing the lookup alone would have switched on a third unredacted egress path. Phase 6 does both halves in one change and this pins both: the lookup that exists, the redaction helper that every section's data goes through, and the restore that puts the people back for the reader — who generated the PDF and has already passed the query layer's access gate. FIX ROUND: the accumulator is created once in `action_generate_report` and threaded through the sections, the narratives and the executive summary, so the one-mapping claim is now true rather than asserted; and the Anomaly Alerts section's stored `summary` — prose this module put the names back INTO before saving it, under a key the collector does not treat as a person — is redacted against a mapping extended from that alert's own details, or dropped when that provenance cannot be checked.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_report.py",
+      "expect": [
+        "config.get_provider()",
+        "redact_sections(sections, mapping)",
+        "redact_names(section.get('data') or {},",
+        "restore_names(narrative.strip(), mapping)",
+        "restore_names(summary.strip(), mapping)",
+        "mapping.update(extended)",
+        "redact_text(summary, mapping)",
+        "summary_is_traceable(raw.get('category'), parsed, names)",
+        "person_keys=PERSON_KEYS - {'name'}"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_02e",
+        "pb_payroll_ai_insights/tests/test_egress.py::test_02f",
+        "pb_payroll_ai_insights/tests/test_egress.py::test_02f2",
+        "pb_payroll_ai_insights/tests/test_egress.py::test_02h",
+        "pb_payroll_ai_insights/tests/test_redaction.py::test_04l",
+        "pb_payroll_ai_insights/tests/test_redaction.py::test_04n"
+      ]
+    },
+    {
+      "id": "payai-voice-is-consent-gated",
+      "kind": "contains",
+      "why": "RAW AUDIO IS THE ONE EGRESS IN THIS MODULE THAT CANNOT BE REDACTED. A recording is a person's voice saying a colleague's name and there is no placeholder for either, so the control is a gate rather than a scrub: a tenant flag that is OFF when absent, plus that user's own recorded consent, both re-asked on the server because the endpoint is reachable by RPC from anything holding a session. The consent copy names the recording, the third party and the fact that we cannot take names out of audio first — a consent that does not name what leaves is a button.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_conversation.py",
+      "expect": [
+        "if not flag_on(self.env, VOICE_FLAG):",
+        "if not Consent.voice_granted():",
+        "def rpc_transcribe_voice",
+        "def rpc_voice_status"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_04",
+        "pb_payroll_ai_insights/tests/test_data_access.py::test_06d",
+        "pb_payroll_ai_insights/models/payroll_ai_consent.py"
+      ]
+    },
+    {
+      "id": "payai-voice-never-auto-submits",
+      "kind": "absent",
+      "within": "rpc_transcribe_voice",
+      "why": "THE OLD ENDPOINT TRANSCRIBED AND THEN SENT, so a mis-heard sentence reached a language model before the person who said it had seen it. The replacement returns the text to the speaker and the learner presses send themselves, over the ordinary path with the ordinary redaction. That is a property of the method, not a promise about it: nothing inside it can submit, and this check plus tests/test_egress.py::test_04b is what stops one being added. The negative control was executed — putting `rpc_send_message` back inside the method fails both.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_conversation.py",
+      "expect": [
+        "rpc_send_message",
+        "process_message",
+        "add_message",
+        "generate_chat",
+        "text_to_speech"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_04b"
+      ]
+    },
+    {
+      "id": "next-best-reads-learn-only",
+      "kind": "model-scope",
+      "within": "next_best",
+      "why": "\"WHAT SHOULD I LEARN NEXT\" IS A LOCAL COMPUTATION AND MUST STAY ONE. The whole personalisation feature is a decision made on this server, over one learner's own progress rows, with nothing sent to any model and nothing read about anybody else. The promise is a NAMESPACE, not a list of forbidden tables, so it is asked the general way the composer's corpus is asked: parse the method AND the helpers it calls literally as `self.x(...)` (one level), collect every `self.env['x.y']` literal, and refuse anything outside `learn.`. A scan that finds no model at all also fails, so hiding the reads behind a variable breaks the build rather than passing quietly. THIS IS A TRIPWIRE, NOT CONTAINMENT, and saying so is part of shipping it (ledger, Phase 5): a read two helpers down, through a variable, in a module-level function or on another model's method is outside what it can see. It catches what somebody writes by accident. One delegation leaves the namespace by design and is named rather than hidden: `learn.live.gate_open()` asks the real group and the real company, which is the same question the live capstone's own predicates ask and the reason the capstone is not offered to somebody who could never finish it.",
+      "file": "pb_learn/models/learn_runtime.py",
+      "expect": [
+        "learn."
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/tests/test_nextbest.py",
+        "models/learn_runtime.py::next_best"
+      ]
+    },
+    {
+      "id": "journey-line-order-is-authored-once",
+      "kind": "contains",
+      "why": "THE MAP'S READING ORDER HAS TWO READERS SINCE PHASE 6 — the page draws it and `learn.runtime.next_best()` walks it — and two copies of an order is the shape this ledger keeps recording (a gate that rebuilds the table it gates drifts from it). It is authored HERE, in data.js, dumped by dump_content.js and emitted into the content plane as `line_order`; journey.js keeps the same literal only as the fallback for a stale bundle, and `test_nextbest::test_15` fails if that fallback and the shipped content ever disagree. This pins the authored source and the generator's emission, which is the half a source-level test in pb_learn cannot see.",
+      "files": [
+        "docs/tutorial_poc/author/data.js",
+        "docs/tutorial_poc/author/tools/gen_learn_data.py",
+        "docs/tutorial_poc/author/tools/dump_content.js"
+      ],
+      "expect": [
+        "const LINE_ORDER = [\"overview\", \"payrun\", \"people\", \"insights\", \"compliance\", \"setup\"];",
+        "'line_order': list(data.get('lineOrder') or [])",
+        "lineOrder: grab(\"LINE_ORDER\")"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/tests/test_nextbest.py::test_15",
+        "pb_learn/models/learn_content.py::line_order"
       ]
     }
   ],

@@ -266,6 +266,76 @@
     }
 }
 
+/* LEARNOS Phase 6 — "Continue".
+   One row, above the sections and below the toolbar: it is the answer to a
+   question the map otherwise makes the learner answer for themselves, and it
+   reads as an offer rather than as an instruction. Same surface, line and
+   radius as a station card, so it belongs to the page instead of shouting at
+   it; the left rule is the one borrowed emphasis. */
+.lrn-continue {
+    display: flex;
+    align-items: center;
+    gap: var(--vuf-sp-3, 12px);
+    padding: var(--vuf-sp-4, 16px);
+    margin-bottom: var(--vuf-sp-5, 20px);
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-left: 3px solid var(--vuf-primary, #1565C0);
+    border-radius: var(--vuf-r-md, 12px);
+
+    .lrn-clabel {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--vuf-muted, #6B7280);
+    }
+
+    .lrn-cardtitle { font-weight: 700; }
+    .lrn-btn { margin-left: auto; flex-shrink: 0; }
+
+    /* Finished everything: the same row, in the done colour, with no button
+       on it. It is a statement, not an offer. */
+    &.done {
+        background: var(--vuf-ok-bg, #E7F6EF);
+        border-left-color: var(--vuf-ok, #12805C);
+    }
+}
+
+/* The streak chip. A count and a tooltip, and deliberately nothing else: no
+   colour that changes as it grows, no warning as it is about to lapse, no
+   notification anywhere in the module. */
+.lrn-chip.streak {
+    gap: 4px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Per-section ring on the line heading — the same flat two-stop conic dial as
+   the hero ring, smaller. Not a second idiom. */
+.lrn-lineprog {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.lrn-ring.sm {
+    width: 20px;
+    height: 20px;
+
+    span { width: 14px; height: 14px; }
+}
+
+.lrn-linecount {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--vuf-muted, #6B7280);
+    font-variant-numeric: tabular-nums;
+}
+
 .lrn-line { margin-bottom: var(--vuf-sp-6, 24px); }
 
 .lrn-linehead {
@@ -303,6 +373,24 @@
     &:focus-visible { outline: none; box-shadow: var(--vuf-sh-ring); }
     &.star { border-left: 3px solid var(--vuf-primary, #1565C0); }
     &.done { background: var(--vuf-ok-bg, #E7F6EF); }
+
+    /* LEARNOS Phase 6 — the done TIER, a top rule and nothing more.
+       Three solid colours, no gradient, no medal graphic and no animation:
+       the celebration is still the tick that `finish()` already draws, once.
+       Bronze is not a rebuke — it is the ordinary, common case, and it is
+       drawn as quietly as the other two. */
+    &.t-bronze { box-shadow: inset 0 3px 0 0 #A97142; }
+    &.t-silver { box-shadow: inset 0 3px 0 0 #9AA4B2; }
+    &.t-gold   { box-shadow: inset 0 3px 0 0 #C9962B; }
+}
+
+.lrn-chip.tier {
+    &.bronze { color: #8A5A34; border-color: rgba(169, 113, 66, .35); }
+    &.silver { color: #5B6472; border-color: rgba(154, 164, 178, .45); }
+    &.gold   { color: #8A6413; border-color: rgba(201, 150, 43, .45); }
+}
+
+.lrn-card {
 
     /* "Start here" — the demo first-login greeting's one gesture. A ring that
        breathes three times and stops: enough to find the card in a grid of

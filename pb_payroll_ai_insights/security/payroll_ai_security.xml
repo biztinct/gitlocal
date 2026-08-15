@@ -61,6 +61,20 @@
             <field name="groups" eval="[(4, ref('group_payai_user'))]"/>
         </record>
 
+        <!-- LEARNOS Phase 6 — voice consent is the user's own row and nobody
+             else's business. Deliberately NOT extended to the PayAI manager
+             rule below: a manager who can read this table can assemble the
+             list of people who refused, and the same ruling was made for
+             `learn.consent` in pb_learn (whose authors get no read rule on it
+             either). Scoped to every internal user because the row is created
+             by the person it is about. -->
+        <record id="rule_payai_consent_own" model="ir.rule">
+            <field name="name">PayAI: own consent row only</field>
+            <field name="model_id" ref="model_payroll_ai_consent"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
         <!-- Managers see all -->
         <record id="rule_conversation_manager" model="ir.rule">
             <field name="name">PayAI: Manager sees all conversations</field>

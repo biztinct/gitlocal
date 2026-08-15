@@ -257,6 +257,27 @@ missing test", contract checker discipline, anchor registry discipline). Read th
 - (Phase 5) With every keydown on document-capture, REGISTRATION ORDER decides Escape —
   a glossaryOpen() stand-down in every surface makes the layering explicit instead of
   load-order luck. Scenario step `value` pairs are learner-facing prose: gated now.
+- (Phase 6) **Tone folding is not injective: fold may be a LOOKUP, never an IDENTITY** — a
+  fold-keyed dedupe merged diacritic-neighbour employees (Hùng/Hưng) and sent the second
+  person's name out in full. **A string the module has run restore_names over is a person
+  key in everything but name** — generated prose (pulse summaries) needs PROVENANCE (redact
+  its source record, redact the sentence against that mapping) or gets dropped, never sent
+  raw. One-mapping-across-the-document needs ONE accumulator passed in, and the test drives
+  the shipped function. A model-scope check names its DEPTH (one literal self.x() level) and
+  calls itself a tripwire.
+- (Phase 6) A hand-maintained .po is CONTENT and takes the register gate (test over the
+  AST-derived literal list when no generator exists). A consent notice is scoped to the
+  right half (the recording goes on release; the TEXT waits for send) and names its third
+  party ONCE per language. MediaRecorder.stop() fires onstop async — the discard flag is
+  set BEFORE the stream is released and re-asked in the callback. Server-side ceilings
+  before b64decode. next_best/streak: flags return {} before any row read; streaks count in
+  the learner's timezone; all-done gets TOLD so (an authored string with no render site is
+  dead weight).
+- (Phase 6, PRODUCT TICKETS) rule_conversation_manager [(1,'=',1)] lets PayAI managers read
+  every conversation + its redaction_map — ownership model is a product decision, raise
+  separately. rpc_send_message/rpc_clear_history browse-without-ownership-check
+  (pre-existing). Pay Runs kanban vs cockpit done-state actions still disagree (Phase 4
+  ticket, still open).
 - (Phase 2, accepted nits for later touch) live_mission.js still `esc(tx())` on step.detail
   (no glossary cards, literal <b> tags there); glossify idempotence guard keys on the
   literal `data-gloss=`; gloss_scan payload ignores matchTerm (over-fails only); the 17-28

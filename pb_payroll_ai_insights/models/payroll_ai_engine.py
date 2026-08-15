@@ -198,6 +198,15 @@ class PayrollAIEngine(models.Model):
         """
         context = context or {}
         conversation_history = conversation_history or []
+        # THE CONVERSATION'S OWN PLACEHOLDER TABLE (LEARNOS Phase 6).
+        #
+        # Loaded once per question and handed to whichever path runs, so that
+        # every history turn is redacted against every person this
+        # conversation has ever named — not only the ones this query happened
+        # to return. Empty dict when there is no conversation (a caller with
+        # no session, and the test harness), which degrades exactly to the
+        # generic scrub the three non-data paths had before.
+        mapping = self._conversation_mapping(context)
 
         try:
             provider = self._get_provider()
@@ -213,13 +222,17 @@ class PayrollAIEngine(models.Model):
 
             # Step 2: Process based on intent
             if intent == 'payroll_data':
-                return self._process_data_query(provider, message, conversation_history, context)
+                return self._process_data_query(
+                    provider, message, conversation_history, context, mapping)
             elif intent == 'payroll_knowledge':
-                return self._process_knowledge_query(provider, message, conversation_history)
+                return self._process_knowledge_query(
+                    provider, message, conversation_history, mapping)
             elif intent == 'onboarding':
-                return self._process_onboarding_query(provider, message, conversation_history, context)
+                return self._process_onboarding_query(
+                    provider, message, conversation_history, context, mapping)
             else:
-                return self._process_general_query(provider, message, conversation_history)
+                return self._process_general_query(
+                    provider, message, conversation_history, mapping)
 
         except UserError:
             raise
@@ -232,6 +245,59 @@ class PayrollAIEngine(models.Model):
                 'follow_up_questions': [],
                 'intent': 'error',
             }
+
+    # ------------------------------------------------ the conversation table
+    @api.model
+    def _conversation(self, context):
+        """The conversation this question belongs to, or an empty recordset.
+
+        An id rather than a recordset crosses the RPC boundary, and an id that
+        names nothing (a stale browser tab, a cleared session) must degrade to
+        "no mapping" rather than raise inside somebody's question.
+        """
+        conv_id = (context or {}).get('conversation_id')
+        if not conv_id:
+            return self.env['payroll.ai.conversation'].browse()
+        return self.env['payroll.ai.conversation'].browse(int(conv_id)).exists()
+
+    @api.model
+    def _conversation_mapping(self, context):
+        """This conversation's table, or an empty one.
+
+        `process_message` is an `@api.model` entry point, so the id in the
+        context is whatever the caller sent. The record rule below it already
+        refuses another user's conversation — what that refusal must not do is
+        become a traceback in the middle of somebody's question, so it degrades
+        to "no mapping", which is Phase 5's behaviour. Note the direction of
+        the failure: a mapping that fails to load makes the redaction do LESS
+        matching, never more, and a mapping belonging to somebody else could
+        only ever remove names that are not there.
+        """
+        try:
+            conversation = self._conversation(context)
+            return conversation.load_redaction_map() if conversation else {}
+        except Exception as exc:                                # noqa: BLE001
+            _logger.warning("PayAI: could not load the redaction map: %s", exc)
+            return {}
+
+    @api.model
+    def _persist_mapping(self, context, mapping):
+        """Save the extended table back onto the conversation.
+
+        Called on the DATA path only, because that is the only path that can
+        learn a new name: the other three never read a record. A failure here
+        must not lose the answer — the mapping is a privacy improvement across
+        turns, and a database hiccup writing it is not a reason to hand the
+        user an error instead of their chart.
+        """
+        conversation = self._conversation(context)
+        if not conversation:
+            return False
+        try:
+            return conversation.store_redaction_map(mapping)
+        except Exception as exc:                                # noqa: BLE001
+            _logger.warning("PayAI: could not store the redaction map: %s", exc)
+            return False
 
     def _classify_intent(self, provider, message):
         """Classify the user's message intent.
@@ -270,8 +336,14 @@ class PayrollAIEngine(models.Model):
             _logger.warning("Intent classification failed: %s, defaulting to general", e)
             return 'general'
 
-    def _process_data_query(self, provider, message, conversation_history, context):
-        """Process a payroll data query — fetch real data from Odoo and generate chart."""
+    def _process_data_query(self, provider, message, conversation_history,
+                            context, mapping=None):
+        """Process a payroll data query — fetch real data from Odoo and generate chart.
+
+        `mapping` is this conversation's accumulated placeholder table, or
+        None for a caller with no conversation. It is EXTENDED here (this is
+        the only path that reads records) and saved back.
+        """
         # Step 1: Get the data query engine to fetch relevant data
         data_engine = self.env['payroll.data.query']
         payroll_data = data_engine.query_for_message(message, context)
@@ -316,14 +388,19 @@ class PayrollAIEngine(models.Model):
         #                    record ids. Figures survive — they are the answer.
         #   this message     the same mapping, plus the free-text scrub. A name
         #                    IS caught here, because by now there is a mapping.
-        #   history turns    the same treatment, with the SAME mapping — so a
-        #                    person named in an earlier answer and absent from
-        #                    THIS query's result is only reached by the generic
-        #                    patterns. Named residual; see ai_redaction.
+        #   history turns    the same treatment, with the SAME mapping — and
+        #                    since Phase 6 that mapping is the CONVERSATION's,
+        #                    so a person named in an earlier answer is caught
+        #                    here even when this query did not return them.
+        #                    That is the Phase 4 residual, closed.
         #   the classifier   ran BEFORE all of this and had no mapping to use.
         #                    It gets `generic_scrub` only: contact details and
         #                    money go, a name does not.
-        redacted_data, mapping = redact_names(payroll_data)
+        redacted_data, mapping = redact_names(payroll_data, mapping=mapping)
+        # SAVED BEFORE THE PROMPT IS SENT, not after the answer comes back. A
+        # provider timeout must not lose the association the reply's
+        # placeholders will need.
+        self._persist_mapping(context, mapping)
         safe_message = redact_text(message, mapping)
 
         # Step 2: Build the prompt with the redacted data
@@ -387,7 +464,8 @@ class PayrollAIEngine(models.Model):
             return response
         return '%s\n\n%s' % (response or '', access_note)
 
-    def _process_knowledge_query(self, provider, message, conversation_history):
+    def _process_knowledge_query(self, provider, message, conversation_history,
+                                 mapping=None):
         """Process a payroll knowledge question."""
         messages = [
             {"role": "system", "content": PAYAI_SYSTEM_PROMPT},
@@ -396,10 +474,13 @@ class PayrollAIEngine(models.Model):
             messages.append({
                 "role": msg.get('role', 'user'),
                 # HISTORY IS AN EARLIER ANSWER WITH THE NAMES PUT BACK IN.
-                # No mapping exists on this path, so this is the generic
-                # scrub: contact details and money go, a prior-turn name does
-                # not. Named residual — see ai_redaction's list.
-                "content": generic_scrub(msg.get('content', '')),
+                # This path never READS a record, so it never extends the
+                # mapping — but since Phase 6 it is handed the conversation's,
+                # so a person an earlier data turn restored into an answer is
+                # removed here too. With no conversation the mapping is empty
+                # and `redact_text` degrades to exactly the generic scrub this
+                # line used to call.
+                "content": redact_text(msg.get('content', ''), mapping),
             })
         messages.append({"role": "user", "content": message})
 
@@ -551,7 +632,8 @@ class PayrollAIEngine(models.Model):
             return 'the Pay Runs / Payslips area'
         return screen.get('name') or None
 
-    def _process_onboarding_query(self, provider, message, conversation_history, context=None):
+    def _process_onboarding_query(self, provider, message, conversation_history,
+                                  context=None, mapping=None):
         """Answer a 'how do I use Payobook' question, optionally launching a tour."""
         messages = [{"role": "system", "content": ONBOARDING_SYSTEM_PROMPT}]
         screen_desc = self._describe_screen((context or {}).get('screen'))
@@ -564,7 +646,7 @@ class PayrollAIEngine(models.Model):
         for msg in conversation_history[-6:]:
             # Same rule as the other three paths — see _process_knowledge_query.
             messages.append({"role": msg.get('role', 'user'),
-                             "content": generic_scrub(msg.get('content', ''))})
+                             "content": redact_text(msg.get('content', ''), mapping)})
         messages.append({"role": "user", "content": message})
 
         raw_response = provider.generate_chat(messages, max_tokens=1200, temperature=0.4)
@@ -581,7 +663,8 @@ class PayrollAIEngine(models.Model):
             'action': self._sanitize_action(result.get('action')),
         }
 
-    def _process_general_query(self, provider, message, conversation_history):
+    def _process_general_query(self, provider, message, conversation_history,
+                               mapping=None):
         """Process a general (non-payroll) question."""
         messages = [
             {"role": "system", "content": PAYAI_SYSTEM_PROMPT},
@@ -589,11 +672,10 @@ class PayrollAIEngine(models.Model):
         for msg in conversation_history[-6:]:
             messages.append({
                 "role": msg.get('role', 'user'),
-                # HISTORY IS AN EARLIER ANSWER WITH THE NAMES PUT BACK IN.
-                # No mapping exists on this path, so this is the generic
-                # scrub: contact details and money go, a prior-turn name does
-                # not. Named residual — see ai_redaction's list.
-                "content": generic_scrub(msg.get('content', '')),
+                # Same rule as the other three paths — see
+                # _process_knowledge_query. The conversation's mapping, or an
+                # empty one, which is the generic scrub.
+                "content": redact_text(msg.get('content', ''), mapping),
             })
         messages.append({"role": "user", "content": message})
 

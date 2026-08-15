@@ -53,6 +53,8 @@ CONTENT_PATH = 'pb_learn/static/content/learn_content.json'
 _EMPTY = {
     'version': '', 'chrome': {}, 'stations': [], 'missions': [], 'glossary': [],
     'intents': [], 'screens': [], 'columns': [], 'global_suggest': [],
+    # LEARNOS Phase 6 — the reading order of the map's lines.
+    'line_order': [],
     # LEARNOS Phase 1b. One authored walkthrough, three ways to take it.
     'scenarios': [],
 }
@@ -140,6 +142,20 @@ class LearnContent(models.AbstractModel):
     @api.model
     def chrome(self):
         return _load()['chrome']
+
+    @api.model
+    def line_order(self):
+        """The READING order of the map's lines, authored in one place.
+
+        LEARNOS Phase 6. It used to be a constant in journey.js alone, which
+        was fine while only the page needed it; `learn.runtime.next_best()`
+        needs the same order to answer "the next required station", and two
+        copies of an order is the shape the ledger keeps recording. Emitted by
+        the generator out of `docs/tutorial_poc/author/data.js`, and pinned
+        against the frontend copy by
+        `contract.json::journey-line-order-is-authored-once`.
+        """
+        return _load().get('line_order') or []
 
     @api.model
     def global_suggest(self):

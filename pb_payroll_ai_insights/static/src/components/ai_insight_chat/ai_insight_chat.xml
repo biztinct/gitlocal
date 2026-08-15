@@ -157,12 +157,16 @@
                                 </div>
                             </t>
 
-                            <!-- TTS Audio Replay -->
-                            <t t-if="msg.hasTts">
+                            <!-- Read this answer aloud. The BROWSER speaks it:
+                                 an answer with the names restored into it must
+                                 not be posted to a speech endpoint to be read
+                                 back. Drawn only where the device can speak. -->
+                            <t t-if="msg.role === 'assistant' and ttsSupported and msg.content">
                                 <button class="payai-tts-replay"
-                                        t-on-click="() => this.playMessageAudio(msg)"
-                                        title="Replay audio response">
-                                    <i class="fa fa-volume-up"/> Listen
+                                        t-on-click="() => this.speak(msg.content)"
+                                        t-att-title="voiceCopy.listen_label || 'Read answers aloud'">
+                                    <i class="fa fa-volume-up"/>
+                                    <t t-esc="voiceCopy.listen_label || 'Read answers aloud'"/>
                                 </button>
                             </t>
 
@@ -196,6 +200,29 @@
                 </t>
             </div>
 
+            <!-- Voice consent, asked once, before anything is recorded.
+                 Copy comes from the server so it follows the reader's own
+                 language, and it names what actually leaves: the recording. -->
+            <t t-if="state.voiceAsking">
+                <div class="payai-voice-consent">
+                    <div class="payai-voice-consent-title">
+                        <i class="fa fa-microphone"/>
+                        <t t-esc="voiceCopy.consent_title"/>
+                    </div>
+                    <p class="payai-voice-consent-body" t-esc="voiceCopy.consent_body"/>
+                    <div class="payai-voice-consent-actions">
+                        <button class="payai-voice-yes"
+                                t-on-click="() => this.answerVoiceConsent(true)">
+                            <t t-esc="voiceCopy.consent_yes"/>
+                        </button>
+                        <button class="payai-voice-no"
+                                t-on-click="() => this.answerVoiceConsent(false)">
+                            <t t-esc="voiceCopy.consent_no"/>
+                        </button>
+                    </div>
+                </div>
+            </t>
+
             <!-- Input Area -->
             <div class="payai-chat-input-area">
                 <!-- Recording Indicator -->
@@ -217,12 +244,35 @@
                     />
                 </t>
                 <div class="payai-input-actions">
-                    <button t-att-class="'payai-mic-btn ' + (state.isRecording ? 'recording' : '')"
-                            t-on-click="toggleVoiceRecording"
-                            t-att-disabled="state.isLoading"
-                            t-att-title="state.isRecording ? 'Stop recording' : 'Voice input'">
-                        <i t-att-class="state.isRecording ? 'fa fa-stop' : 'fa fa-microphone'"/>
-                    </button>
+                    <!-- READ ALOUD, on the device. Absent where the browser
+                         cannot speak. -->
+                    <t t-if="ttsSupported">
+                        <button t-att-class="'payai-tts-btn ' + (state.ttsOn ? 'on' : '')"
+                                t-on-click="toggleTts"
+                                t-att-aria-pressed="state.ttsOn ? 'true' : 'false'"
+                                t-att-title="voiceCopy.listen_label || 'Read answers aloud'">
+                            <i t-att-class="state.ttsOn ? 'fa fa-volume-up' : 'fa fa-volume-off'"/>
+                        </button>
+                    </t>
+                    <!-- THE MICROPHONE IS ABSENT, NOT DISABLED, when voice is
+                         switched off for this tenant, unavailable on this
+                         database, or refused by this user. Hold to talk: the
+                         press is the recording, the release transcribes, and
+                         the text lands in the box above for the learner to
+                         read before anything is sent. -->
+                    <t t-if="voiceOffered">
+                        <button t-att-class="'payai-mic-btn ' + (state.isRecording ? 'recording' : '')"
+                                t-on-pointerdown="onMicPointerDown"
+                                t-on-pointerup="onMicPointerUp"
+                                t-on-pointerleave="onMicPointerUp"
+                                t-on-pointercancel="onMicPointerUp"
+                                t-on-keydown="onMicKeyDown"
+                                t-on-keyup="onMicKeyUp"
+                                t-att-disabled="state.isLoading || state.voiceBusy"
+                                t-att-title="voiceCopy.hold_hint || 'Hold to speak'">
+                            <i t-att-class="state.voiceBusy ? 'fa fa-spinner fa-spin' : 'fa fa-microphone'"/>
+                        </button>
+                    </t>
                     <button class="payai-send-btn"
                             t-on-click="sendMessage"
                             t-att-disabled="state.isLoading || state.isRecording || !state.inputText.trim()">
@@ -230,6 +280,14 @@
                     </button>
                 </div>
             </div>
+            <!-- What was heard, and what went wrong. Under the box, because
+                 the thing it is about is IN the box. -->
+            <t t-if="state.voiceHint">
+                <div class="payai-voice-hint" t-esc="state.voiceHint"/>
+            </t>
+            <t t-if="state.voiceError">
+                <div class="payai-voice-error" t-esc="state.voiceError"/>
+            </t>
         </div>
     </t>
 </templates>

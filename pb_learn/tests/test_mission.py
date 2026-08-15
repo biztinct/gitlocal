@@ -340,7 +340,7 @@ class TestMission(TransactionCase):
     def test_15_the_live_surface_only_reads(self):
         """The capstone's safety argument, asserted as an ABSENCE.
 
-        Same shape as contract.json::coach-cannot-act, and for the same reason:
+        Same shape as contract.json::coach-answers-from-writing-only, and for the same reason:
         the promise is that nothing here acts, and the way a promise like that
         breaks is by somebody adding a convenience. The contract checker makes
         this claim at authoring time; this makes it in the test suite, so it

@@ -228,6 +228,15 @@ def check_model_scope(root, chk):
     "these six product models are absent" but "nothing outside learn.* is
     read at all", and where the difference is whether an employee's pay can
     reach a prompt.
+
+    WHAT IT IS NOT, and the ledger's Phase 5 rule applies word for word: this
+    is a TRIPWIRE, not containment. It reads literal `self.env['x.y']`
+    subscripts in the named method and in the methods that method calls
+    LITERALLY as `self.helper(...)`, one level deep. A read through a
+    variable, a second-level helper, a module-level function or another
+    model's method is outside what it can see. It catches the forms somebody
+    writes by accident; it does not stop the forms somebody would write on
+    purpose.
     """
     text = read(root, chk["file"])
     if text is None:
@@ -236,31 +245,47 @@ def check_model_scope(root, chk):
         tree = ast.parse(text)
     except SyntaxError as exc:
         return None, "could not parse %s: %s" % (chk["file"], exc)
-    target = None
-    for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef) and node.name == chk["within"]:
-            target = node
-            break
+    defs = {node.name: node for node in ast.walk(tree)
+            if isinstance(node, ast.FunctionDef)}
+    target = defs.get(chk["within"])
     if target is None:
         return None, "symbol not found: %s" % chk["within"]
 
+    # ONE LEVEL OF `self.helper(...)` EDGES, AND THE DEPTH IS THE POINT.
+    #
+    # The scan used to read the named method and nothing else, so moving a
+    # read one call down — `self._unreachable_keys()` — took it out of scope
+    # while the promise stayed on the parent. One level of LITERAL `self.x(`
+    # edges into methods defined in the same file closes the form somebody
+    # actually writes; it does NOT follow a second level, a call through a
+    # variable, an `env['other.model'].method()` hop or a module helper. It is
+    # a TRIPWIRE, not containment, and the check's `why` has to say so.
+    scanned = {chk["within"]: target}
+    for node in ast.walk(target):
+        if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                and isinstance(node.func.value, ast.Name)
+                and node.func.value.id == "self"
+                and node.func.attr in defs):
+            scanned.setdefault(node.func.attr, defs[node.func.attr])
+
     prefixes = tuple(chk["expect"])
     found, problems = set(), []
-    for node in ast.walk(target):
-        if not isinstance(node, ast.Subscript):
-            continue
-        key = node.slice
-        if not (isinstance(key, ast.Constant) and isinstance(key.value, str)):
-            continue
-        name = key.value
-        # A model name, not a dict key: dotted, unspaced, lowercase-ish.
-        if "." not in name or " " in name:
-            continue
-        found.add(name)
-        if not name.startswith(prefixes):
-            problems.append(
-                "%s() reads '%s', which is outside %s"
-                % (chk["within"], name, "/".join(prefixes)))
+    for owner, fn in scanned.items():
+        for node in ast.walk(fn):
+            if not isinstance(node, ast.Subscript):
+                continue
+            key = node.slice
+            if not (isinstance(key, ast.Constant) and isinstance(key.value, str)):
+                continue
+            name = key.value
+            # A model name, not a dict key: dotted, unspaced, lowercase-ish.
+            if "." not in name or " " in name:
+                continue
+            found.add(name)
+            if not name.startswith(prefixes):
+                problems.append(
+                    "%s() reads '%s', which is outside %s"
+                    % (owner, name, "/".join(prefixes)))
     if not found:
         problems.append(
             "%s() names no model at all — the scan found nothing to check, "

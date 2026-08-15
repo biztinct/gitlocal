@@ -1309,6 +1309,10 @@ def gen_content(data, bi, live):
     by_key = {i['key']: i for i in intents}
     tree = {
         'chrome': content_chrome(data, bi),
+        # LEARNOS Phase 6. The reading order of the map's lines, emitted so
+        # that the SERVER can answer "what next" in the same order the page
+        # draws — one source, two readers. A raw list of keys, not prose.
+        'line_order': list(data.get('lineOrder') or []),
         'stations': content_stations(data, bi),
         'missions': content_missions(data, bi),
         'scenarios': scenarios,
