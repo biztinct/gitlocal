@@ -240,6 +240,23 @@ missing test", contract checker discipline, anchor registry discipline). Read th
   absent-token occurrence (docstring naming get_provider_instance). pb_learn manifest
   19.0.10.0.0 (new transient model). PRODUCT TICKET: Pay Runs kanban still offers Bank
   file + Email where the cockpit offers Pay & Deliver.
+- (Phase 5) **A blur and the click that caused it are one gesture** — advance-on-focusout
+  plus advance-on-click double-advances; the fix is ordering (mousedown/keydown disarm,
+  focusout arm, click consume), never a timer. And the keyboard is a first-class gesture:
+  Enter/Space activation has no mousedown.
+- (Phase 5) **A syntactic call-graph scan is a tripwire, not containment** — say so in the
+  test's own docstring. Five defeats existed (aliased orm, computed model, this[k], module
+  helper, self=this); the wires that close the literal forms are cheap (non-literal
+  orm.call arg refused, this.orm never aliased/passed, this[ dispatch refused). "It cannot
+  miss one" was false and is the one kind of false the program forbids.
+- (Phase 5) Pin the RETURN, not the declaration (`void mark;` passed a presence check). A
+  generator cannot validate against the artifact it is about to write — read the authoring
+  table. A gate that rebuilds the table it gates drifts from it (gloss_scan's second copy
+  of the match rule was one matchTerm out of step for two phases). WRITING_VERBS grew with
+  the vocabulary (save/match/create/add) and immediately caught matchrow.
+- (Phase 5) With every keydown on document-capture, REGISTRATION ORDER decides Escape —
+  a glossaryOpen() stand-down in every surface makes the layering explicit instead of
+  load-order luck. Scenario step `value` pairs are learner-facing prose: gated now.
 - (Phase 2, accepted nits for later touch) live_mission.js still `esc(tx())` on step.detail
   (no glossary cards, literal <b> tags there); glossify idempotence guard keys on the
   literal `data-gloss=`; gloss_scan payload ignores matchTerm (over-fails only); the 17-28

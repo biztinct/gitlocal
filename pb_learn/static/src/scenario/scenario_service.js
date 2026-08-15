@@ -48,6 +48,30 @@ import { loadContent } from "../content/content_loader";
    key server-side. */
 const PROGRESS_PREFIX = "scenario:";
 
+/** The steps of a scenario that are playable in ONE mode — LEARNOS Phase 5.
+ *
+ *  ONE RULE, THREE READERS, AND IT HAS TO BE ONE FUNCTION. The overlay plays
+ *  Watch and Do, the Journey plays Try, and the Coach's `scenario:key#step`
+ *  deep link resolves a step KEY to an index; if any of them counted the steps
+ *  differently the index would mean two things and the deep link would open
+ *  the wrong card. Exported rather than kept inside the service because the
+ *  Journey reads scenarios out of its own bundle, not out of this service.
+ *
+ *  A step with no `modes` plays in every mode, which is what every step
+ *  authored before Phase 5 means and what the generator emits for them. A step
+ *  that narrows itself is how a walkthrough of the real Formula Studio can
+ *  also be a Try over the six controls the replica actually draws, without
+ *  becoming two scenarios that drift apart.
+ */
+export function playableSteps(scenario, mode) {
+    const steps = (scenario && scenario.steps) || [];
+    if (!mode) {
+        return steps;
+    }
+    return steps.filter((st) => !st.modes || !st.modes.length
+                                || st.modes.includes(mode));
+}
+
 export const scenarioService = {
     dependencies: ["action", "orm"],
 
@@ -104,9 +128,14 @@ export const scenarioService = {
             return all().find((s) => s.key === key) || null;
         }
 
+        /** The steps of the RUNNING scenario, in the mode it is running in. */
+        function steps(key, mode) {
+            return playableSteps(get(key === undefined ? state.key : key),
+                                 mode === undefined ? state.mode : mode);
+        }
+
         function current() {
-            const sc = get(state.key);
-            return sc ? sc.steps[state.index] || null : null;
+            return steps()[state.index] || null;
         }
 
         /** The scenarios offered on ONE screen.
@@ -191,7 +220,7 @@ export const scenarioService = {
 
         function goTo(index) {
             const sc = get(state.key);
-            if (!sc || index < 0 || index >= sc.steps.length) {
+            if (!sc || index < 0 || index >= steps().length) {
                 return;
             }
             state.index = index;
@@ -204,7 +233,7 @@ export const scenarioService = {
             if (!sc) {
                 return;
             }
-            if (state.index < sc.steps.length - 1) {
+            if (state.index < steps().length - 1) {
                 goTo(state.index + 1);
             } else {
                 finish();
@@ -292,7 +321,7 @@ export const scenarioService = {
 
         return {
             state,
-            load, all, get, current, forScreen,
+            load, all, get, steps, current, forScreen,
             begin, next, back, goTo, finish, stop,
             record, log, logStart, nowServer,
             PROGRESS_PREFIX,

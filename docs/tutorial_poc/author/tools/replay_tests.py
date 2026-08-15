@@ -326,6 +326,9 @@ JS_ENGINE = os.path.join(REPO, "pb_learn", "static", "src", "engine")
 JS_SUITE = r"""
 import { RT, tx, txHtml, esc } from "./runtime.mjs";
 import { glossify, setGlossary, glossCardHTML, gtx } from "./glossary.mjs";
+import { SCREENS, practiceShellHTML } from "./screens.mjs";
+import { INPUT_ANCHORS } from "./fixture.mjs";
+import { looseMatch, foldText, foldNumber } from "./input_match.mjs";
 
 let ok = 0, bad = 0;
 function check(name, cond, detail) {
@@ -402,6 +405,17 @@ check("authored <b> is preserved", r.includes("<b>") && r.includes("data-gloss")
 /* 9. IDEMPOTENT. */
 const once = glossify("one payslip", "en");
 check("running twice changes nothing", glossify(once, "en") === once, once);
+/* 9b. AND THE GUARD IS KEYED ON THE WRAPPER, NOT ON THE ATTRIBUTE NAME.
+   A tenant slot's value reaches a body through gtx, escaped — so it can carry
+   the literal `data-gloss=` as TEXT. Keying the guard on that substring let a
+   value somebody typed switch the whole pass off for the body it landed in.
+   (Ledger, Phase 2 accepted nit; closed in Phase 5.) */
+RT.tokens = { companyDisplayName: { en: "data-gloss=x Ltd", vi: "data-gloss=x Ltd" } };
+let guarded = gtx({ en: "The net at {{companyDisplayName}}.", vi: "x" });
+check("a token value containing the attribute name does not disable glossing",
+      guarded.includes('data-gloss="net"'), guarded);
+check("...and the value itself is still inert text",
+      guarded.includes("data-gloss=x Ltd"), guarded);
 
 /* 10. THE CARD renders term and definition, escaped. */
 RT.lang = "en";
@@ -473,6 +487,124 @@ check("tx: an unknown slot renders the key",
 check("esc: the primitive itself",
       esc('<a href="x">&</a>') === "&lt;a href=&quot;x&quot;&gt;&amp;&lt;/a&gt;", esc("<"));
 
+/* ================================================= practice mode (Phase 5)
+   THE WATERMARK, EXECUTED. The source test in tests/test_practice.py asserts
+   that the builder has no branch in it; this one runs the builder for every
+   replica there is and looks at the output, which is the half that would
+   notice the mark being deleted rather than merely made conditional.
+
+   Both languages, because the mark is chrome and chrome follows the reader —
+   and a mark that vanished in Vietnamese would vanish for most of the people
+   this module is written for. */
+const screenKeys = Object.keys(SCREENS);
+check("the replica still has its twenty screens",
+      screenKeys.length === 20, "found " + screenKeys.length);
+let marked = 0;
+for (const lang of ["en", "vi"]) {
+    RT.lang = lang;
+    for (const key of screenKeys) {
+        const html = practiceShellHTML(key, new Set());
+        if (html.includes('data-coach="rep-watermark"')) { marked++; }
+    }
+}
+check("every practice screen carries the watermark, in both languages",
+      marked === screenKeys.length * 2,
+      marked + " of " + (screenKeys.length * 2));
+/* An unknown screen key renders an empty body — and STILL carries the mark.
+   That is the case a state flag would have got wrong: no body, no banner. */
+check("even an unknown screen carries the watermark",
+      practiceShellHTML("no_such_screen", new Set())
+          .includes('data-coach="rep-watermark"'), "!");
+/* FREE-ROAM. In practice mode every section is in scope, so no leaf is
+   greyed out; a lesson's shell greys everything outside its own section, and
+   that difference is what makes the sandbox a sandbox. */
+const free = practiceShellHTML("dashboard", new Set());
+check("practice mode leaves every menu leaf reachable",
+      !free.includes('aria-disabled="true"'),
+      "a practice screen has a disabled leaf");
+/* NINETEEN, not twenty: the import wizard is a flow and has no sidebar leaf,
+   which is why it is a SUB_SCREEN. So the sandbox can reach every replica the
+   menu can name, and the one it cannot name is the one the product cannot
+   either. */
+check("every menu leaf is a nav target in the sandbox",
+      (free.match(/data-nav="/g) || []).length === 19,
+      (free.match(/data-nav="/g) || []).length + " nav targets");
+/* NAV SWITCHING, executed. `pNav` writes one key and the view builder reads
+   it, so what has to be true is that two keys really are two screens — a
+   builder that ignored its argument would pass every check above it. */
+const onDash = practiceShellHTML("dashboard", new Set());
+const onStat = practiceShellHTML("statutory", new Set());
+check("two nav targets render two different screens",
+      onDash !== onStat && onDash.includes('data-coach="dash-kpis"')
+      && onStat.includes('data-coach="st-kpis"'), "!");
+check("the menu marks the screen you are on, and only that one",
+      (onStat.match(/class="lrn-item on/g) || []).length === 1,
+      (onStat.match(/class="lrn-item on/g) || []).length + " marked");
+RT.lang = "en";
+
+/* =============================================== the loose match (Phase 5)
+   THE NEGATIVE CONTROL IS HALF OF THIS BLOCK, and deliberately so. A matcher
+   is only worth having if it says NO — every "accepts" case below has a
+   "refuses" case beside it, because a comparison that returned true would pass
+   the first list on its own and would turn every input step into a keypress. */
+
+/* Numbers: the thousands mark is the reader's, not the author's. The same step
+   is played by somebody typing 1,200,000 and by somebody typing 1.200.000. */
+for (const typed of ["1200000", "1,200,000", "1.200.000", "1 200 000",
+                     "  1200000  ", "1200000 ₫"]) {
+    check("number accepts " + JSON.stringify(typed),
+          looseMatch(typed, "1.200.000", "number"), foldNumber(typed));
+}
+for (const typed of ["120000", "12000000", "1200001", "", "   ", "abc",
+                     "1,200,00"]) {
+    check("number REFUSES " + JSON.stringify(typed),
+          !looseMatch(typed, "1.200.000", "number"), foldNumber(typed));
+}
+/* And the expected side is folded the same way, so an author who writes the
+   English grouping does not change what a Vietnamese learner may type. */
+check("number: both sides fold, either way round",
+      looseMatch("1.200.000", "1,200,000", "number")
+      && looseMatch("1,200,000", "1.200.000", "number"), "!");
+
+/* Text: trimmed, casefolded, and tone marks optional — the keyboard somebody
+   has is not part of the lesson. A DIFFERENT name is still a different name. */
+for (const typed of ["Nguyễn Văn An", "nguyen van an", "  Nguyen  Van   An ",
+                     "NGUYEN VAN AN"]) {
+    check("text accepts " + JSON.stringify(typed),
+          looseMatch(typed, "Nguyễn Văn An", "text"), foldText(typed));
+}
+for (const typed of ["Nguyen Van Anh", "Nguyen An", "Van An Nguyen", "",
+                     "   ", "Nguyen Van"]) {
+    check("text REFUSES " + JSON.stringify(typed),
+          !looseMatch(typed, "Nguyễn Văn An", "text"), foldText(typed));
+}
+check("text: đ folds to d rather than disappearing",
+      foldText("Đỗ Thị Lan") === "do thi lan", foldText("Đỗ Thị Lan"));
+/* An empty EXPECTED can never be satisfied either. A step whose value went
+   missing must not become a step that advances on anything typed at all. */
+check("an empty expected value matches nothing",
+      !looseMatch("anything", "", "text") && !looseMatch("", "", "text"), "!");
+/* The kind is read off INPUT_ANCHORS, and an unknown kind must fall back to
+   the STRICTER of the two — text, where 1.200.000 and 1,200,000 differ. */
+check("an unknown kind is compared as text",
+      !looseMatch("1,200,000", "1.200.000", "wat"), "!");
+
+/* The table itself: both declared fields are drawn by the replica, in the one
+   screen each belongs to. The generator checks this too; here it is checked
+   against the RENDERED html rather than against the source. */
+RT.lang = "en";
+const anchorScreens = { "rep-impfix": "importwizard", "rep-newemp-name": "employees" };
+for (const [anchor, screen] of Object.entries(anchorScreens)) {
+    const html = SCREENS[screen]();
+    check("the replica draws a real input at " + anchor,
+          html.includes('<input') && html.includes('data-coach="' + anchor + '"'),
+          screen);
+}
+check("every declared input anchor is one of those two",
+      Object.keys(INPUT_ANCHORS).sort().join(",")
+        === Object.keys(anchorScreens).sort().join(","),
+      Object.keys(INPUT_ANCHORS).join(","));
+
 console.log("  glossify/tx -> " + ok + " pass, 0 skip, " + bad + " fail");
 process.exit(bad ? 1 : 0);
 """
@@ -524,9 +656,221 @@ def js_checks():
     return ok, 0, failed
 
 
+# ============================================================================
+# THE TRY BRIDGE, LIFTED AND DRIVEN  (LEARNOS Phase 5 review round)
+# ============================================================================
+# The click bridge and the input check are the two methods a learner's fingers
+# reach, and every property this phase claims about them — a wrong value never
+# advances, a click on a field never advances, a blur and the click that caused
+# it are ONE advance, and a KEYBOARD activation after a blur is not swallowed —
+# is a property of how they behave in sequence. Source-level assertions cannot
+# see a sequence.
+#
+# So the real methods are lifted out of journey.js by name and executed against
+# a stub `this` and a hand-rolled DOM of three objects. Lifted, not copied: a
+# copy in this file would be a second bridge, and the second one is always the
+# one that stays right.
+BRIDGE_METHODS = ('_scenarioClick', '_scenarioInputCheck', 'onKeydown',
+                  'onFocusOut', 'onMouseDown')
+
+
+def _lift_js_methods(path, names):
+    """Pull named ES class methods out of a file as source text."""
+    with open(path, encoding='utf-8') as fh:
+        lines = fh.read().split('\n')
+    out, start, name = {}, None, None
+    for i, line in enumerate(lines):
+        m = re.match(r'^    (?:async )?([A-Za-z_$][\w$]*)\(', line)
+        if m and start is None:
+            name, start = m.group(1), i
+            continue
+        if start is not None and line == '    }':
+            if name in names:
+                out[name] = '\n'.join(lines[start:i + 1])
+            start = None
+    missing = set(names) - set(out)
+    assert not missing, 'journey.js no longer defines %s' % sorted(missing)
+    return out
+
+
+BRIDGE_IMPORTS = r"""
+import { RT } from "./runtime.mjs";
+import { INPUT_ANCHORS } from "./fixture.mjs";
+import { looseMatch } from "./input_match.mjs";
+"""
+
+BRIDGE_SUITE = r"""
+let ok = 0, bad = 0;
+function check(name, cond, detail) {
+    if (cond) { console.log("    PASS  " + name); ok++; }
+    else { console.log("    FAIL  " + name + "\n          " + (detail || "")); bad++; }
+}
+const tx = (v) => (v && (v[RT.lang] || v.en)) || "";
+
+/* --- the three-object DOM. `closest` is the only thing the bridge uses. --- */
+function el(anchor, tag, value) {
+    const node = {
+        tagName: tag || "BUTTON", value: value === undefined ? "" : value,
+        getAttribute: (n) => (n === "data-coach" ? anchor : null),
+        matches: (s) => s === "input" && tag === "INPUT",
+    };
+    node.closest = (sel) => {
+        if (sel === "input") { return tag === "INPUT" ? node : null; }
+        return anchor ? node : null;
+    };
+    return node;
+}
+
+/* --- the bridge, with a stub `this`. ------------------------------------ */
+function bridge(steps) {
+    const self = {
+        state: { view: "scenario", sDone: false, sStep: 0, sNudge: false, sMiss: false },
+        advances: 0,
+        get sCurrent() { return steps[self.state.sStep] || null; },
+        sNext() { self.advances++; self.state.sStep++; self.state.sNudge = false;
+                  self.state.sMiss = false; },
+    };
+    Object.assign(self, METHODS);
+    return self;
+}
+/* Gestures, in the order a browser dispatches them. */
+const click = (b, node) => { b.onMouseDown(); b._scenarioClick({ target: node }); };
+const blurTo = (b, node) => b.onFocusOut({ target: node });
+const press = (b, node, key) =>
+    b.onKeydown({ key, target: node, preventDefault() {} });
+
+const FIELD = "rep-impfix";
+const NEXT = "rep-impmatch";
+const STEPS = [
+    { key: "fixcell", anchor: FIELD, act: "input",
+      value: { en: "1,200,000", vi: "1.200.000" } },
+    { key: "matchrow", anchor: NEXT, act: "click" },
+    { key: "landed", anchor: "iw-outcome", act: "observe" },
+];
+check("the lifted bridge knows the field it is driving",
+      !!INPUT_ANCHORS[FIELD] && INPUT_ANCHORS[FIELD].kind === "number", FIELD);
+
+/* 1. A CLICK ON THE FIELD NEVER ADVANCES. */
+let b = bridge(STEPS);
+click(b, el(FIELD, "INPUT", ""));
+check("clicking an input step's own field does not advance",
+      b.advances === 0 && b.state.sStep === 0, "advances=" + b.advances);
+
+/* 2. A WRONG VALUE NEVER ADVANCES, and says so. */
+b = bridge(STEPS);
+press(b, el(FIELD, "INPUT", "12"), "Enter");
+check("a wrong value does not advance and raises the hint",
+      b.advances === 0 && b.state.sMiss === true, "advances=" + b.advances);
+
+/* 3. THE RIGHT VALUE ADVANCES ONCE — in either reader's grouping. */
+for (const [lang, typed] of [["en", "1,200,000"], ["vi", "1.200.000"],
+                             ["en", "1200000"]]) {
+    RT.lang = lang;
+    b = bridge(STEPS);
+    press(b, el(FIELD, "INPUT", typed), "Enter");
+    check("Enter with " + JSON.stringify(typed) + " [" + lang + "] advances once",
+          b.advances === 1 && b.state.sStep === 1, "advances=" + b.advances);
+}
+RT.lang = "en";
+
+/* 4. THE MOUSE GESTURE. Type, then click the control the NEXT step wants:
+      mousedown, focusout, click — and exactly ONE step of movement, because
+      the card in between must not be skipped. */
+b = bridge(STEPS);
+b.onMouseDown();
+blurTo(b, el(FIELD, "INPUT", "1.200.000"));
+b._scenarioClick({ target: el(NEXT, "BUTTON") });
+check("type then mouse-click the next control: exactly one advance",
+      b.advances === 1 && b.state.sStep === 1, "advances=" + b.advances);
+
+/* 5. THE KEYBOARD GESTURE, and this is the regression the review round found.
+      Tab out (blur advances), then Enter or Space on the focused button —
+      which dispatches a click. Without a keyboard disarm the one-shot from
+      step 4 swallowed it and the learner pressed a control that did nothing. */
+for (const key of ["Enter", " "]) {
+    b = bridge(STEPS);
+    blurTo(b, el(FIELD, "INPUT", "1.200.000"));      // Tab: no mousedown
+    const btn = el(NEXT, "BUTTON");
+    press(b, btn, key);                              // keyboard activation…
+    b._scenarioClick({ target: btn });               // …dispatches a click
+    check("type, Tab, then " + JSON.stringify(key) + " on the next control: two advances",
+          b.advances === 2 && b.state.sStep === 2, "advances=" + b.advances);
+}
+
+/* 6. A WRONG CONTROL IS A NUDGE, never a silent no-op and never an advance. */
+b = bridge(STEPS);
+b.state.sStep = 1;                                   // the click step
+click(b, el("iw-review", "BUTTON"));
+check("clicking the wrong control nudges and does not advance",
+      b.advances === 0 && b.state.sNudge === true, "advances=" + b.advances);
+b = bridge(STEPS);
+b.state.sStep = 1;
+click(b, el(NEXT, "BUTTON"));
+check("clicking the right control on a click step advances once",
+      b.advances === 1 && b.state.sNudge === false, "advances=" + b.advances);
+
+/* 7. AN EMPTY FIELD IS NOT A WRONG ANSWER. Blurring one nobody typed in must
+      not put a correction on the screen for doing nothing. */
+b = bridge(STEPS);
+blurTo(b, el(FIELD, "INPUT", "   "));
+check("blurring an untouched field says nothing",
+      b.advances === 0 && b.state.sMiss === false, "miss=" + b.state.sMiss);
+
+console.log("  try bridge -> " + ok + " pass, 0 skip, " + bad + " fail");
+process.exit(bad ? 1 : 0);
+"""
+
+
+def bridge_checks():
+    """Execute the LIFTED click bridge through whole gestures."""
+    print("== try bridge (lifted from journey.js)")
+    tmp = tempfile.mkdtemp(prefix="pblearn-bridge-")
+    ok = failed = 0
+    try:
+        for name in sorted(os.listdir(JS_ENGINE)):
+            if not name.endswith(".js"):
+                continue
+            src = open(os.path.join(JS_ENGINE, name), encoding="utf-8").read()
+            src = re.sub(r'(from\s+")(\./[A-Za-z0-9_./-]+?)(")',
+                         lambda m: m.group(1) + m.group(2) + ".mjs" + m.group(3), src)
+            open(os.path.join(tmp, name[:-3] + ".mjs"), "w", encoding="utf-8").write(src)
+        methods = _lift_js_methods(
+            os.path.join(REPO, "pb_learn/static/src/journey/journey.js"),
+            BRIDGE_METHODS)
+        body = "const METHODS = {\n%s\n};\n" % ",\n".join(
+            m.replace("    ", "", 1) for m in
+            (methods[n] for n in BRIDGE_METHODS))
+        suite = os.path.join(tmp, "_bridge.mjs")
+        # METHODS is DECLARED FIRST. `const` is hoisted but not initialised, so
+        # a suite that used it before its declaration threw a TDZ error and
+        # reported one PASS and a crash — which is exactly the "found nothing
+        # means broken, not passing" shape, one language over.
+        open(suite, "w", encoding="utf-8").write(
+            BRIDGE_IMPORTS + body + BRIDGE_SUITE)
+        r = subprocess.run(["node", suite], capture_output=True, text=True, cwd=tmp)
+        sys.stdout.write(r.stdout)
+        if r.stderr.strip():
+            sys.stdout.write("          " + r.stderr.strip()[:600] + "\n")
+        for line in r.stdout.splitlines():
+            if line.strip().startswith("PASS"):
+                ok += 1
+            elif line.strip().startswith("FAIL"):
+                failed += 1
+        if r.returncode and not failed:
+            failed += 1
+            print("    FAIL  the bridge suite did not run")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return ok, 0, failed
+
+
 TOTAL = [0, 0, 0]
 for addon, pkgname, modname, clsname in (
     ("pb_learn", "pb_learn_tests", "test_scenario", "TestScenarioEngine"),
+    # LEARNOS Phase 5 — the sandbox's two structural promises. Both are source
+    # facts, so both execute here; the watermark is ALSO executed for real
+    # against all twenty replicas in the JS suite below.
+    ("pb_learn", "pb_learn_tests", "test_practice", "TestPracticeMode"),
     ("pb_learn", "pb_learn_tests", "test_retirement", "TestRetirementSeams"),
     ("pb_learn", "pb_learn_tests", "test_anchor_registry", "TestAnchorRegistry"),
     ("pb_learn", "pb_learn_tests", "test_assets", "TestAssets"),
@@ -553,6 +897,10 @@ for addon, pkgname, modname, clsname in (
         TOTAL[i] += r[i]
 
 r = js_checks()
+for i in range(3):
+    TOTAL[i] += r[i]
+
+r = bridge_checks()
 for i in range(3):
     TOTAL[i] += r[i]
 

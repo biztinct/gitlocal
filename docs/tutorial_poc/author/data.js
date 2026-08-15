@@ -209,6 +209,23 @@ const I18N = {
     scNotOnScreen: "That control is not on this screen right now. So here is what it does, rather than an arrow pointing at nothing.",
     scDone: "End of the walkthrough",
     scDoneBody: "That is the whole story. Take it again another way whenever you like. The steps are the same — only who presses changes.",
+    /* -- input steps inside Try (LEARNOS Phase 5) -------------------------
+       A Try step may ask the learner to TYPE. The card says what is wanted;
+       the value is checked loosely — spaces, capitals and thousands marks are
+       forgiven, a different value is not. A wrong value can never advance the
+       walkthrough, so the hint below is the only thing a mismatch produces. */
+    scTypeHere: "Type it in the field I am pointing at, then press Enter.",
+    scNotYet: "That is not the value yet. Read the card and type it again.",
+    /* -- practice mode: the free-roam sandbox (LEARNOS Phase 5) -----------
+       The practice company, with the menu switched on. No walkthrough, no
+       step counter, no right answer: a learner opens screens and reads them.
+       The watermark says on every screen that none of it is real, and the
+       view builder draws it whatever the state — see practiceShellHTML. */
+    practiceMode: "Practice mode",
+    practiceModeLead: "Open the practice company and click around. Every screen is here. Nothing you press reaches a real record.",
+    practiceOpen: "Open practice mode",
+    practiceWatermark: "Practice company — nothing here is real.",
+    practiceHint: "Use the menu on the left to move between screens. Leave when you are done.",
     /* -- the first-run welcome (LEARNOS Phase 3) --------------------------
        ONE CARD, ONCE, ON A REAL TENANT. Shown to somebody who has just
        logged into their own Payobook for the first time, and never again
@@ -409,6 +426,15 @@ const I18N = {
     scNotOnScreen: "Nút đó hiện không có trên màn hình này. Vậy nên tôi mô tả nó ở đây, thay vì chỉ mũi tên vào chỗ trống.",
     scDone: "Hết phần hướng dẫn",
     scDoneBody: "Đó là toàn bộ câu chuyện. Bạn xem lại theo cách khác bất cứ lúc nào cũng được. Các bước vẫn thế — chỉ khác ở chỗ ai là người bấm.",
+    /* -- input steps inside Try (LEARNOS Phase 5) ------------------------- */
+    scTypeHere: "Hãy gõ vào ô tôi đang chỉ, rồi bấm Enter.",
+    scNotYet: "Giá trị này chưa đúng. Hãy đọc lại thẻ và gõ lại.",
+    /* -- practice mode: khu thực hành tự do (LEARNOS Phase 5) ------------- */
+    practiceMode: "Chế độ thực hành",
+    practiceModeLead: "Mở công ty thực hành và bấm thoải mái. Mọi màn hình đều có ở đây. Không nút nào chạm tới dữ liệu thật.",
+    practiceOpen: "Mở chế độ thực hành",
+    practiceWatermark: "Công ty thực hành — không có gì ở đây là thật.",
+    practiceHint: "Dùng menu bên trái để đi giữa các màn hình. Xong việc thì bấm thoát.",
     /* -- the first-run welcome (LEARNOS Phase 3) ------------------------- */
     welcomeTitle: "Chào mừng bạn đến với Payobook",
     welcomeBody: "Bạn muốn xem qua 2 phút trước không? Tôi sẽ chỉ cho bạn những màn hình bạn dùng nhiều nhất.",
@@ -2447,8 +2473,14 @@ const MISSIONS = [
     screen: "importwizard",
     conf: { key: "import", gain: 15 },
     title: B("Fix a bad import before it becomes salaries", "Sửa một đợt nhập lỗi trước khi nó thành lương"),
-    desc: B("A file with duplicate rows and one employee nobody can match. The score drops. Do you fix it, or commit anyway?",
-            "Một tệp có dòng bị lặp và một nhân viên không ai khớp được. Điểm tin cậy tụt xuống. Bạn sửa, hay cứ ghi nhận?"),
+    /* THE TWO FLAGGED ROWS ARE A PRODUCT FACT AND THIS SENTENCE HAS TO MATCH
+       THEM. Phase 5 changed the first row from an unmatched code to a cell
+       that could not be read — the failure the import lesson is actually
+       about, and the one the Try flow repairs by typing. This description was
+       still naming the old row, which is the fixture and the prose disagreeing
+       about the same screen. */
+    desc: B("A file with a duplicate row and one cell nobody could read. The score drops. Do you fix it, or commit anyway?",
+            "Một tệp có một dòng bị lặp và một ô hệ thống không đọc được. Điểm tin cậy tụt xuống. Bạn sửa, hay cứ ghi nhận?"),
     outlineNote: B("The full version puts you in the wizard with the score falling in front of you. It makes you choose between Match, Retry and Skip for each bad row. Then it shows what each of those choices would have produced on {{payDay}} — including the one where a skipped row turns out to have been a person.",
                    "Bản đầy đủ đặt bạn vào trình hướng dẫn với điểm tin cậy đang tụt ngay trước mắt. Nó buộc bạn chọn giữa Khớp, Thử lại và Bỏ qua cho từng dòng lỗi. Rồi nó cho thấy mỗi lựa chọn đó sẽ tạo ra gì vào {{payDay}} — kể cả trường hợp dòng bị bỏ qua hoá ra là một con người."),
   },
@@ -4511,6 +4543,23 @@ const PRACTICE_ANCHORS = {
      a loop, so the replica draws three months and says so by name. */
   "rep-dash-runs": "The replica Dashboard's three-month run list. The product draws ONE latest-run card here; three months is a teaching view, so it keeps a rep- name and the Coach must never claim to point at it on a live screen.",
   "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper.",
+  /* LEARNOS Phase 5. The free-roam sandbox's watermark. It is drawn by
+     `practiceShellHTML` with no condition in front of it — the honesty of that
+     view is that the mark cannot be switched off by any state the Journey
+     holds — and it exists only here, because the product has no watermark. */
+  /* LEARNOS Phase 5 — the two places a learner may TYPE, and the controls
+     beside them. Both fields are declared in INPUT_ANCHORS (practice-data.js),
+     which is the table the generator validates an `act: "input"` step against;
+     an input step pointed anywhere else is refused. They are `rep-` names
+     because neither field exists in the product: the real importer repairs a
+     cell its own way and the real employee form is a form view. */
+  "rep-impfix": "The import wizard's one repairable cell — the overtime amount on the row whose figure could not be read. A real input; the value a learner types is checked loosely against the step's own value, thousands marks and all.",
+  "rep-impmatch": "The Match button on that same row. Practice-only because the product's importer offers its fixes differently; here it is what 'accept this row' looks like.",
+  "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens a form view; here it is the step that takes the learner down to the practice form.",
+  "rep-newemp-name": "The practice employee form's name field. A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
+  "rep-newemp-div": "The practice employee form's division picker. A click target, not an input: choosing the division is choosing which formula configuration will pay this person.",
+  "rep-newemp-save": "The practice employee form's Save button. It saves nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
+  "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",
   "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen.",
 };
 
@@ -4865,20 +4914,32 @@ const SCENARIOS = [
   },
 
   /* ---------------------------------------------------------- sc_formula
-     tour_formula. WATCH ONLY, and the reason is structural rather than
-     editorial: half of it happens in the Grid, and the practice replica has
-     no Grid. A Try step whose control the replica does not draw would leave
-     the learner clicking at nothing. */
+     tour_formula, and from LEARNOS Phase 5 a READ-SIDE Try as well.
+
+     WATCH WALKS ALL EIGHTEEN CONTROLS. TRY WALKS THE SEVEN THE REPLICA DRAWS,
+     and the difference is structural rather than editorial: half of this
+     walkthrough happens in the Grid, and the practice replica has no Grid. The
+     answer Phase 5 chose is NOT to build one — a replica of a spreadsheet
+     engine is a second spreadsheet engine to keep true — but to let each step
+     say which modes it is playable in. So Try is the reading half: the
+     configuration, its components, one formula in words, the names/letters
+     toggle, what it depends on, the live preview and the simulator. Every one
+     of those is a control the replica really has, and the generator refuses a
+     try-playable step whose anchor it does not draw.
+
+     The eleven steps scoped to `watch` are the editing half and the Grid. They
+     are not lesser steps; they are steps whose controls only exist in the
+     product, and pointing Try at one would be a learner clicking at nothing. */
   {
     key: "sc_formula",
     icon: "calculator",
     line: "setup",
-    modes: ["watch"],
+    modes: ["watch", "try"],
     screens: ["formula"],
     name: B("Explore the formula engine", "Khám phá bộ máy công thức"),
     tagline: B("Components, formulas, dependencies and the spreadsheet grid behind them.",
                "Thành phần, công thức, quan hệ phụ thuộc và lưới bảng tính đứng sau chúng."),
-    entry: { nav: "pb_formula_studio.action_pb_formula_studio" },
+    entry: { nav: "pb_formula_studio.action_pb_formula_studio", screen: "formula" },
     steps: [
       {
         key: "config", anchor: "fs-config", nav: "pb_formula_studio.action_pb_formula_studio",
@@ -4899,7 +4960,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "arrows", anchor: "fs-arrows", act: "observe",
+        key: "arrows", anchor: "fs-arrows", act: "observe", modes: ["watch"],
         say: {
           title: B("See the dependencies", "Nhìn thấy quan hệ phụ thuộc"),
           body: B("Turn the arrows on and the connecting lines are drawn between components. You see what feeds what, across the whole configuration at once.",
@@ -4909,7 +4970,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "card", anchor: "fs-card", act: "observe",
+        key: "card", anchor: "fs-card", act: "observe", modes: ["watch"],
         say: {
           title: B("The component card", "Thẻ thành phần"),
           body: B("Each rule shows its column, its code, its category and a validity check. You always know whether the arithmetic is sound before you trust it.",
@@ -4941,7 +5002,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "flow", anchor: "fs-flow", act: "observe", timeout: 4000,
+        key: "flow", anchor: "fs-flow", act: "observe", timeout: 4000, modes: ["watch"],
         say: {
           title: B("Watch it calculate", "Xem nó tính"),
           body: B("The calculation flow shows how a result is built, step by step, down to the final output. Open it full screen. Scroll to zoom, drag to pan.",
@@ -4957,7 +5018,20 @@ const SCENARIOS = [
         },
       },
       {
-        key: "add", anchor: "fs-add", act: "observe",
+        /* PLAYABLE IN BOTH, and it is the last read-side control the replica
+           draws. Simulate answers the question a formula screen otherwise
+           leaves open — "what would this do to real pay" — and it answers it
+           without changing anything, which is why it belongs in the reading
+           half rather than beside the editing controls below. */
+        key: "simulate", anchor: "fs-simulate", act: "observe",
+        say: {
+          title: B("Try a change before you make it", "Thử một thay đổi trước khi làm thật"),
+          body: B("Simulate runs this configuration against a period that has already been paid, and shows what would have come out. Nothing is written and no payslip moves. It is the cheapest way to find out that a rule you were sure about is wrong.",
+                  "Chức năng Mô phỏng chạy cấu hình này trên một kỳ lương đã chi, rồi cho xem kết quả sẽ ra sao. Không có gì được ghi và không phiếu lương nào thay đổi. Đây là cách rẻ nhất để phát hiện một quy tắc bạn đinh ninh là đúng hoá ra lại sai."),
+        },
+      },
+      {
+        key: "add", anchor: "fs-add", act: "observe", modes: ["watch"],
         say: {
           title: B("Add a component, or a whole sheet", "Thêm một thành phần, hoặc cả một trang tính"),
           body: B("Need a new allowance or deduction? The plus adds one component. The same control imports an entire Excel sheet, which is scored before anything is saved.",
@@ -4965,7 +5039,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "editai", anchor: "fs-editai", act: "observe",
+        key: "editai", anchor: "fs-editai", act: "observe", modes: ["watch"],
         say: {
           title: B("Edit by describing it", "Sửa bằng cách mô tả"),
           body: B("Change a formula by describing the change in plain language. Whether editing is available to you at all is a permission, set by your administrator.",
@@ -4973,7 +5047,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "views", anchor: "fs-views", act: "observe",
+        key: "views", anchor: "fs-views", act: "observe", modes: ["watch"],
         say: {
           title: B("Cards, Grid, Test and Settings", "Thẻ, Lưới, Kiểm thử và Thiết lập"),
           body: B("Four ways to hold the same configuration. Let us open the Grid, which is the one that looks like the spreadsheet this all replaced.",
@@ -4981,7 +5055,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "opengrid", anchor: "fs-view-grid", act: "click", guard: false,
+        key: "opengrid", anchor: "fs-view-grid", act: "click", guard: false, modes: ["watch"],
         say: {
           kicker: B("Your turn", "Đến lượt bạn"),
           title: B("Open the Grid", "Mở Lưới"),
@@ -4990,7 +5064,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "canvas", anchor: "grid-canvas", act: "observe", timeout: 5000,
+        key: "canvas", anchor: "grid-canvas", act: "observe", timeout: 5000, modes: ["watch"],
         say: {
           title: B("The full spreadsheet grid", "Toàn bộ lưới bảng tính"),
           body: B("Each component is a column. The rows are its name, category, type, formula, live value and validity. Walk it with the arrow keys, A, B, C, straight across.",
@@ -4998,7 +5072,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "fbar", anchor: "grid-fbar", act: "observe", timeout: 4000,
+        key: "fbar", anchor: "grid-fbar", act: "observe", timeout: 4000, modes: ["watch"],
         say: {
           title: B("The formula bar", "Thanh công thức"),
           body: B("Click any formula cell and it loads here. Edit it in the bar, or press F2 in the cell. Both take the same validated round trip, with live feedback as you type.",
@@ -5006,7 +5080,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "gridhint", anchor: "grid-hint", act: "observe", timeout: 4000,
+        key: "gridhint", anchor: "grid-hint", act: "observe", timeout: 4000, modes: ["watch"],
         say: {
           title: B("Edit, multi-select and drag-fill", "Sửa, chọn nhiều và kéo điền"),
           body: B("Enter saves, Esc cancels, Ctrl+Z undoes. Shift-click or Ctrl-click column headers to set several categories at once. Or drag a formula's fill handle sideways to copy it, with its references translated.",
@@ -5014,7 +5088,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "payai", anchor: "fs-payai", act: "observe",
+        key: "payai", anchor: "fs-payai", act: "observe", modes: ["watch"],
         say: {
           title: B("The copilot knows this configuration", "Trợ lý hiểu cấu hình này"),
           body: B("Ask it to explain a rule or draft a new one. That is Formula Studio — spreadsheet power without a spreadsheet to keep in a folder.",
@@ -5025,23 +5099,34 @@ const SCENARIOS = [
   },
 
   /* ----------------------------------------------------------- sc_import
-     tour_import. The multi-sheet importer lives INSIDE a backend wizard that
-     cannot be opened cold, so this scenario navigates nowhere and its steps
-     degrade to centred cards until the learner has the wizard on screen —
-     which is exactly what the tour it replaces did, deliberately. */
+     tour_import, and from LEARNOS Phase 5 a Try as well.
+
+     THE TWO MODES WALK DIFFERENT CONTROLS, AND THAT IS THE HONEST SHAPE HERE.
+     Watch narrates the REAL multi-sheet importer, which lives inside a backend
+     wizard that cannot be opened cold: its steps point at `imp-*`, they degrade
+     to centred cards until the learner has the wizard on screen, and their
+     timeout is short so the degradation is quick rather than a nine-second
+     stare. Try walks the PRACTICE importer, which is a replica of the same
+     flow with controls of its own. Both tell one story — score the file, fix
+     the row that could not be read, then commit — and a step declares which
+     mode it belongs to rather than the two being two scenarios that drift.
+
+     `entry.nav` opens the import cockpit. Watch used to start wherever the
+     learner happened to be standing, which meant its first card described a
+     screen that was not there. */
   {
     key: "sc_import",
     icon: "inbox",
     line: "payrun",
-    modes: ["watch"],
+    modes: ["watch", "try"],
     screens: ["import", "importwizard", "formula"],
     name: B("Import a sheet with confidence", "Nhập một trang tính có kiểm chứng"),
     tagline: B("Preview, score and fix — before a single component is saved.",
                "Xem trước, chấm điểm và sửa — trước khi lưu bất kỳ thành phần nào."),
-    entry: {},
+    entry: { nav: "pb_import.action_pb_import", screen: "import" },
     steps: [
       {
-        key: "intro", act: "observe",
+        key: "intro", act: "observe", modes: ["watch"],
         say: {
           kicker: B("Import confidence", "Điểm tin cậy khi nhập"),
           title: B("A workbook is not trusted, it is checked", "Không tin ngay bảng tính, mà kiểm tra nó"),
@@ -5050,7 +5135,8 @@ const SCENARIOS = [
         },
       },
       {
-        key: "score", anchor: "imp-confidence", act: "observe", timeout: 3000,
+        key: "score", anchor: "imp-confidence", act: "observe", timeout: 2000,
+        modes: ["watch"],
         say: {
           title: B("A score, not a leap of faith", "Một điểm số, không phải một cú nhắm mắt"),
           body: B("The percentage comes from three things: how cleanly the formulas resolved, how many references survived intact, and how sensible the sample numbers look. A row in red points at something that could not be mapped, and quietly became zero. That is the exact trap this step catches.",
@@ -5058,7 +5144,8 @@ const SCENARIOS = [
         },
       },
       {
-        key: "fix", anchor: "imp-actions", act: "observe", timeout: 3000,
+        key: "fix", anchor: "imp-actions", act: "observe", timeout: 2000,
+        modes: ["watch"],
         say: {
           title: B("Fix it before you commit", "Sửa trước khi ghi nhận"),
           body: B("Pick a fix on any broken row and apply it. The score climbs as you go. Nothing is written until you finish, and abandoning the preview leaves the configuration exactly as it was.",
@@ -5067,12 +5154,178 @@ const SCENARIOS = [
                  "Sửa ĐẦU VÀO ở đây chính là cách chặn một phiếu lương sai về sau. Một dòng sửa sau khi đã ghi nhận là một khoản hiệu chỉnh mà ai đó sẽ phải giải trình."),
         },
       },
+
+      /* ---- the Try track, on the practice importer (LEARNOS Phase 5) ----
+         Six steps over two replica screens. The learner starts the flow, reads
+         the score, repairs the one cell that could not be read, matches the
+         row, commits, and reads what the commit produced. Nothing here can
+         reach a record: there is no server behind a replica. */
+      {
+        key: "openflow", anchor: "im-cta", screen: "import",
+        act: "click", guard: false, modes: ["try"],
+        say: {
+          kicker: B("Your turn", "Đến lượt bạn"),
+          title: B("Open the guided flow", "Mở luồng có hướng dẫn"),
+          body: B("An import is four steps: choose the source, review what was matched, fix what was not, then write it. Press the button to begin. Opening the flow writes nothing.",
+                  "Một lượt nhập liệu có bốn bước: chọn nguồn, soát phần đã khớp, sửa phần chưa khớp, rồi ghi vào hệ thống. Hãy bấm nút để bắt đầu. Mở luồng này chưa ghi gì cả."),
+        },
+      },
+      {
+        key: "readscore", anchor: "iw-review", screen: "importwizard",
+        act: "observe", modes: ["try"],
+        say: {
+          title: B("Read the count, not the percentage", "Đọc con số đếm, đừng đọc phần trăm"),
+          body: B("The score is high and two rows still need you. A percentage tells you how the file went; the count tells you how many people it would get wrong. Read the second one.",
+                  "Điểm số thì cao mà vẫn còn hai dòng cần bạn xử lý. Phần trăm cho biết cả tệp chạy ra sao; con số đếm cho biết bao nhiêu người sẽ bị tính sai. Hãy đọc con số thứ hai."),
+        },
+      },
+      {
+        key: "fixcell", anchor: "rep-impfix", screen: "importwizard",
+        act: "input", value: B("1,200,000", "1.200.000"), modes: ["try"],
+        say: {
+          title: B("Repair the cell that could not be read", "Sửa ô mà hệ thống không đọc được"),
+          body: B("This row's overtime cell is not a number, so the import would read it as nothing. Type the amount from the file and press Enter. A cell nobody repairs becomes a zero on somebody's payslip.",
+                  "Ô tăng ca của dòng này không phải là số, nên hệ thống sẽ hiểu là không có gì. Hãy gõ số tiền theo tệp rồi bấm Enter. Ô không ai sửa sẽ thành số không trên phiếu lương của một người."),
+          tip: B("Type it the way you write numbers. Dots, commas or neither — the amount is what is checked.",
+                 "Bạn viết số theo thói quen nào cũng được. Dấu chấm, dấu phẩy hay không dấu gì — cái được kiểm là con số."),
+        },
+      },
+      {
+        /* GUARDED. `match` joined the writing verbs in the Phase 5 review
+           round, and it belongs there: pressing this writes the row's
+           employee onto the staged batch. In Try the guard changes nothing a
+           learner can feel — the replica has no server either way — which is
+           exactly why declaring it honestly costs nothing. */
+        key: "matchrow", anchor: "rep-impmatch", screen: "importwizard",
+        act: "click", guard: true, modes: ["try"],
+        say: {
+          title: B("Match the row to a person", "Ghép dòng đó với một con người"),
+          body: B("Three choices sit on this row: Match, Retry and Skip. Match tells Payobook which employee record the repaired figure belongs to. Skip would leave this person out of the run.",
+                  "Dòng này có ba lựa chọn: Khớp, Thử lại và Bỏ qua. Khớp cho Payobook biết con số vừa sửa thuộc về hồ sơ nhân viên nào. Bỏ qua sẽ để người này ra ngoài đợt lương."),
+        },
+      },
+      {
+        key: "commit", anchor: "iw-commit", screen: "importwizard",
+        act: "click", guard: true, modes: ["try"],
+        say: {
+          title: B("Commit the import", "Ghi nhận dữ liệu"),
+          body: B("Nothing was written until now. This is the press that writes, and on your own data it is the one worth reading the counts before. Here it is a rehearsal.",
+                  "Cho tới lúc này chưa có gì được ghi. Đây chính là cú bấm ghi dữ liệu, và trên dữ liệu thật thì nên đọc kỹ các con số trước khi bấm. Ở đây chỉ là tập dượt."),
+          tip: B("Abandoning the flow before this leaves everything exactly as it was.",
+                 "Bỏ dở luồng này trước bước đó thì mọi thứ vẫn y nguyên như cũ."),
+        },
+      },
+      {
+        key: "landed", anchor: "iw-outcome", screen: "importwizard",
+        act: "observe", modes: ["try"],
+        say: {
+          title: B("What the import produced", "Lượt nhập đã tạo ra gì"),
+          body: B("Two counts: people created and payslips created. Read them against what you expected. A number you did not expect is a question to ask now, not after the run is approved.",
+                  "Hai con số: số người được tạo và số phiếu lương được tạo. Hãy đối chiếu với những gì bạn mong đợi. Con số lệch là câu hỏi cần hỏi ngay, đừng đợi đến khi đợt lương đã duyệt xong."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_people
+     ADD YOUR FIRST EMPLOYEE — LEARNOS Phase 5, and the first scenario in this
+     module that was never a pb_coach tour.
+
+     TRY ONLY, and the reason is the same one that makes it worth writing. The
+     activation checklist's second item asks a brand-new tenant to add their
+     first person, and the two ways to teach that are both bad on their own: a
+     Watch of the real form would be a walkthrough of an empty database with
+     nobody in it, and a Do would have somebody's first act in their own
+     Payobook be one a tutorial talked them through. Try is the third answer —
+     the same five steps, on a company that is not theirs — so that when they
+     do it for real they have done it before.
+
+     THE LAST STEP DOES NOT SHOW THE ROW APPEARING, and that is deliberate. The
+     replica has no server, so a roster that grew by one would be a lie the
+     fixture told; instead the step points at the roster the learner already
+     read in LP and at the person on it who is NOT payroll-ready. That is the
+     more useful ending anyway: adding somebody is the easy half. */
+  {
+    key: "sc_people",
+    icon: "user-plus",
+    line: "people",
+    modes: ["try"],
+    screens: ["employees"],
+    name: B("Add your first employee", "Thêm nhân viên đầu tiên"),
+    tagline: B("Name, division, save — and the one thing that still stands between a new person and their pay.",
+               "Tên, bộ phận, lưu — và điều duy nhất còn ngăn giữa một người mới và tiền lương của họ."),
+    entry: { screen: "employees" },
+    steps: [
+      {
+        key: "open", anchor: "rep-newemp-open", screen: "employees",
+        act: "click", guard: false,
+        say: {
+          kicker: B("Step 1", "Bước 1"),
+          title: B("Find the new employee form", "Tìm biểu mẫu nhân viên mới"),
+          body: B("Everybody who is paid starts here. In Payobook this button opens a form of its own. In the practice company that form is already drawn under the roster — press the button, then read it there.",
+                  "Mọi người được trả lương đều bắt đầu từ đây. Trong Payobook, nút này mở ra một biểu mẫu riêng. Trong công ty thực hành, biểu mẫu đó đã có sẵn ngay dưới danh sách — hãy bấm nút rồi đọc ở đó."),
+        },
+      },
+      {
+        key: "name", anchor: "rep-newemp-name", screen: "employees",
+        act: "input", value: B("Nguyễn Văn An", "Nguyễn Văn An"),
+        say: {
+          kicker: B("Step 2", "Bước 2"),
+          title: B("Type the person's name", "Nhập tên người đó"),
+          body: B("The name is what everybody after you will search for, so write it the way their contract writes it. Type it and press Enter.",
+                  "Cái tên là thứ những người sau bạn sẽ dùng để tìm, nên hãy viết đúng như trong hợp đồng của họ. Gõ vào rồi bấm Enter."),
+          tip: B("Tone marks are optional here. The practice company is not marking your spelling.",
+                 "Ở đây bạn gõ có dấu hay không đều được. Công ty thực hành không chấm chính tả của bạn."),
+        },
+      },
+      {
+        key: "division", anchor: "rep-newemp-div", screen: "employees",
+        act: "click", guard: false,
+        say: {
+          kicker: B("Step 3", "Bước 3"),
+          title: B("Pick the division", "Chọn bộ phận"),
+          body: B("This is the decision on this form. A division carries its own formula configuration, so choosing one here is choosing the rules that will price every payslip this person ever gets.",
+                  "Đây là quyết định quan trọng nhất trên biểu mẫu này. Mỗi bộ phận có cấu hình công thức riêng, nên chọn bộ phận ở đây là chọn bộ quy tắc sẽ tính mọi phiếu lương của người này về sau."),
+        },
+      },
+      {
+        key: "save", anchor: "rep-newemp-save", screen: "employees",
+        act: "click", guard: true,
+        say: {
+          kicker: B("Step 4", "Bước 4"),
+          title: B("Save the person", "Lưu người này"),
+          body: B("On your own Payobook this writes a record other people can see. Here it writes nothing at all — there is no server behind the practice company.",
+                  "Trên Payobook của chính bạn, thao tác này ghi một bản ghi mà người khác cũng nhìn thấy. Ở đây nó không ghi gì cả — không có máy chủ nào phía sau công ty thực hành."),
+        },
+      },
+      {
+        key: "roster", anchor: "pe-roster", screen: "employees",
+        act: "observe",
+        say: {
+          kicker: B("Step 5", "Bước 5"),
+          title: B("On the roster is not the same as paid", "Có trong danh sách chưa phải là được trả lương"),
+          body: B("Read the last row. That person is on the roster and has no bank account on file, so payroll cannot pay them. Adding somebody is the easy half; a running contract and bank details are the half that decides whether they are in the next run.",
+                  "Hãy đọc dòng cuối cùng. Người đó đã có trong danh sách nhưng chưa có tài khoản ngân hàng, nên hệ thống không chi lương cho họ được. Thêm người mới là phần dễ; hợp đồng đang hiệu lực và thông tin ngân hàng mới là phần quyết định họ có mặt trong đợt lương tới hay không."),
+          tip: B("The payroll-ready column is where this shows up. It counts bank details over headcount, and it is the tile to read before a run rather than after it.",
+                 "Cột \"sẵn sàng tính lương\" là nơi điều này hiện ra. Nó đếm số người đã có thông tin ngân hàng trên tổng sĩ số, và nên đọc trước khi chạy đợt lương chứ đừng đọc sau."),
+        },
+      },
     ],
   },
 
   /* ---------------------------------------------------------- sc_mapping
-     tour_mapping. Same shape and same reason as sc_import: the mid/end
-     mapping wizard is opened from a configuration, not from a menu. */
+     tour_mapping. Watch only: the mid/end mapping wizard is opened from a
+     configuration, not from a menu, and the practice replica has no wizard of
+     its own to stand in for it.
+
+     `entry.nav` opens FORMULA STUDIO rather than the import cockpit, and that
+     is a deliberate departure from the Phase 5 handover's wording, which asked
+     for the import action on both of the watch-only tours. Import is right for
+     sc_import and wrong here: this walkthrough's own first card tells the
+     learner to open the mapping wizard from a configuration, so landing them
+     on a screen none of its three steps mentions would be a worse start than
+     the one it replaces. The two steps whose anchors live inside the closed
+     wizard keep their centred-card degradation and drop to a 2-second wait. */
   {
     key: "sc_mapping",
     icon: "git-branch",
@@ -5082,7 +5335,7 @@ const SCENARIOS = [
     name: B("Map mid-cycle pay to end-cycle", "Ánh xạ lương giữa kỳ sang cuối kỳ"),
     tagline: B("Pair the components of two configurations without matching dozens by hand.",
                "Ghép các thành phần của hai cấu hình mà không phải khớp tay hàng chục dòng."),
-    entry: {},
+    entry: { nav: "pb_formula_studio.action_pb_formula_studio" },
     steps: [
       {
         key: "intro", act: "observe",
@@ -5094,7 +5347,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "matched", anchor: "map-intro", act: "observe", timeout: 3000,
+        key: "matched", anchor: "map-intro", act: "observe", timeout: 2000,
         say: {
           title: B("Matched by code, then by name", "Khớp theo mã, rồi theo tên"),
           body: B("Auto-suggest pairs components with the same code first, which is a perfect match. For the rest it falls back to name similarity, and it skips anything you have already mapped. Every suggestion shows its confidence and the reason it was made.",
@@ -5102,7 +5355,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "accept", anchor: "map-actions", act: "observe", timeout: 3000,
+        key: "accept", anchor: "map-actions", act: "observe", timeout: 2000,
         say: {
           title: B("Suggest, review, accept", "Gợi ý, soát lại, chấp nhận"),
           body: B("Generate the proposals and read them. Then accept the confident ones in one go, or take them one at a time. The machine does the tedious first pass. The judgement stays yours.",

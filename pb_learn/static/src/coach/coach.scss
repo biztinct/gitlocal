@@ -210,6 +210,19 @@ body.pb-coach-absent .lrn-fab { bottom: 92px; }
     .lrn-btn { width: 100%; justify-content: center; }
 }
 
+/* LEARNOS Phase 5 — the way into the free-roam sandbox. LAST in the drawer
+   and quiet: it is not an answer to anything, it is the door for somebody who
+   would rather look than read. Separated by a rule so it does not read as one
+   more suggested question. */
+.lrn-cpractice {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--vuf-line, #E5E7EB);
+
+    .lrn-note { margin: 4px 0 7px; }
+    .lrn-btn { width: 100%; justify-content: center; }
+}
+
 .lrn-cscens { margin-bottom: 12px; }
 
 .lrn-cscen {

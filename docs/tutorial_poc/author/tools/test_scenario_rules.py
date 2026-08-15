@@ -31,6 +31,15 @@ sys.path.insert(0, HERE)
 
 import gen_learn_data as gen                                      # noqa: E402
 
+_DUMP = {}
+
+
+def _shipped(name):
+    """One table out of the real authoring source, loaded once."""
+    if not _DUMP:
+        _DUMP.update(gen.dump())
+    return _DUMP.get(name) or {}
+
 
 def _base_scenario(**over):
     """A minimal VALID scenario. Every fixture below is this with one thing
@@ -56,9 +65,17 @@ def _base_scenario(**over):
     return sc
 
 
-def _run(scenario):
-    """Feed one scenario through the emitter. Returns (exit_code, output)."""
+def _run(scenario, input_anchors=None):
+    """Feed one scenario through the emitter. Returns (exit_code, output).
+
+    `inputAnchors` and `practiceAnchors` are the SHIPPED tables by default:
+    both are read by rules under test, and a probe that supplied its own would
+    be testing a world where the shipped ones do not exist.
+    """
     data = {'scenarios': [scenario],
+            'practiceAnchors': _shipped('practiceAnchors'),
+            'inputAnchors': (_shipped('inputAnchors') if input_anchors is None
+                             else input_anchors),
             'screenCtx': dict.fromkeys(
                 ['runpayroll', 'payruns', 'payslips', 'import', 'importwizard',
                  'fullfinal', 'proration', 'retro', 'formula', 'structures',
@@ -175,6 +192,83 @@ CASES = [
         _base_scenario(steps=[]),
         'no steps',
     ),
+    # ---------------------------------------------------- LEARNOS Phase 5
+    (
+        "an input step pointed at a control that is not a field",
+        _base_scenario(modes=['watch', 'try'],
+                       entry={'nav': 'pb_payrun_wizard.action_pb_payrun_wizard',
+                              'screen': 'runpayroll'},
+                       steps=[{
+                           'key': 'type', 'anchor': 'pw-summary', 'act': 'input',
+                           'value': {'en': '1,200,000', 'vi': '1.200.000'},
+                           'say': {'title': {'en': 'Type it', 'vi': 'Nhập vào'},
+                                   'body': {'en': 'Here.', 'vi': 'Ở đây.'}},
+                       }]),
+        'is not declared in INPUT_ANCHORS',
+    ),
+    (
+        "an input step with an anchor the replica draws but no field on",
+        _base_scenario(modes=['watch', 'try'],
+                       entry={'nav': 'pb_payrun_wizard.action_pb_payrun_wizard',
+                              'screen': 'runpayroll'},
+                       steps=[{
+                           'key': 'type', 'anchor': 'pe-roster', 'act': 'input',
+                           'value': {'en': 'x', 'vi': 'x'},
+                           'screen': 'employees',
+                           'say': {'title': {'en': 'Type it', 'vi': 'Nhập vào'},
+                                   'body': {'en': 'Here.', 'vi': 'Ở đây.'}},
+                       }]),
+        'is not declared in INPUT_ANCHORS',
+    ),
+    (
+        "a try-playable step pointed at a control the replica does not draw",
+        _base_scenario(modes=['watch', 'try'],
+                       entry={'nav': 'pb_payrun_wizard.action_pb_payrun_wizard',
+                              'screen': 'runpayroll'},
+                       steps=[{
+                           'key': 'grid', 'anchor': 'grid-canvas', 'act': 'observe',
+                           'say': {'title': {'en': 'Look', 'vi': 'Nhìn'},
+                                   'body': {'en': 'At this.', 'vi': 'Vào đây.'}},
+                       }]),
+        'which the practice replica does not draw',
+    ),
+    (
+        "a step declaring a mode its scenario does not offer",
+        _base_scenario(steps=[{
+            'key': 'look', 'anchor': 'pw-division', 'act': 'observe',
+            'modes': ['try'],
+            'say': {'title': {'en': 'Look', 'vi': 'Nhìn'},
+                    'body': {'en': 'At this.', 'vi': 'Vào đây.'}},
+        }]),
+        'declares mode(s) the scenario does not offer',
+    ),
+    (
+        "a step scoped to no mode at all",
+        _base_scenario(steps=[{
+            'key': 'look', 'anchor': 'pw-division', 'act': 'observe',
+            'modes': [],
+            'say': {'title': {'en': 'Look', 'vi': 'Nhìn'},
+                    'body': {'en': 'At this.', 'vi': 'Vào đây.'}},
+        }]),
+        'no modes',
+    ),
+]
+
+# The INPUT_ANCHORS table is itself validated, and it is validated against the
+# REPLICA rather than against the registry — a declared field the replica does
+# not draw would let every rule above pass while the learner types into
+# nothing. These two probes replace the shipped table instead of the scenario.
+TABLE_CASES = [
+    (
+        "a declared field the replica does not draw",
+        {'rep-nosuchfield': {'kind': 'text'}},
+        'the replica draws no control with that anchor',
+    ),
+    (
+        "a declared field with a kind nothing implements",
+        {'rep-impfix': {'kind': 'currency'}},
+        'kind must be one of',
+    ),
 ]
 
 
@@ -182,6 +276,16 @@ def main():
     failures = []
     for label, scenario, needle in CASES:
         code, out = _run(scenario)
+        if code != 6:
+            failures.append('%s: expected exit 6, got %r' % (label, code))
+        elif needle not in out:
+            failures.append('%s: refused for the wrong reason.\n      wanted: %s'
+                            '\n      got: %s' % (label, needle, out.strip()))
+        else:
+            print('  ✓ refused: %s' % label)
+
+    for label, table, needle in TABLE_CASES:
+        code, out = _run(_base_scenario(), input_anchors=table)
         if code != 6:
             failures.append('%s: expected exit 6, got %r' % (label, code))
         elif needle not in out:
@@ -204,7 +308,7 @@ def main():
             print('  ✗ %s' % f)
         return 1
     print('\n✓ %d refusals and 1 acceptance — the scenario rules are wired up.'
-          % len(CASES))
+          % (len(CASES) + len(TABLE_CASES)))
     return 0
 
 

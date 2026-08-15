@@ -226,8 +226,7 @@
     "iw-outcome": {
       "screen": "importwizard",
       "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
-      "desc": "What the commit actually created: employees and payslips.",
-      "reserved": true
+      "desc": "What the commit actually created: employees and payslips."
     },
     "iw-commit": {
       "screen": "importwizard",
@@ -613,6 +612,13 @@
     "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
     "rep-dash-runs": "The replica Dashboard's three-month run list. The product draws ONE latest-run card here; three months is a teaching view, so it keeps a rep- name and the Coach must never claim to point at it on a live screen.",
     "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper.",
+    "rep-impfix": "The import wizard's one repairable cell — the overtime amount on the row whose figure could not be read. A real input; the value a learner types is checked loosely against the step's own value, thousands marks and all.",
+    "rep-impmatch": "The Match button on that same row. Practice-only because the product's importer offers its fixes differently; here it is what 'accept this row' looks like.",
+    "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens a form view; here it is the step that takes the learner down to the practice form.",
+    "rep-newemp-name": "The practice employee form's name field. A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
+    "rep-newemp-div": "The practice employee form's division picker. A click target, not an input: choosing the division is choosing which formula configuration will pay this person.",
+    "rep-newemp-save": "The practice employee form's Save button. It saves nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
+    "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",
     "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen."
   },
   "foreign": {

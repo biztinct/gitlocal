@@ -63,6 +63,11 @@ const OPAQUE = new Set(["code", "a", "kbd", "samp", "script", "style", "pre"]);
 const BOUND_L = "(?<![0-9A-Za-zÀ-ỹ])";
 const BOUND_R = "(?![0-9A-Za-zÀ-ỹ])";
 
+/* The wrapper this file writes, as a pattern. Used by the idempotence guard
+   below, and it has to be the whole opening TAG rather than the attribute
+   name: the attribute name alone is a string that can arrive inside a body. */
+const WRAPPED_RE = /<span class="lrn-gloss" data-gloss="/;
+
 function escapeRe(s) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -121,7 +126,14 @@ export function glossify(html, lang) {
     }
     // Idempotence guard. Running twice would wrap the term inside its own
     // span; cheap to prevent, and impossible to notice if it ever happened.
-    if (html.indexOf("data-gloss=") !== -1) {
+    //
+    // KEYED ON THE WRAPPER THIS FUNCTION WRITES, not on a substring of it. The
+    // first version tested for the bare attribute name, which is a string a
+    // tenant can type: a `learn.tenant.override` value containing it reaches
+    // here through `gtx` — escaped, so it can never become a tag, and still
+    // enough to switch the whole pass off for that body. The full opening tag
+    // cannot be forged the same way, because `<` does not survive the escape.
+    if (WRAPPED_RE.test(html)) {
         return html;
     }
     const used = new Set();
@@ -240,6 +252,22 @@ function showCard(span) {
     el.style.left = `${Math.round(left)}px`;
     el.style.top = `${Math.round(above ? r.top - h - 8 : r.bottom + 8)}px`;
     el.classList.toggle("below", !above);
+}
+
+/** Whether a hovercard is showing right now.
+ *
+ *  THE ESCAPE LADDER DEPENDS ON THIS, AND IT USED TO DEPEND ON LOAD ORDER.
+ *  Every keyboard listener in this module is on `document` at CAPTURE phase
+ *  (Odoo's hotkey service stops propagation at document-bubble, so bubble is
+ *  silently dead). Two capture listeners on the same node fire in REGISTRATION
+ *  order — which, for the Coach and this card, is decided by whichever surface
+ *  finished loading the content plane first. A keyboard contract may not rest
+ *  on that. So each surface asks this before acting on Escape and stands down
+ *  while a card is open: one Escape closes the card, the next closes the
+ *  surface. Same ladder the Phase 2+3 deploy round established, made explicit.
+ */
+export function glossaryOpen() {
+    return !!(cardEl && !cardEl.hidden);
 }
 
 /** Tear the card down. Called from a component's onWillUnmount: the card is
