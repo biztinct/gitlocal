@@ -158,3 +158,17 @@ missing test", contract checker discipline, anchor registry discipline). Read th
   wrong answer is worse than a miss. Both are Phase 4 scope items.
 - (Phase 1 validation) A golden-template clone cannot exercise the missing-module Journey
   branch (it has everything installed) — that path needs a deliberately-lean tenant to test.
+- (Phase 2 review) **"Escape at the substitution point" was the WRONG seam when most call
+  sites already escape** — tokenValue() escaping double-escaped ~407 esc(tx()) sites
+  ("Trần & Sons" → "&amp;amp;"). The trust boundary belongs at the RAW-insertion helper
+  (gtx), not inside tx(). A spec bug: the handover's own wording produced it.
+- (Phase 2 review) **A glossary gate must check BOTH directions.** term→entry-exists was
+  gated; alias→wraps-only-what-it-means was not, so bare aliases ("kỳ" inside "bất kỳ",
+  "đang chờ", "run") hung wrong-topic hovercards on 100+ bodies. Rule: single-word aliases
+  forbidden unless allowlisted with a reason; glossify the corpus at generate time as a lint.
+- (Phase 2 review, ruled) `cấp` (not `vòng`) is the tier word in VI everywhere; DEMO_RETAIL_MID
+  deletion from glossary.configCode ACCEPTED (shape+real END codes retained; MID taught in
+  whichconfig); the 17-28-word warning band did NOT shrink (23.8% vs 24.2%) — only the >28
+  tail was removed; honest follow-up target, not a claim of overall simplification.
+- (Phase 2 review → Phase 4 scope) Composer corpus: glossary grew past _CORPUS_CAP (12k) and
+  is appended last — new terms never reach the composer. Fix ordering/cap in Phase 4.

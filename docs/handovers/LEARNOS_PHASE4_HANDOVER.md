@@ -37,6 +37,13 @@ names to the LLM are closed. Privacy rails are copy-paste from pb_learn (ledger 
   screenless match threshold (or require ≥2 strong token hits when screen_key is null) and
   add both cases to simulate_resolver's probes.
 
+### 0b. Composer corpus cap (found by Phase-2 review)
+The glossary section grew past `_CORPUS_CAP = 12000` and is appended LAST in `_corpus()`, so
+new glossary terms never reach the composer. Fix: raise the cap sensibly (measure the full
+corpus size), order sections by answer-value (screen context + intents first, glossary before
+columns), and truncate at a SECTION boundary with a log line — never mid-entry. Add a replay
+assertion that a known new glossary term appears in the corpus for its screen.
+
 ### 1. Answers that teach (pb_learn)
 - Author-side: each intent MAY declare `watch`/`try` scenario targets (extend the QA schema +
   emitter; validate keys like show_me). Coach `_answerHTML` renders [Watch] [Try] buttons when
