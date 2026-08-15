@@ -19,6 +19,11 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
 import { RT, T, tx, esc, ic, reduced, SP} from "../engine/runtime";
+/* The glossary pass (LEARNOS Phase 2). `gtx` is `tx` plus the hovercard
+   wrapper, and it is used at exactly the sites that insert an authored body
+   RAW — a lesson step, a mission step detail, a scenario card. Everywhere
+   else on this screen goes through esc() and must keep doing so. */
+import { gtx, setGlossary, installGlossary, closeGlossary } from "../engine/glossary";
 import { loadContent, composeStations } from "../content/content_loader";
 import { Spot, Trace, setOverlayRoot } from "../engine/spotlight";
 
@@ -128,6 +133,9 @@ export class LearnJourney extends Component {
         });
         onPatched(() => this._afterPaint());
         onWillUnmount(() => {
+            // The card lives on document.body, so leaving the Journey with
+            // one open would strand it over the next screen.
+            closeGlossary();
             Spot.hide();
             document.removeEventListener("keydown", this._onKey);
             document.body.classList.remove("lrn-open");
@@ -193,6 +201,11 @@ export class LearnJourney extends Component {
         };
         RT.tokens = this.bundle.tokens || {};
         RT.chrome = this.bundle.chrome || {};
+        // The hovercard's match table and its one delegated listener. Built
+        // from the glossary the content plane already carries, so no surface
+        // owns a second copy of the terms.
+        setGlossary(this.bundle.glossary);
+        installGlossary();
         this.progress = this.bundle.progress || {};
         this.visible = new Set(
             this.bundle.stations.filter((s) => s.visible).map((s) => s.key));
@@ -483,8 +496,16 @@ export class LearnJourney extends Component {
                 </span>
             </div>`;
         }).join("");
-        return `<div class="lrn-screnrow" role="group"
-            aria-label="${esc(T("scenarios"))}">${cards}</div>`;
+        /* The row's LEAD-IN. `scenariosLead` was authored in Phase 1b and
+           rendered nowhere — the string existed, the map did not show it, and
+           a learner met three unexplained buttons. It says what the three
+           modes are for, which is the one thing the buttons cannot. */
+        return `<div class="lrn-screnhead">
+                <span class="lrn-screnheadtitle">${esc(T("scenarios"))}</span>
+                <p class="lrn-screnlead">${esc(T("scenariosLead"))}</p>
+            </div>
+            <div class="lrn-screnrow" role="group"
+                aria-label="${esc(T("scenarios"))}">${cards}</div>`;
     }
 
     /* ------------------------------------------------------ scenario: TRY
@@ -542,7 +563,7 @@ export class LearnJourney extends Component {
         return `
         ${step.kicker ? `<div class="lrn-kicker">${esc(tx(step.kicker))}</div>` : ""}
         <h3>${esc(tx(step.title))}</h3>
-        <div class="lrn-cbody">${tx(step.body)}</div>
+        <div class="lrn-cbody">${gtx(step.body)}</div>
         ${acts ? `<div class="lrn-scwait">
             <h4>${ic("target")}${esc(T("scYourTurn"))}</h4>
             <p>${esc(step.act === "input"
@@ -644,7 +665,7 @@ export class LearnJourney extends Component {
         return `
         ${st.kicker ? `<div class="lrn-kicker">${esc(tx(st.kicker))}</div>` : ""}
         <h3>${esc(tx(st.title))}</h3>
-        <div class="lrn-cbody">${tx(st.body)}</div>
+        <div class="lrn-cbody">${gtx(st.body)}</div>
         ${moment}
         ${st.consequence ? `<div class="lrn-conseq"><h4>${ic("alert-triangle")}${esc(T("consequence"))}</h4>
             <p>${esc(tx(st.consequence))}</p></div>` : ""}
@@ -887,7 +908,7 @@ export class LearnJourney extends Component {
         return `
         <div class="lrn-kicker">${esc(step.is_undo ? T("undoShown") : T("startMission"))}</div>
         <h3>${esc(tx(step.instruction))}</h3>
-        ${step.detail ? `<div class="lrn-cbody">${esc(tx(step.detail))}</div>` : ""}
+        ${step.detail ? `<div class="lrn-cbody">${gtx(step.detail)}</div>` : ""}
         ${this.state.mHint && step.hint
             ? `<div class="lrn-tip">${ic("lightbulb")}<span>${esc(tx(step.hint))}</span></div>` : ""}
         <div class="lrn-ctools">
@@ -931,10 +952,10 @@ export class LearnJourney extends Component {
         return `
         <div class="lrn-kicker">${esc(T("check"))}</div>
         <h3>${esc(tx(step.instruction))}</h3>
-        ${step.detail ? `<div class="lrn-cbody">${esc(tx(step.detail))}</div>` : ""}
+        ${step.detail ? `<div class="lrn-cbody">${gtx(step.detail)}</div>` : ""}
         <div class="lrn-opts">${opts}</div>
         ${picked && !picked.correct
-            ? `<div class="lrn-explain warn"><p>${tx(picked.recovery)}</p></div>` : ""}
+            ? `<div class="lrn-explain warn"><p>${gtx(picked.recovery)}</p></div>` : ""}
         ${this.state.mHint && step.hint && !chosen
             ? `<div class="lrn-tip">${ic("lightbulb")}<span>${esc(tx(step.hint))}</span></div>` : ""}
         <div class="lrn-ctools">

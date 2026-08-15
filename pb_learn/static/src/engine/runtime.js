@@ -54,15 +54,54 @@ function tokenValue(key) {
     return slot[RT.lang] || slot.en || "{{" + key + "}}";
 }
 
-/** Every translatable value passes through here, so token resolution is free
- *  everywhere — lesson steps, checks, screen chrome. Accepts either a
- *  {en, vi} pair (the bundle's shape and the fixture's) or a plain string. */
-export function tx(o) {
+function interpolate(o, escapeTokens) {
     if (o === null || o === undefined) {
         return "";
     }
     const s = typeof o === "string" ? o : (o[RT.lang] || o.en || "");
-    return s.indexOf("{{") === -1 ? s : s.replace(TOKEN_RE, (_, k) => tokenValue(k));
+    if (s.indexOf("{{") === -1) {
+        return s;
+    }
+    return s.replace(TOKEN_RE, (_, k) => {
+        const v = tokenValue(k);
+        return escapeTokens ? esc(v) : v;
+    });
+}
+
+/** Every translatable value passes through here, so token resolution is free
+ *  everywhere — lesson steps, checks, screen chrome. Accepts either a
+ *  {en, vi} pair (the bundle's shape and the fixture's) or a plain string.
+ *
+ *  RETURNS PLAIN TEXT. The ~400 call sites in this module are
+ *  `esc(tx(...))`, and escaping inside here would double-escape every one of
+ *  them: a tenant called "Trần & Sons" would render as "Trần &amp;amp; Sons".
+ *  Use `txHtml` for the handful of positions that insert the result RAW. */
+export function tx(o) {
+    return interpolate(o, false);
+}
+
+/** `tx` for a RAW-HTML insertion point, with every {{token}} value escaped.
+ *
+ *  THE TRUST BOUNDARY, and it is a property of the POSITION rather than of
+ *  the value. Content bodies are authored in this repo, generated and
+ *  contract-checked, and they legitimately carry <b> and <i> — so the eight
+ *  sites that insert one do not escape it. A TOKEN VALUE is a different
+ *  thing entirely: a `learn.tenant.override` row a tenant administrator
+ *  types, landing in the middle of those same raw bodies. Unescaped, that
+ *  was a tenant-admin -> learner XSS surface.
+ *
+ *  So the escape belongs where the raw insertion happens, not in `tx`:
+ *  escaping in `tx` also escapes the 400 positions that were already safe,
+ *  and produces visible mojibake for every ampersand a tenant types.
+ *
+ *  Nothing calls this directly. `gtx()` in engine/glossary.js is the one
+ *  wrapper, and the eight raw sites all go through it — which is what makes
+ *  "every raw position is covered" a property somebody can check by grepping
+ *  for `gtx(` rather than by reading four files.
+ *
+ *  Proved, with a negative control, by tools/replay_tests.py. */
+export function txHtml(o) {
+    return interpolate(o, true);
 }
 
 /** A chrome string by dotted key, e.g. T("lines.payrun"). Falls back to the key
