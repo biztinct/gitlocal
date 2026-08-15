@@ -8,7 +8,7 @@
     # no version bump is invisible to it, and a stale rsync then reverts it
     # silently). NO SCHEMA CHANGE in this module — `next_best` and `streak` are
     # computed, never stored, so there is nothing to migrate here.
-    'version': '19.0.12.0.0',
+    'version': '19.0.12.0.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

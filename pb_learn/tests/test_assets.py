@@ -311,3 +311,38 @@ class TestAssets(TransactionCase):
                                             'close(')),
                     "%s swallows a key in a branch that closes nothing:\n%s"
                     % (rel, head[:120]))
+
+    def test_06b_the_hovercard_swallows_the_key_from_its_own_siblings(self):
+        """The other half of the ladder, and the half that was WRONG on live.
+
+        The surfaces stand down for an open card (test_06). That covers the
+        order where a surface's listener runs first. In the other order the
+        card's own listener runs first, hides the card, and every surface
+        listener runs AFTERWARDS on the same `document` node — where
+        `stopPropagation()` is a no-op — and each one asks `glossaryOpen()`,
+        gets False because the card is already gone, and closes. One Escape
+        took the hovercard and the Coach on apex.
+
+        `stopImmediatePropagation` is the only call that stops a sibling
+        listener on the same node, so the card's handler owes that one
+        specifically. Asserted as an absence too: a bare `stopPropagation()`
+        here reads as protection and is not.
+        """
+        base = get_module_path('pb_learn')
+        with open(os.path.join(base, 'static/src/engine/glossary.js'),
+                  encoding='utf-8') as fh:
+            src = fh.read()
+        src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
+        src = re.sub(r'(?<!:)//[^\n]*', '', src)
+        handler = src.split('addEventListener("keydown"', 1)
+        self.assertEqual(len(handler), 2,
+                         "the hovercard no longer binds a key — this ladder is "
+                         "about nothing")
+        body = handler[1].split('}, true);', 1)[0]
+        self.assertIn('stopImmediatePropagation', body,
+                      "the hovercard's Escape does not stop the surface "
+                      "listeners beside it on document — one Escape will take "
+                      "both rungs of the ladder")
+        self.assertNotIn('ev.stopPropagation()', body,
+                         "a bare stopPropagation() here protects nothing: "
+                         "every other Escape listener is on the same node")
