@@ -136,7 +136,12 @@ class TestPracticeMode(TransactionCase):
         cls.screens = _read(SCREENS)
         cls.coach = _read(COACH)
         cls.progress = _read(PROGRESS)
-        cls.registry = json.loads(_read(REGISTRY))
+        # NOT `cls.registry` — that name is Odoo's own DB registry on
+        # TransactionCase, and shadowing it with a dict makes every setUp in
+        # this class die in odoo/tests/common.py (`'dict' object has no
+        # attribute clear_all_caches`) before a single assertion runs. The
+        # whole file reported 13 ERRORs and zero coverage that way.
+        cls.anchor_registry = json.loads(_read(REGISTRY))
 
     # -- 1. the tripwires around the sandbox's server calls ----------------
     def _surface(self):
@@ -285,9 +290,10 @@ class TestPracticeMode(TransactionCase):
         """Practice-only by definition — no product screen has a watermark — so
         it lives in the `practice` block and nowhere else. A `product` entry
         would be the Coach claiming it can point at this on a live screen."""
-        self.assertIn('rep-watermark', self.registry['practice'])
+        self.assertIn('rep-watermark', self.anchor_registry['practice'])
         for block in ('product', 'pattern', 'foreign'):
-            self.assertNotIn('rep-watermark', self.registry.get(block) or {})
+            self.assertNotIn('rep-watermark',
+                             self.anchor_registry.get(block) or {})
 
     def test_06_the_journey_draws_the_watermark_through_the_builder_only(self):
         """One writer. A second copy of the mark inside the Journey would be a
