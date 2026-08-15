@@ -13,20 +13,38 @@ pipeline or a fork, and a fork is what kills content systems — twelve months
 later nobody knows which copy is true.
 
 So: content is edited in docs/tutorial_poc/author/, generated into pb_learn,
-and `--check` runs beside the tests. Hand-editing the generated XML is a build
+and `--check` runs beside the tests. Hand-editing a generated file is a build
 failure rather than a silent divergence.
 
-WHAT GOES WHERE
----------------
-English lands in the XML (the msgid). Vietnamese lands in i18n/vi_VN.po (the
-msgstr). That is the standard Odoo path and it is what lets a translator work
-without touching a data file — while `translate=True` keeps arithmetic out of
-their reach, because numbers live in non-translatable `value` columns.
+WHAT GOES WHERE  (LEARNOS PHASE 1a — CONTENT LEFT THE DATABASE)
+---------------------------------------------------------------
+Learning CONTENT — stations, lessons, steps, quizzes, missions, glossary, UI
+chrome, coach intents, screens and the column micro-glossary — is emitted as
+ONE static bilingual asset, `pb_learn/static/content/learn_content.json`. Every
+prose leaf in it is `{"en": ..., "vi": ...}` BY CONSTRUCTION, because both
+languages are in hand at every emission site below. There is no ORM record and
+no `.po` round-trip in that path at all: identical bytes on an empty tenant, on
+the demo and on the apex, with nothing for an upgrade to half-apply.
+
+That leaf shape is not a new invention. It is exactly what the server used to
+build at runtime by reading the same records twice under two language contexts
+and zipping the trees (`learn_station._zip_bilingual`, now deleted): a raw
+scalar stays a raw scalar, an EMPTY translatable stays `''` rather than
+becoming a truthy `{"en": "", "vi": ""}`, and everything else becomes a pair.
+`tools/parity_check.py` re-derives the old payload from the previously
+generated XML and diffs it against this file, leaf by leaf.
+
+What STILL travels the Odoo translation path is the handful of values that are
+genuinely ORM records: the tenant override slots and the sidebar
+section/leaf names. English lands in the XML (the msgid), Vietnamese in
+i18n/vi_VN.po (the msgstr).
 
 WHAT THIS GENERATOR OWNS, AND WHAT IT DOES NOT
 ----------------------------------------------
-Owns: pb_learn/data/*.xml, i18n/vi_VN.po, static/src/engine/fixture.js, and the
-`practice` block of static/src/anchors.json.
+Owns: pb_learn/static/content/learn_content.json, pb_learn/data/
+learn_tenant_slots.xml, pb_learn/data/learn_sidebar_item.xml, i18n/vi_VN.po,
+static/src/engine/fixture.js, and the `practice` block of
+static/src/anchors.json.
 
 Does NOT own: the `product`, `pattern`, `foreign` and `scan` blocks of that
 registry. Those describe real templates in other modules — pb_payrun_wizard,
@@ -36,6 +54,7 @@ else's template from our own content would let the registry agree with itself
 while disagreeing with the product.
 """
 import argparse
+import hashlib
 import html
 import json
 import os
@@ -253,6 +272,55 @@ class Live:
                         % (where, flang))
 
 
+class Bi:
+    """The bilingual leaf rule, and the guard that no leaf ships half-written.
+
+    Reproduces `learn_station._zip_bilingual`'s leaf semantics exactly, because
+    the frontend has been reading that shape since Phase A and Phase 1a is a
+    change of DELIVERY, not of payload:
+
+      * an empty English value stays the empty STRING. Wrapping it as
+        `{"en": "", "vi": ""}` would make it truthy and every
+        `field ? render : ""` in the engine would draw an empty card — which is
+        how a step with no consequence once showed a blank "Before you do this"
+        panel.
+      * anything else is `{"en": ..., "vi": ...}`.
+
+    The Vietnamese is `.strip()`ped because that is what the `.po` writer did
+    to it, and the English is NOT, because that is what the XML field carried.
+    Reproducing both is the difference between a parity check that passes and
+    one that argues about whitespace.
+
+    A translatable with no Vietnamese is an ERROR, exactly as it was when the
+    same omission would have written an empty msgstr: it would reach a
+    Vietnamese reader in English, and failing at generation is that discovery
+    three minutes earlier.
+    """
+
+    def __init__(self):
+        self.untranslated = []   # (where, en)
+        self.leaves = 0
+
+    def p(self, where, value):
+        en = en_of(value) or ''
+        vi = (vi_of(value) or '').strip()
+        if not en:
+            return ''
+        if not en.strip():
+            # Whitespace only. It never earned a .po entry, so at runtime the
+            # zip fell back to English on both sides; say so explicitly.
+            return {'en': en, 'vi': en}
+        self.leaves += 1
+        if not vi:
+            self.untranslated.append((where, en))
+            vi = en
+        return {'en': en, 'vi': vi}
+
+    def each(self, where, values):
+        """A LIST of prose leaves — a debrief, a mistakes list."""
+        return [self.p('%s[%d]' % (where, i), v) for i, v in enumerate(values or [])]
+
+
 class Xml:
     def __init__(self, title, note=None):
         self.lines = ['<?xml version="1.0" encoding="utf-8"?>',
@@ -303,82 +371,60 @@ def flatten_chrome(en_tree, vi_tree, prefix=''):
     return out
 
 
-# ------------------------------------------------------------------ generators
-def gen_strings(data, tr):
-    chrome = flatten_chrome(data['i18n']['en'], data['i18n']['vi'])
-    doc = Xml('UI chrome. Both languages reach the browser so the learner can '
-              'switch live, mid-lesson, without losing their place.')
-    for key in sorted(chrome):
-        en, vi = chrome[key]
+# ============================================================================
+# THE CONTENT TREE — static/content/learn_content.json
+# ============================================================================
+# One artifact, two consumers: the browser fetches it directly
+# (static/src/content/content_loader.js) and the server reads it through
+# `learn.content` (models/learn_content.py) for the ask() resolver, the
+# capstone predicates and the runtime bootstrap.
+#
+# Each builder below mirrors, key for key, the `_*_dict()` method that used to
+# serialise the matching ORM record — including the keys that are always empty
+# (a step line's `note`) and the ORM's own `_order`, because the frontend has
+# been reading those orders since Phase A. tools/parity_check.py is what proves
+# it rather than this paragraph.
+GENERATED_BANNER = (
+    'GENERATED FILE. Do not edit. Source: docs/tutorial_poc/author/ · '
+    'Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py'
+)
+
+
+def content_chrome(data, bi):
+    """The flat UI-chrome map, in both languages.
+
+    Zipped WITHOUT key exceptions, exactly as `_zip_prose` did. The keys here
+    are content names chosen by the author, and three of them — required,
+    correct, after — collide with structural keys in the old `_RAW_KEYS` set;
+    running chrome through the structural zipper left those three as bare
+    English and a Vietnamese learner read "Required" beside "Tùy chọn".
+    """
+    flat = flatten_chrome(data['i18n']['en'], data['i18n']['vi'])
+    out = {}
+    for key in sorted(flat):
+        en, vi = flat[key]
         if not en:
+            # gen_strings skipped these, so no record existed and the map had
+            # no entry. Keep the absence rather than inventing an empty pair.
             continue
-        xmlid = slug(key, 'str_')
-        doc.rec('learn.string', xmlid, [('key', key), ('value', en)])
-        tr.add('learn.string', 'value', xmlid, en, vi)
-    return doc.render()
+        out[key] = bi.p('chrome %s' % key, {'en': en, 'vi': vi})
+    return out
 
 
-def gen_glossary(data, tr):
-    doc = Xml('The domain glossary. One entry per payroll word this desk uses '
-              'differently from ordinary Vietnamese or English.')
+def content_glossary(data, bi):
+    out = []
     for i, (key, val) in enumerate(data['glossary'].items()):
-        xmlid = slug(key, 'gloss_')
-        doc.rec('learn.glossary.term', xmlid, [
-            ('key', key), ('sequence', (i + 1) * 10),
-            ('term', en_of(val['term'])), ('definition', en_of(val['def'])),
-        ])
-        tr.add('learn.glossary.term', 'term', xmlid, en_of(val['term']), vi_of(val['term']))
-        tr.add('learn.glossary.term', 'definition', xmlid, en_of(val['def']), vi_of(val['def']))
-    return doc.render()
-
-
-def gen_stations(data, tr):
-    doc = Xml('Stations — the nodes on the Guided Journey map. One per Pay Run '
-              'sidebar leaf.')
-    lesson_of = {l['station']: l['id'] for l in data['lessons'].values()}
-    seq = 0
-    for line_key, line in data['stations'].items():
-        for st in line['stations']:
-            seq += 10
-            sid = st['id']
-            xmlid = slug(sid, 'station_')
-            outline = st.get('outline') or {}
-            doc.rec('learn.station', xmlid, [
-                ('key', sid),
-                ('name', en_of(st['title'])),
-                ('line', line_key),
-                # Phase A is one section. When People or Insights arrive they
-                # add ROWS here, not a second map.
-                ('section', 'payroll'),
-                ('sequence', seq),
-                ('summary', en_of(st.get('desc'))),
-                ('icon', st.get('icon') or 'circle'),
-                ('kind', 'lesson' if sid in lesson_of else 'outline'),
-                ('sidebar_key', SIDEBAR_KEYS.get(sid, '')),
-                ('duration_min', st.get('mins') or 5),
-                ('required', bool(st.get('required'))),
-                ('star', bool(st.get('star'))),
-                ('after_key', st.get('after') or ''),
-                ('outline_what', en_of(outline.get('what'))),
-                ('outline_why', en_of(outline.get('why'))),
-                ('outline_when', en_of(outline.get('when'))),
-                ('outline_prereq', en_of(outline.get('prereq'))),
-            ])
-            tr.add('learn.station', 'name', xmlid, en_of(st['title']), vi_of(st['title']))
-            tr.add('learn.station', 'summary', xmlid,
-                   en_of(st.get('desc')), vi_of(st.get('desc')))
-            for f in ('what', 'why', 'when', 'prereq'):
-                tr.add('learn.station', 'outline_' + f, xmlid,
-                       en_of(outline.get(f)), vi_of(outline.get(f)))
-            for i, m in enumerate(outline.get('mistakes') or []):
-                mid = '%s_mistake_%d' % (xmlid, i)
-                doc.rec('learn.station.mistake', mid, [
-                    ('station_id', ('ref', xmlid)),
-                    ('sequence', (i + 1) * 10),
-                    ('name', en_of(m)),
-                ])
-                tr.add('learn.station.mistake', 'name', mid, en_of(m), vi_of(m))
-    return doc.render()
+        out.append({
+            'key': key,
+            '_seq': (i + 1) * 10,
+            'term': bi.p('glossary %s term' % key, val['term']),
+            'definition': bi.p('glossary %s definition' % key, val['def']),
+        })
+    # learn.glossary.term._order = 'sequence, key'
+    out.sort(key=lambda g: (g['_seq'], g['key']))
+    for g in out:
+        del g['_seq']
+    return out
 
 
 def _step_lines(step, data):
@@ -409,86 +455,192 @@ def _step_lines(step, data):
     return rows
 
 
-def gen_lessons(data, tr):
-    doc = Xml('Lessons, steps and understanding checks. Every step renders over '
-              'the practice replica, never the live app.')
-    for lkey in sorted(data['lessons']):
-        lesson = data['lessons'][lkey]
-        lx = 'lesson_' + lkey.lower()
-        station_x = slug(lesson['station'], 'station_')
+def content_lesson(lkey, lesson, data, bi):
+    where = 'lesson %s' % lkey
+    node = {
         # A lesson carries its OWN name and goal. health_learn reused the
         # station's, which is wrong the moment a lesson is called something
         # more useful than the screen it teaches — "The board and the gates"
         # is not "Pay Runs".
-        doc.rec('learn.lesson', lx, [
-            ('key', lkey),
-            ('station_id', ('ref', station_x)),
-            ('sequence', 10),
-            ('name', en_of(lesson['title'])),
-            ('goal', en_of(lesson.get('goal'))),
-            ('duration_min', lesson.get('mins') or 5),
-        ])
-        tr.add('learn.lesson', 'name', lx, en_of(lesson['title']), vi_of(lesson['title']))
-        tr.add('learn.lesson', 'goal', lx, en_of(lesson.get('goal')), vi_of(lesson.get('goal')))
+        'key': lkey,
+        'name': bi.p('%s name' % where, lesson['title']),
+        'goal': bi.p('%s goal' % where, lesson.get('goal')),
+        'duration_min': lesson.get('mins') or 5,
+        'steps': [],
+        'quizzes': [],
+    }
+    for i, step in enumerate(lesson['steps']):
+        sw = '%s step %d' % (where, i)
+        moment = step.get('moment') or {}
+        node['steps'].append({
+            'kicker': bi.p('%s kicker' % sw, step.get('kicker')),
+            'title': bi.p('%s title' % sw, step['title']),
+            'body': bi.p('%s body' % sw, step['body']),
+            'tip': bi.p('%s tip' % sw, step.get('tip')),
+            'consequence': bi.p('%s consequence' % sw, step.get('consequence')),
+            'screen': step['screen'],
+            'anchor': step.get('anchor') or '',
+            'visual': moment.get('kind') or 'none',
+            'moment_from': moment.get('from') or '',
+            'moment_to': moment.get('to') or '',
+            'moment_chain': moment.get('chain') or '',
+            'moment_which': moment.get('which') or '',
+            'lines': [{
+                'role': role,
+                'label': bi.p('%s line %d label' % (sw, j), label),
+                'value': value,
+                # learn.step.line.note was never written by the generator and
+                # `_line_dict` shipped it as ''. Kept so the payload does not
+                # change shape while the delivery does.
+                'note': '',
+            } for j, (role, label, value) in enumerate(_step_lines(step, data))],
+        })
+    quiz = lesson.get('quiz')
+    if quiz:
+        node['quizzes'].append({
+            'kind': 'choice',
+            'prompt': bi.p('%s quiz prompt' % where, quiz['question']),
+            'options': [{
+                'label': bi.p('%s quiz opt %d label' % (where, k), opt['text']),
+                'correct': bool(opt.get('correct')),
+                'feedback': bi.p('%s quiz opt %d feedback' % (where, k),
+                                 opt['explanation']),
+            } for k, opt in enumerate(quiz['options'])],
+        })
+    return node
 
-        for i, step in enumerate(lesson['steps']):
-            sx = '%s_step_%02d' % (lx, i)
-            moment = step.get('moment') or {}
-            doc.rec('learn.step', sx, [
-                ('lesson_id', ('ref', lx)),
-                ('sequence', (i + 1) * 10),
-                ('kicker', en_of(step.get('kicker'))),
-                ('title', en_of(step['title'])),
-                ('body', en_of(step['body'])),
-                ('tip', en_of(step.get('tip'))),
-                ('consequence', en_of(step.get('consequence'))),
-                ('screen', step['screen']),
-                ('anchor', step.get('anchor') or ''),
-                ('visual', moment.get('kind') or 'none'),
-                ('moment_from', moment.get('from') or ''),
-                ('moment_to', moment.get('to') or ''),
-                ('moment_chain', moment.get('chain') or ''),
-                ('moment_which', moment.get('which') or ''),
-            ])
-            for f in ('kicker', 'title', 'body', 'tip', 'consequence'):
-                tr.add('learn.step', f, sx, en_of(step.get(f)), vi_of(step.get(f)))
 
-            for j, (role, label, value) in enumerate(_step_lines(step, data)):
-                lnx = '%s_line_%02d' % (sx, j)
-                doc.rec('learn.step.line', lnx, [
-                    ('step_id', ('ref', sx)),
-                    ('sequence', (j + 1) * 10),
-                    ('role', role),
-                    ('label', en_of(label)),
-                    ('value', value),
-                ])
-                tr.add('learn.step.line', 'label', lnx, en_of(label), vi_of(label))
+def content_stations(data, bi):
+    """Stations — the nodes on the Guided Journey map — with their lessons
+    nested exactly as `_station_dict` nested them."""
+    lesson_of = {}
+    for lkey in sorted(data['lessons']):
+        lesson_of.setdefault(data['lessons'][lkey]['station'], lkey)
 
-        quiz = lesson.get('quiz')
-        if quiz:
-            qx = '%s_quiz' % lx
-            doc.rec('learn.quiz', qx, [
-                ('lesson_id', ('ref', lx)),
-                ('sequence', 10),
-                ('kind', 'choice'),
-                ('prompt', en_of(quiz['question'])),
-            ])
-            tr.add('learn.quiz', 'prompt', qx,
-                   en_of(quiz['question']), vi_of(quiz['question']))
-            for k, opt in enumerate(quiz['options']):
-                ox = '%s_opt_%d' % (qx, k)
-                doc.rec('learn.quiz.option', ox, [
-                    ('quiz_id', ('ref', qx)),
-                    ('sequence', (k + 1) * 10),
-                    ('label', en_of(opt['text'])),
-                    ('is_correct', bool(opt.get('correct'))),
-                    ('feedback', en_of(opt['explanation'])),
-                ])
-                tr.add('learn.quiz.option', 'label', ox,
-                       en_of(opt['text']), vi_of(opt['text']))
-                tr.add('learn.quiz.option', 'feedback', ox,
-                       en_of(opt['explanation']), vi_of(opt['explanation']))
-    return doc.render()
+    out, seq = [], 0
+    for line_key, line in data['stations'].items():
+        for st in line['stations']:
+            seq += 10
+            sid = st['id']
+            where = 'station %s' % sid
+            outline = st.get('outline') or {}
+            lkey = lesson_of.get(sid)
+            out.append({
+                'key': sid,
+                'name': bi.p('%s name' % where, st['title']),
+                'line': line_key,
+                # Phase A is one section. When People or Insights arrive they
+                # add ROWS here, not a second map.
+                'section': 'payroll',
+                'sequence': seq,
+                'summary': bi.p('%s summary' % where, st.get('desc')),
+                'icon': st.get('icon') or 'circle',
+                'kind': 'lesson' if lkey else 'outline',
+                'sidebar_key': SIDEBAR_KEYS.get(sid, ''),
+                'duration_min': st.get('mins') or 5,
+                'required': bool(st.get('required')),
+                'star': bool(st.get('star')),
+                'after': st.get('after') or '',
+                'outline': {
+                    'what': bi.p('%s outline what' % where, outline.get('what')),
+                    'why': bi.p('%s outline why' % where, outline.get('why')),
+                    'when': bi.p('%s outline when' % where, outline.get('when')),
+                    'prereq': bi.p('%s outline prereq' % where, outline.get('prereq')),
+                    'mistakes': bi.each('%s mistake' % where, outline.get('mistakes')),
+                },
+                'lessons': ([content_lesson(lkey, data['lessons'][lkey], data, bi)]
+                            if lkey else []),
+            })
+    # learn.station._order = 'line, sequence, id' — the LINE sorts first, and
+    # alphabetically, which is not the order the sections were written in.
+    # journey.js holds the reading order (LINE_ORDER); this is storage order and
+    # the frontend has always received it.
+    out.sort(key=lambda s: (s['line'], s['sequence']))
+    return out
+
+
+def content_missions(data, bi):
+    steps_by_mission = data['missionSteps']
+    out = []
+    for i, m in enumerate(data['missions']):
+        key = m['id']
+        where = 'mission %s' % key
+        conf = m.get('conf') or {}
+        cons = m.get('consequence') or {}
+        anom = m.get('anomaly') or {}
+        debrief = m.get('debrief') or {}
+        node = {
+            'key': key,
+            '_seq': (i + 1) * 10,
+            'line': m.get('group') or 'payrun',
+            'icon': m.get('icon') or 'flask',
+            'name': bi.p('%s name' % where, m['title']),
+            'summary': bi.p('%s summary' % where, m.get('desc')),
+            'duration_min': m.get('mins') or 5,
+            'kind': m.get('kind') or ('full' if m.get('full') else 'outline'),
+            'outline_note': bi.p('%s outline_note' % where, m.get('outlineNote')),
+            'screen': m.get('screen') or '',
+            'confidence_key': conf.get('key') or '',
+            'confidence_gain': conf.get('gain') or 10,
+            'consequence': {
+                'title': bi.p('%s consequence title' % where, cons.get('title')),
+                'scope': bi.p('%s consequence scope' % where, cons.get('scope')),
+                'reversible': bi.p('%s consequence reversible' % where,
+                                   cons.get('reversible')),
+                'verify': bi.p('%s consequence verify' % where, cons.get('verify')),
+            },
+            'anomaly': {
+                'title': bi.p('%s anomaly title' % where, anom.get('title')),
+                'body': bi.p('%s anomaly body' % where, anom.get('body')),
+            },
+            'steps': [],
+            # NOT raw: `did` and `check` are LISTS OF PROSE (the debrief), and
+            # the old zip treated them as prose for exactly that reason.
+            'did': bi.each('%s did' % where, debrief.get('did')),
+            'check': bi.each('%s check' % where, debrief.get('checklist')),
+        }
+        for k, st in enumerate(steps_by_mission.get(key) or []):
+            sw = '%s step %s' % (where, st['id'])
+            recovery = st.get('recovery') or {}
+            options = []
+            for opt in st.get('options') or []:
+                rec = recovery.get(opt['id'])
+                if not opt.get('correct') and not en_of(rec).strip():
+                    # The old model refused this at write time; failing here
+                    # names the option instead of the record id.
+                    raise SystemExit(
+                        'mission %s step %s option %s is wrong and offers no '
+                        'recovery. A wrong choice must always be met with a way '
+                        'back.' % (key, st['id'], opt['id']))
+                options.append({
+                    'key': opt['id'],
+                    'label': bi.p('%s opt %s label' % (sw, opt['id']), opt['label']),
+                    'correct': bool(opt.get('correct')),
+                    'recovery': bi.p('%s opt %s recovery' % (sw, opt['id']), rec),
+                })
+            node['steps'].append({
+                'key': st['id'],
+                'nav': st.get('nav') or '',
+                'target': st.get('target') or '',
+                'instruction': bi.p('%s instruction' % sw, st['instruction']),
+                'detail': bi.p('%s detail' % sw, st.get('detail')),
+                'hint': bi.p('%s hint' % sw, st.get('hint')),
+                'is_decision': bool(st.get('decision')),
+                'is_consequence': bool(st.get('consequence')),
+                'is_undo': bool(st.get('undo')),
+                # `check_key`, NOT `check`: the mission dict already has a
+                # `check` and it is the debrief CHECKLIST, a list of prose.
+                # Live capstones only.
+                'check_key': st.get('check') or '',
+                'is_ack': bool(st.get('ack')),
+                'options': options,
+            })
+        out.append(node)
+    # learn.mission._order = 'sequence, key'
+    out.sort(key=lambda m: (m['_seq'], m['key']))
+    for m in out:
+        del m['_seq']
+    return out
 
 
 # The authoring source names capabilities directly. health_learn mapped four
@@ -498,6 +650,8 @@ def gen_lessons(data, tr):
 CAPABILITIES = ('any', 'no_access', 'operator', 'manager', 'owner')
 
 BLOCK_KIND = {'calcKpi': 'calc_kpi', 'src': 'source'}
+
+DYNAMIC_KIND = {'screenCtx': 'screen_blurb', 'nextStep': 'next_step'}
 
 
 def _blocks_of(intent):
@@ -513,260 +667,165 @@ def _blocks_of(intent):
     return [('any', intent.get('blocks') or [])]
 
 
-def gen_intents(data, tr, live):
-    doc = Xml('Coach intents. Every answer the Coach can give is a block here; '
-              'there is no path from a question to the screen that skips this '
-              'file, which is what lets it promise never to invent a rate.')
+def _intent_phrases(intent):
+    """Trigger phrases, both languages in ONE bag.
+
+    Deliberately not translated: a learner types in whichever language they are
+    thinking in, often mid-shift and often without tone marks, and both have to
+    hit the same intent. The LABEL is always a trigger too — the suggestion
+    buttons submit it verbatim, so a label that does not resolve to its own
+    intent is a dead button.
+    """
+    phrases = list(intent.get('match') or [])
+    for lab in (en_of(intent['label']), vi_of(intent['label'])):
+        if lab and lab not in phrases:
+            phrases.append(lab)
+    return phrases
+
+
+def content_intents(data, bi, live):
+    out = []
     for intent in data['qa']:
         key = intent['id']
-        xmlid = slug(key, 'intent_')
+        where = 'intent %s' % key
         screens = intent.get('screens')
-        screens_csv = '*' if screens == '*' else ','.join(screens or [])
-        doc.rec('learn.intent', xmlid, [
-            ('key', key),
-            ('label', en_of(intent['label'])),
-            ('screens', screens_csv),
-            ('dynamic', {'screenCtx': 'screen_blurb',
-                         'nextStep': 'next_step'}.get(intent.get('dynamic'), 'none')),
-            ('show_me', ','.join(intent.get('showMe') or [])),
-            ('simpler', en_of(intent.get('simpler'))),
-            ('practice_key', intent.get('practice') or ''),
+        node = {
+            'key': key,
+            'label': bi.p('%s label' % where, intent['label']),
+            'screens': '*' if screens == '*' else ','.join(screens or []),
+            'dynamic': DYNAMIC_KIND.get(intent.get('dynamic'), 'none'),
+            'show_me': [a.strip() for a in (intent.get('showMe') or []) if a.strip()],
+            'simpler': bi.p('%s simpler' % where, intent.get('simpler')),
+            'practice_key': intent.get('practice') or '',
             # A refusal stays reachable but is never advertised.
-            ('offer', False if intent.get('offer') is False else True),
-        ])
-        tr.add('learn.intent', 'label', xmlid,
-               en_of(intent['label']), vi_of(intent['label']))
-        if intent.get('simpler'):
-            tr.add('learn.intent', 'simpler', xmlid,
-                   en_of(intent['simpler']), vi_of(intent['simpler']))
-
-        # The label is ALWAYS a trigger phrase, in both languages. The
-        # suggestion buttons submit the label verbatim, so a label that does
-        # not resolve to its own intent is a dead button — and a hand-written
-        # match list does not reliably overlap the question it is offered as.
-        phrases = list(intent.get('match') or [])
-        for lab in (en_of(intent['label']), vi_of(intent['label'])):
-            if lab and lab not in phrases:
-                phrases.append(lab)
-
-        for j, phrase in enumerate(phrases):
-            doc.rec('learn.intent.phrase', '%s_p%02d' % (xmlid, j), [
-                ('intent_id', ('ref', xmlid)),
-                ('text', phrase),
-            ])
-
+            'offer': False if intent.get('offer') is False else True,
+            'phrases': _intent_phrases(intent),
+            'blocks': [],
+        }
         seq = 0
         for capability, blocks in _blocks_of(intent):
             for b in blocks:
                 seq += 10
-                bx = '%s_b%03d' % (xmlid, seq)
                 kind = BLOCK_KIND.get(b['k'], b['k'])
-                body = ''
-                if kind != 'steps' and b.get('v') is not None:
-                    body = en_of(b['v'])
                 fallback = b.get('liveFallback')
                 live.check('intent %s block %d' % (key, seq),
                            b.get('v') if kind != 'steps' else None, fallback)
-                doc.rec('learn.intent.block', bx, [
-                    ('intent_id', ('ref', xmlid)),
-                    ('sequence', seq),
-                    ('capability', capability),
-                    ('kind', kind),
-                    ('body', body),
-                    ('live_fallback', en_of(fallback)),
-                ])
-                if body:
-                    tr.add('learn.intent.block', 'body', bx, body, vi_of(b['v']))
-                if fallback:
-                    tr.add('learn.intent.block', 'live_fallback', bx,
-                           en_of(fallback), vi_of(fallback))
-                if kind == 'steps':
-                    for k, st in enumerate(b['v']):
-                        sx = '%s_s%02d' % (bx, k)
-                        doc.rec('learn.intent.step', sx, [
-                            ('block_id', ('ref', bx)),
-                            ('sequence', (k + 1) * 10),
-                            ('text', en_of(st['t'])),
-                            ('anchor', st.get('a') or ''),
-                        ])
-                        tr.add('learn.intent.step', 'text', sx,
-                               en_of(st['t']), vi_of(st['t']))
-    return doc.render()
+                node['blocks'].append({
+                    'capability': capability,
+                    'kind': kind,
+                    'body': ('' if kind == 'steps' or b.get('v') is None
+                             else bi.p('%s block %d body' % (where, seq), b['v'])),
+                    'live_fallback': bi.p('%s block %d live_fallback' % (where, seq),
+                                          fallback),
+                    'steps': ([{
+                        'text': bi.p('%s block %d step %d' % (where, seq, k), st['t']),
+                        'anchor': st.get('a') or '',
+                    } for k, st in enumerate(b['v'])] if kind == 'steps' else []),
+                })
+        out.append(node)
+    # learn.intent._order = 'key'
+    out.sort(key=lambda i: i['key'])
+    return out
 
 
-def gen_screens(data, tr, live):
-    doc = Xml('The screens the Coach knows, and how it recognises each one. '
-              'Matchers are read from the sidebar leaf named by sidebar_key, so '
-              'the Coach and the sidebar can never disagree.')
+def content_screens(data, bi, live, intents_by_key):
     station_by_id = {}
     for line in data['stations'].values():
         for s in line['stations']:
             station_by_id[s['id']] = s
     sub = data.get('subScreens') or {}
 
+    out = []
     for i, (key, ctx) in enumerate(data['screenCtx'].items()):
-        xmlid = slug(key, 'screen_')
+        where = 'screen %s' % key
         station = station_by_id.get(key)
         if station:
-            name_en, name_vi = en_of(station['title']), vi_of(station['title'])
+            name = station['title']
         elif key in sub:
-            name_en, name_vi = en_of(sub[key]['label']), vi_of(sub[key]['label'])
+            name = sub[key]['label']
         else:
-            name_en = name_vi = key
-        doc.rec('learn.screen', xmlid, [
-            ('key', key),
-            ('sequence', (i + 1) * 10),
-            ('name', name_en),
-            ('blurb', en_of(ctx['blurb'])),
+            name = {'en': key, 'vi': key}
+        live.check('%s next_step' % where, ctx['next'], ctx.get('liveFallback'))
+        chips = []
+        for ckey in (ctx.get('chips') or []):
+            hit = intents_by_key.get(ckey)
+            if not hit:
+                raise SystemExit('screen %s chips an intent that does not exist: %s'
+                                 % (key, ckey))
+            chips.append({'key': ckey, 'label': hit['label']})
+        out.append({
+            'key': key,
+            'sequence': (i + 1) * 10,
+            'name': bi.p('%s name' % where, name),
+            'blurb': bi.p('%s blurb' % where, ctx['blurb']),
             # health_learn collected next_step for the .po and never wrote the
-            # FIELD, so the `whatnext` intent rendered an empty answer in
-            # English. It is the most-asked question on any screen; it ships as
-            # a real field here.
-            ('next_step', en_of(ctx['next'])),
-            ('live_fallback', en_of(ctx.get('liveFallback'))),
-            ('action_tags', SCREEN_ACTION_TAGS.get(key, '')),
-            ('sidebar_key', SIDEBAR_KEYS.get(key, '')),
-            ('suggest_ids', ('eval', '[(6, 0, [%s])]' % ', '.join(
-                "ref('%s')" % slug(k, 'intent_') for k in (ctx.get('chips') or [])))),
-        ])
-        tr.add('learn.screen', 'name', xmlid, name_en, name_vi)
-        tr.add('learn.screen', 'blurb', xmlid, en_of(ctx['blurb']), vi_of(ctx['blurb']))
-        tr.add('learn.screen', 'next_step', xmlid, en_of(ctx['next']), vi_of(ctx['next']))
-        live.check('screen %s next_step' % key, ctx['next'], ctx.get('liveFallback'))
-        if ctx.get('liveFallback'):
-            tr.add('learn.screen', 'live_fallback', xmlid,
-                   en_of(ctx['liveFallback']), vi_of(ctx['liveFallback']))
-    return doc.render()
+            # FIELD, so the `whatnext` intent rendered an empty English answer.
+            # It is the most-asked question on any screen.
+            'next_step': bi.p('%s next_step' % where, ctx['next']),
+            'live_fallback': bi.p('%s live_fallback' % where, ctx.get('liveFallback')),
+            'action_tags': SCREEN_ACTION_TAGS.get(key, ''),
+            'sidebar_key': SIDEBAR_KEYS.get(key, ''),
+            'suggest': chips,
+        })
+    # learn.screen._order = 'sequence, key'
+    out.sort(key=lambda s: (s['sequence'], s['key']))
+    return out
 
 
-def gen_missions(data, tr):
-    doc = Xml('Practice missions. These run on the REPLICA, never a live '
-              'screen: a step that says "compute the run" would otherwise write '
-              '48 real payslips.')
-    steps_by_mission = data['missionSteps']
-
-    for i, m in enumerate(data['missions']):
-        key = m['id']
-        xmlid = slug(key, 'mission_')
-        full = bool(m.get('full'))
-        conf = m.get('conf') or {}
-        cons = m.get('consequence') or {}
-        anom = m.get('anomaly') or {}
-        doc.rec('learn.mission', xmlid, [
-            ('key', key),
-            ('sequence', (i + 1) * 10),
-            ('line', m.get('group') or 'payrun'),
-            ('icon', m.get('icon') or 'flask'),
-            ('name', en_of(m['title'])),
-            ('summary', en_of(m.get('desc'))),
-            ('duration_min', m.get('mins') or 5),
-            # `live` exists in the model for the demo-tenant capstones. Nothing
-            # here uses it and the runner refuses to open one.
-            ('kind', m.get('kind') or ('full' if full else 'outline')),
-            ('outline_note', en_of(m.get('outlineNote'))),
-            ('screen', m.get('screen') or ''),
-            ('confidence_key', conf.get('key') or ''),
-            ('confidence_gain', conf.get('gain') or 10),
-            ('consequence_title', en_of(cons.get('title'))),
-            ('consequence_scope', en_of(cons.get('scope'))),
-            ('consequence_reversible', en_of(cons.get('reversible'))),
-            ('consequence_verify', en_of(cons.get('verify'))),
-            ('anomaly_title', en_of(anom.get('title'))),
-            ('anomaly_body', en_of(anom.get('body'))),
-        ])
-        tr.add('learn.mission', 'name', xmlid, en_of(m['title']), vi_of(m['title']))
-        tr.add('learn.mission', 'summary', xmlid,
-               en_of(m.get('desc')), vi_of(m.get('desc')))
-        tr.add('learn.mission', 'outline_note', xmlid,
-               en_of(m.get('outlineNote')), vi_of(m.get('outlineNote')))
-        for f, src in (('consequence_title', cons.get('title')),
-                       ('consequence_scope', cons.get('scope')),
-                       ('consequence_reversible', cons.get('reversible')),
-                       ('consequence_verify', cons.get('verify')),
-                       ('anomaly_title', anom.get('title')),
-                       ('anomaly_body', anom.get('body'))):
-            tr.add('learn.mission', f, xmlid, en_of(src), vi_of(src))
-
-        for src_key, note_kind in (('did', 'did'), ('checklist', 'check')):
-            for n, note in enumerate((m.get('debrief') or {}).get(src_key) or []):
-                nx = '%s_%s_%02d' % (xmlid, note_kind, n)
-                doc.rec('learn.mission.note', nx, [
-                    ('mission_id', ('ref', xmlid)),
-                    ('sequence', (n + 1) * 10),
-                    ('kind', note_kind),
-                    ('body', en_of(note)),
-                ])
-                tr.add('learn.mission.note', 'body', nx, en_of(note), vi_of(note))
-
-        for k, st in enumerate(steps_by_mission.get(key) or []):
-            sx = '%s_step_%02d' % (xmlid, k)
-            doc.rec('learn.mission.step', sx, [
-                ('mission_id', ('ref', xmlid)),
-                ('sequence', (k + 1) * 10),
-                ('key', st['id']),
-                ('nav', st.get('nav') or ''),
-                ('target', st.get('target') or ''),
-                ('instruction', en_of(st['instruction'])),
-                ('detail', en_of(st.get('detail'))),
-                ('hint', en_of(st.get('hint'))),
-                ('is_decision', bool(st.get('decision'))),
-                ('is_consequence', bool(st.get('consequence'))),
-                ('is_undo', bool(st.get('undo'))),
-                # Live capstones only. A fixture step never carries either:
-                # there is no server behind the replica to check, and a step
-                # the learner ticks off themselves is what `Next` already is.
-                ('check', st.get('check') or ''),
-                ('is_ack', bool(st.get('ack'))),
-            ])
-            for f in ('instruction', 'detail', 'hint'):
-                tr.add('learn.mission.step', f, sx, en_of(st.get(f)), vi_of(st.get(f)))
-
-            recovery = st.get('recovery') or {}
-            for o, opt in enumerate(st.get('options') or []):
-                ox = '%s_opt_%s' % (sx, opt['id'])
-                rec = recovery.get(opt['id'])
-                if not opt.get('correct') and not en_of(rec).strip():
-                    # The model would refuse this at write time; failing here
-                    # names the option instead of the record id.
-                    raise SystemExit(
-                        'mission %s step %s option %s is wrong and offers no '
-                        'recovery. A wrong choice must always be met with a way '
-                        'back.' % (key, st['id'], opt['id']))
-                doc.rec('learn.mission.option', ox, [
-                    ('step_id', ('ref', sx)),
-                    ('sequence', (o + 1) * 10),
-                    ('key', opt['id']),
-                    ('label', en_of(opt['label'])),
-                    ('is_correct', bool(opt.get('correct'))),
-                    ('recovery', en_of(rec)),
-                ])
-                tr.add('learn.mission.option', 'label', ox,
-                       en_of(opt['label']), vi_of(opt['label']))
-                if rec:
-                    tr.add('learn.mission.option', 'recovery', ox,
-                           en_of(rec), vi_of(rec))
-    return doc.render()
-
-
-def gen_columns(data, tr):
-    doc = Xml('The per-screen micro-glossary: what a KPI tile or a chip counts. '
-              'Curated, not read from ir.model.fields — most of these are '
-              'computed tiles with no field behind them to read a help string '
-              'from.')
+def content_columns(data, bi):
+    out = []
     for screen, cols in data['columns'].items():
         for i, (key, label, body) in enumerate(cols):
-            xmlid = 'col_%s_%s' % (slug(screen), slug(key))
-            doc.rec('learn.column', xmlid, [
-                ('screen', screen),
-                ('key', key),
-                ('sequence', (i + 1) * 10),
-                ('label', en_of(label)),
-                ('body', en_of(body)),
-            ])
-            tr.add('learn.column', 'label', xmlid, en_of(label), vi_of(label))
-            tr.add('learn.column', 'body', xmlid, en_of(body), vi_of(body))
-    return doc.render()
+            where = 'column %s/%s' % (screen, key)
+            out.append({
+                'screen': screen,
+                'key': key,
+                'sequence': (i + 1) * 10,
+                'label': bi.p('%s label' % where, label),
+                'body': bi.p('%s body' % where, body),
+            })
+    # learn.column._order = 'screen, sequence, id'
+    out.sort(key=lambda c: (c['screen'], c['sequence'], c['key']))
+    return out
 
+
+def content_global_suggest(intents):
+    """What the Coach can answer ANYWHERE.
+
+    The old server ran `search([('screens','=','*'), ('offer','=',True)],
+    order='key', limit=6)`. Computed here so the browser and the ask() miss
+    path cannot disagree about it, and so the list is diffable.
+    """
+    pool = [i for i in intents if i['screens'] == '*' and i['offer']]
+    pool.sort(key=lambda i: i['key'])
+    return [{'key': i['key'], 'label': i['label']} for i in pool[:6]]
+
+
+def gen_content(data, bi, live):
+    """The whole static content plane, as one JSON document."""
+    intents = content_intents(data, bi, live)
+    by_key = {i['key']: i for i in intents}
+    tree = {
+        'chrome': content_chrome(data, bi),
+        'stations': content_stations(data, bi),
+        'missions': content_missions(data, bi),
+        'glossary': content_glossary(data, bi),
+        'intents': intents,
+        'screens': content_screens(data, bi, live, by_key),
+        'columns': content_columns(data, bi),
+        'global_suggest': content_global_suggest(intents),
+    }
+    # The version is a digest of the tree itself. The old `_bundle_version`
+    # hashed the module version plus nine `write_date` maxima plus the company
+    # id — a value that could change without the content changing and, worse,
+    # could stay the same while a half-applied upgrade left the tables
+    # disagreeing. A content hash cannot do either.
+    digest = hashlib.sha1(
+        json.dumps(tree, sort_keys=True, ensure_ascii=False).encode('utf-8')
+    ).hexdigest()[:12]
+    tree['version'] = digest
+    tree['__generated__'] = GENERATED_BANNER
+    return json.dumps(tree, indent=2, ensure_ascii=False, sort_keys=True) + '\n'
 
 def gen_sidebar_item(data, tr):
     """The Journey's front door: its own SECTION, and the leaf inside it.
@@ -890,16 +949,14 @@ def main():
     data = dump()
     tr = Trans()
     live = Live()
+    bi = Bi()
     files = {
-        'data/learn_strings.xml': gen_strings(data, tr),
-        'data/learn_glossary.xml': gen_glossary(data, tr),
+        # The static content plane. Everything a learner reads lives here, in
+        # both languages, with no ORM record behind any of it.
+        'static/content/learn_content.json': gen_content(data, bi, live),
+        # The two things that are genuinely records, and therefore still take
+        # the .po path: the tenant slots and the sidebar section/leaf names.
         'data/learn_tenant_slots.xml': gen_overrides(data, tr),
-        'data/learn_stations.xml': gen_stations(data, tr),
-        'data/learn_lessons.xml': gen_lessons(data, tr),
-        'data/learn_intents.xml': gen_intents(data, tr, live),
-        'data/learn_screens.xml': gen_screens(data, tr, live),
-        'data/learn_columns.xml': gen_columns(data, tr),
-        'data/learn_missions.xml': gen_missions(data, tr),
         'data/learn_sidebar_item.xml': gen_sidebar_item(data, tr),
         'static/src/engine/fixture.js': gen_fixture(),
         'static/src/anchors.json': gen_anchors(data),
@@ -927,11 +984,16 @@ def main():
             print('  %s' % p)
         return 5
 
-    if tr.untranslated:
+    # The bilingual guard now has TWO halves, because content and records take
+    # two different paths. Both refuse to write rather than shipping a sentence
+    # that reaches a Vietnamese reader in English.
+    untranslated = ([('%s (content)' % w, en) for w, en in bi.untranslated]
+                    + [('%s (record)' % ref, en) for ref, en in tr.untranslated])
+    if untranslated:
         print('UNTRANSLATED: %d translatable value(s) have no Vietnamese. Every '
               'one of these would reach a Vietnamese reader in English.'
-              % len(tr.untranslated))
-        for ref, en in tr.untranslated[:20]:
+              % len(untranslated))
+        for ref, en in untranslated[:20]:
             print('  %s\n    %s' % (ref, en[:90]))
         return 4
 
@@ -969,6 +1031,7 @@ def main():
     print('wrote %d file(s), %d unchanged' % (len(changed), len(files) - len(changed)))
     for c in changed:
         print('  %s' % c)
+    print('  %d bilingual content leaf(s) in learn_content.json' % bi.leaves)
     print('  %d translatable string(s) in vi_VN.po' % len(tr.entries))
     print('  %d live token site(s): %s' % (
         len(live.sites), ', '.join(sorted({w for w, _l, _k in live.sites})) or '-'))

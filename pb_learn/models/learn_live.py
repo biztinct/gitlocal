@@ -8,6 +8,19 @@ WHAT LIVES HERE
                     has it been submitted, whose gate is it at — and answers it
                     by looking, never by doing.
   LIVE_VALUES       the six keys content may interpolate as {{live:key}}.
+  live_check        the ONE call the live runner makes while a mission is open.
+
+WHY `live_check` MOVED HERE IN PHASE 1a
+---------------------------------------
+It used to hang off `learn.mission`, which was a content model and is now a
+list in a JSON file. Of the two homes the handover offered — this file, or a
+slim `learn.mission.runtime` — this one wins on the argument the file already
+makes: `live_check` is the front door to the predicate registry, it refuses
+through the same gate and speaks with the same notes, and putting it here means
+`contract.json::live-surfaces-are-read-only` covers the whole path from the
+runner's RPC to the search that answers it. A second abstract model would have
+been one more file to remember to check. The client call site moved with it
+(`static/src/live/live_mission.js` now calls `learn.live.live_check`).
 
 WHY THEY SHARE A FILE
 ---------------------
@@ -43,13 +56,13 @@ JUNE_END = '2026-06-30'
 # EVERY SENTENCE A LEARNER READS FROM THIS FILE IS A RECORD, not a literal.
 #
 # It used to be a `_B(en, vi)` dict literal per message, which was bilingual and
-# still wrong: a Python dict is invisible to the .po tooling, so a translator
-# never sees it, a reviewer cannot diff it against the rest of the module, and
-# the one surface where the Coach speaks from CODE rather than from content
-# drifts away from the twelve hundred strings that do not. The strings now live
-# in `learn.string` under `live.*`, are generated from
-# docs/tutorial_poc/author/data.js like everything else, and reach vi_VN.po by
-# the same path.
+# still wrong: a Python dict is invisible to the review path, so a reviewer
+# cannot diff it against the rest of the module, and the one surface where the
+# Coach speaks from CODE rather than from content drifts away from the twelve
+# hundred strings that do not. The strings live in the chrome map under
+# `live.*` and are generated from docs/tutorial_poc/author/data.js like
+# everything else. (Phase 1a moved that map out of `learn.string` and into the
+# static content plane; the rule is unchanged and so are the strings.)
 #
 # What stays in Python is COMPOSITION and nothing else: `%(count)s payslips
 # computed for %(division)s` is interpolated here, into a template written
@@ -58,21 +71,14 @@ JUNE_END = '2026-06-30'
 def _note(env, key, **params):
     """One `live.*` chrome string, in BOTH languages, interpolated.
 
-    Read twice under two language contexts because the whole module carries
-    both and lets the reader choose — the same reason learn.string exists at
-    all (see its docstring). A missing key degrades to the key itself rather
-    than to an empty bubble: a learner who sees `live.noRun` can report it,
-    and a learner who sees nothing cannot.
+    Both, because the whole module carries both and lets the reader choose. A
+    missing key degrades to the key itself rather than to an empty bubble: a
+    learner who sees `live.noRun` can report it, and a learner who sees nothing
+    cannot.
     """
     out = {}
     for lang, tag in (('en_US', 'en'), ('vi_VN', 'vi')):
-        # sudo on OUR OWN content table, never on a product model. Every read
-        # of the product in this file is done as the user (see _my_june_run);
-        # a UI string failing on an access rule would take the whole bundle
-        # down for a message that is not a secret.
-        rec = env['learn.string'].sudo().with_context(lang=lang).search(
-            [('key', '=', 'live.%s' % key)], limit=1)
-        text = rec.value if rec else 'live.%s' % key
+        text = env['learn.content'].chrome_text('live.%s' % key, lang)
         if params:
             try:
                 text = text % params
@@ -347,6 +353,39 @@ class LearnLive(models.AbstractModel):
         if not _my_division(self.env):
             return {'ok': False, 'note': _note(self.env, 'noDivision')}
         return predicate(self.env)
+
+    @api.model
+    def live_check(self, mission_key, step_key):
+        """Has the learner done the thing this live step asked for?
+
+        The ONE call the live runner makes while a mission is open, and the
+        only thing it can do: name a step and be told what the product's own
+        records currently say. It cannot advance anything, and there is no
+        method in this file that could — the runner instructs, the learner acts
+        in the product, and this looks.
+
+        Refuses by NAME rather than by silence in every failure mode: a live
+        mission opened outside the demo world, a step that carries no check, a
+        check key nothing implements. Each of those is a different mistake and
+        a learner staring at a step that will not complete deserves to know
+        which one they are in.
+        """
+        mission, step = self.env['learn.content'].mission_step(mission_key, step_key)
+        if not step:
+            return {'ok': False,
+                    'note': _note(self.env, 'noSuchStep',
+                                  step=step_key, mission=mission_key)}
+        if mission.get('kind') != 'live':
+            # A fixture mission has no business calling this. Its steps run on
+            # a JavaScript replica with no server behind them, and the moment
+            # one of them starts asking the database a question it has stopped
+            # being a practice surface.
+            return {'ok': False, 'note': _note(self.env, 'notLive',
+                                               mission=mission_key)}
+        if not step.get('check_key'):
+            return {'ok': False, 'note': _note(self.env, 'notVerified',
+                                               step=step_key)}
+        return self.check(step['check_key'])
 
     # -- values -----------------------------------------------------------
     @api.model

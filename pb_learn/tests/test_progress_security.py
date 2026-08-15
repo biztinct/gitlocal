@@ -6,6 +6,8 @@ from odoo.exceptions import AccessError
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
+from .common import load_content
+
 
 @tagged('post_install', '-at_install')
 class TestProgressSecurity(TransactionCase):
@@ -22,17 +24,19 @@ class TestProgressSecurity(TransactionCase):
             'name': 'Bob Learner', 'login': 'learn_bob_test',
             'group_ids': [(6, 0, [cls.env.ref('base.group_user').id])],
         })
-        cls.station = cls.env['learn.station'].sudo().search([], limit=1)
+        # A station KEY, not a record: there is no station table since Phase
+        # 1a, and the key is what learn.progress and learn.event store.
+        cls.station_key = load_content()['stations'][0]['key']
 
     def test_01_a_learner_records_their_own_progress(self):
         env = self.env(user=self.alice)
-        env['learn.progress'].record(self.station.key, {'state': 'in_progress', 'step_index': 3})
+        env['learn.progress'].record(self.station_key, {'state': 'in_progress', 'step_index': 3})
         mine = env['learn.progress'].my_progress()
-        self.assertEqual(mine[self.station.key]['step_index'], 3)
+        self.assertEqual(mine[self.station_key]['step_index'], 3)
 
     def test_02_one_learner_cannot_see_anothers(self):
         self.env(user=self.alice)['learn.progress'].record(
-            self.station.key, {'state': 'done'})
+            self.station_key, {'state': 'done'})
         seen = self.env(user=self.bob)['learn.progress'].search(
             [('user_id', '=', self.alice.id)])
         self.assertFalse(seen, "Bob can read Alice's learning progress")
@@ -40,7 +44,7 @@ class TestProgressSecurity(TransactionCase):
 
     def test_03_the_event_log_is_append_only(self):
         env = self.env(user=self.alice)
-        env['learn.event'].log('journey_open', station_key=self.station.key)
+        env['learn.event'].log('journey_open', station_key=self.station_key)
         row = env['learn.event'].search([('user_id', '=', self.alice.id)], limit=1)
         self.assertTrue(row)
         with self.assertRaises(AccessError):
@@ -65,7 +69,7 @@ class TestProgressSecurity(TransactionCase):
         record with none of a payroll record's access rules.
         """
         env = self.env(user=self.alice)
-        env['learn.event'].log('quiz_answer', station_key=self.station.key,
+        env['learn.event'].log('quiz_answer', station_key=self.station_key,
                                detail='x' * 500)
         row = env['learn.event'].search(
             [('user_id', '=', self.alice.id), ('kind', '=', 'quiz_answer')], limit=1)

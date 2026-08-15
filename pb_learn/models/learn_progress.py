@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Learner state, and the event log.
+"""Learner state: progress, the event log, and confidence.
+
+These three are the only learning tables left. Content moved to a static asset
+in Phase 1a; what a PERSON did is irreducibly per-database, so it stays here.
 
 The event log ships in release 1 on purpose. The measurement plan (analysis §6)
 uses a *self-referential* baseline: month 1 is the reference period. If the log
@@ -9,9 +12,28 @@ system is pre-production exactly once — which is the only moment this is free.
 It is deliberately thin. No free text, bounded ``detail``, no field anywhere
 that could hold personal or pay data: an event log that can hold an employee's
 name and their net pay eventually holds one.
+
+WHY THE LINKS ARE KEYS AND NOT MANY2ONES
+----------------------------------------
+`learn.progress` used to carry `station_id` / `mission_id` and `learn.event` a
+`station_id`. Those pointed at content models that no longer exist. The
+replacement is the string the frontend was already using — a station key, or
+`mission:<key>` — which is what `my_progress()` has always returned and what
+`record()` has always been called with.
+
+A key is weaker than a foreign key and the weakness is worth naming: nothing in
+the database now stops a row referring to content that has been retired. That
+is handled where it can be handled — `record()` refuses a key the content plane
+does not declare — and a station that is renamed leaves an orphan row rather
+than cascading a delete, which for a progress row is the better failure. The
+upgrade carries the old links across (see migrations/19.0.9.0.0).
 """
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
+
+# The namespace that tells a mission key from a station key. One namespace, so
+# the frontend's progress map has one shape.
+MISSION_PREFIX = 'mission:'
 
 
 class LearnProgress(models.Model):
@@ -23,11 +45,11 @@ class LearnProgress(models.Model):
                               default=lambda self: self.env.user, ondelete='cascade')
     company_id = fields.Many2one('res.company', required=True, index=True,
                                  default=lambda self: self.env.company)
-    # Either a station (a lesson) or a mission. Not both, never neither: the
-    # two are different things a learner completes, and giving missions their
-    # own table would duplicate every rule about scoping and resume.
-    station_id = fields.Many2one('learn.station', index=True, ondelete='cascade')
-    mission_id = fields.Many2one('learn.mission', index=True, ondelete='cascade')
+    # Either a station (a lesson) or `mission:<key>`. Not both, never neither:
+    # the two are different things a learner completes, and giving missions
+    # their own table would duplicate every rule about scoping and resume.
+    key = fields.Char(required=True, index=True,
+                      help="A learn.content station key, or 'mission:<key>'.")
     state = fields.Selection(
         selection=lambda self: self._selection_state(),
         required=True, default='not_started')
@@ -38,10 +60,8 @@ class LearnProgress(models.Model):
     lang = fields.Char(help="Language the learner was reading when they finished.")
 
     _sql_constraints = [
-        ('user_station_uniq', 'unique(user_id, station_id)',
-         'One progress row per learner per station.'),
-        ('user_mission_uniq', 'unique(user_id, mission_id)',
-         'One progress row per learner per mission.'),
+        ('user_key_uniq', 'unique(user_id, key)',
+         'One progress row per learner per station or mission.'),
     ]
 
     @api.model
@@ -52,50 +72,49 @@ class LearnProgress(models.Model):
 
     @api.model
     def my_progress(self):
-        rows = self.search([('user_id', '=', self.env.uid)])
         return {
-            (r.mission_id and 'mission:' + r.mission_id.key or r.station_id.key): {
+            r.key: {
                 'state': r.state,
                 'step_index': r.step_index,
                 'attempts': r.attempts,
                 'first_try_correct': r.first_try_correct,
                 'completed_at': r.completed_at and r.completed_at.isoformat() or '',
             }
-            for r in rows
+            for r in self.search([('user_id', '=', self.env.uid)])
         }
 
     @api.model
+    def _declared(self, key):
+        """True when the content plane actually ships this station or mission.
+
+        The foreign key used to answer this. Asking the content directly keeps
+        the same refusal — an unknown key writes nothing and returns False —
+        without a table to join to.
+        """
+        content = self.env['learn.content']
+        if (key or '').startswith(MISSION_PREFIX):
+            return bool(content.mission(key[len(MISSION_PREFIX):]))
+        return bool(content.station(key))
+
+    @api.model
     def record(self, station_key, values):
-        """Upsert this user's progress for one station.
+        """Upsert this user's progress for one station or mission.
 
         Always writes as the calling user, never sudo: a learner updating their
         own progress is the only write path, and the record rule is what proves
-        it. ``station_key`` is resolved here so the frontend never sends an id.
+        it.
         """
-        # "mission:<key>" addresses a mission; a bare key is a station. One
-        # namespace, so the frontend's progress map has one shape.
-        target, mission = None, None
-        if (station_key or '').startswith('mission:'):
-            mission = self.env['learn.mission'].sudo().search(
-                [('key', '=', station_key[8:])], limit=1)
-            if not mission:
-                return False
-        else:
-            target = self.env['learn.station'].sudo().search(
-                [('key', '=', station_key)], limit=1)
-            if not target:
-                return False
+        if not station_key or not self._declared(station_key):
+            return False
         allowed = {'state', 'step_index', 'attempts', 'first_try_correct',
                    'completed_at', 'lang'}
         vals = {k: v for k, v in (values or {}).items() if k in allowed}
-        key_field = 'mission_id' if mission else 'station_id'
-        key_value = mission.id if mission else target.id
         row = self.search([('user_id', '=', self.env.uid),
-                           (key_field, '=', key_value)], limit=1)
+                           ('key', '=', station_key)], limit=1)
         if row:
             row.write(vals)
         else:
-            row = self.create(dict(vals, user_id=self.env.uid, **{key_field: key_value}))
+            self.create(dict(vals, user_id=self.env.uid, key=station_key))
         return True
 
 
@@ -108,7 +127,7 @@ class LearnEvent(models.Model):
                               default=lambda self: self.env.user, ondelete='cascade')
     company_id = fields.Many2one('res.company', required=True, index=True,
                                  default=lambda self: self.env.company)
-    station_id = fields.Many2one('learn.station', index=True, ondelete='set null')
+    station_key = fields.Char(index=True, help="A learn.content station key.")
     kind = fields.Selection(
         selection=lambda self: self._selection_kind(),
         required=True, index=True)
@@ -164,18 +183,68 @@ class LearnEvent(models.Model):
 
         Unknown kinds are dropped rather than raised: a stale browser tab
         emitting a retired event name must never break a lesson the learner is
-        in the middle of.
+        in the middle of. A station key that the content plane does not declare
+        is dropped the same way and for the same reason — it used to resolve to
+        a null Many2one.
         """
         valid = {k for k, _label in self._selection_kind()}
         if kind not in valid:
             return False
-        station = self.env['learn.station'].sudo().search(
-            [('key', '=', station_key)], limit=1) if station_key else None
+        known = bool(station_key) and bool(
+            self.env['learn.content'].station(station_key))
         self.create({
             'kind': kind,
-            'station_id': station.id if station else False,
+            'station_key': station_key if known else False,
             'screen': (screen or '')[:64] or False,
             'detail': (str(detail) if detail is not None else '')[:64] or False,
             'lang': (lang or '')[:8] or False,
         })
         return True
+
+
+class LearnConfidence(models.Model):
+    """Per-competence confidence, per learner.
+
+    A recovery REDUCES the gain. Without that asymmetry "confidence" only
+    measures completion, which the learner can already see as a tick — and a
+    mission you had to be talked out of is not the same as one you got right.
+
+    Moved here in Phase 1a from learn_mission.py, whose other four models were
+    content and are gone. It is learner state, which is what this file is.
+    """
+    _name = 'learn.confidence'
+    _description = 'Learn confidence score'
+    _order = 'user_id, key'
+
+    user_id = fields.Many2one('res.users', required=True, index=True,
+                              default=lambda self: self.env.user, ondelete='cascade')
+    company_id = fields.Many2one('res.company', required=True, index=True,
+                                 default=lambda self: self.env.company)
+    key = fields.Char(required=True, index=True)
+    score = fields.Integer(default=0)
+
+    _sql_constraints = [
+        ('user_key_uniq', 'unique(user_id, key)', 'One score per learner per competence.'),
+    ]
+
+    @api.model
+    def my_scores(self):
+        return {r.key: r.score for r in self.search([('user_id', '=', self.env.uid)])}
+
+    @api.model
+    def award(self, mission_key, recovered=False):
+        """Add a completed mission's gain. Halved when the learner needed a
+        recovery to get there."""
+        mission = self.env['learn.content'].mission(mission_key)
+        if not mission or not mission.get('confidence_key'):
+            return False
+        gain = mission.get('confidence_gain') or 0
+        if recovered:
+            gain = gain // 2
+        row = self.search([('user_id', '=', self.env.uid),
+                           ('key', '=', mission['confidence_key'])], limit=1)
+        if row:
+            row.score = row.score + gain
+        else:
+            self.create({'key': mission['confidence_key'], 'score': gain})
+        return gain

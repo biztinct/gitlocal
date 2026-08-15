@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-from . import learn_string
-from . import learn_glossary
-from . import learn_station
-from . import learn_lesson
-from . import learn_quiz
-from . import learn_intent
-# Before learn_mission: its live_check delegates to learn.live.
+# The static content plane first: every other model below reads it.
+from . import learn_content
+# Read-only window onto the running system — live values and the capstone
+# predicates. Before learn_intent, whose answers interpolate live values.
 from . import learn_live
-from . import learn_mission
+from . import learn_intent
+from . import learn_runtime
 from . import learn_tenant_override
 from . import learn_progress
 # Phase D2. learn.question.record delegates the scrub to learn.intent.

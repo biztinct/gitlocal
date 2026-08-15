@@ -11,6 +11,8 @@ import re
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
+from .common import load_content
+
 # `${...}` followed by a literal space. The minifier eats that space, inside
 # template literals included.
 BRACE_SPACE_RE = re.compile(r"\$\{[^{}]*\}[ ]+(?=\S)")
@@ -146,17 +148,17 @@ class TestAssets(TransactionCase):
     def test_02b_every_icon_a_RECORD_names_exists_in_the_sprite(self):
         """The regex scan above cannot see these at all.
 
-        A station's icon is a database value chosen by an author, not a literal
-        in the source — so a typo in the content passes every source-level
-        check and renders as a card with a hole where its icon should be. Read
-        from the records instead of guessing at the call sites.
+        A station's icon is a content value chosen by an author, not a literal
+        in the source — so a typo in it passes every source-level check and
+        renders as a card with a hole where its icon should be. Read from the
+        content plane instead of guessing at the call sites.
         """
         base = get_module_path('pb_learn')
         with open(os.path.join(base, 'static/src/journey/icons.xml'), encoding='utf-8') as fh:
             available = set(re.findall(r'symbol id="lrn-i-([a-z0-9-]+)"', fh.read()))
-        named = set()
-        for model in ('learn.station', 'learn.mission'):
-            named |= {i for i in self.env[model].sudo().search([]).mapped('icon') if i}
+        content = load_content()
+        named = {s['icon'] for s in content['stations'] if s['icon']}
+        named |= {m['icon'] for m in content['missions'] if m['icon']}
         missing = sorted(named - available)
         self.assertFalse(missing,
                          "Content names icons the sprite does not have: %s" % missing)

@@ -1,8 +1,25 @@
 # -*- coding: utf-8 -*-
-"""The bundle: completeness, bilingual parity, and no unresolved tokens."""
+"""The content plane: completeness, bilingual parity, and no unresolved tokens.
+
+Phase 1a retarget. These assertions used to run over
+`learn.station.get_bundle()`, which built the payload out of the ORM on every
+call. The payload is now a generated asset and the runtime half is one small
+RPC, so each test reads whichever of the two actually owns the property:
+
+  * shape, completeness, bilingual parity, tokens  -> the content plane
+  * visibility, slots, progress, who is asking     -> learn.runtime.bootstrap()
+
+The one thing that got STRONGER: bilingual parity used to be checked against a
+bundle assembled from the session's own translation lookups, so a missing .po
+entry showed up here. There is no .po in this path any more — the generator
+refuses to write a leaf with no Vietnamese (exit 4) and this is the second
+fence, over the emitted bytes.
+"""
 import re
 
 from odoo.tests.common import TransactionCase, tagged
+
+from .common import load_content, walk_pairs
 
 TOKEN_RE = re.compile(r"\{\{([a-zA-Z][a-zA-Z0-9_]*)\}\}")
 
@@ -25,35 +42,48 @@ SAME_IN_BOTH = {
 NOT_PROSE = (".tokens.",)
 
 
-def walk_strings(node, path=""):
-    """Yield (path, {en, vi}) for every bilingual leaf in the bundle."""
-    if isinstance(node, dict):
-        if set(node.keys()) == {"en", "vi"}:
-            yield path, node
-            return
-        for k, v in node.items():
-            yield from walk_strings(v, "%s.%s" % (path, k))
-    elif isinstance(node, list):
-        for i, v in enumerate(node):
-            yield from walk_strings(v, "%s[%d]" % (path, i))
-
-
 @tagged('post_install', '-at_install')
 class TestBundle(TransactionCase):
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.bundle = cls.env['learn.station'].get_bundle()
+        cls.content = load_content()
+        cls.runtime = cls.env['learn.runtime'].bootstrap()
 
+    # ------------------------------------------------------------- shape
     def test_01_shape(self):
-        for key in ('version', 'stations', 'chrome', 'glossary', 'tokens', 'progress', 'user'):
-            self.assertIn(key, self.bundle, "bundle is missing %s" % key)
-        self.assertTrue(self.bundle['stations'], "no stations shipped")
+        for key in ('version', 'stations', 'chrome', 'glossary', 'missions',
+                    'intents', 'screens', 'columns', 'global_suggest'):
+            self.assertIn(key, self.content, "content plane is missing %s" % key)
+            self.assertTrue(self.content[key], "%s is empty" % key)
+        for key in ('visible_stations', 'screens_runtime', 'tokens', 'progress',
+                    'confidence', 'user', 'collect_questions', 'content_version'):
+            self.assertIn(key, self.runtime, "bootstrap is missing %s" % key)
 
+    def test_01b_the_server_and_the_browser_read_the_same_asset(self):
+        """learn.content resolves the file through odoo.tools.file_open and the
+        browser fetches it over /pb_learn/static/. Two paths to one file — and
+        a deploy that copied only one of them would be invisible from either
+        side, so the version digest is compared rather than assumed."""
+        self.assertEqual(self.env['learn.content'].version(),
+                         self.content['version'])
+        self.assertEqual(self.runtime['content_version'], self.content['version'])
+
+    def test_01c_every_station_is_answered_by_the_bootstrap(self):
+        """A station the runtime does not report on renders with no visibility
+        at all, which the map draws as available — the wrong way to be wrong."""
+        missing = [s['key'] for s in self.content['stations']
+                   if s['key'] not in self.runtime['visible_stations']]
+        self.assertFalse(missing, "Stations with no visibility verdict: %s" % missing)
+        absent = [s['key'] for s in self.content['screens']
+                  if s['key'] not in self.runtime['screens_runtime']]
+        self.assertFalse(absent, "Screens the Coach cannot detect: %s" % absent)
+
+    # ------------------------------------------------------- completeness
     def test_02_every_station_has_content(self):
         thin = []
-        for s in self.bundle['stations']:
+        for s in self.content['stations']:
             o = s['outline']
             if s['kind'] == 'lesson':
                 if not s['lessons'] or not s['lessons'][0]['steps']:
@@ -65,8 +95,12 @@ class TestBundle(TransactionCase):
         self.assertFalse(thin, "Stations with nothing to teach:\n  " + "\n  ".join(thin))
 
     def test_03_each_check_has_exactly_one_right_answer(self):
+        """Was an ORM constraint on learn.quiz. The constraint went with the
+        model, so the invariant it enforced has to be asserted over the emitted
+        content — which is where it can be checked once for every tenant rather
+        than once per database."""
         bad = []
-        for s in self.bundle['stations']:
+        for s in self.content['stations']:
             for lesson in s['lessons']:
                 for q in lesson['quizzes']:
                     right = [o for o in q['options'] if o['correct']]
@@ -75,7 +109,7 @@ class TestBundle(TransactionCase):
                     for o in q['options']:
                         # Every option explains itself, right or wrong. A wrong
                         # option with no recovery text is a rejection.
-                        self.assertTrue(o['feedback']['en'],
+                        self.assertTrue(o['feedback'] and o['feedback']['en'],
                                         "%s: an option has no explanation" % lesson['key'])
         self.assertFalse(bad, "\n  ".join(bad))
 
@@ -87,27 +121,27 @@ class TestBundle(TransactionCase):
         is what shipped a blank "Before you do this" panel on steps that have
         no consequence.
         """
-        empties = [path for path, pair in walk_strings(self.bundle)
+        empties = [path for path, pair in walk_pairs(self.content)
                    if not (pair.get('en') or '').strip()]
         self.assertFalse(empties, "Empty strings shipped as bilingual pairs:\n  "
                                   + "\n  ".join(empties[:20]))
 
     def test_04b_every_chrome_string_is_bilingual(self):
-        """A chrome value that arrives as a bare string never got zipped.
+        """A chrome value that arrives as a bare string never got paired.
 
         The parity check below cannot see this: it walks {en, vi} pairs, so a
         value that never became a pair is invisible to it. That is how three
         labels whose names collide with structural keys — required, correct,
-        after — shipped as English beside translated neighbours.
+        after — once shipped as English beside translated neighbours.
         """
-        bare = [k for k, v in self.bundle['chrome'].items()
-                if isinstance(v, str) and v]
+        bare = [k for k, v in self.content['chrome'].items()
+                if not isinstance(v, dict)]
         self.assertFalse(bare, "Chrome strings that are not bilingual pairs: %s" % bare)
 
     def test_05_no_unresolved_tokens(self):
-        tokens = self.bundle['tokens']
+        tokens = self.runtime['tokens']
         leaked = []
-        for path, pair in walk_strings(self.bundle):
+        for path, pair in walk_pairs(self.content):
             for lang in ('en', 'vi'):
                 for key in TOKEN_RE.findall(pair.get(lang) or ""):
                     if key not in tokens:
@@ -116,13 +150,9 @@ class TestBundle(TransactionCase):
                                  "as the key itself to a learner:\n  " + "\n  ".join(leaked))
 
     def test_06_bilingual_parity(self):
-        """Nothing translatable may ship as English in the Vietnamese bundle.
-
-        This is the check that catches a missing .po entry, which otherwise
-        looks completely normal to an English-speaking reviewer.
-        """
+        """Nothing translatable may ship as English on the Vietnamese side."""
         untranslated = []
-        for path, pair in walk_strings(self.bundle):
+        for path, pair in walk_pairs(self.content):
             en = (pair.get('en') or "").strip()
             vi = (pair.get('vi') or "").strip()
             if not en or path.startswith(NOT_PROSE):
@@ -141,20 +171,23 @@ class TestBundle(TransactionCase):
 
         Only asserted for modules that are actually installed — a tenant
         without pb_payrun_ledgers legitimately has no Proration Audit leaf, and
-        get_bundle reports that station as missing rather than pretending.
+        the bootstrap reports that station as `missing` rather than pretending.
         """
         broken = []
         installed = set(self.env['ir.module.module'].sudo().search(
             [('state', '=', 'installed')]).mapped('name'))
-        for station in self.env['learn.station'].sudo().search([]):
-            key = station.sidebar_key
+        for station in self.content['stations']:
+            key = station['sidebar_key']
             if not key:
                 continue
             module = key.split('.')[0]
             if module not in installed:
                 continue
             if not self.env.ref(key, raise_if_not_found=False):
-                broken.append('%s -> %s' % (station.key, key))
+                broken.append('%s -> %s' % (station['key'], key))
+            elif self.runtime['visible_stations'][station['key']]['missing']:
+                broken.append('%s -> %s reported missing though the leaf exists'
+                              % (station['key'], key))
         self.assertFalse(broken, "Stations pointing at a sidebar leaf that no longer exists:\n  "
                                  + "\n  ".join(broken))
 
@@ -162,12 +195,13 @@ class TestBundle(TransactionCase):
         """Static Selection lists do not translate in this codebase.
 
         Measured, and documented in the repo's gotcha ledger. Asserted by
-        reflection so a future field cannot quietly reintroduce it.
+        reflection so a future field cannot quietly reintroduce it. The list is
+        shorter than it was because ten content models went with Phase 1a —
+        every selection they carried is now a plain string in a generated file,
+        which has no translation problem to have.
         """
         offenders = []
-        models = ('learn.station', 'learn.step', 'learn.step.line', 'learn.quiz',
-                  'learn.progress', 'learn.event', 'learn.mission',
-                  'learn.mission.note', 'learn.intent', 'learn.intent.block')
+        models = ('learn.progress', 'learn.event', 'learn.consent')
         for name in models:
             for fname, field in self.env[name]._fields.items():
                 if field.type != 'selection':
@@ -197,7 +231,7 @@ class TestBundle(TransactionCase):
         # sentence, where it is also capitalised and hardest to spot.
         bad_form = re.compile(r'(?<!phê )trình\s+duyệt(?!\s+web)', re.I)
         offenders = []
-        for path, pair in walk_strings(self.bundle):
+        for path, pair in walk_pairs(self.content):
             vi = (pair.get('vi') or '')
             for m in bad_form.finditer(vi):
                 start = max(0, m.start() - 30)
@@ -217,10 +251,15 @@ class TestBundle(TransactionCase):
         The map is the first thing a learner sees, so this is not a cosmetic
         miss — and Payobook adds lines section by section, which is precisely
         when it would happen again.
+
+        The line vocabulary used to be a Selection on two models that had to be
+        kept identical (`test_mission::test_13`). It is now whatever the content
+        declares, which is one source instead of three.
         """
-        chrome = self.bundle['chrome']
+        chrome = self.content['chrome']
         missing = []
-        for line in set(self.env['learn.station'].sudo().search([]).mapped('line')):
+        for line in sorted({s['line'] for s in self.content['stations']}
+                           | {m['line'] for m in self.content['missions']}):
             key = 'lines.%s' % line
             value = chrome.get(key)
             if not value or not (value.get('en') if isinstance(value, dict) else value):

@@ -30,6 +30,8 @@ from odoo import fields
 from odoo.exceptions import AccessError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
+from .common import load_content
+
 FLAG = 'pb_learn.collect_questions'
 
 
@@ -163,30 +165,33 @@ class TestQuestionMining(TransactionCase):
             "a second decision created a second consent row")
 
     def test_04c_the_consent_copy_ships_in_both_languages(self):
-        String = self.env['learn.string'].sudo()
+        chrome = load_content()['chrome']
         for key in ('consentTitle', 'consentBody', 'consentYes', 'consentNo'):
-            row = String.search([('key', '=', key)], limit=1)
-            self.assertTrue(row, "consent string %s is missing" % key)
-            en = row.with_context(lang='en_US').value
-            vi = row.with_context(lang='vi_VN').value
-            self.assertTrue(en and vi, "%s is not filled in both languages" % key)
+            pair = chrome.get(key)
+            self.assertTrue(pair, "consent string %s is missing" % key)
+            self.assertTrue(pair['en'] and pair['vi'],
+                            "%s is not filled in both languages" % key)
             self.assertNotEqual(
-                en, vi, "%s reaches a Vietnamese reader in English" % key)
+                pair['en'], pair['vi'],
+                "%s reaches a Vietnamese reader in English" % key)
 
     def test_04e_the_bundle_carries_the_tenant_switch(self):
         """The server half of the short-circuit.
 
         Without it the drawer has to ASK whether asking is allowed, which is
-        the round trip the short-circuit exists to remove.
+        the round trip the short-circuit exists to remove. It rode on
+        `learn.intent.coach_bundle` until Phase 1a; it rides on the one runtime
+        call now, which is the same promise with one fewer round trip.
         """
+        Runtime = self.env['learn.runtime']
         self._collect(False)
-        bundle = self.env['learn.intent'].coach_bundle()
+        bundle = Runtime.bootstrap()
         self.assertIn('collect_questions', bundle,
-                      "the bundle does not carry the tenant switch, so the "
+                      "the bootstrap does not carry the tenant switch, so the "
                       "drawer has to ask for it")
         self.assertFalse(bundle['collect_questions'])
         self._collect(True)
-        self.assertTrue(self.env['learn.intent'].coach_bundle()['collect_questions'])
+        self.assertTrue(Runtime.bootstrap()['collect_questions'])
 
     def test_04f_the_drawer_returns_before_any_rpc_when_collection_is_off(self):
         """The client half, asserted on the source — the server cannot observe
@@ -212,9 +217,7 @@ class TestQuestionMining(TransactionCase):
         scrubbed, the rows expire, and they can be deleted. A prompt that
         promises less than the code does undersells it; one that promises more
         is a lie the tests should catch."""
-        body = self.env['learn.string'].sudo().search(
-            [('key', '=', 'consentBody')], limit=1).with_context(
-            lang='en_US').value
+        body = load_content()['chrome']['consentBody']['en']
         self.assertIn('180', body, "the retention window is not stated")
         from odoo.addons.pb_learn.models.learn_question import RETENTION_DAYS
         self.assertIn(str(RETENTION_DAYS), body,

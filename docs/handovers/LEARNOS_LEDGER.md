@@ -60,3 +60,32 @@ missing test", contract checker discipline, anchor registry discipline). Read th
   state='installed' is ACCEPTED as the standard demo-world probe for non-pb_learn modules
   (more precise than model-presence through to-remove/to-upgrade states); pb_learn-internal
   code keeps the model-presence idiom.
+- (Phase 1a) **A parity proof compares EMITTER to EMITTER over the same input, never new
+  output to a committed old artifact** — the committed generated XMLs were STALE at HEAD
+  (--check had not been run before the last content commit). `parity_check.py` executes the
+  old generator out of git. **The pre-1a rev for `--rev` is `6add0cc2`** (last commit with the
+  XML-emitting generator).
+- (Phase 1a) Before deleting a model, grep the whole repo for `Many2one('<model>'` — a KEPT
+  table pointing at a dropped one owes a pre-migration (learn_progress/learn_event did;
+  `migrations/19.0.9.0.0/pre-migrate.py` carries keys before the tables go).
+- (Phase 1a) An ORM `@api.constrains` deleted with its model must MOVE (to the generator/
+  contract checks), not disappear — three mission/quiz invariants now assert over the emitted
+  content, checked once per product instead of once per DB.
+- (Phase 1a) Absent-token grep family, 6th occurrence: `open(` is a substring of `gate_open(`.
+  Pin the tokens a reader would actually write (`file_open(`, `json.load`), never generic verbs.
+- (Phase 1a) When a refactor would leave a contract checker with nothing to see, change the
+  refactor, not the checker (learn.content stayed an AbstractModel so the model-scope corpus
+  check stays honest). AbstractModel + orm.call is the established cockpit pattern (13 already).
+- (Phase 1a) `content.version` hashes CONTENT ONLY — it no longer covers tenant-slot edits or
+  company (the old `_bundle_version` did). Tokens ride bootstrap live, so nothing breaks; do
+  not use `version` as a "anything the learner sees changed" digest.
+- (Phase 1a) `_ambiguous_words`/`_contested_models` lost their ormcache with the records —
+  fine at today's corpus size; re-cache (plain module dict keyed by content sha) if ask()
+  latency ever matters.
+- (Phase 1a, operational) Learning content refreshes on WORKER RESTART only (lru_cache over
+  file_open) — every content redeploy must restart the service; the JSON is served
+  unauthenticated by design (scanned clean: authored content + practice fixtures only).
+- (Phase 1a, deploy gate) The retargeted Odoo test suite and the pre-migration have NEVER
+  executed — the Phase-1-family deploy MUST rehearse `-u pb_learn` on a staging clone of a
+  real DB first and watch the pre-migrate log ("carried N … row(s)"; a dropped-rows WARNING
+  means learner data loss).
