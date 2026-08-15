@@ -38,6 +38,10 @@ import { Component, markup, onMounted, onWillStart, onWillUnmount, useRef, useSt
 import { useBus, useService } from "@web/core/utils/hooks";
 
 import { RT, T, tx, esc, ic } from "../engine/runtime";
+/* The glossary hovercard (LEARNOS Phase 2). Answer blocks are the one
+   place in the drawer that inserts authored prose RAW, so they are the
+   one place `gtx` replaces `tx`. */
+import { gtx, setGlossary, installGlossary, closeGlossary } from "../engine/glossary";
 import { loadContent, composeScreens } from "../content/content_loader";
 import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
@@ -108,6 +112,7 @@ export class CoachHost extends Component {
                     screens: composeScreens(content, runtime),
                     global_suggest: content.global_suggest || [],
                     chrome: content.chrome || {},
+                    glossary: content.glossary || [],
                     tokens: runtime.tokens || {},
                     collect_questions: !!runtime.collect_questions,
                 };
@@ -116,6 +121,11 @@ export class CoachHost extends Component {
                 await this.sc.load();
                 RT.tokens = this.bundle.tokens || RT.tokens;
                 RT.chrome = this.bundle.chrome || RT.chrome;
+                // The Coach is mounted on EVERY screen, so it is usually the
+                // surface that installs the hovercard — the Journey does the
+                // same thing and whichever loads first wins.
+                setGlossary(this.bundle.glossary);
+                installGlossary();
                 this.state.ready = true;
             } catch {
                 // A Coach that cannot load must not break the screen it sits on.
@@ -134,7 +144,11 @@ export class CoachHost extends Component {
             markLauncherStack(this.env);
             maybeGreet(this.env, this.orm, this.action);
         });
-        onWillUnmount(() => document.removeEventListener("keydown", this._onKey));
+        onWillUnmount(() => {
+            document.removeEventListener("keydown", this._onKey);
+            // The card is on document.body, not in this component's tree.
+            closeGlossary();
+        });
     }
 
     // ---------------------------------------------------------------- context
@@ -549,7 +563,7 @@ export class CoachHost extends Component {
             >${ic("book-open")}${esc(T("openLesson"))}</button>`);
 
         const simplerBlock = this.state.simpler && a.simpler
-            ? `<div class="lrn-cblock p simpler">${esc(tx(a.simpler))}</div>` : "";
+            ? `<div class="lrn-cblock p simpler">${gtx(a.simpler)}</div>` : "";
 
         // The learner is entitled to know which KIND of answer they are
         // reading. Two are not a curated intent: a definition out of the
@@ -588,7 +602,7 @@ export class CoachHost extends Component {
         // use — so it is inserted as markup rather than escaped. These strings
         // ship in the module and are never learner input; escaping them printed
         // the tags to the reader.
-        const body = tx(b.body);
+        const body = gtx(b.body);
         switch (b.kind) {
             case "steps":
                 return `<ol class="lrn-csteps">${(b.steps || []).map((s) =>

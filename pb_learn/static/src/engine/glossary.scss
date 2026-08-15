@@ -1,0 +1,86 @@
+/* =============================================================================
+   The glossary hovercard — LEARNOS Phase 2.
+
+   The Coach's card visual language, reused deliberately: a learner has already
+   met this shape in the drawer, so a definition that appears in a lesson body
+   reads as the same system answering rather than as a new surface.
+
+   Solid colours only, --vuf-* tokens, no gradients. The trigger is a dotted
+   underline rather than a colour change, because a payslip body already uses
+   bold for the figures that matter and a second colour would compete with it.
+   ========================================================================== */
+
+.lrn-gloss {
+    border-bottom: 1px dotted var(--vuf-primary, #5a4bb0);
+    cursor: help;
+    /* The word must not move when the underline appears; padding, not margin,
+       and none of it horizontal. A body that reflows on hover is a body whose
+       next line jumps while somebody is reading it. */
+    padding-bottom: 1px;
+
+    &:hover,
+    &:focus-visible {
+        background: var(--vuf-primary-soft, rgba(90, 75, 176, 0.1));
+        border-radius: 3px;
+        outline: none;
+    }
+
+    &:focus-visible {
+        box-shadow: 0 0 0 2px var(--vuf-primary, #5a4bb0);
+    }
+}
+
+.lrn-glosscard {
+    position: fixed;
+    z-index: 1080;                 /* above the Journey, below a modal */
+    /* TWO custom properties and no CSS min(). `min(var(--w), calc(...))` is
+       the sass-hostile form this module has now been bitten by twice; the
+       width is clamped in one declaration with max-width instead. */
+    width: 300px;
+    max-width: calc(100vw - 16px);
+    padding: 12px 14px;
+    background: var(--vuf-surface, #fff);
+    color: var(--vuf-text, #1f2430);
+    border: 1px solid var(--vuf-border, #e3e6ef);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(20, 24, 40, 0.16);
+    font-size: 13px;
+    line-height: 1.5;
+
+    &[hidden] {
+        display: none;
+    }
+
+    .lrn-glossterm {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+        color: var(--vuf-primary, #5a4bb0);
+        margin-bottom: 6px;
+
+        .lrn-ic {
+            width: 14px;
+            height: 14px;
+            flex: 0 0 auto;
+        }
+    }
+
+    .lrn-glossdef {
+        margin: 0;
+    }
+
+    /* The card flips below the term when there is no room above it, and the
+       shadow has to flip with it or the card looks like it is lit from the
+       wrong side. `showCard` sets this class; without a rule here the class
+       was doing nothing, which is the quiet kind of dead code. */
+    &.below {
+        box-shadow: 0 -8px 24px rgba(20, 24, 40, 0.16);
+    }
+}
+
+@media (max-width: 480px) {
+    .lrn-glosscard {
+        width: calc(100vw - 16px);
+    }
+}

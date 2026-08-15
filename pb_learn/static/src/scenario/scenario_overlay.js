@@ -47,6 +47,9 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
 import { T, tx, esc, ic, reduced, SP } from "../engine/runtime";
+/* The glossary hovercard (LEARNOS Phase 2). The step body is the only
+   raw-HTML insertion in this overlay, so it is the only `gtx`. */
+import { gtx, closeGlossary } from "../engine/glossary";
 
 const CARD_W = 372;          // matches the Journey's coach card
 const DWELL = 3400;          // ms a Watch step lingers before advancing
@@ -91,6 +94,7 @@ export class ScenarioOverlay extends Component {
         });
         onWillUnmount(() => {
             this._destroyed = true;
+            closeGlossary();
             if (this._raf) {
                 cancelAnimationFrame(this._raf);
             }
@@ -557,7 +561,7 @@ export class ScenarioOverlay extends Component {
             parts.push(`<div class="lrn-kicker">${esc(tx(step.kicker))}</div>`);
         }
         parts.push(`<h3>${esc(tx(step.title))}</h3>`);
-        parts.push(`<div class="lrn-cbody">${tx(step.body)}</div>`);
+        parts.push(`<div class="lrn-cbody">${gtx(step.body)}</div>`);
 
         if (this.guardedInWatch) {
             // The card says what pressing WOULD do, and says who is not
