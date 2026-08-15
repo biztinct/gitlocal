@@ -121,6 +121,14 @@
       "en": "Leave",
       "vi": "Thoát"
     },
+    "explainHint": {
+      "en": "What this screen is, what to do next, and what its numbers mean.",
+      "vi": "Màn hình này là gì, nên làm gì tiếp, và các con số ở đây nghĩa là gì."
+    },
+    "explainScreen": {
+      "en": "Explain this screen",
+      "vi": "Giải thích màn hình này"
+    },
     "finish": {
       "en": "Finish",
       "vi": "Hoàn thành"
@@ -365,6 +373,10 @@
       "en": "Nothing written here covers that question. Here is what I can answer on this screen.",
       "vi": "Không có nội dung nào ở đây bao phủ câu hỏi đó. Đây là những gì tôi trả lời được trên màn hình này."
     },
+    "notSure": {
+      "en": "Not sure what to ask?",
+      "vi": "Chưa biết nên hỏi gì?"
+    },
     "notVisible": {
       "en": "Not in your menu",
       "vi": "Không có trong menu của bạn"
@@ -548,6 +560,10 @@
     "scope": {
       "en": "What this touches",
       "vi": "Thao tác này ảnh hưởng tới đâu"
+    },
+    "screenAnswer": {
+      "en": "From this screen's own guide",
+      "vi": "Từ hướng dẫn của chính màn hình này"
     },
     "search": {
       "en": "Search the journey",
@@ -1763,10 +1779,24 @@
   ],
   "global_suggest": [
     {
+      "key": "firstday",
+      "label": {
+        "en": "I am new here — where do I start?",
+        "vi": "Tôi mới dùng — nên bắt đầu từ đâu?"
+      }
+    },
+    {
       "key": "fixerror",
       "label": {
         "en": "How do I correct a mistake?",
         "vi": "Tôi sửa một sai sót thế nào?"
+      }
+    },
+    {
+      "key": "howrun",
+      "label": {
+        "en": "How do I run payroll?",
+        "vi": "Tôi chạy bảng lương thế nào?"
       }
     },
     {
@@ -3340,6 +3370,106 @@
       "blocks": [
         {
           "body": {
+            "en": "Add employee, at the top of the Employees screen. It opens a three-step wizard rather than a bare form: the person, then their role, then their contract.",
+            "vi": "Nút Thêm nhân viên, ở phía trên màn hình Nhân sự. Nó mở một trình hướng dẫn ba bước thay vì một biểu mẫu trống: thông tin cá nhân, rồi vị trí công việc, rồi hợp đồng."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "The third step is the one payroll depends on. A person with no running contract computes nothing at all, so they simply do not appear in the run.",
+            "vi": "Bước thứ ba mới là bước hệ thống lương phụ thuộc vào. Người chưa có hợp đồng đang hiệu lực thì không được tính gì cả, nên đơn giản là họ không xuất hiện trong đợt lương."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "Bank details are the other half and they are not on that wizard. Somebody with a contract and no account computes perfectly and is still not paid on {{payDay}}.",
+            "vi": "Thông tin ngân hàng là nửa còn lại và nó không nằm trong trình hướng dẫn đó. Người có hợp đồng mà chưa có tài khoản vẫn được tính lương hoàn hảo và vẫn không nhận được tiền vào {{payDay}}."
+          },
+          "capability": "any",
+          "kind": "warn",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": "",
+          "capability": "any",
+          "kind": "steps",
+          "live_fallback": "",
+          "steps": [
+            {
+              "anchor": "pe-head",
+              "text": {
+                "en": "Add employee — person, role, contract",
+                "vi": "Thêm nhân viên — thông tin cá nhân, vị trí, hợp đồng"
+              }
+            },
+            {
+              "anchor": "ct-roster",
+              "text": {
+                "en": "Check the contract start date against the period you are about to run",
+                "vi": "Đối chiếu ngày bắt đầu hợp đồng với kỳ lương bạn sắp chạy"
+              }
+            },
+            {
+              "anchor": "pe-filters",
+              "text": {
+                "en": "Filter the roster to the people who are not payroll-ready and clear the new name off it",
+                "vi": "Lọc danh sách theo những người chưa sẵn sàng tính lương và xử lý cho tên vừa thêm rời khỏi đó"
+              }
+            }
+          ]
+        },
+        {
+          "body": {
+            "en": "The Add employee wizard's three steps, and the payroll-ready mark on the roster.",
+            "vi": "Ba bước của trình hướng dẫn Thêm nhân viên, và dấu sẵn sàng tính lương trên danh sách."
+          },
+          "capability": "any",
+          "kind": "source",
+          "live_fallback": "",
+          "steps": []
+        }
+      ],
+      "dynamic": "none",
+      "key": "addperson",
+      "label": {
+        "en": "How do I add a new employee?",
+        "vi": "Tôi thêm một nhân viên mới thế nào?"
+      },
+      "offer": true,
+      "phrases": [
+        "how do i add an employee",
+        "add a new employee",
+        "onboard someone",
+        "hire someone",
+        "them nhan vien moi",
+        "tạo hồ sơ nhân viên",
+        "them nguoi vao he thong",
+        "How do I add a new employee?",
+        "Tôi thêm một nhân viên mới thế nào?"
+      ],
+      "practice_key": "",
+      "screens": "employees,contracts",
+      "show_me": [
+        "pe-head",
+        "ct-roster"
+      ],
+      "simpler": "",
+      "try": "",
+      "watch": ""
+    },
+    {
+      "blocks": [
+        {
+          "body": {
             "en": "No. What you do here reaches drafts only — the division and period you are working on. A run that has been submitted or approved cannot be touched from here at all.",
             "vi": "Không. Những gì bạn làm ở đây chỉ chạm tới bản nháp — đúng bộ phận và kỳ bạn đang làm. Một đợt đã trình hoặc đã duyệt thì hoàn toàn không thể bị tác động từ đây."
           },
@@ -3387,7 +3517,9 @@
       "practice_key": "",
       "screens": "runpayroll,import,importwizard",
       "show_me": [],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -3591,7 +3723,9 @@
       "show_me": [
         "pk-card-actions"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -3657,7 +3791,9 @@
       "simpler": {
         "en": "Think of BHXH as a shared fund the law requires. Every month you put in 8% of the salary written in your contract. Not your bonuses, and not your overtime. Your company puts in more than double that on top. The fund pays for pensions, sick leave and maternity leave.",
         "vi": "Hãy hình dung BHXH như một quỹ chung mà pháp luật yêu cầu. Mỗi tháng bạn đóng 8% mức lương ghi trong hợp đồng. Không tính thưởng, không tính tăng ca. Công ty đóng thêm hơn gấp đôi phần đó. Quỹ này chi trả lương hưu, ốm đau và thai sản."
-      }
+      },
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -3724,7 +3860,9 @@
       "simpler": {
         "en": "Insurance is not worked out from what you earned this month. It comes from the salary written in your contract, and only up to a limit. So a busy month with a lot of overtime does not change it. And a very high salary stops adding to it after a point.",
         "vi": "Bảo hiểm không tính từ số bạn kiếm được trong tháng. Nó tính từ mức lương ghi trong hợp đồng, và chỉ tính tới một mức giới hạn. Nên một tháng bận rộn nhiều tăng ca không làm nó thay đổi. Và lương rất cao thì qua một ngưỡng cũng không làm nó tăng thêm."
-      }
+      },
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -3827,7 +3965,9 @@
       "show_me": [
         "st-new"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -3914,7 +4054,9 @@
       "practice_key": "m2",
       "screens": "runpayroll,payruns,payslips",
       "show_me": [],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -3977,7 +4119,9 @@
       "practice_key": "",
       "screens": "*",
       "show_me": [],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4047,7 +4191,9 @@
       "simpler": {
         "en": "It is not a mark out of a hundred. It is how much of your file Payobook could read without guessing. So 96% of fifty rows still means two rows it could not place, and each of those is one person's pay.",
         "vi": "Đây không phải điểm trên thang một trăm. Nó là phần dữ liệu trong tệp mà Payobook đọc được mà không phải đoán. Nên 96% của năm mươi dòng vẫn nghĩa là còn hai dòng nó không xếp được, và mỗi dòng đó là lương của một con người."
-      }
+      },
+      "try": "",
+      "watch": "sc_import"
     },
     {
       "blocks": [
@@ -4115,7 +4261,9 @@
         "fs-components",
         "sr-roster"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4209,7 +4357,9 @@
         "fs-deps",
         "fs-simulate"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4277,7 +4427,99 @@
         "ct-roster",
         "ct-filters"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
+    },
+    {
+      "blocks": [
+        {
+          "body": {
+            "en": "Start with the two-minute tour, then the Dashboard. The tour shows the four screens most people use, on the real product, and it presses nothing for you.",
+            "vi": "Hãy bắt đầu bằng lượt đi một vòng hai phút, rồi tới trang tổng quan. Lượt đó chỉ cho bạn bốn màn hình nhiều người dùng nhất, ngay trên sản phẩm thật, và nó không bấm hộ bạn thứ gì."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": "",
+          "capability": "any",
+          "kind": "steps",
+          "live_fallback": "",
+          "steps": [
+            {
+              "anchor": "dash-hero",
+              "text": {
+                "en": "Watch the tour — it starts on the Dashboard and ends on a pay run",
+                "vi": "Xem lượt giới thiệu — nó bắt đầu ở trang tổng quan và kết thúc ở một đợt lương"
+              }
+            },
+            {
+              "anchor": "dash-hero",
+              "text": {
+                "en": "Read the line under your name. It names the live pay run and what it is waiting for",
+                "vi": "Đọc dòng ngay dưới tên bạn. Nó cho biết đợt lương đang chạy và nó đang chờ điều gì"
+              }
+            },
+            {
+              "anchor": "",
+              "text": {
+                "en": "Open the Journey and take the first lesson. It is eight minutes and nothing in it is real",
+                "vi": "Mở Hành trình học và làm bài đầu tiên. Nó dài tám phút và không có gì trong đó là thật"
+              }
+            }
+          ]
+        },
+        {
+          "body": {
+            "en": "Nothing you read costs anything. Every screen in Payobook can be opened and read; the controls that write are the small number this guide keeps naming.",
+            "vi": "Đọc thì không mất gì cả. Mọi màn hình trong Payobook đều mở ra đọc được; những nút thực sự ghi dữ liệu chỉ là số ít mà tài liệu này liên tục gọi tên."
+          },
+          "capability": "any",
+          "kind": "ok",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "The Journey's own lessons, and the walkthroughs this Coach can start.",
+            "vi": "Các bài học trong Hành trình học, và những lượt hướng dẫn mà Trợ lý này mở được."
+          },
+          "capability": "any",
+          "kind": "source",
+          "live_fallback": "",
+          "steps": []
+        }
+      ],
+      "dynamic": "none",
+      "key": "firstday",
+      "label": {
+        "en": "I am new here — where do I start?",
+        "vi": "Tôi mới dùng — nên bắt đầu từ đâu?"
+      },
+      "offer": true,
+      "phrases": [
+        "where do i start",
+        "i am new",
+        "first day",
+        "getting started",
+        "new to payobook",
+        "bat dau tu dau",
+        "tôi mới bắt đầu",
+        "nguoi moi nen lam gi",
+        "I am new here — where do I start?",
+        "Tôi mới dùng — nên bắt đầu từ đâu?"
+      ],
+      "practice_key": "",
+      "screens": "*",
+      "show_me": [
+        "scenario:sc_welcome"
+      ],
+      "simpler": "",
+      "try": "",
+      "watch": "sc_welcome"
     },
     {
       "blocks": [
@@ -4371,7 +4613,89 @@
         "im-cta",
         "iw-fixrows"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
+    },
+    {
+      "blocks": [
+        {
+          "body": {
+            "en": "Not from the pay run itself. A run computes and records what is owed; a separate step turns that into a bank file and sends the payslips out.",
+            "vi": "Không phải từ chính đợt lương. Đợt lương tính và ghi nhận số phải trả; một bước riêng mới biến số đó thành tệp chi lương ngân hàng và gửi phiếu lương đi."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "Those buttons appear on a run's card only once it has reached Done. Before that the card offers the next approval instead, because there is nothing to pay yet.",
+            "vi": "Các nút đó chỉ xuất hiện trên thẻ của đợt lương khi nó đã Hoàn tất. Trước đó thẻ chỉ hiện bước phê duyệt kế tiếp, vì chưa có gì để chi cả."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "Two outputs and they are different things. {{bankFileFormat}} is what the bank acts on. Journals and Payments are the accounting side of the same month, and neither of them moves money.",
+            "vi": "Hai kết quả và chúng là hai thứ khác nhau. {{bankFileFormat}} là thứ ngân hàng thực hiện. Bút toán và Thanh toán là phần kế toán của cùng tháng đó, và không cái nào chuyển tiền cả."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "A row the bank file cannot use is not dropped quietly. It is listed with the reason, and that list is the last chance to catch somebody before {{payDay}}.",
+            "vi": "Một dòng mà tệp chi lương không dùng được sẽ không bị bỏ đi âm thầm. Nó được liệt kê kèm lý do, và danh sách đó là cơ hội cuối để phát hiện ra ai đó trước {{payDay}}."
+          },
+          "capability": "any",
+          "kind": "warn",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "The buttons a Done pay run offers on its own card, and the bank file each row is checked against.",
+            "vi": "Các nút mà một đợt lương đã Hoàn tất hiện trên chính thẻ của nó, và tệp chi lương mà từng dòng được kiểm tra theo."
+          },
+          "capability": "any",
+          "kind": "source",
+          "live_fallback": "",
+          "steps": []
+        }
+      ],
+      "dynamic": "none",
+      "key": "getpaid",
+      "label": {
+        "en": "How does the money actually reach people?",
+        "vi": "Tiền thực sự tới tay mọi người bằng cách nào?"
+      },
+      "offer": true,
+      "phrases": [
+        "how does the money go out",
+        "how are people actually paid",
+        "make the payment",
+        "generate the bank file",
+        "chuyen tien the nao",
+        "chi lương ra sao",
+        "xuat tep ngan hang",
+        "How does the money actually reach people?",
+        "Tiền thực sự tới tay mọi người bằng cách nào?"
+      ],
+      "practice_key": "",
+      "screens": "payruns,payslips",
+      "show_me": [
+        "pk-card-actions"
+      ],
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4468,7 +4792,231 @@
       "simpler": {
         "en": "Not all of them. Payobook has already marked the ones it was unsure about. Read those first. Then pick two or three ordinary ones at random, to make sure the ordinary ones are fine too.",
         "vi": "Không phải tất cả. Payobook đã đánh dấu sẵn những phiếu mà nó không chắc. Hãy đọc những phiếu đó trước. Rồi chọn ngẫu nhiên hai ba phiếu bình thường, để chắc rằng các phiếu bình thường cũng ổn."
-      }
+      },
+      "try": "",
+      "watch": ""
+    },
+    {
+      "blocks": [
+        {
+          "body": {
+            "en": "One wizard, front to back. Open Run Payroll, choose the division and the period, compute, read the exceptions, then submit. Everything before Submit is a draft, and a draft has paid nobody.",
+            "vi": "Một trình hướng dẫn, từ đầu tới cuối. Mở Chạy bảng lương, chọn bộ phận và kỳ lương, tính, đọc các ngoại lệ, rồi trình lên. Mọi thứ trước bước Trình đều là bản nháp, và bản nháp thì chưa trả cho ai cả."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": "",
+          "capability": "any",
+          "kind": "steps",
+          "live_fallback": "",
+          "steps": [
+            {
+              "anchor": "dash-runpayroll",
+              "text": {
+                "en": "Open Run Payroll — the button is on the Dashboard, top right",
+                "vi": "Mở Chạy bảng lương — nút nằm ở trang tổng quan, phía trên bên phải"
+              }
+            },
+            {
+              "anchor": "pw-division",
+              "text": {
+                "en": "Choose the division. The wizard loads that division's formula configuration with it",
+                "vi": "Chọn bộ phận. Trình hướng dẫn sẽ nạp kèm cấu hình công thức của bộ phận đó"
+              }
+            },
+            {
+              "anchor": "pw-scope",
+              "text": {
+                "en": "Read the eligible headcount before you press anything",
+                "vi": "Đọc số nhân viên đủ điều kiện trước khi bấm bất cứ nút nào"
+              }
+            },
+            {
+              "anchor": "pw-compute",
+              "text": {
+                "en": "Compute. This creates one draft payslip per person and does nothing else",
+                "vi": "Bấm Tính. Bước này tạo mỗi người một phiếu lương nháp, và không làm gì khác"
+              }
+            },
+            {
+              "anchor": "pw-exceptions",
+              "text": {
+                "en": "Read every exception, then submit the run for review",
+                "vi": "Đọc từng ngoại lệ một, rồi trình đợt lương lên soát xét"
+              }
+            }
+          ]
+        },
+        {
+          "body": {
+            "en": "Computing is not paying. After Submit the run walks the approval chain — the Payroll Officer tier, then {{hrTierName}}, then {{gmTierName}} — and only a run that has reached Done offers the money-out buttons.",
+            "vi": "Tính không phải là chi. Sau bước Trình, đợt lương đi qua chuỗi phê duyệt — cấp Chuyên viên tính lương, rồi {{hrTierName}}, rồi {{gmTierName}} — và chỉ đợt đã Hoàn tất mới hiện các nút chi tiền."
+          },
+          "capability": "any",
+          "kind": "warn",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "A low eligible count is the one number worth stopping for. It usually means this month's attendance import has not been committed yet, and computing anyway produces a run that is quietly short.",
+            "vi": "Số nhân viên đủ điều kiện thấp là con số duy nhất đáng dừng lại. Nó thường nghĩa là dữ liệu chấm công tháng này chưa được ghi nhận, và cứ tính tiếp sẽ cho ra một đợt lương thiếu người mà không ai thấy."
+          },
+          "capability": "any",
+          "kind": "ok",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "The Run Payroll wizard's own steps, and the pay run's approval chain.",
+            "vi": "Các bước của chính trình hướng dẫn Chạy bảng lương, và chuỗi phê duyệt của đợt lương."
+          },
+          "capability": "any",
+          "kind": "source",
+          "live_fallback": "",
+          "steps": []
+        }
+      ],
+      "dynamic": "none",
+      "key": "howrun",
+      "label": {
+        "en": "How do I run payroll?",
+        "vi": "Tôi chạy bảng lương thế nào?"
+      },
+      "offer": true,
+      "phrases": [
+        "how do i run payroll",
+        "run a payroll",
+        "start the payroll",
+        "run the month",
+        "how do i pay my staff",
+        "how do i pay everyone",
+        "how do i pay people",
+        "pay my staff this month",
+        "how do we pay everyone",
+        "chay bang luong the nao",
+        "bắt đầu tính lương",
+        "lam sao chay luong",
+        "tra luong cho nhan vien the nao",
+        "trả lương cho nhân viên thế nào",
+        "lam sao tra luong cho moi nguoi",
+        "How do I run payroll?",
+        "Tôi chạy bảng lương thế nào?"
+      ],
+      "practice_key": "m1",
+      "screens": "*",
+      "show_me": [
+        "scenario:sc_payrun",
+        "dash-runpayroll"
+      ],
+      "simpler": {
+        "en": "Five presses, in one wizard. You pick who is being paid, you press Compute, you read what the system flagged, and you send it for approval. Nobody is paid until other people have said yes.",
+        "vi": "Năm thao tác, trong một trình hướng dẫn. Bạn chọn ai được trả lương, bấm Tính, đọc những gì hệ thống đánh dấu, rồi trình lên phê duyệt. Chưa ai được trả tiền cho tới khi những người khác đồng ý."
+      },
+      "try": "sc_payrun",
+      "watch": "sc_payrun"
+    },
+    {
+      "blocks": [
+        {
+          "body": {
+            "en": "The same loop every month, in four moves. Inputs arrive, the run is computed, people sign for it, and the money goes out. Each move has a different owner.",
+            "vi": "Vẫn một vòng lặp đó mỗi tháng, gồm bốn nhịp. Dữ liệu đầu vào về, đợt lương được tính, những người có thẩm quyền ký, rồi tiền được chi. Mỗi nhịp có một người chịu trách nhiệm khác nhau."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": "",
+          "capability": "any",
+          "kind": "steps",
+          "live_fallback": "",
+          "steps": [
+            {
+              "anchor": "im-cta",
+              "text": {
+                "en": "Inputs — attendance and overtime, committed by {{importCutoff}}",
+                "vi": "Đầu vào — chấm công và tăng ca, ghi nhận xong trước {{importCutoff}}"
+              }
+            },
+            {
+              "anchor": "pe-filters",
+              "text": {
+                "en": "People — clear anybody who is not payroll-ready before the run, not after",
+                "vi": "Nhân sự — xử lý những người chưa sẵn sàng tính lương trước khi chạy, đừng để sau"
+              }
+            },
+            {
+              "anchor": "pw-compute",
+              "text": {
+                "en": "Compute and review, then submit for approval",
+                "vi": "Tính rồi soát xét, sau đó trình lên phê duyệt"
+              }
+            },
+            {
+              "anchor": "pk-card-actions",
+              "text": {
+                "en": "Approval, then the money out around {{payDay}}",
+                "vi": "Phê duyệt, rồi chi tiền vào khoảng {{payDay}}"
+              }
+            }
+          ]
+        },
+        {
+          "body": {
+            "en": "The order is not a preference. Importing after the run is computed changes nothing on the payslips already made, and fixing a person after the run is done costs a retro line next month.",
+            "vi": "Thứ tự này không phải là sở thích. Nhập dữ liệu sau khi đã tính thì không thay đổi gì trên các phiếu lương đã tạo, và sửa cho một người sau khi đợt đã Hoàn tất sẽ tốn một dòng hồi tố vào tháng sau."
+          },
+          "capability": "any",
+          "kind": "warn",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "The pay run's own state chain, and the tenant's stated import cutoff and pay day.",
+            "vi": "Chuỗi trạng thái của chính đợt lương, và mốc chốt dữ liệu cùng ngày trả lương do công ty khai báo."
+          },
+          "capability": "any",
+          "kind": "source",
+          "live_fallback": "",
+          "steps": []
+        }
+      ],
+      "dynamic": "none",
+      "key": "monthloop",
+      "label": {
+        "en": "When in the month do I do each part?",
+        "vi": "Trong tháng thì làm phần nào vào lúc nào?"
+      },
+      "offer": true,
+      "phrases": [
+        "when do i do this",
+        "payroll calendar",
+        "what order in the month",
+        "monthly cycle",
+        "lam vao luc nao trong thang",
+        "lịch chạy lương",
+        "thu tu trong thang",
+        "When in the month do I do each part?",
+        "Trong tháng thì làm phần nào vào lúc nào?"
+      ],
+      "practice_key": "",
+      "screens": "dashboard,payruns,runpayroll",
+      "show_me": [
+        "scenario:sc_welcome",
+        "dash-hero"
+      ],
+      "simpler": "",
+      "try": "",
+      "watch": "sc_welcome"
     },
     {
       "blocks": [
@@ -4535,7 +5083,9 @@
         "pw-exceptions",
         "ps-list"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4632,7 +5182,9 @@
         "pe-roster",
         "pe-kpis"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4703,7 +5255,9 @@
       "simpler": {
         "en": "First take off the insurance. Then take off a fixed allowance for yourself, and another for each person who depends on you. Whatever is left is what gets taxed — and the rate starts low and only rises on the part above each band.",
         "vi": "Trước hết trừ bảo hiểm. Rồi trừ một khoản cố định cho bản thân, và thêm một khoản nữa cho mỗi người phụ thuộc. Phần còn lại mới là phần chịu thuế — và thuế suất bắt đầu ở mức thấp, chỉ tăng lên với phần vượt qua từng bậc."
-      }
+      },
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4757,7 +5311,9 @@
       "practice_key": "m1",
       "screens": "*",
       "show_me": [],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4823,7 +5379,9 @@
       "show_me": [
         "lg-rows"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4915,7 +5473,9 @@
       "show_me": [
         "pk-card-actions"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -4981,7 +5541,9 @@
       "show_me": [
         "pa-reject"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5047,7 +5609,90 @@
       "show_me": [
         "lg-rows"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
+    },
+    {
+      "blocks": [
+        {
+          "body": {
+            "en": "Payobook sends it to them. Each payslip becomes a PDF, protected by a password that belongs to that one person, and it is emailed rather than handed round.",
+            "vi": "Payobook gửi tới tận nơi cho họ. Mỗi phiếu lương được kết xuất thành tệp PDF, đặt mật khẩu riêng của đúng người đó, và gửi qua email chứ không chuyền tay."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "It is sent from the run, once the run is Done — not from one payslip at a time. Sending before that would be sending a figure two people have still to sign for.",
+            "vi": "Việc gửi thực hiện từ đợt lương, khi đợt đã Hoàn tất — không phải gửi lẻ từng phiếu. Gửi trước lúc đó là gửi đi một con số mà còn hai người nữa phải ký."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "Every send is logged per payslip, so a delivery that failed is visible and can be sent again on its own. Nobody has to guess who did not receive theirs.",
+            "vi": "Mỗi lần gửi đều được ghi nhật ký theo từng phiếu, nên lần gửi hỏng vẫn nhìn thấy được và gửi lại riêng được. Không ai phải đoán xem ai chưa nhận."
+          },
+          "capability": "any",
+          "kind": "ok",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "The password is worked out at send time and is never written down anywhere. If somebody cannot open theirs, the answer is the pattern the company set, not a stored copy.",
+            "vi": "Mật khẩu được tính ra ngay lúc gửi và không được ghi lại ở bất cứ đâu. Nếu ai đó không mở được tệp của mình thì câu trả lời nằm ở quy tắc công ty đã đặt, không phải ở một bản lưu nào cả."
+          },
+          "capability": "any",
+          "kind": "warn",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "The payslip delivery log on the pay run, and the password rule in the delivery settings.",
+            "vi": "Nhật ký gửi phiếu lương trên đợt lương, và quy tắc mật khẩu trong thiết lập gửi phiếu."
+          },
+          "capability": "any",
+          "kind": "source",
+          "live_fallback": "",
+          "steps": []
+        }
+      ],
+      "dynamic": "none",
+      "key": "seeslip",
+      "label": {
+        "en": "How does an employee get their own payslip?",
+        "vi": "Nhân viên nhận phiếu lương của mình bằng cách nào?"
+      },
+      "offer": true,
+      "phrases": [
+        "how do employees see their payslip",
+        "send payslips to staff",
+        "email the payslips",
+        "payslip pdf for the employee",
+        "nhan vien xem phieu luong o dau",
+        "gửi phiếu lương cho nhân viên",
+        "gui phieu luong qua email",
+        "How does an employee get their own payslip?",
+        "Nhân viên nhận phiếu lương của mình bằng cách nào?"
+      ],
+      "practice_key": "",
+      "screens": "payslips,employees",
+      "show_me": [
+        "pk-card-actions",
+        "ps-detail"
+      ],
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5135,7 +5780,9 @@
         "ig-roster",
         "im-cta"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5222,7 +5869,9 @@
         "ps-kpis",
         "in-trend"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [],
@@ -5245,7 +5894,9 @@
       "practice_key": "",
       "screens": "*",
       "show_me": [],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [],
@@ -5268,7 +5919,9 @@
       "practice_key": "",
       "screens": "*",
       "show_me": [],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5370,7 +6023,9 @@
         "scenario:sc_welcome",
         "rep-nav"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5428,7 +6083,9 @@
         "fs-config",
         "pw-division"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5525,7 +6182,9 @@
         "gr-grid",
         "gr-countries"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5593,7 +6252,9 @@
       "show_me": [
         "pa-lanes"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5674,7 +6335,9 @@
         "st-rates",
         "st-roster"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5765,7 +6428,9 @@
       "simpler": {
         "en": "Use the board when your question is one that comes up every month, and the Explorer when it is not. The board has the answers somebody already thought of; the Explorer lets you ask for one nobody did.",
         "vi": "Dùng bảng phân tích khi câu hỏi của bạn là câu tháng nào cũng gặp, và dùng Explorer khi không phải vậy. Bảng chứa những câu trả lời đã có người nghĩ trước; còn Explorer cho bạn hỏi một câu chưa ai nghĩ tới."
-      }
+      },
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5911,7 +6576,9 @@
       "show_me": [
         "ct-roster"
       ],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -5996,7 +6663,9 @@
       "practice_key": "",
       "screens": "employees,contracts,insights",
       "show_me": [],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     },
     {
       "blocks": [
@@ -6063,7 +6732,9 @@
       "simpler": {
         "en": "Two things move a monthly salary and one thing usually does not. Overtime moves it, and tax follows the overtime. Insurance normally stays put, because it is worked out from the salary written in the contract rather than from what was actually earned that month.",
         "vi": "Có hai thứ làm lương tháng thay đổi và một thứ thường thì không. Tăng ca làm lương thay đổi, và thuế đi theo tăng ca. Bảo hiểm thường đứng yên, vì nó được tính từ mức lương ghi trong hợp đồng chứ không phải từ số thực sự kiếm được trong tháng đó."
-      }
+      },
+      "try": "sc_payslips",
+      "watch": "sc_payslips"
     },
     {
       "blocks": [
@@ -6147,7 +6818,9 @@
       "practice_key": "",
       "screens": "formula,structures,statutory,integrations",
       "show_me": [],
-      "simpler": ""
+      "simpler": "",
+      "try": "",
+      "watch": ""
     }
   ],
   "missions": [
@@ -9348,6 +10021,13 @@
       "sidebar_key": "pb_sidebar.item_dashboard",
       "suggest": [
         {
+          "key": "howrun",
+          "label": {
+            "en": "How do I run payroll?",
+            "vi": "Tôi chạy bảng lương thế nào?"
+          }
+        },
+        {
           "key": "whatpage",
           "label": {
             "en": "What is this screen for?",
@@ -9452,6 +10132,13 @@
       "sequence": 150,
       "sidebar_key": "pb_sidebar.item_employees",
       "suggest": [
+        {
+          "key": "addperson",
+          "label": {
+            "en": "How do I add a new employee?",
+            "vi": "Tôi thêm một nhân viên mới thế nào?"
+          }
+        },
         {
           "key": "payrollready",
           "label": {
@@ -12755,5 +13442,5 @@
       }
     }
   ],
-  "version": "9119d663f6b0"
+  "version": "2302aef06a47"
 }

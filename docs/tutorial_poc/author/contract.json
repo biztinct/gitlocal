@@ -11,7 +11,7 @@
     "human has to re-read — the checker cannot know whether a renamed state key",
     "invalidates one sentence or a whole lesson."
   ],
-  "schemaVersion": "1.6",
+  "schemaVersion": "1.7",
   "repoRoot": "../../..",
   "checks": [
     {
@@ -1251,6 +1251,106 @@
       "fixture": [],
       "taughtIn": [
         "the mode-behaviour matrix in LEARNOS_PHASE1B_HANDOVER.md"
+      ]
+    },
+    {
+      "id": "explain-screen-reads-content-only",
+      "kind": "model-scope",
+      "within": "_explain_floor",
+      "why": "LEARNOS Phase 4. `explain_screen` answers \"what is this screen\" with nobody having typed anything, and its floor is assembled here. Every model this method reaches must be in the learn.* namespace: learn.content for the written material and learn.runtime for the live substitution on next_step. A join to anything the payroll product owns would put a record into an answer that is ALSO, when a tenant switches the composer on, the material for a prompt. Same checker kind and same argument as composer-corpus-reads-learn-content-only: the promise is a NAMESPACE, not a list of banned tables, and the check fails if it finds no model at all, so a rewrite that hides the reads behind a variable breaks the build rather than passing silently.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "learn."
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "chrome strings explainScreen / explainHint / screenAnswer",
+        "pb_learn/tests/test_explain.py"
+      ]
+    },
+    {
+      "id": "explain-prompt-material-is-content-only",
+      "kind": "model-scope",
+      "within": "_explain_wire_text",
+      "why": "The half that actually reaches a provider. `_explain_floor` builds what the LEARNER reads; this builds what is SENT when the composer flag is on, and it is deliberately a second pass over the content plane rather than a flattening of the floor — the floor's next_step has been through learn.runtime, so on the demo world it carries a division name and a run state read out of the database, and on any tenant it can carry an override slot somebody typed. Neither belongs on a wire. Scoped the same way and for the same reason as the floor.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "learn."
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "models/learn_intent.py::_wire_leaf",
+        "pb_learn/tests/test_explain.py"
+      ]
+    },
+    {
+      "id": "explain-screen-has-deterministic-floor",
+      "kind": "contains",
+      "within": "explain_screen",
+      "why": "THE ORDER IS THE FEATURE. Every screen the content plane covers can explain itself offline: the blurb, the next step and the column definitions were all written already. A provider may only REWRITE that, and the structure of this method is what makes \"may only\" true rather than intended — the floor is built and returned before the flag is even read, so a tenant with the composer off runs the code that would have shipped without one, and a rewrite that comes back empty, refused or too long falls back to the same object. The tokens below pin all three: the floor call, the flag read and the fallback. Their ORDER is pinned by tests/test_explain.py, which a `contains` check cannot see.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "floor = self._explain_floor(screen_key)",
+        "if not self._compose_enabled():",
+        "return floor",
+        "self._explain_composed(floor, screen_key, lang) or floor"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the screenAnswer badge in coach.js",
+        "pb_learn/tests/test_explain.py"
+      ]
+    },
+    {
+      "id": "corpus-builder-is-pure",
+      "kind": "absent",
+      "within": "build_corpus",
+      "why": "LEARNOS Phase 4 moved the composer's corpus assembly out of `_corpus` and into a module-level function, so that the exact string on the wire can be asserted without a database. That refactor would have left the model-scope check with less to see — the ledger's rule is to change the refactor rather than the checker, so the reads stayed in `_corpus`, which is still checked, and this pins the property that makes the new function safe: it takes the parsed content tree and scalars, and has no way to reach a registry, a recordset or a cursor. A reader can check that from the signature; this makes it break the build.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "self.env",
+        "cr.execute",
+        ".search(",
+        ".browse("
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "models/learn_intent.py::build_corpus",
+        "tools/replay_tests.py"
+      ]
+    },
+    {
+      "id": "payai-classifies-on-scrubbed-text",
+      "kind": "contains",
+      "within": "_classify_intent",
+      "why": "THE FIRST PROVIDER CALL OF EVERY QUESTION, and until the Phase 4 review it sent the whole user message raw. Every redaction in this module lived in `_process_data_query`, which runs AFTERWARDS — so the comment there claiming the message was protected described a method the message had already gone past. There is no name mapping at this point (nothing has been queried yet), so what is pinned is the generic scrub: an email, a phone number, a record id and a money amount all leave the string before it is formatted into the prompt. A name does not, and that residual is named in ai_redaction.py rather than left to be rediscovered. Pinned at AUTHORING time as well as in tests/test_egress.py because the two run in different places and neither is a substitute for the other.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_engine.py",
+      "expect": [
+        "safe_message = generic_scrub(message)",
+        "INTENT_CLASSIFICATION_PROMPT.format(message=safe_message)"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_01f",
+        "ai_redaction.py residual list"
+      ]
+    },
+    {
+      "id": "payai-history-never-goes-out-raw",
+      "kind": "contains",
+      "why": "CONVERSATION HISTORY IS AN EARLIER ANSWER WITH THE NAMES PUT BACK INTO IT. `restore_deep` re-inserts real employee names for the reader who is entitled to them, and the next turn used to hand those same messages straight back to the provider on all four paths. Three of the four never build a mapping at all, so they get `generic_scrub`; the data path gets the mapping as well. The per-path count is asserted in tests/test_egress.py::test_01g — what this pins is that both call shapes still exist in the file at all, so deleting one cannot pass on the strength of the other. RESIDUAL, disclosed rather than fixed here: a name from an earlier turn that is absent from the CURRENT query's result is only reached by the generic patterns, because the mapping is per-call. Closing it needs a per-conversation mapping, which is a schema change with its own retention question — Phase 6, beside the voice and PDF-report egress work.",
+      "files": [
+        "pb_payroll_ai_insights/models/payroll_ai_engine.py"
+      ],
+      "expect": [
+        "\"content\": redact_text(msg.get('content', ''), mapping),",
+        "\"content\": generic_scrub(msg.get('content', '')),",
+        "\"content\": generic_scrub(msg.get('content', ''))})"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_01g",
+        "ai_redaction.py residual list"
       ]
     }
   ],

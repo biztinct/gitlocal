@@ -27,8 +27,12 @@
      MissionStep{ id, nav?, target?, instruction*, detail?*, hint?*,
                   decision?, consequence?, undo?, options[], recovery{} }
      Screen     { blurb*, next*, chips[] }
-     QAIntent   { id, match[], label*, screens, dynamic?, showMe?, simpler?*,
+     QAIntent   { id, match[], label*, screens, dynamic?, showMe?,
+                  watch?, try?, simpler?*,
                   practice?, offer?, blocks[] | roleVariants{} }
+                  watch/try name a SCENARIO key that declares that mode; the
+                  generator refuses one that does not (a dead button is an
+                  offer made and not kept).
      Column     [key, label*, body*]
    * = translatable; EVERY translatable ships a complete value in BOTH
    languages. The generator has no fallback — an English-only value would ship
@@ -243,6 +247,16 @@ const I18N = {
     composedAnswer: "Composed from the guide",
     noAnswer: "I do not have an answer for that",
     noAnswerBody: "Nothing written here covers that question. Here is what I can answer on this screen.",
+    /* -- explain this screen (LEARNOS Phase 4) ----------------------------
+       A question nobody has to phrase. The drawer's header carries it, and
+       the answer is built from what this module already holds about the
+       screen: what it is, what to do next here, and what its columns count.
+       No provider is needed for any of that — see learn_intent.explain_screen,
+       where the composer may only REWRITE a floor that already exists. */
+    explainScreen: "Explain this screen",
+    explainHint: "What this screen is, what to do next, and what its numbers mean.",
+    screenAnswer: "From this screen's own guide",
+    notSure: "Not sure what to ask?",
     /* -- storing questions: asked once, remembered either way -------------
        The three promises this card makes are checked against the code:
        test_04d asserts that the 180 days here is the same integer as
@@ -423,6 +437,11 @@ const I18N = {
     composedAnswer: "Tổng hợp từ tài liệu hướng dẫn",
     noAnswer: "Tôi chưa có câu trả lời cho việc đó",
     noAnswerBody: "Không có nội dung nào ở đây bao phủ câu hỏi đó. Đây là những gì tôi trả lời được trên màn hình này.",
+    /* -- explain this screen (LEARNOS Phase 4) --------------------------- */
+    explainScreen: "Giải thích màn hình này",
+    explainHint: "Màn hình này là gì, nên làm gì tiếp, và các con số ở đây nghĩa là gì.",
+    screenAnswer: "Từ hướng dẫn của chính màn hình này",
+    notSure: "Chưa biết nên hỏi gì?",
     /* -- storing questions: asked once, remembered either way ------------- */
     consentTitle: "Giúp chúng tôi cải thiện tài liệu hướng dẫn?",
     consentBody: "Nếu bạn đồng ý, chúng tôi lưu lại câu hỏi bạn vừa đặt. Nhờ đó chúng tôi biết tài liệu còn thiếu những gì. Tên riêng và số tiền đều được loại bỏ trước khi lưu. Câu hỏi có lưu kèm tên bạn — nhờ vậy bạn tìm được câu hỏi của mình và xoá đi bất cứ lúc nào. Chúng tôi xoá câu hỏi đã lưu sau 180 ngày. Bạn từ chối thì không có gì được lưu. Trợ lý vẫn hoạt động y như vậy.",
@@ -3013,7 +3032,10 @@ const SCREEN_CTX = {
              "Màn hình bạn bắt đầu. Đợt lương đang chạy, bốn con số mô tả cả công ty, và một thẻ cho từng phần của Payobook đáng mở hôm nay."),
     next: B("Read the line under your name first. It names the live run and how much of it is still waiting. Then open the section the work is actually in. Almost nothing here is a second way of doing anything.",
             "Hãy đọc dòng ngay dưới tên bạn trước. Nó cho biết đợt lương đang chạy và còn bao nhiêu phần đang chờ. Rồi mở đúng nhóm mục chứa phần việc đó. Gần như không thứ gì ở đây là một cách làm thứ hai."),
-    chips: ["whatpage", "wherelives", "whatnext", "practice"],
+    // LEARNOS Phase 4: `howrun` is chipped HERE and nowhere else. The Dashboard
+    // is where somebody who has not run payroll yet is standing, and the
+    // question they were typing had no answer at all before this phase.
+    chips: ["howrun", "whatpage", "wherelives", "whatnext", "practice"],
   },
   approvals: {
     blurb: B("Every submitted run, in the lane of the gate it is waiting at. The header adds up the money at stake across all of them.",
@@ -3027,7 +3049,7 @@ const SCREEN_CTX = {
              "Danh sách nhân sự. Tình trạng hợp đồng, quỹ lương tháng, và liệu từng người có thực sự nhận được lương hay không."),
     next: B("Filter to the people who are not payroll-ready. Clear them before the run, not after it. Somebody with no bank account computes perfectly and is still not paid.",
             "Hãy lọc ra những người chưa sẵn sàng tính lương. Xử lý họ trước khi chạy đợt lương, đừng để sau. Người chưa có tài khoản ngân hàng vẫn được tính lương hoàn hảo mà vẫn không nhận được tiền."),
-    chips: ["payrollready", "whopays", "whosees", "whatnext"],
+    chips: ["addperson", "payrollready", "whopays", "whosees", "whatnext"],
   },
   contracts: {
     blurb: B("Every contract with its type, its dates and its wage. These are the agreements payroll actually computes from.",
@@ -3129,6 +3151,12 @@ const QA = [
     // fragment is a step KEY and not an index, so inserting a step in the
     // middle of the walkthrough cannot silently re-point it somewhere else.
     showMe: ["scenario:sc_payslips#breakdown", "ps-breakdown"],
+    // LEARNOS Phase 4. `showMe` opens the walkthrough on ONE step; these two
+    // offer the whole story, and Try is offered because sc_payslips has a
+    // replica to take it on. The generator refuses a `try` that names a
+    // scenario without the mode, so this pair cannot drift into a dead button.
+    watch: "sc_payslips",
+    try: "sc_payslips",
     simpler: B("Two things move a monthly salary and one thing usually does not. Overtime moves it, and tax follows the overtime. Insurance normally stays put, because it is worked out from the salary written in the contract rather than from what was actually earned that month.",
                "Có hai thứ làm lương tháng thay đổi và một thứ thường thì không. Tăng ca làm lương thay đổi, và thuế đi theo tăng ca. Bảo hiểm thường đứng yên, vì nó được tính từ mức lương ghi trong hợp đồng chứ không phải từ số thực sự kiếm được trong tháng đó."),
     blocks: [
@@ -3283,6 +3311,9 @@ const QA = [
     // at, it is a process to watch: convert, score, fix, and only then
     // commit — which is exactly the three steps of sc_import.
     showMe: ["scenario:sc_import", "iw-review"],
+    // Watch only, and that is the scenario's own declaration: sc_import walks
+    // the real importer and has no replica to hand over to.
+    watch: "sc_import",
     simpler: B("It is not a mark out of a hundred. It is how much of your file Payobook could read without guessing. So 96% of fifty rows still means two rows it could not place, and each of those is one person's pay.",
                "Đây không phải điểm trên thang một trăm. Nó là phần dữ liệu trong tệp mà Payobook đọc được mà không phải đoán. Nên 96% của năm mươi dòng vẫn nghĩa là còn hai dòng nó không xếp được, và mỗi dòng đó là lương của một con người."),
     blocks: [
@@ -3855,6 +3886,177 @@ const QA = [
                      "Dòng \"sắp có\" ở một quốc gia nghĩa là mô-đun tính lương của quốc gia đó chưa được CÀI ở đây — chứ không phải các biểu mẫu không tồn tại. Việt Nam, Singapore, Thái Lan, Campuchia và Malaysia đều có trong danh mục, và biểu mẫu của một quốc gia sẽ xuất hiện ngay khi mô-đun chứa trình lập báo cáo của nó được cài. Vậy nên thông báo đó là câu hỏi về cài đặt dành cho người quản trị hệ thống, không phải giới hạn của sản phẩm. Dù thế nào thì Payobook cũng chỉ lập tệp — chứ không nộp thay bạn.") },
       { k: "src", v: B("The country report catalogue behind this cockpit, and the active company's country.",
                        "Danh mục biểu mẫu theo quốc gia đứng sau màn hình này, và quốc gia của công ty đang hoạt động.") },
+    ],
+  },
+
+  /* ===========================================================================
+     LEARNOS PHASE 4 — THE OBVIOUS QUESTIONS NOBODY HAD WRITTEN.
+
+     The Phase 1 live validation asked the product's most ordinary questions and
+     found no entry for any of these six. "How do I run payroll" was the worst
+     of them: with no content to match, it scored 40 against `payrollready` on
+     one shared word, cleared the screenless floor and was shown under a
+     "Grounded in" badge. A badged wrong answer is worse than a miss, so the
+     floor was raised too (learn_intent._SCREENLESS_FLOOR) — the two fixes are
+     one fix, and neither alone would have been enough.
+
+     Appended rather than interleaved, for the reason the Setup block gives.
+     ======================================================================== */
+  {
+    id: "howrun", screens: "*",
+    label: B("How do I run payroll?", "Tôi chạy bảng lương thế nào?"),
+    /* THE "PAY MY STAFF" FAMILY IS HERE ON PURPOSE (Phase 4 review). Most
+       people do not ask how to "run payroll" — they ask how to pay their
+       staff, and before these phrases existed that question shared `pay` and
+       `month` with `whydiff` and was answered with a lesson about why one
+       person's salary moved. Scoring alone could not fix it: two ambiguous
+       words now buy nothing, but a question with no content still misses, and
+       a miss is not what this question deserves. The floor change and these
+       phrases are one fix.
+
+       `getpaid` answers the neighbouring question — how the money physically
+       reaches people once a run is done — and is scoped to the two screens
+       where that is the live question. This one is global, so off the map it
+       wins, which is the right default for somebody who has not started. */
+    match: ["how do i run payroll", "run a payroll", "start the payroll", "run the month",
+            "how do i pay my staff", "how do i pay everyone", "how do i pay people",
+            "pay my staff this month", "how do we pay everyone",
+            "chay bang luong the nao", "bắt đầu tính lương", "lam sao chay luong",
+            "tra luong cho nhan vien the nao", "trả lương cho nhân viên thế nào",
+            "lam sao tra luong cho moi nguoi"],
+    showMe: ["scenario:sc_payrun", "dash-runpayroll"],
+    // A walkthrough answers this better than any paragraph, and the wizard
+    // supports all three modes — so both offers are real.
+    watch: "sc_payrun",
+    try: "sc_payrun",
+    practice: "m1",
+    simpler: B("Five presses, in one wizard. You pick who is being paid, you press Compute, you read what the system flagged, and you send it for approval. Nobody is paid until other people have said yes.",
+               "Năm thao tác, trong một trình hướng dẫn. Bạn chọn ai được trả lương, bấm Tính, đọc những gì hệ thống đánh dấu, rồi trình lên phê duyệt. Chưa ai được trả tiền cho tới khi những người khác đồng ý."),
+    blocks: [
+      { k: "p", v: B("One wizard, front to back. Open Run Payroll, choose the division and the period, compute, read the exceptions, then submit. Everything before Submit is a draft, and a draft has paid nobody.",
+                     "Một trình hướng dẫn, từ đầu tới cuối. Mở Chạy bảng lương, chọn bộ phận và kỳ lương, tính, đọc các ngoại lệ, rồi trình lên. Mọi thứ trước bước Trình đều là bản nháp, và bản nháp thì chưa trả cho ai cả.") },
+      { k: "steps", v: [
+        { t: B("Open Run Payroll — the button is on the Dashboard, top right", "Mở Chạy bảng lương — nút nằm ở trang tổng quan, phía trên bên phải"), a: "dash-runpayroll" },
+        { t: B("Choose the division. The wizard loads that division's formula configuration with it", "Chọn bộ phận. Trình hướng dẫn sẽ nạp kèm cấu hình công thức của bộ phận đó"), a: "pw-division" },
+        { t: B("Read the eligible headcount before you press anything", "Đọc số nhân viên đủ điều kiện trước khi bấm bất cứ nút nào"), a: "pw-scope" },
+        { t: B("Compute. This creates one draft payslip per person and does nothing else", "Bấm Tính. Bước này tạo mỗi người một phiếu lương nháp, và không làm gì khác"), a: "pw-compute" },
+        { t: B("Read every exception, then submit the run for review", "Đọc từng ngoại lệ một, rồi trình đợt lương lên soát xét"), a: "pw-exceptions" },
+      ] },
+      { k: "warn", v: B("Computing is not paying. After Submit the run walks the approval chain — the Payroll Officer tier, then {{hrTierName}}, then {{gmTierName}} — and only a run that has reached Done offers the money-out buttons.",
+                        "Tính không phải là chi. Sau bước Trình, đợt lương đi qua chuỗi phê duyệt — cấp Chuyên viên tính lương, rồi {{hrTierName}}, rồi {{gmTierName}} — và chỉ đợt đã Hoàn tất mới hiện các nút chi tiền.") },
+      { k: "ok", v: B("A low eligible count is the one number worth stopping for. It usually means this month's attendance import has not been committed yet, and computing anyway produces a run that is quietly short.",
+                      "Số nhân viên đủ điều kiện thấp là con số duy nhất đáng dừng lại. Nó thường nghĩa là dữ liệu chấm công tháng này chưa được ghi nhận, và cứ tính tiếp sẽ cho ra một đợt lương thiếu người mà không ai thấy.") },
+      { k: "src", v: B("The Run Payroll wizard's own steps, and the pay run's approval chain.",
+                       "Các bước của chính trình hướng dẫn Chạy bảng lương, và chuỗi phê duyệt của đợt lương.") },
+    ],
+  },
+
+  {
+    id: "firstday", screens: "*",
+    label: B("I am new here — where do I start?", "Tôi mới dùng — nên bắt đầu từ đâu?"),
+    match: ["where do i start", "i am new", "first day", "getting started", "new to payobook",
+            "bat dau tu dau", "tôi mới bắt đầu", "nguoi moi nen lam gi"],
+    showMe: ["scenario:sc_welcome"],
+    watch: "sc_welcome",
+    blocks: [
+      { k: "p", v: B("Start with the two-minute tour, then the Dashboard. The tour shows the four screens most people use, on the real product, and it presses nothing for you.",
+                     "Hãy bắt đầu bằng lượt đi một vòng hai phút, rồi tới trang tổng quan. Lượt đó chỉ cho bạn bốn màn hình nhiều người dùng nhất, ngay trên sản phẩm thật, và nó không bấm hộ bạn thứ gì.") },
+      { k: "steps", v: [
+        { t: B("Watch the tour — it starts on the Dashboard and ends on a pay run", "Xem lượt giới thiệu — nó bắt đầu ở trang tổng quan và kết thúc ở một đợt lương"), a: "dash-hero" },
+        { t: B("Read the line under your name. It names the live pay run and what it is waiting for", "Đọc dòng ngay dưới tên bạn. Nó cho biết đợt lương đang chạy và nó đang chờ điều gì"), a: "dash-hero" },
+        { t: B("Open the Journey and take the first lesson. It is eight minutes and nothing in it is real", "Mở Hành trình học và làm bài đầu tiên. Nó dài tám phút và không có gì trong đó là thật") },
+      ] },
+      { k: "ok", v: B("Nothing you read costs anything. Every screen in Payobook can be opened and read; the controls that write are the small number this guide keeps naming.",
+                      "Đọc thì không mất gì cả. Mọi màn hình trong Payobook đều mở ra đọc được; những nút thực sự ghi dữ liệu chỉ là số ít mà tài liệu này liên tục gọi tên.") },
+      { k: "src", v: B("The Journey's own lessons, and the walkthroughs this Coach can start.",
+                       "Các bài học trong Hành trình học, và những lượt hướng dẫn mà Trợ lý này mở được.") },
+    ],
+  },
+
+  {
+    id: "monthloop", screens: ["dashboard", "payruns", "runpayroll"],
+    label: B("When in the month do I do each part?", "Trong tháng thì làm phần nào vào lúc nào?"),
+    match: ["when do i do this", "payroll calendar", "what order in the month", "monthly cycle",
+            "lam vao luc nao trong thang", "lịch chạy lương", "thu tu trong thang"],
+    showMe: ["scenario:sc_welcome", "dash-hero"],
+    watch: "sc_welcome",
+    blocks: [
+      { k: "p", v: B("The same loop every month, in four moves. Inputs arrive, the run is computed, people sign for it, and the money goes out. Each move has a different owner.",
+                     "Vẫn một vòng lặp đó mỗi tháng, gồm bốn nhịp. Dữ liệu đầu vào về, đợt lương được tính, những người có thẩm quyền ký, rồi tiền được chi. Mỗi nhịp có một người chịu trách nhiệm khác nhau.") },
+      { k: "steps", v: [
+        { t: B("Inputs — attendance and overtime, committed by {{importCutoff}}", "Đầu vào — chấm công và tăng ca, ghi nhận xong trước {{importCutoff}}"), a: "im-cta" },
+        { t: B("People — clear anybody who is not payroll-ready before the run, not after", "Nhân sự — xử lý những người chưa sẵn sàng tính lương trước khi chạy, đừng để sau"), a: "pe-filters" },
+        { t: B("Compute and review, then submit for approval", "Tính rồi soát xét, sau đó trình lên phê duyệt"), a: "pw-compute" },
+        { t: B("Approval, then the money out around {{payDay}}", "Phê duyệt, rồi chi tiền vào khoảng {{payDay}}"), a: "pk-card-actions" },
+      ] },
+      { k: "warn", v: B("The order is not a preference. Importing after the run is computed changes nothing on the payslips already made, and fixing a person after the run is done costs a retro line next month.",
+                        "Thứ tự này không phải là sở thích. Nhập dữ liệu sau khi đã tính thì không thay đổi gì trên các phiếu lương đã tạo, và sửa cho một người sau khi đợt đã Hoàn tất sẽ tốn một dòng hồi tố vào tháng sau.") },
+      { k: "src", v: B("The pay run's own state chain, and the tenant's stated import cutoff and pay day.",
+                       "Chuỗi trạng thái của chính đợt lương, và mốc chốt dữ liệu cùng ngày trả lương do công ty khai báo.") },
+    ],
+  },
+
+  {
+    id: "addperson", screens: ["employees", "contracts"],
+    label: B("How do I add a new employee?", "Tôi thêm một nhân viên mới thế nào?"),
+    match: ["how do i add an employee", "add a new employee", "onboard someone", "hire someone",
+            "them nhan vien moi", "tạo hồ sơ nhân viên", "them nguoi vao he thong"],
+    showMe: ["pe-head", "ct-roster"],
+    blocks: [
+      { k: "p", v: B("Add employee, at the top of the Employees screen. It opens a three-step wizard rather than a bare form: the person, then their role, then their contract.",
+                     "Nút Thêm nhân viên, ở phía trên màn hình Nhân sự. Nó mở một trình hướng dẫn ba bước thay vì một biểu mẫu trống: thông tin cá nhân, rồi vị trí công việc, rồi hợp đồng.") },
+      { k: "p", v: B("The third step is the one payroll depends on. A person with no running contract computes nothing at all, so they simply do not appear in the run.",
+                     "Bước thứ ba mới là bước hệ thống lương phụ thuộc vào. Người chưa có hợp đồng đang hiệu lực thì không được tính gì cả, nên đơn giản là họ không xuất hiện trong đợt lương.") },
+      { k: "warn", v: B("Bank details are the other half and they are not on that wizard. Somebody with a contract and no account computes perfectly and is still not paid on {{payDay}}.",
+                        "Thông tin ngân hàng là nửa còn lại và nó không nằm trong trình hướng dẫn đó. Người có hợp đồng mà chưa có tài khoản vẫn được tính lương hoàn hảo và vẫn không nhận được tiền vào {{payDay}}.") },
+      { k: "steps", v: [
+        { t: B("Add employee — person, role, contract", "Thêm nhân viên — thông tin cá nhân, vị trí, hợp đồng"), a: "pe-head" },
+        { t: B("Check the contract start date against the period you are about to run", "Đối chiếu ngày bắt đầu hợp đồng với kỳ lương bạn sắp chạy"), a: "ct-roster" },
+        { t: B("Filter the roster to the people who are not payroll-ready and clear the new name off it", "Lọc danh sách theo những người chưa sẵn sàng tính lương và xử lý cho tên vừa thêm rời khỏi đó"), a: "pe-filters" },
+      ] },
+      { k: "src", v: B("The Add employee wizard's three steps, and the payroll-ready mark on the roster.",
+                       "Ba bước của trình hướng dẫn Thêm nhân viên, và dấu sẵn sàng tính lương trên danh sách.") },
+    ],
+  },
+
+  {
+    id: "getpaid", screens: ["payruns", "payslips"],
+    label: B("How does the money actually reach people?", "Tiền thực sự tới tay mọi người bằng cách nào?"),
+    match: ["how does the money go out", "how are people actually paid", "make the payment",
+            "generate the bank file", "chuyen tien the nao", "chi lương ra sao", "xuat tep ngan hang"],
+    showMe: ["pk-card-actions"],
+    blocks: [
+      { k: "p", v: B("Not from the pay run itself. A run computes and records what is owed; a separate step turns that into a bank file and sends the payslips out.",
+                     "Không phải từ chính đợt lương. Đợt lương tính và ghi nhận số phải trả; một bước riêng mới biến số đó thành tệp chi lương ngân hàng và gửi phiếu lương đi.") },
+      { k: "p", v: B("Those buttons appear on a run's card only once it has reached Done. Before that the card offers the next approval instead, because there is nothing to pay yet.",
+                     "Các nút đó chỉ xuất hiện trên thẻ của đợt lương khi nó đã Hoàn tất. Trước đó thẻ chỉ hiện bước phê duyệt kế tiếp, vì chưa có gì để chi cả.") },
+      { k: "p", v: B("Two outputs and they are different things. {{bankFileFormat}} is what the bank acts on. Journals and Payments are the accounting side of the same month, and neither of them moves money.",
+                     "Hai kết quả và chúng là hai thứ khác nhau. {{bankFileFormat}} là thứ ngân hàng thực hiện. Bút toán và Thanh toán là phần kế toán của cùng tháng đó, và không cái nào chuyển tiền cả.") },
+      { k: "warn", v: B("A row the bank file cannot use is not dropped quietly. It is listed with the reason, and that list is the last chance to catch somebody before {{payDay}}.",
+                        "Một dòng mà tệp chi lương không dùng được sẽ không bị bỏ đi âm thầm. Nó được liệt kê kèm lý do, và danh sách đó là cơ hội cuối để phát hiện ra ai đó trước {{payDay}}.") },
+      { k: "src", v: B("The buttons a Done pay run offers on its own card, and the bank file each row is checked against.",
+                       "Các nút mà một đợt lương đã Hoàn tất hiện trên chính thẻ của nó, và tệp chi lương mà từng dòng được kiểm tra theo.") },
+    ],
+  },
+
+  {
+    id: "seeslip", screens: ["payslips", "employees"],
+    label: B("How does an employee get their own payslip?", "Nhân viên nhận phiếu lương của mình bằng cách nào?"),
+    match: ["how do employees see their payslip", "send payslips to staff", "email the payslips",
+            "payslip pdf for the employee", "nhan vien xem phieu luong o dau",
+            "gửi phiếu lương cho nhân viên", "gui phieu luong qua email"],
+    showMe: ["pk-card-actions", "ps-detail"],
+    blocks: [
+      { k: "p", v: B("Payobook sends it to them. Each payslip becomes a PDF, protected by a password that belongs to that one person, and it is emailed rather than handed round.",
+                     "Payobook gửi tới tận nơi cho họ. Mỗi phiếu lương được kết xuất thành tệp PDF, đặt mật khẩu riêng của đúng người đó, và gửi qua email chứ không chuyền tay.") },
+      { k: "p", v: B("It is sent from the run, once the run is Done — not from one payslip at a time. Sending before that would be sending a figure two people have still to sign for.",
+                     "Việc gửi thực hiện từ đợt lương, khi đợt đã Hoàn tất — không phải gửi lẻ từng phiếu. Gửi trước lúc đó là gửi đi một con số mà còn hai người nữa phải ký.") },
+      { k: "ok", v: B("Every send is logged per payslip, so a delivery that failed is visible and can be sent again on its own. Nobody has to guess who did not receive theirs.",
+                      "Mỗi lần gửi đều được ghi nhật ký theo từng phiếu, nên lần gửi hỏng vẫn nhìn thấy được và gửi lại riêng được. Không ai phải đoán xem ai chưa nhận.") },
+      { k: "warn", v: B("The password is worked out at send time and is never written down anywhere. If somebody cannot open theirs, the answer is the pattern the company set, not a stored copy.",
+                        "Mật khẩu được tính ra ngay lúc gửi và không được ghi lại ở bất cứ đâu. Nếu ai đó không mở được tệp của mình thì câu trả lời nằm ở quy tắc công ty đã đặt, không phải ở một bản lưu nào cả.") },
+      { k: "src", v: B("The payslip delivery log on the pay run, and the password rule in the delivery settings.",
+                       "Nhật ký gửi phiếu lương trên đợt lương, và quy tắc mật khẩu trong thiết lập gửi phiếu.") },
     ],
   },
 ];
