@@ -339,6 +339,29 @@ class LearnLive(models.AbstractModel):
         """
         return _live_gate(self.env) is None
 
+    @api.model
+    def world_is_demo(self):
+        """Is this DATABASE the demo world? A different question from
+        `gate_open`, and LEARNOS Phase 3 needs the difference.
+
+        `gate_open` asks about a SESSION: this user, in the demo group, working
+        in the demo company. That is the right question for a capstone, which
+        one person runs. It is the wrong question for a first-run greeting: an
+        administrator who is not in the demo group, standing on the demo
+        database, is not a brand-new tenant, and a session-level probe would
+        have welcomed them to a product they are running.
+
+        The company NAME is the declaration — there is no `is_demo` on
+        `res.company`, and pb_demo/models/demo_catalog.py is the only place the
+        name is written down. Same STRING as `_live_gate`, but not the same
+        PROBE: `env.company` is the ACTIVE company, a session fact, and an
+        apex admin switched to another company would have been welcomed as a
+        brand-new tenant (Phase-3 review MAJOR-3). A database fact is a
+        search over the database, immune to the company switcher.
+        """
+        return bool(self.env['res.company'].sudo().search_count(
+            [('name', '=', DEMO_COMPANY_NAME)]))
+
     # -- predicates -------------------------------------------------------
     @api.model
     def check(self, key):

@@ -45,6 +45,39 @@ RESERVED_SLUGS = {
     'autoconfig', 'autodiscover', 'login', 'auth', 'secure', 'support',
 }
 
+def currency_change(country_currency_id, company_currency_id):
+    """Which currency should a freshly cloned tenant's company be moved to?
+
+    Returns the currency id to write, or None to leave the company alone.
+
+    THIS IS THE WHOLE DECISION, AND IT IS PURE ON PURPOSE. The provisioning
+    path it belongs to runs against a database that has just been cloned on a
+    live box: it cannot be exercised anywhere but a deploy, so the part that
+    can be exercised is lifted out and tested
+    (pb_tenants/tests/test_currency.py). What is left at the call site is two
+    record reads and a write.
+
+    WHY IT EXISTS: the golden template's company is in USD, and every clone
+    inherits that. A Vietnamese tenant therefore opened its first dashboard
+    with "$0" on the payroll tile — the figure was honest and the money sign
+    was not, which is the same family of bug as the hard-coded `₫` this
+    dashboard's formatter used to carry, pointing the other way.
+
+    Both guards are load-bearing:
+      * a country with NO currency (a handful in `res.country` have none)
+        must leave the company where it is rather than clearing its currency,
+        which would break every monetary field on the tenant.
+      * a country whose currency is ALREADY the company's is not a change,
+        and writing it anyway would put a misleading line in the provisioning
+        trail somebody reads when a clone goes wrong.
+    """
+    if not country_currency_id:
+        return None
+    if country_currency_id == company_currency_id:
+        return None
+    return country_currency_id
+
+
 PROVISION_STEPS = [
     ('clone', 'Clone golden template'),
     ('configure', 'Configure tenant'),
@@ -477,12 +510,46 @@ class PbTenants(models.AbstractModel):
             vals = {'name': tenant.name}
             if tenant.admin_email:
                 vals['email'] = tenant.admin_email
+            currency = None
             if tenant.country_code:
                 country = env['res.country'].search([('code', '=', tenant.country_code)], limit=1)
                 if country:
                     vals['country_id'] = country.id
+                    # The template is a USD company and every clone inherits
+                    # that, so a VN tenant read "$0" on its first dashboard.
+                    # The decision is a pure function so it can be tested; the
+                    # records are read here.
+                    new_id = currency_change(country.currency_id.id, company.currency_id.id)
+                    if new_id:
+                        currency = env['res.currency'].browse(new_id)
             company.write(vals)
             say('Company configured: %s%s' % (tenant.name, tenant.country_code and ' (%s)' % tenant.country_code or ''))
+            if currency:
+                # The currency is COSMETIC relative to provisioning and gets
+                # its OWN write: Odoo refuses a currency change once journal
+                # items exist (account/company.py raises), and bundling it with
+                # the rename would turn that refusal into a configure-step
+                # abort. Ask first — the same guard chart_template.py uses —
+                # and treat any failure as a logged skip, never an error.
+                try:
+                    root = company.root_id
+                    if (hasattr(root, '_existing_accounting')
+                            and root._existing_accounting()):
+                        say('Currency left as %s: journal items already exist.'
+                            % company.currency_id.name)
+                    else:
+                        # An INACTIVE currency on a company appears in no
+                        # selection and has no rate maintained — Odoo ships
+                        # almost every one switched off. Activate BEFORE the
+                        # write so the company never points at a dead row.
+                        if not currency.active:
+                            currency.sudo().write({'active': True})
+                        company.write({'currency_id': currency.id})
+                        say('Currency set from country: %s (%s).'
+                            % (currency.name, currency.symbol or ''))
+                except Exception:
+                    say('Currency could not be set; left as %s.'
+                        % company.currency_id.name)
             # the golden template ships with all crons disabled (keeps its
             # registry cold on the shared box) — re-enable the recorded set
             crons = icp.get_param('pb_tenants.template_active_crons', '')

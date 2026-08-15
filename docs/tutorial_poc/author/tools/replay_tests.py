@@ -89,18 +89,74 @@ pkg.__path__ = [os.path.join(REPO, "pb_learn", "tests")]
 sys.modules["pb_learn_tests"] = pkg
 
 
-def load(name):
+def load(name, addon="pb_learn", pkgname="pb_learn_tests"):
     import importlib.util
-    path = os.path.join(REPO, "pb_learn", "tests", name + ".py")
-    spec = importlib.util.spec_from_file_location("pb_learn_tests." + name, path)
+    if pkgname not in sys.modules:
+        p = types.ModuleType(pkgname)
+        p.__path__ = [os.path.join(REPO, addon, "tests")]
+        sys.modules[pkgname] = p
+        # A DOTTED package name has to be reachable as an attribute of its
+        # parent, or a `from ..x import y` inside it resolves to nothing. That
+        # is exactly why pb_tenants' tests are loaded as `pb_tenants.tests`
+        # and pb_learn's are not: the pb_learn suite imports only siblings, so
+        # it can stay out of the real package and away from its __init__.
+        if "." in pkgname:
+            parent, _sep, leaf = pkgname.rpartition(".")
+            if parent in sys.modules:
+                setattr(sys.modules[parent], leaf, p)
+    path = os.path.join(REPO, addon, "tests", name + ".py")
+    spec = importlib.util.spec_from_file_location(pkgname + "." + name, path)
     mod = importlib.util.module_from_spec(spec)
-    sys.modules["pb_learn_tests." + name] = mod
+    sys.modules[pkgname + "." + name] = mod
     spec.loader.exec_module(mod)
     return mod
 
 
 common = load("common")
 sys.modules["pb_learn_tests.common"] = common
+
+
+# ---------------------------------------------------------------------------
+# LEARNOS Phase 3 — two neighbouring modules, replayed the same way.
+#
+# `pb_dashboard`'s source assertions need nothing but the stubs above.
+# `pb_tenants`'s need ONE symbol out of a file that imports half of Odoo's
+# service layer, so rather than stub that layer the harness lifts the shipped
+# function out of the real source by AST and executes THAT. The distinction
+# matters: this is the code that ships, compiled from the file it ships in —
+# not a copy of it living in a test.
+# ---------------------------------------------------------------------------
+def lift(addon, relpath, *names):
+    """Compile named top-level functions out of a source file, nothing else."""
+    import ast
+    path = os.path.join(REPO, addon, relpath)
+    with open(path, encoding="utf-8") as fh:
+        tree = ast.parse(fh.read(), filename=path)
+    wanted = [n for n in tree.body
+              if isinstance(n, ast.FunctionDef) and n.name in names]
+    missing = set(names) - {n.name for n in wanted}
+    assert not missing, "%s does not define %s" % (relpath, sorted(missing))
+    ns = {}
+    exec(compile(ast.Module(body=wanted, type_ignores=[]), path, "exec"), ns)
+    return ns
+
+
+def _fake_pkg(name, **attrs):
+    m = types.ModuleType(name)
+    for k, v in attrs.items():
+        setattr(m, k, v)
+    sys.modules[name] = m
+    return m
+
+
+_tenants = _fake_pkg("pb_tenants")
+_tenants.__path__ = [os.path.join(REPO, "pb_tenants")]
+_tenants_models = _fake_pkg("pb_tenants.models")
+_tenants_models.__path__ = [os.path.join(REPO, "pb_tenants", "models")]
+_tenants.models = _tenants_models
+_tenants_models.service = _fake_pkg(
+    "pb_tenants.models.service",
+    **lift("pb_tenants", "models/service.py", "currency_change"))
 
 
 class NeedsDB(Exception):
@@ -115,8 +171,8 @@ class NoEnv:
         raise NeedsDB(item)
 
 
-def run(modname, clsname):
-    mod = load(modname)
+def run(modname, clsname, addon="pb_learn", pkgname="pb_learn_tests"):
+    mod = load(modname, addon, pkgname)
     cls = getattr(mod, clsname)
 
     class Case(cls):
@@ -133,9 +189,34 @@ def run(modname, clsname):
     finally:
         unittest.TestCase.setUpClass = orig
 
+    # A class whose setUp needs a database skips ENTIRELY rather than reporting
+    # an AttributeError per method. Added in Phase 3, when the first class with
+    # a database-bound setUp arrived: an ERROR that means "not run here" is
+    # noise that eventually gets ignored, and this harness's whole value is
+    # that its output is read.
+    setup_failed = None
+    setup_broken = None
+    try:
+        inst.setUp()
+    except NeedsDB as e:
+        setup_failed = "needs a database: %s" % e
+    except Exception as e:                                      # noqa: BLE001
+        # A setUp that dies for any reason OTHER than needing a database is a
+        # broken suite, and a broken suite reported as SKIP is a green light
+        # nobody meant to give. It fails, loudly, once per class.
+        setup_broken = repr(e)
+
     names = sorted(n for n in dir(cls) if n.startswith("test_"))
     ok = skipped = failed = 0
     for n in names:
+        if setup_broken:
+            print("    FAIL  %s (setUp broke: %s)" % (n, setup_broken))
+            failed += 1
+            continue
+        if setup_failed:
+            print("    SKIP  %s (setUp %s)" % (n, setup_failed))
+            skipped += 1
+            continue
         try:
             getattr(inst, n)()
             print("    PASS  %s" % n)
@@ -374,14 +455,19 @@ def js_checks():
 
 
 TOTAL = [0, 0, 0]
-for modname, clsname in (
-    ("test_scenario", "TestScenarioEngine"),
-    ("test_retirement", "TestRetirementSeams"),
-    ("test_anchor_registry", "TestAnchorRegistry"),
-    ("test_assets", "TestAssets"),
+for addon, pkgname, modname, clsname in (
+    ("pb_learn", "pb_learn_tests", "test_scenario", "TestScenarioEngine"),
+    ("pb_learn", "pb_learn_tests", "test_retirement", "TestRetirementSeams"),
+    ("pb_learn", "pb_learn_tests", "test_anchor_registry", "TestAnchorRegistry"),
+    ("pb_learn", "pb_learn_tests", "test_assets", "TestAssets"),
+    # LEARNOS Phase 3.
+    ("pb_learn", "pb_learn_tests", "test_welcome", "TestWelcomeCard"),
+    ("pb_dashboard", "pb_dashboard_tests", "test_activation", "TestActivationSource"),
+    ("pb_dashboard", "pb_dashboard_tests", "test_activation", "TestActivationPayload"),
+    ("pb_tenants", "pb_tenants.tests", "test_currency", "TestProvisioningCurrency"),
 ):
-    print("== %s" % modname)
-    r = run(modname, clsname)
+    print("== %s.%s" % (addon, modname))
+    r = run(modname, clsname, addon, pkgname)
     for i in range(3):
         TOTAL[i] += r[i]
 

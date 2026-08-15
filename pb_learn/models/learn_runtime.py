@@ -233,6 +233,11 @@ class LearnRuntime(models.AbstractModel):
                 # should not have had.
                 'is_demo': self.env['learn.live'].gate_open(),
             },
+            # LEARNOS Phase 3 — which first-run greeting this database gets.
+            # NOT `user.is_demo`: that is a statement about this SESSION (the
+            # group AND the company), and the greeting is a statement about the
+            # DATABASE. An administrator on the demo world is not a new tenant.
+            'demo_world': self.env['learn.live'].world_is_demo(),
             # Rides along with the bundle the Coach already fetches, so a tenant
             # who never switched question mining on pays NOTHING for it. It is a
             # hint, not a control — `learn.question.create` is the gate, and a

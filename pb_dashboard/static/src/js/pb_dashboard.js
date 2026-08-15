@@ -16,6 +16,74 @@ const ICONS = {
     compass:'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
     "user-plus":'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>',
     upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+    play:'<polygon points="6 3 20 12 6 21 6 3"/>',
+    check:'<path d="M20 6 9 17l-5-5"/>',
+};
+
+/* =============================================================================
+   THE ACTIVATION CHECKLIST — LEARNOS Phase 3
+   -----------------------------------------------------------------------------
+   Five steps from an empty database to a real pay run. This is the whole of
+   what a brand-new tenant admin sees above the KPI strip, and it replaces the
+   three-row setup panel that shipped in Phase 0.
+
+   THE SERVER OWNS `done`, THIS TABLE OWNS THE WORDS. Every tick is a count
+   taken in `pb.dashboard.get_dashboard_data` — never a browser flag, never
+   "you pressed this button once". The payload carries `[{key, done}]` in
+   order, and the two learning steps are simply absent from it on a database
+   without pb_learn, so nothing here has to guess.
+
+   THE COPY IS PLAIN ENGLISH LITERALS, deliberately. pb_dashboard is not a
+   bilingual module — no i18n directory, no learn.string records — so putting
+   these five sentences through pb_learn's authoring source would make this
+   module depend on the one thing it must not depend on. They are written to
+   the same register the learning content is held to: short, one idea each, no
+   payroll jargon a beginner has not met.
+
+   `run` is what each button does, and three of the five hand off to the
+   scenario engine. That engine belongs to pb_learn, so it is looked up as an
+   OPTIONAL service — `useService` throws when a service is missing, and this
+   code runs on databases where it is guaranteed to be missing.
+   ========================================================================== */
+const ACTIVATION = {
+    meet: {
+        icon: "compass",
+        title: "Meet Payobook",
+        desc: "A 2-minute tour. I drive, you watch.",
+        cta: "Watch the tour",
+        run: (self) => self.scenario(SC_WELCOME, "watch"),
+    },
+    employee: {
+        icon: "user-plus",
+        title: "Add your first employee",
+        desc: "A name, a contract, a salary. That is all it takes.",
+        cta: "Add employee",
+        run: (self) => self.open(ACT_EMPLOYEES),
+    },
+    import: {
+        icon: "upload",
+        title: "Bring in your payroll Excel",
+        desc: "Already have a sheet? Bring everyone in at once.",
+        cta: "Import data",
+        run: (self) => self.open(ACT_IMPORT),
+    },
+    practice: {
+        icon: "play",
+        title: "Run a practice payroll",
+        desc: "On a made-up company. Nothing here is real.",
+        cta: "Try it",
+        run: (self) => self.scenario(SC_PAYRUN, "try"),
+    },
+    real: {
+        icon: "zap",
+        title: "Run your first real payroll",
+        desc: "Your own data, with the guide beside you. You press every button.",
+        cta: "Start",
+        // Do-mode walks the REAL wizard and never presses anything itself.
+        // With no guide on this database the honest fallback is the wizard,
+        // which is where the step ends up either way.
+        run: (self) => self.scenario(SC_PAYRUN, "do", ACT_PAYRUN),
+    },
 };
 
 // Resolved once, here, so the two buttons and the sidebar leaves they mirror
@@ -24,7 +92,16 @@ const ICONS = {
 // the client actions behind those tags.
 const ACT_EMPLOYEES = "pb_people.action_pb_people";
 const ACT_IMPORT = "pb_import.action_pb_import";
-const ACT_LEARN = "pb_learn.action_learn_journey";
+const ACT_PAYRUN = "pb_payrun_wizard.action_pb_payrun_wizard";
+
+/* The learning module's scenario engine, and the two walkthroughs the
+   checklist offers. Named as STRINGS on purpose: pb_dashboard imports nothing
+   from pb_learn and declares nothing about it in its manifest, so the only
+   thing that can go stale here is a key, and a stale key degrades to a
+   notification rather than to a broken screen. */
+const SCENARIO_SERVICE = "learn.scenario";
+const SC_WELCOME = "sc_welcome";
+const SC_PAYRUN = "sc_payrun";
 
 export class PbDashboard extends Component {
     static template = "pb_dashboard.PbDashboard";
@@ -95,8 +172,32 @@ export class PbDashboard extends Component {
         return !!d && !d.kpis.contracts && !d.run.slips && !d.formula.count;
     }
 
-    get hasLearn() {
-        return !!(this.state.d && this.state.d.has_learn);
+    // ------------------------------------------------- the activation checklist
+    /** The five steps, in payload order, each carrying its words.
+     *
+     *  The SERVER decides which steps exist and which are done; this only
+     *  joins that to the copy. A key the payload names and this table does
+     *  not is dropped rather than rendered blank — the alternative is a row
+     *  with a button and no sentence.
+     */
+    get activation() {
+        const a = (this.state.d && this.state.d.activation) || null;
+        if (!a || !a.show) return null;
+        const items = (a.items || [])
+            .filter((it) => ACTIVATION[it.key])
+            .map((it) => Object.assign({}, ACTIVATION[it.key], { key: it.key, done: !!it.done }));
+        if (!items.length) return null;
+        // The first step still to do is the one being ASKED for. Everything
+        // else is either behind you or waiting its turn, and drawing three
+        // primary buttons at once asks somebody to choose where to start on
+        // the screen that exists to stop them having to.
+        const next = items.findIndex((it) => !it.done);
+        return { items, next, doneCount: items.filter((it) => it.done).length };
+    }
+
+    /** One handler for all five buttons. The step carries what it does. */
+    runStep(item) {
+        if (item && typeof item.run === "function") item.run(this);
     }
 
     // doAction is a promise: a synchronous try/catch around it catches nothing
@@ -111,9 +212,37 @@ export class PbDashboard extends Component {
         });
     }
 
-    openLearn() { this.open(ACT_LEARN); }
-    openEmployees() { this.open(ACT_EMPLOYEES); }
-    openImport() { this.open(ACT_IMPORT); }
+    /** Start a walkthrough, if there is an engine on this database to start it.
+     *
+     *  `env.services[...]` rather than `useService`, which THROWS on a missing
+     *  service — and a home dashboard that will not mount because an optional
+     *  learning module is absent is a worse bug than a missing button. Same
+     *  optional-lookup idiom pb_learn itself uses for its neighbours.
+     *
+     *  `fallback` is an xml-id to open instead. Only the last step has one:
+     *  "run your first real payroll" is a thing somebody can do without a
+     *  guide, and the other two are the guide.
+     */
+    scenario(key, mode, fallback) {
+        const sc = this.env.services && this.env.services[SCENARIO_SERVICE];
+        if (!sc) {
+            if (fallback) {
+                this.open(fallback);
+            } else {
+                this.notification.add("The guided tour is not installed on this database.", {
+                    type: "warning",
+                });
+            }
+            return;
+        }
+        // begin() returns false for an unknown key and never throws; it is
+        // async, so the rejection path needs a .catch of its own.
+        Promise.resolve(sc.begin(key, mode)).then((started) => {
+            if (!started && fallback) this.open(fallback);
+        }).catch(() => {
+            if (fallback) this.open(fallback);
+        });
+    }
 }
 
 registry.category("actions").add("pb_dashboard", PbDashboard);
