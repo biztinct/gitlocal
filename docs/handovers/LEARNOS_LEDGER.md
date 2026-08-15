@@ -136,3 +136,25 @@ missing test", contract checker discipline, anchor registry discipline). Read th
   executed — the Phase-1-family deploy MUST rehearse `-u pb_learn` on a staging clone of a
   real DB first and watch the pre-migrate log ("carried N … row(s)"; a dropped-rows WARNING
   means learner data loss).
+- (Phase 1 deploy, DONE 2026-08-15) Family deployed to all 4 DBs EXIT=0; learner keys
+  carried; pb_coach uninstalled everywhere (it was installed on ALL 4 — the "template
+  excluded it" memory claim was WRONG); orphan learn_* tables remain (inert, rollback path);
+  two-world Chrome validation PASSED end-to-end after two mid-run fixes (a814dde5).
+- (Phase 1 validation) **`t-out` renders a plain string as TEXT — every OWL raw-HTML surface
+  owes a `markup()` wrapper.** scenario_overlay + live_mission shipped without it: cards
+  painted their own escaped source and had NO working buttons. Any new t-out needs the
+  markup() getter pattern (coach/journey/scenario/live all conform now).
+- (Phase 1 validation) **Bind keydown on `document`, never `window`** — Odoo's hotkey
+  service stops propagation before window-bubble, so a window listener is silently dead.
+  Candidate contract check: no `window.addEventListener("keydown"` in pb_learn.
+- (Phase 1 validation, URGENT PRODUCT FIX 2026-08-15) **A DB `latest_version` AHEAD of the
+  disk manifest is a silent rollback `-u` will never repair.** Live pb_payrun_wizard disk was
+  19.0.1.0.0 (approval-tier bypass bug) while DBs recorded 19.0.1.1.1 — a stale rsync had
+  reverted the Phase-L fix. Restored + `-u pb_payruns` (landed the 2 withheld kanban-view
+  anchors) on all 4 DBs. Deploy ritual gains a step: version-diff EVERY pb_* manifest on
+  disk vs `ir_module_module.latest_version` before finishing.
+- (Phase 1 validation → Phase 4 scope) Corpus gap: no intent answers "How do I run payroll";
+  screenless ask() weak-matches wrong-topic intents and badges them "Grounded in" — a badged
+  wrong answer is worse than a miss. Both are Phase 4 scope items.
+- (Phase 1 validation) A golden-template clone cannot exercise the missing-module Journey
+  branch (it has everything installed) — that path needs a deliberately-lean tenant to test.
