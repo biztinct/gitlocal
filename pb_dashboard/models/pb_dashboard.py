@@ -157,15 +157,24 @@ class PbDashboard(models.AbstractModel):
         # The panel is shown while activation is incomplete and disappears for
         # good once the tenant has a pay run — which is also item 5, so the
         # last tick and the last render are the same event.
-        def scenario_done(key):
-            """Has THIS learner finished this walkthrough, in any of its three
-            modes? One row per learner per key (learn.progress has a unique
-            constraint on the pair), so a count is the whole answer."""
-            return bool(optional('learn.progress', lambda: env['learn.progress'].search_count([
-                ('user_id', '=', env.uid),
-                ('key', '=', SCENARIO_PREFIX + key),
-                ('state', '=', 'done'),
-            ])))
+        def scenario_state(key):
+            """'not_started' | 'in_progress' | 'done', for THIS learner.
+
+            LEARNOS Phase 6 widened this from a boolean. A walkthrough somebody
+            STARTED and did not finish used to read here as untouched, so the
+            checklist said "Watch the tour" to a person who was four steps into
+            it — the one case where the row could tell them something they did
+            not already know. One row per learner per key (learn.progress has a
+            unique constraint on the pair), so the first row is the answer.
+            """
+            rows = optional('learn.progress', lambda: env['learn.progress'].search_read(
+                [('user_id', '=', env.uid), ('key', '=', SCENARIO_PREFIX + key)],
+                ['state'], limit=1))
+            return (rows[0]['state'] if rows else None) or 'not_started'
+
+        def scenario_row(item_key, scenario_key):
+            state = scenario_state(scenario_key)
+            return {'key': item_key, 'done': state == 'done', 'state': state}
 
         # Is the learning module on this database at all? The same registry
         # probe `optional()` uses, asked once, because it decides whether the
@@ -183,11 +192,11 @@ class PbDashboard(models.AbstractModel):
                            lambda: env['hr.payroll.import.batch'].search_count(cdom))
         activation_items = []
         if learn_here:
-            activation_items.append({'key': 'meet', 'done': scenario_done(SC_WELCOME)})
+            activation_items.append(scenario_row('meet', SC_WELCOME))
         activation_items.append({'key': 'employee', 'done': employees > 1})
         activation_items.append({'key': 'import', 'done': bool(contracts) or bool(batches)})
         if learn_here:
-            activation_items.append({'key': 'practice', 'done': scenario_done(SC_PAYRUN)})
+            activation_items.append(scenario_row('practice', SC_PAYRUN))
         activation_items.append({'key': 'real', 'done': runs > 0})
 
         return {

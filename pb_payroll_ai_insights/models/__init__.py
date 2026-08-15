@@ -5,6 +5,9 @@
 # error in it fails the module load rather than the first prompt.
 from . import ai_redaction
 from . import payroll_ai_config
+# LEARNOS Phase 6 — one row per user, holding what they agreed to send out.
+# Before the conversation model, which reads the voice gate off it.
+from . import payroll_ai_consent
 from . import payroll_ai_engine
 from . import payroll_data_query
 from . import payroll_chart_schema

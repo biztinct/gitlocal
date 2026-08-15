@@ -1,7 +1,17 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'PayAI — Intelligent Payroll Analytics',
-    'version': '19.0.2.1.0',
+    # LEARNOS Phase 6. The module's own major segment moves (19.0.2.1.0 ->
+    # 19.0.3.0.0 — the `19.0` is the Odoo series and never moves) because this
+    # release changes the SCHEMA:
+    # `payroll.ai.conversation` gains `redaction_map` and the module gains
+    # `payroll.ai.consent`. Both are purely additive — a new nullable column
+    # and a new table, created by Odoo's own schema update on `-u`, with
+    # nothing to carry across and nothing to back-fill, so there is NO
+    # pre-migrate script and none is needed. The bump is also what makes the
+    # change visible to the deploy-time version-diff gate (ledger, Phase 2+3
+    # deploy: a code change with no version bump is invisible to it).
+    'version': '19.0.3.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'AI-powered payroll analytics with conversational charts, dashboards, and insights',
     'description': """

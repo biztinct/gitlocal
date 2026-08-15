@@ -6,6 +6,13 @@ import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
 
+// LEARNOS Phase 6. A ceiling on one held press, and where the read-aloud
+// preference is remembered. Both are browser-side: the recording ceiling is a
+// courtesy to the person holding the button, and the server's own gates are
+// what decide whether any of this is offered at all.
+const MAX_RECORDING_SECONDS = 60;
+const TTS_PREF = "payaiReadAloud";
+
 /**
  * AiInsightChat — Floating pill → Centered modal chat for PayAI.
  * Renders as a persistent bottom-right pill that expands into a
@@ -31,12 +38,35 @@ export class AiInsightChat extends Component {
             aiIconUrl: false,
             isRecording: false,
             recordingDuration: 0,
+            // LEARNOS Phase 6 — voice.
+            //
+            // `voice.available` decides whether a microphone is DRAWN at all.
+            // Not disabled-with-a-tooltip: on a database with no speech
+            // provider, or a tenant that never switched voice on, or a user
+            // who said no, the honest interface has no microphone in it. The
+            // server answers this (`rpc_voice_status`) because both gates
+            // live there and the browser's copy is a hint, never the control.
+            voice: { available: false, ask: false, consent: "unset", copy: {} },
+            voiceAsking: false,     // the consent card is up
+            voiceBusy: false,       // transcribing
+            voiceHint: "",          // "this is what I heard" — shown once
+            voiceError: "",
+            ttsOn: false,
         });
 
         // Voice recording state
         this._mediaRecorder = null;
         this._audioChunks = [];
         this._recordingTimer = null;
+        this._recordingStream = null;
+        this._keyHeld = false;
+        // M2. Set BEFORE the stream is released on unmount, and re-asked by
+        // the recorder's own `onstop`: stopping a MediaRecorder fires that
+        // callback asynchronously, so a drawer closed mid-recording would
+        // otherwise post the audio it was holding after the component that
+        // asked for it no longer exists. The flag is the only thing between
+        // "the user closed it" and "a recording left the browser".
+        this._discarded = false;
 
         this.suggestions = [
             "How do I run payroll?",
@@ -50,6 +80,20 @@ export class AiInsightChat extends Component {
         onMounted(() => {
             this._loadHistory();
             this._loadAiIcon();
+            this._loadVoiceStatus();
+            this._restoreTtsPreference();
+        });
+        onWillUnmount(() => {
+            // ORDER IS THE CONTROL, not the tidy-up. The discard flag and the
+            // emptied buffer come FIRST, before the recorder is touched: a
+            // recorder still holding the microphone after the component is
+            // gone is a live red dot in the tab strip, and a recorder that
+            // fires `onstop` on the way out is an audio POST from a drawer
+            // nobody has open.
+            this._discarded = true;
+            this._audioChunks = [];
+            this._releaseMicrophone();
+            this._stopSpeaking();
         });
     }
 
@@ -88,6 +132,11 @@ export class AiInsightChat extends Component {
     async sendMessage() {
         const text = this.state.inputText.trim();
         if (!text || this.state.isLoading) return;
+        // The "check what I heard" hint belongs to the text that has now been
+        // sent; leaving it over the empty box would read as a warning about
+        // the next thing typed.
+        this.state.voiceHint = "";
+        this.state.voiceError = "";
 
         // Add user message
         this.state.messages.push({
@@ -124,6 +173,10 @@ export class AiInsightChat extends Component {
                 action: result.action || null,
                 timestamp: new Date().toISOString(),
             });
+            if (this.state.ttsOn) {
+                // On the device. See the note above `ttsSupported`.
+                this.speak(result.response || "");
+            }
         } catch (error) {
             console.error("PayAI error:", error);
             this.state.messages.push({
@@ -215,19 +268,129 @@ export class AiInsightChat extends Component {
         }
     }
 
-    // --- Voice Recording ---
+    // ------------------------------------------------------------------
+    // VOICE  (LEARNOS Phase 6)
+    //
+    // HOLD TO TALK, AND THE TRANSCRIPT LANDS IN THE BOX. It does not send.
+    // The old flow recorded, transcribed and submitted in one gesture, so the
+    // first time anybody saw what had been heard was in the transcript of a
+    // question already answered — and on a payroll help box that sentence is
+    // often a colleague's name and their pay. Now: hold, speak, release, READ
+    // it, then press send like any other question. The server cannot submit
+    // either (`rpc_transcribe_voice` returns text and has no send path in it),
+    // so this is not a discipline the frontend keeps on its own.
+    // ------------------------------------------------------------------
 
-    async toggleVoiceRecording() {
+    async _loadVoiceStatus() {
+        try {
+            const status = await rpc("/web/dataset/call_kw", {
+                model: "payroll.ai.conversation",
+                method: "rpc_voice_status",
+                args: [], kwargs: {},
+            }, { silent: true });
+            Object.assign(this.state.voice, status || {});
+        } catch {
+            // No voice, no microphone drawn. Failing closed is the only
+            // acceptable direction for a control that posts audio to a
+            // third party.
+            this.state.voice.available = false;
+            this.state.voice.ask = false;
+        }
+    }
+
+    get voiceOffered() {
+        return !!(this.state.voice.available || this.state.voice.ask);
+    }
+
+    get voiceCopy() {
+        return this.state.voice.copy || {};
+    }
+
+    /** The consent card, once. `ask` is the server's answer to "has this
+     *  person been asked", so a decline is remembered and cannot come back
+     *  and nag. */
+    async answerVoiceConsent(granted) {
+        this.state.voiceAsking = false;
+        try {
+            await rpc("/web/dataset/call_kw", {
+                model: "payroll.ai.conversation",
+                method: "rpc_set_voice_consent",
+                args: [!!granted], kwargs: {},
+            }, { silent: true });
+        } catch (error) {
+            console.error("PayAI voice consent error:", error);
+            return;
+        }
+        this.state.voice.consent = granted ? "granted" : "declined";
+        this.state.voice.ask = false;
+        // A decline takes the microphone away entirely rather than leaving a
+        // dead control behind.
+        this.state.voice.available = !!granted;
+    }
+
+    // --- press and hold -------------------------------------------------
+    onMicPointerDown(ev) {
+        if (ev && ev.button !== undefined && ev.button !== 0) {
+            return;
+        }
+        this._beginTalk();
+    }
+
+    onMicPointerUp() {
+        this._endTalk();
+    }
+
+    /** THE KEYBOARD IS A FIRST-CLASS GESTURE, not an afterthought: a
+     *  press-and-hold control that only answers to a mouse is a control some
+     *  people cannot use at all. Space/Enter down starts, up stops, and the
+     *  repeat guard stops the operating system's key-repeat from restarting
+     *  the recorder forty times a second. */
+    onMicKeyDown(ev) {
+        if (ev.key !== " " && ev.key !== "Enter") {
+            return;
+        }
+        ev.preventDefault();
+        if (this._keyHeld) {
+            return;
+        }
+        this._keyHeld = true;
+        this._beginTalk();
+    }
+
+    onMicKeyUp(ev) {
+        if (ev.key !== " " && ev.key !== "Enter") {
+            return;
+        }
+        ev.preventDefault();
+        this._keyHeld = false;
+        this._endTalk();
+    }
+
+    _beginTalk() {
+        if (this.state.voiceBusy || this.state.isRecording) {
+            return;
+        }
+        if (this.state.voice.ask) {
+            // Never record first and ask afterwards.
+            this.state.voiceAsking = true;
+            return;
+        }
+        if (!this.state.voice.available) {
+            return;
+        }
+        this._startRecording();
+    }
+
+    _endTalk() {
         if (this.state.isRecording) {
             this._stopRecording();
-        } else {
-            await this._startRecording();
         }
     }
 
     async _startRecording() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this._recordingStream = stream;
             this._audioChunks = [];
             this._mediaRecorder = new MediaRecorder(stream, {
                 mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
@@ -239,18 +402,30 @@ export class AiInsightChat extends Component {
             };
 
             this._mediaRecorder.onstop = () => {
-                // Stop all tracks
-                stream.getTracks().forEach(t => t.stop());
-                this._sendVoiceMessage();
+                this._releaseMicrophone();
+                if (this._discarded) {
+                    // The drawer went away while this was recording. Nothing
+                    // is sent, and the buffer is already empty.
+                    this._audioChunks = [];
+                    return;
+                }
+                this._transcribe();
             };
 
             this._mediaRecorder.start();
             this.state.isRecording = true;
             this.state.recordingDuration = 0;
+            this.state.voiceError = "";
+            this.state.voiceHint = "";
 
-            // Timer for visual feedback
             this._recordingTimer = setInterval(() => {
                 this.state.recordingDuration++;
+                // A HARD CEILING. A key that sticks, or a pointer released
+                // outside the window, must not leave the microphone open and
+                // then post ten minutes of an open-plan office.
+                if (this.state.recordingDuration >= MAX_RECORDING_SECONDS) {
+                    this._endTalk();
+                }
             }, 1000);
         } catch (err) {
             console.error("Microphone access denied:", err);
@@ -272,103 +447,134 @@ export class AiInsightChat extends Component {
         }
     }
 
-    async _sendVoiceMessage() {
-        if (this._audioChunks.length === 0) return;
+    _releaseMicrophone() {
+        if (this._recordingStream) {
+            this._recordingStream.getTracks().forEach((t) => t.stop());
+            this._recordingStream = null;
+        }
+        if (this._recordingTimer) {
+            clearInterval(this._recordingTimer);
+            this._recordingTimer = null;
+        }
+        this.state.isRecording = false;
+    }
 
+    /** Audio out, TEXT INTO THE ASK BAR. Nothing is added to the transcript
+     *  and nothing is sent — the learner reads what was heard, edits it if
+     *  the microphone misheard a name, and presses send. */
+    async _transcribe() {
+        if (this._discarded || this._audioChunks.length === 0) {
+            return;
+        }
         const audioBlob = new Blob(this._audioChunks, { type: 'audio/webm' });
         this._audioChunks = [];
-
-        // Convert to base64
-        const arrayBuffer = await audioBlob.arrayBuffer();
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-
-        // Show "Transcribing..." message
-        this.state.messages.push({
-            role: "user",
-            content: "🎙️ Voice message (transcribing...)",
-            chart: null,
-            insights: [],
-            isVoice: true,
-            timestamp: new Date().toISOString(),
-        });
-        this.state.showSuggestions = false;
-        this.state.isLoading = true;
-        this._scrollToBottom();
-
+        this.state.voiceBusy = true;
         try {
+            const base64 = await this._toBase64(audioBlob);
             const result = await rpc("/web/dataset/call_kw", {
                 model: "payroll.ai.conversation",
-                method: "rpc_send_voice_message",
-                args: [base64, this.state.sessionId, true],
-                kwargs: {},
+                method: "rpc_transcribe_voice",
+                args: [base64], kwargs: {},
             }, { silent: true });
-
-            if (result.error) {
-                // Update the user message to show error
-                const lastUserMsg = this.state.messages[this.state.messages.length - 1];
-                if (lastUserMsg) lastUserMsg.content = "🎙️ " + result.error;
-                this.state.isLoading = false;
+            if (!result || result.error) {
+                this.state.voiceError = (result && result.error)
+                    || this.voiceCopy.failed || "";
                 return;
             }
-
-            this.state.sessionId = result.session_id;
-
-            // Update the user message with transcribed text
-            const userMsg = this.state.messages[this.state.messages.length - 1];
-            if (userMsg) {
-                userMsg.content = "🎙️ " + (result.transcribed_text || "Voice message");
+            const heard = (result.text || "").trim();
+            if (!heard) {
+                this.state.voiceError = this.voiceCopy.failed || "";
+                return;
             }
-
-            // Add assistant response
-            this.state.messages.push({
-                role: "assistant",
-                content: result.response || "",
-                chart: result.chart || null,
-                insights: result.insights || [],
-                followUpQuestions: result.follow_up_questions || [],
-                drillDownModel: result.drilldown_model || "",
-                intent: result.intent || "",
-                action: result.action || null,
-                hasTts: !!result.tts_audio,
-                ttsAudio: result.tts_audio || null,
-                timestamp: new Date().toISOString(),
-            });
-
-            // Auto-play TTS if available
-            if (result.tts_audio) {
-                this._playTtsAudio(result.tts_audio);
-            }
+            // Appended, not replaced: somebody who typed half a question and
+            // then spoke the rest meant both halves.
+            const existing = this.state.inputText.trim();
+            this.state.inputText = existing ? existing + " " + heard : heard;
+            this.state.voiceHint = this.voiceCopy.check_hint || "";
+            setTimeout(() => {
+                const el = this.inputRef.el;
+                if (el) {
+                    el.focus();
+                    el.selectionStart = el.selectionEnd = el.value.length;
+                }
+            }, 0);
         } catch (error) {
             console.error("PayAI voice error:", error);
-            this.state.messages.push({
-                role: "assistant",
-                content: "Sorry, voice processing failed. Please try typing your question.",
-                chart: null,
-                insights: [],
-                timestamp: new Date().toISOString(),
-            });
+            this.state.voiceError = this.voiceCopy.failed || "";
+        } finally {
+            this.state.voiceBusy = false;
         }
-
-        this.state.isLoading = false;
-        this._scrollToBottom();
     }
 
-    _playTtsAudio(base64Audio) {
+    /** CHUNKED. `String.fromCharCode(...bytes)` spreads one argument per byte,
+     *  and a thirty-second recording is a million of them — which is a stack
+     *  overflow, not a slow path. */
+    async _toBase64(blob) {
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        let binary = "";
+        for (let i = 0; i < bytes.length; i += 0x8000) {
+            binary += String.fromCharCode.apply(
+                null, bytes.subarray(i, i + 0x8000));
+        }
+        return btoa(binary);
+    }
+
+    // --- speaking the answer --------------------------------------------
+    //
+    // THE BROWSER'S OWN SYNTHESISER, not the provider's. A reply that has had
+    // its placeholders restored is full of real names; posting it to a
+    // speech-synthesis endpoint to be read aloud would re-export exactly what
+    // the redaction just protected, on the way BACK. `speechSynthesis` runs
+    // on the device, so the answer never leaves the browser — which is what
+    // makes "the spoken reply is inside the trust boundary" true rather than
+    // merely asserted. Documented as a deviation in the Phase 6 report.
+
+    get ttsSupported() {
+        return typeof window !== "undefined" && "speechSynthesis" in window;
+    }
+
+    _restoreTtsPreference() {
         try {
-            const audioBytes = Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0));
-            const blob = new Blob([audioBytes], { type: 'audio/mp3' });
-            const url = URL.createObjectURL(blob);
-            const audio = new Audio(url);
-            audio.play().catch(e => console.warn("TTS autoplay blocked:", e));
-            audio.onended = () => URL.revokeObjectURL(url);
-        } catch (e) {
-            console.warn("TTS playback error:", e);
+            this.state.ttsOn = window.localStorage.getItem(TTS_PREF) === "1";
+        } catch {
+            this.state.ttsOn = false;
         }
     }
 
-    playMessageAudio(msg) {
-        if (msg.ttsAudio) {
-            this._playTtsAudio(msg.ttsAudio);
+    toggleTts() {
+        this.state.ttsOn = !this.state.ttsOn;
+        try {
+            window.localStorage.setItem(TTS_PREF, this.state.ttsOn ? "1" : "0");
+        } catch {
+            // A locked-down profile must not break the drawer.
+        }
+        if (!this.state.ttsOn) {
+            this._stopSpeaking();
+        }
+    }
+
+    speak(text) {
+        if (!this.ttsSupported || !text) {
+            return;
+        }
+        try {
+            this._stopSpeaking();
+            const utterance = new window.SpeechSynthesisUtterance(String(text));
+            const lang = (window.odoo?.session_info?.user_context?.lang || "en_US");
+            utterance.lang = lang.replace("_", "-");
+            window.speechSynthesis.speak(utterance);
+        } catch (e) {
+            console.warn("PayAI speech synthesis failed:", e);
+        }
+    }
+
+    _stopSpeaking() {
+        try {
+            if (this.ttsSupported) {
+                window.speechSynthesis.cancel();
+            }
+        } catch {
+            // Nothing to cancel.
         }
     }
 

@@ -51,6 +51,10 @@ const ACTIVATION = {
         title: "Meet Payobook",
         desc: "A 2-minute tour. I drive, you watch.",
         cta: "Watch the tour",
+        // LEARNOS Phase 6. What the button says when the walkthrough is
+        // half-taken. Only the two learning rows can be half-taken: the other
+        // three are database facts, which are true or not.
+        resume: "Pick up where you left off",
         run: (self) => self.scenario(SC_WELCOME, "watch"),
     },
     employee: {
@@ -72,6 +76,7 @@ const ACTIVATION = {
         title: "Run a practice payroll",
         desc: "On a made-up company. Nothing here is real.",
         cta: "Try it",
+        resume: "Pick up where you left off",
         run: (self) => self.scenario(SC_PAYRUN, "try"),
     },
     real: {
@@ -185,7 +190,21 @@ export class PbDashboard extends Component {
         if (!a || !a.show) return null;
         const items = (a.items || [])
             .filter((it) => ACTIVATION[it.key])
-            .map((it) => Object.assign({}, ACTIVATION[it.key], { key: it.key, done: !!it.done }));
+            .map((it) => {
+                const copy = ACTIVATION[it.key];
+                // A step the learner STARTED says so. The server sends
+                // `state` for the two learning rows and nothing for the
+                // three database facts, so this reads as "not started"
+                // everywhere it does not apply — which is correct, not a
+                // default: a contract either exists or it does not.
+                const resuming = it.state === "in_progress" && !!copy.resume;
+                return Object.assign({}, copy, {
+                    key: it.key,
+                    done: !!it.done,
+                    resuming,
+                    cta: resuming ? copy.resume : copy.cta,
+                });
+            });
         if (!items.length) return null;
         // The first step still to do is the one being ASKED for. Everything
         // else is either behind you or waiting its turn, and drawing three

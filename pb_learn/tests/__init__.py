@@ -19,3 +19,6 @@ from . import test_welcome
 # LEARNOS Phase 5 — the free-roam practice sandbox: the orm allowlist and the
 # watermark that no state can switch off.
 from . import test_practice
+# LEARNOS Phase 6 — the "what next" decision table and the streak, both
+# pure functions so both actually execute offline.
+from . import test_nextbest

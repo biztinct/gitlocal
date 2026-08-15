@@ -120,7 +120,13 @@ class TestActivationSource(TransactionCase):
 
     # -- the checklist's shape ---------------------------------------------
     def test_01_the_five_steps_are_declared_in_order(self):
-        keys = re.findall(r"\{'key': '([a-z]+)'", self.py)
+        # TWO SHAPES SINCE LEARNOS PHASE 6, and the scan reads both. The three
+        # database facts are still appended as literal dicts; the two learning
+        # rows go through `scenario_row`, which also reports whether the
+        # walkthrough was STARTED. Widening the regex rather than dropping the
+        # test: the promise (this list, in this order) did not change.
+        keys = [a or b for a, b in re.findall(
+            r"\{'key': '([a-z]+)'|scenario_row\('([a-z]+)'", self.py)]
         self.assertEqual(keys, list(ORDER),
                          "the server emits the checklist in a different order "
                          "than the journey it describes: %s" % keys)
@@ -155,13 +161,36 @@ class TestActivationSource(TransactionCase):
         for step in sorted(LEARN_STEPS):
             self.assertRegex(
                 self.py,
-                r"if learn_here:\s*\n\s*activation_items\.append\(\{'key': '%s'" % step,
+                r"if learn_here:\s*\n\s*activation_items\.append\("
+                r"scenario_row\('%s'" % step,
                 "the '%s' step is not behind the learning probe" % step)
         for step in sorted(set(ORDER) - LEARN_STEPS):
             self.assertNotRegex(
                 self.py,
-                r"if learn_here:\s*\n\s*activation_items\.append\(\{'key': '%s'" % step,
+                r"if learn_here:\s*\n\s*activation_items\.append\("
+                r"(?:scenario_row\('%s'|\{'key': '%s')" % (step, step),
                 "the '%s' step is hidden on a database that can answer it" % step)
+
+    def test_03b_a_half_taken_walkthrough_says_so(self):
+        """LEARNOS Phase 6. The two learning rows report a STATE, not a
+        boolean. A walkthrough somebody started and left used to read here as
+        untouched, so the checklist offered "Watch the tour" to a person four
+        steps into it — the one case where that row could have told them
+        something they did not already know.
+
+        Pinned at source on both sides, because the payload half only executes
+        on a database: the server must send `state`, and the page must only
+        re-word a row that HAS one (the three database facts have no middle
+        state — a contract exists or it does not)."""
+        self.assertIn("'state': state", self.py,
+                      "the learning rows no longer carry their progress state")
+        self.assertIn("state == 'done'", self.py,
+                      "`done` is no longer derived from the same state")
+        js = self.js or ''
+        self.assertIn('it.state === "in_progress"', js,
+                      "the checklist does not re-word a half-taken step")
+        self.assertIn('resume:', js,
+                      "there is no wording for a half-taken step")
 
     # -- no hard dependency -------------------------------------------------
     def test_04_every_foreign_model_read_is_registry_guarded(self):

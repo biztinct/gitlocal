@@ -76,6 +76,11 @@ export const COACH_ACTIONS = new Set([
     // one context key on it. It reaches no product method for the same reason
     // `c-lesson` does not: the only thing on the other side of it is a replica.
     "c-practice",
+    // LEARNOS Phase 6. "Continue" opens the station the server suggested —
+    // the same door `c-lesson` uses, with the key the bootstrap already sent.
+    // The SUGGESTION is a server computation over this learner's own progress
+    // rows; nothing about it reaches a product method or a language model.
+    "c-continue",
 ]);
 
 export class CoachHost extends Component {
@@ -128,6 +133,13 @@ export class CoachHost extends Component {
                     glossary: content.glossary || [],
                     tokens: runtime.tokens || {},
                     collect_questions: !!runtime.collect_questions,
+                    // LEARNOS Phase 6. Rides along with the bootstrap the
+                    // drawer already fetches, so the "not sure what to ask"
+                    // state can offer the same next step the Journey's map
+                    // offers without a second round trip — and offers nothing
+                    // at all when the tenant flag is off, which is what an
+                    // empty payload means.
+                    next_best: runtime.next_best || {},
                     // Which of the two first-run greetings this database gets.
                     // A DATABASE property, asked of the company the same way a
                     // live capstone asks it — see maybeWelcome.
@@ -582,7 +594,54 @@ export class CoachHost extends Component {
             <button class="lrn-btn sm pri" data-act="c-explain"
                     title="${esc(T("explainHint"))}"
                 >${ic("info")}${esc(T("explainScreen"))}</button>
+            ${this._continueHTML()}
         </div>`;
+    }
+
+    /** "Continue" — the same suggestion the Journey's map makes, offered to
+     *  somebody who opened the drawer without a question.
+     *
+     *  SECOND, after "explain this screen", and the order is the argument: a
+     *  person standing on a screen they do not understand is asking about
+     *  THIS screen, and being sent somewhere else first would be answering a
+     *  question they did not ask. The suggestion is what to do afterwards.
+     *
+     *  Draws nothing when the flag is off, when the learner has finished
+     *  everything, or when the suggestion is the live capstone — that one
+     *  belongs on the map, where its briefing is, not behind a one-line
+     *  button on an unrelated screen. */
+    _continueHTML() {
+        const nb = (this.bundle && this.bundle.next_best) || {};
+        if (!nb.reason_key) {
+            return "";                       // the flag is off: draw nothing
+        }
+        // Finished everything: the sentence, and no button. Saying so in one
+        // line is the whole point — the alternative is a drawer that quietly
+        // stops offering anything and looks broken.
+        if (!nb.key || nb.kind === "none") {
+            return `<p class="lrn-note">${esc(tx(nb.reason || {}))}</p>`;
+        }
+        if (nb.kind !== "station") {
+            // The live capstone belongs on the map, where its briefing is —
+            // not behind a one-line button on an unrelated screen.
+            return "";
+        }
+        return `<button class="lrn-btn sm" data-act="c-continue"
+                data-key="${esc(nb.key)}" title="${esc(tx(nb.reason || {}))}"
+            >${ic("play")}${esc(T("nbTitle"))}</button>`;
+    }
+
+    /** Open the Journey on the suggested station. Same door as `openLesson`,
+     *  one key further — there is exactly one place in this module that knows
+     *  how to open a station from outside the map. */
+    openSuggested(key) {
+        if (!key) {
+            return;
+        }
+        this.action.doAction("pb_learn.action_learn_journey", {
+            additionalContext: { station: key },
+        });
+        this.close();
     }
 
     /** The way into the free-roam sandbox, from wherever the learner is.
@@ -851,6 +910,8 @@ export class CoachHost extends Component {
             this.explainScreen();
         } else if (act === "c-practice") {
             this.openPractice();
+        } else if (act === "c-continue") {
+            this.openSuggested(el.dataset.key);
         }
     }
 

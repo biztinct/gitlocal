@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Learn — in-app learning',
-    # LEARNOS Phase 5. Bumped because `learn.event._selection_kind` gained
-    # three values, which is a field change an `-u` has to apply — and because
-    # the version-diff gate at deploy time can only see a change that moved
-    # this line (ledger, Phase 2+3 deploy: a code change with no version bump
-    # is invisible to it, and a stale rsync then reverts it silently).
-    'version': '19.0.11.0.0',
+    # LEARNOS Phase 6. Bumped for the same two reasons as Phase 5: the content
+    # plane changed (new chrome strings, and the map's reading order is now
+    # emitted into it) and the version-diff gate at deploy time can only see a
+    # change that moved this line (ledger, Phase 2+3 deploy: a code change with
+    # no version bump is invisible to it, and a stale rsync then reverts it
+    # silently). NO SCHEMA CHANGE in this module — `next_best` and `streak` are
+    # computed, never stored, so there is nothing to migrate here.
+    'version': '19.0.12.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
@@ -49,6 +51,15 @@ module is gone; `static/src/scenario/` is what replaced it. A step whose press
 WRITES carries a `guard`, and the engine is structurally incapable of pressing
 one: there is a single `.click()` in the module and no code path reaches it
 with a guarded step.
+
+LEARNOS Phase 6 adds two derived answers and no new table. `next_best()` says
+what to learn next — a decision made on this server over the learner's own
+progress rows, with an authored reason sentence per rule, and nothing sent
+anywhere — and the Journey gains per-section rings, a done tier read off the
+progress row the lesson already wrote, and a streak counted in the learner's
+own time zone. Both are OFF unless the tenant sets `pb_learn.next_best_enabled`
+/ `pb_learn.skill_tree_enabled`. No notifications, no cross-user comparison of
+any kind.
 
 Design: docs/tutorial_poc/design_v2.html
 Authoring surface: docs/tutorial_poc/author/ (content is generated from it,

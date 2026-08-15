@@ -2,7 +2,11 @@
 {
     'name': 'Payobook Dashboard',
     'summary': 'Smashing command-centre home dashboard for Payobook',
-    'version': '19.0.1.0.0',
+    # LEARNOS Phase 6. The activation checklist's two learning rows now report
+    # a STATE rather than a boolean, so a half-taken walkthrough says so. A code
+    # change with no version bump is invisible to the deploy-time version-diff
+    # gate (ledger, Phase 2+3 deploy).
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

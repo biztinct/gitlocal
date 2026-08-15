@@ -127,14 +127,32 @@ sys.modules["pb_learn_tests.common"] = common
 # not a copy of it living in a test.
 # ---------------------------------------------------------------------------
 def lift(addon, relpath, *names):
-    """Compile named top-level functions out of a source file, nothing else."""
+    """Compile named top-level functions (and constants) out of a source file.
+
+    LEARNOS Phase 6 added the constants. `payroll_ai_report`'s two prompt
+    builders interpolate a module-level note that tells the model what a
+    placeholder is — lifting the functions alone gave them a NameError at call
+    time, which would have made the offline replay of the report prompt
+    impossible for the sake of one string. Names are matched against function
+    definitions AND simple top-level assignments, so the caller asks for what
+    it needs by name and nothing else comes across.
+    """
     import ast
     path = os.path.join(REPO, addon, relpath)
     with open(path, encoding="utf-8") as fh:
         tree = ast.parse(fh.read(), filename=path)
-    wanted = [n for n in tree.body
-              if isinstance(n, ast.FunctionDef) and n.name in names]
-    missing = set(names) - {n.name for n in wanted}
+    wanted = []
+    found = set()
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef) and node.name in names:
+            wanted.append(node)
+            found.add(node.name)
+        elif isinstance(node, ast.Assign):
+            targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+            if any(t in names for t in targets):
+                wanted.append(node)
+                found |= {t for t in targets if t in names}
+    missing = set(names) - found
     assert not missing, "%s does not define %s" % (relpath, sorted(missing))
     ns = {}
     exec(compile(ast.Module(body=wanted, type_ignores=[]), path, "exec"), ns)
@@ -197,6 +215,22 @@ _learn.models = _learn_models
 _learn_models.learn_intent = load_pure(
     "pb_learn/models/learn_intent.py",
     "odoo.addons.pb_learn.models.learn_intent")
+# LEARNOS Phase 6 — the "what next" decision table and the streak counter.
+# LIFTED rather than imported: learn_runtime.py defines an Odoo model and
+# imports pytz and a sibling model file, while the two rules under test are
+# pure functions over lists and dates. `timedelta` is handed in the same way
+# the pulse's `json` is — lift() compiles the functions alone and does not run
+# the imports above them.
+_runtime_ns = lift("pb_learn", "models/learn_runtime.py",
+                   "choose_next", "reading_order", "streak_days")
+_runtime_ns["timedelta"] = __import__("datetime").timedelta
+# The one constant it borrows from its neighbour, rather than re-typing the
+# prefix that decides whether a mission's progress row can be found at all.
+_runtime_ns["MISSION_PREFIX"] = lift(
+    "pb_learn", "models/learn_progress.py", "MISSION_PREFIX")["MISSION_PREFIX"]
+_learn_models.learn_runtime = _fake_pkg(
+    "odoo.addons.pb_learn.models.learn_runtime", **_runtime_ns)
+
 _payai = _fake_pkg("odoo.addons.pb_payroll_ai_insights")
 _addons.pb_payroll_ai_insights = _payai
 _payai_models = _fake_pkg("odoo.addons.pb_payroll_ai_insights.models")
@@ -218,6 +252,24 @@ _pulse_ns["redact_names"] = _payai_models.ai_redaction.redact_names
 _pulse_ns["restore_names"] = _payai_models.ai_redaction.restore_names
 _payai_models.payroll_ai_pulse = _fake_pkg(
     "odoo.addons.pb_payroll_ai_insights.models.payroll_ai_pulse", **_pulse_ns)
+# LEARNOS Phase 6 — the PDF report's two prompt builders, lifted for the same
+# reason as the others: the file defines an Odoo model, and the claim being
+# tested is about a STRING. This path spent four phases dead, so the day it
+# was switched on is the day its prompt has to be assertable offline.
+_report_ns = lift("pb_payroll_ai_insights", "models/payroll_ai_report.py",
+                  "report_section_prompt", "report_executive_prompt",
+                  "redact_sections", "alert_rows", "alert_names",
+                  "summary_is_traceable", "_PLACEHOLDER_NOTE",
+                  "PERSON_NAMING_CATEGORIES", "SUMMARY_DATA_CHARS",
+                  "SECTION_DATA_CHARS")
+_report_ns["json"] = json
+_report_ns["_logger"] = __import__("logging").getLogger("replay")
+for _name in ("PERSON_KEYS", "collect_names", "extend_mapping", "redact_names",
+              "redact_text", "restore_names"):
+    _report_ns[_name] = getattr(_payai_models.ai_redaction, _name)
+_payai_models.payroll_ai_report = _fake_pkg(
+    "odoo.addons.pb_payroll_ai_insights.models.payroll_ai_report",
+    **_report_ns)
 
 _tenants = _fake_pkg("pb_tenants")
 _tenants.__path__ = [os.path.join(REPO, "pb_tenants")]
@@ -876,6 +928,10 @@ for addon, pkgname, modname, clsname in (
     ("pb_learn", "pb_learn_tests", "test_assets", "TestAssets"),
     # LEARNOS Phase 3.
     ("pb_learn", "pb_learn_tests", "test_welcome", "TestWelcomeCard"),
+    # LEARNOS Phase 6. The decision table and the streak are pure functions
+    # for exactly this: every rule, every tie and every time-zone edge runs
+    # here, on a machine with no odoo-bin.
+    ("pb_learn", "pb_learn_tests", "test_nextbest", "TestNextBest"),
     # LEARNOS Phase 4. `explain_blocks`, `build_corpus` and both prompt
     # builders are pure over the content tree, so the floor really is replayed
     # here for three screens in both languages rather than only described.

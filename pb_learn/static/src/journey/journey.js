@@ -38,6 +38,14 @@ const MISSION_HOME = {
 
 /* The READING order of the lines on the map, and the icon each heading gets.
  *
+ * LEARNOS PHASE 6: THE ORDER IS AUTHORED IN `docs/tutorial_poc/author/data.js`
+ * AND SHIPS IN THE CONTENT PLANE, because the SERVER needs it too —
+ * `learn.runtime.next_best()` answers "the next required station in reading
+ * order". The constant below is the FALLBACK for a bundle that predates the
+ * key; `get lineOrder()` prefers what the content shipped, and
+ * `test_nextbest::test_15` fails if the two ever disagree. Do not edit this
+ * list on its own: edit the authoring source and regenerate.
+ *
  * Not the model's selection order and not the station sequence: the generator
  * numbers stations with one counter across every line in declaration order, so
  * a new section is APPENDED there to avoid renumbering the ones before it —
@@ -212,6 +220,15 @@ export class LearnJourney extends Component {
             return;
         }
         this.bundle = {
+            // LEARNOS Phase 6. Three answers the server already worked out,
+            // riding along with the one call this component already makes.
+            // All three are EMPTY when their tenant flag is off, and every
+            // surface below draws nothing on empty rather than drawing an
+            // explanation of why a feature is missing.
+            nextBest: runtime.next_best || {},
+            streak: runtime.streak || {},
+            skillTree: !!runtime.skill_tree,
+            lineOrder: runtime.line_order || [],
             stations: composeStations(content, runtime),
             missions: content.missions || [],
             scenarios: content.scenarios || [],
@@ -334,6 +351,63 @@ export class LearnJourney extends Component {
             .every((s) => this.stateOf(s.key) === "done");
     }
 
+    /* ------------------------------------------------- LEARNOS Phase 6 */
+
+    /** The reading order, from the content plane, with this file's constant
+     *  as the fallback for a stale bundle. One AUTHORED source
+     *  (docs/tutorial_poc/author/data.js) feeds both this and the server's
+     *  `next_best`, so the map and the suggestion cannot disagree about which
+     *  section comes next. */
+    get lineOrder() {
+        const fromContent = this.bundle && this.bundle.lineOrder;
+        return fromContent && fromContent.length ? fromContent : LINE_ORDER;
+    }
+
+    get nextBest() {
+        return (this.bundle && this.bundle.nextBest) || {};
+    }
+
+    get skillTree() {
+        return !!(this.bundle && this.bundle.skillTree);
+    }
+
+    get streak() {
+        return (this.bundle && this.bundle.streak) || {};
+    }
+
+    /** done / total for one line. Derived on every render from the same
+     *  progress the cards read — there is no per-line counter anywhere, and a
+     *  stored one would be a second truth to keep in step. */
+    lineProgress(list) {
+        const total = list.length;
+        const done = list.filter((s) => this.stateOf(s.key) === "done").length;
+        return { done, total, pct: total ? Math.round(done / total * 100) : 0 };
+    }
+
+    /** bronze | silver | gold | "" — DERIVED, NEVER STORED.
+     *
+     *  Read off the two fields the lesson already writes: `first_try_correct`
+     *  and `attempts`. Gold is the understanding check answered correctly on
+     *  the first answer; silver is getting there on the second; bronze is
+     *  finishing, which is the point and is never presented as a failure.
+     *
+     *  ONLY FOR LESSONS. An outline station has no understanding check, so it
+     *  has no attempts either — grading one bronze would be marking somebody
+     *  down for reading the kind of page that has nothing to answer. */
+    tierOf(station) {
+        if (!this.skillTree || station.kind !== "lesson") {
+            return "";
+        }
+        if (this.stateOf(station.key) !== "done") {
+            return "";
+        }
+        const p = this.progress[station.key] || {};
+        if (p.first_try_correct) {
+            return "gold";
+        }
+        return (p.attempts || 0) <= 2 ? "silver" : "bronze";
+    }
+
     // ------------------------------------------------------------- persistence
     async _saveProgress(key, vals) {
         this.progress[key] = Object.assign({}, this.progress[key], vals);
@@ -410,10 +484,11 @@ export class LearnJourney extends Component {
             !q || tx(sc.name).toLowerCase().includes(q)
             || tx(sc.tagline).toLowerCase().includes(q);
 
+        const order = this.lineOrder;
         const keys = Object.keys(lines).concat(
             Object.keys(screnLines).filter((k) => !lines[k]));
-        const ordered = LINE_ORDER.filter((k) => keys.includes(k))
-            .concat(keys.filter((k) => !LINE_ORDER.includes(k)));
+        const ordered = order.filter((k) => keys.includes(k))
+            .concat(keys.filter((k) => !order.includes(k)));
         const lineHTML = ordered.map((lineKey) => {
             const items = (lines[lineKey] || []).filter(match);
             const screns = (screnLines[lineKey] || []).filter(screnMatch);
@@ -422,7 +497,8 @@ export class LearnJourney extends Component {
             }
             return `<section class="lrn-line">
                 <h3 class="lrn-linehead">${ic(LINE_ICON[lineKey] || "map-pin")}
-                    ${esc(T("lines." + lineKey))}</h3>
+                    ${esc(T("lines." + lineKey))}
+                    ${this._lineRingHTML(lines[lineKey] || [])}</h3>
                 <div class="lrn-cards">${items.map((s) => this._cardHTML(s)).join("")}</div>
                 ${this._scenarioRowHTML(screns)}
             </section>`;
@@ -445,9 +521,11 @@ export class LearnJourney extends Component {
                     ${this.badgeEarned
                         ? `<span class="lrn-chip ok">${ic("award")}${esc(T("badgeGot"))}</span>`
                         : `<span class="lrn-chip">${ic("award")}${esc(T("badge"))}</span>`}
+                    ${this._streakHTML()}
                 </div>
             </div>
         </header>
+        ${this._continueHTML()}
         <div class="lrn-toolbar">
             <button class="lrn-btn pri" data-act="to-missions"
                 >${ic("flask")}${esc(T("missions"))}</button>
@@ -458,6 +536,88 @@ export class LearnJourney extends Component {
         </div>
         ${this._practiceCardHTML()}
         ${lineHTML || `<p class="lrn-note">${esc(T("noAnswer"))}</p>`}`;
+    }
+
+    /* ------------------------------------------------- LEARNOS Phase 6 views
+
+       CONTINUE. One suggestion, chosen by the server from this learner's own
+       rows, with the reason it was chosen printed beside it. The reason is
+       not decoration: a strip that says "do this next" and nothing else is a
+       nag, and one that says why is an explanation somebody can disagree with.
+
+       Drawn only when the server sent one — the flag being off, or every
+       lesson being finished with the capstone out of reach, both produce an
+       empty payload and no strip. */
+    _continueHTML() {
+        const nb = this.nextBest;
+        if (!nb.reason_key) {
+            return "";                       // the flag is off: draw nothing
+        }
+        const reason = tx(nb.reason || {});
+        // FINISHED IS AN ANSWER AND IT GETS DRAWN. `next_best` returns
+        // `nbAllDone` with no key, and the first draft rendered nothing for
+        // it — so the one learner who had completed everything was the one
+        // the feature went silent on. No button, because there is nowhere to
+        // send them; the sandbox card below is the standing offer.
+        if (!nb.key || nb.kind === "none") {
+            return `
+            <div class="lrn-continue done">
+                <span class="lrn-cardico">${ic("check-circle", "ok")}</span>
+                <span class="lrn-cardmain">
+                    <span class="lrn-clabel">${esc(T("nbTitle"))}</span>
+                    <span class="lrn-carddesc">${esc(reason)}</span>
+                </span>
+            </div>`;
+        }
+        const isMission = nb.kind === "mission";
+        const target = isMission
+            ? (this.missions.find((m) => m.key === nb.key) || null)
+            : this.station(nb.key);
+        if (!target) {
+            // A stale bundle naming content this build does not ship. Say
+            // nothing rather than drawing a button that opens nothing.
+            return "";
+        }
+        return `
+        <div class="lrn-continue">
+            <span class="lrn-cardico">${ic(isMission ? "flask" : (target.icon || "map-pin"))}</span>
+            <span class="lrn-cardmain">
+                <span class="lrn-clabel">${esc(T("nbTitle"))}</span>
+                <span class="lrn-cardtitle">${esc(tx(target.name))}</span>
+                <span class="lrn-carddesc">${esc(reason)}</span>
+            </span>
+            <button class="lrn-btn pri" data-act="nb-go"
+                    data-key="${esc(nb.key)}" data-kind="${esc(nb.kind)}"
+                >${ic("play")}${esc(T(isMission ? "nbGoMission" : "nbGo"))}</button>
+        </div>`;
+    }
+
+    /** Days in a row, and an honest tooltip. No notification, no reminder, no
+     *  "you are about to lose it" — the number is there when the learner
+     *  looks, and gone quietly when they miss a day. */
+    _streakHTML() {
+        const streak = this.streak;
+        if (!this.skillTree || !streak.days) {
+            return "";
+        }
+        return `<span class="lrn-chip streak" title="${esc(T("streakHint"))}"
+            >${ic("flame")}${esc(streak.display || String(streak.days))}${SP}${
+            esc(T("streakTitle"))}</span>`;
+    }
+
+    /** A ring per section heading. Same conic-gradient idiom as the hero
+     *  ring above it and as pb_dashboard's — one dial shape in the product,
+     *  flat two-stop, no gradient. */
+    _lineRingHTML(list) {
+        if (!this.skillTree || !list.length) {
+            return "";
+        }
+        const p = this.lineProgress(list);
+        return `<span class="lrn-lineprog"
+                title="${esc(p.done + " / " + p.total + " " + T("lineProgress"))}">
+            <span class="lrn-ring sm" style="--p:${p.pct}"></span>
+            <span class="lrn-linecount">${p.done}${SP}/ ${p.total}</span>
+        </span>`;
     }
 
     /* --------------------------------------------------- practice mode card
@@ -518,16 +678,27 @@ export class LearnJourney extends Component {
         const startChip = start
             ? `<span class="lrn-chip a">${ic("sparkles")}${esc(T("startHere"))}</span>`
             : "";
+        // The tier is DERIVED from the progress row the lesson already wrote
+        // and is drawn as one quiet chip beside the tick — the celebration
+        // stays the check that is already there, once, and nothing new
+        // animates. See `tierOf`.
+        const tier = this.tierOf(s);
+        const tierChip = tier
+            ? `<span class="lrn-chip tier ${tier}" title="${esc(T("tierHint"))}"
+                >${ic("award")}${esc(T(
+                    tier === "gold" ? "tierGold"
+                        : tier === "silver" ? "tierSilver" : "tierBronze"))}</span>`
+            : "";
         return `
         <button class="lrn-card ${s.star ? "star" : ""}${SP}${st === "done" ? "done" : ""}${
-                SP}${start ? "pulse" : ""}"
+                SP}${tier ? "t-" + tier : ""}${SP}${start ? "pulse" : ""}"
                 data-station="${esc(s.key)}">
             <span class="lrn-cardico">${ic(s.icon)}</span>
             <span class="lrn-cardmain">
                 <span class="lrn-cardtitle">${esc(tx(s.name))}
                     ${st === "done" ? ic("check-circle", "ok") : ""}</span>
                 <span class="lrn-carddesc">${esc(tx(s.summary))}</span>
-                <span class="lrn-cardmeta">${startChip}${badge}${need}${gate}
+                <span class="lrn-cardmeta">${startChip}${tierChip}${badge}${need}${gate}
                     <span class="lrn-chip">${ic("clock")}${esc(T("est"))}${SP}${s.duration_min}${SP}${esc(T("min"))}</span>
                 </span>
             </span>
@@ -1336,6 +1507,19 @@ export class LearnJourney extends Component {
             "s-exit": () => this.sExit(),
             "to-practice": () => this.openPractice(),
             "p-exit": () => this.pExit(),
+            // LEARNOS Phase 6. The Continue strip opens whatever the server
+            // suggested — a station or the live capstone — through the SAME
+            // two doors everything else on this page uses, so the suggestion
+            // cannot become a third way of starting a lesson.
+            "nb-go": () => {
+                const kind = act.dataset.kind;
+                const key = act.dataset.key;
+                if (kind === "mission") {
+                    this.openMission(key);
+                } else {
+                    this.openStation(key);
+                }
+            },
             "morph-before": () => { this.state.morphSide = "before"; },
             "morph-after": () => { this.state.morphSide = "after"; },
         }[a];
@@ -1480,6 +1664,15 @@ export class LearnJourney extends Component {
         // second sandbox of its own.
         if (ctx.practice) {
             this.openPractice();
+            return;
+        }
+        // LEARNOS Phase 6. The Coach's "Continue" opens the STATION the
+        // server suggested. A station key, not a lesson key: the suggestion is
+        // made over stations (outlines included, which have no lesson to name),
+        // and `openStation` is the same door a card press uses.
+        const stKey = typeof ctx.station === "string" ? ctx.station : "";
+        if (stKey && this.station(stKey)) {
+            this.openStation(stKey);
             return;
         }
         const scKey = typeof ctx.scenario === "string" ? ctx.scenario : "";

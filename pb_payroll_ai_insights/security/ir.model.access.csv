@@ -12,3 +12,4 @@ access_payroll_ai_dashboard_widget_user,payroll.ai.dashboard.widget user,model_p
 access_payroll_ai_pulse_user,payroll.ai.pulse user,model_payroll_ai_pulse,group_payai_user,1,1,0,0
 access_payroll_ai_pulse_manager,payroll.ai.pulse manager,model_payroll_ai_pulse,group_payai_manager,1,1,1,1
 access_payroll_ai_report_wizard_user,payroll.ai.report.wizard user,model_payroll_ai_report_wizard,group_payai_user,1,1,1,1
+access_payroll_ai_consent_own,payroll.ai.consent own,model_payroll_ai_consent,base.group_user,1,1,1,0

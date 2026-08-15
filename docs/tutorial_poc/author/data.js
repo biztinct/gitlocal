@@ -226,6 +226,44 @@ const I18N = {
     practiceOpen: "Open practice mode",
     practiceWatermark: "Practice company — nothing here is real.",
     practiceHint: "Use the menu on the left to move between screens. Leave when you are done.",
+    /* -- what to learn next (LEARNOS Phase 6) -----------------------------
+       ONE SUGGESTION, WITH ITS REASON. `learn.runtime.next_best()` picks the
+       station and picks the sentence: the reason is authored per RULE, so the
+       learner is told why this one and not just handed a card. Nothing here is
+       computed from anybody else's progress — the whole decision is made from
+       this learner's own rows, on this server, and never leaves it. */
+    nbTitle: "Continue",
+    nbGo: "Open this one",
+    // A SECOND KEY, not a sentence built in the page. The live capstone is a
+    // mission, and "Open this one" beside a mission card reads as a lesson —
+    // which is the one thing it is not. Two keys is also what makes both
+    // wordings visible to the translator and to the register gate; a string
+    // assembled from a condition is invisible to both.
+    nbGoMission: "Open this mission",
+    nbResume: "You started this one. Pick up where you stopped.",
+    nbFinishLine: "You are close to finishing this section. This is the next lesson in it.",
+    nbRequired: "This is the next lesson the map asks for.",
+    nbCapstone: "The lessons are done. This one is real work, in the demo world.",
+    nbOptional: "Everything required is done. This one is extra, and it is useful.",
+    // RENDERED, not swallowed. `next_best` returns this reason with no key at
+    // all, and both surfaces used to draw nothing for it — so the one learner
+    // who finished everything was the one the feature went silent on.
+    nbAllDone: "You have finished every lesson here. Practice mode is always open.",
+    /* -- the skill tree and the streak (LEARNOS Phase 6) -------------------
+       Both are DERIVED and neither is stored. A tier is read off the progress
+       row the lesson already wrote; a streak is counted from this learner's
+       own events, in their own time zone. There is no notification, no league
+       table and no comparison with anybody else — a broken streak simply
+       resets, quietly, and nothing says a word about it. */
+    lineProgress: "done in this section",
+    tierBronze: "Finished",
+    tierSilver: "Finished, second try",
+    tierGold: "Right first time",
+    tierHint: "Gold means you got the understanding check right on the first answer.",
+    // Lower case: it is rendered after the number ("3 days in a row"), so a
+    // capital here puts one in the middle of a phrase.
+    streakTitle: "days in a row",
+    streakHint: "Days in a row with at least one lesson opened. Miss a day and it starts again.",
     /* -- the first-run welcome (LEARNOS Phase 3) --------------------------
        ONE CARD, ONCE, ON A REAL TENANT. Shown to somebody who has just
        logged into their own Payobook for the first time, and never again
@@ -435,6 +473,24 @@ const I18N = {
     practiceOpen: "Mở chế độ thực hành",
     practiceWatermark: "Công ty thực hành — không có gì ở đây là thật.",
     practiceHint: "Dùng menu bên trái để đi giữa các màn hình. Xong việc thì bấm thoát.",
+    /* -- gợi ý học tiếp (LEARNOS Phase 6) --------------------------------- */
+    nbTitle: "Học tiếp",
+    nbGo: "Mở bài này",
+    nbGoMission: "Mở nhiệm vụ này",
+    nbResume: "Bạn đã bắt đầu bài này. Hãy học tiếp từ chỗ đang dở.",
+    nbFinishLine: "Bạn sắp xong phần này. Đây là bài kế tiếp trong phần đó.",
+    nbRequired: "Đây là bài kế tiếp mà lộ trình yêu cầu.",
+    nbCapstone: "Bạn đã học xong các bài. Bài này là việc thật, làm trên môi trường demo.",
+    nbOptional: "Các bài bắt buộc đã xong. Bài này là bài tự chọn, và rất đáng học.",
+    nbAllDone: "Bạn đã học xong mọi bài ở đây. Chế độ thực hành luôn mở.",
+    /* -- cây kỹ năng và chuỗi ngày (LEARNOS Phase 6) ----------------------- */
+    lineProgress: "bài đã xong trong phần này",
+    tierBronze: "Đã xong",
+    tierSilver: "Đã xong ở lần thử thứ hai",
+    tierGold: "Đúng ngay lần đầu",
+    tierHint: "Vàng nghĩa là bạn trả lời đúng phần Kiểm tra hiểu bài ngay lần đầu.",
+    streakTitle: "ngày liên tiếp",
+    streakHint: "Số ngày liên tiếp bạn mở ít nhất một bài học. Nghỉ một ngày thì đếm lại từ đầu.",
     /* -- the first-run welcome (LEARNOS Phase 3) ------------------------- */
     welcomeTitle: "Chào mừng bạn đến với Payobook",
     welcomeBody: "Bạn muốn xem qua 2 phút trước không? Tôi sẽ chỉ cho bạn những màn hình bạn dùng nhiều nhất.",
@@ -964,6 +1020,29 @@ const GLOSSARY = {
    Prose ported from the v1 prototype (docs/tutorial_poc/data.js STATIONS),
    re-scoped: v1 mixed Pay Run and Setup on one map, Phase A ships Pay Run.
    ========================================================================== */
+/* =============================================================================
+   THE READING ORDER OF THE MAP'S LINES  (LEARNOS Phase 6)
+   -----------------------------------------------------------------------------
+   It moved here from `journey/journey.js`, and the move is the point: the
+   SERVER now needs this order too. `learn.runtime.next_best()` answers "what
+   should I learn next", and the answer is "the next required station in
+   reading order" — which the frontend knew and the server did not. Two copies
+   of a reading order is exactly the shape the ledger keeps recording (a gate
+   that rebuilds the table it gates drifts from it), so there is one, here,
+   and the generator emits it into the content plane for both readers.
+
+   NOT the storage order. The generator numbers stations with one counter
+   running across every line in declaration order, so a new section is
+   APPENDED there to avoid renumbering everything before it — right for
+   storage, wrong for a page. A learner meets Overview first and Setup last.
+
+   A line MISSING from this list is still drawn, after the ones that are in
+   it (journey.js), and is still reachable by next_best (learn_runtime.py).
+   That is deliberate: a section must never be able to vanish from the map
+   because somebody forgot a second file.
+   ========================================================================== */
+const LINE_ORDER = ["overview", "payrun", "people", "insights", "compliance", "setup"];
+
 const STATIONS = {
   payrun: {
     stations: [

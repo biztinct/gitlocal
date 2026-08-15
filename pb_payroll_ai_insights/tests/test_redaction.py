@@ -34,14 +34,18 @@ import json
 from odoo.tests.common import TransactionCase, tagged
 
 from odoo.addons.pb_payroll_ai_insights.models.ai_redaction import (
-    collect_names, generic_scrub, redact_names, redact_text, restore_deep,
-    restore_names,
+    collect_names, extend_mapping, generic_scrub, redact_names, redact_text,
+    restore_deep, restore_names,
 )
 from odoo.addons.pb_payroll_ai_insights.models.payroll_ai_engine import (
     data_query_prompt,
 )
 from odoo.addons.pb_payroll_ai_insights.models.payroll_ai_pulse import (
     pulse_summary_prompt, redacted_details,
+)
+from odoo.addons.pb_payroll_ai_insights.models.payroll_ai_report import (
+    SUMMARY_DATA_CHARS, alert_rows, redact_sections, report_executive_prompt,
+    report_section_prompt,
 )
 
 # A payload in the exact shape `_query_individual_data` returns, with the
@@ -63,6 +67,34 @@ INDIVIDUAL_PAYLOAD = {
     'drilldown_model': 'hr.employee',
 }
 
+# TWO PEOPLE WHOSE NAMES FOLD TO THE SAME ASCII. `Hùng` and `Hưng` are
+# different men; strip the tone marks and both are `Hung`. Vietnamese is full
+# of these pairs (Dũng/Dụng, Lân/Lấn, Trâm/Trầm) and they are exactly what the
+# first draft of `extend_mapping` merged into one entry — leaving the second
+# person unmapped and his name in the prompt. The fixture is here rather than
+# in one test because the property below is asserted over it.
+NEIGHBOUR_PAYLOAD = {
+    'query_type': 'individual_employees',
+    'data': [
+        {'employee': 'Trần Văn Hùng', 'department': 'Retail', 'salary': 18500000.0},
+        {'employee': 'Trần Văn Hưng', 'department': 'F&B', 'salary': 17000000.0},
+        {'employee': 'Nguyễn Văn Dũng', 'department': 'Retail', 'salary': 16000000.0},
+        {'employee': 'Nguyễn Văn Dụng', 'department': 'Retail', 'salary': 15500000.0},
+        {'employee': 'Phạm Thị Lân', 'department': 'F&B', 'salary': 14000000.0},
+        {'employee': 'Phạm Thị Lấn', 'department': 'F&B', 'salary': 13500000.0},
+        {'employee': 'Đỗ Thị Trâm', 'department': 'Retail', 'salary': 12500000.0},
+        {'employee': 'Đỗ Thị Trầm', 'department': 'Retail', 'salary': 12000000.0},
+    ],
+}
+
+# Every spelling of every neighbour above. The SECOND of each pair is the one
+# the merge bug let through, so it is named here explicitly.
+NEIGHBOURS = (
+    'Trần Văn Hùng', 'Trần Văn Hưng', 'Nguyễn Văn Dũng', 'Nguyễn Văn Dụng',
+    'Phạm Thị Lân', 'Phạm Thị Lấn', 'Đỗ Thị Trâm', 'Đỗ Thị Trầm',
+    'Hùng', 'Hưng', 'Dũng', 'Dụng', 'Lân', 'Lấn', 'Trâm', 'Trầm',
+)
+
 # The pulse's headcount detector, verbatim in shape.
 PULSE_DETAILS = {
     'new_employees': [
@@ -81,7 +113,7 @@ FORBIDDEN = (
     'Đỗ Thị Lan', 'Do Thi Lan', 'Lan',
     'Bùi Anh Tuấn', 'Bui Anh Tuan', 'Tuấn', 'Tuan',
     'Lê Thu Trang', 'Le Thu Trang', 'Trang',
-)
+) + NEIGHBOURS
 
 
 def _leaks(text, names=FORBIDDEN):
@@ -312,7 +344,265 @@ class TestAiRedaction(TransactionCase):
                          "about Nguyễn Thị Mai")
         import odoo.addons.pb_payroll_ai_insights.models.ai_redaction as mod
         self.assertIn('PRIOR-TURN NAMES IN CONVERSATION HISTORY', mod.__doc__)
-        self.assertIn('DICTIONARY KEYS ARE NEVER REDACTED', mod.__doc__)
+        self.assertIn('DICTIONARY KEYS: SUBSTITUTED, NEVER COLLECTED FROM',
+                      mod.__doc__)
+
+    # -- 4h. the per-conversation mapping (LEARNOS Phase 6) ----------------
+    def test_04h_a_placeholder_means_the_same_person_across_three_turns(self):
+        """THE PHASE 4 RESIDUAL, CLOSED, replayed offline.
+
+        Three turns of one conversation. Turn 1 asks about the Retail payroll
+        and learns two people. Turn 2 is a KNOWLEDGE question whose history
+        carries turn 1's restored answer — which used to go out with the names
+        in, because that path built no mapping. Turn 3 asks about a different
+        department and meets a third person.
+
+        What is asserted is what a conversation needs: the numbers are stable
+        (so "[person-2] again" is the same person), the history is clean on a
+        path that never reads a record, and the new person gets the next free
+        number rather than colliding with an old one.
+        """
+        # --- turn 1: the data path builds the table -----------------------
+        turn1 = {'data': [{'employee': 'Nguyễn Thị Mai', 'salary': 12000000.0},
+                          {'employee': 'Trần Văn Hùng', 'salary': 18500000.0}]}
+        _r1, mapping = redact_names(turn1, mapping={})
+        self.assertEqual(mapping, {'[person-1]': 'Nguyễn Thị Mai',
+                                   '[person-2]': 'Trần Văn Hùng'})
+        # The answer the reader saw, with the names put back.
+        answer1 = restore_names('[person-2] earns more than [person-1].', mapping)
+        self.assertEqual(answer1, 'Trần Văn Hùng earns more than Nguyễn Thị Mai.')
+
+        # --- turn 2: a knowledge question, history carries that answer ----
+        history_out = redact_text(answer1, mapping)
+        self.assertFalse(_leaks(history_out),
+                         "a prior-turn name went back out: %s" % history_out)
+        self.assertEqual(history_out,
+                         '[person-2] earns more than [person-1].',
+                         "the placeholders are not the same ones as turn 1")
+
+        # --- turn 3: a new person joins the same conversation -------------
+        turn3 = {'data': [{'employee': 'Đỗ Thị Lan', 'salary': 15000000.0},
+                          # …and one from turn 1, spelled without tone marks,
+                          # which is how a second query often returns it.
+                          {'employee': 'Nguyen Thi Mai', 'salary': 12000000.0}]}
+        _r3, mapping = redact_names(turn3, mapping=mapping)
+        self.assertEqual(mapping['[person-3]'], 'Đỗ Thị Lan')
+        self.assertEqual(len(mapping), 3,
+                         "the unaccented spelling was filed as a fourth person")
+        self.assertEqual(redact_text('and Nguyễn Thị Mai again', mapping),
+                         'and [person-1] again')
+
+    def test_04h2_two_people_who_fold_to_one_name_are_two_people(self):
+        """THE SHIP-BLOCKER THE PHASE 6 REVIEW FOUND, and the reason the dedupe
+        key is the ACCENTED spelling.
+
+        `_ascii` folds tone marks, and Vietnamese tone marks are what
+        distinguish `Hùng` from `Hưng`. The first draft treated a folded
+        collision as "already mapped", so the second man was not in the mapping
+        at all — and a name that is not in the mapping is a name in the prompt.
+        Four pairs, because the reviewer reproduced it with four and one pair
+        is a coincidence.
+
+        NEGATIVE CONTROL, EXECUTED: reverting `extend_mapping` to fold-dedupe
+        fails this test on the first surviving name; restoring it passes. Both
+        runs are in the Phase 6 fix-round report.
+        """
+        redacted, mapping = redact_names(NEIGHBOUR_PAYLOAD)
+        blob = json.dumps(redacted, ensure_ascii=False, default=str)
+        self.assertFalse(_leaks(blob, NEIGHBOURS),
+                         "a diacritic neighbour survived: %s"
+                         % _leaks(blob, NEIGHBOURS))
+        self.assertEqual(len(mapping), 8,
+                         "eight people were merged into %d entries: %s"
+                         % (len(mapping), mapping))
+        self.assertEqual(len(set(mapping.values())), 8)
+        # …and each one is still restorable to the right person.
+        self.assertEqual(restore_names('[person-1] and [person-2]', mapping),
+                         'Trần Văn Hùng and Trần Văn Hưng')
+
+    def test_04h3_a_shared_fold_stops_matching_once_it_is_ambiguous(self):
+        """The secondary lookup, and where it stands down. One accented
+        spelling: the unaccented form is the same person. Two accented
+        spellings that fold together: the unaccented form no longer names
+        either of them, so it takes its own placeholder rather than being
+        attributed to whichever arrived first. Redacted either way — the
+        difference is only which placeholder, and guessing is the thing to
+        avoid."""
+        _r, one = redact_names({'data': [{'employee': 'Trần Văn Hùng'}]})
+        _r, same = redact_names({'data': [{'employee': 'Tran Van Hung'}]},
+                                mapping=one)
+        self.assertEqual(len(same), 1, "an unaccented respelling forked")
+
+        _r, two = redact_names({'data': [{'employee': 'Trần Văn Hùng'},
+                                         {'employee': 'Trần Văn Hưng'}]})
+        _r, three = redact_names({'data': [{'employee': 'Tran Van Hung'}]},
+                                 mapping=two)
+        self.assertEqual(len(three), 3,
+                         "the ambiguous fold was attributed to one of them")
+        self.assertFalse(_leaks(redact_text('Tran Van Hung was paid', three),
+                                NEIGHBOURS),
+                         "the ambiguous spelling was left in free text")
+
+    def test_04i_extend_mapping_never_renumbers_and_never_reuses(self):
+        """The two ways this could go wrong, stated separately. Renumbering
+        breaks the restore of an answer already on screen; reusing a number
+        puts one person's name on another person's sentence."""
+        m = extend_mapping(['A Name'], {})
+        m = extend_mapping(['B Name'], m)
+        self.assertEqual(m, {'[person-1]': 'A Name', '[person-2]': 'B Name'})
+        # A gap (the cap dropped [person-1]) must not be filled in.
+        m2 = extend_mapping(['C Name'], {'[person-7]': 'G Name'})
+        self.assertEqual(m2['[person-8]'], 'C Name')
+        self.assertNotIn('[person-1]', m2)
+        # A junk key is not a placeholder and cannot decide the next number.
+        m3 = extend_mapping(['D Name'], {'not-a-placeholder': 'X'})
+        self.assertEqual(m3['[person-1]'], 'D Name')
+
+    def test_04j_a_name_used_as_a_dictionary_key_is_substituted_too(self):
+        """Phase 6 widened the property to KEYS. The pulse keys `by_type` on a
+        leave type and `dept_overtime` on a department — neither is a person —
+        but a payload that keys anything on somebody who is ALSO a value in it
+        used to hand the provider that name in full."""
+        payload = {'data': [{'employee': 'Nguyễn Thị Mai', 'salary': 1}],
+                   'by_person': {'Nguyễn Thị Mai': 3, 'Retail': 4}}
+        redacted, mapping = redact_names(payload)
+        blob = json.dumps(redacted, ensure_ascii=False)
+        self.assertFalse(_leaks(blob), "a name survived as a key: %s" % blob)
+        self.assertEqual(redacted['by_person'], {'[person-1]': 3, 'Retail': 4})
+        self.assertEqual(mapping, {'[person-1]': 'Nguyễn Thị Mai'})
+
+    def test_04k_a_key_that_is_only_a_key_is_the_stated_residual(self):
+        """The honest half, and it is why `test_egress::test_02d` exists. A
+        name that appears NOWHERE except as a key is never collected, because
+        there is no honest way to tell a person's name from a department's."""
+        payload = {'by_person': {'Nguyễn Thị Mai': 3}}
+        redacted, mapping = redact_names(payload)
+        self.assertEqual(mapping, {})
+        self.assertEqual(redacted, payload)
+        import odoo.addons.pb_payroll_ai_insights.models.ai_redaction as mod
+        self.assertIn('SUBSTITUTED, NEVER COLLECTED FROM', mod.__doc__)
+
+    # -- 4l. the PDF report, repaired and redacted in one change -----------
+    def test_04l_the_report_section_prompt_is_clean_end_to_end(self):
+        """The exact string one section sends, with the salary section's real
+        shape in it. This path was DEAD for four phases; the day it was
+        repaired it had to be clean, and this is the assertion that says so
+        with no provider and no database."""
+        redacted, mapping = redact_names(INDIVIDUAL_PAYLOAD['data'], mapping={})
+        prompt = report_section_prompt(
+            'Salary Distribution by Department',
+            json.dumps(redacted, ensure_ascii=False, default=str))
+        self.assertFalse(_leaks(prompt), "the report section prompt carries: %s"
+                         % _leaks(prompt))
+        self.assertIn('[person-1]', prompt)
+        self.assertIn('18500000', prompt, "the figures were redacted away too")
+        self.assertIn('placeholders', prompt)
+        # …and the narrative the model writes comes back with the people in it.
+        self.assertEqual(
+            restore_names('[person-2] is the highest paid.', mapping),
+            'Trần Văn Hùng is the highest paid.')
+
+    def test_04m_the_executive_summary_shares_the_sections_mapping(self):
+        """One mapping across the whole document, driven through the SHIPPED
+        function rather than a loop this test writes.
+
+        The first version of this test re-implemented the accumulation and
+        therefore proved that the test could accumulate — which is exactly the
+        shape the ledger keeps recording. `redact_sections` is what both the
+        narrative pass and the executive summary call; if either stops calling
+        it, `test_egress::test_02f` fails, and if IT stops accumulating, this
+        does.
+        """
+        sections = [
+            {'title': 'Salary Distribution', 'data': INDIVIDUAL_PAYLOAD['data']},
+            {'title': 'Headcount', 'data': [
+                {'name': 'Bùi Anh Tuấn', 'department': 'IT Services'},
+                {'employee': 'Nguyễn Thị Mai', 'department': 'Retail'}]},
+            {'title': 'Refused', 'data': {}, 'access_refused': True,
+             'narrative': 'your role is not allowed to read that'},
+        ]
+        prepared, mapping = redact_sections(sections, {})
+        self.assertEqual([s['title'] for s, _j in prepared],
+                         ['Salary Distribution', 'Headcount'],
+                         "an access-refused section was sent to be narrated")
+        overview = "\n".join("- %s: %s" % (sec['title'], js[:SUMMARY_DATA_CHARS])
+                             for sec, js in prepared)
+        prompt = report_executive_prompt('2026-07-01', '2026-07-31', overview)
+        self.assertFalse(_leaks(prompt),
+                         "the executive summary prompt carries: %s" % _leaks(prompt))
+        self.assertEqual(mapping['[person-1]'], 'Nguyễn Thị Mai',
+                         "the second section renumbered the first section's people")
+        self.assertEqual(mapping['[person-4]'], 'Bùi Anh Tuấn')
+        self.assertIn('IT Services', prompt,
+                      "the department was redacted — it is not a person")
+
+    # -- 4n. the anomaly section's free-text summaries ---------------------
+    def test_04n_a_restored_name_in_an_alert_summary_does_not_go_out(self):
+        """THE SECOND SHIP-BLOCKER, executed.
+
+        `summary` is prose this module wrote the names back INTO before
+        storing it, and it is not a person key — so the collector never saw it
+        and the whole section went out with the joiners named. The details are
+        now redacted first and the sentence is redacted against the mapping
+        they built.
+        """
+        alerts = [{
+            'id': 1,
+            'name': '2 New Employees Joined This Week',
+            'severity': 'info',
+            'category': 'headcount',
+            'deviation_pct': 0.0,
+            'details': json.dumps(PULSE_DETAILS, ensure_ascii=False),
+            'summary': ('Bùi Anh Tuấn joined IT Services and Lê Thu Trang '
+                        'joined Retail this week; headcount is up two.'),
+        }]
+        rows, mapping = alert_rows(alerts, {})
+        blob = json.dumps(rows, ensure_ascii=False)
+        self.assertFalse(_leaks(blob), "the summary carries: %s" % _leaks(blob))
+        self.assertIn('[person-1]', rows[0]['summary'])
+        self.assertIn('[person-2]', rows[0]['summary'])
+        self.assertEqual(len(mapping), 2)
+        # THE TITLE IS NOT A PERSON. It is built from a count and it has to
+        # stay readable — a section heading reading "[person-3]" is unreadable
+        # and protects nobody.
+        self.assertEqual(rows[0]['name'], '2 New Employees Joined This Week')
+        self.assertEqual(rows[0]['category'], 'headcount')
+
+    def test_04n2_an_untraceable_summary_is_dropped_not_guessed_at(self):
+        """When the provenance cannot be checked the sentence does not go.
+        Three shapes: details that will not parse, details that are empty, and
+        a person-naming detector whose details named nobody. The row keeps its
+        title, severity and deviation, which is enough to narrate from."""
+        base = {'id': 2, 'name': '3 New Employees Joined This Week',
+                'severity': 'info', 'category': 'headcount',
+                'deviation_pct': 0.0,
+                'summary': 'Bùi Anh Tuấn and Lê Thu Trang joined this week.'}
+        for details in ('not json at all', '', '{"total": 3}'):
+            rows, mapping = alert_rows([dict(base, details=details)], {})
+            blob = json.dumps(rows, ensure_ascii=False)
+            self.assertFalse(_leaks(blob),
+                             "details=%r let a name through: %s"
+                             % (details[:20], _leaks(blob)))
+            self.assertEqual(rows[0]['summary'], 'No AI summary available.',
+                             "details=%r kept an untraceable summary" % details[:20])
+            self.assertEqual(mapping, {})
+            self.assertEqual(rows[0]['name'], base['name'])
+
+    def test_04n3_a_summary_a_detector_cannot_name_people_in_survives(self):
+        """The other direction, so the rule is not "drop every summary". An
+        overtime alert keys on a DEPARTMENT and its summary is about a
+        department — dropping it would cost the report its most useful
+        sentence for nothing."""
+        alerts = [{
+            'id': 3, 'name': 'Overtime Spike in Retail: +42%',
+            'severity': 'warning', 'category': 'overtime', 'deviation_pct': 42.0,
+            'details': json.dumps({'department': 'Retail', 'current_ot': 9000000}),
+            'summary': 'Overtime in Retail rose 42% against last month.',
+        }]
+        rows, mapping = alert_rows(alerts, {})
+        self.assertEqual(rows[0]['summary'],
+                         'Overtime in Retail rose 42% against last month.')
+        self.assertEqual(mapping, {})
 
     # -- 5. the whole call path, with both ends stubbed --------------------
     def test_05_the_engine_itself_sends_a_clean_prompt(self):

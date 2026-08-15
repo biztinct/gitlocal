@@ -173,6 +173,10 @@
       "en": "Say it the full way",
       "vi": "Giải thích đầy đủ lại"
     },
+    "lineProgress": {
+      "en": "done in this section",
+      "vi": "bài đã xong trong phần này"
+    },
     "lines.compliance": {
       "en": "Compliance",
       "vi": "Tuân thủ"
@@ -356,6 +360,42 @@
     "motionOn": {
       "en": "Motion on",
       "vi": "Bật chuyển động"
+    },
+    "nbAllDone": {
+      "en": "You have finished every lesson here. Practice mode is always open.",
+      "vi": "Bạn đã học xong mọi bài ở đây. Chế độ thực hành luôn mở."
+    },
+    "nbCapstone": {
+      "en": "The lessons are done. This one is real work, in the demo world.",
+      "vi": "Bạn đã học xong các bài. Bài này là việc thật, làm trên môi trường demo."
+    },
+    "nbFinishLine": {
+      "en": "You are close to finishing this section. This is the next lesson in it.",
+      "vi": "Bạn sắp xong phần này. Đây là bài kế tiếp trong phần đó."
+    },
+    "nbGo": {
+      "en": "Open this one",
+      "vi": "Mở bài này"
+    },
+    "nbGoMission": {
+      "en": "Open this mission",
+      "vi": "Mở nhiệm vụ này"
+    },
+    "nbOptional": {
+      "en": "Everything required is done. This one is extra, and it is useful.",
+      "vi": "Các bài bắt buộc đã xong. Bài này là bài tự chọn, và rất đáng học."
+    },
+    "nbRequired": {
+      "en": "This is the next lesson the map asks for.",
+      "vi": "Đây là bài kế tiếp mà lộ trình yêu cầu."
+    },
+    "nbResume": {
+      "en": "You started this one. Pick up where you stopped.",
+      "vi": "Bạn đã bắt đầu bài này. Hãy học tiếp từ chỗ đang dở."
+    },
+    "nbTitle": {
+      "en": "Continue",
+      "vi": "Học tiếp"
     },
     "needReview": {
       "en": "Need review",
@@ -633,6 +673,14 @@
       "en": "Step",
       "vi": "Bước"
     },
+    "streakHint": {
+      "en": "Days in a row with at least one lesson opened. Miss a day and it starts again.",
+      "vi": "Số ngày liên tiếp bạn mở ít nhất một bài học. Nghỉ một ngày thì đếm lại từ đầu."
+    },
+    "streakTitle": {
+      "en": "days in a row",
+      "vi": "ngày liên tiếp"
+    },
     "stuck": {
       "en": "Stuck?",
       "vi": "Cần trợ giúp?"
@@ -644,6 +692,22 @@
     "suggested": {
       "en": "Suggested for this screen",
       "vi": "Gợi ý cho màn hình này"
+    },
+    "tierBronze": {
+      "en": "Finished",
+      "vi": "Đã xong"
+    },
+    "tierGold": {
+      "en": "Right first time",
+      "vi": "Đúng ngay lần đầu"
+    },
+    "tierHint": {
+      "en": "Gold means you got the understanding check right on the first answer.",
+      "vi": "Vàng nghĩa là bạn trả lời đúng phần Kiểm tra hiểu bài ngay lần đầu."
+    },
+    "tierSilver": {
+      "en": "Finished, second try",
+      "vi": "Đã xong ở lần thử thứ hai"
     },
     "tryAgain": {
       "en": "Try again",
@@ -6850,6 +6914,14 @@
       "try": "",
       "watch": ""
     }
+  ],
+  "line_order": [
+    "overview",
+    "payrun",
+    "people",
+    "insights",
+    "compliance",
+    "setup"
   ],
   "missions": [
     {
@@ -13995,5 +14067,5 @@
       }
     }
   ],
-  "version": "c4fe4f27bbfc"
+  "version": "4de7711e42f3"
 }
