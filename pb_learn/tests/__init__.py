@@ -12,3 +12,6 @@ from . import test_composer
 from . import test_questions
 # LEARNOS Phase 1b — the scenario engine and its one structural promise.
 from . import test_scenario
+# LEARNOS Phase 3 — the real-tenant welcome card, and the boundary between it
+# and the demo greeting test_retirement owns.
+from . import test_welcome

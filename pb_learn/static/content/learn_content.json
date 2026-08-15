@@ -613,6 +613,22 @@
       "en": "What to check first",
       "vi": "Cần kiểm tra gì trước"
     },
+    "welcomeBody": {
+      "en": "Want a 2-minute look around first? I will show you the screens you use most.",
+      "vi": "Bạn muốn xem qua 2 phút trước không? Tôi sẽ chỉ cho bạn những màn hình bạn dùng nhiều nhất."
+    },
+    "welcomeGo": {
+      "en": "Watch the tour",
+      "vi": "Xem hướng dẫn"
+    },
+    "welcomeLater": {
+      "en": "Later",
+      "vi": "Để sau"
+    },
+    "welcomeTitle": {
+      "en": "Welcome to Payobook",
+      "vi": "Chào mừng bạn đến với Payobook"
+    },
     "whatIs": {
       "en": "What it is",
       "vi": "Đây là gì"
@@ -12739,5 +12755,5 @@
       }
     }
   ],
-  "version": "778b7676ec50"
+  "version": "9119d663f6b0"
 }

@@ -45,7 +45,7 @@ import { gtx, setGlossary, installGlossary, closeGlossary } from "../engine/glos
 import { loadContent, composeScreens } from "../content/content_loader";
 import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
-import { markLauncherStack, maybeGreet } from "./first_login";
+import { markLauncherStack, maybeGreet, maybeWelcome } from "./first_login";
 
 /* Shared with the Journey: one language preference for the whole system. */
 const LOCAL_PREFS = "pbLearnPrefs";
@@ -115,6 +115,10 @@ export class CoachHost extends Component {
                     glossary: content.glossary || [],
                     tokens: runtime.tokens || {},
                     collect_questions: !!runtime.collect_questions,
+                    // Which of the two first-run greetings this database gets.
+                    // A DATABASE property, asked of the company the same way a
+                    // live capstone asks it — see maybeWelcome.
+                    demo_world: !!runtime.demo_world,
                 };
                 // Same fetch, no second round trip: the scenario service reads
                 // the memoised content plane the drawer has just resolved.
@@ -142,7 +146,15 @@ export class CoachHost extends Component {
             // live in first_login.js; neither can throw, and neither is allowed
             // to delay the drawer.
             markLauncherStack(this.env);
+            // TWO first-run greetings, one database each. The demo world gets
+            // the Journey map with a pulse; a real tenant gets the welcome
+            // card. Neither can fire on the other's database, and a bundle
+            // that failed to load gets neither — the card would otherwise
+            // render its own chrome keys as its text.
             maybeGreet(this.env, this.orm, this.action);
+            if (this.bundle) {
+                maybeWelcome(this.env, this.orm, this.sc, this.bundle.demo_world);
+            }
         });
         onWillUnmount(() => {
             document.removeEventListener("keydown", this._onKey);

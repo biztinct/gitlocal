@@ -36,42 +36,93 @@
         svg { vertical-align: -.18em; }
     }
 
-    // Empty-tenant setup panel — white surface, left rail accent, solid indigo
-    // buttons. Same vocabulary as .pbd-kpi, one step warmer.
-    .pbd-setup {
+    // Activation checklist — white surface, left rail accent, solid indigo.
+    // Same vocabulary as .pbd-kpi, one step warmer. Solid colours only, no
+    // gradient, Lucide strokes, and the only animation is the tick drawing
+    // itself.
+    .pbd-act {
         background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
         padding: 20px 22px; margin-bottom: 20px; position: relative; overflow: hidden;
         box-shadow: 0 6px 18px rgba(27,23,51,.08);
         &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--pbd-brand); }
     }
-    .pbd-setup-head { display: flex; align-items: flex-start; gap: 12px; }
-    .pbd-setup-ic {
+    .pbd-act-head { display: flex; align-items: flex-start; gap: 12px; }
+    .pbd-act-hic {
         display: inline-grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px;
         border-radius: 10px; background: #EEF0FE; color: var(--pbd-brand);
     }
-    .pbd-setup-t { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
-    .pbd-setup-s { color: var(--pbd-muted); font-size: 13px; margin-top: 3px; }
+    .pbd-act-hx { flex: 1 1 auto; min-width: 0; }
+    .pbd-act-t { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+    .pbd-act-s { color: var(--pbd-muted); font-size: 13px; margin-top: 3px; }
+    .pbd-act-count {
+        flex: 0 0 auto; font-size: 11.5px; font-weight: 700; color: var(--pbd-muted);
+        background: #F4F5FB; border: 1px solid var(--pbd-border);
+        padding: 5px 11px; border-radius: 999px; white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
 
-    .pbd-steps { margin-top: 16px; border-top: 1px solid #F0EFF7; }
-    .pbd-step {
-        display: flex; align-items: center; gap: 14px; padding: 14px 2px;
-        border-bottom: 1px solid #F0EFF7;
+    .pbd-acts { margin: 16px 0 0; padding: 0; list-style: none; border-top: 1px solid #F0EFF7; }
+    .pbd-act-i {
+        display: flex; align-items: center; gap: 14px; padding: 14px 2px 14px 0;
+        border-bottom: 1px solid #F0EFF7; position: relative;
         &:last-child { border-bottom: none; padding-bottom: 2px; }
+
+        // The step being asked for. A rail rather than a fill: the row still
+        // has to read as one of a list, and a filled row would compete with
+        // the hero above it.
+        &.is-next {
+            padding-left: 12px;
+            &::before {
+                content: ""; position: absolute; left: 0; top: 10px; bottom: 10px;
+                width: 3px; border-radius: 3px; background: var(--pbd-brand);
+            }
+            .pbd-act-mark { background: #EEF0FE; border-color: #C7CBF5; }
+        }
+        // Behind you. Dimmed, never struck through — a finished step is still
+        // a place somebody may want to go back to.
+        &.is-done {
+            .pbd-act-n { color: var(--pbd-muted); }
+            .pbd-act-mark { background: #E7F8F1; border-color: #A7E4CD; color: #0F8A63; }
+        }
     }
-    .pbd-step-ic {
+    .pbd-act-mark {
         display: inline-grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px;
-        border-radius: 10px; background: #F4F5FB; color: var(--pbd-brand); border: 1px solid var(--pbd-border);
+        border-radius: 10px; background: #F4F5FB; color: var(--pbd-brand);
+        border: 1px solid var(--pbd-border);
     }
-    .pbd-step-x { flex: 1 1 auto; min-width: 0; }
-    .pbd-step-t { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
-    .pbd-step-s { font-size: 12.5px; color: var(--pbd-muted); margin-top: 2px; }
+    .pbd-act-x { flex: 1 1 auto; min-width: 0; }
+    .pbd-act-n { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+    .pbd-act-d { font-size: 12.5px; color: var(--pbd-muted); margin-top: 2px; }
     .pbd-btn {
         flex: 0 0 auto; background: var(--pbd-brand); color: #fff; border: 1px solid var(--pbd-brand);
         padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
         &:hover { background: #4338CA; border-color: #4338CA; }
+        // Every step is reachable; only one is being asked for. A ghost button
+        // is still a button, which is the point — somebody who wants to import
+        // first is not wrong.
+        &.ghost {
+            background: transparent; color: var(--pbd-brand); border-color: var(--pbd-border);
+            font-weight: 600;
+            &:hover { background: #F4F5FB; border-color: #C7CBF5; }
+        }
     }
+
+    // THE TICK DRAWS ITSELF. CSS only — no library, no sprite, no emoji: the
+    // Lucide check is a single stroked path, so dashing it and animating the
+    // offset draws it left to right exactly once, when the row first appears
+    // with its state already decided by the server.
+    .pbd-act-i.is-done .pbd-act-mark svg path {
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        animation: pbd-tick .42s cubic-bezier(.65,0,.35,1) forwards;
+    }
+    @keyframes pbd-tick { to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+        .pbd-act-i.is-done .pbd-act-mark svg path { animation: none; stroke-dashoffset: 0; }
+    }
+
     @media (max-width: 640px) {
-        .pbd-step { flex-wrap: wrap; }
+        .pbd-act-i { flex-wrap: wrap; }
         .pbd-btn { width: 100%; }
     }
 
@@ -103,6 +154,12 @@
     .pbd-card-m { color: var(--pbd-muted); font-size: 12.5px; margin-top: 3px; }
     .pbd-ring { position: relative; display: inline-grid; place-items: center; }
     .pbd-ring-n { position: absolute; font-weight: 800; }
+    // Stands where the dial would: nothing measured yet, and the card keeps
+    // its shape rather than jumping when the first figure arrives.
+    .pbd-ring-none {
+        display: inline-grid; place-items: center; width: 66px; height: 66px;
+        color: var(--pbd-muted); font-size: 20px; font-weight: 800; flex: 0 0 66px;
+    }
 
     .pbd-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
     .pbd-pill { font-size: 11.5px; font-weight: 700; padding: 4px 11px; border-radius: 999px; }

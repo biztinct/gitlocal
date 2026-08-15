@@ -371,3 +371,103 @@ body.pb-coach-absent .lrn-fab { bottom: 92px; }
 @media (prefers-reduced-motion: reduce) {
     .lrn-fab { transition: none; }
 }
+
+/* =============================================================================
+   THE FIRST-RUN WELCOME CARD — LEARNOS Phase 3.
+
+   Centred, small, and NO BACKDROP — the same argument as the drawer above it.
+   This is an offer, not a gate: the screen behind it has to stay readable
+   while somebody decides whether they have two minutes, and a dimmed app on
+   the first second of a first login says "you may not use this yet".
+
+   It appears once and is gone the moment either button is pressed, so it
+   carries no close affordance beyond its own two answers plus Escape.
+   ========================================================================== */
+.lrn-welcome {
+    position: fixed;
+    /* NO CSS min() — Bootstrap's Sass intercepts it and takes the whole bundle
+       down (the standing trap this file has now hit twice). A width and a
+       max-width express the same intent with no function call at all. */
+    left: 50%;
+    top: 22%;
+    transform: translateX(-50%);
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    z-index: 1045;
+    padding: 18px 18px 16px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-lg, 16px);
+    box-shadow: var(--vuf-sh-lg, 0 18px 50px rgba(16, 12, 40, .14));
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--vuf-ink, #101728);
+}
+
+.lrn-welcome-h {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    .lrn-welcome-ic {
+        display: inline-grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        border-radius: 9px;
+        background: var(--vuf-primary-soft, #EEF0FE);
+        color: var(--vuf-primary, #5A4BB0);
+    }
+    .lrn-ic { width: 17px; height: 17px; }
+}
+
+.lrn-welcome-t {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    color: var(--vuf-ink, #101728);
+}
+
+.lrn-welcome-b {
+    margin: 10px 0 0;
+    color: var(--vuf-ink-soft, #4B5563);
+}
+
+.lrn-welcome-a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 9px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    .lrn-welcome-go {
+        background: var(--vuf-primary, #5A4BB0);
+        border: 1px solid var(--vuf-primary, #5A4BB0);
+        color: #fff;
+        font-weight: 700;
+        .lrn-ic { width: 14px; height: 14px; }
+    }
+    /* "Later" is a real answer, so it is a real button — quieter, never a
+       link and never smaller than the tap target beside it. */
+    .lrn-welcome-later {
+        background: transparent;
+        border: 1px solid var(--vuf-line, #E5E7EB);
+        color: var(--vuf-ink-soft, #4B5563);
+        font-weight: 600;
+    }
+}
+
+@media (max-width: 640px) {
+    .lrn-welcome { top: auto; bottom: 16px; }
+    .lrn-welcome-a button { flex: 1 1 auto; justify-content: center; }
+}

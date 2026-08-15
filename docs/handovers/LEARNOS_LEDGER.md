@@ -181,6 +181,26 @@ missing test", contract checker discipline, anchor registry discipline). Read th
   are presumed wrong (BARE_ALIASES allowlist, reason required). Escaping is a property of
   the POSITION, not the value — the one raw-insertion wrapper is `gtx()`, and "are all raw
   positions covered" is the grep for `${tx(`/`${T(` returning nothing.
+- (Phase 3 review, BLOCKER fixed) **A currency change is refused by Odoo once journal items
+  exist** — bundling `currency_id` into the provisioning rename write turns that refusal into
+  a configure-step abort. It now has its OWN write, guarded by `_existing_accounting()` (the
+  chart_template.py idiom), and swallows its own failure with a logged skip. DEPLOY CHECK:
+  `select count(*) from account_move_line` on payobook_template — non-zero means tenant
+  currencies stay USD (logged), zero means the fix applies cleanly.
+- (Phase 3 review, fixed) The AST registry-guard must match `self.env[...]`/`x.env[...]` AND
+  treat non-constant subscripts as unguarded-unknown — the Name-only version was defeated by
+  the two most ordinary Odoo idioms. Reusable form: `_guarded_env_reads` in
+  pb_dashboard/tests/test_activation.py.
+- (Phase 3 review, fixed) **"Is this the demo WORLD" is a database fact = a search over
+  res.company; `env.company` is the ACTIVE company, a session fact** — the session probe
+  welcomed an apex admin switched to company 2 as a new tenant. `learn.live.world_is_demo()`
+  now counts companies by the declared name.
+- (Phase 3) Checklist rules: a step whose predicate lives in a missing module is HIDDEN, not
+  shown forever-unticked; `'show': not runs` is source-pinned (a True slip would ship the
+  checklist to every veteran tenant); `hr.payslip.run` has NO company_id in this codebase —
+  any per-company runs domain raises. Replay harness is now addon-generic; a setUp that
+  breaks for any reason other than NeedsDB reports FAIL, never SKIP. 7th
+  absent-token-in-own-prose occurrence (test_welcome test_10 `min(`) — strip comments first.
 - (Phase 2, accepted nits for later touch) live_mission.js still `esc(tx())` on step.detail
   (no glossary cards, literal <b> tags there); glossify idempotence guard keys on the
   literal `data-gloss=`; gloss_scan payload ignores matchTerm (over-fails only); the 17-28

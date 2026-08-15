@@ -1,5 +1,30 @@
 # -*- coding: utf-8 -*-
+"""The home dashboard's one data call.
+
+TWO RULES GOVERN THIS FILE, and both of them are about honesty.
+
+1. NO FABRICATED NUMBER, EVER. A brand-new tenant sees zeros and a helpful
+   empty state; it never sees a company that does not exist. The legacy
+   analytics fallback that used to fill these in was a hard-coded sample dict
+   and it reached a real customer's screen.
+
+2. NO HARD DEPENDENCY ON ANOTHER COCKPIT. The manifest declares `web`,
+   `om_hr_payroll` and `pb_hr_payroll_base` and nothing else. The activation
+   checklist below asks questions of the learning module and of the import
+   module, and both of those questions are asked through `optional()`, which
+   answers "not on this database" instead of raising. There is no python
+   import of either module anywhere in here, and there must never be one:
+   this dashboard is the first screen of every tenant, including the lean
+   ones.
+"""
 from odoo import api, models
+
+# The two scenarios the activation checklist watches, under the namespace
+# `learn.progress` stores them in (pb_learn/models/learn_progress.py
+# SCENARIO_PREFIX). Strings, not imports — see rule 2 above.
+SCENARIO_PREFIX = 'scenario:'
+SC_WELCOME = 'sc_welcome'
+SC_PAYRUN = 'sc_payrun'
 
 
 class PbDashboard(models.AbstractModel):
@@ -16,12 +41,37 @@ class PbDashboard(models.AbstractModel):
             except Exception:
                 return default
 
+        def optional(model, fn, default=0):
+            """Read a model another module owns, or report `default`.
+
+            THE REGISTRY IS THE PROBE, not the module table: what the caller
+            needs is for `env[model]` not to raise, and that is exactly what
+            this tests. It needs no rights at all, which an
+            `ir.module.module` read under superuser did (pb_learn ledger,
+            run D1).
+
+            Everything this dashboard reads from pb_learn or from the import
+            module goes through here. That is a structural property rather
+            than a promise — `tests/test_activation.py::test_04` walks the
+            syntax tree of this file and fails if a single one of those reads
+            sits outside an `optional()` call.
+            """
+            if model not in env:
+                return default
+            return safe(fn, default)
+
         cdom = [('company_id', 'in', env.companies.ids)]
         employees = safe(lambda: env['hr.employee'].search_count(cdom))
         contracts = (safe(lambda: env['hr.contract'].search_count(cdom + [('state', '=', 'open')]))
                      or safe(lambda: env['hr.contract'].search_count(cdom)))
 
         # ---- Latest pay run ----
+        # NOT company-scoped, and that is a property of the model rather than
+        # an oversight: `hr.payslip.run` carries no `company_id` field in this
+        # codebase — om_hr_payroll does not declare one and none of the eight
+        # modules that inherit it adds one. A `company_id` domain here would
+        # raise on every call, which `safe()` would turn into a silent zero.
+        runs = safe(lambda: env['hr.payslip.run'].search_count([]))
         run = safe(lambda: env['hr.payslip.run'].search([], order='id desc', limit=1), None)
         run_data = {'name': '—', 'slips': 0, 'done': 0, 'pending': 0, 'readiness': 0, 'state': ''}
         if run:
@@ -97,16 +147,54 @@ class PbDashboard(models.AbstractModel):
             'symbol': (cur.symbol if cur else None) or '',
             'position': (cur.position if cur else None) or 'before',
         }
-        # Whether the guided tour exists on THIS database — the setup panel's
-        # first row is only offered when there is something behind it.
-        has_learn = bool(safe(lambda: env['ir.module.module'].sudo().search_count(
-            [('name', '=', 'pb_learn'), ('state', '=', 'installed')])))
+        # ---- Activation checklist (LEARNOS Phase 3) ----
+        # FIVE STEPS, FIVE REAL COUNTS. Nothing here is remembered in a flag,
+        # inferred from a button press or carried in a browser: every item
+        # reports the state of the database, so a step somebody finished in
+        # another tab is already ticked when this loads, and a step nobody has
+        # done cannot be ticked by pressing its button and coming back.
+        #
+        # The panel is shown while activation is incomplete and disappears for
+        # good once the tenant has a pay run — which is also item 5, so the
+        # last tick and the last render are the same event.
+        def scenario_done(key):
+            """Has THIS learner finished this walkthrough, in any of its three
+            modes? One row per learner per key (learn.progress has a unique
+            constraint on the pair), so a count is the whole answer."""
+            return bool(optional('learn.progress', lambda: env['learn.progress'].search_count([
+                ('user_id', '=', env.uid),
+                ('key', '=', SCENARIO_PREFIX + key),
+                ('state', '=', 'done'),
+            ])))
+
+        # Is the learning module on this database at all? The same registry
+        # probe `optional()` uses, asked once, because it decides whether the
+        # two learning steps are OFFERED rather than only whether they can be
+        # read. A step whose predicate can never be satisfied is a step that
+        # sits unticked forever, which is worse than a shorter list.
+        learn_here = 'learn.progress' in env
+
+        # HEADCOUNT > 1, NOT > 0. The golden template ships the admin's
+        # `hr.employee` row (id 1, renamed per tenant), and provisioning does
+        # not create it — so a tenant that has never added anybody still
+        # reports one employee. Contracts carry the "is this tenant empty"
+        # question everywhere else in this file for the same reason.
+        batches = optional('hr.payroll.import.batch',
+                           lambda: env['hr.payroll.import.batch'].search_count(cdom))
+        activation_items = []
+        if learn_here:
+            activation_items.append({'key': 'meet', 'done': scenario_done(SC_WELCOME)})
+        activation_items.append({'key': 'employee', 'done': employees > 1})
+        activation_items.append({'key': 'import', 'done': bool(contracts) or bool(batches)})
+        if learn_here:
+            activation_items.append({'key': 'practice', 'done': scenario_done(SC_PAYRUN)})
+        activation_items.append({'key': 'real', 'done': runs > 0})
 
         return {
             'user': env.user.name or 'there',
             'company': env.company.name or 'Payobook',
             'currency': currency,
-            'has_learn': has_learn,
+            'activation': {'show': not runs, 'items': activation_items},
             'kpis': {
                 'headcount': headcount,
                 'contracts': contracts,

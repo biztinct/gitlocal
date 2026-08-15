@@ -205,6 +205,21 @@ const I18N = {
     scNotOnScreen: "That control is not on this screen right now. So here is what it does, rather than an arrow pointing at nothing.",
     scDone: "End of the walkthrough",
     scDoneBody: "That is the whole story. Take it again another way whenever you like. The steps are the same — only who presses changes.",
+    /* -- the first-run welcome (LEARNOS Phase 3) --------------------------
+       ONE CARD, ONCE, ON A REAL TENANT. Shown to somebody who has just
+       logged into their own Payobook for the first time, and never again
+       after they answer it either way. It OFFERS the welcome walkthrough
+       and does not start it: the same ruling as the demo greeting, which
+       opens the map and stops. A card that begins moving before you have
+       read anything is the thing people learn to dismiss.
+
+       "Later" is a real answer and the card takes it. There is no third
+       state and nothing nags: the same walkthrough sits on the dashboard
+       checklist and in the Coach for as long as it is useful. */
+    welcomeTitle: "Welcome to Payobook",
+    welcomeBody: "Want a 2-minute look around first? I will show you the screens you use most.",
+    welcomeGo: "Watch the tour",
+    welcomeLater: "Later",
     /* -- the Coach ------------------------------------------------------- */
     coachName: "Payobook Coach",
     stuck: "Stuck?",
@@ -380,6 +395,11 @@ const I18N = {
     scNotOnScreen: "Nút đó hiện không có trên màn hình này. Vậy nên tôi mô tả nó ở đây, thay vì chỉ mũi tên vào chỗ trống.",
     scDone: "Hết phần hướng dẫn",
     scDoneBody: "Đó là toàn bộ câu chuyện. Bạn xem lại theo cách khác bất cứ lúc nào cũng được. Các bước vẫn thế — chỉ khác ở chỗ ai là người bấm.",
+    /* -- the first-run welcome (LEARNOS Phase 3) ------------------------- */
+    welcomeTitle: "Chào mừng bạn đến với Payobook",
+    welcomeBody: "Bạn muốn xem qua 2 phút trước không? Tôi sẽ chỉ cho bạn những màn hình bạn dùng nhiều nhất.",
+    welcomeGo: "Xem hướng dẫn",
+    welcomeLater: "Để sau",
     /* -- the Coach ------------------------------------------------------- */
     coachName: "Trợ lý Payobook",
     stuck: "Cần trợ giúp?",
