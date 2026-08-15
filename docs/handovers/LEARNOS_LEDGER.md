@@ -201,6 +201,25 @@ missing test", contract checker discipline, anchor registry discipline). Read th
   any per-company runs domain raises. Replay harness is now addon-generic; a setUp that
   breaks for any reason other than NeedsDB reports FAIL, never SKIP. 7th
   absent-token-in-own-prose occurrence (test_welcome test_10 `min(`) — strip comments first.
+- (Phase 2+3 deploy, DONE 2026-08-15) LIVE on all 4 DBs: 198 staging tests 0-fail, 12/12
+  Chrome checks (checklist lifecycle, welcome card, hovercards, VI, world_is_demo company-2
+  proof). **2nd silent-rollback caught by the version-diff gate: pb_sidebar disk was stale
+  (collapse/pin dead on live; a future -u would have DELETED sidebar entries)** — restored
+  from git + -u'd. Gate stays. A code change WITHOUT a version bump is invisible to that
+  gate — bump on every deployable change.
+- (Phase 2+3 deploy) **"document, not window" is necessary but NOT sufficient for keydown:
+  Odoo's hotkey service stops propagation at document-bubble, so the listener must be
+  CAPTURE phase** — the welcome card's Escape was silently dead in real Chrome while
+  synthetic dispatch worked. And a transient layer that closes on a key SWALLOWS that key
+  (stopPropagation), else one Escape closes the hovercard and exits the lesson. Both fixed
+  post-deploy (ride next family deploy).
+- (Phase 2+3 deploy) `post_install` tests run ONLY for modules named in the same `-u` —
+  a test-tag run must name every module under test. `fs.protected_regular=2` blocks the
+  root-append /tmp sentinel pattern — use /var/log/<dir> owned dirs. `{en,vi}` is a SHAPE,
+  not a meaning: any walker that assumes prose must prove what it skipped (test_04c pattern).
+- (Deploy backlog, out of LEARNOS scope) Local-ahead-never-deployed modules: pb_demo 1.5.0,
+  pb_pay_delivery 1.0.2, pb_demo_portal, pb_website. Pre-existing UI bug: Timecards empty
+  state renders literal `_t("With hours only")`.
 - (Phase 2, accepted nits for later touch) live_mission.js still `esc(tx())` on step.detail
   (no glossary cards, literal <b> tags there); glossify idempotence guard keys on the
   literal `data-gloss=`; gloss_scan payload ignores matchTerm (over-fails only); the 17-28

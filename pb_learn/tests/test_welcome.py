@@ -138,13 +138,19 @@ class TestWelcomeCard(TransactionCase):
                              "the welcome card writes the demo greeting's flag")
 
     def test_05_escape_is_bound_on_the_document(self):
-        """Odoo's hotkey service stops propagation before the window-bubble
-        phase, so a `window` keydown listener is silently dead. Found in Chrome
-        in the Phase 1 validation round; it costs one word to get wrong."""
-        self.assertIn('document.addEventListener("keydown", onKey)', self.js)
+        """Odoo's hotkey service stops propagation at document BEFORE the
+        bubble phase, so `document` alone is necessary but NOT sufficient —
+        the listener must be CAPTURE phase or it is silently dead (proven
+        live in the Phase 2+3 deploy validation: a real Escape left the card
+        up while a synthetic dispatch closed it). And a transient layer that
+        closes on a key swallows that key."""
+        self.assertIn('document.addEventListener("keydown", onKey, true)', self.js)
         self.assertNotIn('window.addEventListener("keydown"', self.js)
-        self.assertIn('document.removeEventListener("keydown", onKey)', self.js,
-                      "the listener outlives the card it belongs to")
+        self.assertIn('document.removeEventListener("keydown", onKey, true)', self.js,
+                      "the listener outlives the card it belongs to, or the "
+                      "remove no longer matches the capture-phase add")
+        self.assertIn('ev.stopPropagation();', self.js,
+                      "Escape closes the card AND exits what is behind it")
 
     def test_06_the_card_cannot_break_the_product(self):
         """It runs inside the Coach's onMounted, and the Coach is on every
