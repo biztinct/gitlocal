@@ -425,6 +425,26 @@
       "en": "Practice company. Nothing you do here reaches a real employee, payslip or pay run.",
       "vi": "Công ty thực hành. Mọi thao tác ở đây đều không chạm tới nhân viên, phiếu lương hay đợt lương thật."
     },
+    "practiceHint": {
+      "en": "Use the menu on the left to move between screens. Leave when you are done.",
+      "vi": "Dùng menu bên trái để đi giữa các màn hình. Xong việc thì bấm thoát."
+    },
+    "practiceMode": {
+      "en": "Practice mode",
+      "vi": "Chế độ thực hành"
+    },
+    "practiceModeLead": {
+      "en": "Open the practice company and click around. Every screen is here. Nothing you press reaches a real record.",
+      "vi": "Mở công ty thực hành và bấm thoải mái. Mọi màn hình đều có ở đây. Không nút nào chạm tới dữ liệu thật."
+    },
+    "practiceOpen": {
+      "en": "Open practice mode",
+      "vi": "Mở chế độ thực hành"
+    },
+    "practiceWatermark": {
+      "en": "Practice company — nothing here is real.",
+      "vi": "Công ty thực hành — không có gì ở đây là thật."
+    },
     "prereq": {
       "en": "What you need first",
       "vi": "Cần gì trước"
@@ -493,6 +513,10 @@
       "en": "That control is not on this screen right now. So here is what it does, rather than an arrow pointing at nothing.",
       "vi": "Nút đó hiện không có trên màn hình này. Vậy nên tôi mô tả nó ở đây, thay vì chỉ mũi tên vào chỗ trống."
     },
+    "scNotYet": {
+      "en": "That is not the value yet. Read the card and type it again.",
+      "vi": "Giá trị này chưa đúng. Hãy đọc lại thẻ và gõ lại."
+    },
     "scNudge": {
       "en": "Not that one — try the glowing control.",
       "vi": "Không phải nút đó — hãy thử nút đang phát sáng."
@@ -520,6 +544,10 @@
     "scTryHint": {
       "en": "You drive, on the practice company.",
       "vi": "Bạn thao tác, trên công ty thực hành."
+    },
+    "scTypeHere": {
+      "en": "Type it in the field I am pointing at, then press Enter.",
+      "vi": "Hãy gõ vào ô tôi đang chỉ, rồi bấm Enter."
     },
     "scTyping": {
       "en": "Typing",
@@ -7480,8 +7508,8 @@
       "screen": "importwizard",
       "steps": [],
       "summary": {
-        "en": "A file with duplicate rows and one employee nobody can match. The score drops. Do you fix it, or commit anyway?",
-        "vi": "Một tệp có dòng bị lặp và một nhân viên không ai khớp được. Điểm tin cậy tụt xuống. Bạn sửa, hay cứ ghi nhận?"
+        "en": "A file with a duplicate row and one cell nobody could read. The score drops. Do you fix it, or commit anyway?",
+        "vi": "Một tệp có một dòng bị lặp và một ô hệ thống không đọc được. Điểm tin cậy tụt xuống. Bạn sửa, hay cứ ghi nhận?"
       }
     },
     {
@@ -8196,6 +8224,9 @@
             "en": "Welcome",
             "vi": "Chào bạn"
           },
+          "modes": [
+            "watch"
+          ],
           "nav": "pb_dashboard.action_pb_dashboard",
           "screen": "",
           "timeout": 0,
@@ -8216,6 +8247,9 @@
           "guard": false,
           "key": "kpis",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8236,6 +8270,9 @@
           "guard": false,
           "key": "engine",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8259,6 +8296,9 @@
             "en": "Formula Studio",
             "vi": "Xưởng công thức"
           },
+          "modes": [
+            "watch"
+          ],
           "nav": "pb_formula_studio.action_pb_formula_studio",
           "screen": "",
           "timeout": 0,
@@ -8279,6 +8319,9 @@
           "guard": false,
           "key": "components",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8299,6 +8342,9 @@
           "guard": false,
           "key": "formula",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 4000,
@@ -8319,6 +8365,9 @@
           "guard": false,
           "key": "namesletters",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 4000,
@@ -8339,6 +8388,9 @@
           "guard": false,
           "key": "deps",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8359,6 +8411,9 @@
           "guard": false,
           "key": "flow",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 4000,
@@ -8379,6 +8434,9 @@
           "guard": false,
           "key": "preview",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8399,6 +8457,9 @@
           "guard": false,
           "key": "editai",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8425,6 +8486,9 @@
             "en": "Run payroll",
             "vi": "Chạy bảng lương"
           },
+          "modes": [
+            "watch"
+          ],
           "nav": "pb_payrun_wizard.action_pb_payrun_wizard",
           "screen": "",
           "timeout": 0,
@@ -8445,6 +8509,9 @@
           "guard": false,
           "key": "compute",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8468,6 +8535,9 @@
           "guard": false,
           "key": "board",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "pb_payruns.action_pb_payruns_kanban",
           "screen": "",
           "timeout": 0,
@@ -8488,6 +8558,9 @@
           "guard": false,
           "key": "copilot",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "pb_dashboard.action_pb_dashboard",
           "screen": "",
           "timeout": 0,
@@ -8538,6 +8611,11 @@
             "en": "Step 1",
             "vi": "Bước 1"
           },
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "pb_payrun_wizard.action_pb_payrun_wizard",
           "screen": "runpayroll",
           "timeout": 0,
@@ -8561,6 +8639,11 @@
             "en": "Step 2",
             "vi": "Bước 2"
           },
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "runpayroll",
           "timeout": 0,
@@ -8584,6 +8667,11 @@
             "en": "Step 3",
             "vi": "Bước 3"
           },
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "runpayroll",
           "timeout": 0,
@@ -8610,6 +8698,11 @@
             "en": "Step 4",
             "vi": "Bước 4"
           },
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "runpayroll",
           "timeout": 0,
@@ -8636,6 +8729,11 @@
             "en": "Step 5",
             "vi": "Bước 5"
           },
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "runpayroll",
           "timeout": 0,
@@ -8659,6 +8757,11 @@
             "en": "Step 6",
             "vi": "Bước 6"
           },
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "runpayroll",
           "timeout": 0,
@@ -8710,6 +8813,11 @@
             "en": "The board",
             "vi": "Bảng đợt lương"
           },
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "pb_payruns.action_pb_payruns_kanban",
           "screen": "payruns",
           "timeout": 0,
@@ -8730,6 +8838,11 @@
           "guard": false,
           "key": "tabs",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "payruns",
           "timeout": 0,
@@ -8750,6 +8863,11 @@
           "guard": false,
           "key": "card",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "payruns",
           "timeout": 0,
@@ -8773,6 +8891,11 @@
             "en": "Inside a run",
             "vi": "Bên trong một đợt"
           },
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "pb_payslip_review.action_pb_payslip_review",
           "screen": "payslips",
           "timeout": 0,
@@ -8793,6 +8916,11 @@
           "guard": false,
           "key": "list",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "payslips",
           "timeout": 0,
@@ -8813,6 +8941,11 @@
           "guard": false,
           "key": "status",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "payslips",
           "timeout": 0,
@@ -8833,6 +8966,11 @@
           "guard": false,
           "key": "breakdown",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try",
+            "do"
+          ],
           "nav": "",
           "screen": "payslips",
           "timeout": 0,
@@ -8852,13 +8990,14 @@
     {
       "entry": {
         "nav": "pb_formula_studio.action_pb_formula_studio",
-        "screen": ""
+        "screen": "formula"
       },
       "icon": "calculator",
       "key": "sc_formula",
       "line": "setup",
       "modes": [
-        "watch"
+        "watch",
+        "try"
       ],
       "name": {
         "en": "Explore the formula engine",
@@ -8881,6 +9020,10 @@
             "en": "Formula Studio",
             "vi": "Xưởng công thức"
           },
+          "modes": [
+            "watch",
+            "try"
+          ],
           "nav": "pb_formula_studio.action_pb_formula_studio",
           "screen": "",
           "timeout": 0,
@@ -8901,6 +9044,10 @@
           "guard": false,
           "key": "components",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8921,6 +9068,9 @@
           "guard": false,
           "key": "arrows",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8944,6 +9094,9 @@
           "guard": false,
           "key": "card",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -8964,6 +9117,10 @@
           "guard": false,
           "key": "formula",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 4000,
@@ -8984,6 +9141,10 @@
           "guard": false,
           "key": "namesletters",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 4000,
@@ -9004,6 +9165,10 @@
           "guard": false,
           "key": "deps",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9024,6 +9189,9 @@
           "guard": false,
           "key": "flow",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 4000,
@@ -9044,6 +9212,10 @@
           "guard": false,
           "key": "preview",
           "kicker": "",
+          "modes": [
+            "watch",
+            "try"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9051,6 +9223,30 @@
           "title": {
             "en": "Live preview, real numbers",
             "vi": "Xem trước trực tiếp, số liệu thật"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "anchor": "fs-simulate",
+          "body": {
+            "en": "Simulate runs this configuration against a period that has already been paid, and shows what would have come out. Nothing is written and no payslip moves. It is the cheapest way to find out that a rule you were sure about is wrong.",
+            "vi": "Chức năng Mô phỏng chạy cấu hình này trên một kỳ lương đã chi, rồi cho xem kết quả sẽ ra sao. Không có gì được ghi và không phiếu lương nào thay đổi. Đây là cách rẻ nhất để phát hiện một quy tắc bạn đinh ninh là đúng hoá ra lại sai."
+          },
+          "guard": false,
+          "key": "simulate",
+          "kicker": "",
+          "modes": [
+            "watch",
+            "try"
+          ],
+          "nav": "",
+          "screen": "",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Try a change before you make it",
+            "vi": "Thử một thay đổi trước khi làm thật"
           },
           "value": ""
         },
@@ -9064,6 +9260,9 @@
           "guard": false,
           "key": "add",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9084,6 +9283,9 @@
           "guard": false,
           "key": "editai",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9104,6 +9306,9 @@
           "guard": false,
           "key": "views",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9127,6 +9332,9 @@
             "en": "Your turn",
             "vi": "Đến lượt bạn"
           },
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9147,6 +9355,9 @@
           "guard": false,
           "key": "canvas",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 5000,
@@ -9167,6 +9378,9 @@
           "guard": false,
           "key": "fbar",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 4000,
@@ -9187,6 +9401,9 @@
           "guard": false,
           "key": "gridhint",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 4000,
@@ -9207,6 +9424,9 @@
           "guard": false,
           "key": "payai",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9225,14 +9445,15 @@
     },
     {
       "entry": {
-        "nav": "",
-        "screen": ""
+        "nav": "pb_import.action_pb_import",
+        "screen": "import"
       },
       "icon": "inbox",
       "key": "sc_import",
       "line": "payrun",
       "modes": [
-        "watch"
+        "watch",
+        "try"
       ],
       "name": {
         "en": "Import a sheet with confidence",
@@ -9257,6 +9478,9 @@
             "en": "Import confidence",
             "vi": "Điểm tin cậy khi nhập"
           },
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9277,9 +9501,12 @@
           "guard": false,
           "key": "score",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
-          "timeout": 3000,
+          "timeout": 2000,
           "tip": "",
           "title": {
             "en": "A score, not a leap of faith",
@@ -9297,9 +9524,12 @@
           "guard": false,
           "key": "fix",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
-          "timeout": 3000,
+          "timeout": 2000,
           "tip": {
             "en": "Fixing the INPUT here is what stops a wrong payslip later. A row corrected after the commit is a correction somebody has to explain.",
             "vi": "Sửa ĐẦU VÀO ở đây chính là cách chặn một phiếu lương sai về sau. Một dòng sửa sau khi đã ghi nhận là một khoản hiệu chỉnh mà ai đó sẽ phải giải trình."
@@ -9307,6 +9537,156 @@
           "title": {
             "en": "Fix it before you commit",
             "vi": "Sửa trước khi ghi nhận"
+          },
+          "value": ""
+        },
+        {
+          "act": "click",
+          "anchor": "im-cta",
+          "body": {
+            "en": "An import is four steps: choose the source, review what was matched, fix what was not, then write it. Press the button to begin. Opening the flow writes nothing.",
+            "vi": "Một lượt nhập liệu có bốn bước: chọn nguồn, soát phần đã khớp, sửa phần chưa khớp, rồi ghi vào hệ thống. Hãy bấm nút để bắt đầu. Mở luồng này chưa ghi gì cả."
+          },
+          "guard": false,
+          "key": "openflow",
+          "kicker": {
+            "en": "Your turn",
+            "vi": "Đến lượt bạn"
+          },
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "import",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Open the guided flow",
+            "vi": "Mở luồng có hướng dẫn"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "anchor": "iw-review",
+          "body": {
+            "en": "The score is high and two rows still need you. A percentage tells you how the file went; the count tells you how many people it would get wrong. Read the second one.",
+            "vi": "Điểm số thì cao mà vẫn còn hai dòng cần bạn xử lý. Phần trăm cho biết cả tệp chạy ra sao; con số đếm cho biết bao nhiêu người sẽ bị tính sai. Hãy đọc con số thứ hai."
+          },
+          "guard": false,
+          "key": "readscore",
+          "kicker": "",
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "importwizard",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Read the count, not the percentage",
+            "vi": "Đọc con số đếm, đừng đọc phần trăm"
+          },
+          "value": ""
+        },
+        {
+          "act": "input",
+          "anchor": "rep-impfix",
+          "body": {
+            "en": "This row's overtime cell is not a number, so the import would read it as nothing. Type the amount from the file and press Enter. A cell nobody repairs becomes a zero on somebody's payslip.",
+            "vi": "Ô tăng ca của dòng này không phải là số, nên hệ thống sẽ hiểu là không có gì. Hãy gõ số tiền theo tệp rồi bấm Enter. Ô không ai sửa sẽ thành số không trên phiếu lương của một người."
+          },
+          "guard": false,
+          "key": "fixcell",
+          "kicker": "",
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "importwizard",
+          "timeout": 0,
+          "tip": {
+            "en": "Type it the way you write numbers. Dots, commas or neither — the amount is what is checked.",
+            "vi": "Bạn viết số theo thói quen nào cũng được. Dấu chấm, dấu phẩy hay không dấu gì — cái được kiểm là con số."
+          },
+          "title": {
+            "en": "Repair the cell that could not be read",
+            "vi": "Sửa ô mà hệ thống không đọc được"
+          },
+          "value": {
+            "en": "1,200,000",
+            "vi": "1.200.000"
+          }
+        },
+        {
+          "act": "click",
+          "anchor": "rep-impmatch",
+          "body": {
+            "en": "Three choices sit on this row: Match, Retry and Skip. Match tells Payobook which employee record the repaired figure belongs to. Skip would leave this person out of the run.",
+            "vi": "Dòng này có ba lựa chọn: Khớp, Thử lại và Bỏ qua. Khớp cho Payobook biết con số vừa sửa thuộc về hồ sơ nhân viên nào. Bỏ qua sẽ để người này ra ngoài đợt lương."
+          },
+          "guard": true,
+          "key": "matchrow",
+          "kicker": "",
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "importwizard",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Match the row to a person",
+            "vi": "Ghép dòng đó với một con người"
+          },
+          "value": ""
+        },
+        {
+          "act": "click",
+          "anchor": "iw-commit",
+          "body": {
+            "en": "Nothing was written until now. This is the press that writes, and on your own data it is the one worth reading the counts before. Here it is a rehearsal.",
+            "vi": "Cho tới lúc này chưa có gì được ghi. Đây chính là cú bấm ghi dữ liệu, và trên dữ liệu thật thì nên đọc kỹ các con số trước khi bấm. Ở đây chỉ là tập dượt."
+          },
+          "guard": true,
+          "key": "commit",
+          "kicker": "",
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "importwizard",
+          "timeout": 0,
+          "tip": {
+            "en": "Abandoning the flow before this leaves everything exactly as it was.",
+            "vi": "Bỏ dở luồng này trước bước đó thì mọi thứ vẫn y nguyên như cũ."
+          },
+          "title": {
+            "en": "Commit the import",
+            "vi": "Ghi nhận dữ liệu"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "anchor": "iw-outcome",
+          "body": {
+            "en": "Two counts: people created and payslips created. Read them against what you expected. A number you did not expect is a question to ask now, not after the run is approved.",
+            "vi": "Hai con số: số người được tạo và số phiếu lương được tạo. Hãy đối chiếu với những gì bạn mong đợi. Con số lệch là câu hỏi cần hỏi ngay, đừng đợi đến khi đợt lương đã duyệt xong."
+          },
+          "guard": false,
+          "key": "landed",
+          "kicker": "",
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "importwizard",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "What the import produced",
+            "vi": "Lượt nhập đã tạo ra gì"
           },
           "value": ""
         }
@@ -9319,6 +9699,170 @@
     {
       "entry": {
         "nav": "",
+        "screen": "employees"
+      },
+      "icon": "user-plus",
+      "key": "sc_people",
+      "line": "people",
+      "modes": [
+        "try"
+      ],
+      "name": {
+        "en": "Add your first employee",
+        "vi": "Thêm nhân viên đầu tiên"
+      },
+      "screens": [
+        "employees"
+      ],
+      "steps": [
+        {
+          "act": "click",
+          "anchor": "rep-newemp-open",
+          "body": {
+            "en": "Everybody who is paid starts here. In Payobook this button opens a form of its own. In the practice company that form is already drawn under the roster — press the button, then read it there.",
+            "vi": "Mọi người được trả lương đều bắt đầu từ đây. Trong Payobook, nút này mở ra một biểu mẫu riêng. Trong công ty thực hành, biểu mẫu đó đã có sẵn ngay dưới danh sách — hãy bấm nút rồi đọc ở đó."
+          },
+          "guard": false,
+          "key": "open",
+          "kicker": {
+            "en": "Step 1",
+            "vi": "Bước 1"
+          },
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "employees",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Find the new employee form",
+            "vi": "Tìm biểu mẫu nhân viên mới"
+          },
+          "value": ""
+        },
+        {
+          "act": "input",
+          "anchor": "rep-newemp-name",
+          "body": {
+            "en": "The name is what everybody after you will search for, so write it the way their contract writes it. Type it and press Enter.",
+            "vi": "Cái tên là thứ những người sau bạn sẽ dùng để tìm, nên hãy viết đúng như trong hợp đồng của họ. Gõ vào rồi bấm Enter."
+          },
+          "guard": false,
+          "key": "name",
+          "kicker": {
+            "en": "Step 2",
+            "vi": "Bước 2"
+          },
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "employees",
+          "timeout": 0,
+          "tip": {
+            "en": "Tone marks are optional here. The practice company is not marking your spelling.",
+            "vi": "Ở đây bạn gõ có dấu hay không đều được. Công ty thực hành không chấm chính tả của bạn."
+          },
+          "title": {
+            "en": "Type the person's name",
+            "vi": "Nhập tên người đó"
+          },
+          "value": {
+            "en": "Nguyễn Văn An",
+            "vi": "Nguyễn Văn An"
+          }
+        },
+        {
+          "act": "click",
+          "anchor": "rep-newemp-div",
+          "body": {
+            "en": "This is the decision on this form. A division carries its own formula configuration, so choosing one here is choosing the rules that will price every payslip this person ever gets.",
+            "vi": "Đây là quyết định quan trọng nhất trên biểu mẫu này. Mỗi bộ phận có cấu hình công thức riêng, nên chọn bộ phận ở đây là chọn bộ quy tắc sẽ tính mọi phiếu lương của người này về sau."
+          },
+          "guard": false,
+          "key": "division",
+          "kicker": {
+            "en": "Step 3",
+            "vi": "Bước 3"
+          },
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "employees",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Pick the division",
+            "vi": "Chọn bộ phận"
+          },
+          "value": ""
+        },
+        {
+          "act": "click",
+          "anchor": "rep-newemp-save",
+          "body": {
+            "en": "On your own Payobook this writes a record other people can see. Here it writes nothing at all — there is no server behind the practice company.",
+            "vi": "Trên Payobook của chính bạn, thao tác này ghi một bản ghi mà người khác cũng nhìn thấy. Ở đây nó không ghi gì cả — không có máy chủ nào phía sau công ty thực hành."
+          },
+          "guard": true,
+          "key": "save",
+          "kicker": {
+            "en": "Step 4",
+            "vi": "Bước 4"
+          },
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "employees",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Save the person",
+            "vi": "Lưu người này"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "anchor": "pe-roster",
+          "body": {
+            "en": "Read the last row. That person is on the roster and has no bank account on file, so payroll cannot pay them. Adding somebody is the easy half; a running contract and bank details are the half that decides whether they are in the next run.",
+            "vi": "Hãy đọc dòng cuối cùng. Người đó đã có trong danh sách nhưng chưa có tài khoản ngân hàng, nên hệ thống không chi lương cho họ được. Thêm người mới là phần dễ; hợp đồng đang hiệu lực và thông tin ngân hàng mới là phần quyết định họ có mặt trong đợt lương tới hay không."
+          },
+          "guard": false,
+          "key": "roster",
+          "kicker": {
+            "en": "Step 5",
+            "vi": "Bước 5"
+          },
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "employees",
+          "timeout": 0,
+          "tip": {
+            "en": "The payroll-ready column is where this shows up. It counts bank details over headcount, and it is the tile to read before a run rather than after it.",
+            "vi": "Cột \"sẵn sàng tính lương\" là nơi điều này hiện ra. Nó đếm số người đã có thông tin ngân hàng trên tổng sĩ số, và nên đọc trước khi chạy đợt lương chứ đừng đọc sau."
+          },
+          "title": {
+            "en": "On the roster is not the same as paid",
+            "vi": "Có trong danh sách chưa phải là được trả lương"
+          },
+          "value": ""
+        }
+      ],
+      "tagline": {
+        "en": "Name, division, save — and the one thing that still stands between a new person and their pay.",
+        "vi": "Tên, bộ phận, lưu — và điều duy nhất còn ngăn giữa một người mới và tiền lương của họ."
+      }
+    },
+    {
+      "entry": {
+        "nav": "pb_formula_studio.action_pb_formula_studio",
         "screen": ""
       },
       "icon": "git-branch",
@@ -9349,6 +9893,9 @@
             "en": "Mid to end cycle",
             "vi": "Giữa kỳ sang cuối kỳ"
           },
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
           "timeout": 0,
@@ -9369,9 +9916,12 @@
           "guard": false,
           "key": "matched",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
-          "timeout": 3000,
+          "timeout": 2000,
           "tip": "",
           "title": {
             "en": "Matched by code, then by name",
@@ -9389,9 +9939,12 @@
           "guard": false,
           "key": "accept",
           "kicker": "",
+          "modes": [
+            "watch"
+          ],
           "nav": "",
           "screen": "",
-          "timeout": 3000,
+          "timeout": 2000,
           "tip": {
             "en": "A component left unmapped is not an error. It is a component that exists in one cycle and not the other, and that happens.",
             "vi": "Một thành phần chưa được ánh xạ không phải là lỗi. Đó là thành phần chỉ có ở một chu kỳ mà không có ở chu kỳ kia, và chuyện đó vẫn xảy ra."
@@ -13442,5 +13995,5 @@
       }
     }
   ],
-  "version": "2302aef06a47"
+  "version": "c4fe4f27bbfc"
 }

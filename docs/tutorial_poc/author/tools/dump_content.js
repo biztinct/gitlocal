@@ -67,6 +67,12 @@ const out = {
     caseData: grab("CASE"),
     practice: grab("PRACTICE"),
     subScreens: grab("SUB_SCREENS"),
+    /* LEARNOS Phase 5. The anchors the replica draws a real <input> at, and
+       the kind of value each one holds. The generator validates every
+       `act: "input"` step against this and refuses one that points anywhere
+       else — a step that asks a learner to type into a paragraph cannot be
+       completed, and fails by doing nothing at all. */
+    inputAnchors: grab("INPUT_ANCHORS"),
 };
 
 process.stdout.write(JSON.stringify(out, null, 1));

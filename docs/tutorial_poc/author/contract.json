@@ -1238,6 +1238,31 @@
       ]
     },
     {
+      "id": "input-anchors-exist-in-replica",
+      "kind": "contains",
+      "why": "An `act: \"input\"` step is checked against INPUT_ANCHORS, and INPUT_ANCHORS is only worth checking against if the replica really draws a field at every key in it. Three files have to agree: the fixture declares the anchor and its kind, the replica draws an <input> there through `inputRow`, and the registry declares the name so the anchor lint can see it. If they drift, the failure is silent in the worst way — the learner types, nothing happens, and the walkthrough is stuck with no error anywhere. The generator refuses this too; this is the same question asked of the SHIPPED files, which is where a hand-edit would show up.",
+      "files": [
+        "pb_learn/static/src/engine/screens.js",
+        "pb_learn/static/src/engine/fixture.js",
+        "pb_learn/static/src/anchors.json"
+      ],
+      "expect": [
+        "inputRow(\"rep-impfix\"",
+        "inputRow(\"rep-newemp-name\"",
+        "\"rep-impfix\": { kind: \"number\" }",
+        "\"rep-newemp-name\": { kind: \"text\" }",
+        "\"rep-impfix\":",
+        "\"rep-newemp-name\":"
+      ],
+      "fixture": [
+        "INPUT_ANCHORS"
+      ],
+      "taughtIn": [
+        "sc_import step fixcell",
+        "sc_people step name"
+      ]
+    },
+    {
       "id": "watch-mode-never-clicks-guarded",
       "kind": "absent",
       "within": "_enterStep",

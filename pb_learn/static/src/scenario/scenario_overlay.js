@@ -49,7 +49,7 @@ import { useService } from "@web/core/utils/hooks";
 import { T, tx, esc, ic, reduced, SP } from "../engine/runtime";
 /* The glossary hovercard (LEARNOS Phase 2). The step body is the only
    raw-HTML insertion in this overlay, so it is the only `gtx`. */
-import { gtx, closeGlossary } from "../engine/glossary";
+import { gtx, glossaryOpen, closeGlossary } from "../engine/glossary";
 
 const CARD_W = 372;          // matches the Journey's coach card
 const DWELL = 3400;          // ms a Watch step lingers before advancing
@@ -95,7 +95,15 @@ export class ScenarioOverlay extends Component {
             // listener never runs and the overlay's whole keyboard interface
             // — Escape, ArrowRight, ArrowLeft — is silently dead. coach.js:129
             // and journey.js:125 both bind `document` for exactly this reason.
-            document.addEventListener("keydown", this._onKey);
+            // CAPTURE PHASE, and it is not a style choice. "document, not
+            // window" was necessary and NOT sufficient: Odoo's hotkey service
+            // stops propagation at document-BUBBLE, so a bubble listener here
+            // is silently dead in real Chrome while synthetic dispatch in a
+            // test still works — measured on the Phase 2+3 deploy, on the
+            // welcome card's Escape, and the reason first_login.js has bound
+            // capture ever since. The removal has to match the phase or the
+            // listener is never removed at all.
+            document.addEventListener("keydown", this._onKey, true);
             this._raf = requestAnimationFrame(this._loop);
         });
         onWillUnmount(() => {
@@ -107,7 +115,7 @@ export class ScenarioOverlay extends Component {
             this._detachClick();
             this._clearTimer();
             this._clearTyper();
-            document.removeEventListener("keydown", this._onKey);
+            document.removeEventListener("keydown", this._onKey, true);
         });
     }
 
@@ -116,9 +124,13 @@ export class ScenarioOverlay extends Component {
         return this.state.key ? this.sc.get(this.state.key) : null;
     }
 
+    /** The steps playable in THIS mode. A step may narrow itself to Watch or
+     *  to Try (Phase 5), so the count, the index and the "step N of M" the
+     *  card prints all have to come from the same filtered list — and from the
+     *  same function the service advances through, or Next would walk past a
+     *  step the card never showed. */
     get steps() {
-        const s = this.scenario;
-        return s ? s.steps || [] : [];
+        return this.sc.steps(this.state.key, this.state.mode);
     }
 
     get step() {
@@ -511,6 +523,15 @@ export class ScenarioOverlay extends Component {
             return;
         }
         if (ev.key === "Escape") {
+            // A hovercard over the card closes first (see glossaryOpen).
+            if (glossaryOpen()) {
+                return;
+            }
+            // A transient layer that closes on a key SWALLOWS that key, or one
+            // Escape both closes the card and does whatever the screen behind
+            // it does with Escape. The arrow branches below only move the
+            // walkthrough, so they take the default and leave the key alone.
+            ev.stopPropagation();
             ev.preventDefault();
             this.onLeave();
         } else if (ev.key === "ArrowRight") {

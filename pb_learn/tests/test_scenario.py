@@ -37,11 +37,17 @@ PRESSER = '_watchAutoClick'
 # well-meaning refactor reaches the same place without writing `.click`.
 PRESS_TOKENS = ('.click(', 'dispatchEvent(', 'new MouseEvent')
 
+# THE SECOND COPY, and it is deliberate rather than an oversight: the
+# generator refuses at authoring time and this re-asks the same question of the
+# SHIPPED artifact, which is where a hand-edited content plane shows up. Two
+# copies mean they can drift, so `test_06b` compares them and fails if they do.
 WRITING_VERBS = (
     'compute', 'submit', 'approve', 'reject', 'confirm', 'delete', 'send',
     'commit', 'pay', 'post', 'generate', 'activate', 'archive', 'cancel',
     'apply', 'run', 'release', 'issue', 'disburse', 'finalize', 'transfer',
     'remit',
+    # LEARNOS Phase 5 — the first Save and the first Match in this module.
+    'save', 'match', 'create', 'add',
 )
 
 
@@ -223,6 +229,28 @@ class TestScenarioEngine(TransactionCase):
                                % (sc['key'], step['key'], '/'.join(hits)))
         self.assertFalse(bad, "\n  ".join(bad))
 
+    def test_06b_both_copies_of_the_verb_list_say_the_same_thing(self):
+        """Two copies, one meaning. The generator refuses at authoring time and
+        this file re-asks of the artifact; a word added to one and not the
+        other is a rule that holds in one direction only, which is the shape
+        the ledger keeps finding under "a convention broken three times"."""
+        gen = os.path.join(
+            get_module_path('pb_learn'), '..', 'docs', 'tutorial_poc',
+            'author', 'tools', 'gen_learn_data.py')
+        if not os.path.exists(gen):
+            self.skipTest('the authoring source is not deployed beside the module')
+        with open(gen, encoding='utf-8') as fh:
+            src = fh.read()
+        # Cut at the line that is exactly `)`, not at the first `)` in the
+        # text: the block's own comment contains "(ledger, Phase D review)",
+        # and splitting on that dropped the four verbs added below it — a scan
+        # that reads a truncated list and reports a mismatch it invented.
+        tail = src.split('WRITING_VERBS = (', 1)[1]
+        block = tail.split('\n)', 1)[0]
+        theirs = tuple(re.findall(r"'([a-z]+)'", block))
+        self.assertEqual(sorted(theirs), sorted(WRITING_VERBS),
+                         "the generator's verb list and this one disagree")
+
     def test_07_guarded_steps_exist_at_all(self):
         """The negative of test_06 is satisfied by a scenario with no clicks.
 
@@ -261,11 +289,20 @@ class TestScenarioEngine(TransactionCase):
         try-capable because its screens exist while its controls do not.
         """
         replica = _read('static/src/engine/screens.js')
+        # A field the replica draws through the `inputRow` helper reaches the
+        # attribute as an interpolation, so the literal scan cannot see it —
+        # the same blind spot `test_assets` has with `kpiTile("layers", …)`.
+        replica += '\n'.join('data-coach="%s"' % a for a in
+                             re.findall(r'\binputRow\("([a-z0-9-]+)"', replica))
         bad = []
         for sc in self.scenarios:
             if 'try' not in sc['modes']:
                 continue
             for st in sc['steps']:
+                # PER-STEP MODES (Phase 5): a step scoped away from Try is
+                # played on the real product only, where its anchor lives.
+                if 'try' not in (st.get('modes') or sc['modes']):
+                    continue
                 if st['anchor'] and 'data-coach="%s"' % st['anchor'] not in replica:
                     bad.append('%s/%s points at %s, which no replica draws'
                                % (sc['key'], st['key'], st['anchor']))
@@ -322,6 +359,165 @@ class TestScenarioEngine(TransactionCase):
         self.assertNotIn('"scenario:" +', journey,
                          "the Journey builds the progress key itself")
 
+    # -- input steps (LEARNOS Phase 5) -------------------------------------
+    def test_15_an_input_step_can_only_advance_on_a_match(self):
+        """THE PHASE 5 COUNTERPART OF test_02.
+
+        `.click()` had one call site with the guard as its first statement;
+        an input step's advance has the same shape and for the same reason. The
+        assertions are structural rather than behavioural because the failure
+        being prevented is a REFACTOR: somebody adding a second way to advance
+        an input step, in a branch that looks reasonable on its own.
+
+          * exactly one method in the Journey calls `looseMatch`;
+          * that method contains exactly one `this.sNext()`;
+          * the match is asked BEFORE it;
+          * and the click bridge, which is the other thing a learner can do to
+            a field, advances only on `step.act === "click"`.
+        """
+        journey = _read('static/src/journey/journey.js')
+        bodies = _method_bodies(_strip_comments(journey))
+        matchers = [name for name, body in bodies.items() if 'looseMatch(' in body]
+        self.assertEqual(
+            matchers, ['_scenarioInputCheck'],
+            "the loose match is asked in %s. It belongs in one method, so that "
+            "'a wrong value cannot advance' is a property of one place."
+            % (matchers or 'nowhere'))
+        check = bodies['_scenarioInputCheck']
+        self.assertEqual(
+            check.count('this.sNext()'), 1,
+            "the input check advances from more than one place")
+        self.assertLess(check.index('looseMatch('), check.index('this.sNext()'),
+                        "the input check advances before it compares")
+        # And the wrong value's only outcome is the hint.
+        self.assertIn('this.state.sMiss = true;', check)
+
+    def test_15b_the_click_bridge_never_advances_an_input_step(self):
+        """A click on a field is how you start typing in it. If the bridge
+        advanced on the anchor alone, every input step would be completable
+        without typing anything — which is the whole feature, gone, in a way
+        nothing would report."""
+        journey = _read('static/src/journey/journey.js')
+        bodies = _method_bodies(_strip_comments(journey))
+        bridge = bodies['_scenarioClick']
+        self.assertIn('step.act === "input"', bridge,
+                      "the click bridge does not distinguish an input step")
+        self.assertEqual(bridge.count('this.sNext()'), 1,
+                         "the click bridge has more than one advance in it")
+        self.assertIn('step.act === "click" && onTarget', bridge,
+                      "the click bridge's advance is not gated on a click step")
+        self.assertLess(bridge.index('step.act === "input"'),
+                        bridge.index('this.sNext()'),
+                        "an input step reaches the advance before it is refused")
+
+    def test_16_every_input_step_points_at_a_declared_field(self):
+        """The artifact's side of the generator's refusal. `INPUT_ANCHORS` is
+        read out of the shipped fixture, because a hand-edited content plane is
+        exactly what a generator check cannot see."""
+        fixture = _read('static/src/engine/fixture.js')
+        declared = set(re.findall(r'"([a-z0-9-]+)":\s*\{\s*kind:', fixture))
+        self.assertTrue(declared,
+                        "no INPUT_ANCHORS found in the fixture — this scan is "
+                        "broken rather than passing")
+        bad = []
+        for sc in self.scenarios:
+            for st in sc['steps']:
+                if st['act'] != 'input':
+                    continue
+                if st['anchor'] not in declared:
+                    bad.append('%s/%s types into %r, which declares no field'
+                               % (sc['key'], st['key'], st['anchor']))
+                if not (st['value'] or {}).get('en'):
+                    bad.append('%s/%s is an input step with no expected value'
+                               % (sc['key'], st['key']))
+        self.assertFalse(bad, "\n  ".join(bad))
+
+    def test_17_a_step_never_widens_the_scenario_it_belongs_to(self):
+        """Per-step modes narrow. A step naming a mode its scenario does not
+        offer is a step nobody can reach, and it would look authored."""
+        bad = []
+        for sc in self.scenarios:
+            for st in sc['steps']:
+                modes = st.get('modes') or []
+                self.assertTrue(modes, '%s/%s has no modes' % (sc['key'], st['key']))
+                outside = [m for m in modes if m not in sc['modes']]
+                if outside:
+                    bad.append('%s/%s declares %s; the scenario offers %s'
+                               % (sc['key'], st['key'], outside, sc['modes']))
+        self.assertFalse(bad, "\n  ".join(bad))
+
+    # -- the three Phase 5 flows, pinned step by step ----------------------
+    # KEY, ANCHOR, ACT, GUARD, MODES — the whole table, written out. Not a
+    # count and not a spot check: a walkthrough is an ordered thing, and the
+    # failure worth catching is a step inserted, reordered or quietly
+    # re-anchored, which every weaker form of this test passes through. It is
+    # the same argument as pinning the five pipeline labels rather than
+    # counting them (ledger, Run A2 review).
+    FLOWS = {
+        'sc_import': [
+            ('intro', '', 'observe', False, ['watch']),
+            ('score', 'imp-confidence', 'observe', False, ['watch']),
+            ('fix', 'imp-actions', 'observe', False, ['watch']),
+            ('openflow', 'im-cta', 'click', False, ['try']),
+            ('readscore', 'iw-review', 'observe', False, ['try']),
+            ('fixcell', 'rep-impfix', 'input', False, ['try']),
+            ('matchrow', 'rep-impmatch', 'click', True, ['try']),
+            ('commit', 'iw-commit', 'click', True, ['try']),
+            ('landed', 'iw-outcome', 'observe', False, ['try']),
+        ],
+        'sc_people': [
+            ('open', 'rep-newemp-open', 'click', False, ['try']),
+            ('name', 'rep-newemp-name', 'input', False, ['try']),
+            ('division', 'rep-newemp-div', 'click', False, ['try']),
+            ('save', 'rep-newemp-save', 'click', True, ['try']),
+            ('roster', 'pe-roster', 'observe', False, ['try']),
+        ],
+    }
+
+    # sc_formula is pinned by its TRY SCOPE rather than by all eighteen steps:
+    # the seven controls the replica draws are the claim Phase 5 makes about
+    # it, and the eleven watch-only ones are the pre-existing tour.
+    FORMULA_TRY = ['config', 'components', 'formula', 'namesletters', 'deps',
+                   'preview', 'simulate']
+
+    def test_18_the_phase5_flows_are_the_tables_they_were_reviewed_as(self):
+        by_key = {sc['key']: sc for sc in self.scenarios}
+        for key, table in self.FLOWS.items():
+            self.assertIn(key, by_key, "%s is gone" % key)
+            got = [(st['key'], st['anchor'], st['act'], st['guard'],
+                    st['modes']) for st in by_key[key]['steps']]
+            self.assertEqual(got, table, "%s's step table has changed" % key)
+
+    def test_18b_sc_formula_tries_exactly_the_seven_the_replica_draws(self):
+        sc = next(s for s in self.scenarios if s['key'] == 'sc_formula')
+        self.assertEqual(sorted(sc['modes']), ['try', 'watch'])
+        tried = [st['key'] for st in sc['steps'] if 'try' in st['modes']]
+        self.assertEqual(tried, self.FORMULA_TRY,
+                         "the try scope of sc_formula has moved")
+        # And the eleven the replica cannot draw are still played in Watch.
+        watched = [st['key'] for st in sc['steps'] if 'watch' in st['modes']]
+        self.assertEqual(len(watched), len(sc['steps']),
+                         "a step has been scoped out of Watch, which walks the "
+                         "real product and can reach every one of them")
+
+    def test_19_the_two_watch_only_tours_now_open_somewhere_real(self):
+        """Both used to start wherever the learner was standing, so their first
+        card described a screen that was not there. The steps whose anchors
+        live inside a closed wizard keep the centred-card degradation and wait
+        two seconds for it rather than nine."""
+        for key, nav in (('sc_import', 'pb_import.action_pb_import'),
+                         ('sc_mapping',
+                          'pb_formula_studio.action_pb_formula_studio')):
+            sc = next(s for s in self.scenarios if s['key'] == key)
+            self.assertEqual(sc['entry']['nav'], nav,
+                             "%s does not open the screen it walks" % key)
+        for key in ('sc_import', 'sc_mapping'):
+            sc = next(s for s in self.scenarios if s['key'] == key)
+            slow = [st['key'] for st in sc['steps']
+                    if 'watch' in st['modes'] and st['anchor']
+                    and st['timeout'] != 2000]
+            self.assertFalse(slow, "%s waits longer than 2s on %s" % (key, slow))
+
     def test_14_the_scenario_json_matches_what_the_generator_writes(self):
         """The artifact is generated, and a generated file that has been hand
         edited is the failure this whole pipeline exists to prevent. Cheap
@@ -337,6 +533,7 @@ class TestScenarioEngine(TransactionCase):
                 self.assertIn(field, sc, "%s has no %s" % (sc.get('key'), field))
             for st in sc['steps']:
                 for field in ('key', 'anchor', 'nav', 'screen', 'act', 'guard',
-                              'timeout', 'kicker', 'title', 'body', 'tip', 'value'):
+                              'modes', 'timeout', 'kicker', 'title', 'body',
+                              'tip', 'value'):
                     self.assertIn(field, st,
                                   "%s/%s has no %s" % (sc['key'], st.get('key'), field))

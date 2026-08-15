@@ -33,6 +33,13 @@ import { Component, markup, onWillStart, onWillUnmount, useState } from "@odoo/o
 import { useService } from "@web/core/utils/hooks";
 
 import { RT, T, tx, esc, ic } from "../engine/runtime";
+/* The glossary hovercard. `gtx` is the ONE raw-insertion wrapper in this
+   module, and a mission step's `detail` is an authored body exactly like a
+   lesson step's — the Journey has rendered it with `gtx` since Phase 2 and
+   this card was still printing its `<b>` tags as text (ledger, accepted nit).
+   Aligned rather than re-decided: `detail` is the authored HTML, the
+   `instruction` is a title and stays escaped, which is what journey.js does. */
+import { gtx, setGlossary, installGlossary } from "../engine/glossary";
 import { loadContent, composeScreens } from "../content/content_loader";
 import { LiveState } from "./live_state";
 
@@ -96,6 +103,13 @@ export class LiveHost extends Component {
             RT.chrome = content.chrome || RT.chrome;
             this.missions = content.missions || [];
             this.screens = composeScreens(content, runtime);
+            // The hovercard's table and its one delegated listener. The Coach
+            // installs the same pair from the same content, and both calls are
+            // idempotent — but a capstone can be resumed on a page where the
+            // drawer was never opened, and a card that cannot be reached is a
+            // definition nobody reads.
+            setGlossary(content.glossary || []);
+            installGlossary();
         } catch {
             // A runner that cannot load must not break the screen it sits on.
             this.missions = [];
@@ -297,7 +311,7 @@ export class LiveHost extends Component {
             : "";
         return `
             <h3>${esc(tx(step.instruction))}</h3>
-            ${step.detail ? `<p class="lrn-lvdetail">${esc(tx(step.detail))}</p>` : ""}
+            ${step.detail ? `<p class="lrn-lvdetail">${gtx(step.detail)}</p>` : ""}
             ${consequence}
             ${result}
             ${hint}`;

@@ -6,7 +6,9 @@
      live DOM, which reactive re-rendering fights rather than helps. -->
 <t t-name="pb_learn.Journey">
     <div class="lrn-root" t-att-data-motion="state.motion" t-att-lang="state.lang === 'vi' ? 'vi' : 'en'"
-         t-on-click="onClick" t-on-input="onInput">
+         t-on-click="onClick" t-on-input="onInput"
+         t-on-keydown="onKeydown" t-on-focusout="onFocusOut"
+         t-on-mousedown="onMouseDown">
 
         <t t-call="pb_learn.IconSprite"/>
 

@@ -41,7 +41,8 @@ import { RT, T, tx, esc, ic } from "../engine/runtime";
 /* The glossary hovercard (LEARNOS Phase 2). Answer blocks are the one
    place in the drawer that inserts authored prose RAW, so they are the
    one place `gtx` replaces `tx`. */
-import { gtx, setGlossary, installGlossary, closeGlossary } from "../engine/glossary";
+import { gtx, glossaryOpen, setGlossary, installGlossary, closeGlossary }
+    from "../engine/glossary";
 import { loadContent, composeScreens } from "../content/content_loader";
 import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
@@ -70,6 +71,11 @@ export const COACH_ACTIONS = new Set([
     // now carry are NOT new actions — they are `c-scenario`, the control the
     // "Show me how" rows have used since Phase 1b.
     "c-explain",
+    // LEARNOS Phase 5. Practice mode opens the Journey's free-roam sandbox —
+    // the same client action the "Open the lesson" button already opens, with
+    // one context key on it. It reaches no product method for the same reason
+    // `c-lesson` does not: the only thing on the other side of it is a replica.
+    "c-practice",
 ]);
 
 export class CoachHost extends Component {
@@ -147,7 +153,15 @@ export class CoachHost extends Component {
         useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this._resolveScreen());
         onMounted(() => {
             this._resolveScreen();
-            document.addEventListener("keydown", this._onKey);
+            // CAPTURE PHASE, and it is not a style choice. "document, not
+            // window" was necessary and NOT sufficient: Odoo's hotkey service
+            // stops propagation at document-BUBBLE, so a bubble listener here
+            // is silently dead in real Chrome while synthetic dispatch in a
+            // test still works — measured on the Phase 2+3 deploy, on the
+            // welcome card's Escape, and the reason first_login.js has bound
+            // capture ever since. The removal has to match the phase or the
+            // listener is never removed at all.
+            document.addEventListener("keydown", this._onKey, true);
             // Two pieces of CHROME the Coach happens to be the right host for,
             // because it is the one component mounted on every screen. Both
             // live in first_login.js; neither can throw, and neither is allowed
@@ -164,7 +178,7 @@ export class CoachHost extends Component {
             }
         });
         onWillUnmount(() => {
-            document.removeEventListener("keydown", this._onKey);
+            document.removeEventListener("keydown", this._onKey, true);
             // The card is on document.body, not in this component's tree.
             closeGlossary();
         });
@@ -223,6 +237,14 @@ export class CoachHost extends Component {
             ev.preventDefault();
             this.toggle();
         } else if (ev.key === "Escape" && this.state.open) {
+            // THE LADDER, ONE RUNG AT A TIME. A hovercard open over the drawer
+            // closes first and this stands down for it — otherwise one Escape
+            // would take both, and which one it took would depend on which
+            // surface finished loading first (both listeners are on document
+            // at capture now).
+            if (glossaryOpen()) {
+                return;
+            }
             // Only closes the Coach. The screen behind it keeps its own Escape.
             ev.stopPropagation();
             this.close();
@@ -445,8 +467,12 @@ export class CoachHost extends Component {
             if (!started || !stepKey) {
                 return;
             }
-            const sc = this.sc.get(key);
-            const index = (sc ? sc.steps : []).findIndex((s) => s.key === stepKey);
+            // The index has to be into the list the ENGINE will play, not into
+            // every step the author wrote: a scenario whose Watch and Try
+            // differ (Phase 5) numbers its steps differently in each, and an
+            // index taken from the wrong one opens a card about something else.
+            const index = this.sc.steps(key, this.sc.state.mode)
+                .findIndex((s) => s.key === stepKey);
             // A fragment that names no step opens the walkthrough at its
             // beginning, which is a worse answer and not a broken one.
             if (index > 0) {
@@ -510,6 +536,10 @@ export class CoachHost extends Component {
             // none, this draws nothing rather than an empty heading.
             parts.push(this._scenarioHTML());
             parts.push(this._suggestHTML());
+            // LAST. A learner who came to the drawer with a question should
+            // meet the answers first; the sandbox is what they reach for when
+            // none of them was the thing they wanted.
+            parts.push(this._practiceHTML());
         }
         // BELOW the answer, deliberately. The person opened the drawer because
         // they were stuck; the answer is what they came for, and a consent card
@@ -553,6 +583,34 @@ export class CoachHost extends Component {
                     title="${esc(T("explainHint"))}"
                 >${ic("info")}${esc(T("explainScreen"))}</button>
         </div>`;
+    }
+
+    /** The way into the free-roam sandbox, from wherever the learner is.
+     *
+     *  Drawn on EVERY screen, unlike the two offers above it: those need the
+     *  content plane to cover the screen, and this one needs nothing — the
+     *  practice company is the same twenty replicas whatever cockpit the
+     *  learner is standing on. It is also the honest answer to "can I just try
+     *  this somewhere safe", which is a question the drawer could not answer
+     *  before Phase 5.
+     */
+    _practiceHTML() {
+        return `<div class="lrn-cpractice">
+            <div class="lrn-clabel">${esc(T("practiceMode"))}</div>
+            <p class="lrn-note">${esc(T("practiceModeLead"))}</p>
+            <button class="lrn-btn sm" data-act="c-practice"
+                >${ic("flask")}${esc(T("practiceOpen"))}</button>
+        </div>`;
+    }
+
+    /** Open the Journey on the sandbox. Same door as `openLesson`, one key
+     *  further: the deep link is what the Journey reads, so there is exactly
+     *  one place that knows how to build a practice view. */
+    openPractice() {
+        this.action.doAction("pb_learn.action_learn_journey", {
+            additionalContext: { practice: 1 },
+        });
+        this.close();
     }
 
     /** Does this scenario really offer that mode?
@@ -791,6 +849,8 @@ export class CoachHost extends Component {
             this.startScenario(el.dataset.key, el.dataset.mode, 0);
         } else if (act === "c-explain") {
             this.explainScreen();
+        } else if (act === "c-practice") {
+            this.openPractice();
         }
     }
 

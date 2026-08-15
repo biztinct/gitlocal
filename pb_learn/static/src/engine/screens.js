@@ -22,8 +22,8 @@
    hand a translator wording they do not own, and the two would diverge at the
    first product rename.
    ========================================================================== */
-import { B, CASE, MENU, POLICY, PRACTICE, RUN, STATUS_LABELS, SUB_SCREENS, TAX }
-    from "./fixture";
+import { B, CASE, INPUT_ANCHORS, MENU, POLICY, PRACTICE, RUN, STATUS_LABELS,
+         SUB_SCREENS, TAX } from "./fixture";
 import { esc, ic, initial, tx, T, N, M, P, SP} from "./runtime";
 import { calcHTML, pipeHTML } from "./visuals";
 
@@ -55,7 +55,42 @@ const KIND_LABEL = {
     param: B("Parameter", "Tham số"),
 };
 
+/* An attribute, held as a constant rather than written inline. A quoted string
+   inside a `${…}` makes rjsmin lose track of the enclosing template literal and
+   strip whitespace from the rest of it — the hazard runtime.js documents and
+   test_assets::test_01c enforces — so a conditional attribute is built here and
+   interpolated as a bare identifier. */
+const ATTR_IMPMATCH = 'data-coach="rep-impmatch"';
+
 /* ------------------------------------------------------------------- helpers */
+/** A real <input>, drawn ONLY at an anchor the fixture declares.
+ *
+ *  The guard is not politeness: `INPUT_ANCHORS` is the table the generator
+ *  validates input steps against and the table `input_match.js` reads the
+ *  comparison rule from, so a field drawn outside it would be a field the
+ *  engine has no rule for and the author cannot point a step at. Drawing
+ *  nothing is the honest failure — a step that cannot find its field degrades
+ *  to a centred card, which says something, where a field with no entry would
+ *  silently never match.
+ */
+function inputRow(anchor, label, placeholder) {
+    if (!INPUT_ANCHORS[anchor]) {
+        return "";
+    }
+    // A <label> WRAPPING THE FIELD, not a <div>. One of the two call sites is
+    // inside a `<span>` — the import wizard's error row — and a div there is
+    // invalid nesting that the parser fixes by closing the span early, which
+    // moves the field out of the row it belongs to. Label and span are both
+    // phrasing content, so this form is valid in either place, and wrapping
+    // the input gives the field its accessible name without a second
+    // attribute that can drift from the visible text.
+    return `<label class="lrn-inputrow">
+        <span class="lrn-flabel">${esc(tx(label))}</span>
+        <input class="lrn-in" type="text" autocomplete="off" value=""
+               data-coach="${esc(anchor)}" placeholder="${esc(tx(placeholder))}"/>
+    </label>`;
+}
+
 export function statusChip(kind, key) {
     const s = (STATUS_LABELS[kind] || {})[key];
     return s
@@ -154,6 +189,54 @@ function ledgerHTML(key) {
             <div class="lrn-foot2">
                 <button class="lrn-link" data-coach="lg-openfull">${esc(T("openFullList"))}</button>
             </div>
+        </div>`;
+}
+
+/* -------------------------------------------- the practice employee form
+   DRAWN INLINE, UNDER THE ROSTER, AND SAID SO ON THE CARD.
+
+   The product opens a form VIEW here — press New and the roster is replaced.
+   The replica cannot: a screen is one zero-argument function with no state
+   behind it, so a form that appears and disappears would be a second screen
+   with no sidebar leaf, no action tag and nothing for the Coach to resolve it
+   by. Drawing it inline is the honest version of the same lesson, and the
+   panel's own heading says which of the two you are looking at — the same
+   ruling as `rep-pipeline`, where the product draws columns and the replica
+   draws a stepper because the lesson is about the journey between them.
+
+   Nothing here saves anything. The Save button is a picture of a button; what
+   the learner is rehearsing is the ORDER — name, division, save — and the fact
+   that a person on the roster is still not a person who can be paid. */
+function newEmployeeHTML() {
+    return `
+        <div class="lrn-panel">
+            <h3>${ic("user-plus")}${esc(tx(B(
+                "New employee — practice form. Save writes nothing.",
+                "Nhân viên mới — biểu mẫu thực hành. Nút Lưu không ghi gì.")))}</h3>
+            <p class="lrn-note">${esc(tx(B(
+                "In Payobook this opens as its own form. Here it sits under the roster, so you can read both at once.",
+                "Trong Payobook, phần này mở ra thành một biểu mẫu riêng. Ở đây nó nằm ngay dưới danh sách để bạn đọc được cả hai cùng lúc.")))}</p>
+            ${inputRow("rep-newemp-name",
+                       B("Full name", "Họ và tên"),
+                       B("Type the person's full name", "Nhập họ và tên của người đó"))}
+            <label class="lrn-flabel">${esc(tx(B("Division", "Bộ phận")))}</label>
+            <select class="lrn-in" data-coach="rep-newemp-div">
+                <option>${esc(tx(RUN.division))}</option>
+                <option>F&amp;B</option>
+                <option>${esc(tx(B("IT Services", "Dịch vụ CNTT")))}</option>
+            </select>
+            <div class="lrn-strip">
+                <button class="lrn-btn pri" data-coach="rep-newemp-save">${ic("check")}${
+                    esc(tx(B("Save", "Lưu")))}</button>
+            </div>
+            <!-- WHAT PAYOBOOK DOES, said as what Payobook does. The first
+                 version of this sentence promised that a saved person "joins
+                 the roster above", which is not true of this panel: nothing is
+                 saved and the roster never grows. A replica may show less than
+                 the product; it may not promise more. -->
+            <p class="lrn-note">${esc(tx(B(
+                "In Payobook a saved person joins the roster above, and is still not payroll-ready: that needs a running contract and bank details.",
+                "Trong Payobook, người đã lưu sẽ xuất hiện trong danh sách ở trên, và vẫn chưa sẵn sàng tính lương: còn cần hợp đồng đang hiệu lực và thông tin ngân hàng.")))}</p>
         </div>`;
 }
 
@@ -327,7 +410,7 @@ export const SCREENS = {
             <div class="lrn-strip" data-coach="pe-head">
                 <button class="lrn-btn" data-coach="pe-bulk">${ic("list-checks")}${
                     esc(tx(B("Select", "Chọn nhiều")))}</button>
-                <button class="lrn-btn pri">${ic("plus")}${
+                <button class="lrn-btn pri" data-coach="rep-newemp-open">${ic("plus")}${
                     esc(tx(B("Add employee", "Thêm nhân viên")))}</button>
             </div>
             <div class="lrn-grid g6" data-coach="pe-kpis">
@@ -352,7 +435,8 @@ export const SCREENS = {
                 <p class="lrn-note">${esc(tx(B(
                     "Headcount counts everybody this practice company employs — all 48 — while the four rows below are a sample you can read. The wage shown is the registered contract base, the figure insurance is charged on, not what the person will be paid this month.",
                     "Sĩ số đếm toàn bộ nhân sự của công ty thực hành này — đủ 48 người — còn bốn dòng bên dưới là một mẫu đủ nhỏ để đọc. Mức lương hiển thị là lương cơ bản đã đăng ký theo hợp đồng, tức mức dùng để tính bảo hiểm, không phải số người đó thực nhận trong tháng.")))}</p>
-            </div>`;
+            </div>
+            ${newEmployeeHTML()}`;
     },
 
     /* --------------------------------------------------------- Contracts */
@@ -840,17 +924,31 @@ export const SCREENS = {
             <div class="lrn-wstep ${i === 2 ? "cur" : i < 2 ? "done" : ""}">
                 <span class="lrn-wdot">${i + 1}</span><span>${esc(tx(s))}</span>
             </div>`).join("");
-        const errs = w.errorRows.map((r) => `
+        // ONE ROW IS REPAIRABLE BY TYPING, and it is the row whose cell could
+        // not be read. The other one is a duplicate, which no amount of typing
+        // fixes — that asymmetry is the product's, and drawing a field on both
+        // would teach that every flagged row has an answer you can type.
+        const errs = w.errorRows.map((r) => {
+            const fix = r.fix
+                ? inputRow("rep-impfix",
+                           B("Overtime amount", "Số tiền tăng ca"),
+                           B("Type the amount from the file",
+                             "Nhập số tiền theo tệp"))
+                : "";
+            const matchAttr = r.fix ? ATTR_IMPMATCH : "";
+            return `
             <div class="lrn-err">
                 <span><span class="lrn-nm">${esc(r.name)}</span>
                     <span class="lrn-faint">${esc(r.code)}</span><br>
-                    <span class="lrn-sub2">${esc(tx(r.why))}</span></span>
+                    <span class="lrn-sub2">${esc(tx(r.why))}</span>
+                    ${fix}</span>
                 <span class="lrn-rr">
-                    <button class="lrn-btn sm">${esc(T("match"))}</button>
+                    <button class="lrn-btn sm" ${matchAttr}>${esc(T("match"))}</button>
                     <button class="lrn-btn sm ghost">${esc(T("retry"))}</button>
                     <button class="lrn-btn sm ghost">${esc(T("skip"))}</button>
                 </span>
-            </div>`).join("");
+            </div>`;
+        }).join("");
 
         return `
             <div class="lrn-rail" data-coach="iw-steps">${steps}</div>
@@ -1190,7 +1288,11 @@ export function shellHTML(screen, opts) {
     const leaf = ownerLeaf(screen);
     const secs = MENU.map((sec) => {
         const items = sec.items.map((it) => {
-            const inScope = sec === owner;
+            // `free` is practice mode: every section is in scope, because the
+            // whole point of the sandbox is that a learner opens whatever they
+            // are curious about. A lesson keeps one section lit, so that a step
+            // about the pay-run desk does not read as an invitation to wander.
+            const inScope = !!o.free || sec === owner;
             const seen = !inScope || visible.has(it.id);
             // During a guided lesson the full menu stays legible: a learner who
             // cannot open a screen is exactly the person who needs to read what
@@ -1235,4 +1337,23 @@ function blockedHTML() {
             "You can still read what this screen does, and what it would take to be given access.",
             "Bạn vẫn có thể đọc màn hình này làm gì, và cần gì để được cấp quyền truy cập.")))}</p>
     </div>`;
+}
+
+/* ------------------------------------------------------- the practice view
+   LEARNOS Phase 5. The free-roam sandbox's builder, and it is the LAST thing
+   in this file on purpose: `tests/test_practice.py` reads from its `export`
+   line to the end of the file and asserts that the body contains no branch of
+   any kind. That is what "unconditional" means here — not "we always pass the
+   flag", but "there is no flag, and no expression that could evaluate to no
+   watermark". A state that hides the mark cannot be written, because there is
+   nothing in this function for a state to reach.
+
+   Everything else about the view is deliberately the ordinary shell: the same
+   replica, the same anchors, the same twenty screens a lesson stands on. Only
+   the menu is different (`free`), because a sandbox whose menu is greyed out
+   is a sandbox with one screen in it. */
+export function practiceShellHTML(screen, visible) {
+    const mark = `<div class="lrn-watermark" data-coach="rep-watermark">${
+        ic("shield-check")}<span>${esc(T("practiceWatermark"))}</span></div>`;
+    return mark + shellHTML(screen, { guided: true, free: true, visible: visible });
 }

@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Learn — in-app learning',
-    'version': '19.0.10.0.0',
+    # LEARNOS Phase 5. Bumped because `learn.event._selection_kind` gained
+    # three values, which is a field change an `-u` has to apply — and because
+    # the version-diff gate at deploy time can only see a change that moved
+    # this line (ledger, Phase 2+3 deploy: a code change with no version bump
+    # is invisible to it, and a stale rsync then reverts it silently).
+    'version': '19.0.11.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

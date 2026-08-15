@@ -1265,3 +1265,73 @@
 
     .lrn-btn { margin-left: auto; }
 }
+
+/* ============================================================ practice mode
+   LEARNOS Phase 5. Two pieces: the card that offers the sandbox on the map,
+   and the watermark that rides above every screen inside it.
+
+   The watermark is amber and it is STICKY, not fixed: fixed would sit on top
+   of the playbar on a phone, and a mark that covers the way out is a worse
+   mark. It is also not a `.lrn-pbanner` — that banner belongs to the shell and
+   says the DATA is practice data; this one says the whole surface is, which is
+   a different sentence and has to be legible even when the shell scrolls. */
+.lrn-practicecard {
+    display: flex;
+    align-items: center;
+    gap: var(--vuf-sp-3, 12px);
+    padding: var(--vuf-sp-4, 16px);
+    margin-bottom: var(--vuf-sp-4, 16px);
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-left: 3px solid var(--vuf-primary, #5A4BB0);
+    border-radius: var(--vuf-r-md, 12px);
+
+    .lrn-btn { margin-left: auto; flex: 0 0 auto; }
+}
+
+.lrn-watermark {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px var(--vuf-sp-4, 16px);
+    background: var(--vuf-warn-bg, #FDF3E2);
+    color: var(--vuf-warn, #B45309);
+    border-bottom: 1px solid var(--vuf-warn, #B45309);
+    border-radius: var(--vuf-r-sm, 10px) var(--vuf-r-sm, 10px) 0 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .01em;
+}
+
+/* An input step inside Try. The mismatch card is a HINT, never a verdict:
+   nothing is scored here and nothing is lost, so it reads like the nudge for a
+   wrong control rather than like a wrong answer. */
+.lrn-scmiss {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: var(--vuf-warn-bg, #FDF3E2);
+    color: var(--vuf-warn, #B45309);
+    border-radius: var(--vuf-r-sm, 10px);
+    font-size: 12px;
+
+    .lrn-ic { flex: 0 0 auto; }
+}
+
+/* The replica's own input fields, drawn only where INPUT_ANCHORS declares one.
+   The ring the Try engine puts on the wanted control lands on the wrapper, so
+   the field itself only has to look like a field. */
+.lrn-inputrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+
+    .lrn-in { max-width: 240px; }
+}

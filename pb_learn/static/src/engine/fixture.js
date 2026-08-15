@@ -463,9 +463,15 @@ const PRACTICE = {
   wizard: {
     rows: 48, matched: 46, newEmployees: 0, errors: 2,
     get score() { return Math.round(this.matched / this.rows * 1000) / 10; },
+    /* `fix: true` marks the ONE row the practice importer lets you repair by
+       typing. It is the row whose overtime cell could not be read — which is
+       the failure the import lesson is about, because a cell that cannot be
+       read does not stop the import, it quietly becomes zero. The value the
+       learner types is not stored here: it belongs to the scenario STEP, so
+       the expected answer has one owner (see INPUT_ANCHORS below). */
     errorRows: [
-      { name: "Bùi Anh Tuấn", code: "NV0052",
-        why: B("No employee matches this code", "Không có nhân viên nào khớp mã này") },
+      { name: "Bùi Anh Tuấn", code: "NV0052", fix: true,
+        why: B("Overtime cell is not a number", "Ô tăng ca không phải là số") },
       { name: "Đỗ Thị Lan", code: "NV0021",
         why: B("Duplicate row in the file", "Dòng bị lặp trong tệp") },
     ],
@@ -1018,6 +1024,42 @@ const MENU = [
   },
 ];
 
+/* =============================================================================
+   3b. THE FIELDS A LEARNER MAY TYPE IN  (LEARNOS Phase 5)
+   -----------------------------------------------------------------------------
+   ONE TABLE, THREE READERS, AND THAT IS THE ENTIRE POINT OF IT.
+
+     · `engine/screens.js` draws a real <input> at each of these anchors, and
+       at no other anchor. The replica has no free-text fields anywhere else,
+       so a step cannot ask a learner to type into a picture of a field.
+     · `engine/input_match.js` reads `kind` to decide how loosely the typed
+       value is compared — thousands marks are optional in a number, tone
+       marks are optional in a name.
+     · `tools/gen_learn_data.py` REFUSES an `act: "input"` step whose anchor is
+       not a key here, and refuses a key here the replica does not draw. An
+       input step pointed at a paragraph is a step nobody can ever complete,
+       and it would fail silently: the learner types, nothing happens, and the
+       walkthrough is stuck with no error anywhere.
+
+   THE EXPECTED VALUE IS NOT HERE. It is the step's own `value`, in both
+   languages, because it is content: what to type is part of the lesson, and a
+   second copy of it beside the field is a second thing to keep in step.
+
+   Keys are `rep-` names because these fields exist only in the practice
+   company. The product's import wizard repairs a cell in its own way and the
+   product's employee form is a form view; neither is what is drawn here, and
+   the Coach must never claim to point at one of these on a live screen.
+   ========================================================================== */
+const INPUT_ANCHORS = {
+  /* The import wizard's one repairable cell. A MONEY figure, so the reader's
+     own thousands mark has to be accepted: the same step is played by somebody
+     typing 1,200,000 and by somebody typing 1.200.000. */
+  "rep-impfix": { kind: "number" },
+  /* The practice employee form's name field. A NAME, so tone marks are
+     optional — the keyboard a learner has is not part of the lesson. */
+  "rep-newemp-name": { kind: "text" },
+};
+
 /* The import wizard is a FLOW, not a destination — it has no sidebar leaf, so
    it cannot appear in MENU. Named here so the shell can still title it. */
 const SUB_SCREENS = {
@@ -1082,4 +1124,4 @@ const CHAINS = {
   },
 };
 
-export { B, PRACTICE_META, CASE, EMP, RUN, PRACTICE, MENU, SUB_SCREENS, STATUS_LABELS, CHAINS, POLICY, TAX };
+export { B, PRACTICE_META, CASE, EMP, RUN, PRACTICE, MENU, SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY, TAX };

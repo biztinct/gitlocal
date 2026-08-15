@@ -23,7 +23,8 @@ import { RT, T, tx, esc, ic, reduced, SP} from "../engine/runtime";
    wrapper, and it is used at exactly the sites that insert an authored body
    RAW — a lesson step, a mission step detail, a scenario card. Everywhere
    else on this screen goes through esc() and must keep doing so. */
-import { gtx, setGlossary, installGlossary, closeGlossary } from "../engine/glossary";
+import { gtx, glossaryOpen, setGlossary, installGlossary, closeGlossary }
+    from "../engine/glossary";
 import { loadContent, composeStations } from "../content/content_loader";
 import { Spot, Trace, setOverlayRoot } from "../engine/spotlight";
 
@@ -55,7 +56,10 @@ const LINE_ICON = {
     compliance: "shield-check",
     setup: "plug",
 };
-import { shellHTML } from "../engine/screens";
+import { SCREENS, practiceShellHTML, shellHTML } from "../engine/screens";
+import { INPUT_ANCHORS } from "../engine/fixture";
+import { looseMatch } from "../engine/input_match";
+import { playableSteps } from "../scenario/scenario_service";
 import { LiveState } from "../live/live_state";
 import { morphHTML, calcHTML, pipeHTML, runPipeline } from "../engine/visuals";
 
@@ -110,6 +114,15 @@ export class LearnJourney extends Component {
             sStep: 0,
             sNudge: false,
             sDone: false,
+            // Phase 5 — an input step's mismatch. Separate from `sNudge`,
+            // which is a wrong CONTROL: this one is the right control with the
+            // wrong value in it, and it is the only thing a wrong value can
+            // ever produce. It never advances anything.
+            sMiss: false,
+            // Phase 5 — practice mode, the free-roam sandbox. `pScreen` is the
+            // replica the learner is standing on and survives a trip back to
+            // the map, so re-opening the sandbox resumes where they left it.
+            pScreen: "dashboard",
             lang: "en",
             motion: "auto",
             error: "",
@@ -118,6 +131,9 @@ export class LearnJourney extends Component {
         this.bundle = null;
         this.progress = {};
         this.visible = new Set();
+        // The one-shot that keeps a blur and the click that caused it
+        // from being two advances. See `_scenarioClick`.
+        this._blurAdvanced = false;
         this._onKey = this._onKey.bind(this);
 
         onWillStart(async () => {
@@ -127,7 +143,15 @@ export class LearnJourney extends Component {
         });
         onMounted(() => {
             setOverlayRoot(this.overlayRef.el);
-            document.addEventListener("keydown", this._onKey);
+            // CAPTURE PHASE, and it is not a style choice. "document, not
+            // window" was necessary and NOT sufficient: Odoo's hotkey service
+            // stops propagation at document-BUBBLE, so a bubble listener here
+            // is silently dead in real Chrome while synthetic dispatch in a
+            // test still works — measured on the Phase 2+3 deploy, on the
+            // welcome card's Escape, and the reason first_login.js has bound
+            // capture ever since. The removal has to match the phase or the
+            // listener is never removed at all.
+            document.addEventListener("keydown", this._onKey, true);
             document.body.classList.add("lrn-open");
             this._log("journey_open");
         });
@@ -137,7 +161,7 @@ export class LearnJourney extends Component {
             // one open would strand it over the next screen.
             closeGlossary();
             Spot.hide();
-            document.removeEventListener("keydown", this._onKey);
+            document.removeEventListener("keydown", this._onKey, true);
             document.body.classList.remove("lrn-open");
         });
     }
@@ -265,8 +289,11 @@ export class LearnJourney extends Component {
         return this.scenarios.find((s) => s.key === this.state.scenarioKey) || null;
     }
 
+    /** The steps this scenario plays in TRY. Filtered through the same
+     *  function the overlay and the Coach use, so the three surfaces agree
+     *  about what step 4 of 7 is (Phase 5). */
     get sSteps() {
-        return this.scenario ? this.scenario.steps || [] : [];
+        return playableSteps(this.scenario, "try");
     }
 
     get sCurrent() {
@@ -349,6 +376,9 @@ export class LearnJourney extends Component {
         if (this.state.view === "scenario") {
             return markup(this._scenarioBody());
         }
+        if (this.state.view === "practice") {
+            return markup(this._practiceBody());
+        }
         if (this.state.view === "missions") {
             return markup(this._missionListBody());
         }
@@ -426,7 +456,44 @@ export class LearnJourney extends Component {
                        placeholder="${esc(T("search"))}" aria-label="${esc(T("search"))}"/>
             </label>
         </div>
+        ${this._practiceCardHTML()}
         ${lineHTML || `<p class="lrn-note">${esc(T("noAnswer"))}</p>`}`;
+    }
+
+    /* --------------------------------------------------- practice mode card
+       ABOVE the lines and never inside one. The sandbox is not a station and
+       does not belong to a section: it is every screen at once, with nothing
+       to complete and nothing to get right. Drawing it as one more card in the
+       Overview row would promise a lesson it does not have. */
+    _practiceCardHTML() {
+        return `
+        <div class="lrn-practicecard">
+            <span class="lrn-cardico">${ic("flask")}</span>
+            <span class="lrn-cardmain">
+                <span class="lrn-cardtitle">${esc(T("practiceMode"))}</span>
+                <span class="lrn-carddesc">${esc(T("practiceModeLead"))}</span>
+            </span>
+            <button class="lrn-btn pri" data-act="to-practice"
+                >${ic("compass")}${esc(T("practiceOpen"))}</button>
+        </div>`;
+    }
+
+    /* ------------------------------------------------- practice mode: the view
+       The replica with its menu switched on. There is no walkthrough here and
+       no step counter: `data-nav` swaps the screen and everything else on the
+       replica stays inert, which is what it already is outside a scenario.
+
+       The watermark is NOT rendered here. It is rendered by
+       `practiceShellHTML`, unconditionally, so that no state this component
+       holds can produce a sandbox without one. */
+    _practiceBody() {
+        const shell = practiceShellHTML(this.state.pScreen, this.visible);
+        return `${shell}
+        <div class="lrn-playbar" role="group">
+            <span class="lrn-stepno">${esc(T("practiceHint"))}</span>
+            <button class="lrn-btn sm ghost" data-act="p-exit"
+                >${ic("x")}${esc(T("exit"))}</button>
+        </div>`;
     }
 
     _cardHTML(s) {
@@ -560,16 +627,23 @@ export class LearnJourney extends Component {
             return "";
         }
         const acts = step.act === "click" || step.act === "input";
+        // An input step says BOTH things: what value is wanted, and that
+        // typing it is what moves the walkthrough. The second half is not
+        // decoration — there is no Next button on this card, so a learner who
+        // does not know Enter is the way on has no way on.
+        const ask = step.act === "input"
+            ? T("scExpected") + ": " + tx(step.value) + " — " + T("scTypeHere")
+            : T("scPressIt");
         return `
         ${step.kicker ? `<div class="lrn-kicker">${esc(tx(step.kicker))}</div>` : ""}
         <h3>${esc(tx(step.title))}</h3>
         <div class="lrn-cbody">${gtx(step.body)}</div>
         ${acts ? `<div class="lrn-scwait">
             <h4>${ic("target")}${esc(T("scYourTurn"))}</h4>
-            <p>${esc(step.act === "input"
-                ? T("scExpected") + ": " + tx(step.value)
-                : T("scPressIt"))}</p>
+            <p>${esc(ask)}</p>
         </div>` : ""}
+        ${this.state.sMiss
+            ? `<div class="lrn-scmiss">${ic("info")}<span>${esc(T("scNotYet"))}</span></div>` : ""}
         ${this.state.sNudge
             ? `<div class="lrn-scnudge">${ic("info")}${esc(T("scNudge"))}</div>` : ""}
         ${step.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(step.tip))}</span></div>` : ""}
@@ -993,6 +1067,12 @@ export class LearnJourney extends Component {
 
     // ---------------------------------------------------------- post-render fx
     _afterPaint() {
+        if (this.state.view === "practice") {
+            // No spotlight in the sandbox: nothing is being pointed at, and a
+            // ring left over from the map would be pointing at the wrong page.
+            Spot.hide();
+            return;
+        }
         if (this.state.view === "scenario") {
             const step = this.sCurrent;
             if (!step || this.state.sDone) {
@@ -1049,6 +1129,21 @@ export class LearnJourney extends Component {
         if (want) {
             want.classList.add("lrn-scwant");
         }
+        // An input step puts the cursor where the answer goes. Without it the
+        // learner reads "type it in the field I am pointing at" and then has
+        // to find the field, which is the one thing the ring was for.
+        // `preventScroll`: the spotlight has already scrolled the anchor into
+        // view and a second scroll fights the first one.
+        if (want && step.act === "input") {
+            const field = want.matches("input") ? want : want.querySelector("input");
+            try {
+                if (field && field !== document.activeElement) {
+                    field.focus({ preventScroll: true });
+                }
+            } catch {
+                // A detached field must not end the walkthrough.
+            }
+        }
     }
 
     /* -------------------------------------------------- the Try click bridge
@@ -1078,12 +1173,98 @@ export class LearnJourney extends Component {
             return true;
         }
         const key = hit.getAttribute("data-coach");
-        if (key && step.anchor && key === step.anchor) {
+        // THE BLUR AND THE CLICK THAT CAUSED IT ARE ONE GESTURE, and without
+        // this they would be two steps. Type the value, press the control the
+        // NEXT step asks for: `focusout` fires first and advances on the
+        // value, then this handler sees the new step with its own anchor
+        // already under the cursor and advances again — so the card for the
+        // step in between is never read. Armed by `_scenarioInputCheck` only
+        // when a blur advanced, and disarmed by the `mousedown` that starts
+        // any LATER click, so a learner who tabs away and comes back never
+        // loses one. Ordering is what makes it exact rather than a timer:
+        // mousedown, then focusout, then click.
+        if (this._blurAdvanced) {
+            this._blurAdvanced = false;
+            if (key && step.anchor && key === step.anchor) {
+                return true;
+            }
+        }
+        const onTarget = !!(key && step.anchor && key === step.anchor);
+        // AN INPUT STEP NEVER ADVANCES ON A CLICK. Pressing the field is how
+        // you start typing in it, and nothing more: the value is what is being
+        // asked for, and a click that walked past the value would make the
+        // step a button-press with a text box beside it. The only advance an
+        // input step has is `_scenarioInputCheck`, below.
+        if (step.act === "input") {
+            this.state.sNudge = !onTarget;
+            return true;
+        }
+        if (step.act === "click" && onTarget) {
             this.state.sNudge = false;
             this.sNext();
         } else {
             this.state.sNudge = true;
         }
+        return true;
+    }
+
+    /** THE ONLY PLACE AN INPUT STEP ADVANCES, and the guard is its first
+     *  statement for the same reason `_watchAutoClick` re-asks its own.
+     *
+     *  Everything that could make this fire on the wrong thing is answered
+     *  before `sNext()` is reachable: the view, the step's act, the element
+     *  being INSIDE the anchor the step named, an empty field, and finally the
+     *  value itself through `looseMatch`. A wrong value produces `sMiss` and
+     *  nothing else — there is no branch here that advances without the match,
+     *  and `tests/test_scenario.py::test_15` asserts that structurally rather
+     *  than trusting this paragraph.
+     */
+    _scenarioInputCheck(el, fromBlur) {
+        if (this.state.view !== "scenario" || this.state.sDone) {
+            return;
+        }
+        const step = this.sCurrent;
+        if (!step || step.act !== "input" || !step.anchor) {
+            return;
+        }
+        const host = el.closest("[data-coach]");
+        if (!host || host.getAttribute("data-coach") !== step.anchor) {
+            return;
+        }
+        const typed = el.value || "";
+        if (!typed.trim()) {
+            // Blurring an untouched field is not a wrong answer. Saying it was
+            // would put a correction on the screen for doing nothing.
+            return;
+        }
+        const spec = INPUT_ANCHORS[step.anchor] || {};
+        if (!looseMatch(typed, tx(step.value), spec.kind)) {
+            this.state.sMiss = true;
+            return;
+        }
+        this.state.sMiss = false;
+        this.state.sNudge = false;
+        this._blurAdvanced = !!fromBlur;
+        this.sNext();
+    }
+
+    /* ------------------------------------------- the practice click bridge
+       ONE control does anything in the sandbox: a `data-nav` leaf in the
+       replica's own menu. Everything else on a practice screen is inert,
+       exactly as it is on a lesson's replica — a fake Compute button that
+       "worked" would be teaching the wrong thing about the real one.
+
+       Returns true when the event belonged to the sandbox, so the Journey's
+       own handlers do not also fire on it. */
+    _practiceClick(ev) {
+        if (this.state.view !== "practice") {
+            return false;
+        }
+        const nav = ev.target.closest("[data-nav]");
+        if (!nav) {
+            return false;
+        }
+        this.pNav(nav.getAttribute("data-nav"));
         return true;
     }
 
@@ -1099,6 +1280,10 @@ export class LearnJourney extends Component {
             return;
         }
         if (this._scenarioClick(ev)) {
+            ev.preventDefault();
+            return;
+        }
+        if (this._practiceClick(ev)) {
             ev.preventDefault();
             return;
         }
@@ -1149,6 +1334,8 @@ export class LearnJourney extends Component {
             "s-next": () => this.sNext(),
             "s-back": () => this.sBack(),
             "s-exit": () => this.sExit(),
+            "to-practice": () => this.openPractice(),
+            "p-exit": () => this.pExit(),
             "morph-before": () => { this.state.morphSide = "before"; },
             "morph-after": () => { this.state.morphSide = "after"; },
         }[a];
@@ -1165,9 +1352,67 @@ export class LearnJourney extends Component {
         }
     }
 
+    /** Enter, inside a replica field. The check is the same one a blur runs;
+     *  Enter exists because it is what a person types after a value. */
+    onKeydown(ev) {
+        // DISARM FIRST, AND FOR THE KEYBOARD TOO. Enter and Space ACTIVATE a
+        // focused control, which dispatches a click — so a learner who typed
+        // the value, pressed Tab and then pressed Enter on the next button was
+        // having that press swallowed by the one-shot below, silently. The
+        // pointer gesture is disarmed by `mousedown`; this is the same
+        // disarm for the gesture that has no mousedown in it. A silent no-op
+        // on a replica control is the thing the click bridge exists to
+        // prevent, so it may not be how the bridge itself behaves.
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+            this._blurAdvanced = false;
+        }
+        if (ev.key !== "Enter") {
+            return;
+        }
+        const el = ev.target.closest && ev.target.closest("input");
+        if (!el) {
+            return;
+        }
+        ev.preventDefault();
+        this._scenarioInputCheck(el);
+    }
+
+    /** Leaving the field. Checked too, because somebody who types the value
+     *  and then clicks the control they think comes next should not be told
+     *  they got it wrong — they got it right and moved on. */
+    onFocusOut(ev) {
+        const el = ev.target.closest && ev.target.closest("input");
+        if (el) {
+            this._scenarioInputCheck(el, true);
+        }
+    }
+
+    /** Disarms the one-shot above. It runs BEFORE the blur it may cause, so a
+     *  click that starts fresh always clears a flag left over from a tab-away,
+     *  and a click that caused the blur is armed after it. */
+    onMouseDown() {
+        this._blurAdvanced = false;
+    }
+
     _onKey(ev) {
         const typing = /^(INPUT|TEXTAREA)$/.test(ev.target.tagName);
         if (typing) {
+            return;
+        }
+        // ONE RUNG AT A TIME. A hovercard over a lesson closes on the first
+        // Escape and this stands down for it; the second Escape leaves the
+        // lesson. Every branch below that CLOSES something swallows the key
+        // for the same reason — the arrow branches only move the reader, so
+        // they take the default and leave the key alone.
+        if (ev.key === "Escape" && glossaryOpen()) {
+            return;
+        }
+        if (this.state.view === "practice") {
+            if (ev.key === "Escape") {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.pExit();
+            }
             return;
         }
         if (this.state.view === "scenario") {
@@ -1177,6 +1422,7 @@ export class LearnJourney extends Component {
             const step = this.sCurrent;
             if (ev.key === "Escape") {
                 ev.preventDefault();
+                ev.stopPropagation();
                 this.sExit();
             } else if (ev.key === "ArrowRight" && step && step.act === "observe") {
                 ev.preventDefault();
@@ -1192,6 +1438,7 @@ export class LearnJourney extends Component {
         }
         if (ev.key === "Escape") {
             ev.preventDefault();
+            ev.stopPropagation();
             this.exitLesson();
         } else if (ev.key === "ArrowRight") {
             ev.preventDefault();
@@ -1228,6 +1475,13 @@ export class LearnJourney extends Component {
         // action rather than rendering the replica wherever the learner was
         // standing, so the Coach drawer, a Journey card and an intent's
         // `show_me` all reach Try through ONE door.
+        // The Coach's practice-mode entry (Phase 5). One door, same as the
+        // scenario link: the drawer opens this action rather than growing a
+        // second sandbox of its own.
+        if (ctx.practice) {
+            this.openPractice();
+            return;
+        }
         const scKey = typeof ctx.scenario === "string" ? ctx.scenario : "";
         if (scKey && this.scenarios.some((s) => s.key === scKey)) {
             const mode = typeof ctx.mode === "string" ? ctx.mode : "try";
@@ -1264,6 +1518,7 @@ export class LearnJourney extends Component {
         this.state.scenarioKey = null;
         this.state.sDone = false;
         this.state.sNudge = false;
+        this.state.sMiss = false;
     }
 
     openStation(key) {
@@ -1497,12 +1752,14 @@ export class LearnJourney extends Component {
         this.state.view = "scenario";
         this.state.sStep = 0;
         this.state.sNudge = false;
+        this.state.sMiss = false;
         this.state.sDone = false;
         this.sc.logStart(key, "try");
     }
 
     sNext() {
         this.state.sNudge = false;
+        this.state.sMiss = false;
         if (this.state.sStep < this.sSteps.length - 1) {
             this.state.sStep += 1;
             this.sc.record(this.state.scenarioKey, {
@@ -1517,6 +1774,7 @@ export class LearnJourney extends Component {
 
     sBack() {
         this.state.sNudge = false;
+        this.state.sMiss = false;
         if (this.state.sStep > 0) {
             this.state.sStep -= 1;
         }
@@ -1545,6 +1803,52 @@ export class LearnJourney extends Component {
         this.state.view = "map";
         this.state.scenarioKey = null;
         this.state.sNudge = false;
+        this.state.sMiss = false;
+    }
+
+    // --------------------------------------------------------- practice mode
+    /** Open the free-roam sandbox.
+     *
+     *  THE WHOLE SURFACE IS THESE THREE METHODS AND `_practiceBody`, AND THE
+     *  ONLY SERVER CALL ANY OF THEM MAKES IS `_log`, WHICH WRITES ONE ROW INTO
+     *  `learn.event`.
+     *
+     *  What holds that claim up is a TRIPWIRE, not a proof, and the difference
+     *  is worth stating where somebody might rely on it.
+     *  `tests/test_practice.py` walks this surface syntactically —
+     *  `this.NAME(` edges, `this.orm.call("literal"` sites — and refuses the
+     *  shapes that would let a call hide from that walk: a non-literal model
+     *  name, `this.orm` handed to anything other than its own `.call`, `this`
+     *  aliased to a local, `this[…]` dispatch, and any `.call(` whose receiver
+     *  is not `this.orm`. A determined author can still route around a
+     *  syntactic scan; what they cannot do is route around it BY ACCIDENT, and
+     *  the tripwires are chosen so that every ordinary way of growing this
+     *  code into a server call trips one.
+     */
+    openPractice() {
+        Spot.hide();
+        this.state.view = "practice";
+        this._log("practice_open", this.state.pScreen);
+    }
+
+    /** Switch replica screens. The one thing a control in the sandbox does. */
+    pNav(key) {
+        // `Object.hasOwn`, not `hasOwnProperty.call`: the practice surface is
+        // scanned for `.call(` sites and the only one allowed there is
+        // `this.orm.call`. A second, innocent `.call(` in this method would
+        // have to be exempted by name, and an exemption list on a safety scan
+        // is the beginning of the scan not meaning anything.
+        if (!key || !Object.hasOwn(SCREENS, key)) {
+            return;
+        }
+        this.state.pScreen = key;
+        this._log("practice_nav", key);
+    }
+
+    pExit() {
+        Spot.hide();
+        this._log("practice_exit", this.state.pScreen);
+        this.state.view = "map";
     }
 
     // -------------------------------------------------------------- settings

@@ -193,6 +193,14 @@ class LearnEvent(models.Model):
             ('scenario_step', self.env._('Scenario step')),
             ('scenario_complete', self.env._('Scenario completed')),
             ('scenario_abandon', self.env._('Scenario abandoned')),
+            # LEARNOS Phase 5 — the free-roam practice sandbox. `practice_nav`
+            # carries the replica key in `detail`, and it is the only one of
+            # the three worth reading on its own: which screens somebody opens
+            # when nothing is telling them where to go is the closest thing
+            # this module has to a question nobody was prompted to ask.
+            ('practice_open', self.env._('Practice mode opened')),
+            ('practice_nav', self.env._('Practice mode screen opened')),
+            ('practice_exit', self.env._('Practice mode left')),
         ]
 
     # -- append-only ------------------------------------------------------

@@ -531,6 +531,16 @@ def leaves(data):
             say = st.get('say') or {}
             for f in ('kicker', 'title', 'body', 'tip'):
                 add('scenarios', '%s.%s.%s' % (sc['key'], st['key'], f), say.get(f))
+            # AN INPUT STEP'S `value` IS PROSE A LEARNER READS AND THEN TYPES.
+            # It is a bilingual pair for a reason — "1,200,000" and
+            # "1.200.000" are the same amount written for two readers — and it
+            # is rendered on the Try card beside the step's own body, so it is
+            # learner-facing by every test this gate applies to the rest. It
+            # was outside the walk until Phase 5's review round, which is the
+            # same "learner-facing does not stop at the field you were
+            # thinking about" the Phase 2 review made about the fixture.
+            add('scenarios', '%s.%s.value' % (sc['key'], st['key']),
+                st.get('value'))
 
     for it in data['qa']:
         w = it['id']
@@ -691,16 +701,31 @@ def gloss_scan(data):
         open(scan, 'w', encoding='utf-8').write(GLOSS_SCAN)
         payload = os.path.join(tmp, 'input.json')
         with open(payload, 'w', encoding='utf-8') as fh:
+            # THE PHRASES COME FROM `match_table()`, NOT FROM A SECOND WALK OF
+            # THE GLOSSARY, and that is the Phase 5 fix rather than a tidy-up.
+            #
+            # This payload used to rebuild the table inline and add the DISPLAY
+            # term unconditionally — while the generator, the shipped card and
+            # `match_table()` all drop it for a language whose entry sets
+            # `matchTerm: {vi: false}`. Exactly one entry does: "Nháp" is the
+            # right label and the wrong matcher, because it is a syllable of
+            # "bản nháp". So this scan was asking the real `glossify` about a
+            # phrase the real card never matches, and reporting what it found.
+            # Over-failing only, which is why it survived a review — but a gate
+            # that is one table out of step with the thing it gates is a gate
+            # whose next disagreement will be the other way round.
+            table = match_table(data['glossary'])
+            phrases = {}
+            for lang in ('en', 'vi'):
+                for phrase, key in table[lang]:
+                    phrases.setdefault(key, {'en': [], 'vi': []})[lang].append(phrase)
             json.dump({'glossary': [
                 {'key': k,
                  'term': v['term'],
                  'definition': v['def'],
-                 'match': {lang: sorted(
-                     {(p or '').strip().lower()
-                      for p in ([(v['term'] or {}).get(lang) or '']
-                                + list((v.get('aliases') or {}).get(lang) or []))
-                      if (p or '').strip()}, key=lambda p: (-len(p), p))
-                     for lang in ('en', 'vi')}}
+                 'match': {lang: sorted(phrases.get(k, {}).get(lang) or [],
+                                        key=lambda p: (-len(p), p))
+                           for lang in ('en', 'vi')}}
                 for k, v in data['glossary'].items()], 'rows': rows}, fh)
         out = subprocess.run(['node', scan, payload], capture_output=True, text=True)
         if out.returncode:

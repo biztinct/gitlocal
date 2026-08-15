@@ -16,3 +16,6 @@ from . import test_scenario
 # LEARNOS Phase 3 — the real-tenant welcome card, and the boundary between it
 # and the demo greeting test_retirement owns.
 from . import test_welcome
+# LEARNOS Phase 5 — the free-roam practice sandbox: the orm allowlist and the
+# watermark that no state can switch off.
+from . import test_practice

@@ -922,6 +922,15 @@ WRITING_VERBS = (
     'commit', 'pay', 'post', 'generate', 'activate', 'archive', 'cancel',
     'apply', 'run', 'release', 'issue', 'disburse', 'finalize', 'transfer',
     'remit',
+    # LEARNOS Phase 5. THE LIST HAS TO GROW WITH THE VOCABULARY, and this is
+    # the round that proved it: Phase 5 shipped the first `Save` click step in
+    # the module and the first `Match`, and neither word was here — so the
+    # verb list, whose whole job is to refuse a `guard: false` that is
+    # obviously wrong, would have waved both through. It is a second line of
+    # defence and it is still a LIST OF EXAMPLES (ledger, Phase D review); the
+    # rule that does the work is that `guard` is mandatory and has no default.
+    # Adding a word here is part of teaching a new control.
+    'save', 'match', 'create', 'add',
 )
 
 # Real-screen destinations a scenario may navigate to. Every one is an
@@ -939,20 +948,29 @@ SCENARIO_NAV = {
 }
 
 
-def _anchor_registry_keys():
+def _anchor_registry_keys(data):
     """Every anchor name the registry knows, and its wildcard prefixes.
 
-    Read from `pb_learn/static/src/anchors.json` — all four kinds, because a
-    scenario legitimately points at controls this module does not own. The six
-    ported tours walk Formula Studio's grid, the multi-sheet importer and the
-    PayAI pill, none of which is pb_learn's template; what matters is that the
-    name is DECLARED somewhere rather than typed from memory.
+    Read from `pb_learn/static/src/anchors.json` — all the kinds this module
+    does NOT own, because a scenario legitimately points at controls in other
+    templates. The six ported tours walk Formula Studio's grid, the multi-sheet
+    importer and the PayAI pill; what matters is that the name is DECLARED
+    somewhere rather than typed from memory.
+
+    THE `practice` BLOCK COMES FROM THE AUTHORING SOURCE, NOT FROM THE FILE,
+    and the difference is a bootstrapping bug that bit on the first run of
+    Phase 5. This generator WRITES that block (see `gen_anchors`) at the end of
+    the same run in which this reads it — so a newly authored practice anchor
+    was refused for not being in a file that had not been written yet, and the
+    only way through was to run the generator twice. `data['practiceAnchors']`
+    is the same table one step earlier, and it is the one the emitter is about
+    to serialise.
     """
     path = os.path.join(ADDON, 'static/src/anchors.json')
     with open(path, encoding='utf-8') as fh:
         reg = json.load(fh)
-    literal, prefixes = set(), set()
-    for block in ('product', 'pattern', 'practice', 'foreign'):
+    literal, prefixes = set(data.get('practiceAnchors') or {}), set()
+    for block in ('product', 'pattern', 'foreign'):
         for key in reg.get(block) or {}:
             if key.endswith('*'):
                 prefixes.add(key[:-1])
@@ -963,6 +981,38 @@ def _anchor_registry_keys():
 
 def _anchor_known(key, literal, prefixes):
     return key in literal or any(key.startswith(p) for p in prefixes)
+
+
+def _replica_anchors():
+    """Every anchor the PRACTICE REPLICA actually draws.
+
+    Read as literal `data-coach="…"` attributes out of `engine/screens.js`,
+    with comments stripped first — the replica's own header paragraph writes
+    the attribute name while explaining it, and a scan that counts prose finds
+    an anchor that is not there. (Recurring trap, ledger; this is its seventh
+    site.)
+
+    WHY THE GENERATOR NEEDS THIS AND NOT ONLY THE REGISTRY. The registry says a
+    name is DECLARED. Try mode needs a stronger fact: that the control is on
+    the screen the learner is looking at, because a Try step whose anchor the
+    replica does not draw is a step whose only outcome is a centred card and a
+    learner clicking at nothing. `tests/test_scenario.py::test_09` has asked
+    this of the shipped artifact since Phase 1b; asking it here is the same
+    question three minutes earlier, and it is what makes a per-step `modes`
+    declaration checkable rather than merely honest.
+    """
+    path = os.path.join(ADDON, 'static/src/engine/screens.js')
+    with open(path, encoding='utf-8') as fh:
+        src = fh.read()
+    src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
+    src = re.sub(r'(?<!:)//[^\n]*', '', src)
+    found = set(re.findall(r'data-coach="([^"{}$]+)"', src))
+    # An anchor reaching the attribute through a HELPER ARGUMENT is invisible
+    # to the scan above — the same blind spot `test_assets` has with icon
+    # names, where `kpiTile("layers", …)` hid a missing sprite symbol. The
+    # input fields are all drawn by one helper, so its call sites are read too.
+    found |= set(re.findall(r'\binputRow\("([a-z0-9-]+)"', src))
+    return found
 
 
 def _writes(step):
@@ -976,12 +1026,35 @@ def _writes(step):
     return sorted(v for v in WRITING_VERBS if v in words)
 
 
+INPUT_KINDS = ('text', 'number')
+
+
 def content_scenarios(data, bi):
     scenarios = data.get('scenarios') or []
     screens = set(data['screenCtx'])
-    literal, prefixes = _anchor_registry_keys()
+    literal, prefixes = _anchor_registry_keys(data)
+    input_anchors = data.get('inputAnchors') or {}
+    replica = _replica_anchors()
     problems, seen = [], set()
     out = []
+
+    # THE INPUT TABLE ITSELF, before any step is read. A declared field the
+    # replica does not draw is worse than a missing one: the generator would
+    # then happily accept a step pointed at it, and the learner would type into
+    # nothing. Checked once per run rather than per step, so the message names
+    # the table rather than whichever scenario reached it first.
+    for anchor, spec in sorted(input_anchors.items()):
+        kind = (spec or {}).get('kind')
+        if kind not in INPUT_KINDS:
+            problems.append('INPUT_ANCHORS %s: kind must be one of %s, not %r'
+                            % (anchor, '/'.join(INPUT_KINDS), kind))
+        if anchor not in replica:
+            problems.append('INPUT_ANCHORS %s: the replica draws no control '
+                            'with that anchor, so nothing could ever be typed '
+                            'into it' % anchor)
+        if not _anchor_known(anchor, literal, prefixes):
+            problems.append('INPUT_ANCHORS %s: is in no block of anchors.json'
+                            % anchor)
 
     for sc in scenarios:
         key = sc['key']
@@ -1054,6 +1127,30 @@ def content_scenarios(data, bi):
             if act not in ('observe', 'click', 'input'):
                 problems.append('%s: unknown act %r' % (sw, act))
 
+            # PER-STEP MODES (LEARNOS Phase 5). A scenario is one story, and
+            # until now every step of it was played in every mode the scenario
+            # declared. Two of the Phase 5 flows cannot be: the formula
+            # walkthrough visits eleven controls the practice replica does not
+            # draw, and the import walkthrough points Watch at the real
+            # importer's own anchors while Try stands on the replica.
+            #
+            # So a step may narrow itself — never widen: a step mode the
+            # SCENARIO does not declare is a step nobody can ever reach, and a
+            # step with no modes at all is a step that has been deleted without
+            # being deleted.
+            # ABSENT and EMPTY are different answers and `or` cannot tell them
+            # apart: absent means "every mode the scenario has", empty means
+            # the author scoped the step to nothing, which is a mistake worth
+            # naming rather than a default worth applying.
+            raw_modes = step.get('modes')
+            step_modes = list(modes if raw_modes is None else raw_modes)
+            outside = [m for m in step_modes if m not in modes]
+            if outside:
+                problems.append('%s: declares mode(s) the scenario does not '
+                                'offer: %s' % (sw, ', '.join(outside)))
+            if not step_modes:
+                problems.append('%s: no modes — it can never be played' % sw)
+
             anchor = step.get('anchor') or ''
             if anchor and not _anchor_known(anchor, literal, prefixes):
                 problems.append('%s: anchor %r is in no block of anchors.json'
@@ -1069,9 +1166,21 @@ def content_scenarios(data, bi):
             if screen and screen not in offered:
                 problems.append('%s: stands on %s, which the scenario does not '
                                 'list in `screens`' % (sw, screen))
-            if 'try' in modes and not (screen or entry_screen):
-                problems.append('%s: try-capable scenario, and this step stands '
-                                'on no replica screen' % sw)
+            # THE TRY CONTRACT, and it is per STEP now rather than per
+            # scenario. A step that is playable in Try has to stand on a
+            # replica AND point at a control the replica draws; a step that has
+            # narrowed itself out of Try is free to point at anything the real
+            # product has, because that is the only place it will ever run.
+            if 'try' in step_modes:
+                if not (screen or entry_screen):
+                    problems.append('%s: playable in try, and it stands on no '
+                                    'replica screen' % sw)
+                if anchor and anchor not in replica:
+                    problems.append(
+                        '%s: playable in try and points at %r, which the '
+                        'practice replica does not draw. Either scope the step '
+                        'to the modes that can reach that control, or point it '
+                        'at one the replica has.' % (sw, anchor))
 
             # THE GUARD RULE. `guard` is mandatory on a click step and there is
             # no default: a default is a decision nobody made, and the decision
@@ -1102,6 +1211,19 @@ def content_scenarios(data, bi):
                 if 'do' in modes:
                     problems.append('%s: input steps are not playable in "do" — '
                                     'the engine will not type into real records' % sw)
+                # THE FIELD HAS TO BE A FIELD. `INPUT_ANCHORS` is the one table
+                # that says which replica controls are real <input>s, and the
+                # replica draws them from the same table — so an input step
+                # pointed anywhere else is a step whose only behaviour is to
+                # never advance. It fails silently at runtime, which is exactly
+                # the kind of thing that has to fail loudly here.
+                if anchor not in input_anchors:
+                    problems.append(
+                        '%s: an input step points at %r, which is not declared '
+                        'in INPUT_ANCHORS. The replica draws a real field only '
+                        'at those anchors; anywhere else the learner would type '
+                        'into nothing and the step would never advance.'
+                        % (sw, anchor or '(no anchor)'))
 
             say = step.get('say') or {}
             node['steps'].append({
@@ -1111,6 +1233,11 @@ def content_scenarios(data, bi):
                 'screen': screen,
                 'act': act,
                 'guard': bool(guard),
+                # Always emitted, always the full list — never omitted when it
+                # equals the scenario's. A reader of the artifact should not
+                # have to know the default to know what a step plays in, and
+                # `playableSteps()` in the engine then has one shape to read.
+                'modes': step_modes,
                 'timeout': int(step.get('timeout') or 0),
                 'kicker': bi.p('%s kicker' % sw, say.get('kicker')),
                 'title': bi.p('%s title' % sw, say.get('title')),
@@ -1289,7 +1416,8 @@ def gen_fixture():
     # a name no screen imports would put a second, unread copy of the rate
     # change in the engine's contract.
     exports = ('\nexport { B, PRACTICE_META, CASE, EMP, RUN, PRACTICE, MENU,'
-               ' SUB_SCREENS, STATUS_LABELS, CHAINS, POLICY, TAX };\n')
+               ' SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY,'
+               ' TAX };\n')
     return header + src.rstrip() + '\n' + exports
 
 

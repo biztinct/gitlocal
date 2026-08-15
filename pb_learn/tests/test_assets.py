@@ -192,3 +192,122 @@ class TestAssets(TransactionCase):
                 missing.append(rel)
         self.assertFalse(missing,
                          "Templates using the sprite without injecting it: %s" % missing)
+
+    def test_04_an_authored_body_is_inserted_through_gtx(self):
+        """`gtx` is the ONE raw-insertion wrapper in this module, and "are all
+        raw positions covered" is meant to be answerable by grepping for it.
+
+        Every surface that prints an authored BODY — a lesson step, a mission
+        step's detail, a scenario card, a live capstone's card — has to go
+        through it, or that surface prints its `<b>` as text and reaches none
+        of the glossary hovercards the same sentence gets everywhere else.
+        The live capstone shipped `esc(tx(step.detail))` from Phase B until
+        LEARNOS Phase 5; it was on the ledger as an accepted nit for two
+        phases, which is exactly how long an accepted nit survives without a
+        test under it.
+
+        A TITLE is not a body and stays escaped — journey.js escapes
+        `step.instruction` and glosses `step.detail`, and this asserts the same
+        pair rather than a blanket rule.
+        """
+        base = get_module_path('pb_learn')
+        pairs = (
+            ('static/src/journey/journey.js', 'gtx(step.detail)'),
+            ('static/src/journey/journey.js', 'gtx(step.body)'),
+            ('static/src/live/live_mission.js', 'gtx(step.detail)'),
+            ('static/src/scenario/scenario_overlay.js', 'gtx(step.body)'),
+        )
+        for rel, want in pairs:
+            with open(os.path.join(base, rel), encoding='utf-8') as fh:
+                src = fh.read()
+            self.assertIn(want, src, "%s no longer inserts %s" % (rel, want))
+        with open(os.path.join(base, 'static/src/live/live_mission.js'),
+                  encoding='utf-8') as fh:
+            live = fh.read()
+        self.assertNotIn('esc(tx(step.detail))', live,
+                         "the live card escapes an authored body again")
+
+    def test_05_every_keydown_listener_is_document_capture(self):
+        """"document, not window" is necessary and NOT sufficient.
+
+        Odoo's hotkey service stops propagation at document-BUBBLE, so a
+        bubble listener on `document` is silently dead in real Chrome while a
+        synthetic dispatch in a test still runs it. Measured on the Phase 2+3
+        deploy — the welcome card's Escape — and `first_login.js` has bound
+        capture ever since while three other surfaces did not. The rule is
+        now a test rather than a paragraph in the ledger, which is what this
+        repository does with a convention it has broken three times.
+
+        The REMOVAL has to carry the flag too: `removeEventListener` matches on
+        the phase, so a capture listener removed without it is never removed.
+        """
+        base = get_module_path('pb_learn')
+        bad = []
+        for rel, path in self._js_files():
+            with open(path, encoding='utf-8') as fh:
+                src = fh.read()
+            src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
+            src = re.sub(r'(?<!:)//[^\n]*', '', src)
+            if 'window.addEventListener("keydown"' in src:
+                bad.append('%s binds keydown on window' % rel)
+            for verb in ('addEventListener', 'removeEventListener'):
+                # A HANDLER BODY CONTAINS SEMICOLONS AND PARENTHESES, so the
+                # call's own closing bracket has to be FOUND rather than
+                # guessed at: the first version stopped at the first `;`,
+                # which for the glossary's inline arrow function is inside the
+                # handler, and reported a capture listener as a bubble one.
+                needle = 'document.%s("keydown"' % verb
+                at = src.find(needle)
+                while at != -1:
+                    depth, i = 0, at + needle.index('(')
+                    while i < len(src):
+                        if src[i] == '(':
+                            depth += 1
+                        elif src[i] == ')':
+                            depth -= 1
+                            if depth == 0:
+                                break
+                        i += 1
+                    tail = src[max(at, i - 8):i]
+                    if 'true' not in tail:
+                        bad.append('%s %s("keydown") is not capture phase'
+                                   % (rel, verb))
+                    at = src.find(needle, i)
+        self.assertFalse(bad, "\n  ".join(bad))
+        # And the scan found something: four surfaces bind this key.
+        binds = 0
+        for _rel, path in self._js_files():
+            with open(path, encoding='utf-8') as fh:
+                binds += fh.read().count('document.addEventListener("keydown"')
+        self.assertGreaterEqual(binds, 4,
+                                "only %d keydown listeners found — the scan has "
+                                "stopped finding them" % binds)
+
+    def test_06_only_a_closing_branch_swallows_the_key(self):
+        """A transient layer that closes on a key must swallow it, or one
+        Escape closes the hovercard AND exits the lesson. The converse matters
+        as much: a branch that only MOVES the reader — the arrow keys — must
+        leave the key alone, or the walkthrough starts eating keystrokes the
+        product needs.
+        """
+        base = get_module_path('pb_learn')
+        for rel in ('static/src/journey/journey.js',
+                    'static/src/scenario/scenario_overlay.js',
+                    'static/src/coach/coach.js'):
+            with open(os.path.join(base, rel), encoding='utf-8') as fh:
+                src = re.sub(r'/\*.*?\*/', '', fh.read(), flags=re.S)
+            src = re.sub(r'(?<!:)//[^\n]*', '', src)
+            key = src.split('_onKey(ev)', 1)[1].split('\n    }', 1)[0]
+            self.assertIn('glossaryOpen()', key,
+                          "%s acts on Escape without standing down for an open "
+                          "hovercard" % rel)
+            self.assertIn('stopPropagation', key,
+                          "%s closes on a key without swallowing it" % rel)
+            # Every stopPropagation is in a branch that also closes something.
+            for chunk in key.split('stopPropagation')[1:]:
+                head = chunk[:220]
+                self.assertTrue(
+                    any(w in head for w in ('Exit(', 'exitLesson(', 'onLeave(',
+                                            'close(')),
+                    "%s swallows a key in a branch that closes nothing:\n%s"
+                    % (rel, head[:120]))
