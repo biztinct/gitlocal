@@ -5,7 +5,12 @@ from odoo.exceptions import UserError
 import json
 import logging
 
+from .ai_redaction import (
+    generic_scrub, redact_names, redact_text, restore_deep, restore_names,
+)
+
 _logger = logging.getLogger(__name__)
+
 
 # System prompt for PayAI
 PAYAI_SYSTEM_PROMPT = """You are PayAI, an intelligent payroll analytics assistant for Payobook.
@@ -122,6 +127,39 @@ ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
 Include "action" ONLY when a listed lesson clearly matches the request; otherwise omit it or set it to null. Never invent menus, buttons or lesson keys that are not listed above."""
 
 
+def data_query_prompt(message, payload_json):
+    """The exact string the data-query path sends, as a pure function.
+
+    Factored out of ``_process_data_query`` in LEARNOS Phase 4 for one reason:
+    "no employee name is in the prompt" is a claim about a STRING, and a claim
+    about a string should be asserted against the string. With this here, the
+    redaction suite builds a payload full of names, emails and phone numbers,
+    calls this, and asserts on the whole result — with no provider, no network
+    and no database.
+
+    Both arguments must already be redacted. This function deliberately does
+    not redact anything itself: a builder that quietly cleans its inputs is a
+    builder whose caller stops thinking about them.
+    """
+    return f"""The user asked: "{message}"
+
+Here is the actual payroll data from the system:
+
+{payload_json}
+
+Based on this data, provide:
+1. A clear, insightful narrative response
+2. An appropriate Chart.js chart configuration to visualize the data
+3. Key insights and observations
+4. Suggested follow-up questions
+
+Names have been replaced with placeholders of the form [person-1]. Use those
+placeholders exactly as they appear, including in chart labels. Do not invent
+real names for them and do not guess who they are.
+
+Remember to use the PayAI color palette and choose the best chart type for this data."""
+
+
 class PayrollAIEngine(models.Model):
     """Core AI engine for PayAI — handles intent classification, data retrieval, and response generation."""
 
@@ -166,7 +204,12 @@ class PayrollAIEngine(models.Model):
 
             # Step 1: Classify intent
             intent = self._classify_intent(provider, message)
-            _logger.info("PayAI intent: %s for message: %s", intent, message[:80])
+            # Scrubbed in the LOG too. The server log is inside the trust
+            # boundary, so this is not an egress fix — it is a retention one:
+            # this line was writing "why is <a colleague>'s net only 4.200.000"
+            # into a file with no retention policy, once per question.
+            _logger.info("PayAI intent: %s for message: %s",
+                         intent, generic_scrub(message)[:80])
 
             # Step 2: Process based on intent
             if intent == 'payroll_data':
@@ -191,9 +234,26 @@ class PayrollAIEngine(models.Model):
             }
 
     def _classify_intent(self, provider, message):
-        """Classify the user's message intent."""
+        """Classify the user's message intent.
+
+        THE FIRST THING THAT LEAVES, AND IT USED TO LEAVE RAW.
+
+        This runs before any query, so nothing has been read and there is no
+        name mapping to build one from — which is exactly why it was missed:
+        the redaction work all sits in `_process_data_query`, and by the time
+        that runs, the whole message has already been on the wire once, in
+        this prompt, to decide which of four paths to take.
+
+        `generic_scrub` is what is available here and it is not nothing: an
+        email, a phone number, a record id and a money amount all go. A NAME
+        does not, because there is nothing yet to match it against, and that
+        residual is written down in ai_redaction's list rather than left to be
+        found. Classification does not need the name — it needs the shape of
+        the question, and "[person-1]" and "Mai" route identically.
+        """
+        safe_message = generic_scrub(message)
         try:
-            prompt = INTENT_CLASSIFICATION_PROMPT.format(message=message)
+            prompt = INTENT_CLASSIFICATION_PROMPT.format(message=safe_message)
             response = provider.generate_text(prompt, max_tokens=20, temperature=0.1)
             intent = response.strip().lower().replace('"', '').replace("'", '')
 
@@ -239,20 +299,36 @@ class PayrollAIEngine(models.Model):
         # appended deterministically below rather than left to the model.
         access_note = payroll_data.get('access_note') or ''
 
-        # Step 2: Build the prompt with actual data
-        data_prompt = f"""The user asked: "{message}"
+        # Step 1c: THE NAMES COME OUT BEFORE THIS PROMPT IS BUILT.
+        #
+        # The asking user has already passed the access gate above, so they are
+        # entitled to these names. The provider is not, and never was — this
+        # path posted employee names, job titles and wages verbatim from the
+        # day it was written. `mapping` stays on this server and is what puts
+        # them back at the end.
+        #
+        # EXACTLY WHAT IS PROTECTED, AND WHERE. An earlier draft of this
+        # comment said "three things are redacted" and was FALSE AS BUILT,
+        # because it described this method and the message had already been
+        # sent once, unredacted, by `_classify_intent`. The honest version:
+        #
+        #   payload          names by key then everywhere, plus emails, phones,
+        #                    record ids. Figures survive — they are the answer.
+        #   this message     the same mapping, plus the free-text scrub. A name
+        #                    IS caught here, because by now there is a mapping.
+        #   history turns    the same treatment, with the SAME mapping — so a
+        #                    person named in an earlier answer and absent from
+        #                    THIS query's result is only reached by the generic
+        #                    patterns. Named residual; see ai_redaction.
+        #   the classifier   ran BEFORE all of this and had no mapping to use.
+        #                    It gets `generic_scrub` only: contact details and
+        #                    money go, a name does not.
+        redacted_data, mapping = redact_names(payroll_data)
+        safe_message = redact_text(message, mapping)
 
-Here is the actual payroll data from the system:
-
-{json.dumps(payroll_data, indent=2, default=str)}
-
-Based on this data, provide:
-1. A clear, insightful narrative response
-2. An appropriate Chart.js chart configuration to visualize the data
-3. Key insights and observations
-4. Suggested follow-up questions
-
-Remember to use the PayAI color palette and choose the best chart type for this data."""
+        # Step 2: Build the prompt with the redacted data
+        data_prompt = data_query_prompt(
+            safe_message, json.dumps(redacted_data, indent=2, default=str))
 
         messages = [
             {"role": "system", "content": PAYAI_SYSTEM_PROMPT},
@@ -261,7 +337,7 @@ Remember to use the PayAI color palette and choose the best chart type for this 
         for msg in conversation_history[-6:]:
             messages.append({
                 "role": msg.get('role', 'user'),
-                "content": msg.get('content', ''),
+                "content": redact_text(msg.get('content', ''), mapping),
             })
         messages.append({"role": "user", "content": data_prompt})
 
@@ -269,6 +345,11 @@ Remember to use the PayAI color palette and choose the best chart type for this 
         try:
             raw_response = provider.generate_chat(messages, max_tokens=2500, temperature=0.5)
             result = provider._parse_json_response(raw_response)
+            # THE PLACEHOLDERS GO BACK, EVERYWHERE. Not only in the narrative:
+            # a chart's labels are the names the model was handed, and an axis
+            # reading "[person-1]" is a worse outcome than no redaction at all,
+            # because it reads as a rendering fault rather than as a control.
+            result = restore_deep(result, mapping)
 
             return {
                 'response': self._with_access_note(
@@ -281,10 +362,12 @@ Remember to use the PayAI color palette and choose the best chart type for this 
             }
         except Exception as e:
             _logger.warning("Failed to parse chart response: %s", e)
-            # Fallback: return raw text response
+            # Fallback: return raw text response. It is the model's own words
+            # with nothing parsed out of them, so it carries placeholders too.
+            fallback = (restore_names(raw_response, mapping)
+                        if 'raw_response' in dir() else str(e))
             return {
-                'response': self._with_access_note(
-                    raw_response if 'raw_response' in dir() else str(e), access_note),
+                'response': self._with_access_note(fallback, access_note),
                 'chart': None,
                 'insights': [],
                 'follow_up_questions': [],
@@ -312,7 +395,11 @@ Remember to use the PayAI color palette and choose the best chart type for this 
         for msg in conversation_history[-6:]:
             messages.append({
                 "role": msg.get('role', 'user'),
-                "content": msg.get('content', ''),
+                # HISTORY IS AN EARLIER ANSWER WITH THE NAMES PUT BACK IN.
+                # No mapping exists on this path, so this is the generic
+                # scrub: contact details and money go, a prior-turn name does
+                # not. Named residual — see ai_redaction's list.
+                "content": generic_scrub(msg.get('content', '')),
             })
         messages.append({"role": "user", "content": message})
 
@@ -475,7 +562,9 @@ Remember to use the PayAI color palette and choose the best chart type for this 
                            "'this screen', interpret it relative to that." % screen_desc,
             })
         for msg in conversation_history[-6:]:
-            messages.append({"role": msg.get('role', 'user'), "content": msg.get('content', '')})
+            # Same rule as the other three paths — see _process_knowledge_query.
+            messages.append({"role": msg.get('role', 'user'),
+                             "content": generic_scrub(msg.get('content', ''))})
         messages.append({"role": "user", "content": message})
 
         raw_response = provider.generate_chat(messages, max_tokens=1200, temperature=0.4)
@@ -500,7 +589,11 @@ Remember to use the PayAI color palette and choose the best chart type for this 
         for msg in conversation_history[-6:]:
             messages.append({
                 "role": msg.get('role', 'user'),
-                "content": msg.get('content', ''),
+                # HISTORY IS AN EARLIER ANSWER WITH THE NAMES PUT BACK IN.
+                # No mapping exists on this path, so this is the generic
+                # scrub: contact details and money go, a prior-turn name does
+                # not. Named residual — see ai_redaction's list.
+                "content": generic_scrub(msg.get('content', '')),
             })
         messages.append({"role": "user", "content": message})
 

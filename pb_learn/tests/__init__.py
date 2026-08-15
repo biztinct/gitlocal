@@ -9,6 +9,7 @@ from . import test_progress_security
 from . import test_retirement
 # Phase D2.
 from . import test_composer
+from . import test_explain
 from . import test_questions
 # LEARNOS Phase 1b — the scenario engine and its one structural promise.
 from . import test_scenario

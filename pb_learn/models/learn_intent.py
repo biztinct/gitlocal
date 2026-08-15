@@ -25,6 +25,12 @@ before it, and the only material it is given is this module's own tutorial
 text — never a database record. What it writes is badged so the reader knows
 which kind of answer they are holding.
 
+PHASE 4 adds a second entry point and no second promise: `explain_screen`
+answers "what is this screen" with no question typed, and its DETERMINISTIC
+FLOOR — blurb, next step, the screen's own columns — is built and returned
+before the composer flag is even read. A provider may rewrite that floor and
+can never replace it, under the same gates and the same badge.
+
 NOTE TO THE NEXT READER: `contract.json::coach-answers-from-writing-only`
 greps this file whole, prose included, for the tokens that must never appear
 here — a product model name, raw SQL, or another module's provider registry.
@@ -140,6 +146,39 @@ def _is_advice(question):
 _SCORE_FLOOR = 20
 _ON_SCREEN_BONUS = 25
 
+# THE SCREENLESS FLOOR (LEARNOS Phase 4).
+#
+# The Coach is mounted on every screen, and on the ones the content plane does
+# not cover — the Journey itself, an ordinary list view, somebody else's
+# cockpit — `screen_key` is None. Two things are then true at once: there is no
+# on-screen bonus to separate the candidates, and there is no screen for the
+# reader to check the answer against. The live validation found what that
+# combination does.
+#
+# "How do I run payroll" had no content at all. It shared exactly one topic
+# word with `payrollready` ("payroll", long enough and not ambiguous), scored
+# 40, cleared the floor of 20 and was rendered under a "Grounded in" badge.
+# WITH a screen the same question honestly missed, because the on-screen bonus
+# went to intents that cover that screen and the stray 40 lost. A badged wrong
+# answer is worse than a miss: the badge is the Coach saying "I read this
+# somewhere", which is exactly the promise the module is built on.
+#
+# Worse than one wrong answer: "what is the company holiday policy" scored 40
+# against BOTH `whichpolicy` and `whichfilings`, and the tie was broken
+# alphabetically by key. A coin toss, badged.
+#
+# So a screenless question needs a REAL hit. 55 is the two-shared-topic-word
+# tier, which is the smallest score `_score` gives that cannot come from a
+# single word — the handover's "≥2 strong token hits when screen_key is null",
+# expressed as the floor rather than as a second rule inside the scorer.
+# Everything above it still works screenless: an exact label (100), a phrase
+# contained in the question (80) and a question contained in a phrase (60).
+#
+# The corpus gap and this floor are ONE fix, and neither alone was enough. The
+# floor turns a badged wrong answer into an honest miss; `howrun` turns the
+# honest miss into an answer.
+_SCREENLESS_FLOOR = 55
+
 
 def _norm(text):
     """Lowercase, strip diacritics, fold đ, drop punctuation.
@@ -165,9 +204,42 @@ def _topic_words(text):
 # upgraded tenant gets and what every test that does not set it gets.
 COMPOSE_FLAG = 'pb_learn.compose_enabled'
 
-_CORPUS_CAP = 12000
+# THE CAP, AND WHY IT MOVED (LEARNOS Phase 4).
+#
+# It was 12,000 characters, the glossary was appended LAST, and the glossary is
+# 12,680 characters on its own. On `payslips` the screen block and the intent
+# blocks came to 12,559 before the glossary started, so the composer had been
+# shipped a corpus in which NO glossary term ever appeared — and every term
+# added since Phase C1 (waterfall, drill, cost per head, filing) had never
+# reached it at all. Measured, not estimated, and re-measured after this
+# phase's six new intents AND after `_wire_leaf` began substituting the
+# authored fallback for a live token: the widest screen's full corpus is
+# **30,486** characters (payslips, Vietnamese). Every one of the twenty
+# screens was over the old cap in both languages.
+#
+# (An earlier draft of this comment said 30,558 — the figure from a
+# scratch script that predated `_wire_leaf`. The number a comment states
+# about its own code has to come from that code; `test_04d` computes it.)
+#
+# 36,000 fits all forty screen-language pairs with about 15% headroom, and
+# `test_explain::test_04d` re-measures on every run rather than trusting this
+# paragraph — it is what caught this phase's six new intents pushing the
+# widest past a first attempt at 30,000. The truncation is what happens when
+# content
+# outgrows even this: a SECTION is dropped whole, with a log line naming it.
+# Never mid-entry — half a glossary definition in a prompt is a definition the
+# model completes for itself.
+_CORPUS_CAP = 36000
 _QUESTION_CAP = 400
 _REPLY_CAP = 1500
+
+# Order matters more than the cap does, because the cap only bites at the end
+# of this list. Ordered by what actually answers a question about a screen:
+# the screen's own material first, then the intents scoped to it, then the
+# vocabulary, and columns last because a column definition only helps a
+# question that names the column — and a question that names a column never
+# reaches the composer, since `_match_column` catches it two steps earlier.
+_CORPUS_SECTIONS = ('screen', 'intents', 'glossary', 'columns')
 
 
 def _ascii(text):
@@ -233,6 +305,14 @@ _CURRENCY_AMOUNT = re.compile(
 # Anything that looks like it identifies a person or a record, scrubbed from
 # the question before it leaves this server. These four are health_learn's,
 # unchanged; the two payroll-grade ones above are new here.
+#
+# THERE IS A SECOND COPY OF THIS FAMILY, and it is deliberate:
+# `pb_payroll_ai_insights/models/ai_redaction.py` carries `_ascii` and these
+# patterns for PayAI's two legacy egress paths. Not imported in either
+# direction — pb_learn's dependency on PayAI is soft on purpose, and a
+# cross-addon import for four regexes would make each uninstallable without
+# the other. If a pattern is fixed here, fix it there; the pointer is written
+# on both ends so neither copy can be found without the other.
 # A Vietnamese number is written "+84 912 345 678" as often as "+84912345678",
 # and health_learn's pattern demanded a digit IMMEDIATELY after the country
 # code — so the spaced international form, which is the one people paste out of
@@ -274,11 +354,290 @@ def _one(pair, lang='en_US'):
         or pair.get('en') or ''
 
 
+def _label_body(label, body):
+    """"<b>Label</b> — definition", as a bilingual leaf.
+
+    Both halves are AUTHORED content out of the module's own bundle — the same
+    trust class as every other answer body, which is why the label is embedded
+    as markup rather than escaped. Nothing a tenant or a learner types reaches
+    this function; the one thing that does, a tenant slot value, arrives
+    escaped through `gtx` at the point of insertion (LEARNOS Phase 2).
+    """
+    out = {}
+    for tag, lang in (('en', 'en_US'), ('vi', 'vi_VN')):
+        lab, txt = _one(label, lang), _one(body, lang)
+        out[tag] = ('<b>%s</b> — %s' % (lab, txt)) if lab else txt
+    return _pair(out['en'], out['vi'])
+
+
+def _chrome_pair(content, key):
+    """One chrome string as a bilingual leaf, for a payload the drawer draws
+    as a heading. `chrome_text` falls back to the KEY rather than to silence,
+    which is the behaviour wanted here too."""
+    return _pair(content.chrome_text(key, 'en_US'),
+                 content.chrome_text(key, 'vi_VN'))
+
+
+# ======================================================================
+# WHAT A PROMPT MAY CARRY (LEARNOS Phase 4)
+# ======================================================================
+# The content plane holds TWO kinds of placeholder, and they need opposite
+# treatment on the way to a provider. Getting that backwards is how a tenant's
+# own text ends up on a wire, so it is written out rather than inferred.
+#
+# `{{gmTierName}}` — a TENANT FACT SLOT. The VALUE is typed by a tenant
+#   administrator and lives in `learn.tenant.override`. It is NEVER substituted
+#   on this path: the content plane ships the authored sentence with the
+#   placeholder still in it, and only the browser resolves one. So what leaves
+#   this server is the KEY, which this module wrote, and no tenant text at all.
+#   The token is KEPT rather than stripped, for two reasons: stripping it
+#   leaves "then , then , then done", which is a worse thing to hand a model
+#   than a brace pair; and if the model copies it into its answer, the drawer's
+#   `gtx()` resolves it for the reader exactly as it resolves an authored one.
+#
+# `{{live:june_run_state}}` — a LIVE VALUE, read out of the DATABASE by
+#   `learn.live`. Its key is ours, but nothing downstream can resolve one in a
+#   composed answer (the browser has no live values; the server renders them
+#   only into authored leaves), so a model that echoed it would print a brace
+#   pair to the reader. It is replaced by the authored `live_fallback` — the
+#   sentence every tenant that is not the demo world already reads, which the
+#   generator refuses to let an author omit. Where there is no fallback it is
+#   dropped, and the surrounding whitespace tidied.
+_LIVE_TOKEN_RE = re.compile(r'\{\{live:[a-z_]+\}\}')
+
+
+def _wire_leaf(leaf, fallback, lang):
+    """One language of an authored leaf, made safe to put in a prompt."""
+    text = _one(leaf, lang)
+    if not _LIVE_TOKEN_RE.search(text or ''):
+        return text
+    substitute = _one(fallback, lang)
+    if substitute:
+        return substitute
+    return re.sub(r'[ \t]{2,}', ' ', _LIVE_TOKEN_RE.sub('', text)).strip()
+
+
 def _covers_screen(intent, screen_key):
     raw = (intent.get('screens') or '*').strip()
     if raw == '*':
         return True
     return screen_key in [s.strip() for s in raw.split(',') if s.strip()]
+
+
+# ======================================================================
+# THE CORPUS, AS A PURE FUNCTION (LEARNOS Phase 4)
+# ======================================================================
+# It takes the parsed content tree and returns a string. No recordset, no
+# registry, no database — which is the point twice over:
+#
+#   * it is the exact text that goes on the wire, so it can be asserted
+#     offline, character for character, by a harness with no Odoo
+#     (`tools/replay_tests.py`);
+#   * a function whose only input is the content tree cannot reach a payroll
+#     table, and that is a property a reader can check by looking at the
+#     signature rather than by trusting a paragraph.
+#     `contract.json::corpus-builder-is-pure` asserts it anyway.
+#
+# TREAT THE TREE AS IMMUTABLE. It is one shared dict per worker process (see
+# learn_content.py), so nothing below may write to it.
+def _corpus_screen_part(tree, screen, lang):
+    parts = ['SCREEN: %s — %s' % (_one(screen['name'], lang),
+                                  _one(screen.get('blurb'), lang))]
+    next_step = _wire_leaf(screen.get('next_step'),
+                           screen.get('live_fallback'), lang)
+    if next_step:
+        parts.append('NEXT: %s' % next_step)
+    station = next((s for s in tree.get('stations') or []
+                    if s['key'] == screen['key']), None)
+    if station:
+        parts.append('STATION: %s — %s' % (_one(station['name'], lang),
+                                           _one(station.get('summary'), lang)))
+        for lesson in station.get('lessons') or []:
+            for step in lesson.get('steps') or []:
+                parts.append('- %s: %s' % (_one(step['title'], lang),
+                                           _one(step.get('body'), lang)))
+        for mistake in (station.get('outline') or {}).get('mistakes') or []:
+            parts.append('MISTAKE: %s' % _one(mistake, lang))
+    return parts
+
+
+def corpus_sections(tree, screen_key, lang):
+    """{section name: [lines]} — everything WE have written about one screen.
+
+    Read from the static content plane and nothing else. Every value that
+    comes out of here was authored in docs/tutorial_poc/author/ and shipped in
+    the module; none of it describes a person, a payslip or a pay run that
+    exists.
+    """
+    screen = next((s for s in tree.get('screens') or []
+                   if s['key'] == screen_key), None) if screen_key else None
+    out = {name: [] for name in _CORPUS_SECTIONS}
+    if screen:
+        out['screen'] = _corpus_screen_part(tree, screen, lang)
+        out['columns'] = [
+            'COLUMN %s: %s' % (_one(col['label'], lang),
+                               _wire_leaf(col['body'], None, lang))
+            for col in tree.get('columns') or [] if col['screen'] == screen_key]
+    for intent in tree.get('intents') or []:
+        if screen_key and not _covers_screen(intent, screen_key):
+            continue
+        for block in intent.get('blocks') or []:
+            if block['capability'] == 'any' and block.get('body'):
+                out['intents'].append(
+                    '%s: %s' % (_one(intent['label'], lang),
+                                _wire_leaf(block['body'],
+                                           block.get('live_fallback'), lang)))
+    out['glossary'] = ['TERM %s: %s' % (_one(term['term'], lang),
+                                        _one(term['definition'], lang))
+                       for term in tree.get('glossary') or []]
+    return out
+
+
+def build_corpus(tree, screen_key, lang, cap=None):
+    """The corpus as one string, truncated at a SECTION boundary.
+
+    A slice at `cap` characters cuts through whatever entry happens to be
+    there — half a definition, or the first clause of a warning with the
+    "never" still to come. Both are worse in a prompt than the entry being
+    absent, because a model completes a sentence it was handed. So a section
+    that does not fit is dropped whole and said out loud; a later, smaller one
+    may still fit, which is why this walks the whole list rather than stopping
+    at the first refusal.
+    """
+    cap = _CORPUS_CAP if cap is None else cap
+    kept, dropped, size = [], [], 0
+    sections = corpus_sections(tree, screen_key, lang)
+    for name in _CORPUS_SECTIONS:
+        body = '\n'.join(sections.get(name) or [])
+        if not body:
+            continue
+        extra = len(body) + (1 if kept else 0)
+        if size + extra > cap:
+            dropped.append('%s (%d chars)' % (name, len(body)))
+            continue
+        kept.append(body)
+        size += extra
+    if dropped:
+        _logger.warning(
+            "Learn composer: the corpus for screen %r [%s] is over the %d "
+            "character cap, so these sections were left out whole rather than "
+            "cut mid-entry: %s. Raise _CORPUS_CAP or shorten the content.",
+            screen_key, lang, cap, ', '.join(dropped))
+    return '\n'.join(kept)
+
+
+# ======================================================================
+# THE PROMPTS, AS PURE FUNCTIONS (LEARNOS Phase 4)
+# ======================================================================
+# The exact bytes that leave this server. Building them here rather than
+# inline is what makes "no record data is in the prompt" a testable claim
+# instead of a reading exercise: a test hands these two functions their inputs
+# and asserts on the whole returned string, with no provider and no network.
+#
+# Every argument below is either the learner's own scrubbed question or text
+# out of the content plane. Neither function can obtain anything else — they
+# have no env, no default and nothing to reach with.
+def compose_prompt(corpus, question):
+    """The composer's prompt: our material, their question, four refusals."""
+    return (
+        "You are the in-app help assistant for Payobook, a payroll "
+        "system. Answer the question USING ONLY the material below, which "
+        "is the product's own tutorial content.\n"
+        "If the material does not contain the answer, reply with exactly: "
+        "NO_ANSWER.\n"
+        "Never invent or repeat a contribution rate, a tax threshold, a "
+        "relief amount, a deadline or any other number that is not written "
+        "in the material. Never give tax, legal or compliance advice. "
+        "Never claim to have performed an action: you cannot compute a "
+        "run, approve a payslip or change a record.\n"
+        "Answer in at most four sentences, plainly, in the same language "
+        "as the question.\n\n"
+        "MATERIAL:\n%s\n\nQUESTION: %s\nANSWER:" % (corpus, question))
+
+
+# Four is what fits in a drawer above the fold, and the columns are sequenced
+# by the author, so the first four are the ones they put first.
+EXPLAIN_COLUMNS = 4
+
+
+def explain_blocks(tree, screen_key, next_step):
+    """The explanation's answer-blocks, as a pure function.
+
+    `next_step` is passed IN rather than looked up, and that is the seam: on
+    the server it arrives from `learn.runtime.next_step_live` with its
+    `{{live:…}}` tokens resolved against the database, and offline it arrives
+    as the authored pair. Everything else here is the content tree, so the
+    block SHAPES — which is what the drawer renders and what can go wrong —
+    are assertable without Odoo.
+
+    Returns [] for a screen this module does not cover. The caller turns that
+    into the ordinary honest miss rather than into an empty card.
+    """
+    screen = next((s for s in tree.get('screens') or []
+                   if s['key'] == screen_key), None) if screen_key else None
+    if not screen:
+        return []
+    blocks = []
+    if screen.get('blurb'):
+        blocks.append({'capability': 'any', 'kind': 'p',
+                       'body': screen['blurb'], 'steps': []})
+    if next_step:
+        blocks.append({'capability': 'any', 'kind': 'ok',
+                       'body': next_step, 'steps': []})
+    columns = [c for c in tree.get('columns') or [] if c['screen'] == screen_key]
+    for col in columns[:EXPLAIN_COLUMNS]:
+        blocks.append({'capability': 'any', 'kind': 'p',
+                       'body': _label_body(col['label'], col['body']),
+                       'steps': []})
+    if not blocks:
+        return []
+    blocks.append({'capability': 'any', 'kind': 'source',
+                   'body': screen['name'], 'steps': []})
+    return blocks
+
+
+def explain_scenario_offer(tree, screen_key):
+    """(watch key, try key) for the first walkthrough offered on this screen.
+
+    The scenario is not narrated into a block. A sentence saying "there is a
+    walkthrough of this" is a worse version of the button that starts one, and
+    the button already exists — Phase 4 gave every answer optional
+    `watch` / `try` keys for exactly this shape.
+    """
+    for scenario in tree.get('scenarios') or []:
+        if screen_key not in (scenario.get('screens') or []):
+            continue
+        modes = scenario.get('modes') or []
+        return (scenario['key'] if 'watch' in modes else '',
+                scenario['key'] if 'try' in modes else '')
+    return '', ''
+
+
+def explain_prompt(screen_key, floor_text):
+    """The explain-this-screen prompt.
+
+    Two inputs and both are ours: the screen KEY (a content identifier, not a
+    record id) and the plain text of the deterministic floor this call is
+    trying to improve on. There is no learner question here at all — nobody
+    typed anything — so there is nothing to scrub and nothing a person could
+    have put in it.
+    """
+    return (
+        "You are the in-app help assistant for Payobook, a payroll "
+        "system. Below is the product's own tutorial text for one screen.\n"
+        "Rewrite it as a short plain-language explanation of that screen: "
+        "what it is, what to do next on it, and what its numbers mean.\n"
+        "Use ONLY the material below. If it is not enough to explain the "
+        "screen, reply with exactly: NO_ANSWER.\n"
+        "Never invent or repeat a contribution rate, a tax threshold, a "
+        "relief amount, a deadline or any other number that is not written "
+        "in the material. Never give tax, legal or compliance advice. "
+        "Never claim to have performed an action: you cannot compute a "
+        "run, approve a payslip or change a record.\n"
+        "Answer in at most six sentences, plainly, in the same language as "
+        "the material.\n\n"
+        "SCREEN KEY: %s\n\nMATERIAL:\n%s\n\nEXPLANATION:"
+        % (screen_key or '', floor_text))
 
 
 class LearnIntent(models.AbstractModel):
@@ -345,21 +704,34 @@ class LearnIntent(models.AbstractModel):
             elif nq in np and len(nq) >= 6:
                 best = max(best, 60)
         if best < 60:
-            # Topic overlap, but never on one shared common word: that is how a
-            # tax-advice question ends up answered with a UI tour.
+            # TOPIC OVERLAP IS COUNTED IN DISCRIMINATING WORDS ONLY.
+            #
+            # The deploy round removed ambiguous words from the ONE-word tier
+            # and left the two-word tier counting every shared word, which
+            # only looks consistent until you notice that two words carrying
+            # no signal carry no more signal than one. Phase 4 review
+            # demonstrated it: "how do i pay my staff this month" shares `pay`
+            # and `month` with `whydiff` — both of them ambiguous, both of
+            # them in half the corpus — scored 55, cleared the screenless
+            # floor and was rendered under a "Grounded in" badge.
+            #
+            # So the filter is applied once, to the shared SET, and both tiers
+            # read from the result. `_ambiguous_words` is derived from the
+            # content rather than declared beside it, so this stays true as
+            # intents are added.
             if ambiguous is None:
                 ambiguous = self._ambiguous_words()
             qw = _topic_words(question)
             for phrase in phrases:
-                shared = qw & _topic_words(phrase)
-                if len(shared) >= 2:
+                strong = (qw & _topic_words(phrase)) - ambiguous
+                if len(strong) >= 2:
                     best = max(best, 55)
-                elif len(shared) == 1:
-                    word = next(iter(shared))
+                elif len(strong) == 1:
+                    word = next(iter(strong))
                     # Long AND discriminating. Either alone is not enough: the
                     # length test alone let `change` through, and dropping the
                     # length test would let any rare short word through.
-                    if len(word) >= 6 and word not in ambiguous:
+                    if len(word) >= 6:
                         best = max(best, 40)
         if best and screen_key and _covers_screen(intent, screen_key) \
                 and (intent.get('screens') or '*') != '*':
@@ -378,10 +750,33 @@ class LearnIntent(models.AbstractModel):
         ambiguous = self._ambiguous_words()
         scored = [(self._score(question, i, screen_key, ambiguous), i['key'])
                   for i in candidates]
-        scored = [s for s in scored if s[0] >= _SCORE_FLOOR]
+        # Off the map the bar is higher — see _SCREENLESS_FLOOR. Applied here
+        # rather than inside `_score` so that the scores themselves stay
+        # comparable between the two cases and only the ACCEPTANCE changes.
+        floor = _SCORE_FLOOR if screen_key else _SCREENLESS_FLOOR
+        scored = [s for s in scored if s[0] >= floor]
         if not scored:
             return None
         scored.sort(key=lambda s: (-s[0], s[1]))
+        # A TIE AT THE FLOOR IS A COIN TOSS WEARING A BADGE.
+        #
+        # The sort's second key is the intent KEY, so two candidates on the
+        # same score are separated ALPHABETICALLY — a rule nobody chose, about
+        # a question nobody could answer. Phase 4 review reproduced it: "what
+        # is the pay run for this month" scored 55 against both `howrun` and
+        # `whydiff`, and `howrun` won for the same reason `whichfilings` beat
+        # `whichpolicy` on the holiday-policy probe.
+        #
+        # At the FLOOR specifically, a tie means the weakest kind of hit the
+        # resolver accepts, twice, with nothing to choose between them. That
+        # is the definition of a miss, and the honest miss names what the
+        # Coach CAN answer here.
+        #
+        # ABOVE the floor a tie may keep the sort. Two intents both scoring 80
+        # or 100 are both real matches — one of them is a good answer, and
+        # refusing to pick would throw away an answer rather than a guess.
+        if len(scored) > 1 and scored[0][0] == floor and scored[1][0] == floor:
+            return None
         return scored[0][1]
 
     @api.model
@@ -511,6 +906,16 @@ class LearnIntent(models.AbstractModel):
             'blocks': self._blocks_for(intent, capability, screen),
             'capability': capability,
             'show_me': list(intent.get('show_me') or []),
+            # LEARNOS Phase 4 — "answers that teach". Two OPTIONAL scenario
+            # keys, added to the payload rather than folded into `show_me`,
+            # because they answer a different question: `show_me` says "that
+            # control is over there", these say "here is the whole task".
+            # An older browser that does not read them is unaffected, which is
+            # why this is an addition to the contract and not a change to it.
+            # The generator refuses a key that names no scenario, and refuses
+            # a `try` on a scenario that has no Try mode.
+            'watch': intent.get('watch') or '',
+            'try': intent.get('try') or '',
             'practice_key': intent.get('practice_key') or '',
         }
 
@@ -658,39 +1063,14 @@ class LearnIntent(models.AbstractModel):
         payroll product owns would put pay data in a prompt, which is the one
         thing this method exists not to do — and it is the one method in the
         module whose model scope is checked mechanically rather than read.
+
+        The assembly moved to `build_corpus` in LEARNOS Phase 4 so that the
+        exact string on the wire can be asserted without a database. What is
+        left here is the one thing that needs a registry: the door onto the
+        content plane. The model-scope check still sees exactly one model, and
+        `corpus-builder-is-pure` covers the half that moved.
         """
-        content = self.env['learn.content']
-        parts = []
-        screen = content.screen(screen_key) if screen_key else None
-        if screen:
-            parts.append('SCREEN: %s — %s' % (_one(screen['name'], lang),
-                                              _one(screen.get('blurb'), lang)))
-            if screen.get('next_step'):
-                parts.append('NEXT: %s' % _one(screen['next_step'], lang))
-            station = content.station(screen_key)
-            if station:
-                parts.append('STATION: %s — %s' % (_one(station['name'], lang),
-                                                   _one(station.get('summary'), lang)))
-                for lesson in station.get('lessons') or []:
-                    for step in lesson.get('steps') or []:
-                        parts.append('- %s: %s' % (_one(step['title'], lang),
-                                                   _one(step.get('body'), lang)))
-                for mistake in (station.get('outline') or {}).get('mistakes') or []:
-                    parts.append('MISTAKE: %s' % _one(mistake, lang))
-            for col in content.screen_columns(screen_key):
-                parts.append('COLUMN %s: %s' % (_one(col['label'], lang),
-                                                _one(col['body'], lang)))
-        for intent in content.intents():
-            if screen_key and not _covers_screen(intent, screen_key):
-                continue
-            for block in intent.get('blocks') or []:
-                if block['capability'] == 'any' and block.get('body'):
-                    parts.append('%s: %s' % (_one(intent['label'], lang),
-                                             _one(block['body'], lang)))
-        for term in content.glossary():
-            parts.append('TERM %s: %s' % (_one(term['term'], lang),
-                                          _one(term['definition'], lang)))
-        return '\n'.join(parts)[:_CORPUS_CAP]
+        return build_corpus(self.env['learn.content'].tree(), screen_key, lang)
 
     @api.model
     def _compose(self, question, screen_key, lang=None):
@@ -722,20 +1102,7 @@ class LearnIntent(models.AbstractModel):
         if not corpus.strip():
             return None
         scrubbed = self._scrub(question)
-        prompt = (
-            "You are the in-app help assistant for Payobook, a payroll "
-            "system. Answer the question USING ONLY the material below, which "
-            "is the product's own tutorial content.\n"
-            "If the material does not contain the answer, reply with exactly: "
-            "NO_ANSWER.\n"
-            "Never invent or repeat a contribution rate, a tax threshold, a "
-            "relief amount, a deadline or any other number that is not written "
-            "in the material. Never give tax, legal or compliance advice. "
-            "Never claim to have performed an action: you cannot compute a "
-            "run, approve a payslip or change a record.\n"
-            "Answer in at most four sentences, plainly, in the same language "
-            "as the question.\n\n"
-            "MATERIAL:\n%s\n\nQUESTION: %s\nANSWER:" % (corpus, scrubbed))
+        prompt = compose_prompt(corpus, scrubbed)
         try:
             reply = provider.generate_text(prompt, max_tokens=300, temperature=0.2)
         except Exception:                                     # noqa: BLE001
@@ -760,6 +1127,10 @@ class LearnIntent(models.AbstractModel):
             'matched': True,
             'capability': self._capability(screen_key),
             'show_me': [],
+            # Explicitly empty, not merely absent. A model chose these words;
+            # it does not get to decide that a walkthrough covers them.
+            'watch': '',
+            'try': '',
             'practice_key': '',
             # Badged so the drawer can say so. A composed answer is written by
             # a model FROM our material — the reader is entitled to know which
@@ -767,6 +1138,152 @@ class LearnIntent(models.AbstractModel):
             # column glossary carries a badge.
             'source_kind': 'composed',
         }
+
+    # ==================================================================
+    # EXPLAIN THIS SCREEN — a question nobody has to phrase
+    # ==================================================================
+    # THE FLOOR IS THE FEATURE. Every screen the content plane covers can
+    # explain itself with no provider, no flag, no network and no question:
+    # the blurb says what it is, `next_step` says what to do here (with its
+    # live token resolved, so on the demo world it names the reader's own run),
+    # and the column glossary says what the numbers on it count. All three were
+    # already written; what was missing was a control that asked for them
+    # together.
+    #
+    # A provider may then REWRITE that floor and may never replace it. The
+    # order in `explain_screen` is the guarantee: the floor is built and
+    # returned before the flag is even read, so a database with the composer
+    # off runs exactly the code that shipped without one, and a rewrite that
+    # comes back empty, refused or too long falls back to the same object.
+    #
+    # WHAT IS ON THE WIRE IF THE FLAG IS ON: the screen key and the floor text
+    # — content-plane strings written in docs/tutorial_poc/author/. No record,
+    # no learner question (there is none to ask), no tenant slot value. The
+    # last of those is deliberate: `next_step` may carry a tenant-authored live
+    # value, so the text handed to `explain_prompt` is the AUTHORED sentence,
+    # not the rendered one. See `_explain_wire_text`.
+
+    @api.model
+    def _explain_floor(self, screen_key):
+        """The offline explanation, in the ordinary answer shape.
+
+        NO `lang` ARGUMENT, deliberately. Every block it returns carries BOTH
+        languages and the drawer picks — the same shape every other answer in
+        this module has. A language parameter here would have been a dead
+        argument that the next reader assumes is doing something.
+
+        Returns None when the screen is not one this module covers — the Coach
+        already has an honest sentence for that and does not need a second one.
+
+        The live substitution is the only thing that happens here and not in
+        `explain_blocks`: `next_step_live` resolves `{{live:…}}` against the
+        database, so on the demo world this names the reader's own run, and
+        everywhere else it degrades to the authored fallback.
+        """
+        Content = self.env['learn.content']
+        screen = Content.screen(screen_key)
+        if not screen:
+            return None
+        tree = Content.tree()
+        blocks = explain_blocks(
+            tree, screen_key, self.env['learn.runtime'].next_step_live(screen))
+        if not blocks:
+            return None
+        watch, try_ = explain_scenario_offer(tree, screen_key)
+        return {
+            'key': 'screen:%s' % screen_key,
+            'label': _chrome_pair(Content, 'explainScreen'),
+            'simpler': '',
+            'blocks': blocks,
+            'matched': True,
+            'capability': self._capability(screen_key),
+            'show_me': [],
+            'watch': watch,
+            'try': try_,
+            'practice_key': '',
+            'source_kind': 'screen',
+        }
+
+    @api.model
+    def _explain_wire_text(self, screen_key, lang):
+        """The floor as plain text, for a prompt — AUTHORED strings only.
+
+        Built from the content plane a second time rather than by flattening
+        the floor payload, and the difference is the whole reason this method
+        exists: the floor's `next_step` has been through `learn.runtime`, so on
+        the demo world it carries a division name and a run state read out of
+        the database, and on any tenant it can carry an override slot somebody
+        typed. Neither belongs on a wire to a provider. What is sent is the
+        sentence as an author wrote it, tokens unresolved.
+        """
+        Content = self.env['learn.content']
+        screen = Content.screen(screen_key)
+        if not screen:
+            return ''
+        parts = ['SCREEN: %s — %s' % (_one(screen['name'], lang),
+                                      _one(screen.get('blurb'), lang))]
+        next_step = _wire_leaf(screen.get('next_step'),
+                               screen.get('live_fallback'), lang)
+        if next_step:
+            parts.append('NEXT: %s' % next_step)
+        for col in Content.screen_columns(screen_key)[:EXPLAIN_COLUMNS]:
+            parts.append('COLUMN %s: %s' % (_one(col['label'], lang),
+                                            _wire_leaf(col['body'], None, lang)))
+        return '\n'.join(parts)
+
+    @api.model
+    def _explain_composed(self, floor, screen_key, lang):
+        """A model's rewrite of the floor, or None. Never a replacement for it.
+
+        Everything the composer refuses on, this refuses on too, and for the
+        same reasons: no provider, no material, an empty reply, a NO_ANSWER, a
+        suspiciously long one, a provider that raised.
+        """
+        provider = self._provider()
+        if not provider:
+            return None
+        wire_lang = 'vi_VN' if (lang or '').lower().startswith('vi') else 'en_US'
+        material = self._explain_wire_text(screen_key, wire_lang)
+        if not material.strip():
+            return None
+        prompt = explain_prompt(screen_key, material)
+        try:
+            reply = provider.generate_text(prompt, max_tokens=300, temperature=0.2)
+        except Exception:                                     # noqa: BLE001
+            _logger.info("Learn coach: explain rewrite failed", exc_info=True)
+            return None
+        reply = (reply or '').strip()
+        if not reply or 'NO_ANSWER' in reply or len(reply) > _REPLY_CAP:
+            return None
+        out = dict(floor)
+        # One language, shown in both — the same compromise `_compose` makes,
+        # for the same reason, and badged the same way so the reader can tell.
+        out['blocks'] = [{'capability': 'any', 'kind': 'p',
+                          'body': _pair(reply), 'steps': []}]
+        out['source_kind'] = 'composed'
+        return out
+
+    @api.model
+    def explain_screen(self, screen_key, lang=None):
+        """"Explain this screen" — the Coach's one button that asks nothing.
+
+        THE ORDER IS THE CONTRACT, and `contract.json::explain-screen-has-
+        deterministic-floor` pins it: the floor exists and is returned before
+        the flag is read, so the provider branch can only ever be an
+        improvement on an answer this tenant already had.
+        """
+        floor = self._explain_floor(screen_key)
+        if not floor:
+            # The same honest miss `ask()` gives, built the same way, so an
+            # uncovered screen answers with what the Coach CAN do here.
+            return {
+                'matched': False,
+                'capability': self._capability(screen_key),
+                'suggest': self._suggestions(screen_key),
+            }
+        if not self._compose_enabled():
+            return floor
+        return self._explain_composed(floor, screen_key, lang) or floor
 
     # ------------------------------------------------------ column glossary
     @api.model
@@ -812,6 +1329,8 @@ class LearnIntent(models.AbstractModel):
             'matched': True,
             'capability': self._capability(screen_key),
             'show_me': [],
+            'watch': '',
+            'try': '',
             'practice_key': '',
             'source_kind': 'column',
         }

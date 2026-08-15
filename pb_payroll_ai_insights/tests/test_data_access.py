@@ -251,7 +251,14 @@ class TestDataQueryAccess(TransactionCase):
         self.assertIn("payroll_data.get('access_refused')", body,
                       "the engine no longer recognises a refusal")
         refusal_at = body.index("access_refused")
-        prompt_at = body.index('json.dumps(payroll_data')
+        # LEARNOS PHASE 4 RE-ANCHORED THIS. The marker used to be
+        # `json.dumps(payroll_data`, and that string is gone for a good
+        # reason: the payload is redacted first and the REDACTED copy is what
+        # is serialised. A check that fails for a correct reason teaches the
+        # next author to delete checks, so it is rewritten to the new promise
+        # — the prompt builder — rather than dropped. The redaction ordering
+        # itself is pinned in test_egress::test_01d.
+        prompt_at = body.index('data_query_prompt(')
         self.assertLess(refusal_at, prompt_at,
                         "the refusal is checked AFTER the data is put in the prompt")
 

@@ -64,19 +64,29 @@ assert os.path.isdir(ADDON), 'pb_learn not found at %s' % ADDON
 # being mirrored are asserted present in the module source, so removing one
 # there fails HERE, loudly, instead of silently un-mirroring.
 MIRRORED_MARKERS = (
-    # the ambiguous-word rule (deploy-round fix)
+    # the ambiguous-word rule (deploy-round fix), now applied to the shared
+    # SET so that BOTH overlap tiers count discriminating words only
+    # (Phase 4 review: two ambiguous words bought the 55 tier)
     'def _ambiguous_words',
-    'word not in ambiguous',
+    'strong = (qw & _topic_words(phrase)) - ambiguous',
+    'if len(strong) >= 2:',
+    'elif len(strong) == 1:',
     'len(word) >= 6',
+    # a tie AT the floor is a miss, not an alphabetical coin toss
+    'if len(scored) > 1 and scored[0][0] == floor and scored[1][0] == floor:',
     # the four scoring tiers
     'best = max(best, 100)',
     'best = max(best, 80)',
     'best = max(best, 60)',
     'best = max(best, 55)',
     'best = max(best, 40)',
-    # the on-screen bonus and the floor
+    # the on-screen bonus and the two floors (LEARNOS Phase 4 raised the
+    # screenless one; mirroring only the constant would let the module go back
+    # to one floor while this file kept reporting green)
     'best += _ON_SCREEN_BONUS',
-    's[0] >= _SCORE_FLOOR',
+    '_SCREENLESS_FLOOR = 55',
+    'floor = _SCORE_FLOOR if screen_key else _SCREENLESS_FLOOR',
+    's[0] >= floor',
     # retrieval order in ask()
     "self._match_column(question, screen_key)",
     # the column glossary reading BOTH languages
@@ -106,6 +116,7 @@ def _load_module_globals():
 G = _load_module_globals()
 _norm, _topic_words, _is_advice = G['_norm'], G['_topic_words'], G['_is_advice']
 FLOOR, BONUS = G['_SCORE_FLOOR'], G['_ON_SCREEN_BONUS']
+SCREENLESS_FLOOR = G['_SCREENLESS_FLOOR']
 
 
 def one(pair, lang='en'):
@@ -183,12 +194,13 @@ def score(question, intent, screen_key):
     if best < 60:
         qw = _topic_words(question)
         for phrase in intent['phrases']:
-            shared = qw & _topic_words(phrase)
-            if len(shared) >= 2:
+            # Discriminating words only, for BOTH tiers — Phase 4 review.
+            strong = (qw & _topic_words(phrase)) - AMBIGUOUS
+            if len(strong) >= 2:
                 best = max(best, 55)
-            elif len(shared) == 1:
-                word = next(iter(shared))
-                if len(word) >= 6 and word not in AMBIGUOUS:
+            elif len(strong) == 1:
+                word = next(iter(strong))
+                if len(word) >= 6:
                     best = max(best, 40)
     if best and screen_key and covers(intent, screen_key) \
             and (intent['screens'] or '*') != '*':
@@ -201,10 +213,18 @@ def resolve(question, screen_key=None):
         return 'compliance' if any(i['key'] == 'compliance' for i in INTENTS) else None
     scored = [(score(question, i, screen_key), i['key']) for i in INTENTS
               if not screen_key or covers(i, screen_key)]
-    scored = [s for s in scored if s[0] >= FLOOR]
+    # LEARNOS Phase 4: off the map the bar is the two-shared-word tier, so a
+    # single shared word can no longer buy a badged answer.
+    floor = FLOOR if screen_key else SCREENLESS_FLOOR
+    scored = [s for s in scored if s[0] >= floor]
     if not scored:
         return None
     scored.sort(key=lambda s: (-s[0], s[1]))
+    # A tie AT the floor is the weakest hit accepted, twice, with nothing to
+    # choose between them — an alphabetical coin toss, badged. Above the floor
+    # a tie is two real matches and the sort may keep it.
+    if len(scored) > 1 and scored[0][0] == floor and scored[1][0] == floor:
+        return None
     return scored[0][1]
 
 
@@ -254,6 +274,85 @@ MUST_MISS = [
     ("how do I change the office wifi password", ('payruns', 'payslips', 'import')),
     ("where do I book the meeting room", ('payruns', 'payslips')),
     ("what is the office coffee budget", ('payslips',)),
+]
+
+# ------------------------------------------------------ the screenless pair
+# LEARNOS PHASE 4. The Coach is mounted everywhere, and on the surfaces the
+# content plane does not cover — the Journey itself, an ordinary list view —
+# `screen_key` is None. The live validation found that a single shared topic
+# word (score 40) then cleared the floor of 20 and produced a "Grounded in"
+# badge over a wrong-topic answer. Both halves of that finding are probed
+# here, because a floor that only stops wrong answers is one somebody will
+# raise until it stops right ones too.
+#
+# 1. THE WRONG-TOPIC MATCHES. EVERY ONE OF THESE MUST BE DECIDED BY A RULE
+#    THIS FILE IS TESTING — a probe that misses anyway is not a probe, it is a
+#    line that makes the count look bigger. The Phase 4 review caught one of
+#    those here ("the office wifi password" missed at BOTH floors, because it
+#    shares no long word with anything) and it has been replaced. The score
+#    each one reaches with the rules OFF is written beside it.
+#
+#    Payobook has no content about any of these and never will; they are not
+#    corpus gaps, they are questions for somebody in HR.
+SCREENLESS_MUST_MISS = [
+    # 40 against `whichpolicy` on `policy` alone. Stopped ONLY by the
+    # screenless floor: at 20 it resolves and is badged "Grounded in".
+    "what is the overtime policy for interns",
+    # 40 against BOTH `whichpolicy` and `whichfilings`. Stopped by the floor,
+    # and by the tie rule if the floor were ever lowered to 40.
+    "what is the company holiday policy",
+    # 55 against BOTH `howrun` and `whydiff` BEFORE the ambiguous filter was
+    # applied to the two-word tier; it is the probe that fix was written for.
+    # It now scores ZERO, because `pay`, `run` and `month` are all ambiguous —
+    # so it no longer exercises TIE-AT-FLOOR, which is what the next entry is
+    # for. (Recorded rather than quietly re-labelled: the first draft of this
+    # list claimed it was the tie probe, which was the MINOR-3 mistake the
+    # review had just corrected, made again one layer down.)
+    "what is the pay run for this month",
+    # THE TIE PROBE, and it is a question somebody actually asks on a Setup
+    # screen. `insurance`/`base`/`ceiling` are two strong words of `ceiling`;
+    # `safe`/`edit`/`live` are two strong words of `editlive`. Both reach 55,
+    # neither reaches higher, and the sort's second key is the intent KEY — so
+    # without TIE-AT-FLOOR the answer is `ceiling`, chosen alphabetically over
+    # `editlive`, for a question that is honestly BOTH. Off the map there is
+    # no screen to break the tie and no screen for the reader to check the
+    # answer against, so the honest miss names what the Coach can answer.
+    "is the insurance base and ceiling safe to edit live",
+    # `pay` + `month`, both ambiguous. Before the Phase 4 review the 55 tier
+    # topic words {pay, staff}: `pay` is ambiguous, `staff` is not in any
+    # howrun phrase's topic set as a pair with it — with the ambiguous filter
+    # DISABLED this resolves to `howrun` on the weak overlap (verified by
+    # executing the control, re-review round 2). Stopped by the ambiguous
+    # filter on the two-word tier. (The neighbouring "how do i pay my staff"
+    # is a legitimate HIT, because `howrun` gained that exact phrase.)
+    "when do i pay my staff",
+]
+
+# 2. THE LEGITIMATE SCREENLESS HITS THAT MUST KEEP WORKING. Raising a floor is
+#    only safe if something proves what is still above it. Each of these
+#    resolves off a real hit rather than off one shared word: an exact label
+#    (100), a phrase contained in the question (80), or a question contained
+#    in a phrase (60). `howrun` is in this list deliberately — it is the
+#    question the whole fix started from, and the pair of changes has to leave
+#    it ANSWERED rather than merely un-badged.
+#    THE PAY-FAMILY VARIANTS ARE HERE BECAUSE OF THE REVIEW. Almost nobody
+#    asks how to "run payroll"; they ask how to pay their staff. Every one of
+#    these was answered by `whydiff` before Phase 4 — a lesson about why one
+#    person's salary moved — and tightening the score alone would have turned
+#    all five into honest misses, which is better and still not an answer. The
+#    scoring fix and the phrases `howrun` gained are one fix, and this list is
+#    what stops the next person tightening the floor until they stop working.
+SCREENLESS_MUST_HIT = [
+    ("how do I correct a mistake in a payslip", 'fixerror'),
+    ("how do i run payroll", 'howrun'),
+    ("how do i pay my staff this month", 'howrun'),
+    ("how do i pay everyone", 'howrun'),
+    ("how do i pay people", 'howrun'),
+    ("how do we pay everyone this month", 'howrun'),
+    ("tra luong cho nhan vien the nao", 'howrun'),
+    ("let me practise this safely on the fake company", 'practice'),
+    ("what should i do next", 'whatnext'),
+    ("sửa lỗi", 'fixerror'),
 ]
 
 # Questions that must reach the advice refusal, from the Phase D review.
@@ -315,6 +414,23 @@ def main():
                 problems.append('%r on %s matched %s:%s — it has no content'
                                 % (question, sk, kind, key))
 
+    # 3b. THE SCREENLESS PAIR (Phase 4). Both directions, and the second is
+    #     the one that stops the floor being raised until nothing gets through.
+    screenless = 0
+    for question in SCREENLESS_MUST_MISS:
+        screenless += 1
+        kind, key = ask(question, None)
+        if kind != 'miss':
+            problems.append('%r off the map matched %s:%s on a weak score — a '
+                            'badged wrong answer is worse than a miss'
+                            % (question, kind, key))
+    for question, expected in SCREENLESS_MUST_HIT:
+        screenless += 1
+        kind, key = ask(question, None)
+        if (kind, key) != ('intent', expected):
+            problems.append('%r off the map should still resolve to %s, got '
+                            '%s:%s' % (question, expected, kind, key))
+
     # 4. the advice guard, both directions.
     for question in MUST_REFUSE:
         if not _is_advice(question):
@@ -336,6 +452,7 @@ def main():
     # has to be non-zero or this file is not checking what it says it checks.
     for label, count in (('suggestion chips', chips), ('labels', labels),
                          ('miss probes', misses), ('intents', len(INTENTS)),
+                         ('screenless probes', screenless),
                          ('columns', len(COLUMNS)), ('screens', len(SCREENS))):
         if not count:
             problems.append('the scan found ZERO %s — this simulation is '
@@ -347,6 +464,9 @@ def main():
              len(SCREENS), len(COLUMNS), len(AMBIGUOUS)))
     print('  %d suggestion chips · %d labels x lang · %d miss probes · %d advice probes'
           % (chips, labels, misses, len(MUST_REFUSE) + len(MUST_ANSWER)))
+    print('  %d screenless probes (%d must miss, %d must still hit) · floors %d/%d'
+          % (screenless, len(SCREENLESS_MUST_MISS), len(SCREENLESS_MUST_HIT),
+             FLOOR, SCREENLESS_FLOOR))
     if args.verbose:
         print('  ambiguous words: %s' % ', '.join(sorted(AMBIGUOUS)))
     if problems:
