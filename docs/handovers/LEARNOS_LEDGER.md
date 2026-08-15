@@ -172,3 +172,16 @@ missing test", contract checker discipline, anchor registry discipline). Read th
   tail was removed; honest follow-up target, not a claim of overall simplification.
 - (Phase 2 review → Phase 4 scope) Composer corpus: glossary grew past _CORPUS_CAP (12k) and
   is appended last — new terms never reach the composer. Fix ordering/cap in Phase 4.
+- (Phase 2 fix round) **A claimed clean sweep is not one until a gate says so** — the
+  vòng→cấp sweep left one tier-sense survivor and one blind-replace nonsense string, both
+  caught only by re-review. `jargon.py` now has `VI_RESTRICTED` (a VI term legal only inside
+  listed compounds) with an executed negative control; extend it instead of trusting seds.
+- (Phase 2) Display term ≠ match phrase (`matchTerm: {vi: false}` — "Nháp" is the right
+  label and the wrong matcher). Vietnamese is written in syllables: single-word VI aliases
+  are presumed wrong (BARE_ALIASES allowlist, reason required). Escaping is a property of
+  the POSITION, not the value — the one raw-insertion wrapper is `gtx()`, and "are all raw
+  positions covered" is the grep for `${tx(`/`${T(` returning nothing.
+- (Phase 2, accepted nits for later touch) live_mission.js still `esc(tx())` on step.detail
+  (no glossary cards, literal <b> tags there); glossify idempotence guard keys on the
+  literal `data-gloss=`; gloss_scan payload ignores matchTerm (over-fails only); the 17-28
+  word warning band is unchanged (~24%) — only the >28 tail was removed.

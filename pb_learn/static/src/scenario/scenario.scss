@@ -162,6 +162,28 @@
    Drawn under each line's station cards. A scenario is not a station and must
    not look like one: it is wider, it names its modes as separate buttons, and
    the buttons are the affordance rather than the card. */
+/* The row's lead-in (LEARNOS Phase 2). The three mode buttons are a promise
+   about who presses; without a sentence above them a learner has to infer that
+   from three verbs. `scenariosLead` was authored in Phase 1b and rendered
+   nowhere until now. */
+.lrn-screnhead {
+    margin: 18px 0 8px;
+
+    .lrn-screnheadtitle {
+        display: block;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--vuf-text, #1f2430);
+    }
+
+    .lrn-screnlead {
+        margin: 2px 0 0;
+        font-size: 13px;
+        color: var(--vuf-text-muted, #6b7280);
+        max-width: 62ch;
+    }
+}
+
 .lrn-screnrow {
     display: grid;
     gap: var(--vuf-sp-3, 12px);

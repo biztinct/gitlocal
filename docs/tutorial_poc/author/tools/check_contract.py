@@ -269,11 +269,23 @@ def check_model_scope(root, chk):
 
 
 def _bilingual_pairs(node, out):
-    """Every `{en, vi}` leaf in the tree, as en -> {vi, …}."""
+    """Every `{en, vi}` PROSE leaf in the tree, as en -> {vi, …}.
+
+    The `{en, vi}` key set is not sufficient on its own, and LEARNOS Phase 2
+    is what proved it: a glossary entry's `match` block is
+    `{"en": [...], "vi": [...]}` — the per-language phrase lists the hovercard
+    matches on — which has the same keys and is not prose. Treating it as a
+    leaf raised `unhashable type: 'list'`, which was at least loud; the quieter
+    version of the same bug is a non-prose node being counted as a translatable
+    and reported as untranslated. A prose leaf is two STRINGS, so that is what
+    is tested.
+    """
     if isinstance(node, dict):
         if set(node) == {"en", "vi"}:
-            out.setdefault(node["en"], set()).add(node["vi"])
-            return
+            if isinstance(node["en"], str) and isinstance(node["vi"], str):
+                out.setdefault(node["en"], set()).add(node["vi"])
+                return
+            # Same keys, not prose: keep walking rather than claiming it.
         for value in node.values():
             _bilingual_pairs(value, out)
     elif isinstance(node, list):
