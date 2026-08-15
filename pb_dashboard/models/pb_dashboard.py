@@ -75,14 +75,11 @@ class PbDashboard(models.AbstractModel):
                 avg = round(payroll / hc) if hc else 0
         except Exception:
             payroll = contributions = avg = 0
-        # Fallback to the legacy analytics dashboard if no payslip data exists yet.
-        if not payroll:
-            adash = safe(lambda: env['hr.analytics.dashboard'].search([], limit=1), None)
-            if adash:
-                payroll = safe(lambda: adash.total_personnel_cost)
-                contributions = safe(lambda: adash.total_contributions)
-                avg = safe(lambda: adash.average_salary)
-                headcount = safe(lambda: adash.total_headcount) or employees
+        # NO FALLBACK. A database with no payslips reports zeros. The legacy
+        # analytics-dashboard record used to fill these in, and its figures were
+        # a hard-coded sample dict, so a brand-new tenant was shown a company
+        # that does not exist (LEARNOS ledger rule 1 — honest zeros). This
+        # module must not read that model at all; the phase greps for it.
 
         # ---- Formula engine ----
         cfgs = safe(lambda: env['hr.formula.config'].search([]), None)
@@ -92,9 +89,24 @@ class PbDashboard(models.AbstractModel):
         tests = sum(len(c.test_result_ids) for c in cfgs) if cfgs else 0
         f_health = round(active / f_count * 100) if f_count else 0
 
+        # ---- Presentation context ----
+        # The money formatter used to hard-code `₫`. Ship the company's own
+        # currency instead; the browser only formats what it is given.
+        cur = env.company.currency_id
+        currency = {
+            'symbol': (cur.symbol if cur else None) or '',
+            'position': (cur.position if cur else None) or 'before',
+        }
+        # Whether the guided tour exists on THIS database — the setup panel's
+        # first row is only offered when there is something behind it.
+        has_learn = bool(safe(lambda: env['ir.module.module'].sudo().search_count(
+            [('name', '=', 'pb_learn'), ('state', '=', 'installed')])))
+
         return {
             'user': env.user.name or 'there',
             'company': env.company.name or 'Payobook',
+            'currency': currency,
+            'has_learn': has_learn,
             'kpis': {
                 'headcount': headcount,
                 'contracts': contracts,
