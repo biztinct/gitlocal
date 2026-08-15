@@ -190,7 +190,11 @@ function askWelcome() {
                 // A transient layer that closes on a key SWALLOWS that key —
                 // the learner meant "close the card", not "and also exit
                 // whatever is behind it".
-                ev.stopPropagation();
+                // stopImmediatePropagation, not stopPropagation: every
+                // Escape listener sits on document-capture, and a sibling on
+                // the SAME node still runs after stopPropagation (proven live
+                // on the hovercard during the Phase 4-6 deploy).
+                ev.stopImmediatePropagation();
                 ev.preventDefault();
                 answer("later");
             }

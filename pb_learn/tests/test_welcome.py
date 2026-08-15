@@ -149,7 +149,7 @@ class TestWelcomeCard(TransactionCase):
         self.assertIn('document.removeEventListener("keydown", onKey, true)', self.js,
                       "the listener outlives the card it belongs to, or the "
                       "remove no longer matches the capture-phase add")
-        self.assertIn('ev.stopPropagation();', self.js,
+        self.assertIn('ev.stopImmediatePropagation();', self.js,
                       "Escape closes the card AND exits what is behind it")
 
     def test_06_the_card_cannot_break_the_product(self):

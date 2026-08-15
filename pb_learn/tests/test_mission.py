@@ -207,6 +207,11 @@ class TestMission(TransactionCase):
                             'static/src/journey/journey.js')
         with open(path, encoding='utf-8') as fh:
             src = fh.read()
+        # CODE only: a docstring showing `orm.call("literal"` as an example
+        # defeated this scan on the deploy clone — 10th occurrence of the
+        # family; the rule is in the ledger.
+        src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
+        src = re.sub(r'(?<!:)//[^\n]*', '', src)
         calls = set(re.findall(r'orm\.call\(\s*"([a-z_.]+)"', src))
         allowed = {'learn.runtime', 'learn.progress', 'learn.event', 'learn.confidence'}
         self.assertFalse(calls - allowed,

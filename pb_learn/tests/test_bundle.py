@@ -184,6 +184,11 @@ class TestBundle(TransactionCase):
             vi = (pair.get('vi') or "").strip()
             if not en or path.startswith(NOT_PROSE):
                 continue
+            # A step's typed VALUE is data, not prose — a person's name is
+            # identical in both languages by definition (deploy finding,
+            # sc_people's Nguyễn Văn An).
+            if path.endswith('.value'):
+                continue
             if en == vi and en not in SAME_IN_BOTH:
                 # Pure figures and times are the same in both languages.
                 if re.fullmatch(r"[\d\s:.,%₫+\-–—/]+", en):
