@@ -193,19 +193,35 @@ class TestScenarioEngine(TransactionCase):
                       "the listener is not a one-shot capture listener")
         self.assertNotIn('WAIT_TIMEOUT', wait,
                          "the waiting path knows about a deadline")
-        self.assertNotIn('DWELL', wait,
-                         "the waiting path can advance on a dwell")
+        self.assertNotIn('PRESS_SETTLE', wait,
+                         "the waiting path can advance on a timer")
 
-    def test_05_autoplay_belongs_to_watch_alone(self):
-        """`_dwell` is the only self-advance, and only Watch reaches it."""
-        bodies = _method_bodies(_strip_comments(self.overlay))
-        enter = bodies['_enterStep']
-        self.assertIn('if (this.isWatch) {', enter,
-                      "the dwell is not gated on the mode")
-        self.assertIn('this._dwell();', enter)
-        dwell_at = enter.index('this._dwell();')
-        gate_at = enter.rindex('if (this.isWatch) {', 0, dwell_at)
-        self.assertLess(gate_at, dwell_at)
+    def test_05_a_walkthrough_never_advances_by_itself(self):
+        """NOTHING self-advances, in either mode.
+
+        Watch used to dwell 3.4s and walk on. It read as a video played at
+        somebody, and a reader who wanted a second look could not ask for one,
+        so the step now ends when the learner presses Next and at no other
+        moment. Watch may still PRESS an unguarded control to set the screen up
+        for the next card (test_01/test_02 own that promise) — what it may not
+        do is move the card.
+
+        The one surviving automatic step change is in `_awaitRealClick`: Do
+        mode, after the learner has pressed the real control themselves. That
+        is the engine noticing, not deciding.
+        """
+        code = _strip_comments(self.overlay)
+        self.assertNotIn('_dwell', code,
+                         "the dwell is back; a Watch step can walk on by itself")
+        bodies = _method_bodies(code)
+        movers = sorted(n for n, b in bodies.items() if 'this.sc.next()' in b)
+        self.assertEqual(movers, ['_awaitRealClick', 'onNext'],
+                         "the step is advanced from %s. Only the learner's Next "
+                         "press and Do-mode's response to the learner's OWN "
+                         "press may move a walkthrough on." % movers)
+        for name in ('_enterStep', '_watchAutoClick'):
+            self.assertNotIn('this.sc.next()', bodies[name],
+                             "%s advances the walkthrough on its own" % name)
 
     # -- the content plane's half ------------------------------------------
     def test_06_every_click_step_states_its_guard(self):
