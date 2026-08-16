@@ -2,31 +2,45 @@
 <odoo noupdate="1">
 
     <!-- ============ Demo driver users + employees ============ -->
-    <!-- SECURITY: no password field — these are ACTIVE internal users shipped
-         in `data` (xmlids must resolve for toggle_demo/route sims), so a
-         hardcoded password would be a live credential on every install. They
-         ship with no usable password; set one from Settings > Users just
-         before a phone demo, and clear it afterwards. -->
+    <!-- SECURITY: no password field, and they ship ARCHIVED.
+
+         These live in `data` rather than `demo` on purpose — the xmlids must
+         resolve for toggle_demo/the route sims, which a demo-only load cannot
+         guarantee. The cost used to be that every install, including paying
+         client tenants, carried two live internal driver accounts: on the SaaS
+         fleet they were what the tenant cockpit counted as "2 users", when the
+         real answer was one admin (see pb_tenants fleet health).
+
+         `active="False"` keeps the xmlids resolvable while nobody inherits a
+         live account. toggle_demo() un-archives the pair when demo mode is
+         switched ON and re-archives them when it is switched OFF, so an awake
+         driver account only ever exists while somebody is actually demoing.
+         Still no password: set one from Settings > Users just before a phone
+         demo, and clear it afterwards. -->
     <record id="demo_user_driver_hanoi" model="res.users">
         <field name="name">Nguyễn Văn Tài (Driver)</field>
         <field name="login">driver.hanoi@payobook.com</field>
         <field name="group_ids" eval="[(4, ref('group_pb_driver'))]"/>
+        <field name="active" eval="False"/>
     </record>
     <record id="demo_emp_driver_hanoi" model="hr.employee">
         <field name="name">Nguyễn Văn Tài</field>
         <field name="user_id" ref="demo_user_driver_hanoi"/>
         <field name="job_title">Delivery Driver</field>
+        <field name="active" eval="False"/>
     </record>
 
     <record id="demo_user_driver_hcmc" model="res.users">
         <field name="name">Trần Thị Mai (Driver)</field>
         <field name="login">driver.hcmc@payobook.com</field>
         <field name="group_ids" eval="[(4, ref('group_pb_driver'))]"/>
+        <field name="active" eval="False"/>
     </record>
     <record id="demo_emp_driver_hcmc" model="hr.employee">
         <field name="name">Trần Thị Mai</field>
         <field name="user_id" ref="demo_user_driver_hcmc"/>
         <field name="job_title">Delivery Driver</field>
+        <field name="active" eval="False"/>
     </record>
 
     <!-- ============ Route simulators (ship active=False; admin-gated) ======= -->

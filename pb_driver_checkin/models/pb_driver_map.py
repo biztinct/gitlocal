@@ -166,10 +166,19 @@ class PbDriverMap(models.AbstractModel):
         sims = Sim.browse(seed_ids)
         active = bool(active)
         for sim in sims:
-            emp = self.env['hr.employee'].sudo().search(
+            # active_test=False is load-bearing: the seed driver and employee ship
+            # ARCHIVED (see data/demo_routes.xml) so no install carries a live
+            # driver account. A plain search would silently find nothing here and
+            # demo mode would do nothing at all, with no error to explain why.
+            emp = self.env['hr.employee'].sudo().with_context(active_test=False).search(
                 [('user_id', '=', sim.user_id.id)], limit=1)
             if not emp:
                 continue
+            # Wake the pair BEFORE punching: attendance on an archived employee is
+            # not something to rely on.
+            if active:
+                sim.user_id.sudo().write({'active': True})
+                emp.write({'active': True})
             # seed at the route's first point so check-in lands near the sim;
             # if the route can't be parsed, punch with no location (never 0,0)
             geo = {'mode': 'gps'}
@@ -185,4 +194,9 @@ class PbDriverMap(models.AbstractModel):
             sim.active = active
             if active:
                 sim.progress_m = 0.0
+            else:
+                # Back to sleep — but only after the check-out above is recorded,
+                # so demo mode leaves no driver account awake behind it.
+                emp.write({'active': False})
+                sim.user_id.sudo().write({'active': False})
         return {'ok': True, 'active': active, 'count': len(sims)}
