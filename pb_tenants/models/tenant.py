@@ -37,6 +37,14 @@ class PbTenant(models.Model):
     ], default='unknown')
     health_checked = fields.Datetime()
 
+    # TLS state, read off the certificate nginx actually serves for this host
+    # (not off disk) — so "what the client's browser gets" is what we record.
+    cert_expires = fields.Date(help="Expiry of the certificate served for this tenant's subdomain")
+    cert_days_left = fields.Integer(default=-1, help="-1 when the certificate could not be read")
+    cert_own = fields.Boolean(
+        help="True when the tenant has its own auto-renewing certificate; False means it is "
+             "falling back to the wildcard, which does NOT auto-renew.")
+
     last_backup_at = fields.Datetime()
     backup_ids = fields.One2many('pb.tenant.backup', 'tenant_id')
     domain_ids = fields.One2many('pb.tenant.domain', 'tenant_id')
