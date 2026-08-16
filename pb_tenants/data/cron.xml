@@ -10,6 +10,18 @@
         <field name="nextcall" eval="(DateTime.now().replace(hour=19, minute=30, second=0) + timedelta(days=1))"/>
         <field name="active" eval="True"/>
     </record>
+    <!-- Safety net for the non-fatal cert provisioning step: any live tenant
+         still riding the (non-renewing) wildcard gets its own certificate. -->
+    <record id="cron_certs" model="ir.cron">
+        <field name="name">Payobook Tenants: tenant TLS certificates</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_certs()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=3, minute=15, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
     <record id="cron_health" model="ir.cron">
         <field name="name">Payobook Tenants: fleet health refresh</field>
         <field name="model_id" ref="model_pb_tenants"/>

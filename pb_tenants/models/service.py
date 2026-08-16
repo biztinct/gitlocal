@@ -94,6 +94,9 @@ FALLBACK_RESOLVERS = ('1.1.1.1', '8.8.8.8')
 # Start nagging about the wildcard certificate this many days before it expires.
 # Manual DNS-01 certificates do NOT auto-renew, so this is the only warning there is.
 TLS_RENEW_WARN_DAYS = 30
+# certbot renews at 30 days. A tenant cert still below this is not renewing on
+# its own, so _cron_certs re-runs the issuer rather than waiting for expiry.
+CERT_REISSUE_DAYS = 21
 
 # Per-tenant health probes, each run independently: (field, required table, SQL).
 # They used to share a single try/except, so the first schema drift silently
@@ -363,24 +366,27 @@ class PbTenants(models.AbstractModel):
             'template_size': self._human(self._db_size(self._template_db())) if template_ok else None,
         }
 
-    def _check_wildcard_tls(self, dom):
-        """Inspect the cert nginx actually serves for a *.dom name.
+    def _peer_cert(self, server_name):
+        """Read the certificate nginx actually serves for `server_name`.
 
-        Returns {'ok': covers the wildcard, 'expires': 'YYYY-MM-DD'|None,
-        'days_left': int|None}. Expiry matters because the wildcard is issued
-        with certbot's manual DNS-01 flow, which has no renewal hook — nothing
-        on this server will renew it, so the cockpit is the reminder.
+        Probes our own https on 127.0.0.1 with SNI, so it reports what a client
+        would really be handed — including which server block won. Reading PEM
+        files off /etc/letsencrypt instead would be a lie by omission (root-only,
+        and it cannot tell you which block nginx picked).
+
+        Returns {'text': openssl -text output, 'expires': 'YYYY-MM-DD'|None,
+        'days_left': int|None}; empty text when the probe failed.
         """
-        out = ''
+        blank = {'text': '', 'expires': None, 'days_left': None}
         try:
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
             with socket.create_connection(('127.0.0.1', 443), timeout=3) as sock:
-                with ctx.wrap_socket(sock, server_hostname='pb-probe-x7.%s' % dom) as tls:
+                with ctx.wrap_socket(sock, server_hostname=server_name) as tls:
                     der = tls.getpeercert(binary_form=True)
             cert = ssl.DER_cert_to_PEM_cert(der)
-            # cheap SAN check without external deps
+            # cheap parse without external deps
             import tempfile
             with tempfile.NamedTemporaryFile('w', suffix='.pem', delete=False) as f:
                 f.write(cert)
@@ -391,8 +397,8 @@ class PbTenants(models.AbstractModel):
             finally:
                 os.unlink(pem)
         except Exception:
-            return {'ok': False, 'expires': None, 'days_left': None}
-        res = {'ok': ('*.%s' % dom) in out, 'expires': None, 'days_left': None}
+            return blank
+        res = {'text': out, 'expires': None, 'days_left': None}
         m = re.search(r'Not After\s*:\s*(.+)', out)
         if m:
             try:
@@ -404,6 +410,16 @@ class PbTenants(models.AbstractModel):
             except ValueError:
                 pass
         return res
+
+    def _check_wildcard_tls(self, dom):
+        """Does a random *.dom name get a certificate covering the wildcard?
+
+        Uses a hostname nobody could have issued a per-tenant cert for, so this
+        keeps measuring the WILDCARD even now that tenants have their own certs.
+        """
+        info = self._peer_cert('pb-probe-x7.%s' % dom)
+        return {'ok': ('*.%s' % dom) in info['text'],
+                'expires': info['expires'], 'days_left': info['days_left']}
 
     # ================================================================== slug
     @api.model
@@ -596,6 +612,22 @@ class PbTenants(models.AbstractModel):
                                 'login': tenant.admin_email,
                                 'password': password}}
 
+    def _tenant_cert_vals(self, tenant):
+        """What certificate is this tenant's subdomain actually being served?
+
+        `cert_own` False means the host is falling back to the wildcard, which
+        cannot auto-renew — that is the state _cron_certs exists to repair.
+        """
+        host = '%s.%s' % (tenant.slug, self._base_domain())
+        info = self._peer_cert(host)
+        if not info['text']:
+            return {'cert_expires': False, 'cert_days_left': -1, 'cert_own': False}
+        # Its own cert names the host in the subject; the wildcard names *.domain.
+        own = ('CN=%s' % host) in info['text'] or ('DNS:%s' % host) in info['text']
+        return {'cert_expires': info['expires'] or False,
+                'cert_days_left': info['days_left'] if info['days_left'] is not None else -1,
+                'cert_own': own}
+
     def _step_cert(self, tenant, say):
         """Give this tenant's subdomain its own auto-renewing certificate.
 
@@ -728,6 +760,7 @@ class PbTenants(models.AbstractModel):
             _logger.warning("Health SQL failed for %s: %s", t.slug, e)
         code, ms = self._probe('%s.%s' % (t.slug, self._base_domain()))
         vals['ping_ms'] = ms
+        vals.update(self._tenant_cert_vals(t))
         stale = not t.last_backup_at or t.last_backup_at < datetime.now() - timedelta(hours=48)
         dbfilter_live = '%d' in (odoo.tools.config['dbfilter'] or '')
         if code == 200:
@@ -933,6 +966,63 @@ class PbTenants(models.AbstractModel):
                 _logger.warning("Health refresh failed for %s: %s", t.slug, e)
             self.env.cr.commit()
         self._warn_cert_expiry()
+
+    def _cron_certs(self):
+        """Keep every live tenant on its own auto-renewing certificate.
+
+        Provisioning's cert step is deliberately non-fatal — a tenant whose
+        issuance failed (slow DNS, Let's Encrypt rate limit) goes live on the
+        wildcard and nothing would ever notice. That is the worst place to be
+        left: the wildcard is precisely the certificate that cannot auto-renew.
+        This is the safety net that closes that gap.
+
+        Two repairable states, and nothing else is touched:
+          * no certificate of its own  -> issue one
+          * its own, but under CERT_REISSUE_DAYS and still not renewed by
+            certbot.timer -> re-run, since something is wrong with renewal
+
+        pb-tenant-cert passes --keep-until-expiring, so a needless run is a
+        no-op rather than an issuance against the weekly rate limit. Healthy
+        tenants are not touched at all, so nginx is not reloaded for nothing.
+        """
+        script = '/usr/local/bin/pb-tenant-cert'
+        for t in self.env['pb.tenant'].sudo().search([('state', '=', 'live')]):
+            host = '%s.%s' % (t.slug, self._base_domain())
+            try:
+                vals = self._tenant_cert_vals(t)
+                t.write(vals)
+                self.env.cr.commit()
+            except Exception as e:
+                _logger.warning("Certificate check failed for %s: %s", host, e)
+                continue
+            days = vals['cert_days_left']
+            if vals['cert_own'] and days >= CERT_REISSUE_DAYS:
+                continue  # healthy and renewing on its own
+            if not os.path.exists(script):
+                _logger.warning(
+                    "%s has no certificate of its own and %s is not installed.", host, script)
+                continue
+            reason = ('has no certificate of its own (falling back to the non-renewing wildcard)'
+                      if not vals['cert_own'] else
+                      'expires in %s days and has not renewed' % days)
+            _logger.warning("Repairing TLS for %s: %s", host, reason)
+            try:
+                proc = subprocess.run(['sudo', '-n', script, host, t.slug],
+                                      capture_output=True, text=True, timeout=300)
+            except subprocess.TimeoutExpired:
+                _logger.warning("Certificate repair for %s timed out.", host)
+                continue
+            if proc.returncode == 0:
+                # nginx reloads gracefully, so re-probing immediately can still be
+                # answered by the OLD config and record a stale "no certificate".
+                # Let the new workers take over before believing the answer.
+                time.sleep(3)
+                t.write(self._tenant_cert_vals(t))
+                _logger.info("Certificate repaired for %s.", host)
+            else:
+                tail = ((proc.stdout or '') + '\n' + (proc.stderr or '')).strip()[-300:]
+                _logger.warning("Certificate repair for %s failed: %s", host, tail)
+            self.env.cr.commit()
 
     def _warn_cert_expiry(self):
         """Nag the server log when the wildcard cert is close to lapsing.
