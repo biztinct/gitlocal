@@ -278,6 +278,14 @@ missing test", contract checker discipline, anchor registry discipline). Read th
   separately. rpc_send_message/rpc_clear_history browse-without-ownership-check
   (pre-existing). Pay Runs kanban vs cockpit done-state actions still disagree (Phase 4
   ticket, still open).
+- (Post-ship ruling, 2026-08-16, user) **A Watch walkthrough NEVER advances by itself.** The
+  3.4s dwell read as a video played at the learner — too fast to follow, and no way to ask
+  for a second look. A step now ends on the learner's Next press and at no other moment, in
+  BOTH modes. Watch still PRESSES an unguarded control (the demonstration, so the screen the
+  next card describes exists) on a 400ms settle — it just no longer chains that press into an
+  advance. Only `onNext` and `_awaitRealClick` (Do reacting to the learner's OWN press) may
+  move a step; `test_scenario::test_05` was inverted to assert exactly that, with the
+  negative control executed. Pacing belongs to the reader, not the engine.
 - (Phase 2, accepted nits for later touch) live_mission.js still `esc(tx())` on step.detail
   (no glossary cards, literal <b> tags there); glossify idempotence guard keys on the
   literal `data-gloss=`; gloss_scan payload ignores matchTerm (over-fails only); the 17-28
