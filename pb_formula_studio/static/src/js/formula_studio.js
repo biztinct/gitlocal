@@ -4610,7 +4610,11 @@ export class PbFormulaStudio extends Component {
 
     // ---- guided first-setup wizard ----
     async openWizard() {
+        // Both config choosers can launch the wizard from their footer. Close
+        // whichever is open, or its overlay keeps painting over the wizard and
+        // the wizard only becomes visible once that one is dismissed.
         this.state.configPickerOpen = false;
+        this.state.configSwitcherOpen = false;
         this.state.wizardStep = 1;
         this.state.wizardForm = { name: "", country_code: "VN", cycle_type: "regular", template: "vn_standard" };
         if (!this.state.wizardTemplates.length) {
