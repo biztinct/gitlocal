@@ -20,13 +20,22 @@
    tour and exactly the thing a guard is for. A learner who presses Next on a
    step they have not performed simply moves on with the screen unchanged.
 
+   NOTHING IN HERE ADVANCES BY ITSELF
+   ----------------------------------
+   In BOTH modes the learner decides when to move on, by pressing Next. The
+   first cut of Watch dwelled 3.4s per step and walked on; it read as a video
+   playing at somebody, and a reader who wanted a second look had no way to ask
+   for one. The only automatic step change left in the module is in Do, AFTER
+   the learner has pressed the real control themselves — which is not the
+   engine deciding anything, it is the engine noticing.
+
    HOW THE TWO MODES DIFFER, IN ONE PARAGRAPH
    ------------------------------------------
-   Watch dwells and advances by itself; Do never does. Watch may press an
-   unguarded control; Do never presses anything. On a guarded step Watch stops
-   pressing and becomes an ordinary observe with a card that says what pressing
-   would do; Do attaches a one-shot capture listener, says "you press it — I'll
-   wait", and has no timer that could walk past it.
+   Watch may press an unguarded control to demonstrate it, so the screen the
+   next step describes actually exists; Do never presses anything. On a guarded
+   step Watch stops pressing and becomes an ordinary observe with a card that
+   says what pressing would do; Do attaches a one-shot capture listener and
+   says "you press it — I'll wait".
 
    WHAT IT DOES NOT DO
    -------------------
@@ -52,7 +61,7 @@ import { T, tx, esc, ic, reduced, SP } from "../engine/runtime";
 import { gtx, glossaryOpen, closeGlossary } from "../engine/glossary";
 
 const CARD_W = 372;          // matches the Journey's coach card
-const DWELL = 3400;          // ms a Watch step lingers before advancing
+const PRESS_SETTLE = 400;    // ms before Watch performs a demonstrated press
 const AFTER_CLICK = 520;     // ms to let the app's own handler run
 const WAIT_TIMEOUT = 9000;   // ms to poll for a step's anchor before giving up
 const WAIT_POLL = 120;       // ms between polls
@@ -272,13 +281,10 @@ export class ScenarioOverlay extends Component {
             this._typeIntoCard(step);
         }
 
-        // Autoplay is a WATCH property. In Do the learner advances, always —
-        // including on the steps that carry no risk, because a walkthrough that
-        // moves under somebody working on their own payroll is worse than one
-        // that waits a moment too long.
-        if (this.isWatch) {
-            this._dwell();
-        }
+        // AND THEN IT WAITS. There is deliberately no timer here in either
+        // mode: a step ends when the learner presses Next and at no other
+        // moment. Watch may still have pressed a control above to set the
+        // screen up — that is the demonstration — but the CARD does not move.
     }
 
     /** Mid-scenario navigation.
@@ -438,20 +444,10 @@ export class ScenarioOverlay extends Component {
             } catch {
                 // The product's own handler threw; the walkthrough carries on.
             }
-            this._timer = window.setTimeout(() => {
-                if (this.state.active) {
-                    this.sc.next();
-                }
-            }, AFTER_CLICK);
-        }, DWELL);
-    }
-
-    _dwell() {
-        this._timer = window.setTimeout(() => {
-            if (this.state.active) {
-                this.sc.next();
-            }
-        }, DWELL);
+            // AND NOTHING ELSE. The press is the demonstration; moving on is
+            // the learner's to decide. A press that also advanced was how the
+            // first cut of Watch outran its own reader.
+        }, PRESS_SETTLE);
     }
 
     _clearTimer() {

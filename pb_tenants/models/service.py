@@ -82,8 +82,10 @@ PROVISION_STEPS = [
     ('clone', 'Clone golden template'),
     ('configure', 'Configure tenant'),
     ('admin', 'Create admin access'),
+    ('cert', 'Secure with HTTPS'),
     ('verify', 'Verify & go live'),
 ]
+# 'verify' must stay last: _run_step promotes the tenant to 'live' on that key.
 NIGHTLY_KEEP = 14
 
 IPV4_RE = re.compile(r'^\d{1,3}(?:\.\d{1,3}){3}$')
@@ -469,6 +471,8 @@ class PbTenants(models.AbstractModel):
                 extra = self._step_configure(tenant, say)
             elif step == 'admin':
                 extra = self._step_admin(tenant, say)
+            elif step == 'cert':
+                extra = self._step_cert(tenant, say)
             elif step == 'verify':
                 extra = self._step_verify(tenant, say)
             else:
@@ -591,6 +595,55 @@ class PbTenants(models.AbstractModel):
         return {'credentials': {'url': self._tenant_url(slug),
                                 'login': tenant.admin_email,
                                 'password': password}}
+
+    def _step_cert(self, tenant, say):
+        """Give this tenant's subdomain its own auto-renewing certificate.
+
+        The *.payobook.com wildcard was issued through certbot's MANUAL dns-01
+        flow and its renewal config has no auth hook, so `certbot renew` reaches
+        it and blocks waiting for a human — it will never renew unattended. A
+        per-host HTTP-01 certificate renews through certbot.timer like every
+        other cert on the box.
+
+        NEVER FATAL. The wildcard still serves this hostname perfectly well, so
+        a slow DNS propagation or a bumped Let's Encrypt rate limit must not
+        fail an otherwise good tenant. It degrades to a warning in the
+        provisioning trail and the tenant goes live on the wildcard.
+        """
+        host = '%s.%s' % (tenant.slug, self._base_domain())
+        script = '/usr/local/bin/pb-tenant-cert'
+        if not os.path.exists(script):
+            say('%s not installed — tenant will use the wildcard certificate.' % script, 'warn')
+            return {}
+        try:
+            proc = subprocess.run(['sudo', '-n', script, host, tenant.slug],
+                                  capture_output=True, text=True, timeout=180)
+        except subprocess.TimeoutExpired:
+            say('Certificate request timed out — falling back to the wildcard certificate.', 'warn')
+            return {}
+        if proc.returncode == 0:
+            say('HTTPS certificate issued for %s — renews automatically.' % host)
+        else:
+            tail = ((proc.stdout or '') + '\n' + (proc.stderr or '')).strip()[-300:]
+            say('Certificate request failed, using the wildcard instead: %s' % (tail or 'unknown error'), 'warn')
+        return {}
+
+    def _detach_tenant_cert(self, tenant):
+        """Drop a tenant subdomain's nginx block + certificate, if it has one.
+
+        pb-domain-detach is hostname-generic, so it serves both custom domains
+        and our own subdomains. Best-effort: offboarding must not fail because
+        nginx housekeeping did.
+        """
+        script = '/usr/local/bin/pb-domain-detach'
+        if not os.path.exists(script):
+            return
+        host = '%s.%s' % (tenant.slug, self._base_domain())
+        try:
+            subprocess.run(['sudo', '-n', script, host],
+                           capture_output=True, text=True, timeout=120)
+        except Exception as e:
+            _logger.warning("Could not detach certificate for %s: %s", host, e)
 
     def _step_verify(self, tenant, say):
         slug = tenant.slug
@@ -789,6 +842,9 @@ class PbTenants(models.AbstractModel):
             if self._db_exists(staging):
                 _direct(db_service.exp_drop)(staging)
             _direct(db_service.exp_drop)(t.slug)
+        # Take the subdomain's own nginx block + certificate down with the DB,
+        # or the host keeps answering on a block that proxies to nothing.
+        self._detach_tenant_cert(t)
         t.write({'state': 'decommissioned', 'health_state': 'unknown',
                  'notes': (t.notes or '') + '\nDecommissioned %s.' % fields.Date.today()})
         return {'ok': True, 'final_backup_id': final and final.id or None,
