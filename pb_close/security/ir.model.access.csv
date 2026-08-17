@@ -2,3 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_pb_wf_lock_officer,pb.wf.lock.officer,model_pb_wf_lock,hr_attendance.group_hr_attendance_officer,1,0,0,0
 access_pb_wf_lock_att_manager,pb.wf.lock.attendance.manager,model_pb_wf_lock,hr_attendance.group_hr_attendance_manager,1,1,1,1
 access_pb_wf_lock_pay_manager,pb.wf.lock.payroll.manager,model_pb_wf_lock,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_close_review_officer,pb.close.review.officer,model_pb_close_review,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_close_review_att_manager,pb.close.review.attendance.manager,model_pb_close_review,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_pb_close_review_pay_manager,pb.close.review.payroll.manager,model_pb_close_review,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
