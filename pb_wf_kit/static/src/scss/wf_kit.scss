@@ -1,0 +1,268 @@
+// =====================================================================
+//  Workforce Kit — shared context bar, drawer and exception ribbon.
+//  Strictly on --pbim-* tokens (W1). Flat fills, no gradients (W3).
+//  Every rule carries a fallback so the kit also paints correctly when a
+//  host mounts it outside a .pbim root (W14).
+// =====================================================================
+
+// ------------------------------------------------------------ context bar
+.wfctx {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    * { box-sizing: border-box; }
+    svg { display: block; }
+
+    .wfctx-seg {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        padding: 5px 10px;
+        height: 34px;
+    }
+    .wfctx-seg__ic { color: var(--pbim-muted, #64748B); flex: none; }
+
+    // --- department -------------------------------------------------------
+    .wfctx-select {
+        border: 0;
+        background: transparent;
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--pbim-ink, #1B1733);
+        cursor: pointer;
+        max-width: 190px;
+        &:focus { outline: none; }
+        &.is-pinned { color: var(--pbim-primary, #5A4BB0); }
+    }
+
+    // --- week -------------------------------------------------------------
+    .wfctx-week { padding: 4px 5px; gap: 2px; }
+    .wfctx-nav {
+        border: 0;
+        background: transparent;
+        color: var(--pbim-muted, #64748B);
+        cursor: pointer;
+        border-radius: 7px;
+        padding: 4px 5px;
+        display: grid;
+        place-items: center;
+        &:hover { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+    }
+    .wfctx-flip svg { transform: rotate(180deg); }
+    .wfctx-weeklabel {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+        min-width: 104px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .wfctx-today {
+        border: 0;
+        background: transparent;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--pbim-primary, #5A4BB0);
+        cursor: pointer;
+        border-radius: 7px;
+        padding: 4px 8px;
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+    }
+
+    // --- person typeahead --------------------------------------------------
+    .wfctx-input {
+        border: 0;
+        background: transparent;
+        font: inherit;
+        font-size: 12.5px;
+        color: var(--pbim-ink, #1B1733);
+        width: 150px;
+        &::placeholder { color: var(--pbim-muted, #64748B); }
+        &:focus { outline: none; }
+    }
+    .wfctx-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 34px;
+        padding: 0 6px 0 10px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #fff);
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--pbim-ink, #1B1733);
+
+        &.is-pinned {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary, #5A4BB0);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .wfctx-chip__x {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        opacity: .65;
+        cursor: pointer;
+        padding: 3px;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        &:hover { opacity: 1; background: var(--pbim-surface, #fff); }
+    }
+
+    .wfctx-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        min-width: 240px;
+        z-index: 40;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+        padding: 5px;
+        overflow: hidden;
+    }
+    .wfctx-menu__item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        font-size: 12.5px;
+        text-align: left;
+        color: var(--pbim-ink, #1B1733);
+        padding: 7px 9px;
+        border-radius: 8px;
+        cursor: pointer;
+        svg { color: var(--pbim-muted, #64748B); flex: none; }
+        &:hover { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+            svg { color: inherit; } }
+    }
+}
+
+// ---------------------------------------------------------------- drawer
+.wfdr-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 60;
+    background: rgba(16, 12, 40, .28);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.wfdr {
+    width: 320px;
+    max-width: 88vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--pbim-surface, #fff);
+    border-left: 1px solid var(--pbim-line, #E2E8F0);
+    box-shadow: var(--pbim-sh-lg, 0 18px 44px rgba(40, 50, 90, .12));
+    animation: wfdr-in .18s ease-out;
+
+    * { box-sizing: border-box; }
+    svg { display: block; }
+
+    .wfdr-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .wfdr-head__txt { flex: 1 1 auto; min-width: 0; }
+    .wfdr-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .wfdr-sub {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .wfdr-x {
+        flex: none;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-muted, #64748B);
+        border-radius: 9px;
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        &:hover { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+    }
+    .wfdr-body { flex: 1 1 auto; overflow: auto; padding: 14px 16px 22px; font-size: 13px; }
+}
+
+@keyframes wfdr-in {
+    from { transform: translateX(18px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+// ---------------------------------------------------------------- ribbon
+.wfrb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 13px;
+    border-radius: var(--pbim-r-sm, 10px);
+    border: 1px solid transparent;
+    font-size: 12.5px;
+    font-weight: 600;
+
+    svg { display: block; }
+    .wfrb-ic  { flex: none; display: grid; place-items: center; }
+    .wfrb-txt { flex: 1 1 auto; }
+    .wfrb-act {
+        flex: none;
+        border: 1px solid currentColor;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        border-radius: 8px;
+        padding: 4px 11px;
+        cursor: pointer;
+        &:hover { background: rgba(255, 255, 255, .55); }
+    }
+
+    &--amber {
+        background: var(--pbim-amber-soft, #FEF3C7);
+        border-color: var(--pbim-amber, #D97706);
+        color: var(--pbim-amber, #D97706);
+    }
+    &--rose {
+        background: var(--pbim-rose-soft, #FCE7EF);
+        border-color: var(--pbim-rose, #DC2668);
+        color: var(--pbim-rose, #DC2668);
+    }
+    &--green {
+        background: var(--pbim-green-soft, #E3F2E9);
+        border-color: var(--pbim-green, #2E7D4F);
+        color: var(--pbim-green, #2E7D4F);
+    }
+}
