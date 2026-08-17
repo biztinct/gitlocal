@@ -187,6 +187,67 @@
     </t>
   </t>
 
+  <!-- ========================================================= command palette
+       Mounted by the HOST through the Odoo overlay service, so this markup
+       lives in `.o-overlay-container` and never inside a workspace — which is
+       what keeps the shell's z-discipline intact (W37). -->
+  <t t-name="pb_wf_kit.WfCommandPalette">
+    <div class="wfcp-scrim" t-on-click="() => props.onClose()">
+      <!-- .stop so a click inside the panel does not reach the scrim's close -->
+      <div class="wfcp" role="dialog" aria-modal="true" aria-label="Command palette"
+           t-on-click.stop="() => {}">
+
+        <div class="wfcp-search">
+          <span class="wfcp-search__ic" t-out="ic('search', 16)"/>
+          <input class="wfcp-input" type="text" t-ref="input"
+                 placeholder="Search people, lenses, actions…"
+                 aria-label="Search people, lenses, actions"
+                 t-att-value="state.q"
+                 t-on-input="onInput" t-on-keydown="onKeydown"/>
+          <span class="wfcp-esc">ESC</span>
+        </div>
+
+        <div class="wfcp-list">
+          <div class="wfcp-grp" t-foreach="groups" t-as="g" t-key="g.name">
+            <div class="wfcp-grp__h" t-esc="g.name"/>
+            <button t-foreach="g.items" t-as="row" t-key="row.row.kind + ':' + row.row.id"
+                    class="wfcp-row"
+                    t-att-class="{ 'is-on': state.active === row.idx }"
+                    t-on-mouseenter="() => this.setActive(row.idx)"
+                    t-on-click="() => this.run(row.row)">
+              <span class="wfcp-row__ic" t-out="ic(row.row.icon || 'chevron', 14)"/>
+              <span class="wfcp-row__l" t-esc="row.row.label"/>
+              <span class="wfcp-row__s" t-if="row.row.sublabel" t-esc="row.row.sublabel"/>
+            </button>
+          </div>
+
+          <div class="wfcp-empty" t-if="state.searching">
+            <span t-out="ic('loader', 16)"/><span>Searching…</span>
+          </div>
+
+          <!-- §2a, measured live: this database has NO `unaccent`, so
+               "Bui Anh" matches nothing while "Bùi Anh" matches. Folding
+               client-side would only lie about what the server can find. -->
+          <div class="wfcp-empty wfcp-empty--hint" t-if="showAccentHint">
+            <span t-out="ic('alert', 16)"/>
+            <span>Nobody matched. Names are matched exactly, accents included —
+              try "Bùi Anh" rather than "Bui Anh".</span>
+          </div>
+
+          <div class="wfcp-empty" t-if="!count and !state.searching">
+            <span t-out="ic('search', 16)"/><span>Nothing matches that.</span>
+          </div>
+        </div>
+
+        <div class="wfcp-foot">
+          <span><b>↑↓</b> move</span>
+          <span><b>↵</b> open</span>
+          <span><b>esc</b> close</span>
+        </div>
+      </div>
+    </div>
+  </t>
+
   <!-- ====================================================== exception ribbon -->
   <t t-name="pb_wf_kit.WfRibbon">
     <div class="wfrb" t-attf-class="wfrb--{{ tone }}">

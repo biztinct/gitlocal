@@ -460,6 +460,109 @@ class TestMissionStaticGates(TransactionCase):
         self.assertRegex(js, re.compile(r'useEffect\(.*?_loadPerson', re.S))
         self.assertIn('useEffect', js)
 
+    # ------------------------------------------------------- the ⌘K palette
+    def test_the_palette_renders_through_the_overlay_service(self):
+        """§3.5 / W37: the palette has to paint above a lens's fixed-position
+        modals. Doing that from inside the workspace would mean stacking shell
+        chrome above 1050 — the exact fight W37 exists to prevent, and one the
+        60px biz rail overlay would lose too. The overlay container is a sibling
+        of the whole action host, so the palette wins by LOCATION, and NOTHING
+        in the shell's stylesheet changes for this feature."""
+        js = self._js()
+        self.assertIn('useService("overlay")', js)
+        self.assertRegex(js, re.compile(
+            r'this\.overlay\.add\(\s*WfCommandPalette', re.S))
+        # no palette geometry in the shell's own stylesheet at all
+        for needle in ('pbms-palette', 'wfcp'):
+            self.assertNotIn(needle, self._scss(),
+                             'the palette is not styled by the shell (%s)' % needle)
+
+    def test_the_command_bar_search_became_the_palette(self):
+        """§3.5: the bar's person typeahead WAS the search. It is off on every
+        lens now — but the PIN is context, not search, so the chip moves onto
+        the bar beside the launcher rather than disappearing with it."""
+        js, xml = self._js(), self._xml()
+        self.assertEqual(js.count('person: true'), 0,
+                         'the context bar no longer owns the search')
+        self.assertEqual(js.count('person: false'), 7,
+                         'all seven lenses must say so explicitly')
+        self.assertIn('openPalette()', xml)
+        self.assertIn('class="pbms-pin"', xml,
+                      'the pinned person must stay visible on the bar')
+        self.assertIn('this.closePerson()', xml,
+                      'and clearable from it')
+
+    def test_the_hotkey_is_control_k_and_survives_a_focused_input(self):
+        """Odoo's hotkey service maps meta -> "control" per platform, so one
+        registration is ⌘K on macOS and Ctrl-K elsewhere. `bypassEditable
+        Protection` because the officer is usually mid-type in a lens filter
+        when they reach for it — a shortcut that only works when nothing is
+        focused is a shortcut nobody learns."""
+        js = self._js()
+        self.assertRegex(js, re.compile(
+            r'useHotkey\("control\+k".*?bypassEditableProtection: true', re.S))
+        self.assertRegex(js, r'get paletteHint\(\)[^}]*isMacOS\(\)')
+
+    def test_every_palette_action_targets_an_affordance_that_exists(self):
+        """§3.6's hard rule, and W29's lesson: a door that can only ever produce
+        an error is worse than no door. Every `cmd` in the registry must be
+        handled by the lens it names, and every `arrival` must use the W26
+        protocol the Time hub already implements."""
+        js = self._js()
+        block = re.search(r'const PALETTE_ACTIONS = \[(.*?)\n\];', js, re.S)
+        self.assertTrue(block, 'the action registry must be module-level')
+        body = block.group(1)
+        entries = re.findall(
+            r'lens: "(\w+)",\s*(?:cmd: "(\w+)"|arrival: \{([^}]*)\})', body)
+        self.assertEqual(len(entries), 8, 'the handover specifies eight actions')
+
+        handlers = {
+            'schedule': _read('pb_schedule', 'static', 'src', 'js', 'pb_schedule.js'),
+            'today': _read('pb_today', 'static', 'src', 'js', 'pb_today.js'),
+            'timeoff': _read('pb_timeoff', 'static', 'src', 'js', 'pb_timeoff.js'),
+            'overtime': _read('pb_hr_workforce', 'static', 'src', 'js', 'pb_ot_desk.js'),
+        }
+        for lens, cmd, arrival in entries:
+            if cmd:
+                src = handlers.get(lens)
+                self.assertTrue(src, 'no source for the %s lens' % lens)
+                self.assertIn('cmd.name === "%s"' % cmd, src,
+                              'the %s lens does not implement pb_cmd %r'
+                              % (lens, cmd))
+            else:
+                self.assertEqual(lens, 'time',
+                                 'only the Time hub implements the W26 arrival')
+                self.assertIn('pb_lens', arrival)
+
+    def test_the_pb_cmd_protocol_is_consumed_by_nonce_not_by_a_callback(self):
+        """§3.6 / W21.1. A "consumed" callback would be a CHILD writing HOST
+        state from a mount hook — the bug that cost P1a 591 junk records and
+        then bit a second time on a keyed child. The nonce means the host never
+        has to be told, and the lens can re-read the prop as often as OWL likes.
+        """
+        self.assertIn('cmd: { name: "", nonce: 0 }', self._js())
+        self.assertRegex(self._js(), re.compile(
+            r'runPaletteAction\(id\).*?nonce: this\.state\.cmd\.nonce \+ 1', re.S))
+        for module, fname in (('pb_schedule', 'pb_schedule.js'),
+                              ('pb_today', 'pb_today.js'),
+                              ('pb_timeoff', 'pb_timeoff.js'),
+                              ('pb_hr_workforce', 'pb_ot_desk.js')):
+            src = _read(module, 'static', 'src', 'js', fname)
+            self.assertIn('cmd.nonce === this._cmdNonce', src,
+                          '%s must consume by nonce' % module)
+            # the prop is TYPED optional, so it may never arrive as null (W35)
+            self.assertIn('pbCmd: { name: "", nonce: 0 }', src,
+                          '%s needs a non-null default (W35)' % module)
+
+    def test_the_palette_only_offers_lenses_this_persona_can_open(self):
+        """The rail already hides a lens whose facade would refuse. Offering a
+        verb that lands on it would put the same dead end back through another
+        door."""
+        self.assertRegex(self._js(), re.compile(
+            r'get paletteActions\(\).*?allowed\[a\.lens\]', re.S))
+        self.assertRegex(self._js(), re.compile(
+            r'runPaletteAction\(id\).*?allowed\[a\.lens\]', re.S))
+
     def test_the_refusal_note_is_required(self):
         """The Team cockpit's note is optional. In the dock it is not: a refusal
         with no reason is a support ticket, and two of the four models carry the

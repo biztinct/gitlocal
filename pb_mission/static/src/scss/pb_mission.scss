@@ -71,7 +71,11 @@
     // to read on deep indigo. Only the SEGMENTS are re-tinted — the typeahead
     // menu stays a light popover, because it floats over the page, not the bar.
     .pbms-ctx {
-        flex: 1 1 auto;
+        // 0 1: the context segments keep their natural size and shrink under
+        // pressure, but the ⌘K launcher beside them is the one that GROWS —
+        // otherwise the bar's kit wrap would take the space and, being
+        // `flex-wrap: wrap`, would silently double the bar's height instead.
+        flex: 0 1 auto;
         min-width: 0;
         gap: 9px;
 
@@ -122,6 +126,92 @@
             color: #fff;
         }
         .wfctx-chip__x:hover { background: color-mix(in srgb, #fff 20%, transparent); }
+    }
+
+    // ------------------------------------------- the ⌘K launcher + the pin
+    // The bar's search since P3b. It is a BUTTON, not an input: what it opens
+    // finds people, lenses and actions, and a text field would promise that the
+    // typing happens here.
+    .pbms-search {
+        flex: 1 1 auto;
+        min-width: 150px;
+        max-width: 360px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 32px;
+        padding: 0 9px;
+        border: 1px solid color-mix(in srgb, #fff 17%, transparent);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: color-mix(in srgb, #fff 9%, transparent);
+        color: color-mix(in srgb, #fff 70%, transparent);
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background .12s, border-color .12s;
+
+        svg { display: block; }
+        &:hover {
+            background: color-mix(in srgb, #fff 15%, transparent);
+            border-color: color-mix(in srgb, #fff 28%, transparent);
+            color: #fff;
+        }
+    }
+    .pbms-search__ic { display: inline-flex; flex: none; }
+    .pbms-search__tx {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: left;
+    }
+    .pbms-search__kbd {
+        flex: none;
+        padding: 1px 6px;
+        border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+        border-radius: 5px;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: .03em;
+    }
+
+    // The pinned person still lives on the bar — the palette replaced the
+    // SEARCH, not the context. Same chip semantics as the kit's, in the command
+    // bar's inverted palette.
+    .pbms-pin {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 220px;
+        height: 32px;
+        padding: 0 4px 0 9px;
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-primary, #5A4BB0);
+        color: #fff;
+        font-size: 11.5px;
+        font-weight: 700;
+
+        svg { display: block; }
+    }
+    .pbms-pin__n {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .pbms-pin__x {
+        flex: none;
+        display: inline-flex;
+        padding: 3px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        &:hover { background: color-mix(in srgb, #fff 20%, transparent); }
     }
 
     .pbms-user {
@@ -234,5 +324,9 @@
         .pbms-rail__b { width: 46px; }
         .pbms-rail__l { display: none; }
         .pbms-brand__tx { display: none; }
+        // the launcher keeps its icon and its shortcut; the promise of what it
+        // searches costs more room than it informs at this width
+        .pbms-search { min-width: 0; max-width: 120px; }
+        .pbms-search__tx { display: none; }
     }
 }

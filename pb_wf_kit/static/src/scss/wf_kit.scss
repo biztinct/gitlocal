@@ -474,3 +474,157 @@
     }
     &[disabled] { opacity: .55; cursor: default; }
 }
+
+// =====================================================================
+//  Command palette (P3b §3.5) — ⌘K over the Workforce workspace.
+//
+//  These selectors are NOT nested under `.pbim`: the host mounts this through
+//  the Odoo overlay service, so the markup lands in `.o-overlay-container`,
+//  outside every workspace root. That is deliberate — it is what lets the
+//  palette paint above a lens's fixed-position modals without the shell
+//  stacking any chrome of its own (W37) — and it is also why every custom
+//  property here MUST carry its real pbim hex as a fallback: the `--pbim-*`
+//  variables are emitted by `@include pbim-root-vars` inside the `.pbim`
+//  selector only, so out here the fallback is what actually paints (W14).
+// =====================================================================
+
+.wfcp-scrim {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 12vh 16px 16px;
+    background: rgba(16, 12, 40, .38);
+}
+
+.wfcp {
+    width: 100%;
+    max-width: 560px;
+    max-height: 68vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--pbim-r-lg, 18px);
+    background: var(--pbim-surface, #ffffff);
+    box-shadow: 0 18px 44px rgba(40, 50, 90, .12);
+    color: var(--pbim-ink, #1B1733);
+    font-size: 13px;
+
+    * { box-sizing: border-box; }
+    svg { display: block; }
+}
+
+.wfcp-search {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+}
+.wfcp-search__ic { display: inline-flex; color: var(--pbim-muted, #64748B); }
+.wfcp-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    color: var(--pbim-ink, #1B1733);
+
+    &::placeholder { color: var(--pbim-muted, #64748B); }
+}
+.wfcp-esc {
+    flex: none;
+    padding: 2px 6px;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: 5px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: .05em;
+    color: var(--pbim-muted, #64748B);
+}
+
+.wfcp-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.wfcp-grp + .wfcp-grp { margin-top: 6px; }
+.wfcp-grp__h {
+    padding: 6px 8px 4px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--pbim-muted, #64748B);
+}
+
+.wfcp-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 8px 9px;
+    border: 0;
+    border-radius: var(--pbim-r-sm, 10px);
+    background: transparent;
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--pbim-ink, #1B1733);
+    text-align: left;
+    cursor: pointer;
+
+    &.is-on {
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+    }
+}
+.wfcp-row__ic { display: inline-flex; flex: none; color: var(--pbim-muted, #64748B); }
+.wfcp-row.is-on .wfcp-row__ic { color: var(--pbim-primary, #5A4BB0); }
+.wfcp-row__l {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+}
+.wfcp-row__s {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+    font-size: 10.5px;
+    color: var(--pbim-muted, #64748B);
+}
+
+.wfcp-empty {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 18px 12px;
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--pbim-muted, #64748B);
+
+    &--hint { color: var(--pbim-amber, #D97706); }
+}
+
+.wfcp-foot {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 14px;
+    padding: 8px 15px;
+    border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+    font-size: 10px;
+    color: var(--pbim-muted, #64748B);
+
+    b { font-weight: 800; color: var(--pbim-muted, #64748B); }
+}

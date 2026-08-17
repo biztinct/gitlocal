@@ -200,17 +200,26 @@ class TestP3aEmbeddability(TransactionCase):
         The second half of the gate matters as much: a search failure must not
         RETIRE the control. `personDenied` is for AccessError only.
         """
-        body = _read('pb_wf_kit', 'static', 'src', 'js', 'wf_context_bar.js')
-        self.assertTrue(body, 'the context bar must be readable')
-        block = re.search(r'name_search"[^;]*?\}\);', body, re.S)
-        self.assertTrue(block, 'no name_search call found in the context bar')
-        call = block.group(0)
-        self.assertIn('domain:', call,
-                      'Odoo 19 name_search takes `domain`, not `args`')
-        self.assertNotRegex(call, r'\bargs\s*:',
-                            '`args` raises TypeError on every keystroke in Odoo 19')
-        self.assertIn('AccessError', body,
-                      'only an access failure may retire the person segment')
+        # P3b: the palette runs the same search, so it inherits the same gate —
+        # a second copy of this call is a second place for the bug to come back.
+        checked = 0
+        for fname in ('wf_context_bar.js', 'wf_command_palette.js'):
+            body = _read('pb_wf_kit', 'static', 'src', 'js', fname)
+            self.assertTrue(body, '%s must be readable' % fname)
+            checked += 1
+            block = re.search(r'name_search"[^;]*?\}\);', body, re.S)
+            self.assertTrue(block, 'no name_search call found in %s' % fname)
+            call = block.group(0)
+            self.assertIn('domain:', call,
+                          'Odoo 19 name_search takes `domain`, not `args` (%s)'
+                          % fname)
+            self.assertNotRegex(
+                call, r'\bargs\s*:',
+                '`args` raises TypeError on every keystroke in Odoo 19 (%s)' % fname)
+            self.assertIn('AccessError', body,
+                          'only an access failure may retire the person search '
+                          '(%s)' % fname)
+        self.assertEqual(checked, 2)
 
     def test_the_today_hand_off_keeps_its_standalone_fallback(self):
         """P3a §3.5. Embedded, "File correction" is a lens switch; standalone it
