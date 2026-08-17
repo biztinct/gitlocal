@@ -225,16 +225,27 @@ class TestTimeHubFacade(TransactionCase):
     # =================================================================== T2.4
     def test_cross_company_employee_is_not_readable(self):
         """A person outside env.companies must not leak a name or an hours
-        total through the drawer — it is reachable from a free typeahead."""
+        total through the drawer — it is reachable from a free typeahead.
+
+        `allowed_company_ids` is pinned explicitly rather than relying on the
+        default: creating a res.company adds it to the acting user's allowed
+        set on this database, so a bare `env.companies` would quietly contain
+        the "other" company and the test would prove nothing (it didn't, on the
+        first live run).
+        """
         other = self.env['res.company'].create({'name': 'P1a Other Co'})
         stranger = self.env['hr.employee'].create({
             'name': 'Stranger Sam', 'company_id': other.id, 'tz': 'UTC'})
-        self.assertEqual(
-            self.Hub.get_person_week(stranger.id, self.week.isoformat()), {},
-            "a cross-company employee must yield an empty payload")
 
-        # ...and is readable again once that company is actually active
-        allowed = self.Hub.with_company(other).with_context(
+        scoped = self.Hub.with_context(allowed_company_ids=[self.company.id])
+        self.assertEqual(
+            scoped.get_person_week(stranger.id, self.week.isoformat()), {},
+            "a cross-company employee must yield an empty payload")
+        # the officer's OWN people stay readable in that same scope
+        self.assertTrue(scoped.get_person_week(self.emp.id, self.week.isoformat()))
+
+        # ...and the stranger is readable again once that company is active
+        allowed = self.Hub.with_context(
             allowed_company_ids=[self.company.id, other.id])
         self.assertTrue(allowed.get_person_week(stranger.id, self.week.isoformat()))
 
@@ -251,7 +262,11 @@ class TestTimeHubFacade(TransactionCase):
         mon = self._day(0)
         self._att(mon, hours=8)
 
-        data = self.Hub.get_timeline(False, self.week.isoformat(), False)
+        # Scoped to the fixture's own department: `get_timeline` caps at 120
+        # rows ordered by name, and this runs against a live database with
+        # thousands of employees, so an unfiltered call legitimately truncates
+        # the fixture away (it did, on the first live run).
+        data = self.Hub.get_timeline(self.dept.id, self.week.isoformat(), False)
         self.assertEqual(data['week_start'], self.week.isoformat())
         self.assertEqual(len(data['days']), 7)
         row = next((r for r in data['employees'] if r['id'] == self.emp.id), None)
@@ -274,24 +289,29 @@ class TestTimeHubFacade(TransactionCase):
             'name': 'Plain Pat', 'login': 'p1a_plain_pat',
             'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
         with self.assertRaises(AccessError):
-            self.Hub.with_user(user).get_timeline(False, self.week.isoformat(), False)
+            self.Hub.with_user(user).get_timeline(self.dept.id, self.week.isoformat(), False)
 
     def test_timeline_company_and_department_scope(self):
+        """The sudo reads are still bounded by env.companies, the department
+        and the search — none of which the legacy Timecards facade did."""
         other = self.env['res.company'].create({'name': 'P1a Timeline Co'})
+        # a name that sorts FIRST, so truncation cannot be what hides it
         stranger = self.env['hr.employee'].create({
-            'name': 'Aaa Stranger', 'company_id': other.id, 'tz': 'UTC'})
-        data = self.Hub.get_timeline(False, self.week.isoformat(), False)
+            'name': 'Aaa Stranger', 'company_id': other.id, 'tz': 'UTC',
+            'department_id': self.dept.id})
+        scoped = self.Hub.with_context(allowed_company_ids=[self.company.id])
+
+        data = scoped.get_timeline(self.dept.id, self.week.isoformat(), False)
         ids = {r['id'] for r in data['employees']}
         self.assertIn(self.emp.id, ids)
         self.assertNotIn(stranger.id, ids,
                          "sudo reads must still be scoped to env.companies")
 
-        only_dept = self.Hub.get_timeline(self.dept.id, self.week.isoformat(), False)
         self.assertTrue(all(
             self.env['hr.employee'].browse(r['id']).department_id == self.dept
-            for r in only_dept['employees']))
+            for r in data['employees']))
 
-        by_name = self.Hub.get_timeline(False, self.week.isoformat(), 'Tess Time')
+        by_name = scoped.get_timeline(False, self.week.isoformat(), 'Tess Timecard')
         self.assertEqual({r['id'] for r in by_name['employees']}, {self.emp.id})
 
     def test_timeline_empty_cohort_does_not_fall_back_to_everyone(self):
