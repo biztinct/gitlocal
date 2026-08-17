@@ -78,7 +78,11 @@ class TestP3aSidebar(TransactionCase):
                 len(live), ', '.join('%s(%s)' % (i.name, i.sequence)
                                      for i in live.sorted('sequence'))))
         item = live
-        self.assertEqual(item.name, 'Workforce')
+        # P3b: "WORKFORCE > Workforce" read as a stutter on a section header
+        # that already says the word. Asserted in the DATABASE, not in the XML,
+        # for the reason W13.1/W27 exist: the file and the record can disagree
+        # and `-u` will say EXIT 0 either way.
+        self.assertEqual(item.name, 'Mission Control')
         self.assertEqual(item.sequence, 10)
         self.assertEqual(item.icon, 'compass')
         self.assertEqual(item.action_xmlid, 'pb_mission.action_pb_workforce')
@@ -213,10 +217,12 @@ class TestP3aSidebar(TransactionCase):
 
     def test_no_two_sidebar_items_share_a_label(self):
         """W28 — a label is unique across the WHOLE sidebar, not per section.
-        "Workforce" is a new label on this table (the string already existed on
-        the pb.sidebar.SECTION and on an unrelated security group, neither of
-        which shares it), so it needs the same database-wide check every rename
-        in this program has had."""
+
+        P3a introduced "Workforce" on this table; P3b renames it to "Mission
+        Control". Both needed the same database-wide check, because the twin a
+        rename collides with always lives in ANOTHER module's data file, where
+        it is invisible from the one being edited (`pb_sidebar.item_approvals`
+        is the precedent that cost P1b a rename)."""
         items = self.env['pb.sidebar.item'].search([])
         seen = {}
         for item in items:
