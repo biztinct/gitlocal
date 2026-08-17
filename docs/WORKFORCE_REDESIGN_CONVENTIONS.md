@@ -468,17 +468,27 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   from a hook to one of them. Corollary: a poll that repaints a list the user is
   mid-interaction with must be `quiet` — it may not clear an optimistic removal
   set or a half-typed refusal note (the dock's `load(quiet)`).
-- **W42 A refusal note that is OPTIONAL somewhere and REQUIRED somewhere else is
-  a deliberate difference, and the stricter surface has to enforce it in the
-  DISABLED state, not in a validator.** The Team cockpit's refuse box says
-  "Reason (optional)…"; the dock's says "(required)" and its Refuse button is
-  `disabled` until `refuseNote.trim()` is non-empty. Two of the four sources
-  (`pb.business.trip.action_refuse_chain`, `hr.attendance.correction.
-  action_refuse`) carry that note INTO their own refusal chain, where it is the
-  only record of why — and the dock is the surface where a refusal is one click
-  next to seven other people's requests, i.e. exactly where an unexplained one
-  is most likely. Enforcing it by disabling the button means the officer never
-  composes a refusal that is then rejected.
+- **W42 Never make a field REQUIRED unless the thing behind it actually stores
+  the value. (Caught in P3b's own live run, on the first version of the dock.)**
+  The dock's refuse box demanded a reason for every source. Only TWO of the four
+  keep one: `pb.business.trip.action_refuse_chain` and
+  `hr.attendance.correction.action_refuse` take a `note` parameter and record
+  it, and there it is the only account the employee will ever get of why.
+  `hr.overtime.request.action_refuse` and `hr.leave.action_refuse` take no note
+  at all — the facade's own `_ACT_MAP` says so with `'note': False` — so
+  everything typed for them was discarded on the way in. A required field whose
+  value is thrown away is a control that lies about what it does, and it is
+  exactly the kind of lie nobody discovers, because the refusal still works.
+  The fix is to let the SERVER answer per item: `takes_note` on each queue row,
+  derived from the same whitelist `act()` dispatches on, so the requirement and
+  the recording can never drift apart. Two corollaries:
+  1. where the note IS kept, enforce it by DISABLING the confirm button, not by
+     validating on submit — the officer must never compose a refusal that is
+     then rejected;
+  2. where it is not, say so in the placeholder rather than silently dropping
+     the field ("Reason (optional) — this request type does not store it").
+  General form: when a surface is stricter than the model beneath it, the extra
+  strictness has to be derived from the model, not asserted over it.
 - **W43 Put a floating panel in the OVERLAY when the alternative is winning a
   z-index argument.** The ⌘K palette has to paint above a lens's
   `position: fixed` modal at 1050. Any implementation inside the workspace would

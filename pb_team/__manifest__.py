@@ -31,12 +31,16 @@ sees the same shape it always did):
   * each source search is CAPPED at 20 (they were unbounded), with the TRUE
     totals in `queues.counts` and `queues.has_more[source]` saying the list was
     cut — capping the list must never understate the backlog;
+  * `queues.items[].takes_note` — whether THIS source's refuse action actually
+    records the note, read straight off the `act` whitelist. Two of the four do;
+    a surface that makes the note required without knowing which would demand a
+    reason and then discard it (W42);
   * `scope='org'` — every pending item in the active companies, gated by
     `_require_org_approver` (HR manager | payroll manager) and advertised to the
     client as `can_org`. It widens the READ only: `act()` is untouched, still
     real-user, still whitelisted, still scope-checked.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

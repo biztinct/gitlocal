@@ -106,19 +106,22 @@
                 <t t-if="it.when"> · <t t-esc="it.when"/></t>
               </div>
 
-              <!-- refuse-with-a-REQUIRED-note (the Team cockpit's box, with the
-                   note promoted from optional to mandatory) -->
+              <!-- refuse-with-a-note (the Team cockpit's box). The note is
+                   REQUIRED on the two sources whose refuse action records it,
+                   and honestly labelled optional on the two that discard it —
+                   the server decides, per item, from the same whitelist `act`
+                   uses. -->
               <t t-if="state.refuseFor === key(it)">
                 <div class="pbms-dcard__refuse">
                   <textarea class="pbms-dcard__note" rows="2"
-                            placeholder="Why is this refused? (required)"
+                            t-att-placeholder="notePlaceholder(it)"
                             t-att-value="state.refuseNote"
                             t-on-input="onRefuseNote"/>
                   <div class="pbms-dcard__racts">
                     <button class="pbms-dock__btn pbms-dock__btn--ghost"
                             t-on-click="() => this.cancelRefuse()">Cancel</button>
                     <button class="pbms-dock__btn pbms-dock__btn--danger"
-                            t-att-disabled="!canConfirmRefuse or state.busy[key(it)]"
+                            t-att-disabled="!canConfirmRefuse(it) or state.busy[key(it)]"
                             t-on-click="() => this.confirmRefuse(it)">Refuse</button>
                   </div>
                 </div>
