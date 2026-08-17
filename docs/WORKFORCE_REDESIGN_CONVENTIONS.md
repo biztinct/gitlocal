@@ -256,3 +256,22 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   real person-door click (`openPerson`) so the drawer is not stuck shut.
   Corollary: a surface that pins a person but shows NO person chip (Today) must not
   auto-open its drawer on arrival either — a pre-existing pin is context, not a request.
+- **W27 Unfreeze a `noupdate` record in a PRE-migrate, not a post-migrate. (Found live,
+  P1b — the third bite of W13.1 and the one that finally explains the pattern.)**
+  An upgrade runs `pre-migrate → DATA FILES LOAD → post-migrate`. P0 and P1a both cleared
+  the stored `ir_model_data.noupdate` flag in a POST-migrate and then hand-applied the one
+  field they were changing, which worked only because each was changing exactly one field.
+  P1b changed TWO on the same record (sequence 37→60 **and** the label "Business Trips" →
+  "Trips") and the live database came back:
+  `Business Trips | 60 | active` — the sequence moved because the script wrote it, the
+  label did not, because the loader had skipped the file milliseconds earlier while the
+  flag was still set. **EXIT 0, no error, no warning**, and because the flag is left clear
+  a *second* upgrade silently repairs it — so the bug only exists on the first deploy to
+  any given database, which is precisely where nobody looks for it.
+  Rule: clear the flag in `migrations/<version>/pre-migrate.py`. Then the data file
+  applies EVERY field it declares, in the same upgrade, and there is no hand-written
+  `UPDATE` to keep in sync with the XML. Keep hand-applied values only for things the data
+  file cannot express (a value that must not be overwritten if an admin changed it).
+  Corollary — this is *why* W13.1 insists on asserting the DB after `-u`: the repo, the
+  log and the migration were all "correct", and only reading `pb_sidebar_item.name` back
+  showed the rail still had the old word on it.
