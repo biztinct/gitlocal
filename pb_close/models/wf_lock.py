@@ -125,6 +125,20 @@ class PbWfLock(models.Model):
                 "Locking or reopening a workforce day is restricted to "
                 "attendance managers and payroll managers."))
 
+    @api.model
+    def _pb_check_company(self, company_id):
+        """The two doors below are `@api.model`, i.e. reachable straight over
+        `call_kw` with any integer. Holding the manager group in YOUR companies
+        is not permission to close somebody else's week, and multi-company is
+        what this platform sells (one database per tenant, but several companies
+        inside a tenant is normal). So the scope is checked, not assumed."""
+        if self.env.su:
+            return
+        if int(company_id) not in (self.env.companies.ids
+                                   or [self.env.company.id]):
+            raise AccessError(_(
+                "That company is not in your active companies."))
+
     # The gate lives on the MODEL, not only on the facade that edits it (W31):
     # `pb.close` runs as an OFFICER, so a facade-side check would make every
     # future helper on that facade a new place to forget it.
@@ -280,6 +294,7 @@ class PbWfLock(models.Model):
         """Lock one day. Idempotent: locking a locked day is a no-op."""
         self._pb_check_manage()
         company_id = int(company_id)
+        self._pb_check_company(company_id)
         day = fields.Date.to_date(day)
         rec = self.sudo().search(
             [('company_id', '=', company_id), ('date', '=', day)], limit=1)
@@ -314,6 +329,7 @@ class PbWfLock(models.Model):
                 "account anyone reviewing this payroll will have of why the "
                 "week was taken back."))
         company_id = int(company_id)
+        self._pb_check_company(company_id)
         day = fields.Date.to_date(day)
         rec = self.sudo().search(
             [('company_id', '=', company_id), ('date', '=', day)], limit=1)

@@ -112,6 +112,22 @@ class TestWfLock(CloseCase):
         self.assertTrue(self.Lock._is_locked(self.company, self.day))
         self.assertFalse(self.Lock._is_locked(other, self.day))
 
+    def test_a_manager_cannot_close_a_company_they_are_not_in(self):
+        """`lock_day` / `unlock_day` are @api.model, i.e. reachable straight
+        over call_kw with any integer. Holding the manager group in YOUR
+        companies is not permission to close somebody else's week."""
+        other = self.env['res.company'].create({'name': 'P4 Outside Co'})
+        manager = self._manager('p4_scope_manager')
+        Lock = self.Lock.with_user(manager).with_context(
+            allowed_company_ids=[self.company.id])
+        with self.assertRaises(AccessError):
+            Lock.lock_day(other.id, self.day, 'not mine')
+        with self.assertRaises(AccessError):
+            Lock.unlock_day(other.id, self.day, 'still not mine')
+        # …and their own company is untouched by the refusal
+        Lock.lock_day(self.company.id, self.day, 'mine')
+        self.assertTrue(self.Lock._is_locked(self.company, self.day))
+
     # ==================================================================
     #  hr.attendance — the punch table
     # ==================================================================
