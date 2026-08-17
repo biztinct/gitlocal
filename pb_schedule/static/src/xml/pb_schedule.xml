@@ -44,6 +44,16 @@
 
         <span class="pbsc-spacer"/>
 
+        <button class="pbsc-btn ghost" t-att-class="{ 'is-on': state.coverageOn }"
+                t-att-aria-pressed="state.coverageOn ? 'true' : 'false'"
+                t-on-click="() => this.toggleCoverage()"
+                title="Show required vs scheduled on every day">
+          <span t-out="ic('shieldCheck', 14)"/><span>Coverage</span>
+        </button>
+        <button class="pbsc-btn ghost" t-on-click="() => this.openCoverageDrawer()"
+                title="Edit coverage requirements" aria-label="Edit coverage requirements">
+          <span t-out="ic('settings', 14)"/>
+        </button>
         <button class="pbsc-btn ghost" t-on-click="() => this.refresh()"
                 title="Reload the roster" aria-label="Reload the roster">
           <span t-out="ic('refresh', 14)"/>
@@ -153,6 +163,15 @@
                 <div t-attf-class="pbsc-h {{ day.is_today ? 'is-today' : '' }} {{ day.is_weekend ? 'is-weekend' : '' }}">
                   <span class="dw" t-esc="day.label"/>
                   <span class="dd"><t t-esc="day.day_num"/> <t t-esc="day.month"/></span>
+                  <t t-set="cov" t-value="coverageFor(day)"/>
+                  <span t-if="state.coverageOn and cov"
+                        t-attf-class="pbsc-cov is-{{ cov.state }}"
+                        t-attf-title="{{ cov.scheduled }} scheduled of {{ cov.required }} needed">
+                    <t t-if="cov.state === 'gap'">&#8722;<t t-esc="cov.gap"/></t>
+                    <t t-elif="cov.state === 'surplus'">+<t t-esc="cov.surplus"/></t>
+                    <t t-else=""><t t-out="ic('check', 10)"/></t>
+                    <span class="rq"><t t-esc="cov.scheduled"/>/<t t-esc="cov.required"/></span>
+                  </span>
                   <t t-set="st" t-value="statsByDay[day.date]"/>
                   <span class="dst" t-if="st">
                     <span class="h"><t t-esc="hrs(st.hours)"/> h</span>
@@ -361,6 +380,103 @@
           </div>
         </div>
       </div>
+
+      <!-- ======================== coverage drawer ====================== -->
+      <WfDrawer t-if="state.coverageDrawer" title="'Coverage requirements'"
+                subtitle="'How many people this scope needs, per day'"
+                onClose="() => this.closeCoverageDrawer()">
+        <div class="pbsc-cov-drawer">
+          <p class="pbsc-note">
+            A weekday row is the standing rule; a date row is the exception and
+            wins for that day. A row with no shift states a whole-day total.
+            Departments with a rule of their own are not also subject to the
+            company-wide one.
+          </p>
+
+          <div class="pbsc-covform" t-if="state.coverageForm">
+            <div class="pbsc-covform__grid">
+              <label class="pbsc-field">
+                <span class="l">Rule type</span>
+                <select class="i" t-on-change="(ev) => this.onCoverageField('mode', ev)">
+                  <option value="weekday" t-att-selected="state.coverageForm.mode === 'weekday'">Every weekday</option>
+                  <option value="date" t-att-selected="state.coverageForm.mode === 'date'">One specific date</option>
+                </select>
+              </label>
+
+              <label class="pbsc-field" t-if="state.coverageForm.mode === 'weekday'">
+                <span class="l">Weekday</span>
+                <select class="i" t-on-change="(ev) => this.onCoverageField('weekday', ev)">
+                  <t t-foreach="coverageWeekdays" t-as="w" t-key="w.value">
+                    <option t-att-value="w.value"
+                            t-att-selected="state.coverageForm.weekday === w.value"
+                            t-esc="w.label"/>
+                  </t>
+                </select>
+              </label>
+
+              <label class="pbsc-field" t-if="state.coverageForm.mode === 'date'">
+                <span class="l">Date</span>
+                <input class="i" type="date" t-att-value="state.coverageForm.date"
+                       t-on-change="(ev) => this.onCoverageField('date', ev)"/>
+              </label>
+
+              <label class="pbsc-field">
+                <span class="l">Shift</span>
+                <select class="i" t-on-change="(ev) => this.onCoverageField('template_id', ev)">
+                  <option value="">Whole day</option>
+                  <t t-foreach="templates" t-as="tm" t-key="tm.id">
+                    <option t-att-value="tm.id"
+                            t-att-selected="state.coverageForm.template_id === tm.id"
+                            t-esc="tm.name"/>
+                  </t>
+                </select>
+              </label>
+
+              <label class="pbsc-field">
+                <span class="l">People needed</span>
+                <input class="i" type="number" min="0" step="1"
+                       t-att-value="state.coverageForm.required_headcount"
+                       t-on-input="(ev) => this.onCoverageField('required_headcount', ev)"/>
+              </label>
+            </div>
+            <div class="pbsc-modal__actions">
+              <button class="pbsc-btn ghost" t-on-click="() => this.cancelCoverageForm()">Cancel</button>
+              <button class="pbsc-btn primary" t-att-disabled="state.coverageSaving"
+                      t-on-click="() => this.saveCoverageRow()">
+                <span t-out="ic('check', 14)"/><span>Save rule</span>
+              </button>
+            </div>
+          </div>
+
+          <button class="pbsc-btn primary pbsc-covadd" t-elif="canEditCoverage"
+                  t-on-click="() => this.newCoverageRow()">
+            <span t-out="ic('plus', 14)"/><span>New requirement</span>
+          </button>
+
+          <div class="pbsc-covlist">
+            <div class="pbsc-covrow" t-foreach="coverageRows" t-as="row" t-key="row.id">
+              <span class="n" t-esc="row.required_headcount"/>
+              <span class="d">
+                <span class="t" t-esc="row.label"/>
+              </span>
+              <button class="pbsc-x" t-if="canEditCoverage"
+                      t-on-click="() => this.editCoverageRow(row)"
+                      title="Edit" aria-label="Edit">
+                <span t-out="ic('settings', 13)"/>
+              </button>
+              <button class="pbsc-x" t-if="canEditCoverage"
+                      t-on-click="() => this.deleteCoverageRow(row)"
+                      title="Remove" aria-label="Remove">
+                <span t-out="ic('x', 13)"/>
+              </button>
+            </div>
+            <p class="pbsc-note" t-if="!coverageRows.length">
+              Nothing stated yet, so the roster shows no coverage marks at all —
+              an absent rule is not a requirement of zero.
+            </p>
+          </div>
+        </div>
+      </WfDrawer>
 
       <!-- ========================== person drawer ====================== -->
       <WfDrawer t-if="drawerOpen" title="drawerTitle" subtitle="drawerSubtitle"

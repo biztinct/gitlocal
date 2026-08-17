@@ -266,6 +266,7 @@ class ShiftPlanningGrid(models.TransientModel):
                                num_days, department_id)
         return {
             'stats': stats,
+            'coverage': self._pb_coverage(days, scoped, department_id),
             'week_start': week_start.isoformat(),
             'week_end': week_end.isoformat(),
             'num_days': num_days,
@@ -404,6 +405,155 @@ class ShiftPlanningGrid(models.TransientModel):
                 'decimals': currency.decimal_places,
             },
         }
+
+    # ================================================== WP-4: coverage
+    @api.model
+    def _pb_coverage(self, days, scoped, department_id):
+        """Required vs scheduled per day. See shift_coverage.py for the rules.
+
+        Returns `None` when the scope has stated no requirements at all — an
+        absent rule must produce an absent chip, not a rose gap against an
+        implied zero.
+        """
+        Req = self.env['hr.shift.coverage.requirement']
+        co_ids = self._pb_company_ids()
+        dept = int(department_id) if department_id else False
+        dates = [fields.Date.from_string(d['date']) for d in days]
+
+        rows = Req.search([
+            ('company_id', 'in', co_ids),
+            ('department_id', 'in', ([dept, False] if dept else [False])),
+            '|', ('date', 'in', dates), ('date', '=', False),
+        ])
+        if not rows:
+            return None
+
+        # Rule 1 — specific scope beats general, per (weekday/date, template).
+        dept_rows = rows.filtered(lambda r: r.department_id.id == dept) if dept \
+            else rows.browse()
+        company_rows = rows.filtered(lambda r: not r.department_id)
+        scoped_rows = dept_rows if dept_rows else company_rows
+
+        # index by (template_id, key) where key is ('d', date) or ('w', weekday)
+        by_key = {}
+        for r in scoped_rows:
+            tid = r.template_id.id or False
+            key = ('d', r.date) if r.date else ('w', r.weekday)
+            by_key[(tid, key)] = r.required_headcount
+
+        # supply: draft + published only (§3.5 rule 4)
+        planned = scoped.filtered(lambda s: s.state in ('draft', 'published'))
+        supply_total, supply_tmpl = {}, {}
+        for s in planned:
+            iso = s.date.isoformat()
+            supply_total[iso] = supply_total.get(iso, 0) + 1
+            k = (iso, s.shift_template_id.id)
+            supply_tmpl[k] = supply_tmpl.get(k, 0) + 1
+
+        out = {}
+        any_rule = False
+        for d in days:
+            day = fields.Date.from_string(d['date'])
+            wd = str(day.weekday())
+
+            def required_for(tid):
+                # Rule 2 — the date row is the exception and wins outright.
+                if (tid, ('d', day)) in by_key:
+                    return by_key[(tid, ('d', day))]
+                return by_key.get((tid, ('w', wd)))
+
+            per_template = []
+            for tid in {k[0] for k in by_key if k[0]}:
+                need = required_for(tid)
+                if need is None:
+                    continue
+                have = supply_tmpl.get((d['date'], tid), 0)
+                per_template.append({
+                    'template_id': tid,
+                    'required': need,
+                    'scheduled': have,
+                    'gap': max(0, need - have),
+                })
+
+            # Rule 3 — a day-total row is authoritative; otherwise the sum.
+            day_total = required_for(False)
+            if day_total is None and per_template:
+                day_total = sum(p['required'] for p in per_template)
+            if day_total is None:
+                out[d['date']] = None
+                continue
+
+            any_rule = True
+            have = supply_total.get(d['date'], 0)
+            gap = day_total - have
+            out[d['date']] = {
+                'required': day_total,
+                'scheduled': have,
+                'gap': max(0, gap),
+                'surplus': max(0, -gap),
+                'state': 'gap' if gap > 0 else ('exact' if gap == 0 else 'surplus'),
+                'per_template': sorted(per_template,
+                                       key=lambda p: p['template_id']),
+            }
+        return out if any_rule else None
+
+    @api.model
+    def get_coverage_requirements(self, department_id=False):
+        """The rows the coverage drawer edits, most specific scope first."""
+        self._require_officer()
+        Req = self.env['hr.shift.coverage.requirement']
+        dept = int(department_id) if department_id else False
+        rows = Req.search([
+            ('company_id', 'in', self._pb_company_ids()),
+            ('department_id', 'in', ([dept, False] if dept else [False])),
+        ])
+        weekdays = dict(Req._fields['weekday'].selection)
+        return {
+            'can_edit': Req._pb_can_edit(),
+            'rows': [{
+                'id': r.id,
+                'department_id': r.department_id.id or False,
+                'department_name': r.department_id.name or '',
+                'weekday': r.weekday or False,
+                'weekday_label': weekdays.get(r.weekday, ''),
+                'date': r.date.isoformat() if r.date else False,
+                'template_id': r.template_id.id or False,
+                'template_name': r.template_id.name or '',
+                'required_headcount': r.required_headcount,
+                'label': r._pb_label(),
+            } for r in rows],
+            'weekdays': [{'value': v, 'label': lbl} for v, lbl in
+                         Req._fields['weekday'].selection],
+        }
+
+    @api.model
+    def save_coverage_requirement(self, vals, requirement_id=False):
+        """Create or update ONE requirement row. Manager-gated on the model."""
+        self._require_officer()
+        Req = self.env['hr.shift.coverage.requirement']
+        clean = {
+            'department_id': int(vals.get('department_id') or 0) or False,
+            'weekday': vals.get('weekday') or False,
+            'date': vals.get('date') or False,
+            'template_id': int(vals.get('template_id') or 0) or False,
+            'required_headcount': int(vals.get('required_headcount') or 0),
+        }
+        if requirement_id:
+            row = Req.browse(int(requirement_id))
+            row.write(clean)
+            return row.id
+        clean['company_id'] = (self.env.companies[:1] or self.env.company).id
+        return Req.create(clean).id
+
+    @api.model
+    def delete_coverage_requirement(self, requirement_id):
+        self._require_officer()
+        row = self.env['hr.shift.coverage.requirement'].browse(
+            int(requirement_id)).exists()
+        if not row:
+            return False
+        row.unlink()
+        return True
 
     # --------------------------------------------------------- budget CRUD
     @api.model
