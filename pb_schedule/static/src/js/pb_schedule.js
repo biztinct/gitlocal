@@ -80,9 +80,12 @@ export class PbSchedule extends Component {
             // quick-create
             create: null,           // { employeeId, employeeName, date, label }
             creating: false,
+            checks: null,           // check_day payload for the open square
+            checking: false,
             // copy week
             copyOpen: false,
             copying: false,
+            copyReport: null,       // the refuse-on-paste skip report
             // person drawer
             person: null,
             personLoading: false,
@@ -478,13 +481,73 @@ export class PbSchedule extends Component {
             label: this.dayLabel(day),
             onLeave: emp ? (emp.leaves[day.date] || null) : null,
         };
+        this.state.checks = null;
+        if (employeeId) { this._loadChecks(employeeId, day.date); }
     }
 
-    closeCreate() { this.state.create = null; }
+    closeCreate() {
+        this.state.create = null;
+        this.state.checks = null;
+    }
+
+    /**
+     * WP-5: every template's verdict, BEFORE any of them is clicked.
+     *
+     * W21: fired from a click handler (openCreate), never a mount hook, and it
+     * is a pure read — `check_day` cannot write anything.
+     */
+    async _loadChecks(employeeId, dateStr) {
+        const ids = this.templates.map((t) => t.id);
+        if (!ids.length) { return; }
+        this.state.checking = true;
+        try {
+            const res = await this.orm.call(MODEL, "check_day",
+                                            [employeeId, dateStr, ids]);
+            // a modal the officer has since closed must not repaint
+            if (this.state.create && this.state.create.date === dateStr) {
+                this.state.checks = res;
+            }
+        } catch {
+            // warnings are a courtesy: losing them must not break the modal,
+            // and the server constraint is still the real guard
+            this.state.checks = null;
+        } finally {
+            this.state.checking = false;
+        }
+    }
+
+    get contextWarnings() {
+        return (this.state.checks && this.state.checks.context) || [];
+    }
+
+    warningsFor(templateId) {
+        const by = this.state.checks && this.state.checks.by_template;
+        return (by && by[String(templateId)]) || [];
+    }
+
+    blockFor(templateId) {
+        return this.warningsFor(templateId).find((w) => w.severity === "block")
+            || null;
+    }
+
+    /** "" | "warn" | "block" — the tile's marker tone. */
+    templateTone(templateId) {
+        const w = this.warningsFor(templateId);
+        if (w.some((x) => x.severity === "block")) { return "block"; }
+        if (w.some((x) => x.severity === "warn")) { return "warn"; }
+        return "";
+    }
 
     async createShift(templateId) {
         const c = this.state.create;
         if (!c || this.state.creating) { return; }
+        // `block` prevents the create in the UI. The server constraint remains
+        // the real guard — this only means the officer is told first.
+        const blocked = this.blockFor(templateId);
+        if (blocked) {
+            this.notif.add(blocked.text, { type: "danger", sticky: true });
+            return;
+        }
         this.state.creating = true;
         try {
             await this.orm.call(MODEL, "quick_create_shift",
@@ -561,19 +624,39 @@ export class PbSchedule extends Component {
         return `${dt.getFullYear()}-${p(dt.getMonth() + 1)}-${p(dt.getDate())}`;
     }
 
-    openCopy() { this.state.copyOpen = true; }
-    closeCopy() { this.state.copyOpen = false; }
+    openCopy() {
+        this.state.copyOpen = true;
+        this.state.copyReport = null;
+    }
 
+    closeCopy() {
+        this.state.copyOpen = false;
+        this.state.copyReport = null;
+    }
+
+    /**
+     * Copy Week is REFUSE-ON-PASTE (§3.6). The legacy button pasted everything
+     * unconditionally — onto approved leave, onto shifts people already had,
+     * and onto nights a young worker is legally barred from, which the ORM then
+     * refused, aborting the whole paste with no report of what happened.
+     *
+     * The modal stays open on the report: "12 copied, 3 skipped" with names and
+     * reasons is the entire point, and a toast that disappears is not it.
+     */
     async doCopy() {
         if (this.state.copying) { return; }
         this.state.copying = true;
         try {
-            const n = await this.orm.call(MODEL, "copy_week", [
+            const res = await this.orm.call(MODEL, "copy_week_checked", [
                 this.wf.weekStart, this.nextSpanStart,
-                this.wf.departmentId || false,
+                this.wf.departmentId || false, this.state.span,
             ]);
-            this.state.copyOpen = false;
-            this.notif.add(_t("%s shifts copied forward.", n), { type: "success" });
+            this.state.copyReport = res;
+            if (!res.skipped.length) {
+                this.notif.add(_t("%s shifts copied forward.", res.created),
+                               { type: "success" });
+            }
+            await this.load();
         } catch (e) {
             this.notif.add((e && e.data && e.data.message)
                 || _t("Copy failed."), { type: "danger" });

@@ -406,6 +406,324 @@ class ShiftPlanningGrid(models.TransientModel):
             },
         }
 
+    # ============================================== WP-5: edit-time warnings
+    #
+    # SEVERITIES (binding, P2 §3.6)
+    #   block  the server WILL refuse this. Today that is exactly one rule —
+    #          pb_young_worker's night ban — and the UI mirrors it so the
+    #          planner is told before the save instead of after it. The server
+    #          constraint remains the real guard; this is a courtesy, not a
+    #          replacement.
+    #   warn   a real problem a human should look at: an overlap, or a day the
+    #          person is on approved leave. Never blocking.
+    #   info   context: a leave request that is still pending.
+    #
+    # OT ceilings are ADVISORY BY DESIGN and can never be `block`. Overflow
+    # above a ceiling becomes bonus hours (Phase K); a roster that refused to
+    # schedule at 90% of a monthly cap would be wrong about the business rule,
+    # not strict about it.
+
+    @api.model
+    def _pb_leave_map(self, employee_ids, date_from, date_to):
+        """{(employee_id, iso_date): 'approved'|'pending'} over a window.
+
+        sudo for the same reason the roster's overlay is sudo — leave presence
+        is system-derived context, and a planner without `hr.leave.type` read
+        must still be warned that they are rostering someone who is away.
+        """
+        out = {}
+        if not employee_ids:
+            return out
+        leaves = self.env['hr.leave'].sudo().search([
+            ('employee_id', 'in', list(employee_ids)),
+            ('state', 'in', _APPROVED_LEAVE_STATES + _PENDING_LEAVE_STATES),
+            ('date_from', '<=', datetime.combine(date_to, datetime.max.time())),
+            ('date_to', '>=', datetime.combine(date_from, datetime.min.time())),
+        ])
+        for lv in leaves:
+            lv_start = lv.date_from.date() if isinstance(lv.date_from, datetime) else lv.date_from
+            lv_end = lv.date_to.date() if isinstance(lv.date_to, datetime) else lv.date_to
+            cur = max(lv_start, date_from)
+            stop = min(lv_end, date_to)
+            kind = 'approved' if lv.state in _APPROVED_LEAVE_STATES else 'pending'
+            while cur <= stop:
+                key = (lv.employee_id.id, cur.isoformat())
+                if out.get(key) != 'approved':
+                    out[key] = kind
+                cur += timedelta(days=1)
+        return out
+
+    @api.model
+    def _pb_ceilings(self, employee_ids, ref_date):
+        """The RPC-safe OT budget payload, batched.
+
+        `pb.ot.ceiling._allowance` / `_split` are PRIVATE; the supported door is
+        `hr.attendance.weekentry.get_ot_ceilings` (attendance_weekentry.py:333),
+        which is what the Overtime Desk uses too. Going through it is what keeps
+        this warning and the OT Desk's red-pulse KPI talking about one number.
+        """
+        if not employee_ids:
+            return {}
+        try:
+            return self.env['hr.attendance.weekentry'].get_ot_ceilings(
+                list(employee_ids), ref_date.isoformat())
+        except Exception:
+            # A ceiling read must never be able to stop a roster from loading.
+            return {}
+
+    @api.model
+    def _pb_shift_windows(self, employee_ids, date_from, date_to):
+        """{employee_id: [(start, end, shift_id)]} for the overlap test."""
+        out = {}
+        if not employee_ids:
+            return out
+        shifts = self.env['hr.shift.planning'].search([
+            ('employee_id', 'in', list(employee_ids)),
+            ('date', '>=', date_from - timedelta(days=1)),
+            ('date', '<=', date_to + timedelta(days=1)),
+            ('state', 'in', _LIVE_STATES),
+        ])
+        for s in shifts:
+            if s.start_datetime and s.end_datetime:
+                out.setdefault(s.employee_id.id, []).append(
+                    (s.start_datetime, s.end_datetime, s.id))
+        return out
+
+    @api.model
+    def _pb_young_worker_block(self, employee, day, template):
+        """Mirror pb_young_worker's ValidationError, or None. Never raises.
+
+        The module is NOT a dependency (§3.1): it is probed, and a tenant
+        without it simply gets no such warning. The wording is deliberately the
+        same as the constraint's — a planner should not read two different
+        sentences about one law.
+        """
+        if 'pb.young.worker' not in self.env:
+            return None
+        try:
+            Eng = self.env['pb.young.worker'].sudo()
+            if not Eng._has_any_rule():
+                return None
+            band = Eng.get_band(employee, day)
+            if not (band and band.night_blocked):
+                return None
+            rule = Eng._rule_for_company(employee.company_id)
+            if not (rule and Eng._shift_hits_night(
+                    template, rule.night_from, rule.night_to)):
+                return None
+            return _(
+                "Night work is not permitted for workers under 18 "
+                "(Vietnam Labor Code). %(name)s cannot be assigned the "
+                "%(shift)s shift, which falls in the %(a)02.0f:00–%(b)02.0f:00 "
+                "night window.",
+                name=employee.name,
+                shift=template.name or template.code,
+                a=rule.night_from, b=rule.night_to)
+        except Exception:
+            # A probe that throws must degrade to silence, not to a broken
+            # modal — the server constraint is still the real guard.
+            return None
+
+    @api.model
+    def _pb_check(self, employee, day, template, windows, leaves, ceilings,
+                  exclude_shift_id=False):
+        """The warning worker. Pure read; caches are passed in so a 400-shift
+        Copy Week is a handful of queries rather than 1 600."""
+        warnings = []
+        start, end = self._pb_shift_window(template, day)
+
+        # --- overlap (the same question `_detect_conflicts` asks) -----------
+        for (o_start, o_end, o_id) in windows.get(employee.id, []):
+            if exclude_shift_id and o_id == exclude_shift_id:
+                continue
+            if o_start < end and start < o_end:
+                warnings.append({
+                    'severity': 'warn', 'code': 'overlap',
+                    'text': _("%(name)s already has a shift that overlaps "
+                              "%(a)s–%(b)s on this day.",
+                              name=employee.name,
+                              a=self._pb_hhmm(o_start), b=self._pb_hhmm(o_end)),
+                })
+                break
+
+        # --- leave ----------------------------------------------------------
+        kind = leaves.get((employee.id, day.isoformat()))
+        if kind == 'approved':
+            warnings.append({
+                'severity': 'warn', 'code': 'leave_approved',
+                'text': _("%s is on approved leave that day.", employee.name),
+            })
+        elif kind == 'pending':
+            warnings.append({
+                'severity': 'info', 'code': 'leave_pending',
+                'text': _("%s has a leave request awaiting approval that day.",
+                          employee.name),
+            })
+
+        # --- young worker (the only hard rule) ------------------------------
+        yw = self._pb_young_worker_block(employee, day, template)
+        if yw:
+            warnings.append({'severity': 'block', 'code': 'young_worker_night',
+                             'text': yw})
+
+        # --- OT ceiling: ADVISORY, matching ot_desk.py:184's 90% ------------
+        ceil = ceilings.get(employee.id) or {}
+        cap = ceil.get('cap_month') or 0.0
+        used = ceil.get('mtd') or 0.0
+        if cap and used >= 0.9 * cap:
+            warnings.append({
+                'severity': 'warn', 'code': 'ot_ceiling',
+                'text': _("%(name)s has used %(used).1f of %(cap).1f overtime "
+                          "hours this month. Overflow becomes bonus hours.",
+                          name=employee.name, used=used, cap=cap),
+            })
+        return warnings
+
+    @api.model
+    def check_shift(self, employee_id, date_str, template_id,
+                    exclude_shift_id=False):
+        """Would this assignment be a problem? (P2 §3.6)
+
+        :return: ``{'warnings': [{severity, code, text}], 'blocked': bool}``
+        """
+        self._require_officer()
+        employee = self.env['hr.employee'].browse(int(employee_id)).exists()
+        template = self.env['hr.shift.template'].browse(int(template_id)).exists()
+        day = fields.Date.from_string(date_str)
+        if not (employee and template and day):
+            return {'warnings': [], 'blocked': False}
+        warnings = self._pb_check(
+            employee, day, template,
+            self._pb_shift_windows([employee.id], day, day),
+            self._pb_leave_map([employee.id], day, day),
+            self._pb_ceilings([employee.id], day),
+            exclude_shift_id=exclude_shift_id)
+        return {
+            'warnings': warnings,
+            'blocked': any(w['severity'] == 'block' for w in warnings),
+        }
+
+    @api.model
+    def check_day(self, employee_id, date_str, template_ids):
+        """Every template's verdict for one square, in ONE round trip.
+
+        The quick-create modal marks each template tile before it is clicked —
+        a warning that only appears after you have committed is a receipt, not
+        a warning.
+        """
+        self._require_officer()
+        employee = self.env['hr.employee'].browse(int(employee_id)).exists()
+        day = fields.Date.from_string(date_str)
+        out = {'by_template': {}, 'context': []}
+        if not (employee and day):
+            return out
+        windows = self._pb_shift_windows([employee.id], day, day)
+        leaves = self._pb_leave_map([employee.id], day, day)
+        ceilings = self._pb_ceilings([employee.id], day)
+        templates = self.env['hr.shift.template'].browse(
+            [int(t) for t in (template_ids or [])]).exists()
+        seen_context = set()
+        for tmpl in templates:
+            warns = self._pb_check(employee, day, tmpl, windows, leaves, ceilings)
+            out['by_template'][str(tmpl.id)] = warns
+            # leave / ceiling do not depend on the template: hoist them once so
+            # the modal states them at the top instead of on every tile
+            for w in warns:
+                if w['code'] in ('leave_approved', 'leave_pending', 'ot_ceiling') \
+                        and w['code'] not in seen_context:
+                    seen_context.add(w['code'])
+                    out['context'].append(w)
+        for key, warns in out['by_template'].items():
+            out['by_template'][key] = [
+                w for w in warns if w['code'] not in seen_context]
+        return out
+
+    # =============================== WP-5: Copy Week, revalidate-on-paste
+    @api.model
+    def copy_week_checked(self, source_week_str, target_week_str,
+                          department_id=False, num_days=7):
+        """Copy a span forward, REFUSING the targets that would be a problem.
+
+        The legacy `copy_week` pasted everything unconditionally: it happily
+        rostered people onto approved leave, onto shifts they already had, and
+        onto nights a young worker is legally barred from — the last of which
+        the ORM then refused, aborting the WHOLE paste with a validation error
+        and no report of what had happened.
+
+        This one validates every target first and returns a skip report. It
+        does NOT stop at the first problem, because "why did nothing copy" is
+        the question the old behaviour left you with.
+
+        Skipped: anything with a `block` or a `warn`. `info` (a pending leave
+        request) is not enough to refuse a paste — it is context, and refusing
+        on it would make the button useless in any team with open requests.
+        """
+        self._require_officer()
+        source_start = fields.Date.from_string(source_week_str)
+        target_start = fields.Date.from_string(target_week_str)
+        num_days = 14 if int(num_days or 7) == 14 else 7
+        delta = target_start - source_start
+
+        domain = [('date', '>=', source_start),
+                  ('date', '<=', source_start + timedelta(days=num_days - 1)),
+                  ('company_id', 'in', self._pb_company_ids()),
+                  ('state', 'in', _LIVE_STATES)]
+        if department_id:
+            domain.append(('department_id', '=', int(department_id)))
+        sources = self.env['hr.shift.planning'].search(domain, order='date, id')
+        if not sources:
+            return {'created': 0, 'skipped': [], 'considered': 0,
+                    'target_start': target_start.isoformat()}
+
+        emp_ids = [e for e in sources.mapped('employee_id').ids if e]
+        t_from = target_start
+        t_to = target_start + timedelta(days=num_days - 1)
+        windows = self._pb_shift_windows(emp_ids, t_from, t_to)
+        leaves = self._pb_leave_map(emp_ids, t_from, t_to)
+        ceilings = self._pb_ceilings(emp_ids, t_to)
+
+        created, skipped = 0, []
+        for src in sources:
+            employee = src.employee_id
+            template = src.shift_template_id
+            if not (employee and template):
+                continue
+            target_day = src.date + delta
+            warns = self._pb_check(employee, target_day, template,
+                                   windows, leaves, ceilings)
+            hard = [w for w in warns if w['severity'] in ('block', 'warn')]
+            if hard:
+                skipped.append({
+                    'employee_id': employee.id,
+                    'employee_name': employee.name,
+                    'date': target_day.isoformat(),
+                    'template': template.name or template.code or '',
+                    'reasons': [w['text'] for w in hard],
+                    'severity': 'block' if any(
+                        w['severity'] == 'block' for w in hard) else 'warn',
+                })
+                continue
+            start, end = self._pb_shift_window(template, target_day)
+            self.env['hr.shift.planning'].create({
+                'employee_id': employee.id,
+                'shift_template_id': template.id,
+                'date': target_day,
+                'start_datetime': start,
+                'end_datetime': end,
+                'state': 'draft',
+            })
+            # a shift created THIS pass is a conflict for the next one — the
+            # legacy loop happily pasted two identical shifts onto one person
+            windows.setdefault(employee.id, []).append((start, end, 0))
+            created += 1
+
+        return {
+            'created': created,
+            'skipped': skipped,
+            'considered': len(sources),
+            'target_start': target_start.isoformat(),
+        }
+
     # ================================================== WP-4: coverage
     @api.model
     def _pb_coverage(self, days, scoped, department_id):
