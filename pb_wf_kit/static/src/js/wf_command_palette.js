@@ -129,15 +129,21 @@ export class WfCommandPalette extends Component {
     get count() { return this.rows.length; }
 
     /**
-     * The diacritics hint (§2a). It only appears once a search has actually
-     * come back empty — telling someone about accent folding before they have
-     * typed anything is noise, and after they have found their person it is
-     * wrong.
+     * The diacritics hint (§2a). It is the EMPTY STATE, not an annotation:
+     * it appears only when a person search has come back empty AND nothing
+     * else matched either.
+     *
+     * The first version fired on "no people", which meant typing "sched" —
+     * four perfectly good lens and action hits on screen — also produced
+     * "Nobody matched. Names are matched exactly…" underneath them. A hint
+     * that contradicts the list above it is worse than no hint (found in
+     * P3b's own live run). One empty state, and only when the list is empty.
      */
     get showAccentHint() {
         return this.state.searched
             && !this.state.searching
             && !this.state.people.length
+            && !this.count
             && this.state.q.trim().length >= 2;
     }
 

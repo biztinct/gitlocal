@@ -87,19 +87,27 @@ class TestP3bCommandPalette(TransactionCase):
         for key in ('ArrowDown', 'ArrowUp', 'Escape'):
             self.assertIn('ev.key === "%s"' % key, js)
 
-    def test_the_accent_hint_only_appears_after_an_empty_search(self):
+    def test_the_accent_hint_is_the_empty_state_not_an_annotation(self):
         """§2a, measured live: this database has NO `unaccent`, so "Bui Anh"
         matches nothing while "Bùi Anh" matches. Folding client-side would lie
-        about what the server can find, so the palette SAYS so instead — but
-        only once a search has actually come back empty. Before anyone has typed
-        it is noise; after they have found their person it is wrong."""
+        about what the server can find, so the palette SAYS so instead.
+
+        But it is the EMPTY STATE, not a note on the side. The first version
+        fired on "no people matched", so typing "sched" — four good lens and
+        action hits on screen — printed "Nobody matched. Names are matched
+        exactly…" underneath them. A hint that contradicts the list above it is
+        worse than no hint. One empty state, and only when the list is empty:
+        `!this.count` in the getter, and the generic line stands down for it.
+        """
         js, xml = self._js(), self._xml()
         block = re.search(r'get showAccentHint\(\) \{(.*?)\n    \}', js, re.S)
         self.assertTrue(block, 'no showAccentHint getter')
         body = block.group(1)
-        for needle in ('searched', 'searching', 'people.length'):
+        for needle in ('searched', 'searching', 'people.length', '!this.count'):
             self.assertIn(needle, body)
         self.assertIn('showAccentHint', xml, 'the hint must be rendered')
+        self.assertIn('!count and !state.searching and !showAccentHint', xml,
+                      'the generic empty state must stand down for the hint')
 
     def test_nothing_writes_from_a_lifecycle_hook(self):
         """W21: the palette's only mount-time work is focusing its input. Every
