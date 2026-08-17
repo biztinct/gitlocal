@@ -30,7 +30,7 @@ class TestTimeHubFacade(TransactionCase):
             'name': 'P1a Time Hub', 'company_id': cls.company.id})
         cls.emp = cls.env['hr.employee'].create({
             'name': 'Tess Timecard', 'company_id': cls.company.id, 'tz': 'UTC',
-            'barcode': 'P1A-0001', 'department_id': cls.dept.id,
+            'barcode': 'P1A0001', 'department_id': cls.dept.id,
             'job_title': 'Line lead'})
         cls.tmpl = cls.env['hr.shift.template'].create({
             'name': 'P1a Day', 'code': 'P1AD', 'start_hour': 8.0, 'end_hour': 16.0,
@@ -130,7 +130,7 @@ class TestTimeHubFacade(TransactionCase):
         card = data['employee']
         self.assertEqual(card['id'], self.emp.id)
         self.assertEqual(card['name'], self.emp.name)
-        self.assertEqual(card['badge'], 'P1A-0001')
+        self.assertEqual(card['badge'], 'P1A0001')
         self.assertEqual(card['dept'], self.dept.name)
 
     def test_person_week_matches_the_week_grid_cell(self):

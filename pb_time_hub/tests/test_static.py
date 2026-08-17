@@ -137,9 +137,13 @@ class TestWorkforceStaticGates(TransactionCase):
                            'static', 'src', 'xml', 'time_hub.xml')
         with open(tpl, encoding='utf-8') as fh:
             body = fh.read()
-        # each mounted lens component, with its attributes, up to the closing />
-        mounts = re.findall(r'<(TimelineLens|AttendanceWeekGrid|PbAttendanceFlow)\b[^>]*?/>',
+        # Each mounted lens component WITH its attributes, up to the closing />.
+        # The group is non-capturing on purpose: re.findall returns the GROUPS
+        # when there are any, so a capturing group here would hand back bare
+        # component names and the 'onPerson' check below would inspect the wrong
+        # string entirely (it did, on the first live run — the gate caught it).
+        mounts = re.findall(r'<(?:TimelineLens|AttendanceWeekGrid|PbAttendanceFlow)\b[^>]*?/>',
                             body, re.S)
         self.assertGreaterEqual(len(mounts), 4, 'expected four lens mounts')
-        missing = [m.split()[0] for m in mounts if 'onPerson' not in m]
+        missing = [m.split()[0].lstrip('<') for m in mounts if 'onPerson' not in m]
         self.assertFalse(missing, 'lens mounts without a person door: %s' % missing)
