@@ -114,8 +114,17 @@ class PbTimeHub(models.AbstractModel):
 
     # =========================================================== ribbon
     @api.model
-    def get_hub_summary(self, department_id=False, week_start=False):
+    def get_hub_summary(self, department_id=False, week_start=False,
+                        employee_id=False):
         """Ribbon sentence + per-lens badge counts for the context week.
+
+        `employee_id` (P1b §2.4) is the shared context's pinned person, and it
+        is NOT optional decoration: the Exceptions lens narrows its queue by the
+        same pin, so a summary that ignored it would put "18" on the tab badge
+        above a queue showing one person's 0. That is precisely the
+        two-surfaces-disagree failure this method was written to prevent — the
+        count has to be filtered by whatever filters the board, or the promise
+        below is only true when nobody is using the filter.
 
         The exception engine's ``_get_exceptions`` is deliberately
         underscore-private (security fix G-C1): every read inside it is sudo, so
@@ -130,7 +139,7 @@ class PbTimeHub(models.AbstractModel):
         dt = df + timedelta(days=6)
 
         Flow = self.env['pb.attendance.flow']
-        emps, truncated = Flow._cohort(df, dt, department_id)
+        emps, truncated = Flow._cohort(df, dt, department_id, employee_id)
         rows = self.env['pb.attendance.exception.engine']._get_exceptions(
             emps, df, dt) if emps else []
 
