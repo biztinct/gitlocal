@@ -262,8 +262,8 @@ class ShiftPlanningGrid(models.TransientModel):
                 self._pb_shift_card(s, tmap, False))
 
         assigned = scoped.filtered(lambda s: s.employee_id)
-        stats = self._pb_stats(days, assigned, employees, week_start,
-                               num_days, department_id)
+        stats = self._pb_stats(days, assigned, week_start, num_days,
+                               department_id)
         return {
             'stats': stats,
             'coverage': self._pb_coverage(days, scoped, department_id),
@@ -334,8 +334,7 @@ class ShiftPlanningGrid(models.TransientModel):
         return rows, len(mondays)
 
     @api.model
-    def _pb_stats(self, days, assigned, employees, week_start, num_days,
-                  department_id):
+    def _pb_stats(self, days, assigned, week_start, num_days, department_id):
         """Per-day hours/cost and the week's budget variance.
 
         Cost = Σ(planned_hours × rate). Actual cost is only reported for days
@@ -343,7 +342,12 @@ class ShiftPlanningGrid(models.TransientModel):
         printing 0 next to a scheduled figure reads as "we spent nothing"
         rather than "this has not happened yet".
         """
-        rates = self._pb_rates(employees.ids)
+        # The rate cohort is EVERY employee with a shift in the span, NOT the
+        # capped page of rows. `assigned` is already scope-filtered, so a
+        # roster whose 201st person is off-screen still costs what it costs —
+        # keying the rates off `employees` would have silently zeroed their
+        # hours and counted them as "no rate" the moment the cap bit.
+        rates = self._pb_rates(assigned.employee_id.ids)
         by_day = {d['date']: {'hours': 0.0, 'cost': 0.0, 'actual_cost': 0.0,
                               'actual_hours': 0.0, 'shifts': 0}
                   for d in days}
