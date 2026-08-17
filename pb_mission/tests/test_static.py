@@ -301,7 +301,7 @@ class TestMissionStaticGates(TransactionCase):
             os.path.isdir(os.path.join(module, 'security')),
             'pb_mission must ship no ACLs of its own')
 
-        allowed = {'pb.team', 'hr.employee'}
+        allowed = {'pb.team', 'hr.employee', 'pb.time.hub'}
         called = set()
         for path in _walk('pb_mission', ('.js',), skip_tests=True):
             with open(path, encoding='utf-8') as fh:
@@ -387,6 +387,78 @@ class TestMissionStaticGates(TransactionCase):
         for needle in ('orm', 'rpc', 'await'):
             self.assertNotIn(needle, block.group(1),
                              'the hovercard must be RPC-free (%s)' % needle)
+
+    # ------------------------------------------------- the person surface
+    def test_exactly_three_lenses_declare_their_own_person_drawer(self):
+        """§3.3: Time, Today and Schedule each already mount their own
+        <WfPersonWeek/>. Without the flag the shell would put a SECOND panel
+        over theirs for the same person — two drawers, one of them stale."""
+        js = self._js()
+        self.assertEqual(js.count('ownsPersonDrawer: true'), 3)
+        for key in ('today', 'schedule', 'time'):
+            block = re.search(
+                r'key: "%s".*?\n    \},' % key, js, re.S)
+            self.assertTrue(block, '%s not found in LENSES' % key)
+            self.assertIn('ownsPersonDrawer: true', block.group(0),
+                          '%s owns a drawer and must say so' % key)
+        for key in ('timeoff', 'overtime', 'trips', 'approvals'):
+            block = re.search(r'key: "%s".*?\n    \},' % key, js, re.S)
+            self.assertNotIn('ownsPersonDrawer', block.group(0),
+                             '%s has no drawer of its own' % key)
+
+    def test_the_shell_drawer_is_gated_on_the_lens_capability(self):
+        js, xml = self._js(), self._xml()
+        self.assertRegex(
+            js, r'get shellOwnsDrawer\(\)\s*\{\s*return !this\.lensDef\.ownsPersonDrawer;')
+        self.assertRegex(js, r'get personDrawerOpen\(\)[^}]*shellOwnsDrawer')
+        self.assertIn('t-if="personDrawerOpen"', xml)
+        # exactly ONE drawer in the shell — a second would be the bug this
+        # capability flag exists to prevent
+        self.assertEqual(xml.count('<WfDrawer '), 1)
+        self.assertEqual(xml.count('<WfPersonWeek '), 1)
+
+    def test_closing_the_shell_drawer_clears_the_pin(self):
+        """The bar's person chip and the drawer are two views of ONE piece of
+        context. Closing one while the other still insists a person is selected
+        is how a surface starts lying about its own state (W16)."""
+        self.assertRegex(
+            self._js(),
+            re.compile(r'closePerson\(\)\s*\{.*?personId: false', re.S))
+
+    def test_an_unresolvable_person_is_cleared_not_left_spinning(self):
+        """§2's measured pattern: a person `get_person_week` cannot resolve gets
+        a toast and the pin cleared. W40 — the catch narrows nothing: it reports
+        the server's words, restores the surface and warns on the console."""
+        js = self._js()
+        block = re.search(r'async _loadPerson\(.*?\n    \}\n', js, re.S)
+        self.assertTrue(block, '_loadPerson not found')
+        body = block.group(0)
+        self.assertIn('console.warn', body, 'the failure must stay observable')
+        self.assertEqual(body.count('personId: false'), 2,
+                         'both the empty payload and the raise must clear the pin')
+        self.assertIn('this.wf.personId !== personId', body,
+                      'a late reply must not paint over a changed selection')
+
+    def test_a_restored_pin_does_not_pop_a_drawer_on_arrival(self):
+        """W26's corollary: a pre-existing pin is CONTEXT, not a request. The
+        shared context is persisted, so without this every arrival in Workforce
+        would open a drawer over whatever the officer came to look at — and a
+        `pb_focus: "queue"` deep link says the same thing explicitly."""
+        js = self._js()
+        self.assertRegex(
+            js, re.compile(r'personHidden:\s*!!this\.ctxSvc\.state\.personId'
+                           r'\s*\|\|\s*arrival\.focus === "queue"', re.S))
+        self.assertRegex(
+            js, re.compile(r'openPerson\(employeeId\)\s*\{.*?personHidden = false',
+                           re.S),
+            'an explicit person door must un-hide the drawer')
+
+    def test_the_drawer_load_is_an_effect_not_a_lens_mount_hook(self):
+        """Effects run AFTER the patch, so the fetch is a plain read outside
+        anybody's render fiber (W21 / W36's precedent)."""
+        js = self._js()
+        self.assertRegex(js, re.compile(r'useEffect\(.*?_loadPerson', re.S))
+        self.assertIn('useEffect', js)
 
     def test_the_refusal_note_is_required(self):
         """The Team cockpit's note is optional. In the dock it is not: a refusal

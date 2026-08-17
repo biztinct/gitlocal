@@ -2,31 +2,39 @@
 /**
  * Mission Control — the Workforce workspace (mockup B).
  *
- * Seven rail items become one room. The shell owns exactly four things:
+ * Seven rail items become one room. The shell owns exactly six things:
  *
- *   1. the command bar: brand, the ONE <WfContextBar/> (its person typeahead is
- *      the bar's search — P3b replaces it with the palette), and the user;
+ *   1. the command bar: brand, the ONE <WfContextBar/>, the ⌘K palette that
+ *      takes over its search, and the user;
  *   2. the lens rail and which lens is showing;
  *   3. the canvas — a definite-height box, because five of the seven cockpits
  *      scroll themselves and three of those pin sticky chrome to their own root
  *      (W20);
- *   4. arrival routing and the in-shell hand-off between lenses.
+ *   4. arrival routing and the in-shell hand-off between lenses;
+ *   5. the ambient Needs-you dock (pb_dock.js), mounted once beside every lens;
+ *   6. the PERSON SURFACE: one shared <WfPersonWeek/> drawer for the four
+ *      lenses that do not own one, so a person pinned from the dock, the
+ *      palette or a deep link opens SOMEWHERE, on every lens.
  *
  * The lenses themselves are the EXISTING cockpit components mounted with
  * `embedded="true"` (W17). Not one line of their logic is re-implemented here,
  * and every one of them still has its own registered client action.
  *
- * What this file deliberately does NOT have: a dock, a person popover, a
- * command palette (all P3b), and any RPC of its own — the only server call it
- * makes is `hasGroup`, to decide which lenses to put on the rail.
+ * The shell ships no model, no ACL and no facade of its own: it reads
+ * `hasGroup` for the rail, `pb.team` for the dock (the Team Approvals cockpit's
+ * own queue) and `pb.time.hub.get_person_week` for the drawer (the panel the
+ * Time, Today and Schedule lenses already fetch). Everything it calls existed
+ * before it did.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, useEffect, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
+import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
+import { WfPersonWeek } from "@pb_wf_kit/js/wf_person_week";
 import { WfDock } from "@pb_mission/js/pb_dock";
 import { PbToday } from "@pb_today/js/pb_today";
 import { PbSchedule } from "@pb_schedule/js/pb_schedule";
@@ -37,6 +45,8 @@ import { PbTrips } from "@pb_business_trip/js/pb_trips";
 import { PbTeamCockpit } from "@pb_team/js/pb_team";
 
 const LENS_KEY = "pbms.lens.v1";
+/** The person drawer's data contract, documented in pb_time_hub/models. */
+const PERSON_MODEL = "pb.time.hub";
 
 /**
  * The seven lenses, in rail order.
@@ -62,22 +72,32 @@ const LENS_KEY = "pbms.lens.v1";
  * seven doors into one cannot advertise a surface that would answer with an
  * AccessError. It is a visibility hint only — every facade still enforces its
  * own gate server-side, and nothing here widens anything (W12).
+ *
+ * `ownsPersonDrawer` is P3b's capability flag. Time, Today and Schedule each
+ * already mount their OWN <WfPersonWeek/> drawer, wired to their own actions
+ * (Time's "File correction" hand-off, Schedule's roster). The shell's drawer is
+ * for the other four, and the flag is what stops the officer getting TWO panels
+ * for one person on the three that already work. It is a declaration, not a
+ * behaviour: a lens that grows its own drawer sets the flag in the same commit.
  */
 const LENSES = [
     {
         key: "today", icon: "activity",
         groups: ["hr_attendance.group_hr_attendance_officer"],
         features: { department: true, week: false, person: true, day: true, search: true },
+        ownsPersonDrawer: true,
     },
     {
         key: "schedule", icon: "calendar",
         groups: ["hr_attendance.group_hr_attendance_officer"],
         features: { department: true, week: true, person: true, day: false, search: true },
+        ownsPersonDrawer: true,
     },
     {
         key: "time", icon: "clock",
         groups: ["hr_attendance.group_hr_attendance_officer"],
         features: { department: true, week: true, person: true, day: false, search: true },
+        ownsPersonDrawer: true,
     },
     {
         key: "timeoff", icon: "umbrella",
@@ -107,12 +127,15 @@ const LENS_KEYS = LENSES.map((l) => l.key);
 export class PbMission extends Component {
     static template = "pb_mission.PbMission";
     static components = {
-        WfContextBar, WfDock,
+        WfContextBar, WfDock, WfDrawer, WfPersonWeek,
         PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbTrips, PbTeamCockpit,
     };
     static props = { action: { type: Object, optional: true }, "*": true };
 
     setup() {
+        this.orm = useService("orm");
+        this.notif = useService("notification");
+        this.actionService = useService("action");
         this.ctxSvc = useService("wf_context");
         // useState() on the service's reactive is what subscribes the shell —
         // the command bar's chips follow a change made by any lens below.
@@ -134,6 +157,23 @@ export class PbMission extends Component {
             timeArrival: arrival.timeArrival,
             // bumped on every hand-off so the hub REMOUNTS and re-reads arrival
             timeNonce: 0,
+
+            // ----- the shell person surface (§3.3) -----
+            // the get_person_week payload, or null while loading / unresolved
+            person: null,
+            /**
+             * A PRE-EXISTING pin is context, not a request (W26's corollary,
+             * and PbSchedule's own `drawerHidden` precedent). The shared context
+             * is persisted, so without this every arrival in Workforce would
+             * open a drawer over whatever the officer actually came to look at.
+             * Any explicit person DOOR — a dock card, a palette pick, a lens
+             * avatar — goes through `openPerson`, which clears it.
+             *
+             * `pb_focus: "queue"` says the same thing louder: the deep link
+             * pinned a person as a FILTER, so the drawer must stay shut (W26).
+             */
+            personHidden: !!this.ctxSvc.state.personId
+                || arrival.focus === "queue",
         });
 
         // Stable handler identity: a fresh inline arrow makes OWL treat the
@@ -145,7 +185,32 @@ export class PbMission extends Component {
             // (W21.1) — the dock's lifecycle hooks are pure reads.
             onDockPerson: (employeeId) => this.openPerson(employeeId),
             onDockQueue: () => this.setLens("approvals"),
+            onClosePerson: () => this.closePerson(),
+            onOpenProfile: () => this.openProfile(),
         };
+
+        /**
+         * Load the drawer's week when — and only when — the SHELL is the one
+         * showing it. On Time, Today and Schedule the lens fetches its own copy,
+         * so firing here as well would be two requests for one panel.
+         *
+         * An EFFECT, not a mount hook wired to the lens: effects run after the
+         * patch, so this is a plain read outside anybody's render fiber (W21,
+         * and the WfContextBar person-label precedent, W36). `get_person_week`
+         * is a pure read with no write path in it, which is what makes it safe
+         * to re-enter at all.
+         */
+        useEffect(
+            (personId, weekStart) => {
+                if (!personId) {
+                    this.state.person = null;
+                    return;
+                }
+                this._loadPerson(personId, weekStart);
+            },
+            () => [this.shellOwnsDrawer ? this.wf.personId : false,
+                   this.wf.weekStart],
+        );
 
         onWillStart(async () => { await this._resolveAccess(); });
     }
@@ -170,7 +235,13 @@ export class PbMission extends Component {
         const fwd = {};
         if (ctx.pb_lens) { fwd.pb_lens = ctx.pb_lens; }
         if (ctx.pb_focus) { fwd.pb_focus = ctx.pb_focus; }
-        return { lens, timeArrival: Object.keys(fwd).length ? { context: fwd } : {} };
+        return {
+            lens,
+            // the shell's OWN reading of pb_focus: it decides whether the person
+            // surface opens on arrival, exactly as the hub decides for its own
+            focus: ctx.pb_focus || "",
+            timeArrival: Object.keys(fwd).length ? { context: fwd } : {},
+        };
     }
 
     _restoreLens() {
@@ -271,18 +342,98 @@ export class PbMission extends Component {
         this.setLens(lens);
     }
 
-    // ---------------------------------------------------------- person door
+    // -------------------------------------------------------- person surface
     /**
      * The shell's ONE person door (W5): the dock, the palette and any lens all
      * arrive here, and all of them arrive from a CLICK.
      *
      * Pinning on the shared context is the whole action — the command bar's
-     * chip, the three lenses that own a drawer and (WP-3) the shell's own drawer
-     * are all views of the same piece of context (W4/W16).
+     * chip, the three lenses that own a drawer and the shell's own drawer are
+     * all views of the same piece of context (W4/W16).
      */
     openPerson(employeeId) {
         if (!employeeId) { return; }
+        // A door was CLICKED, so the drawer is wanted even if this session
+        // arrived with a restored pin (or a `pb_focus: "queue"` deep link).
+        // Re-clicking the person already pinned changes nothing on the context,
+        // so this flag is the whole state change and it must land on its own.
+        this.state.personHidden = false;
         this.ctxSvc.set({ personId: employeeId });
+    }
+
+    closePerson() {
+        // Clearing the pin is what closes it: the bar's chip and the drawer are
+        // two views of one piece of context, so closing one must not leave the
+        // other insisting a person is selected.
+        this.state.personHidden = false;
+        this.ctxSvc.set({ personId: false });
+    }
+
+    /** True on the four lenses that do NOT bring their own person drawer. */
+    get shellOwnsDrawer() { return !this.lensDef.ownsPersonDrawer; }
+
+    get personDrawerOpen() {
+        return !!this.wf.personId && this.shellOwnsDrawer && !this.state.personHidden;
+    }
+
+    /**
+     * §2's documented failure mode, applied here: the palette and the dock can
+     * both hand over a person `get_person_week` cannot resolve — a different
+     * company, or a persona without attendance-officer access on a lens that
+     * does not need it (Trips is ungated). The pattern is toast-and-clear, not
+     * a drawer stuck on "Loading…".
+     *
+     * W40: the catch narrows nothing. It reports the server's own words, clears
+     * the pin so the surface is usable again, and warns on the console so the
+     * failure stays observable.
+     */
+    async _loadPerson(personId, weekStart) {
+        try {
+            const data = await this.orm.call(PERSON_MODEL, "get_person_week",
+                                             [personId, weekStart]);
+            // a late reply must not paint over a person since changed or closed
+            if (this.wf.personId !== personId) { return; }
+            if (data && data.employee) {
+                this.state.person = data;
+                return;
+            }
+            this.state.person = null;
+            this.notif.add(_t("That employee is not available in this company."),
+                           { type: "warning" });
+            this.ctxSvc.set({ personId: false });
+        } catch (e) {
+            if (this.wf.personId !== personId) { return; }
+            this.state.person = null;
+            console.warn("pb_mission: could not load the person week", e);
+            this.notif.add((e && e.data && e.data.message)
+                || _t("Could not load that person."), { type: "danger" });
+            this.ctxSvc.set({ personId: false });
+        }
+    }
+
+    get personTitle() {
+        const p = this.state.person;
+        return (p && p.employee.name) || _t("Loading…");
+    }
+
+    get personSubtitle() {
+        const p = this.state.person;
+        if (!p) { return ""; }
+        return [p.employee.job, p.employee.dept, p.employee.badge]
+            .filter((x) => x).join(" · ");
+    }
+
+    /** Native-form escape as a DIALOG with a return path (W5). */
+    openProfile() {
+        const p = this.state.person;
+        if (!p) { return; }
+        this.actionService.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.employee",
+            res_id: p.employee.id,
+            views: [[false, "form"]],
+            target: "new",
+        });
     }
 
     // ------------------------------------------------------------------ user

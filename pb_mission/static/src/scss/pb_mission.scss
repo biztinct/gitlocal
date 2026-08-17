@@ -200,7 +200,13 @@
     // are the belt and braces — a flex child's min-size resolves against its
     // min-CONTENT by default, which is exactly how P1a's Week Grid ended up
     // 1 496px wide inside a 1 305px parent, covering the Save button.
+    // `position: relative` is the containing block for the SHELL's person
+    // drawer, whose scrim is `position: absolute; inset: 0` — that makes the
+    // scrim the canvas box rather than the whole workspace, so the command bar
+    // and the lens rail stay reachable behind it. `position` alone creates no
+    // stacking context; a z-index would, and would trap a lens modal (W37).
     .pbms-canvas {
+        position: relative;
         flex: 1 1 auto;
         min-width: 0;
         min-height: 0;
