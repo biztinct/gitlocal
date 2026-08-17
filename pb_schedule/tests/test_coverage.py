@@ -225,6 +225,28 @@ class TestShiftCoverage(TransactionCase):
                     'department_id': self.dept.id, 'weekday': '1',
                     'required_headcount': 2})
 
+    def test_a_requirement_from_another_company_cannot_be_touched(self):
+        """`browse(id)` on an RPC argument is a cross-company door: the manager
+        gate asks "may you edit coverage", never "may you edit THIS company's
+        coverage", and this model carries no record rule."""
+        other = self.env['res.company'].create({'name': 'P2 Other Co'})
+        foreign = self._req(company_id=other.id, weekday='3',
+                            required_headcount=7)
+        # Creating a company as superuser ALSO grants it to the acting user, so
+        # the scope has to be pinned explicitly — `_pb_company_ids()` reads
+        # `env.companies`, which is `allowed_company_ids` from the context.
+        Grid = self.Grid.with_context(allowed_company_ids=[self.company.id])
+        self.assertNotIn(other.id, Grid._pb_company_ids(),
+                         'the probe company must be outside the active scope')
+
+        self.assertFalse(Grid.delete_coverage_requirement(foreign.id))
+        self.assertTrue(foreign.exists(), 'the foreign row must survive')
+        with self.assertRaises(Exception):
+            with self.env.cr.savepoint():
+                Grid.save_coverage_requirement(
+                    {'weekday': '3', 'required_headcount': 99}, foreign.id)
+        self.assertEqual(foreign.required_headcount, 7)
+
     # --------------------------------------------------------- facade CRUD
     def test_save_then_delete_a_requirement_through_the_facade(self):
         rid = self.Grid.save_coverage_requirement({
