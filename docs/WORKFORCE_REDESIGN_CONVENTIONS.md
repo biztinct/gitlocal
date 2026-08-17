@@ -201,3 +201,58 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   READ, event handlers WRITE.* The hub now creates (or reuses) the correction in its click handler
   and hands the lens an `{correction_id}` to open; the lens's mount does a pure `get_correction`,
   which is safe to run any number of times. A `filing` flag guards the double-click.
+- **W22 An XML comment may not contain a double hyphen — and OWL template files are XML.**
+  `<!-- ------------- board ------------- -->` is not a comment, it is a parse error
+  (`Double hyphen within comment`), and it takes the WHOLE template file down: every
+  `t-name` in it silently fails to register, so the cockpit dies at mount with
+  "Missing template", pointing at a component that is perfectly fine. Odoo's own
+  templates use `=` rules for exactly this reason. Use `<!-- ==== section ==== -->`.
+  Cheap gate: `xmllint --noout` every `.xml` you touched before committing — it also
+  catches unescaped `&` and `<` in a `t-esc` default, which fail the same way.
+- **W23 One `class` attribute per element, and nothing between a `t-if` and its `t-else`.**
+  Two P1b near-misses, both silent:
+  1. `t-att-class` and `t-attf-class` both compile to the SAME `class` attribute. An
+     element carrying both gets whichever the compiler wrote last — so the tone class
+     or the `is-on` class survives, never reliably both. Pick one: a static `class` +
+     `t-att-class="{ 'x': cond }"` is a documented, safe pair (precedent:
+     `time_hub.xml` `.pbth-body`); a `t-attf-class` that interpolates the condition
+     itself (`{{ cond ? 'is-on' : '' }}`) is the safe way to combine a computed tone
+     with a state class.
+  2. `t-else` binds to the IMMEDIATELY PRECEDING sibling. An XML comment between the
+     branches breaks the pairing, and the failure is a template compile error at
+     runtime, not at `-u`. When a branch deserves a comment, put the comment INSIDE
+     the branch or use an explicit `t-if` for the second one.
+- **W24 The exception engine only sees `state = 'published'` shifts — Today sees
+  `published` AND `completed`, on purpose.** `pb.attendance.exception.engine._get_exceptions`
+  and `pb.attendance.flow._cohort` both filter `('state', '=', 'published')`, while
+  `pb.time.hub` and `pb.today` use `_PLANNED_STATES = ('published', 'completed')`. That
+  is not drift, it is two different questions: "what did we commit to and has it gone
+  wrong" versus "who is working today". But it has a consequence worth knowing before
+  you interpret any live screen — **pb_demo completes every past punched shift**
+  (`demo_workforce.py`: `action_publish()` then `action_complete()` when not future and
+  not absent), so on the demo world the Exceptions queue for a settled day is driven
+  almost entirely by the ABSENT variant, whose shift stays `published`. A Today row
+  that is late will therefore often have no matching exception row, and that is
+  correct. What must never differ is the GRACE (§2.5): both resolve it through
+  `pb.attendance.rule._grace_for_company`, and `pb_today/tests/test_today.py
+  ::test_late_agrees_with_the_exception_engine` pins them together on a published shift.
+- **W25 A polled surface should not be able to write.** P1a's 591 junk corrections came
+  from a mount-time write on a surface nobody was even clicking. P1b's Today board is
+  polled every 30 s and clicked reflexively, so `pb.today` was built with no `create`,
+  `write` or `unlink` in it at all, and a static test asserts that. Its "File
+  correction" door NAVIGATES — it pins the person on `wf_context` and hands over to the
+  Exceptions lens, which mints the record one click later on a row the officer has
+  actually looked at. Rule: for any surface with an auto-refresh, make the read-only
+  property explicit and test it, rather than relying on every future contributor
+  remembering W21. A door that only navigates cannot generate rows.
+- **W26 The hub deep-link protocol: `pb_lens` + `pb_focus`.** A cockpit handing over to
+  a hub passes intent through `doAction(..., { additionalContext: {...} })`, and the hub
+  reads it ONCE in `setup()` from `props.action.context`:
+  `pb_lens` names the lens to open; `pb_focus: "queue"` says *the pinned person is a
+  FILTER, not a drawer to open*. Without the second one the hand-off is worse than
+  useless: `wf_context.personId` drives the person drawer, so filtering the queue would
+  also pop a panel on top of the very queue the officer was just sent to read. Any host
+  whose drawer is context-driven needs this opt-out, and it must be cleared by the next
+  real person-door click (`openPerson`) so the drawer is not stuck shut.
+  Corollary: a surface that pins a person but shows NO person chip (Today) must not
+  auto-open its drawer on arrival either — a pre-existing pin is context, not a request.
