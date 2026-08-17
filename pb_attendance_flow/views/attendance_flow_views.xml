@@ -12,6 +12,8 @@
                 <field name="grace_in_minutes"/>
                 <field name="grace_out_minutes"/>
                 <field name="open_checkout_hours"/>
+                <field name="variance_minutes"/>
+                <field name="variance_hours_week"/>
                 <field name="count_late_as"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>
@@ -35,6 +37,12 @@
                             <field name="grace_out_minutes"/>
                             <field name="open_checkout_hours"/>
                             <field name="count_late_as"/>
+                        </group>
+                    </group>
+                    <group string="Weekly Close tolerance">
+                        <group>
+                            <field name="variance_minutes"/>
+                            <field name="variance_hours_week"/>
                         </group>
                     </group>
                 </sheet>
