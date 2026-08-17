@@ -14,7 +14,6 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="country_code"/>
-                <field name="structure_id"/>
                 <field name="rule_count"/>
                 <field name="validation_status" widget="badge"
                        decoration-success="validation_status == 'passed'"
@@ -367,7 +366,6 @@
             <search string="Search Formula Configurations">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="structure_id"/>
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Active" name="active_state" domain="[('state', '=', 'active')]"/>
                 <filter string="Has Errors" name="errors" domain="[('has_errors', '=', True)]"/>
@@ -379,7 +377,7 @@
                 <group name="group_by">
                     <filter string="Country" name="group_country" context="{'group_by': 'country_code'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
-                    <filter string="Structure" name="group_structure" context="{'group_by': 'structure_id'}"/>
+                    <filter string="Cycle" name="group_cycle" context="{'group_by': 'cycle_type'}"/>
                 </group>
             </search>
         </field>
