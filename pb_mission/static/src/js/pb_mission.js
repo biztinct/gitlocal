@@ -27,6 +27,7 @@ import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
+import { WfDock } from "@pb_mission/js/pb_dock";
 import { PbToday } from "@pb_today/js/pb_today";
 import { PbSchedule } from "@pb_schedule/js/pb_schedule";
 import { PbTimeHub } from "@pb_time_hub/js/time_hub";
@@ -106,7 +107,7 @@ const LENS_KEYS = LENSES.map((l) => l.key);
 export class PbMission extends Component {
     static template = "pb_mission.PbMission";
     static components = {
-        WfContextBar,
+        WfContextBar, WfDock,
         PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbTrips, PbTeamCockpit,
     };
     static props = { action: { type: Object, optional: true }, "*": true };
@@ -140,6 +141,10 @@ export class PbMission extends Component {
         // fetch — the refetch trap P1a had to fix twice.
         this._h = {
             onHandOff: (lens, context) => this.handOff(lens, context),
+            // Both fire from a dock CLICK, never from its mount or its poll
+            // (W21.1) — the dock's lifecycle hooks are pure reads.
+            onDockPerson: (employeeId) => this.openPerson(employeeId),
+            onDockQueue: () => this.setLens("approvals"),
         };
 
         onWillStart(async () => { await this._resolveAccess(); });
@@ -264,6 +269,20 @@ export class PbMission extends Component {
         this.state.timeArrival = context ? { context: { ...context } } : {};
         this.state.timeNonce += 1;
         this.setLens(lens);
+    }
+
+    // ---------------------------------------------------------- person door
+    /**
+     * The shell's ONE person door (W5): the dock, the palette and any lens all
+     * arrive here, and all of them arrive from a CLICK.
+     *
+     * Pinning on the shared context is the whole action — the command bar's
+     * chip, the three lenses that own a drawer and (WP-3) the shell's own drawer
+     * are all views of the same piece of context (W4/W16).
+     */
+    openPerson(employeeId) {
+        if (!employeeId) { return; }
+        this.ctxSvc.set({ personId: employeeId });
     }
 
     // ------------------------------------------------------------------ user
