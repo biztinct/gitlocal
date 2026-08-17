@@ -170,9 +170,13 @@ class TestScheduleGrid(TransactionCase):
     # -------------------------------------------------------------- leave
     def test_approved_leave_paints_the_square(self):
         day = self.week + timedelta(days=4)
-        leave_type = self.env['hr.leave.type'].search([], limit=1)
+        # A type that needs no allocation — see test_warnings._leave_type for
+        # why `search([], limit=1)` is a trap here.
+        leave_type = self.env['hr.leave.type'].sudo().search(
+            [('requires_allocation', '=', False)], limit=1)
         if not leave_type:
-            self.skipTest('no leave type configured')
+            leave_type = self.env['hr.leave.type'].sudo().create({
+                'name': 'P2 Grid Probe Leave', 'requires_allocation': False})
         leave = self.env['hr.leave'].sudo().create({
             'name': 'P2 leave probe',
             'employee_id': self.emp.id,

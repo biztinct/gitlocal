@@ -11,10 +11,10 @@
  * overlay, conflict marks, publish-all with a draft badge, week⇄fortnight, and
  * the template quick-create with colour swatches. What did not: the private
  * department and job dropdowns (W4 — department comes from `wf_context` now,
- * and the job filter was a second unsynchronized context), the `⚠️` emoji, the
- * FontAwesome icons, the eleven hand-picked 2013 hexes, and `target:"current"`
- * on a shift card, which replaced the whole cockpit with a form and no way back
- * (W5).
+ * and the job filter was a second unsynchronized context), the U+26A0 warning
+ * emoji, the FontAwesome icons, the eleven hand-picked 2013 hexes, and
+ * `target:"current"` on a shift card, which replaced the whole cockpit with a
+ * form and no way back (W5).
  *
  * Later work packages hang off the same read call: the stats strip (WP-3), the
  * coverage overlay (WP-4) and the edit-time warnings (WP-5).

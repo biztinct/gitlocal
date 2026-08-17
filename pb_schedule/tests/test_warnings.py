@@ -102,10 +102,25 @@ class TestScheduleWarnings(TransactionCase):
         self.assertNotIn('overlap', self._codes(self._check(tmpl=self.day_t)))
 
     # -------------------------------------------------------------- leave
-    def _leave(self, state):
-        ltype = self.env['hr.leave.type'].search([], limit=1)
+    def _leave_type(self):
+        """A leave type that needs NO allocation.
+
+        `hr.leave.type.requires_allocation` defaults to True, and this database
+        has plenty of such types — `search([], limit=1)` reliably returns one,
+        and then `hr.leave.create` raises "You do not have any allocation for
+        this time off type". Seeding an allocation would drag the whole
+        accrual/validation machine into a roster test; a no-allocation type is
+        the same fixture with none of it.
+        """
+        ltype = self.env['hr.leave.type'].sudo().search(
+            [('requires_allocation', '=', False)], limit=1)
         if not ltype:
-            self.skipTest('no leave type configured')
+            ltype = self.env['hr.leave.type'].sudo().create({
+                'name': 'P2 Probe Leave', 'requires_allocation': False})
+        return ltype
+
+    def _leave(self, state):
+        ltype = self._leave_type()
         lv = self.env['hr.leave'].sudo().create({
             'name': 'P2 warn leave', 'employee_id': self.emp.id,
             'holiday_status_id': ltype.id,
@@ -245,9 +260,7 @@ class TestScheduleWarnings(TransactionCase):
         for emp in (clean, on_leave, busy):
             self._shift(emp, self.day, self.day_t)
         # …and two reasons to refuse in the TARGET week
-        ltype = self.env['hr.leave.type'].search([], limit=1)
-        if not ltype:
-            self.skipTest('no leave type configured')
+        ltype = self._leave_type()
         lv = self.env['hr.leave'].sudo().create({
             'name': 'P2 copy leave', 'employee_id': on_leave.id,
             'holiday_status_id': ltype.id,

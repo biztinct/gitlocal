@@ -102,7 +102,11 @@ class ShiftCoverageRequirement(models.Model):
                 "Only an attendance manager or a payroll manager can change "
                 "coverage requirements."))
 
-    @api.constrains('weekday', 'date')
+    # `company_id` is in the trigger list ON PURPOSE (W34): Odoo validates a
+    # constraint on CREATE only when one of its fields is present in the vals
+    # or has a default. A row with NEITHER weekday NOR date therefore skipped
+    # this check entirely — the one case it exists to catch.
+    @api.constrains('weekday', 'date', 'company_id')
     def _check_exactly_one_when(self):
         for rec in self:
             if bool(rec.weekday) == bool(rec.date):
