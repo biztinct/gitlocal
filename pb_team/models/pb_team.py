@@ -424,8 +424,18 @@ class PbTeam(models.AbstractModel):
         if 'pb.wf.lock' in self.env:
             try:
                 Lock = self.env['pb.wf.lock']
-                pairs = {(r.employee_id.company_id.id, r.date)
-                         for r in recs if r.date and r.employee_id.company_id}
+                # The company expression MUST be the one the guard uses
+                # (`pb_close/models/overtime_request.py::_pb_lock_pairs`):
+                # record company first, employee company as the fallback. They
+                # legitimately differ — an OT request defaults `company_id` to
+                # `env.company`, which on a multi-company database is whoever
+                # created it, not necessarily the employee's company — and when
+                # they did differ the batch offered a row as CLEAN that the
+                # guard then refused. Found LIVE in P4's validation run; it is
+                # the "door that can only ever produce an error" this very
+                # condition exists to prevent.
+                pairs = {(r.company_id.id or r.employee_id.company_id.id, r.date)
+                         for r in recs if r.date}
                 locked = Lock._locked_pairs([c for c, _d in pairs],
                                             [d for _c, d in pairs])
             except Exception:
@@ -439,7 +449,7 @@ class PbTeam(models.AbstractModel):
             planned = r.planned_hours or 0.0
             if entered <= 0 or abs(entered - planned) > _HOURS_EPS:
                 continue
-            cid = r.employee_id.company_id.id
+            cid = r.company_id.id or r.employee_id.company_id.id
             if r.date and (cid, r.date) in locked:
                 continue
             c = ceilings.get(r.employee_id.id)
