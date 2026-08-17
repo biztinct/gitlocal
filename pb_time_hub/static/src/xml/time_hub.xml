@@ -37,8 +37,15 @@
       <!-- ============================ lenses ============================= -->
       <div class="pbth-body">
 
+        <!-- Timeline — the rebuilt Timecards read-model on pbim tones -->
+        <div class="pbth-lensbody" t-if="state.lens === 'timeline'">
+          <TimelineLens t-key="'lens-tl'"
+                        departmentId="wf.departmentId" weekStart="wf.weekStart"
+                        search="wf.search" onPerson="_h.onPerson"/>
+        </div>
+
         <!-- Week Grid — the Weekly Entry cockpit, embedded (W17) -->
-        <div class="pbth-lensbody pbth-lensbody--grid" t-if="state.lens === 'grid'">
+        <div class="pbth-lensbody pbth-lensbody--grid" t-elif="state.lens === 'grid'">
           <AttendanceWeekGrid t-key="'lens-grid'" embedded="true"/>
         </div>
 
@@ -136,6 +143,87 @@
           </div>
         </t>
       </WfDrawer>
+    </div>
+  </t>
+
+  <!-- ==================================================== Timeline lens -->
+  <t t-name="pb_time_hub.TimelineLens">
+    <div class="pbtl">
+
+      <div class="pbtl-load" t-if="state.loading and !state.data">
+        <span t-out="ic('loader', 22)"/><span>Loading the week…</span>
+      </div>
+
+      <div class="pbtl-empty" t-elif="!rows.length">
+        <span t-out="ic('activity', 28)"/>
+        <div class="t">No one to show</div>
+        <div class="s">Adjust the department, the week or the search above.</div>
+      </div>
+
+      <t t-else="">
+        <!-- legend + the hour window the bars are measured against -->
+        <div class="pbtl-legend">
+          <span class="pbtl-axis"><t t-out="ic('clock', 12)"/><t t-esc="axisLabel"/></span>
+          <span class="pbtl-key pbtl-key--indigo"><i/>Regular</span>
+          <span t-foreach="legend" t-as="l" t-key="l.type"
+                t-attf-class="pbtl-key pbtl-key--{{ l.tone }}">
+            <i/><t t-esc="l.name"/>
+            <b t-if="l.rate and l.rate !== '—'" t-esc="l.rate"/>
+          </span>
+        </div>
+
+        <div class="pbtl-scroll">
+          <table class="pbtl-tbl">
+            <thead>
+              <tr>
+                <th class="pbtl-th-emp">Employee</th>
+                <th t-foreach="days" t-as="d" t-key="d.date"
+                    t-att-class="{ 'is-we': d.is_weekend, 'is-today': d.is_today }"
+                    t-esc="d.full_label"/>
+                <th class="pbtl-th-n">Reg</th>
+                <th class="pbtl-th-n">OT</th>
+                <th class="pbtl-th-n">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="rows" t-as="r" t-key="r.id">
+                <td class="pbtl-emp">
+                  <!-- every avatar is a door to the person drawer (W5) -->
+                  <button class="pbtl-who" t-on-click="() => this.openPerson(r.id)"
+                          t-attf-title="Open {{ r.name }}'s week">
+                    <img class="pbtl-av" t-att-src="r.avatar_url" alt=""/>
+                    <span class="pbtl-who__txt">
+                      <span class="n" t-esc="r.name"/>
+                      <span class="s"><t t-esc="r.job_title"/><t t-if="r.job_title and r.department"> · </t><t t-esc="r.department"/></span>
+                    </span>
+                  </button>
+                </td>
+
+                <td t-foreach="days" t-as="d" t-key="d.date"
+                    t-att-class="{ 'is-we': d.is_weekend, 'is-today': d.is_today }">
+                  <t t-set="card" t-value="dayCard(r, d.date)"/>
+                  <div class="pbtl-track">
+                    <span t-foreach="card.entries" t-as="b" t-key="b_index"
+                          t-attf-class="pbtl-bar pbtl-bar--{{ b.tone }} {{ b.is_active ? 'is-live' : '' }}"
+                          t-attf-style="{{ barStyle(b) }}"
+                          t-att-title="barTitle(r, d.date, b)">
+                      <t t-if="b.bar_type === 'trip'"><t t-out="ic('plane', 11)"/></t>
+                    </span>
+                    <span class="pbtl-hrs" t-if="card.total" t-esc="fmtH(card.total)"/>
+                  </div>
+                </td>
+
+                <td class="pbtl-n" t-esc="fmtH(r.total_regular)"/>
+                <td class="pbtl-n">
+                  <span t-attf-class="pbth-pill pbth-pill--{{ r.total_ot ? 'amber' : 'slate' }}"
+                        t-esc="fmtH(r.total_ot)"/>
+                </td>
+                <td class="pbtl-n pbtl-n--tot" t-esc="fmtH(r.total_hours)"/>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </t>
     </div>
   </t>
 

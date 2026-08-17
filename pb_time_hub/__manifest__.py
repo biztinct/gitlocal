@@ -45,6 +45,7 @@ ships no private pickers. pbim indigo tokens, Lucide icons, no gradients.
     'assets': {
         'web.assets_backend': [
             'pb_time_hub/static/src/scss/time_hub.scss',
+            'pb_time_hub/static/src/js/timeline_lens.js',
             'pb_time_hub/static/src/js/time_hub.js',
             'pb_time_hub/static/src/xml/time_hub.xml',
         ],

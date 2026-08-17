@@ -243,3 +243,60 @@ class TestTimeHubFacade(TransactionCase):
         self.assertEqual(self.Hub.get_person_week('nope', self.week.isoformat()), {})
         self.assertEqual(
             self.Hub.get_person_week(2 ** 31 - 1, self.week.isoformat()), {})
+
+    # =============================================== T2 (WP-4) Timeline lens
+    def test_timeline_is_gated_scoped_and_pbim_toned(self):
+        """The Timeline read-model is officer-gated, company-scoped, and hands
+        the lens pbim TONES rather than the legacy facade's 2013 hexes."""
+        mon = self._day(0)
+        self._att(mon, hours=8)
+
+        data = self.Hub.get_timeline(False, self.week.isoformat(), False)
+        self.assertEqual(data['week_start'], self.week.isoformat())
+        self.assertEqual(len(data['days']), 7)
+        row = next((r for r in data['employees'] if r['id'] == self.emp.id), None)
+        self.assertTrue(row, "the seeded employee must appear on the timeline")
+        bars = row['days'][mon.isoformat()]['entries']
+        self.assertTrue(bars, "a punched day must produce at least one bar")
+        for b in bars:
+            self.assertIn('tone', b, "every bar carries a pbim tone")
+            self.assertIn(b['tone'], ('indigo', 'amber', 'rose', 'cyan', 'trip'))
+            # geometry survives; it is maths, not chrome
+            self.assertIn('bar_left', b)
+            self.assertIn('bar_width', b)
+        for l in data['legend']:
+            self.assertIn('tone', l)
+            self.assertNotIn('color', l,
+                             "the legacy hex palette must not reach the client")
+
+        # gate
+        user = self.env['res.users'].create({
+            'name': 'Plain Pat', 'login': 'p1a_plain_pat',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        with self.assertRaises(AccessError):
+            self.Hub.with_user(user).get_timeline(False, self.week.isoformat(), False)
+
+    def test_timeline_company_and_department_scope(self):
+        other = self.env['res.company'].create({'name': 'P1a Timeline Co'})
+        stranger = self.env['hr.employee'].create({
+            'name': 'Aaa Stranger', 'company_id': other.id, 'tz': 'UTC'})
+        data = self.Hub.get_timeline(False, self.week.isoformat(), False)
+        ids = {r['id'] for r in data['employees']}
+        self.assertIn(self.emp.id, ids)
+        self.assertNotIn(stranger.id, ids,
+                         "sudo reads must still be scoped to env.companies")
+
+        only_dept = self.Hub.get_timeline(self.dept.id, self.week.isoformat(), False)
+        self.assertTrue(all(
+            self.env['hr.employee'].browse(r['id']).department_id == self.dept
+            for r in only_dept['employees']))
+
+        by_name = self.Hub.get_timeline(False, self.week.isoformat(), 'Tess Time')
+        self.assertEqual({r['id'] for r in by_name['employees']}, {self.emp.id})
+
+    def test_timeline_empty_cohort_does_not_fall_back_to_everyone(self):
+        """An empty filter result must return an empty timeline — never the
+        legacy facade's 'no employee_id => search everybody' branch."""
+        data = self.Hub.get_timeline(False, self.week.isoformat(), 'zzz-nobody-zzz')
+        self.assertEqual(data['employees'], [])
+        self.assertEqual(data['legend'], [])
