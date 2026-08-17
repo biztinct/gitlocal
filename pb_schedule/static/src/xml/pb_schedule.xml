@@ -54,12 +54,16 @@
                 title="Edit coverage requirements" aria-label="Edit coverage requirements">
           <span t-out="ic('settings', 14)"/>
         </button>
+        <button class="pbsc-btn ghost" t-on-click="() => this.openTemplates()"
+                title="The shift library">
+          <span t-out="ic('layers', 14)"/><span>Templates</span>
+        </button>
         <button class="pbsc-btn ghost" t-on-click="() => this.refresh()"
                 title="Reload the roster" aria-label="Reload the roster">
           <span t-out="ic('refresh', 14)"/>
         </button>
         <button class="pbsc-btn ghost" t-on-click="() => this.openCopy()">
-          <span t-out="ic('layers', 14)"/><span>Copy week</span>
+          <span t-out="ic('copy', 14)"/><span>Copy week</span>
         </button>
         <button class="pbsc-btn primary" t-on-click="() => this.publishAll()"
                 t-att-disabled="!counts.draft or state.publishing">
@@ -431,6 +435,43 @@
           </div>
         </div>
       </div>
+
+      <!-- ======================= templates drawer ====================== -->
+      <WfDrawer t-if="state.templatesDrawer" title="'Shift templates'"
+                subtitle="'The library every quick-create picks from'"
+                onClose="() => this.closeTemplates()">
+        <div class="pbsc-tpl-drawer">
+          <button class="pbsc-btn primary pbsc-covadd"
+                  t-on-click="() => this.openTemplate(false)">
+            <span t-out="ic('plus', 14)"/><span>New template</span>
+          </button>
+          <p class="pbsc-note" t-if="state.templatesData">
+            Usage counted over <t t-esc="state.templatesData.span_label"/>.
+          </p>
+
+          <div class="pbsc-tpllist">
+            <button class="pbsc-tplrow" t-foreach="templateRows" t-as="row"
+                    t-key="row.id" t-on-click="() => this.openTemplate(row)">
+              <span t-attf-class="pbsc-swatch pbsc-swatch--t{{ tone(row.color) }}"/>
+              <span class="d">
+                <span class="t"><t t-esc="row.name"/>
+                  <span class="cd" t-if="row.code">[<t t-esc="row.code"/>]</span>
+                </span>
+                <span class="s">
+                  <t t-esc="row.start"/>–<t t-esc="row.end"/> ·
+                  <t t-esc="row.duration"/> h · <t t-esc="row.type_label"/>
+                  <t t-if="row.is_overnight"> · overnight</t>
+                </span>
+              </span>
+              <span class="u"><t t-esc="row.usage"/></span>
+            </button>
+            <p class="pbsc-note" t-if="!templateRows.length">
+              No shift templates yet. Create one and every square on the roster
+              can offer it.
+            </p>
+          </div>
+        </div>
+      </WfDrawer>
 
       <!-- ======================== coverage drawer ====================== -->
       <WfDrawer t-if="state.coverageDrawer" title="'Coverage requirements'"

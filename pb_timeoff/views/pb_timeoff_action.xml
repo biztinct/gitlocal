@@ -2,7 +2,7 @@
 <odoo>
     <!-- Client Action: Leave Command Center cockpit (Phase K). -->
     <record id="action_pb_timeoff" model="ir.actions.client">
-        <field name="name">Leave</field>
+        <field name="name">Time Off</field>
         <field name="tag">pb_timeoff</field>
     </record>
 </odoo>

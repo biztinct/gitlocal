@@ -15,7 +15,10 @@
         <!-- hero -->
         <div class="pbot-hero">
           <div>
-            <div class="eyebrow"><span class="i" t-out="ic('zap',15)"/> Overtime Desk</div>
+            <!-- P2 §3.10: the eyebrow says what the RAIL says. A cockpit whose
+                 hero calls itself something the sidebar has never heard of makes
+                 the user re-derive where they are on every arrival. -->
+            <div class="eyebrow"><span class="i" t-out="ic('zap',15)"/> Overtime</div>
             <h1>Approve overtime &amp; manage limits</h1>
             <div class="sub">Org-wide queue · ceiling context · bonus-hours overflow</div>
           </div>

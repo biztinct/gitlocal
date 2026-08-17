@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- `hr.shift.template` shipped with kanban, list and form views and NO
+         search view (P1b finding). Odoo then falls back to a generated one that
+         searches `name` only — so a planner who knows a shift by its CODE, or
+         who wants the night shifts, has to scroll. The Schedule drawer is the
+         editor of record now, but the native list is still reachable from the
+         still-registered `pb_hr_workforce.action_shift_template`, and this is
+         the cheap fix P2 promised (§3.9). -->
+    <record id="view_shift_template_search" model="ir.ui.view">
+        <field name="name">hr.shift.template.search</field>
+        <field name="model">hr.shift.template</field>
+        <field name="arch" type="xml">
+            <search string="Shift Templates">
+                <field name="name" string="Shift"
+                       filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="code"/>
+                <field name="resource_calendar_id"/>
+                <filter name="morning" string="Morning"
+                        domain="[('shift_type', '=', 'morning')]"/>
+                <filter name="afternoon" string="Afternoon"
+                        domain="[('shift_type', '=', 'afternoon')]"/>
+                <filter name="night" string="Night"
+                        domain="[('shift_type', '=', 'night')]"/>
+                <separator/>
+                <filter name="overnight" string="Crosses midnight"
+                        domain="[('is_overnight', '=', True)]"/>
+                <separator/>
+                <filter name="archived" string="Archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="by_type" string="Shift type"
+                            context="{'group_by': 'shift_type'}"/>
+                    <filter name="by_company" string="Company"
+                            context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>

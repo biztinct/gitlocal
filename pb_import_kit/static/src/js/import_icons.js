@@ -60,6 +60,9 @@ export const IC = {
     mapPin:     '<path d="M20 10c0 4.4-8 12-8 12s-8-7.6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
     truck:      '<path d="M14 18V6a1 1 0 0 0-1-1H2v13"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
     sunrise:    '<path d="M12 2v8M4.93 10.93 6.34 12.34M2 18h2M20 18h2M17.66 12.34l1.41-1.41M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/>',
+    // Schedule cockpit (P2) — Copy Week. Added HERE, never in a per-module
+    // icon file: W2 makes this registry the one place a glyph is declared.
+    copy:       '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
 };
 
 /**

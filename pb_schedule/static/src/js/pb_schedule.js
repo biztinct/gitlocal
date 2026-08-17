@@ -101,6 +101,9 @@ export class PbSchedule extends Component {
             coverageData: null,
             coverageForm: null,
             coverageSaving: false,
+            // templates drawer (WP-6) — the retired rail item's new home
+            templatesDrawer: false,
+            templatesData: null,
         });
 
         // Stable handler identities — a fresh inline arrow makes OWL treat the
@@ -468,6 +471,52 @@ export class PbSchedule extends Component {
         } finally {
             this.state.coverageSaving = false;
         }
+    }
+
+    // =========================================== WP-6: templates drawer
+    async openTemplates() {
+        this.state.templatesDrawer = true;
+        await this._loadTemplates();
+    }
+
+    closeTemplates() { this.state.templatesDrawer = false; }
+
+    /** W21: click handler, pure read. */
+    async _loadTemplates() {
+        try {
+            this.state.templatesData = await this.orm.call(
+                MODEL, "get_templates",
+                [this.wf.weekStart, this.state.span,
+                 this.wf.departmentId || false]);
+        } catch (e) {
+            this.state.templatesData = null;
+            this.notif.add((e && e.data && e.data.message)
+                || _t("Could not load the shift library."), { type: "danger" });
+        }
+    }
+
+    get templateRows() {
+        return (this.state.templatesData && this.state.templatesData.rows) || [];
+    }
+
+    /**
+     * Editing stays on the NATIVE form (W5: dialog + return path). A bespoke
+     * editor for a five-field configuration model would be a second source of
+     * truth for `duration`, whose compute lives on the model.
+     */
+    openTemplate(row) {
+        this.actionService.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.shift.template",
+            res_id: row ? row.id : false,
+            views: [[false, "form"]],
+            target: "new",
+        }, {
+            onClose: async () => {
+                await this._loadTemplates();
+                await this.load();
+            },
+        });
     }
 
     // ------------------------------------------------------ quick create

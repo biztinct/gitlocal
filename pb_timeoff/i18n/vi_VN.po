@@ -143,3 +143,13 @@ msgstr "Đơn nghỉ phép này không còn tồn tại."
 #: code:addons/pb_timeoff/models/pb_timeoff.py:0
 msgid "No department"
 msgstr "Chưa có phòng ban"
+
+# ==== Workforce P2 §3.10 — hero/eyebrow titles match the rail ====
+# W7/C18.74: Odoo 19 needs BOTH the `#. module:` line and an
+# `#. odoo-javascript` / `#. odoo-python` marker, or the entry is not loaded.
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Time Off"
+msgstr "Nghỉ Phép"

@@ -333,12 +333,21 @@
         <field name="match_action_tags">pb_schedule,shift_planning_grid</field>
         <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
     </record>
-    <!-- Last of the configuration surfaces still on the rail; it folds into
-         Schedule's templates drawer in P2 and retires there. -->
+    <!-- RETIRED by Workforce P2: folded into Schedule's templates drawer
+         (pb_schedule). A shift library is configuration you touch while you are
+         building a roster, not a destination of its own — and the rail lands on
+         its final Option-A shape of SEVEN items.
+
+         It moves into the 900+ retired band, because a deactivated item still
+         OCCUPIES its sequence for W8's uniqueness rule (W18) — and 80 is now
+         free for whatever P3 puts there. The native action survives untouched;
+         the drawer opens its form, and P2 gives that list the search view it
+         never had (pb_schedule/views/shift_template_views.xml). -->
     <record id="item_wf_templates" model="pb.sidebar.item">
         <field name="section_id" ref="sec_workforce"/><field name="name">Shift Templates</field>
-        <field name="icon">layers</field><field name="sequence">80</field>
+        <field name="icon">layers</field><field name="sequence">905</field>
         <field name="action_xmlid">pb_hr_workforce.action_shift_template</field>
+        <field name="active" eval="False"/>
     </record>
     <!-- RETIRED by Workforce P1b: the Overtime Desk's config gallery is the
          editor of record for hr.overtime.config (pb_ot_desk.js openConfig opens

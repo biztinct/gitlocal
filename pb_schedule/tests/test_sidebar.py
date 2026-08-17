@@ -68,6 +68,86 @@ class TestP2Sidebar(TransactionCase):
         officer = self.env.ref('hr_attendance.group_hr_attendance_officer')
         self.assertEqual(item.groups_id.ids, officer.ids)
 
+    # ============================================= the Option-A rail, final
+    def test_the_rail_is_exactly_seven_items_in_order(self):
+        """P2's finale (§3.14 of the roadmap): Today · Schedule · Time ·
+        Time Off · Overtime · Trips · Team Approvals. Shift Templates folded
+        into Schedule's drawer and left the rail."""
+        sec = self._section()
+        live = self.env['pb.sidebar.item'].search([('section_id', '=', sec.id)])
+        self.assertEqual(
+            [i.name for i in live.sorted('sequence')],
+            ['Today', 'Schedule', 'Time', 'Time Off', 'Overtime', 'Trips',
+             'Team Approvals'],
+            'the rail reads: %s' % ', '.join(
+                '%s(%s)' % (i.name, i.sequence) for i in live.sorted('sequence')))
+        self.assertEqual(len(live), 7)
+
+    def test_shift_templates_retired_into_the_900_band(self):
+        """W18: `active = False` takes an item off the rail but not out of the
+        section, so 80 is only free once the record has MOVED."""
+        item = self._item('pb_sidebar.item_wf_templates')
+        if not item:
+            self.skipTest('pb_sidebar is not installed')
+        self.assertFalse(item.active, 'Shift Templates must be off the rail')
+        self.assertEqual(item.sequence, 905)
+
+    def test_the_shift_template_action_survives_its_retirement(self):
+        """The drawer opens the native FORM, and the list action stays reachable
+        — P2 deletes nothing (binding non-goal)."""
+        act = self.env.ref('pb_hr_workforce.action_shift_template',
+                           raise_if_not_found=False)
+        self.assertTrue(act)
+        search = self.env.ref('pb_schedule.view_shift_template_search',
+                              raise_if_not_found=False)
+        self.assertTrue(search, 'P2 owes hr.shift.template the search view it '
+                                'never had (§3.9)')
+        self.assertEqual(search.model, 'hr.shift.template')
+
+    # ======================================== §3.10 hero-title alignment
+    def test_the_cockpit_actions_are_named_like_the_rail(self):
+        """A cockpit whose breadcrumb calls itself something the sidebar has
+        never heard of makes the user re-derive where they are on arrival."""
+        expected = {
+            'pb_schedule.action_pb_schedule': 'Schedule',
+            'pb_team.action_pb_team': 'Team Approvals',
+            'pb_timeoff.action_pb_timeoff': 'Time Off',
+            'pb_hr_workforce.action_pb_ot_desk': 'Overtime',
+        }
+        for xmlid, name in expected.items():
+            act = self.env.ref(xmlid, raise_if_not_found=False)
+            if not act:
+                continue
+            self.assertEqual(act.name, name, '%s should be named %r' % (xmlid, name))
+
+    def test_the_hero_eyebrows_say_what_the_rail_says(self):
+        """The RECORD is not enough — the eyebrow is a literal in the OWL
+        template, and only reading the file catches a half-done rename."""
+        import os
+
+        from odoo.modules.module import get_module_path
+        checks = [
+            ('pb_schedule', ('static', 'src', 'xml', 'pb_schedule.xml'),
+             '>Schedule<', 'My Roster'),
+            ('pb_team', ('static', 'src', 'xml', 'pb_team.xml'),
+             'Team Approvals', '>My Team<'),
+            ('pb_timeoff', ('static', 'src', 'xml', 'pb_timeoff.xml'),
+             'Time Off', '/> Leave</div>'),
+            ('pb_hr_workforce', ('static', 'src', 'xml', 'pb_ot_desk.xml'),
+             '/> Overtime</div>', '/> Overtime Desk</div>'),
+        ]
+        for module, parts, needle, gone in checks:
+            path = get_module_path(module)
+            if not path:
+                continue
+            full = os.path.join(path, *parts)
+            if not os.path.exists(full):
+                continue
+            with open(full, encoding='utf-8') as fh:
+                body = fh.read()
+            self.assertIn(needle, body, '%s hero title' % module)
+            self.assertNotIn(gone, body, '%s still carries the old title' % module)
+
     def test_workforce_sequences_are_still_unique(self):
         """W8/W18, counting retired items too."""
         sec = self._section()

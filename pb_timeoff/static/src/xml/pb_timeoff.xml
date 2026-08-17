@@ -14,7 +14,9 @@
         <!-- hero -->
         <div class="pbto-hero">
           <div>
-            <div class="eyebrow"><span class="i" t-out="ic('calendar',15)"/> Leave</div>
+            <!-- P2 §3.10: the eyebrow says what the RAIL says ("Time Off"),
+                 not what the model is called. -->
+            <div class="eyebrow"><span class="i" t-out="ic('calendar',15)"/> Time Off</div>
             <h1>Leave Command Center</h1>
             <div class="sub">Org-wide time off · approvals · balances</div>
           </div>

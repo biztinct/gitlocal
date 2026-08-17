@@ -30,7 +30,9 @@
             <div class="pbteam-hero-id">
               <img class="pbteam-hero-av" t-att-src="state.data.me.avatar_url" alt=""/>
               <div>
-                <div class="pbteam-eyebrow">My Team</div>
+                <!-- P2 §3.10: the rail says "Team Approvals" (W28 — "Approvals"
+                     was already taken by the payroll cockpit), so this does. -->
+                <div class="pbteam-eyebrow">Team Approvals</div>
                 <div class="pbteam-hero-name"><t t-esc="state.data.me.name"/></div>
               </div>
             </div>
