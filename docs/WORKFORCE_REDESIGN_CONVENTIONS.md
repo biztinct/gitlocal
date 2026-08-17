@@ -190,4 +190,14 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   4. after any live UI test that can WRITE, count the rows. `pb_hr_workforce`'s own weekgrid header
      already warned about this class of bug ("no parent-state mutation during child mount → fetch
      loop"); P1a proved it applies to callbacks too, not just direct `setState`.
-
+  **W21.1 — the same day, a second bite: a KEYED child's `onWillStart` can still run twice.** With the
+  loop fixed, the drawer's "File correction" hand-off *still* produced two drafts, 69 ms apart. OWL
+  **restarts an in-flight mount whenever the parent re-renders**, and the hub's handler legitimately
+  re-rendered three times right after the click (`setLens`, `closePerson`, then the ctx `onChange`
+  fan-out). A stable `t-key` does not save you: the mount had not completed, so it was discarded and
+  re-run. Both `create_correction` calls were therefore in flight simultaneously, in separate
+  read-committed transactions — so the server-side `reuse_draft` guard could not see the other row
+  either. **A uniqueness guard cannot fix a concurrency problem.** The rule is absolute: *mount hooks
+  READ, event handlers WRITE.* The hub now creates (or reuses) the correction in its click handler
+  and hands the lens an `{correction_id}` to open; the lens's mount does a pure `get_correction`,
+  which is safe to run any number of times. A `filing` flag guards the double-click.
