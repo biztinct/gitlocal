@@ -32,6 +32,19 @@
         </button>
       </div>
 
+      <!-- focused day (opt-in) — always inside the week above, by invariant -->
+      <div class="wfctx-seg wfctx-day" t-if="features.day">
+        <button class="wfctx-nav" t-on-click="() => this.prevDay()"
+                title="Previous day" aria-label="Previous day">
+          <span t-out="ic('chevron', 14)" class="wfctx-flip"/>
+        </button>
+        <span class="wfctx-daylabel" t-esc="dayLabel"/>
+        <button class="wfctx-nav" t-on-click="() => this.nextDay()"
+                title="Next day" aria-label="Next day">
+          <span t-out="ic('chevron', 14)"/>
+        </button>
+      </div>
+
       <!-- person typeahead -->
       <div class="wfctx-seg wfctx-person" t-if="features.person and !state.personDenied">
         <t t-if="ctx.personId">

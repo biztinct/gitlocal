@@ -115,3 +115,32 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   is dropped silently (found on two live borders in `trip_composer.scss`). Use
   `color-mix(in srgb, var(--x, #hex) 20%, transparent)`. Confirmed safe through Dart Sass — unlike
   mixed-unit `min()/max()`, `color-mix()` passes straight through to the bundle.
+- **W16 `wf_context.set()` is the ONLY write door.** The service exposes its
+  `reactive` state because every consumer needs `useState(ctxSvc.state)` to subscribe — that is
+  the whole cross-cockpit sync mechanism and it cannot be hidden behind a proxy without breaking
+  it. But the state is *read-only to consumers*: a direct `ctx.state.weekStart = x` /
+  `this.wf.day = x` skips normalization (Monday snapping, day validation), skips the
+  **`day` ∈ `[weekStart, weekStart+6]` invariant**, skips `localStorage` persistence AND skips the
+  `onChange` fan-out — so the surface looks right while every other cockpit silently desyncs, and a
+  reload throws the change away. Always `ctxSvc.set({...})` (or `shiftWeek` / `shiftDay` / `today` /
+  `reset`, which all funnel through it). Enforced by a grep gate in each phase's static tests:
+  `grep -rn "\.state\.\(departmentId\|weekStart\|personId\|search\|day\) *=" <workforce modules>`
+  must be empty outside `wf_context_service.js` itself.
+  Reconciliation rules `set()` owns (P1a): `weekStart` in the patch wins and the day is clamped
+  keeping its **weekday** (Wed stays Wed when you page weeks); a bare `day` patch drags the week to
+  that day's Monday; a junk `day` is ignored rather than stored.
+- **W17 Embedding pattern: one component, one facade, two mount points.** When a hub absorbs an
+  existing cockpit as a lens, do **not** copy its body into the hub and do not fork a "lens" variant
+  (W6). Give the existing component an `embedded` boolean prop (plus, where it has internal views, an
+  `initialView`), and:
+  1. the component keeps its `registry.category("actions")` registration, so the standalone action
+     and any `doAction` caller keeps working until the retirement phase deletes it;
+  2. `embedded` suppresses **only chrome the hub already owns** — its hero/title, its own
+     `<WfContextBar/>`, its back-to-board button. Never its logic, never its facade calls;
+  3. the hub's context bar rules (W4): in embedded mode the child reads `wf_context` instead of any
+     private week/department state, and re-fetches when the context changes;
+  4. `export` the class so the hub can `import { X } from "@module/js/file"` — Odoo maps
+     `@module/js/…` to `module/static/src/js/…`, and the file is already in `web.assets_backend`
+     because the hub depends on the module.
+  Applied twice in P1a: `AttendanceWeekGrid` (Week Grid lens) and `PbAttendanceFlow`
+  (Exceptions + Import lenses, `initialView` `board` / `import`).
