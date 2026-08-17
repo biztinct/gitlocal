@@ -99,6 +99,33 @@ class TestControlDataPersonFilter(TransactionCase):
         self.assertEqual(board['person']['id'], stranger.id)
         self.assertEqual(board['person']['name'], stranger.name)
 
+    def test_the_hub_badge_follows_the_same_pin_as_the_queue(self):
+        """The Time hub's lens badge and this board must count the same thing.
+
+        Found live: Today handed a person over, the Exceptions queue narrowed to
+        them and showed 0 — while the lens tab above it still badged the whole
+        week's 18. `get_hub_summary` now takes the same `employee_id`, so the
+        P1a invariant ("the ribbon's count IS the lens's count, by construction
+        rather than by luck") survives the filter instead of holding only while
+        nobody uses it.
+        """
+        Hub = self.env['pb.time.hub']
+        board = self._board(self.alice.id)
+        summary = Hub.get_hub_summary(self.dept.id, self.df.isoformat(),
+                                      self.alice.id)
+        self.assertEqual(summary['open_exceptions'], len(board['exceptions']))
+        self.assertEqual(summary['lens_counts']['exceptions'],
+                         board['kpis']['open_exceptions'])
+
+        # ...and unfiltered, both still agree on the wider number
+        wide_board = self._board()
+        wide_summary = Hub.get_hub_summary(self.dept.id, self.df.isoformat())
+        self.assertEqual(wide_summary['open_exceptions'], len(wide_board['exceptions']))
+        self.assertGreater(wide_summary['open_exceptions'],
+                           summary['open_exceptions'],
+                           'the fixture has two people with exceptions, so the '
+                           'filtered count must be strictly smaller')
+
     # =================================================================== T2.2
     def test_without_the_argument_nothing_changed(self):
         """Regression: the standalone cockpit calls this with three arguments

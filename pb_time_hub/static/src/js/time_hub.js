@@ -153,8 +153,13 @@ export class PbTimeHub extends Component {
     // -------------------------------------------------------------- data
     async _loadSummary() {
         try {
+            // personId travels with it: the Exceptions lens narrows its queue
+            // by the same pin, so an unfiltered summary would badge the tab
+            // with the whole week's count above a queue showing one person's
+            // (P1b §2.4).
             this.state.summary = await this.orm.call(MODEL, "get_hub_summary", [
                 this.wf.departmentId || false, this.wf.weekStart,
+                this.wf.personId || false,
             ]);
         } catch (e) {
             // A ribbon that cannot load must never take the hub down with it —
