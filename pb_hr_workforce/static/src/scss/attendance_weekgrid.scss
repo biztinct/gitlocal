@@ -45,26 +45,9 @@
         font-size: 16px; font-weight: 800; color: var(--pbim-ink);
         svg { color: var(--pbim-primary); }
     }
-    .wfg-select {
-        border: 1px solid var(--pbim-line); border-radius: 9px;
-        padding: 7px 11px; font-size: 13px; background: #fff; color: var(--pbim-text);
-        outline: none;
-        &:focus { border-color: var(--pbim-primary); }
-    }
-    .wfg-navbtn {
-        display: inline-flex; align-items: center; justify-content: center;
-        width: 34px; height: 34px; border-radius: 9px;
-        border: 1px solid var(--pbim-line); background: #fff; color: var(--pbim-text);
-        cursor: pointer;
-        &:hover { background: var(--pbim-line-2); }
-    }
-    .wfg-todaybtn {
-        border: 1px solid var(--pbim-line); border-radius: 9px;
-        padding: 7px 14px; font-weight: 700; font-size: 13px;
-        background: #fff; color: var(--pbim-primary); cursor: pointer;
-        &:hover { background: var(--pbim-soft); }
-    }
-    .wfg-weeklabel { font-weight: 700; min-width: 190px; text-align: center; }
+    // .wfg-select / .wfg-navbtn / .wfg-todaybtn / .wfg-weeklabel were the
+    // cockpit's private department + week controls. <WfContextBar/> owns those
+    // now and brings its own .wfctx-* styling (W4/W6).
     .wfg-railtoggle {
         display: inline-flex; align-items: center; gap: 7px;
         border: 1px solid var(--pbim-line); border-radius: 9px;

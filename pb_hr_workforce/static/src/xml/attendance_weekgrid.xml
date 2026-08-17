@@ -13,23 +13,13 @@
             </svg>
             <span>Weekly Entry</span>
           </div>
-          <select class="wfg-select" t-on-change="onDeptChange">
-            <option value="">All departments</option>
-            <t t-foreach="state.departments" t-as="dep" t-key="dep.id">
-              <option t-att-value="dep.id" t-esc="dep.name"/>
-            </t>
-          </select>
         </div>
 
+        <!-- Shared department + week context (pb_wf_kit). The cockpit no longer
+             owns a private picker: the selection lives in the wf_context
+             service and is restored after a reload (W4). -->
         <div class="wfg-tb__center">
-          <button class="wfg-navbtn" t-on-click="() => this.prevWeek()" title="Previous week">
-            <svg class="wfg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <button class="wfg-todaybtn" t-on-click="() => this.goToday()">Today</button>
-          <span class="wfg-weeklabel" t-esc="state.weekLabel"/>
-          <button class="wfg-navbtn" t-on-click="() => this.nextWeek()" title="Next week">
-            <svg class="wfg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
+          <WfContextBar features="{ department: true, week: true, person: false }"/>
         </div>
 
         <div class="wfg-tb__right">

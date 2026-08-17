@@ -11,36 +11,19 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { WeekGrid } from "@biz_week_grid/js/week_grid";
+import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
+// isoLocal is still needed here for the month/year OT-ceiling keys. The rest of
+// the local-date helpers (parseLocal / monday / week labels) moved to the kit,
+// next to the week nav that uses them. NEVER round-trip a wall-clock day through
+// toISOString() — it converts to UTC and slips the date in any non-UTC timezone.
+import { isoLocal } from "@pb_wf_kit/js/wf_context_service";
 
 const MODEL = "hr.attendance.weekentry";
 const OT_TYPES = ["weekday", "weekend", "holiday", "night"];
 
-// Local-date helpers. NEVER round-trip a wall-clock day through toISOString()
-// — that converts to UTC and slips the date in any non-UTC timezone (a Monday
-// picked at 06:00 in UTC+7 serializes to the previous Sunday, fetching the
-// wrong week). Format and parse using LOCAL date parts so the week the officer
-// sees is the week the server is asked for.
-function isoLocal(dt) {
-    const y = dt.getFullYear();
-    const m = String(dt.getMonth() + 1).padStart(2, "0");
-    const d = String(dt.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
-}
-function parseLocal(str) {
-    const [y, m, d] = String(str).split("-").map(Number);
-    return new Date(y, (m || 1) - 1, d || 1);
-}
-function monday(d) {
-    const dt = d instanceof Date ? new Date(d) : parseLocal(d);
-    const day = dt.getDay();
-    const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
-    dt.setDate(diff);
-    return isoLocal(dt);
-}
-
 export class AttendanceWeekGrid extends Component {
     static template = "pb_hr_workforce.AttendanceWeekGrid";
-    static components = { WeekGrid };
+    static components = { WeekGrid, WfContextBar };
     static props = { action: { type: Object, optional: true }, "*": true };
 
     setup() {
@@ -48,10 +31,15 @@ export class AttendanceWeekGrid extends Component {
         this.notif = useService("notification");
         this.dialog = useService("dialog");
 
+        // Department + week are SHARED state now (W4): they live in wf_context,
+        // are rendered by <WfContextBar/>, and survive a reload. useState() on
+        // the service's reactive object subscribes this component, so a change
+        // made in the bar re-renders the cockpit and rolls paramsKey, which is
+        // what makes the grid refetch.
+        this.ctx = useService("wf_context");
+        this.wf = useState(this.ctx.state);
+
         this.state = useState({
-            weekStart: monday(new Date()),
-            departmentId: false,
-            departments: [],
             railOpen: true,
             focusEmp: null,
             reloadNonce: 0,
@@ -60,7 +48,6 @@ export class AttendanceWeekGrid extends Component {
             liveDelta: {},   // empId -> {mtd, ytd} unsaved OT deltas
             summary: { draft_count: 0, draft_hours: 0, draft_ids: [], pending_count: 0, pending_ids: [] },
             truncated: 0,
-            weekLabel: "",
             saving: false,
         });
 
@@ -99,8 +86,8 @@ export class AttendanceWeekGrid extends Component {
         };
 
         onWillStart(async () => {
-            try { this.state.departments = await this._rpc("get_departments"); } catch (_e) { /* */ }
-            // cockpit fetches its own bootstrap (own lifecycle → safe to set state)
+            // The department list is the context bar's job now; the cockpit only
+            // fetches its own bootstrap (own lifecycle → safe to set state).
             this._bootstrap = await this._doFetch();
         });
     }
@@ -113,7 +100,7 @@ export class AttendanceWeekGrid extends Component {
     }
 
     get paramsKey() {
-        return `${this.state.weekStart}|${this.state.departmentId || ""}|${this.state.reloadNonce}`;
+        return `${this.wf.weekStart}|${this.wf.departmentId || ""}|${this.state.reloadNonce}`;
     }
 
     // translatable empty-state text handed to the generic <WeekGrid/> (a plain
@@ -124,13 +111,12 @@ export class AttendanceWeekGrid extends Component {
 
     async _doFetch() {
         const data = await this._rpc("get_week_entries", [
-            this.state.weekStart, this.state.departmentId || false, false,
+            this.wf.weekStart, this.wf.departmentId || false, false,
         ]);
         // capture context for the rail / tray / token map
         this.state.ceilings = data.ceilings || {};
         this.state.summary = data.summary || this.state.summary;
         this.state.truncated = data.truncated || 0;
-        this.state.weekLabel = this._fmtWeek(data.week_start, data.week_end);
         this.state.liveDelta = {};
         this._lastDeltaStr = "{}";
         this._rowsById = {};
@@ -307,28 +293,14 @@ export class AttendanceWeekGrid extends Component {
     fmtH(v) { return (Math.round((v || 0) * 10) / 10); }
 
     // -------------------------------------------------------- toolbar / tray
-    _fmtWeek(startISO, endISO) {
-        const s = parseLocal(startISO), e = parseLocal(endISO);
-        const o = { day: "numeric", month: "short" };
-        return `${s.toLocaleDateString("en-US", o)} – ${e.toLocaleDateString("en-US", o)}, ${e.getFullYear()}`;
-    }
-    prevWeek() { this._shiftWeek(-7); }
-    nextWeek() { this._shiftWeek(7); }
-    goToday() { this.state.weekStart = monday(new Date()); }
-    _shiftWeek(days) {
-        const d = parseLocal(this.state.weekStart);
-        d.setDate(d.getDate() + days);
-        this.state.weekStart = isoLocal(d);
-    }
-    onDeptChange(ev) {
-        this.state.departmentId = ev.target.value ? parseInt(ev.target.value) : false;
-    }
+    // Department select, week nav and the week label are all <WfContextBar/>
+    // now — the cockpit keeps only the controls that are genuinely its own.
     toggleRail() { this.state.railOpen = !this.state.railOpen; }
 
     async submitAll() {
         try {
             const r = await this._rpc("submit_week", [
-                this.state.weekStart, this.state.departmentId || false, false]);
+                this.wf.weekStart, this.wf.departmentId || false, false]);
             this.notif.add((r.submitted || 0) + " " + _t("overtime request(s) submitted."),
                 { type: "success" });
             await this._reloadContext();

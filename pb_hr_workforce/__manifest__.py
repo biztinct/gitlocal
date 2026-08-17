@@ -1,6 +1,6 @@
 {
     'name': 'Workforce Management',
-    'version': '19.0.4.8.2',
+    'version': '19.0.4.9.0',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
@@ -27,6 +27,7 @@ Workforce Management — Deputy & Rippling-Style HR Tools
         'biz_week_grid',
         'pb_sidebar',
         'pb_import_kit',
+        'pb_wf_kit',      # shared Workforce context bar / drawer / ribbon (W6)
     ],
     'data': [
         'security/ir.model.access.csv',
