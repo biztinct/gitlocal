@@ -1,0 +1,232 @@
+// =====================================================================
+//  Mission Control — mockup B's workspace: dark command bar, 76px lens rail,
+//  full-bleed canvas.
+//
+//  Strictly --pbim-* tokens (W1). The mockup painted the command bar in a navy
+//  that exists nowhere in the design system; this uses the token that already
+//  means "deep brand ink", `--pbim-primary-dark`, so the bar is the brand's own
+//  indigo rather than a ninth colour nobody owns. Every declaration
+//  carries the correct pbim fallback, because a var() fallback is a real colour,
+//  not a comment (W14/W19) — and `#fff` is the only literal in this file.
+//
+//  Z-DISCIPLINE (§3.7): shell chrome never exceeds 20. Below 1920px the biz
+//  sidebar becomes a 60px absolute hover-overlay at z-25 that must paint OVER
+//  this workspace, and the lenses' own modals live at 1050. So: the command bar
+//  is 2, the rail is 1, and the canvas creates NO stacking context at all —
+//  otherwise a lens's `position: fixed` modal would be trapped inside it.
+// =====================================================================
+
+.pbim.pbms {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+
+    // ==================================================== command bar
+    .pbms-top {
+        flex: 0 0 auto;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 9px 16px;
+        // NOT overflow:hidden — the context bar's typeahead menu is an absolute
+        // child of this bar and has to escape it.
+        background: var(--pbim-primary-dark, #241F52);
+        color: #fff;
+    }
+
+    .pbms-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        flex: none;
+        font-weight: 800;
+        font-size: 13.5px;
+        letter-spacing: -.01em;
+    }
+    .pbms-brand__ic {
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        background: var(--pbim-primary, #5A4BB0);
+        color: #fff;
+        svg { display: block; }
+    }
+    .pbms-brand__tx { white-space: nowrap; }
+
+    // ------------------------------------------- the ONE context bar, tinted
+    // The kit paints for a white surface; on the command bar its segments have
+    // to read on deep indigo. Only the SEGMENTS are re-tinted — the typeahead
+    // menu stays a light popover, because it floats over the page, not the bar.
+    .pbms-ctx {
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 9px;
+
+        .wfctx-seg,
+        .wfctx-chip {
+            height: 32px;
+            background: color-mix(in srgb, #fff 9%, transparent);
+            border-color: color-mix(in srgb, #fff 17%, transparent);
+            color: #fff;
+        }
+        .wfctx-seg__ic { color: color-mix(in srgb, #fff 62%, transparent); }
+
+        .wfctx-select {
+            color: #fff;
+            &.is-pinned { color: #fff; font-weight: 700; }
+            // A native <select> hands its option list the control's colours;
+            // white-on-indigo there would be white-on-white.
+            option { color: var(--pbim-ink, #1B1733); background: #fff; }
+        }
+
+        .wfctx-weeklabel { color: #fff; }
+        // the focused day keeps the accent it has on white, lightened to read
+        // on indigo — it is a different dimension from the week beside it
+        .wfctx-daylabel { color: var(--pbim-primary-light, #CBC2EE); }
+
+        .wfctx-nav {
+            color: color-mix(in srgb, #fff 70%, transparent);
+            &:hover {
+                background: color-mix(in srgb, #fff 14%, transparent);
+                color: #fff;
+            }
+        }
+        .wfctx-today {
+            color: var(--pbim-primary-light, #CBC2EE);
+            &:hover { background: color-mix(in srgb, #fff 14%, transparent); }
+        }
+
+        // the command bar's search (P3b turns this into the palette)
+        .wfctx-person { flex: 1 1 auto; min-width: 180px; max-width: 380px; }
+        .wfctx-input {
+            width: 100%;
+            color: #fff;
+            &::placeholder { color: color-mix(in srgb, #fff 55%, transparent); }
+        }
+        .wfctx-chip.is-pinned {
+            background: var(--pbim-primary, #5A4BB0);
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            color: #fff;
+        }
+        .wfctx-chip__x:hover { background: color-mix(in srgb, #fff 20%, transparent); }
+    }
+
+    .pbms-user {
+        flex: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--pbim-primary, #5A4BB0);
+        color: #fff;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .02em;
+        cursor: default;
+    }
+
+    // ==================================================== rail + canvas
+    .pbms-low {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        align-items: stretch;
+    }
+
+    .pbms-rail {
+        z-index: 1;
+        flex: 0 0 76px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 14px 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: var(--pbim-surface, #fff);
+        border-right: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbms-rail__b {
+        width: 60px;
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        padding: 9px 3px;
+        border: 0;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: transparent;
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        text-align: center;
+        cursor: pointer;
+        transition: background .12s, color .12s;
+
+        svg { display: block; }
+        &:hover {
+            background: var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-ink, #1B1733);
+        }
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .pbms-rail__ic { display: inline-flex; }
+    .pbms-rail__l { display: block; }
+
+    // W20: the lens box is DEFINITE-HEIGHT and hands that height straight to the
+    // cockpit. `min-height: 0` / `min-width: 0` on both the box and the guest
+    // are the belt and braces — a flex child's min-size resolves against its
+    // min-CONTENT by default, which is exactly how P1a's Week Grid ended up
+    // 1 496px wide inside a 1 305px parent, covering the Save button.
+    .pbms-canvas {
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .pbms-lens {
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+
+        > * {
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 0;
+        }
+    }
+
+    // ------------------------------------------------------- narrow screens
+    // Below the small-laptop breakpoint the labels cost more than they inform;
+    // the rail keeps the icons and the tooltip carries the name.
+    @media (max-width: 1099px) {
+        .pbms-rail { flex-basis: 56px; }
+        .pbms-rail__b { width: 46px; }
+        .pbms-rail__l { display: none; }
+        .pbms-brand__tx { display: none; }
+    }
+}
