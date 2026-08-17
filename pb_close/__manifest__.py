@@ -33,10 +33,10 @@ behind the decisions the week produced. The one exception is the overtime
 guard, which IS a money path (`approved_hours` feeds the formula inputs), and it
 is guarded for exactly that reason.
 
-New code in this module NEVER reads `hr.shift.planning.compliance_status`
-(stale by construction: a stored compute over now(), no cron, and
+New code in this module NEVER reads the shift model's stored compliance-status
+field (stale by construction: a stored compute over now(), no cron, and
 `actual_check_*` never written by production code). Everything is derived live,
-the shape `pb_today.py`:295-317 proved.
+the shape `pb_today.py`:295-317 proved, and a grep gate keeps it so.
 """,
     'version': '19.0.1.0.0',
     'category': 'Human Resources/Attendance',

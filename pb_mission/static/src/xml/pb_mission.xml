@@ -112,6 +112,19 @@
             <PbTeamCockpit t-key="'lens-approvals'" embedded="true"/>
           </div>
 
+          <!-- P4's Close lens. Unlike the seven above it is not an embedded
+               cockpit — there was no Close surface to embed — but it takes the
+               same three wires: the shared context (through wf_context, not a
+               prop), the `pb_cmd` nonce channel, and the shell's own hand-off
+               and person doors, so "Fix" lands on Time.Exceptions without ever
+               leaving the room. -->
+          <div class="pbms-lens" t-if="state.lens === 'close'">
+            <PbCloseLens t-key="'lens-close'" embedded="true"
+                         pbCmd="state.cmd"
+                         onHandOff="_h.onHandOff"
+                         onOpenPerson="_h.onDockPerson"/>
+          </div>
+
           <!-- ================== the shell person surface ==================
                ONE drawer for the four lenses that do not bring their own
                (`ownsPersonDrawer` in LENSES). It lives INSIDE the canvas

@@ -48,7 +48,22 @@ P3b adds the ambient layer on top of that shell:
     overlay service so the shell's z-discipline (W37) is untouched, and the
     `pb_cmd` protocol that carries a palette action into a lens.
 
-Still non-goals: no engine work (tolerances, locks, "approve all clean" — P4).
+P4 turns the engine on inside the same shell:
+
+  * the **Close lens** (mockup C) — the eighth lens and the only one that is
+    not an embedded cockpit, because there was no Close surface to embed. Verb
+    header, Mon-Sun day-lock chips, the clean/flagged/missing stat strip, the
+    flagged table with scheduled-vs-actual bars and reason chips, and the
+    payroll-handoff rail with its checklist and "Lock week & send to payroll".
+    Every action is a click handler; `get_close_data` has no write path in it.
+    Gated to the attendance/payroll MANAGER tiers, matching the locks it sets.
+  * the dock's **clean batch** — OT items the server has certified as clean
+    (requested hours match the grid, ceiling headroom is there, the day is not
+    locked) get a footer that approves all of them through `pb.team.act`,
+    sequentially, as the real user.
+
+Still non-goals: employee shift acknowledgment and the shift-end pulse, both
+descoped from P4 for want of an employee-facing workforce surface.
 
 Nothing is deleted — all seven client actions stay registered and reachable, and
 the retired rail items move to the 900 band (W18).
@@ -56,7 +71,7 @@ the retired rail items move to the 900 band (W18).
 pbim tokens only (the command bar is the deep-indigo `--pbim-primary-dark`, not
 a new navy), Lucide icons through the shared `ic()` registry, flat fills.
 """,
-    'version': '19.0.1.2.2',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -71,6 +86,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
         'pb_hr_workforce',      # Overtime lens
         'pb_business_trip',     # Trips lens
         'pb_team',              # Approvals lens
+        'pb_close',             # P4: pb.close / pb.wf.lock behind the Close lens
         'pb_sidebar',           # the single rail entry that replaces seven
     ],
     'data': [
@@ -81,9 +97,12 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
         'web.assets_backend': [
             'pb_mission/static/src/scss/pb_mission.scss',
             'pb_mission/static/src/scss/pb_dock.scss',
+            'pb_mission/static/src/scss/pb_close_lens.scss',
             'pb_mission/static/src/js/pb_dock.js',
+            'pb_mission/static/src/js/pb_close_lens.js',
             'pb_mission/static/src/js/pb_mission.js',
             'pb_mission/static/src/xml/pb_dock.xml',
+            'pb_mission/static/src/xml/pb_close_lens.xml',
             'pb_mission/static/src/xml/pb_mission.xml',
         ],
     },
