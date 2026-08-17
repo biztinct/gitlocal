@@ -309,7 +309,7 @@
                 </button>
                 <t t-if="state.cfgAdvOpen">
                   <div class="ce-grid2" style="margin-top:14px">
-                    <div class="ce-field"><label>Payroll structure</label>
+                    <div class="ce-field"><label title="Interop only — nothing in the Excel import or the formula calculation reads it.">Legacy payroll structure</label>
                       <CfgCombo options="cfgMeta('structures')" value="state.setDraft.structure_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('structure_id', id)"/></div>
                     <div class="ce-field"><label>Data source connector</label>
                       <CfgCombo options="cfgMeta('connectors')" value="state.setDraft.connector_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('connector_id', id)"/></div>

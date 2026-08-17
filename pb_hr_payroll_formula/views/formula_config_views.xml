@@ -136,7 +136,6 @@
                         <group string="Configuration">
                             <field name="code"/>
                             <field name="country_code"/>
-                            <field name="structure_id"/>
                             <field name="cycle_type"/>
                             <field name="connector_id"/>
                             <field name="use_color_coded_excel_import"/>
@@ -274,6 +273,31 @@
                         <!-- Description Tab -->
                         <page string="Description" name="description">
                             <field name="description" nolabel="1"/>
+                        </page>
+
+                        <!-- Interop with the legacy hr.payroll.structure world.
+                             Off the main Configuration card on purpose: a config
+                             whose components come from Excel needs nothing here,
+                             and setting it narrows downstream lookups. -->
+                        <page string="Legacy Link" name="legacy">
+                            <group>
+                                <group string="Legacy Payroll Structure">
+                                    <field name="structure_id"/>
+                                </group>
+                            </group>
+                            <div class="text-muted" colspan="2">
+                                <p>
+                                    Leave this empty unless this configuration has to interoperate
+                                    with an old-style <em>Payroll Structure</em> (salary rules defined
+                                    outside the formula engine). Nothing in the Excel import or the
+                                    formula calculation reads it.
+                                </p>
+                                <p>
+                                    Several configurations may share one structure — a mid-cycle and an
+                                    end-cycle config for the same structure is normal — so a structure
+                                    on its own does not identify a configuration.
+                                </p>
+                            </div>
                         </page>
                     </notebook>
 
