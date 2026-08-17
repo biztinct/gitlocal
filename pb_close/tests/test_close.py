@@ -359,6 +359,20 @@ class TestCloseBoard(CloseCase):
         keys = [c['key'] for c in self._data()['checklist']]
         self.assertEqual(keys, ['ot', 'corrections', 'flags', 'locks'])
 
+    def test_a_day_that_has_not_happened_yet_is_not_unfinished_business(self):
+        """The CURRENT week's future days must not count as unlocked, or the
+        checklist says "3 days unlocked" on a Wednesday forever — which is how
+        a checklist teaches people to ignore it."""
+        from datetime import date, timedelta as _td
+        today = date.today()
+        this_monday = today - _td(days=today.weekday())
+        data = self.Close.get_close_data(
+            department_id=self.dept.id, week_start=this_monday.isoformat())
+        self.assertEqual(data['stats']['days_total'], today.weekday() + 1)
+        locks_tick = [c for c in data['checklist'] if c['key'] == 'locks'][0]
+        self.assertIn('%s day' % (today.weekday() + 1), locks_tick['label'])
+        self.assertFalse(data['all_locked'])
+
     # ==================================================================
     #  the payload's shape contracts
     # ==================================================================
