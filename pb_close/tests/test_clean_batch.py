@@ -79,6 +79,32 @@ class TestCleanBatch(CloseCase):
         req = self._ot(hours=0.0)
         self.assertFalse(self._verdict(req).get(req.id))
 
+    def test_the_clean_map_resolves_the_company_exactly_as_the_guard_does(self):
+        """Found LIVE in P4's validation run.
+
+        `hr.overtime.request.company_id` defaults to `env.company` — whoever
+        created the row — while its employee may belong to another company. The
+        guard keys the lock on the RECORD's company (employee's as a fallback);
+        the clean map used to key it on the EMPLOYEE's. When those differed, the
+        batch offered a row as clean that the guard immediately refused: the
+        door that can only ever produce an error, in the very condition written
+        to prevent one.
+        """
+        other = self.env['res.company'].create({'name': 'P4 Clean Other Co'})
+        req = self._ot()
+        req.sudo().write({'company_id': other.id})
+        self.assertNotEqual(req.company_id, req.employee_id.company_id,
+                            'the fixture must actually differ')
+
+        self.Lock.sudo().lock_day(other.id, self.day, 'closed over there')
+        self.assertFalse(self._verdict(req).get(req.id),
+                         'the clean map must follow the RECORD company')
+        # …and the guard agrees, which is the whole point
+        res = self.Team.with_user(self.boss).act(
+            'hr.overtime.request', req.id, 'approve')
+        self.assertFalse(res['ok'])
+        self.assertIn('closed', res['error'])
+
     def test_a_request_on_a_LOCKED_day_is_NOT_clean(self):
         """Approving OT onto a closed week is refused by pb_close anyway —
         offering it in a batch would produce a row that fails halfway through
