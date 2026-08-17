@@ -7,3 +7,5 @@ from . import attendance_correction
 from . import overtime_request
 from . import attendance_import
 from . import attendance_weekentry
+from . import close_review
+from . import close

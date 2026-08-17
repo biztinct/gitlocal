@@ -47,10 +47,15 @@ class CloseCase(TransactionCase):
         cls.emp2 = Emp.create({'name': 'P4 Steady', 'company_id': cls.company.id,
                                'tz': 'UTC', 'barcode': 'P4C002'})
 
+        # break_duration 0 on purpose: `duration` (→ shift.planned_hours) is
+        # end − start − break, so the stock 1 h break would make an 8 h punch
+        # against an 08:00–16:00 shift read as +1.0 h EVERY day and bust the
+        # weekly tolerance for every fixture in the suite. The suite is about
+        # the classifier, not about lunch.
         cls.tmpl = cls.env['hr.shift.template'].create({
             'name': 'P4 Day', 'code': 'P4DAY', 'start_hour': 8.0,
-            'end_hour': 16.0, 'is_overnight': False, 'shift_type': 'morning',
-            'company_id': cls.company.id})
+            'end_hour': 16.0, 'break_duration': 0.0, 'is_overnight': False,
+            'shift_type': 'morning', 'company_id': cls.company.id})
 
     # ------------------------------------------------------------- helpers
     @classmethod
