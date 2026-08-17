@@ -2,7 +2,8 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_driver_checkin.DriverMap">
-    <div class="pbim dm-cockpit">
+    <div class="pbim dm-cockpit"
+         t-att-class="{ 'dm-cockpit--embedded': props.embedded, 'dm-cockpit--maponly': mapOnly }">
 
       <div t-if="!state.loaded" class="pbim-busy">
         <div class="pbim-spin"/><span>Loading driver map…</span>
@@ -10,8 +11,9 @@
 
       <div t-else="" class="dm-wrap">
 
-        <!-- KPI strip -->
-        <div class="dm-kpis">
+        <!-- KPI strip — suppressed when embedded: the host already draws the
+             page's numbers, and duplicating them is the fork W17 forbids. -->
+        <div class="dm-kpis" t-if="!props.embedded">
           <div class="dm-kpi">
             <div class="dm-kpi__v" t-esc="state.kpis.active or 0"/>
             <div class="dm-kpi__l">Active now</div>
@@ -37,9 +39,10 @@
           </button>
         </div>
 
-        <!-- body: rail + map -->
+        <!-- body: rail + map. The compact card (initialView="map") drops the
+             rail — the Today board's people list is right beside it. -->
         <div class="dm-body">
-          <div class="dm-rail">
+          <div class="dm-rail" t-if="!mapOnly">
             <div class="dm-rail__head">
               Drivers <span class="dm-rail__count" t-esc="state.drivers.length"/>
             </div>
@@ -86,6 +89,21 @@
           <div class="dm-mapwrap">
             <div class="dm-map" t-ref="map"/>
             <div t-if="state.demoActive" class="dm-simbanner">SIMULATED DEMO DATA</div>
+
+            <!-- Compact-card legend. Rendered by the CARD, never handed up to
+                 the host: a child that reports its numbers to a parent from a
+                 mount hook restarts the host's render fiber (W21). -->
+            <div class="dm-cardlegend" t-if="mapOnly">
+              <span class="dm-cardlegend__k dm-cardlegend__k--live">
+                <i/><t t-esc="liveCounts.active"/> moving
+              </span>
+              <span class="dm-cardlegend__k dm-cardlegend__k--idle">
+                <i/><t t-esc="liveCounts.idle"/> idle &gt; 5 min
+              </span>
+              <span class="dm-cardlegend__k dm-cardlegend__k--off">
+                <i/><t t-esc="liveCounts.off"/> off duty
+              </span>
+            </div>
           </div>
         </div>
       </div>

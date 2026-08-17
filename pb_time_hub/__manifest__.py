@@ -26,7 +26,7 @@ component, one facade and two mount points per surface, never a fork.
 Department, week and person come from the shared `wf_context` (W4); the hub
 ships no private pickers. pbim indigo tokens, Lucide icons, no gradients.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

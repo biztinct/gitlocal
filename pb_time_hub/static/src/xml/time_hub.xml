@@ -67,82 +67,16 @@
       </div>
 
       <!-- ======================= person drawer =========================== -->
-      <WfDrawer t-if="wf.personId" title="drawerTitle" subtitle="drawerSubtitle"
+      <!-- The drawer BODY is the kit's shared panel (W6) — the same component
+           the Today board mounts, so there is one copy of the person-week
+           answer. Both actions stay HERE, in the host: filing a correction
+           writes, and writes belong to event handlers (W21.1). -->
+      <WfDrawer t-if="wf.personId and !state.drawerHidden"
+                title="drawerTitle" subtitle="drawerSubtitle"
                 onClose="() => this.closePerson()">
-        <t t-set="p" t-value="state.person"/>
-
-        <div class="pbth-dr-load" t-if="!p">
-          <span t-out="ic('loader', 22)"/><span>Loading…</span>
-        </div>
-
-        <t t-else="">
-          <!-- who -->
-          <div class="pbth-dr-who">
-            <img class="pbth-av" t-att-src="p.employee.avatar_url" alt=""/>
-            <div class="pbth-dr-who__txt">
-              <div class="n" t-esc="p.employee.name"/>
-              <div class="s" t-esc="drawerSubtitle"/>
-            </div>
-            <span class="pbth-pill pbth-pill--green" t-if="p.employee.on_shift_now">On shift</span>
-          </div>
-
-          <!-- week summary chips -->
-          <div class="pbth-wksum">
-            <span><i>Scheduled</i><b t-esc="fmt(p.totals.sched)"/></span>
-            <span><i>Actual</i><b t-esc="fmt(p.totals.actual)"/></span>
-            <span><i>Δ week</i><b t-attf-class="d-{{ deltaTone(p.totals.delta) }}"
-                                  t-esc="fmtDelta(p.totals.delta)"/></span>
-          </div>
-
-          <!-- the named pain point: one person's week as a table -->
-          <table class="pbth-dt">
-            <thead>
-              <tr><th>Day</th><th>Sched</th><th>Actual</th><th>Entered</th><th>Δ</th></tr>
-            </thead>
-            <tbody>
-              <tr t-foreach="p.days" t-as="d" t-key="d.date"
-                  t-att-class="{ 'is-today': d.is_today }">
-                <td>
-                  <span t-esc="d.label"/>
-                  <span class="pbth-flag" t-if="d.flags.includes('trip')" title="Business trip">·T</span>
-                  <span class="pbth-flag" t-if="d.flags.includes('holiday')" title="Public holiday">·H</span>
-                </td>
-                <td t-esc="fmt(d.sched, d.planned)"/>
-                <td t-esc="fmt(d.actual, d.planned or d.actual)"/>
-                <td>
-                  <span t-attf-class="pbth-din {{ dayTone(d) }}"
-                        t-esc="d.entered ? fmt(d.entered) : '—'"/>
-                </td>
-                <td t-attf-class="{{ deltaTone(d.delta) }}"
-                    t-esc="d.planned ? fmtDelta(d.delta) : '—'"/>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- overtime + compliance chips -->
-          <div class="pbth-chips">
-            <span t-foreach="p.ot" t-as="o" t-key="o.type"
-                  t-attf-class="pbth-pill pbth-pill--{{ o.tone }}">
-              <t t-esc="o.label"/> · <t t-esc="fmt(o.hours)"/>h
-            </span>
-            <span class="pbth-pill pbth-pill--green" t-if="p.compliance">
-              On time <t t-esc="p.compliance.pct"/>%
-            </span>
-            <span class="pbth-chips__empty" t-if="!p.ot.length and !p.compliance">
-              No overtime or shift compliance recorded this week.
-            </span>
-          </div>
-
-          <!-- every drawer is a door onwards, never a dead end (W5) -->
-          <div class="pbth-dr-acts">
-            <button class="pbth-btn pbth-btn--ghost" t-on-click="() => this.fileCorrection()">
-              <span t-out="ic('fileText', 14)"/><span>File correction</span>
-            </button>
-            <button class="pbth-btn pbth-btn--out" t-on-click="() => this.openProfile()">
-              <span t-out="ic('external', 14)"/><span>Full profile</span>
-            </button>
-          </div>
-        </t>
+        <WfPersonWeek data="state.person" filing="state.filing"
+                      onFileCorrection="_h.onFileCorrection"
+                      onOpenProfile="_h.onOpenProfile"/>
       </WfDrawer>
     </div>
   </t>
