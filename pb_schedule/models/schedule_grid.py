@@ -1,0 +1,302 @@
+# Part of Payobook. See LICENSE file for full copyright and licensing details.
+"""``hr.shift.planning.grid`` — P2's ADDITIVE extension of the roster facade.
+
+STRATEGY (P2 §3.2, binding)
+---------------------------
+The legacy cockpit (`pb_hr_workforce/static/src/js/shift_planning_grid.js`) is
+still registered and still works; it is retired by W18, not deleted. So this
+file may only ADD methods. `get_grid_data`, `quick_create_shift`, `delete_shift`,
+`publish_shifts`, `copy_week`, `get_departments` and `get_job_positions` keep
+their exact payload shapes — the old screen consumes them until a later cleanup
+phase removes it, and a "small improvement" to one of those dicts would break a
+surface nobody is looking at.
+
+`get_schedule_data` is therefore a NEW read model, not a patched one. It differs
+from `get_grid_data` in four ways that matter:
+
+  * it is CAPPED. The legacy grid searched every active employee and looped in
+    Python; on this tenant that is 4 500 rows per render. `WF_ROW_CAP` (200,
+    §2.6) applies, with the overflow REPORTED, and the employees the week is
+    actually about — the ones with shifts in the window — sort first so the cap
+    can never hide the roster you came to read;
+  * SEARCH IS SERVER-SIDE. With a cap, a client-side `filteredEmployees` getter
+    would search only the 200 rows that happened to survive it, which is worse
+    than no search at all;
+  * it carries the three P2 instruments (cost strip, coverage, warnings);
+  * it takes its department/week from the shared `wf_context` (W4) — there is
+    no private picker on the new cockpit, and no job filter (the legacy job
+    dropdown was a second, unsynchronized context and it goes).
+
+NAME CLASH WARNING
+------------------
+There is a completely different model ALSO called `hr.shift.planning`, declared
+by the `hr_shift` module (`hr_shift/models/shift_planning.py`:15). `pb_schedule`
+must never depend on, import, or reason about it. Everything here means
+`pb_hr_workforce`'s model.
+"""
+
+from datetime import datetime, timedelta
+
+from odoo import _, api, fields, models
+
+# Shared row budget (§2.6) — mirrored from pb_wf_kit's WF_ROW_CAP export.
+# pb_schedule/tests/test_static.py asserts the two still agree.
+WF_ROW_CAP = 200
+
+# The states a shift is "on the roster" in. `cancelled` is excluded everywhere:
+# a cancelled shift is a decision, not a plan.
+_LIVE_STATES = ('draft', 'published', 'completed')
+
+_APPROVED_LEAVE_STATES = ('validate', 'validate1')
+_PENDING_LEAVE_STATES = ('confirm',)
+
+
+class ShiftPlanningGrid(models.TransientModel):
+    _inherit = 'hr.shift.planning.grid'
+
+    # ------------------------------------------------------------- helpers
+    @api.model
+    def _pb_company_ids(self):
+        return self.env.companies.ids or [self.env.company.id]
+
+    @api.model
+    def _pb_shift_window(self, template, shift_date):
+        """(start, end) naive datetimes for a template on a day.
+
+        Byte-identical to `quick_create_shift`'s arithmetic (the base facade,
+        :229-237) ON PURPOSE: the warning engine must predict exactly the row
+        the create would write, or it would warn about a shift nobody is about
+        to make. Template hours are wall-clock floats stored naive, which is the
+        existing convention for this model and not P2's to change.
+        """
+        start_h = int(template.start_hour)
+        start_m = int(round((template.start_hour % 1) * 60))
+        end_h = int(template.end_hour)
+        end_m = int(round((template.end_hour % 1) * 60))
+        start_dt = datetime.combine(
+            shift_date, datetime.min.time().replace(hour=start_h, minute=start_m))
+        end_day = shift_date + timedelta(days=1) if template.is_overnight else shift_date
+        end_dt = datetime.combine(
+            end_day, datetime.min.time().replace(hour=end_h, minute=end_m))
+        return start_dt, end_dt
+
+    @api.model
+    def _pb_hhmm(self, dt):
+        """"08:00" — 24h, tabular, unambiguous.
+
+        The legacy grid printed `%I:%M%p` ("8am"), which is fine in an English
+        roster and unreadable in a Vietnamese one; every other P0–P1 Workforce
+        surface prints HH:MM and the strip's numbers line up under it.
+        """
+        return dt.strftime('%H:%M') if dt else ''
+
+    @api.model
+    def _pb_template_map(self):
+        templates = self.env['hr.shift.template'].search([])
+        return {t.id: {
+            'id': t.id,
+            'name': t.name or '',
+            'code': t.code or '',
+            'color': t.color or 0,
+            'shift_type': t.shift_type or '',
+            'start_hour': t.start_hour,
+            'end_hour': t.end_hour,
+            'duration': t.duration,
+            'is_overnight': t.is_overnight,
+        } for t in templates}
+
+    # ------------------------------------------------------------- cohort
+    @api.model
+    def _pb_employees(self, department_id, search, shifts):
+        """(recordset, truncated) — the roster's rows, capped and ordered.
+
+        Order: people with a shift in the window first (that is what a roster
+        is), then the rest of the scoped population, both alphabetically. The
+        cap then bites on the tail, where the information is, rather than at
+        "Anh" through "Bao".
+        """
+        domain = [('active', '=', True),
+                  ('company_id', 'in', self._pb_company_ids())]
+        if department_id:
+            domain.append(('department_id', '=', int(department_id)))
+        q = (search or '').strip()
+        if q:
+            domain += ['|', ('name', 'ilike', q), ('job_title', 'ilike', q)]
+
+        Emp = self.env['hr.employee']
+        # A hard limit on the SEARCH too: `search(order='name')` over 4 500 rows
+        # to then keep 200 of them is a full table read per keystroke.
+        scheduled_ids = [e for e in shifts.mapped('employee_id').ids if e]
+        with_shifts = Emp.search(
+            domain + [('id', 'in', scheduled_ids)], order='name') if scheduled_ids else Emp
+        room = WF_ROW_CAP - len(with_shifts)
+        without = Emp
+        if room > 0:
+            without = Emp.search(
+                domain + [('id', 'not in', with_shifts.ids)],
+                order='name', limit=room + 1)
+        total = Emp.search_count(domain)
+        rows = with_shifts + without
+        truncated = 0
+        if len(rows) > WF_ROW_CAP:
+            rows = rows[:WF_ROW_CAP]
+        if total > len(rows):
+            truncated = total - len(rows)
+        return rows, truncated
+
+    # =================================================== the read model
+    @api.model
+    def get_schedule_data(self, week_start_str, department_id=False,
+                          num_days=7, search=''):
+        """The Schedule cockpit's ONE read call.
+
+        :param week_start_str: ISO Monday from `wf_context.weekStart`.
+        :param department_id: from `wf_context.departmentId` (False = all).
+        :param num_days: 7 or 14 — the fortnight toggle widens the window from
+            the same context week; it is a local view choice, not a context one.
+        :param search: from `wf_context.search`; filtered SERVER-side (see the
+            module docstring — a client filter over a capped list is a lie).
+        """
+        self._require_officer()
+        week_start = fields.Date.from_string(week_start_str)
+        num_days = 14 if int(num_days or 7) == 14 else 7
+        week_end = week_start + timedelta(days=num_days - 1)
+        today = fields.Date.context_today(self)
+        co_ids = self._pb_company_ids()
+
+        days = []
+        for i in range(num_days):
+            d = week_start + timedelta(days=i)
+            days.append({
+                'date': d.isoformat(),
+                'label': d.strftime('%a'),
+                'day_num': d.day,
+                'month': d.strftime('%b'),
+                'dow': d.weekday(),
+                'is_today': d == today,
+                'is_past': d < today,
+                'is_weekend': d.weekday() >= 5,
+            })
+
+        Shift = self.env['hr.shift.planning']
+        window = [('date', '>=', week_start), ('date', '<=', week_end),
+                  ('company_id', 'in', co_ids),
+                  ('state', 'in', _LIVE_STATES)]
+        all_shifts = Shift.search(window)
+        if department_id:
+            dept = int(department_id)
+            scoped = all_shifts.filtered(
+                lambda s: not s.employee_id or s.department_id.id == dept)
+        else:
+            scoped = all_shifts
+
+        employees, truncated = self._pb_employees(department_id, search, scoped)
+
+        # sudo on leave: the presence overlay is system-derived roster context.
+        # Same rail the base facade documents at :64-68 and pb.today at :162 —
+        # without it a planner who cannot read hr.leave.type crashes the whole
+        # roster on the holiday_status_id dereference below.
+        leaves = self.env['hr.leave'].sudo().search([
+            ('employee_id', 'in', employees.ids),
+            ('state', 'in', _APPROVED_LEAVE_STATES + _PENDING_LEAVE_STATES),
+            ('date_from', '<=', datetime.combine(week_end, datetime.max.time())),
+            ('date_to', '>=', datetime.combine(week_start, datetime.min.time())),
+        ]) if employees else self.env['hr.leave']
+
+        tmap = self._pb_template_map()
+        conflicts = self._detect_conflicts(scoped)
+        conflict_shift_ids = set()
+        for w in conflicts:
+            conflict_shift_ids.add(w.get('shift_a_id'))
+            conflict_shift_ids.add(w.get('shift_b_id'))
+
+        by_emp = {}
+        for s in scoped:
+            if s.employee_id:
+                by_emp.setdefault(s.employee_id.id, []).append(s)
+
+        leaves_by_emp = {}
+        for lv in leaves:
+            lv_start = lv.date_from.date() if isinstance(lv.date_from, datetime) else lv.date_from
+            lv_end = lv.date_to.date() if isinstance(lv.date_to, datetime) else lv.date_to
+            cur = max(lv_start, week_start)
+            stop = min(lv_end, week_end)
+            bucket = leaves_by_emp.setdefault(lv.employee_id.id, {})
+            while cur <= stop:
+                approved = lv.state in _APPROVED_LEAVE_STATES
+                prev = bucket.get(cur.isoformat())
+                # an approved day beats a pending one on the same square
+                if not prev or (approved and not prev['is_approved']):
+                    bucket[cur.isoformat()] = {
+                        'type': lv.holiday_status_id.name or _('Leave'),
+                        'is_approved': approved,
+                    }
+                cur += timedelta(days=1)
+
+        rows = []
+        for emp in employees:
+            emp_shifts = by_emp.get(emp.id) or []
+            shifts_by_date = {}
+            for s in emp_shifts:
+                shifts_by_date.setdefault(s.date.isoformat(), []).append(
+                    self._pb_shift_card(s, tmap, s.id in conflict_shift_ids))
+            calendar = emp.resource_calendar_id
+            contracted = (calendar.hours_per_week if calendar else 0.0) or 40.0
+            if num_days == 14:
+                contracted *= 2
+            rows.append({
+                'id': emp.id,
+                'name': emp.name or '',
+                'job_title': emp.job_title or (emp.job_id.name if emp.job_id else '') or '',
+                'department': emp.department_id.name if emp.department_id else '',
+                'avatar_url': '/web/image/hr.employee/%s/avatar_128' % emp.id,
+                'total_hours': round(sum(s.planned_hours for s in emp_shifts), 1),
+                'contracted_hours': round(contracted, 1),
+                'shifts': shifts_by_date,
+                'leaves': leaves_by_emp.get(emp.id) or {},
+            })
+
+        open_by_date = {}
+        for s in scoped.filtered(lambda x: not x.employee_id):
+            open_by_date.setdefault(s.date.isoformat(), []).append(
+                self._pb_shift_card(s, tmap, False))
+
+        assigned = scoped.filtered(lambda s: s.employee_id)
+        return {
+            'week_start': week_start.isoformat(),
+            'week_end': week_end.isoformat(),
+            'num_days': num_days,
+            'days': days,
+            'employees': rows,
+            'open_shifts': open_by_date,
+            'templates': sorted(tmap.values(), key=lambda t: (t['start_hour'], t['name'])),
+            'conflicts': conflicts,
+            'truncated': truncated,
+            'row_cap': WF_ROW_CAP,
+            'counts': {
+                'shifts': len(assigned),
+                'draft': len(assigned.filtered(lambda s: s.state == 'draft')),
+                'published': len(assigned.filtered(lambda s: s.state == 'published')),
+                'completed': len(assigned.filtered(lambda s: s.state == 'completed')),
+                'open': len(scoped) - len(assigned),
+                'conflicts': len(conflicts),
+            },
+        }
+
+    @api.model
+    def _pb_shift_card(self, shift, tmap, has_conflict):
+        tmpl = tmap.get(shift.shift_template_id.id) or {}
+        return {
+            'id': shift.id,
+            'template_id': shift.shift_template_id.id,
+            'template_name': tmpl.get('name', ''),
+            'template_code': tmpl.get('code', ''),
+            'color': tmpl.get('color', 0),
+            'shift_type': tmpl.get('shift_type', ''),
+            'start': self._pb_hhmm(shift.start_datetime),
+            'end': self._pb_hhmm(shift.end_datetime),
+            'state': shift.state,
+            'planned_hours': round(shift.planned_hours or 0.0, 2),
+            'actual_hours': round(shift.actual_hours or 0.0, 2),
+            'conflict': bool(has_conflict),
+        }
