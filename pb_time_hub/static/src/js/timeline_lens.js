@@ -49,6 +49,12 @@ export class TimelineLens extends Component {
     }
 
     async _load(p) {
+        // Compare against the LAST REQUESTED key, not against `this.props`:
+        // inside onWillUpdateProps `this.props` is still the OLD props until the
+        // hook resolves, so a props-based guard would discard every update's
+        // own reply and the lens would never repaint.
+        const key = this._key(p);
+        this._reqKey = key;
         this.state.loading = true;
         try {
             const data = await this.orm.call(MODEL, "get_timeline", [
@@ -56,7 +62,7 @@ export class TimelineLens extends Component {
             ]);
             // A slow reply for an abandoned week must not paint over the
             // current one.
-            if (this._key(p) !== this._key(this.props)) { return; }
+            if (this._reqKey !== key) { return; }
             this.state.data = data;
             if (data && data.truncated) {
                 this.notif.add(
@@ -65,11 +71,12 @@ export class TimelineLens extends Component {
                     { type: "warning" });
             }
         } catch (e) {
+            if (this._reqKey !== key) { return; }
             this.state.data = null;
             this.notif.add((e && e.data && e.data.message) || _t("Could not load the timeline."),
                 { type: "danger" });
         } finally {
-            this.state.loading = false;
+            if (this._reqKey === key) { this.state.loading = false; }
         }
     }
 
