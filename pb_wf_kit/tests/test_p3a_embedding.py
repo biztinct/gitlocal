@@ -185,6 +185,33 @@ class TestP3aEmbeddability(TransactionCase):
             self.assertEqual(act.tag, tag, '%s must keep its client tag' % xmlid)
         self.assertTrue(checked, 'no cockpit module is installed')
 
+    def test_the_person_typeahead_calls_odoo_19s_name_search(self):
+        """`BaseModel.name_search(name, domain, operator, limit)` — Odoo 19
+        renamed the second parameter from `args` to `domain`.
+
+        The kit passed `args: []`, so every keystroke raised
+        `TypeError: name_search() got an unexpected keyword argument 'args'`,
+        the catch marked the persona denied, and the person segment vanished for
+        the rest of the session. No console error, no toast — the control was
+        simply not there any more, which reads as "this build has no person
+        search" rather than as a bug. It shipped that way from P0 and nothing
+        found it until P3a made it the command bar's search.
+
+        The second half of the gate matters as much: a search failure must not
+        RETIRE the control. `personDenied` is for AccessError only.
+        """
+        body = _read('pb_wf_kit', 'static', 'src', 'js', 'wf_context_bar.js')
+        self.assertTrue(body, 'the context bar must be readable')
+        block = re.search(r'name_search"[^;]*?\}\);', body, re.S)
+        self.assertTrue(block, 'no name_search call found in the context bar')
+        call = block.group(0)
+        self.assertIn('domain:', call,
+                      'Odoo 19 name_search takes `domain`, not `args`')
+        self.assertNotRegex(call, r'\bargs\s*:',
+                            '`args` raises TypeError on every keystroke in Odoo 19')
+        self.assertIn('AccessError', body,
+                      'only an access failure may retire the person segment')
+
     def test_the_today_hand_off_keeps_its_standalone_fallback(self):
         """P3a §3.5. Embedded, "File correction" is a lens switch; standalone it
         is still the P1b doAction into the Time hub — one method, two routes, and

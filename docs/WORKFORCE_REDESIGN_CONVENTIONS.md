@@ -426,3 +426,27 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
      this class of bug surfaces on the laptop and never on the monitor.
   Gated by `pb_wf_kit/tests/test_p3a_embedding.py::test_the_root_scrollers_move_their_
   scrollport_inside`.
+- **W40 A `catch` that DISABLES a control turns a one-line API change into a missing feature,
+  and nobody will ever see the error.** (Found in P3a, live, on a bug that had been shipping
+  since P0.) `WfContextBar._search()` called
+  `name_search(..., { name, args: [], operator, limit })`. Odoo 19 renamed that second
+  parameter — the signature is `BaseModel.name_search(name, domain, operator, limit)` — so
+  every keystroke raised `TypeError: name_search() got an unexpected keyword argument
+  'args'`. The handler swallowed it and set `personDenied = true`, and the template hides the
+  whole segment when that flag is set. Net effect: the person search silently DELETED itself
+  on first use, in every Workforce cockpit, for three phases. No console error (the catch ate
+  it), no toast, no empty dropdown to be suspicious about — the control was simply not on the
+  page, which reads as "this build doesn't have that" rather than as a defect. It survived
+  P0-P2 because the segment is one of several and nobody types in it during a screenshot pass.
+  Rules:
+  1. a `catch` may narrow a feature only for the reason it was written for. Degrading on
+     "the persona cannot read hr.employee" means testing for `AccessError`; everything else
+     must `console.warn` and leave the control alone;
+  2. never `catch {}` without binding the error — the bare form makes the failure
+     unobservable by construction;
+  3. when you make an existing control the HEADLINE of a new surface, exercise it end to end
+     live (type, pick, confirm the state landed) rather than checking that it renders. P3a's
+     T4-T14 all passed on a search that could not work.
+  Gated by `pb_wf_kit/tests/test_p3a_embedding.py::test_the_person_typeahead_calls_odoo_19s_
+  name_search`. Related live fact worth knowing: this database has no `unaccent`, so
+  "Bui Anh" matches nothing while "Bùi Anh" matches — P3b's palette needs an answer for that.
