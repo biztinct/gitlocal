@@ -135,9 +135,15 @@ class HrFormulaConfig(models.Model):
 
     structure_id = fields.Many2one(
         'hr.payroll.structure',
-        string='Payroll Structure',
+        string='Legacy Payroll Structure',
         tracking=True,
-        help="Link to the payroll structure this config applies to"
+        help="Optional link to an old-style payroll structure, for interop only. "
+             "Nothing in the Excel import or the formula calculation reads it — "
+             "leave it empty unless this configuration must line up with salary "
+             "rules defined outside the formula engine. Several configurations "
+             "may share one structure (mid-cycle and end-cycle for the same "
+             "structure is normal), so a structure alone does not identify a "
+             "configuration."
     )
     mid_cycle_source_component_id = fields.Many2one(
         'hr.formula.rule',

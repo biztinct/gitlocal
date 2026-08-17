@@ -244,35 +244,74 @@ class HrPayslipFormula(models.Model):
         return payload
 
     def _find_formula_config(self):
-        """Find appropriate formula configuration for this payslip"""
-        self.ensure_one()
+        """Find the formula configuration for a payslip that has none set.
 
-        # Try to find config based on structure
+        Only reached when ``formula_config_id`` is empty — everything created by
+        the pay-run wizard or the import batch sets it explicitly.
+
+        Ordered most-specific first. Note that ``struct_id`` is a WEAK signal:
+        several configs legitimately share one ``hr.payroll.structure`` (a
+        mid-cycle and an end-cycle config for the same structure is the normal
+        shape), and a payslip carries no cycle marker of its own to tell them
+        apart. So a structure match is used only when it is unambiguous;
+        otherwise we fall through rather than silently pick the wrong cycle.
+
+        Every lookup is company-scoped: without it, a multi-company database
+        can hand a payslip a config belonging to another company.
+        """
+        self.ensure_one()
+        Config = self.env['hr.formula.config']
+        # Company-less configs are shared, so include them — a strict equality
+        # filter would resolve to nothing at all for such a config, which is
+        # worse than the cross-company match this replaces.
+        company_domain = [
+            '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id)
+        ] if self.company_id else []
+
+        # 1. A sibling payslip in the same run already resolved this. Strongest
+        #    signal available and free of the ambiguity below.
+        if self.payslip_run_id:
+            sibling = self.payslip_run_id.slip_ids.filtered(
+                lambda s: s.id != self.id and s.formula_config_id
+            )[:1]
+            if sibling:
+                return sibling.formula_config_id
+
+            # 2. The import batch that produced the run records the config it
+            #    was run with.
+            batch = self.env['hr.payroll.import.batch'].search(
+                [('payslip_run_id', '=', self.payslip_run_id.id)], limit=1
+            )
+            if batch.formula_config_id:
+                return batch.formula_config_id
+
+        # 3. Payroll structure — only when it identifies exactly one config.
         if self.struct_id:
-            config = self.env['hr.formula.config'].search([
+            configs = Config.search(company_domain + [
                 ('structure_id', '=', self.struct_id.id),
                 ('state', '=', 'active'),
-            ], limit=1)
-            if config:
-                return config
+            ])
+            if len(configs) == 1:
+                return configs
+            if len(configs) > 1:
+                _logger.warning(
+                    "Payslip %s: structure %s maps to %s active formula configs (%s) — "
+                    "ambiguous, ignoring the structure and falling back.",
+                    self.id, self.struct_id.display_name, len(configs),
+                    ", ".join(configs.mapped('name')),
+                )
 
-        # Try to find config based on employee's country
+        # 4. Employee's country.
         if self.employee_id and self.employee_id.country_id:
-            country_code = self.employee_id.country_id.code
-            config = self.env['hr.formula.config'].search([
-                ('country_code', '=', country_code),
+            config = Config.search(company_domain + [
+                ('country_code', '=', self.employee_id.country_id.code),
                 ('state', '=', 'active'),
             ], limit=1)
             if config:
                 return config
 
-        # Try to find any active config for this company
-        config = self.env['hr.formula.config'].search([
-            ('company_id', '=', self.company_id.id),
-            ('state', '=', 'active'),
-        ], limit=1)
-
-        return config
+        # 5. Any active config for this company.
+        return Config.search(company_domain + [('state', '=', 'active')], limit=1)
 
     def _get_formula_input_values(self, config):
         """
