@@ -11,7 +11,7 @@ from odoo.addons.biz_geo_tracking.controllers.pwa_shell import GeoPwaShell
 _logger = logging.getLogger(__name__)
 
 _SCOPE = '/driver'
-_THEME = '#0b1f3a'
+_THEME = '#5A4BB0'   # pbim indigo primary (PWA theme/splash colour)
 _MAX_SELFIE_BYTES = 5 * 1024 * 1024
 _IMAGE_MIMES = ('image/jpeg', 'image/png', 'image/webp')
 
@@ -78,7 +78,7 @@ class DriverApp(http.Controller, GeoPwaShell):
         ]
         return self._make_manifest(
             'Payobook Driver', 'Driver', _SCOPE, _SCOPE,
-            theme_color=_THEME, bg_color='#0b1f3a', icons=icons)
+            theme_color=_THEME, bg_color=_THEME, icons=icons)
 
     @http.route('/driver/service-worker.js', type='http', auth='public',
                 methods=['GET'], website=False, sitemap=False)

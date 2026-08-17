@@ -5,7 +5,7 @@ import { useService } from "@web/core/utils/hooks";
 import { GeoMap } from "@biz_geo_tracking/js/geo_map";
 
 const POLL_MS = 5000;
-const NAVY = "#0b1f3a";
+const PIN_COLOR = "#5A4BB0";   // pbim indigo primary (W1) — inlined onto the Leaflet pin
 
 function fmtDur(sec) {
     if (sec == null) { return "—"; }
@@ -90,7 +90,7 @@ export class DriverMap extends Component {
             keep.push(dvr.id);
             this.geo.upsertMarker(dvr.id, {
                 lat: dvr.last_lat, lon: dvr.last_lon,
-                label: dvr.initials, sim: dvr.source === "sim", color: NAVY,
+                label: dvr.initials, sim: dvr.source === "sim", color: PIN_COLOR,
                 popupHtml: this._popup(dvr),
             });
         }
