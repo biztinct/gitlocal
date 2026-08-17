@@ -1,7 +1,8 @@
 // Manager Live-Map cockpit. The root carries the shared `.pbim` class, so the
-// --pbim-* CSS custom props are already in scope (emitted by import_kit.scss);
-// navy accent for the driver domain. Map pins/popups styled here (Leaflet).
-$dm-navy: #0b1f3a;
+// --pbim-* CSS custom props are already in scope (emitted by import_kit.scss).
+// One indigo primary for the driver domain too (W1). Map pins/popups styled
+// here (Leaflet); the pin rules render OUTSIDE the .pbim root, so their var()
+// fallbacks are what actually paint.
 
 .dm-cockpit {
     height: 100%;
@@ -16,7 +17,7 @@ $dm-navy: #0b1f3a;
     }
     .pbim-spin {
         width: 26px; height: 26px; border-radius: 50%;
-        border: 3px solid var(--pbim-line); border-top-color: $dm-navy;
+        border: 3px solid var(--pbim-line); border-top-color: var(--pbim-primary, #5A4BB0);
         animation: dm-spin .8s linear infinite;
     }
     @keyframes dm-spin { to { transform: rotate(360deg); } }
@@ -30,7 +31,7 @@ $dm-navy: #0b1f3a;
     }
     .dm-kpi {
         min-width: 88px;
-        &__v { font-size: 24px; font-weight: 800; color: $dm-navy; line-height: 1; }
+        &__v { font-size: 24px; font-weight: 800; color: var(--pbim-primary, #5A4BB0); line-height: 1; }
         &__v--warn { color: var(--pbim-amber); }
         &__v--muted { color: var(--pbim-muted); }
         &__l { font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
@@ -121,7 +122,7 @@ $dm-navy: #0b1f3a;
 .bgeo-pin__dot {
     display: flex; align-items: center; justify-content: center;
     width: 34px; height: 34px; border-radius: 50%;
-    background: var(--bgeo-pin-color, #0b1f3a); color: #fff;
+    background: var(--bgeo-pin-color, #5A4BB0); color: #fff;
     font-size: 12px; font-weight: 800; border: 2px solid #fff;
     box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
 }

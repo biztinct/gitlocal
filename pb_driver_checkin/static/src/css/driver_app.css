@@ -1,8 +1,7 @@
 /* Payobook Driver PWA — standalone stylesheet.
    pbim palette VALUES copied (this bundle cannot @import backend SCSS). */
 :root {
-    --pbdrv-navy: #0b1f3a;
-    --pbdrv-navy-2: #12294a;
+    --pbdrv-navy: #5A4BB0;   /* pbim indigo primary (W1); name kept to avoid churn */
     --pbdrv-ink: #1B1733;
     --pbdrv-muted: #64748B;
     --pbdrv-line: #E2E8F0;
