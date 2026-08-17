@@ -450,3 +450,115 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   Gated by `pb_wf_kit/tests/test_p3a_embedding.py::test_the_person_typeahead_calls_odoo_19s_
   name_search`. Related live fact worth knowing: this database has no `unaccent`, so
   "Bui Anh" matches nothing while "Bùi Anh" matches — P3b's palette needs an answer for that.
+- **W41 An always-mounted, POLLED surface may carry write buttons — but only if
+  its mount hooks and its poll are provably reads, and the gate has to be on
+  `setup()`, not on the writers.** W25 concluded from P1a's 591 junk corrections
+  that "a polled surface should not be able to write", and built `pb.today` with
+  no `create`/`write`/`unlink` at all. P3b's dock breaks that shape on purpose:
+  it is mounted beside every lens, polls every 60 s, and its whole reason to
+  exist is a check and a cross on each card. What makes that safe is not care,
+  it is where the gate points. `get_team_data` has no write path in it; every
+  mutation goes through `pb.team.act`, which is reachable only from a
+  `t-on-click`; and `pb_mission/tests/test_static.py::test_the_dock_never_
+  writes_from_a_lifecycle_hook` asserts that neither `this.approve(`,
+  `this.confirmRefuse(` nor the string `"act"` appears anywhere inside
+  `setup()` — which is where every lifecycle hook AND the interval are
+  registered. Gating the writer methods would have been the useless version of
+  this test: they are supposed to exist. The thing that must not exist is a path
+  from a hook to one of them. Corollary: a poll that repaints a list the user is
+  mid-interaction with must be `quiet` — it may not clear an optimistic removal
+  set or a half-typed refusal note (the dock's `load(quiet)`).
+- **W42 A refusal note that is OPTIONAL somewhere and REQUIRED somewhere else is
+  a deliberate difference, and the stricter surface has to enforce it in the
+  DISABLED state, not in a validator.** The Team cockpit's refuse box says
+  "Reason (optional)…"; the dock's says "(required)" and its Refuse button is
+  `disabled` until `refuseNote.trim()` is non-empty. Two of the four sources
+  (`pb.business.trip.action_refuse_chain`, `hr.attendance.correction.
+  action_refuse`) carry that note INTO their own refusal chain, where it is the
+  only record of why — and the dock is the surface where a refusal is one click
+  next to seven other people's requests, i.e. exactly where an unexplained one
+  is most likely. Enforcing it by disabling the button means the officer never
+  composes a refusal that is then rejected.
+- **W43 Put a floating panel in the OVERLAY when the alternative is winning a
+  z-index argument.** The ⌘K palette has to paint above a lens's
+  `position: fixed` modal at 1050. Any implementation inside the workspace would
+  have to stack shell chrome above 1050, which is precisely the fight W37 exists
+  to prevent — and the 60px biz-rail hover overlay at 25 would lose it too. The
+  Odoo overlay service (`useService("overlay").add(Component, props, {onRemove})`)
+  mounts into `.o-overlay-container`, a sibling of the whole action host, so the
+  palette wins by LOCATION and pb_mission.scss does not change by one line for
+  the feature. Two consequences worth writing down:
+  1. the overlaid component renders OUTSIDE every `.pbim` root, so its `--pbim-*`
+     custom properties do not resolve and the `var()` FALLBACK is what paints
+     (W14 again, this time by construction rather than by accident) — the kit's
+     `.wfcp-*` block is written with every fallback correct for that reason;
+  2. `overlay.add()` returns its own `remove()`. Keep that handle and null it in
+     `onRemove`, or the hotkey that opens the panel will happily open a second
+     one on top of the first.
+  Related geometry rule, hit on the dock's hovercard: a panel that must escape a
+  scrolling ancestor is `position: fixed` off a MEASURED origin
+  (`getBoundingClientRect` in the event handler), not `position: absolute` — an
+  `overflow-y: auto` box clips horizontally too (W34), so an absolute hovercard
+  is sliced off at its scroller's edge and looks like a rendering bug. And make
+  such a card `pointer-events: none`: if the pointer can land on it, the gap
+  between it and its trigger makes it flicker.
+- **W44 A host→lens instruction is carried by a NONCE the lens tracks, never by
+  a "consumed" callback.** P3b's `pb_cmd` protocol (extending W26's `pb_lens` /
+  `pb_focus`): the shell holds `state.cmd = { name, nonce }` and passes it as a
+  prop; each lens keeps `this._cmdNonce` and runs the instruction when the
+  incoming nonce differs. The obvious alternative — the lens calling
+  `props.onCmdConsumed()` — is a CHILD WRITING HOST STATE, and it would be
+  called from `onWillStart`/`onWillUpdateProps` because that is where the
+  instruction arrives: exactly W21/W21.1, which cost P1a 591 records and then
+  bit a second time on a keyed child. With a nonce the host never has to be
+  told, and the lens may re-read the prop as many times as OWL restarts its
+  mount. Three rails that come with it:
+  1. the prop is TYPED optional with a NON-NULL default (`{ name: "", nonce: 0 }`)
+     — a typed optional prop still rejects `null` (W35);
+  2. the instruction is consumed AFTER the lens's own load when it needs loaded
+     data (a quick-create needs a day and an employee; the Bonus door needs
+     `can_view_bonus`), i.e. at the end of `onWillStart`, not at its start;
+  3. a lens ignoring an unknown command is CORRECT behaviour, and an entry is
+     added to the palette registry only where the target affordance ALREADY
+     EXISTS — a verb that lands on nothing is W29's "door that can only ever
+     produce an error", and a static gate walks the registry checking each
+     `cmd.name === "…"` really is implemented by the lens it names.
+  Registry as of P3b: `schedule` → quick_create · copy_week · set_budget;
+  `today` → map; `timeoff` → apply; `overtime` → bonus. The Time hub's two verbs
+  (import, exceptions) ride W26's arrival protocol instead, because it already
+  implements it — one protocol per target, chosen by what the target has.
+- **W45 A capped read must carry the TRUE total beside the capped list, or the
+  surface will report a shrinking backlog as the real one grows.** `pb.team`'s
+  four queue searches were unbounded; P3b caps each SOURCE at 20 (per source, so
+  a thousand pending leaves cannot starve three OT requests out of the list) and
+  therefore had to add `queues.counts` as a `search_count` and
+  `queues.has_more[source]`. The dock's header reads that total, never
+  `items.length` — a gate asserts it — and the "+N more" link is computed from
+  the difference. Same rule for `total`: it is emitted ALWAYS, 0 included,
+  because it used to live on the `has_team` branch only and a manager with no
+  reports would have rendered "Needs you · undefined". A missing key is not a
+  zero, and JSON will not tell you which one you got.
+- **W46 A "display" date field needs a machine twin, produced beside it.**
+  `pb.team`'s `when` is built with `%d %b`: locale-shaped, year-less and
+  un-sortable, and a client that wants to sort or age a queue item has nothing
+  to parse. P3b adds `when_iso` next to it, from the same field in the same
+  expression, so the two cannot drift into describing different days. The helper
+  collapses a Date and a Datetime to the same `YYYY-MM-DD` and takes the date
+  part as stored rather than converting, because the display twin does exactly
+  the same thing.
+- **W47 A wider READ scope must be gated on the model side AND advertised to the
+  client, and it must not widen the WRITE by one inch.** `get_team_data(scope=
+  'org')` returns every pending item in the active companies. Three separate
+  things make that safe: `_require_org_approver()` raises for anyone who is not
+  an HR manager or a payroll manager (the two MANAGER tiers only — an HR *user*
+  is not a company-wide approver, even though `_HR_GROUPS` contains them);
+  `can_org` in the payload tells the dock whether to render the Team/Org toggle
+  at all, so an offer the server would refuse is never made; and `act()` is
+  untouched — still whitelisted, still the real user through each model's own
+  gated method, still scope-checked (W12). Deliberate design detail: both org
+  groups are INSIDE `_HR_GROUPS`, so the read gate and the mutation gate cannot
+  drift apart into "sees it, cannot act on it". Second rule that came with it:
+  a scope that multiplies the population must also drop the per-population
+  extras — org scope returns the BLANK metrics/roster shapes rather than walking
+  4 500 employees through the OT-ceiling, shift-compliance and exception-engine
+  builders four times a minute. Blank SHAPE, not a missing key.

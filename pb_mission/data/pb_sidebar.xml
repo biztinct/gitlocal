@@ -5,7 +5,7 @@
      once (W13.1/W27). -->
 <odoo noupdate="0">
 
-    <!-- WORKFORCE › Workforce — the whole section, in one door.
+    <!-- WORKFORCE › Mission Control — the whole section, in one door.
 
          Seven items (Today 10 · Schedule 20 · Time 30 · Time Off 40 ·
          Overtime 50 · Trips 60 · Team Approvals 70) become this one, and they
@@ -14,9 +14,23 @@
          None of the seven client actions is touched — every cockpit is still
          registered and still reachable at its own URL.
 
-         W28: no other `pb.sidebar.item` in any module carries the label
-         "Workforce" (the string exists on the pb.sidebar.SECTION and on an
-         unrelated security group, neither of which shares this table).
+         P3b renames this item "Workforce" -> "Mission Control". The section
+         header already says WORKFORCE, so "WORKFORCE > Workforce" read as a
+         stutter; "WORKFORCE > Mission Control" reads as intended. The action
+         itself keeps the name "Workforce", because that is what the breadcrumb
+         and the section are about.
+
+         W28 (a label is unique across the WHOLE sidebar table, not just its
+         section): no other `pb.sidebar.item` in any module carries either
+         label. "Mission Control" appears nowhere else in the codebase's
+         sidebar data, and Formula Studio's own Command Center is a ~K palette
+         inside a cockpit, not a rail entry — deliberately NOT reused as a name
+         here, because two things called Command Center would be two things.
+
+         The record is `noupdate="0"` and its stored `ir_model_data.noupdate`
+         flag was asserted clear by P3a, so a plain `-u pb_mission` really does
+         move it — which W13.1 says must still be checked in the DATABASE
+         afterwards, and `test_sidebar.py` is what checks it.
 
          UNGATED, on purpose. The seven it replaces had five different gates
          between them and TWO of them — Trips and Team Approvals — were open to
@@ -29,7 +43,7 @@
          server-side (W12). -->
     <record id="item_workforce" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
-        <field name="name">Workforce</field>
+        <field name="name">Mission Control</field>
         <field name="icon">compass</field>
         <field name="sequence">10</field>
         <field name="action_xmlid">pb_mission.action_pb_workforce</field>
