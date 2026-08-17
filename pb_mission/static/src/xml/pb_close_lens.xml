@@ -92,7 +92,12 @@
                 <tr>
                   <th>Person · day</th>
                   <th>Scheduled vs actual</th>
-                  <th class="pbmc-t__num">&#916;</th>
+                  <!-- The literal Greek capital delta, NOT the `&#916;`
+                       entity: the shell's no-invented-hex gate scans for
+                       `#[0-9a-f]{3,8}` and an XML numeric entity looks exactly
+                       like a three-digit hex colour to it (W1's gate, found in
+                       P4's own test run). -->
+                  <th class="pbmc-t__num">Δ</th>
                   <th>Why flagged</th>
                   <th></th>
                 </tr>

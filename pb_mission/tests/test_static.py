@@ -294,10 +294,16 @@ class TestMissionStaticGates(TransactionCase):
         close = self._close_js() + self._close_xml()
 
         self.assertIn('key: "close"', shell, 'the Close lens must be on the rail')
-        # the lens reads the tolerance from the PAYLOAD, never a literal
+        # The lens reads the tolerance from the PAYLOAD, never a literal.
+        # The gate scans the TEMPLATE, not the JS: a word-shaped gate over the
+        # source fails on the comment that explains the rule, which is W48's
+        # corollary and which this very assertion demonstrated in P4's own test
+        # run before it was narrowed.
         self.assertIn('this.d.tolerance', self._close_js())
+        self.assertIn('toleranceLabel', close,
+                      'the strip must render the payload-built label')
         self.assertNotRegex(
-            close, r'\b10-min\b',
+            self._close_xml(), r'\b\d+-min\b',
             'the tolerance must come from the payload, not from the template')
         # locks and reviews are SERVER calls on the facade
         for call in ('"lock_days"', '"unlock_days"', '"review_flag"',

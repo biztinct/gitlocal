@@ -340,7 +340,16 @@ class PbClose(models.AbstractModel):
                 dev = self._punch_deviation(day_shifts, day_atts)
                 if dev is not None and dev > var_min:
                     kinds.append('variance_over')
-                if day_shifts:
+
+                # Only a day that raised NO flag of its own feeds the weekly
+                # rollup. That is what the rollup is FOR (W54): drift that no
+                # single day caught. Letting a flagged day contribute too would
+                # double-count it — a missing punch is an 8 h delta, so one
+                # absence would bust any weekly tolerance and every missing
+                # punch would arrive with a redundant "week outside tolerance"
+                # beside it. (Found by the P4 test run: two flags where the
+                # matrix expected one.)
+                if day_shifts and not kinds:
                     week_dev += abs(delta)
                     if abs(delta) > abs(worst[0]):
                         worst = (delta, d)

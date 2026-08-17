@@ -29,6 +29,37 @@ _logger = logging.getLogger(__name__)
 class PbPayrunWizardDemo(models.AbstractModel):
     _inherit = 'pb.payrun.wizard'
 
+    # ------------------------------------------------------- advisories
+    def _pb_demo_advisories(self, exceptions, emp_ids, ds, de):
+        """Run the product's payroll ADVISORIES on the division path.
+
+        Every advisory in this codebase rides the wizard's append-after-super
+        seam (`pb_young_worker`, and `pb_close` from Workforce P4), which means
+        each of them depends on sitting MRO-OUTER of this class. Measured on the
+        live registry, none of them does — the order is
+        `pb_demo -> pb_close -> pb_young_worker -> pb_payrun_wizard`, so a
+        division run has never shown either set of warnings. (pb_young_worker's
+        own `test_09` asserts the opposite and is stale; P4 found this.)
+
+        The direction of the fix matters. A production module must never depend
+        on the demo module to be correct, and adding `pb_demo` to `pb_close`'s
+        depends would be exactly that. So the DEMO calls the product's hooks:
+        soft (`getattr`), guarded (nothing here may break a run), and a no-op on
+        a database where those modules are absent.
+
+        The generic (salary-structure) path is unaffected either way — it calls
+        super, so the wrappers fire normally there.
+        """
+        for hook in ('_yw_append_exceptions', '_close_append_exceptions'):
+            fn = getattr(self, hook, None)
+            if fn is None:
+                continue
+            try:
+                fn(exceptions, emp_ids, ds, de)
+            except Exception:
+                _logger.exception('pb_demo: payroll advisory %s failed', hook)
+        return exceptions
+
     # ------------------------------------------------------------------ helpers
     def _gen(self):
         return self.env['pb.demo.generator']
@@ -277,6 +308,9 @@ class PbPayrunWizardDemo(models.AbstractModel):
         if 'pb_total_net' in run._fields:
             self.env.flush_all()
             run._compute_pb_totals()
+        # This return does not call super, so the product's advisories are
+        # invoked here explicitly — see _pb_demo_advisories.
+        self._pb_demo_advisories(exceptions, emp_ids, ds, de)
         return {'computed': computed, 'exceptions': exceptions}
 
     # --------------------------------------------------------- step 2 create+compute
@@ -381,6 +415,9 @@ class PbPayrunWizardDemo(models.AbstractModel):
         if 'pb_total_net' in run._fields:
             self.env.flush_all()
             run._compute_pb_totals()
+
+        # Same reason as compute_batch: this path never reaches super().
+        self._pb_demo_advisories(exceptions, list(cmap), ds, de)
 
         summary = self.get_summary(run.id)
         summary['exceptions'] = exceptions
