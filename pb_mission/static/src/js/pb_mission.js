@@ -26,7 +26,7 @@
  * Time, Today and Schedule lenses already fetch). Everything it calls existed
  * before it did.
  */
-import { Component, useState, useEffect, onWillStart } from "@odoo/owl";
+import { Component, useState, useEffect, onWillStart, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
@@ -254,6 +254,20 @@ export class PbMission extends Component {
         // as the workspace does.
         useHotkey("control+k", () => this.openPalette(),
                   { bypassEditableProtection: true });
+
+        /**
+         * The palette lives in the OVERLAY container, which is a sibling of the
+         * whole action host — so it does NOT unmount when this shell does. Leave
+         * it up and it becomes an orphan whose every row calls back into a
+         * destroyed component: open ⌘K, click a sidebar item, and the palette is
+         * still floating over the next screen (found live, P3b).
+         *
+         * This is the price of W43's "win by location, not by z-index": the
+         * thing that makes the overlay immune to the shell's stacking also makes
+         * it immune to the shell's lifecycle, so the host has to close what it
+         * opened.
+         */
+        onWillUnmount(() => this.closePalette());
 
         // The chip's label follows the PIN wherever it was set — the dock, the
         // palette, a lens avatar or a restored context. An effect runs AFTER

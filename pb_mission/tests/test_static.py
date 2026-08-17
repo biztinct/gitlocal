@@ -493,6 +493,22 @@ class TestMissionStaticGates(TransactionCase):
             self.assertNotIn(needle, self._scss(),
                              'the palette is not styled by the shell (%s)' % needle)
 
+    def test_the_shell_closes_the_palette_it_opened(self):
+        """The overlay container is a SIBLING of the action host, so the palette
+        does not unmount when the shell does — that is the price of W43's "win
+        by location, not by z-index". Left up, it becomes an orphan whose every
+        row calls back into a destroyed component: open ⌘K, click a sidebar
+        item, and it is still floating over the next screen (found live, P3b).
+        """
+        js = self._js()
+        self.assertRegex(js, re.compile(
+            r'onWillUnmount\(\(\) => this\.closePalette\(\)\)', re.S))
+        # and the handle is nulled by the overlay's own callback, so the hotkey
+        # cannot stack a second palette on the first
+        self.assertRegex(js, re.compile(
+            r'onRemove: \(\) => \{ this\._closePalette = null; \}', re.S))
+        self.assertIn('if (this._closePalette) { return; }', js)
+
     def test_the_command_bar_search_became_the_palette(self):
         """§3.5: the bar's person typeahead WAS the search. It is off on every
         lens now — but the PIN is context, not search, so the chip moves onto
