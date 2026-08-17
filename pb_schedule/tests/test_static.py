@@ -168,6 +168,31 @@ class TestScheduleStaticGates(TransactionCase):
         self.assertIn('WfPersonWeek', tpl,
                       'the drawer body must be the KIT panel, not a fork (W6)')
         self.assertIn('openShift', tpl, 'a shift card must open its record')
+        self.assertIn('openTemplate', tpl,
+                      'a template row must open its native form (WP-6)')
+
+    def test_the_retired_rail_items_have_a_home_in_the_cockpit(self):
+        """W18 retires a rail item INTO something. If the drawer that absorbed
+        Shift Templates ever stops being mounted, the retirement stops being a
+        consolidation and becomes a deletion."""
+        tpl = _read(_MODULE, 'static', 'src', 'xml', 'pb_schedule.xml')
+        self.assertIn('openTemplates', tpl,
+                      'the toolbar must be able to open the templates drawer')
+        self.assertIn('pbsc-tpllist', tpl, 'the drawer must list the library')
+
+    def test_every_lucide_name_used_exists_in_the_shared_registry(self):
+        """W2: `ic()` falls back to a CHECKMARK for an unknown key, so a typo
+        renders a plausible wrong glyph and nothing ever errors."""
+        icons = _read('pb_import_kit', 'static', 'src', 'js', 'import_icons.js')
+        block = re.search(r'export const IC = \{(.*?)\n\};', icons, re.S)
+        self.assertTrue(block, 'could not find the IC registry')
+        known = set(re.findall(r'^\s{4}([A-Za-z0-9_]+)\s*:', block.group(1), re.M))
+        used = set()
+        for path in _walk(_MODULE, ('.js', '.xml'), skip_tests=True):
+            with open(path, encoding='utf-8') as fh:
+                used |= set(re.findall(r"\bic\(\s*'([A-Za-z0-9_]+)'", fh.read()))
+        missing = sorted(used - known)
+        self.assertFalse(missing, 'icons not in the shared registry: %s' % missing)
 
     # ------------------------------------------------------------ W22/W23
     def test_every_template_file_parses_as_xml(self):

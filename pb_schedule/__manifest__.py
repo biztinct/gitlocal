@@ -29,7 +29,7 @@ pbim tokens, Lucide icons via the shared `ic()` registry, flat fills, and the
 shared `wf_context` for department/week/search (W4). No payroll money path is
 touched: the rate helper is a READ helper for display aggregates only (W12).
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -47,6 +47,7 @@ touched: the rate helper is a READ helper for display aggregates only (W12).
     ],
     'data': [
         'security/ir.model.access.csv',
+        'views/shift_template_views.xml',
         'views/pb_schedule_action.xml',
     ],
     'assets': {

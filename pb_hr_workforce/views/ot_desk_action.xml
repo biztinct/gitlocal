@@ -2,7 +2,7 @@
 <odoo>
     <!-- Client Action: Overtime Desk cockpit (Phase K). -->
     <record id="action_pb_ot_desk" model="ir.actions.client">
-        <field name="name">Overtime Desk</field>
+        <field name="name">Overtime</field>
         <field name="tag">pb_ot_desk</field>
     </record>
 </odoo>

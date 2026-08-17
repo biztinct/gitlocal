@@ -286,3 +286,36 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   grep the live `pb_sidebar_item` table for the label you intend to use, across every
   section — the collision is invisible in the data file you are editing, because the twin
   lives in another module.
+- **W29 A required field can make a whole feature UNREACHABLE, and the surface will
+  still render it.** (Found in P2 while porting the roster.) `hr.shift.planning.employee_id`
+  is `required=True` (`pb_hr_workforce/models/shift_planning.py`:17-19) and nothing in the
+  dependency tree relaxes it. The legacy grid nevertheless shipped an "Open Shifts" row
+  built from `shifts.filtered(lambda s: not s.employee_id)` — a predicate the ORM
+  guarantees is never true — with a summary metric counting it, and a `+` in every cell
+  wired to `quick_create_shift(false, …)`, i.e. a door into a create the ORM must refuse.
+  It looked like a feature for years because an empty row looks exactly like a row with
+  nothing scheduled in it.
+  Rule: when you port a surface, check every "optional" reference against the FIELD
+  DEFINITION, not against the UI that reads it. And a door that can only ever produce an
+  error is worse than no door (W5) — P2 keeps the row for the day P4 relaxes the field,
+  renders it only when the payload really has open shifts, and does not make it a create
+  door. Same class of trap: a `t-if` on a value the server can never send.
+- **W30 A PostgreSQL `UNIQUE` does not stop duplicate NULLs, so a scope-with-an-optional-
+  dimension needs a Python constraint too.** The natural key for `pb.schedule.budget` is
+  `unique(company_id, department_id, week_start)` where `department_id` empty means
+  "company-wide". Under a plain UNIQUE index NULLs are DISTINCT, so `(1, NULL, 2026-03-02)`
+  can be inserted any number of times and the constraint reports nothing — the one row
+  that is most likely to be created twice (the company-wide default) is the one row it
+  cannot protect. Keep the SQL constraint (it is the cheap guard for the non-NULL rows)
+  **and** add an `@api.constrains` covering the NULL case, with a test that inserts the
+  duplicate. `NULLS NOT DISTINCT` exists in PG15+ but is not expressible through Odoo's
+  `_sql_constraints`, and silently does nothing on an older server.
+- **W31 Gate a manager-only table on the MODEL, not only in the facade that edits it.**
+  Both P2 config models (`pb.schedule.budget`, `hr.shift.coverage.requirement`) are edited
+  through `hr.shift.planning.grid`, which is gated at ATTENDANCE OFFICER — one tier below
+  the manager tier that may change money and demand figures. Putting the manager check in
+  the facade helper would mean every future helper on that facade is a new place to forget
+  it. The check lives in `create`/`write`/`unlink` on the model (alongside the
+  `ir.model.access` rows, which cover generic ORM callers), so the facade physically
+  cannot be a softer door — and each model ships a test that calls the facade AS an
+  officer and asserts the AccessError, while its READ door still works.

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Client action for the My Team (MSS) cockpit. Access is enforced in the
+    <!-- Client action for the Team Approvals (MSS) cockpit. Access is enforced in the
          pb.team RPC facade + the sidebar item's groups_id (C18.9: ir.actions.client
          carries no group field in Odoo 19). Empty-state if the user has no team. -->
     <record id="action_pb_team" model="ir.actions.client">
-        <field name="name">My Team</field>
+        <field name="name">Team Approvals</field>
         <field name="tag">pb_team</field>
     </record>
 </odoo>

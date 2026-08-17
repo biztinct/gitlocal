@@ -406,6 +406,60 @@ class ShiftPlanningGrid(models.TransientModel):
             },
         }
 
+    # ============================================== WP-6: templates drawer
+    @api.model
+    def get_templates(self, week_start_str, num_days=7, department_id=False):
+        """The shift library, with how much each template is used this span.
+
+        The "Shift Templates" rail item retires into this drawer (§3.9, W18).
+        Editing still happens on the NATIVE form — a bespoke editor for a
+        five-field configuration model would be a second source of truth for
+        `duration`, whose compute already lives on the model.
+        """
+        self._require_officer()
+        week_start = fields.Date.from_string(week_start_str)
+        num_days = 14 if int(num_days or 7) == 14 else 7
+        week_end = week_start + timedelta(days=num_days - 1)
+
+        domain = [('date', '>=', week_start), ('date', '<=', week_end),
+                  ('company_id', 'in', self._pb_company_ids()),
+                  ('state', 'in', _LIVE_STATES)]
+        if department_id:
+            domain.append(('department_id', '=', int(department_id)))
+        usage = {}
+        for group in self.env['hr.shift.planning'].read_group(
+                domain, ['id'], ['shift_template_id']):
+            tid = group['shift_template_id'] and group['shift_template_id'][0]
+            if tid:
+                usage[tid] = group['shift_template_id_count']
+
+        templates = self.env['hr.shift.template'].search([])
+        return {
+            'rows': [{
+                'id': t.id,
+                'name': t.name or '',
+                'code': t.code or '',
+                'color': t.color or 0,
+                'shift_type': t.shift_type or '',
+                'type_label': dict(
+                    t._fields['shift_type'].selection).get(t.shift_type, ''),
+                'start': self._pb_float_hhmm(t.start_hour),
+                'end': self._pb_float_hhmm(t.end_hour),
+                'duration': round(t.duration or 0.0, 2),
+                'is_overnight': t.is_overnight,
+                'usage': usage.get(t.id, 0),
+            } for t in templates],
+            'span_label': '%s → %s' % (week_start.isoformat(),
+                                       week_end.isoformat()),
+        }
+
+    @api.model
+    def _pb_float_hhmm(self, value):
+        """8.5 -> "08:30". The template's hours are floats, not datetimes."""
+        h = int(value or 0)
+        m = int(round(((value or 0) % 1) * 60))
+        return '%02d:%02d' % (h, m)
+
     # ============================================== WP-5: edit-time warnings
     #
     # SEVERITIES (binding, P2 §3.6)

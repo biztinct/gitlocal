@@ -485,3 +485,13 @@ msgstr "Bàn Làm Thêm Giờ chỉ dành cho quản lý chấm công."
 #: code:addons/pb_hr_workforce/models/ot_desk.py:0
 msgid "Bonus Hours review is restricted to payroll managers."
 msgstr "Rà soát Giờ Thưởng chỉ dành cho quản lý bảng lương."
+
+# ==== Workforce P2 §3.10 — hero/eyebrow titles match the rail ====
+# W7/C18.74: Odoo 19 needs BOTH the `#. module:` line and an
+# `#. odoo-javascript` / `#. odoo-python` marker, or the entry is not loaded.
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Overtime"
+msgstr "Làm Thêm Giờ"
