@@ -280,3 +280,197 @@
         color: var(--pbim-green, #2E7D4F);
     }
 }
+
+// --------------------------------------------------------- person-week body
+// Moved from pb_time_hub in P1b (W6): the Today board needs the identical
+// drawer body, and a second copy is exactly the fork the kit exists to prevent.
+// Rules are the P1a ones, re-prefixed `wfpw-`; every var() carries its real
+// pbim fallback because the drawer can render inside any host (W14/W19).
+.wfpw-load {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 30px 0;
+    color: var(--pbim-muted, #64748B);
+    svg { animation: wfpw-spin 1s linear infinite; }
+}
+
+@keyframes wfpw-spin { to { transform: rotate(360deg); } }
+
+.wfpw-who {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+}
+.wfpw-av {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: none;
+    background: var(--pbim-soft, #EDEAF8);
+}
+.wfpw-who__txt {
+    min-width: 0;
+    .n {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .s { font-size: 10.5px; color: var(--pbim-muted, #64748B); }
+}
+
+.wfpw-wksum {
+    display: flex;
+    gap: 6px;
+    margin: 12px 0;
+
+    span {
+        flex: 1;
+        background: var(--pbim-slate-soft, #EEF1F5);
+        border-radius: var(--pbim-r-sm, 10px);
+        padding: 7px 6px;
+        text-align: center;
+    }
+    i {
+        display: block;
+        font-style: normal;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+    }
+    b {
+        display: block;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        font-variant-numeric: tabular-nums;
+    }
+    .d-pos { color: var(--pbim-amber, #D97706); }
+    .d-neg { color: var(--pbim-rose, #DC2668); }
+}
+
+// the person's week as a table — the owner's named pain point
+.wfpw-dt {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+
+    th {
+        font-size: 9px;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+        text-align: right;
+        padding: 5px 6px;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        font-weight: 800;
+        &:first-child { text-align: left; }
+    }
+    td {
+        padding: 5px 6px;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-text, #1B1733);
+        &:first-child {
+            text-align: left;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    tr:last-child td { border-bottom: 0; }
+    tr.is-today td { background: var(--pbim-soft, #EDEAF8); }
+
+    .pos { color: var(--pbim-amber, #D97706); font-weight: 700; }
+    .neg { color: var(--pbim-rose, #DC2668); font-weight: 700; }
+}
+.wfpw-flag {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--pbim-primary, #5A4BB0);
+    margin-left: 3px;
+}
+.wfpw-din {
+    display: inline-block;
+    min-width: 36px;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: 6px;
+    padding: 1px 5px;
+    background: var(--pbim-surface, #ffffff);
+    text-align: center;
+
+    &.ed {
+        border-color: var(--pbim-primary, #5A4BB0);
+        box-shadow: 0 0 0 2px var(--pbim-soft, #EDEAF8);
+        font-weight: 700;
+    }
+    &.miss {
+        border-color: var(--pbim-rose, #DC2668);
+        background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668);
+        font-weight: 700;
+    }
+    &.zero { color: var(--pbim-muted, #64748B); }
+}
+
+.wfpw-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 12px 0 10px;
+}
+.wfpw-chips__empty { font-size: 11px; color: var(--pbim-muted, #64748B); }
+
+.wfpw-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid transparent;
+
+    &--green  { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+    &--amber  { background: var(--pbim-amber-soft, #FEF3C7); color: var(--pbim-amber, #D97706); }
+    &--rose   { background: var(--pbim-rose-soft, #FCE7EF); color: var(--pbim-rose, #DC2668); }
+    &--cyan   { background: var(--pbim-cyan-soft, #E5EDFD); color: var(--pbim-cyan, #2563EB); }
+    &--indigo { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+    &--slate  { background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #64748B); }
+}
+
+.wfpw-acts { display: flex; gap: 8px; margin-top: 4px; }
+.wfpw-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: var(--pbim-r-sm, 10px);
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &--ghost {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-muted, #64748B);
+        &:hover { color: var(--pbim-primary, #5A4BB0); border-color: var(--pbim-primary, #5A4BB0); }
+    }
+    &--out {
+        border: 1px solid var(--pbim-primary, #5A4BB0);
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-primary, #5A4BB0);
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+    }
+    &[disabled] { opacity: .55; cursor: default; }
+}

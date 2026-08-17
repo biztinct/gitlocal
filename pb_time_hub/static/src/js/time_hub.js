@@ -21,6 +21,7 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
+import { WfPersonWeek } from "@pb_wf_kit/js/wf_person_week";
 import { WfRibbon } from "@pb_wf_kit/js/wf_ribbon";
 import { AttendanceWeekGrid } from "@pb_hr_workforce/js/attendance_weekgrid";
 import { PbAttendanceFlow } from "@pb_attendance_flow/js/pb_attendance_flow";
@@ -33,7 +34,7 @@ const LENSES = ["timeline", "grid", "exceptions", "import"];
 export class PbTimeHub extends Component {
     static template = "pb_time_hub.PbTimeHub";
     static components = {
-        WfContextBar, WfDrawer, WfRibbon,
+        WfContextBar, WfDrawer, WfPersonWeek, WfRibbon,
         TimelineLens, AttendanceWeekGrid, PbAttendanceFlow,
     };
     static props = { action: { type: Object, optional: true }, "*": true };
@@ -48,8 +49,17 @@ export class PbTimeHub extends Component {
         this.ctxSvc = useService("wf_context");
         this.wf = useState(this.ctxSvc.state);
 
+        // An incoming deep-link may name the lens to open and ask for the
+        // drawer to stay shut — see `_arrival` for why that is not the same as
+        // "no person pinned".
+        const arrival = this._arrival();
+
         this.state = useState({
-            lens: this._restoreLens(),
+            lens: arrival.lens || this._restoreLens(),
+            // The Today board hands a person over so the Exceptions queue lands
+            // FILTERED; the drawer would sit on top of the very queue the
+            // officer was sent to read. Any later person door clears this.
+            drawerHidden: arrival.hideDrawer,
             summary: null,
             person: null,
             personLoading: false,
@@ -71,6 +81,8 @@ export class PbTimeHub extends Component {
             onPerson: (id) => this.openPerson(id),
             onChanged: () => this._loadSummary(),
             onEscalate: (id) => this.escalate(id),
+            onFileCorrection: () => this.fileCorrection(),
+            onOpenProfile: () => this.openProfile(),
         };
 
         // Ribbon follows the context week/department, like every lens.
@@ -103,6 +115,23 @@ export class PbTimeHub extends Component {
     lensCount(key) {
         const counts = (this.state.summary && this.state.summary.lens_counts) || {};
         return counts[key] || 0;
+    }
+
+    /**
+     * What the action that opened this hub asked for.
+     *
+     * `pb_lens`  — open on this lens instead of the remembered one.
+     * `pb_focus` — "queue" means "the person on the context is a FILTER, not a
+     *              drawer to open": the Today board pins the person so the
+     *              Exceptions lens narrows to them, and popping the drawer on
+     *              arrival would cover the queue it just filtered.
+     *
+     * Read once, in setup, from props — never written back anywhere.
+     */
+    _arrival() {
+        const ctx = (this.props.action && this.props.action.context) || {};
+        const lens = LENSES.includes(ctx.pb_lens) ? ctx.pb_lens : null;
+        return { lens, hideDrawer: ctx.pb_focus === "queue" && !!lens };
     }
 
     _restoreLens() {
@@ -145,12 +174,19 @@ export class PbTimeHub extends Component {
     /** The ONE way to open the drawer: pin the person on the shared context. */
     openPerson(employeeId) {
         if (!employeeId) { return; }
+        // A person door was CLICKED, so the drawer is wanted again even if this
+        // hub was opened by a deep-link that asked for the queue.
+        this.state.drawerHidden = false;
         this.ctxSvc.set({ personId: employeeId });
+        // Re-clicking the person already pinned by a deep-link changes nothing
+        // on the context, so nothing would re-render; the flag above is the
+        // whole state change and it must land on its own.
     }
 
     closePerson() {
         // Clearing the pin is what closes the drawer — the bar's person chip
         // and the drawer are two views of the same piece of context.
+        this.state.drawerHidden = false;
         this.ctxSvc.set({ personId: false });
     }
 
@@ -265,31 +301,8 @@ export class PbTimeHub extends Component {
         });
     }
 
-    // ------------------------------------------------------------ format
-    /** "8.0" / "—" — an unplanned day has no schedule, it is not a 0 h one. */
-    fmt(v, planned = true) {
-        if (!planned) { return "—"; }
-        if (!v) { return "0"; }
-        return String(Math.round(v * 10) / 10);
-    }
-
-    fmtDelta(v) {
-        if (!v) { return "0"; }
-        const n = Math.round(v * 10) / 10;
-        return n > 0 ? `+${n}` : String(n);
-    }
-
-    deltaTone(v) {
-        if (!v || Math.abs(v) < 0.05) { return ""; }
-        return v > 0 ? "pos" : "neg";
-    }
-
-    dayTone(d) {
-        if (d.flags.includes("missing")) { return "miss"; }
-        if (d.flags.includes("over")) { return "ed"; }
-        if (!d.entered) { return "zero"; }
-        return "";
-    }
+    // The drawer's number formatting (fmt / fmtDelta / deltaTone / dayTone)
+    // moved to <WfPersonWeek/> in pb_wf_kit with the markup it serves (W6).
 }
 
 registry.category("actions").add("pb_time_hub", PbTimeHub);

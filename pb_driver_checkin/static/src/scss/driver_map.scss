@@ -116,6 +116,34 @@
         font-size: 11px; letter-spacing: 1px; padding: 6px 14px; border-radius: 999px;
         border: 1px solid var(--pbim-amber);
     }
+
+    // ---- embedded (W17): the host owns the page chrome ----
+    // The root keeps height:100% in BOTH modes; W20 makes that the HOST's
+    // problem — a lens whose cockpit owns its own scrolling must be given a box
+    // with a definite height, or (here) a Leaflet map collapses to zero.
+    &.dm-cockpit--embedded {
+        background: transparent;
+    }
+    // Compact map card on the Today board: map only, rounded, with the card's
+    // own legend floating over the bottom edge.
+    &.dm-cockpit--maponly {
+        .dm-body { border-radius: inherit; overflow: hidden; }
+    }
+    .dm-cardlegend {
+        position: absolute; left: 0; right: 0; bottom: 0; z-index: 500;
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        padding: 8px 14px;
+        background: var(--pbim-surface, #ffffff);
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        font-size: 11px; font-weight: 700; color: var(--pbim-muted, #64748B);
+        &__k {
+            display: inline-flex; align-items: center; gap: 5px;
+            i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+        }
+        &__k--live { color: var(--pbim-green, #2E7D4F); }
+        &__k--idle { color: var(--pbim-amber, #D97706); }
+        &__k--off  { color: var(--pbim-muted, #64748B); }
+    }
 }
 
 // ---- Leaflet marker pins (global, rendered outside .dm-cockpit root) ----

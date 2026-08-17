@@ -105,6 +105,88 @@
     </div>
   </t>
 
+  <!-- ================================================ person-week drawer body -->
+  <!-- Moved here from pb_time_hub in P1b so the Today board and the Time hub
+       mount ONE panel instead of two copies (W6). Markup unchanged; the class
+       prefix is the kit's (`wfpw-`) because the styles travelled with it. -->
+  <t t-name="pb_wf_kit.WfPersonWeek">
+    <div class="wfpw-load" t-if="!p">
+      <span t-out="ic('loader', 22)"/><span>Loading…</span>
+    </div>
+
+    <t t-else="">
+      <!-- who -->
+      <div class="wfpw-who">
+        <img class="wfpw-av" t-att-src="p.employee.avatar_url" alt=""/>
+        <div class="wfpw-who__txt">
+          <div class="n" t-esc="p.employee.name"/>
+          <div class="s" t-esc="subtitle"/>
+        </div>
+        <span class="wfpw-pill wfpw-pill--green" t-if="p.employee.on_shift_now">On shift</span>
+      </div>
+
+      <!-- week summary chips -->
+      <div class="wfpw-wksum">
+        <span><i>Scheduled</i><b t-esc="fmt(p.totals.sched)"/></span>
+        <span><i>Actual</i><b t-esc="fmt(p.totals.actual)"/></span>
+        <span><i>Δ week</i><b t-attf-class="d-{{ deltaTone(p.totals.delta) }}"
+                              t-esc="fmtDelta(p.totals.delta)"/></span>
+      </div>
+
+      <!-- the named pain point: one person's week as a table -->
+      <table class="wfpw-dt">
+        <thead>
+          <tr><th>Day</th><th>Sched</th><th>Actual</th><th>Entered</th><th>Δ</th></tr>
+        </thead>
+        <tbody>
+          <tr t-foreach="p.days" t-as="d" t-key="d.date"
+              t-att-class="{ 'is-today': d.is_today }">
+            <td>
+              <span t-esc="d.label"/>
+              <span class="wfpw-flag" t-if="d.flags.includes('trip')" title="Business trip">·T</span>
+              <span class="wfpw-flag" t-if="d.flags.includes('holiday')" title="Public holiday">·H</span>
+            </td>
+            <td t-esc="fmt(d.sched, d.planned)"/>
+            <td t-esc="fmt(d.actual, d.planned or d.actual)"/>
+            <td>
+              <span t-attf-class="wfpw-din {{ dayTone(d) }}"
+                    t-esc="d.entered ? fmt(d.entered) : '—'"/>
+            </td>
+            <td t-attf-class="{{ deltaTone(d.delta) }}"
+                t-esc="d.planned ? fmtDelta(d.delta) : '—'"/>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- overtime + compliance chips -->
+      <div class="wfpw-chips">
+        <span t-foreach="p.ot" t-as="o" t-key="o.type"
+              t-attf-class="wfpw-pill wfpw-pill--{{ o.tone }}">
+          <t t-esc="o.label"/> · <t t-esc="fmt(o.hours)"/>h
+        </span>
+        <span class="wfpw-pill wfpw-pill--green" t-if="p.compliance">
+          On time <t t-esc="p.compliance.pct"/>%
+        </span>
+        <span class="wfpw-chips__empty" t-if="!p.ot.length and !p.compliance">
+          No overtime or shift compliance recorded this week.
+        </span>
+      </div>
+
+      <!-- every drawer is a door onwards, never a dead end (W5) -->
+      <div class="wfpw-acts">
+        <button class="wfpw-btn wfpw-btn--ghost" t-if="props.onFileCorrection"
+                t-att-disabled="props.filing"
+                t-on-click="() => props.onFileCorrection()">
+          <span t-out="ic('fileText', 14)"/><span>File correction</span>
+        </button>
+        <button class="wfpw-btn wfpw-btn--out" t-if="props.onOpenProfile"
+                t-on-click="() => props.onOpenProfile()">
+          <span t-out="ic('external', 14)"/><span>Full profile</span>
+        </button>
+      </div>
+    </t>
+  </t>
+
   <!-- ====================================================== exception ribbon -->
   <t t-name="pb_wf_kit.WfRibbon">
     <div class="wfrb" t-attf-class="wfrb--{{ tone }}">

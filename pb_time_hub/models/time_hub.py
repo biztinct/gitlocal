@@ -77,7 +77,13 @@ _BAR_TONE = {
     'extended': 'amber',
     'trip': 'trip',
 }
-_TIMELINE_MAX_ROWS = 120   # perf budget for one dept-week of hour-axis bars
+# The SHARED row budget (§2.6, P1b). This was 120 while the Week Grid capped at
+# 200, so "the first N employees" meant a different N depending on which lens
+# you were looking at, and narrowing a department until the grid was complete
+# still left the timeline truncated. One number now: `WF_ROW_CAP` in
+# pb_wf_kit/static/src/js/wf_rows.js, mirrored here and asserted equal by
+# pb_today/tests/test_static.py.
+_TIMELINE_MAX_ROWS = 200
 
 
 class PbTimeHub(models.AbstractModel):

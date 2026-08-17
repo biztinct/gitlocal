@@ -1,0 +1,414 @@
+// =====================================================================
+//  Today board — mockup B's canvas: tile strip, filtered people list, driver
+//  map card. Strictly --pbim-* tokens, indigo primary (W1). Flat fills only
+//  (W3). Every declaration carries the correct pbim fallback, because a var()
+//  fallback is a real colour, not a comment (W14/W19).
+//
+//  The tile tones are pbim SEMANTICS, not a new palette: green = present,
+//  rose = late, amber = expected-not-here, cyan = done, slate = away.
+// =====================================================================
+
+.pbim.pbtd {
+    // The WfDrawer scrim is position:absolute and belongs to THIS surface —
+    // without a positioned root it escapes to the viewport and covers the
+    // sidebar and breadcrumb (wf_kit.scss).
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+    svg { display: block; }
+
+    // ------------------------------------------------------------- header
+    .pbtd-head {
+        flex: none;
+        padding: 16px 22px 14px;
+        background: var(--pbim-surface, #ffffff);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbtd-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+    .pbtd-title {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbtd-ctx { margin-left: auto; }
+
+    .pbtd-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbtd-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        b {
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+    .pbtd-sep { opacity: .5; }
+    .pbtd-upd { font-variant-numeric: tabular-nums; }
+    .pbtd-spacer { flex: 1; }
+
+    .pbtd-icbtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        flex: none;
+        border-radius: 8px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-muted, #64748B);
+        cursor: pointer;
+        &:hover {
+            color: var(--pbim-primary, #5A4BB0);
+            border-color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+
+    // board / map switch
+    .pbtd-seg {
+        display: inline-flex;
+        gap: 3px;
+        padding: 3px;
+        border-radius: 999px;
+        background: var(--pbim-slate-soft, #EEF1F5);
+    }
+    .pbtd-seg__b {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 0;
+        background: transparent;
+        border-radius: 999px;
+        padding: 5px 12px;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        cursor: pointer;
+        &:hover { color: var(--pbim-primary, #5A4BB0); }
+        &.is-on {
+            background: var(--pbim-surface, #ffffff);
+            color: var(--pbim-primary, #5A4BB0);
+            box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+        }
+    }
+
+    // -------------------------------------------------------------- tiles
+    .pbtd-tiles {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+    }
+    .pbtd-tile {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 12px 14px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color .12s ease, box-shadow .12s ease;
+
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+        &.is-on {
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 3px var(--pbim-soft, #EDEAF8);
+        }
+
+        &__v {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            color: var(--pbim-ink, #1B1733);
+        }
+        &__l {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--pbim-muted, #64748B);
+            i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+        }
+
+        &--green  { .pbtd-tile__v { color: var(--pbim-green, #2E7D4F); }
+                    .pbtd-tile__l i { background: var(--pbim-green, #2E7D4F); } }
+        &--rose   { .pbtd-tile__v { color: var(--pbim-rose, #DC2668); }
+                    .pbtd-tile__l i { background: var(--pbim-rose, #DC2668); } }
+        &--amber  { .pbtd-tile__v { color: var(--pbim-amber, #D97706); }
+                    .pbtd-tile__l i { background: var(--pbim-amber, #D97706); } }
+        &--cyan   { .pbtd-tile__v { color: var(--pbim-cyan, #2563EB); }
+                    .pbtd-tile__l i { background: var(--pbim-cyan, #2563EB); } }
+        &--slate  { .pbtd-tile__v { color: var(--pbim-slate, #64748B); }
+                    .pbtd-tile__l i { background: var(--pbim-slate, #64748B); } }
+    }
+
+    // --------------------------------------------------------------- body
+    .pbtd-body {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        padding: 16px 22px 22px;
+    }
+    // W20: the Map view's lens owns its own scrolling and is height:100%, so
+    // the body must stop being the scroller and hand it a bounded box.
+    .pbtd-body--fill {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 16px 22px;
+    }
+    .pbtd-lensbody {
+        min-height: 0;
+        min-width: 0;      // belt and braces: never let a lens overlap the page
+    }
+    .pbtd-lensbody--map {
+        flex: 1;
+        display: flex;
+        min-height: 360px;
+        border-radius: var(--pbim-r, 14px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        overflow: hidden;
+        > .dm-cockpit { flex: 1; min-width: 0; }
+    }
+
+    .pbtd-load {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 60px 0;
+        color: var(--pbim-muted, #64748B);
+        svg { animation: pbtd-spin 1s linear infinite; }
+    }
+
+    // ------------------------------------------------------------ canvas
+    .pbtd-canvas {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 16px;
+        align-items: start;
+    }
+    @media (max-width: 1180px) {
+        .pbtd-canvas { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    // ------------------------------------------------------- people list
+    .pbtd-list {
+        min-width: 0;
+        border-radius: var(--pbim-r, 14px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        overflow: hidden;
+
+        &__h {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+
+            .t {
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: .06em;
+                text-transform: uppercase;
+                color: var(--pbim-ink, #1B1733);
+            }
+            .n {
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--pbim-primary, #5A4BB0);
+                background: var(--pbim-soft, #EDEAF8);
+                border-radius: 999px;
+                padding: 2px 9px;
+                font-variant-numeric: tabular-nums;
+            }
+            .hint { margin-left: auto; font-size: 11px; color: var(--pbim-muted, #64748B); }
+        }
+    }
+    .pbtd-clear {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        border-radius: 999px;
+        padding: 3px 10px;
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        cursor: pointer;
+        &:hover { color: var(--pbim-primary, #5A4BB0); border-color: var(--pbim-primary, #5A4BB0); }
+    }
+
+    .pbtd-trunc {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        font-size: 11.5px;
+        background: var(--pbim-amber-soft, #FEF3C7);
+        color: var(--pbim-amber, #D97706);
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    }
+
+    .pbtd-rows { max-height: 62vh; overflow-y: auto; }
+
+    .pbtd-prow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 16px;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        &:last-child { border-bottom: 0; }
+        &:hover { background: var(--pbim-bg, #F5F6FA); }
+        &.is-late { box-shadow: inset 3px 0 0 0 var(--pbim-rose, #DC2668); }
+    }
+    .pbtd-who {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        &:hover .n { color: var(--pbim-primary, #5A4BB0); }
+
+        &__txt {
+            min-width: 0;
+            .n {
+                font-size: 12.5px;
+                font-weight: 700;
+                color: var(--pbim-ink, #1B1733);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .s {
+                display: block;
+                font-size: 10.5px;
+                color: var(--pbim-muted, #64748B);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    }
+    .pbtd-av {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex: none;
+        background: var(--pbim-soft, #EDEAF8);
+    }
+    .pbtd-story {
+        flex: 0 1 auto;
+        min-width: 0;
+        font-size: 11px;
+        color: var(--pbim-muted, #64748B);
+        font-variant-numeric: tabular-nums;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .pbtd-latepill { flex: none; }
+    .pbtd-rowact { flex: none; }
+
+    .pbtd-empty {
+        padding: 46px 24px;
+        text-align: center;
+        color: var(--pbim-muted, #64748B);
+        svg { margin: 0 auto; color: var(--pbim-primary, #5A4BB0); opacity: .55; }
+        .t { font-weight: 800; color: var(--pbim-ink, #1B1733); margin: 12px 0 5px; }
+        .s { font-size: 12px; line-height: 1.5; max-width: 420px; margin: 0 auto; }
+    }
+
+    // ----------------------------------------------------------- map card
+    .pbtd-mapcard {
+        border-radius: var(--pbim-r, 14px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        overflow: hidden;
+
+        &__h {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-muted, #64748B);
+            .t {
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: .06em;
+                text-transform: uppercase;
+                color: var(--pbim-ink, #1B1733);
+            }
+        }
+        // W20: the embedded DriverMap is height:100% (a Leaflet map inside an
+        // auto-height box collapses to nothing), so the card gives it a
+        // DEFINITE height rather than letting it "just flow".
+        &__b {
+            height: 300px;
+            > .dm-cockpit { height: 100%; }
+        }
+    }
+    .pbtd-open {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: 0;
+        background: transparent;
+        padding: 2px 4px;
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--pbim-primary, #5A4BB0);
+        cursor: pointer;
+        &:hover { text-decoration: underline; }
+    }
+}
+
+@keyframes pbtd-spin { to { transform: rotate(360deg); } }

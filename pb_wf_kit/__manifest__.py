@@ -20,11 +20,20 @@ their own pickers (W4).
     typeahead. Each segment is opt-in through the `features` prop. Degrades to
     week-only when the persona cannot read hr.department / hr.employee.
   * `<WfDrawer/>`  — the right-side person-drawer chassis (ESC / backdrop close).
+  * `<WfPersonWeek/>` — the drawer BODY: one employee's week as a table
+    (scheduled / actual / entered / Δ), OT chips, compliance, and the doors
+    onwards. Lifted out of pb_time_hub in P1b so the Today board mounts the same
+    panel instead of forking it (W6). Pure presentation — the host fetches
+    `pb.time.hub.get_person_week` and owns both actions, because filing a
+    correction WRITES and writes belong to event handlers (W21).
   * `<WfRibbon/>`  — the exception ribbon (amber / rose / green).
+  * `WF_ROW_CAP`   — the one row budget every Workforce read-model shares
+    (§2.6); the capping facades mirror it and pb_today's static test asserts
+    they all still agree.
 
 pbim-tokenized throughout, Lucide icons via pb_import_kit's shared ic() registry.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -38,9 +47,11 @@ pbim-tokenized throughout, Lucide icons via pb_import_kit's shared ic() registry
     'assets': {
         'web.assets_backend': [
             'pb_wf_kit/static/src/scss/wf_kit.scss',
+            'pb_wf_kit/static/src/js/wf_rows.js',
             'pb_wf_kit/static/src/js/wf_context_service.js',
             'pb_wf_kit/static/src/js/wf_context_bar.js',
             'pb_wf_kit/static/src/js/wf_drawer.js',
+            'pb_wf_kit/static/src/js/wf_person_week.js',
             'pb_wf_kit/static/src/js/wf_ribbon.js',
             'pb_wf_kit/static/src/xml/wf_kit.xml',
         ],
