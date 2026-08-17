@@ -406,3 +406,23 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   Applying W28 to in-surface navigation would import a disambiguation the user cannot see the
   reason for. Rule: grep the table before renaming a RECORD; judge an in-surface label by
   what else is visible in that surface.
+- **W39 `margin: 0 auto` cancels a flex item's stretch, so a centred `max-width` wrap sizes
+  to its CAP instead of to its host — and it only shows up on the screens nobody develops
+  on.** (Found in P3a's self-review, at 1440×900, after the surface had already passed every
+  gate at 1920.) `pb_timeoff`'s `.pbto-wrap` and `pb_ot_desk`'s `.pbot-wrap` are the classic
+  readable-column recipe: `max-width: 1360px; margin: 0 auto`. The moment W20 promotes one of
+  them to the embedded SCROLLPORT it becomes a flex item, and an auto margin on the cross
+  axis suppresses `align-items: stretch` — so instead of filling a 1304px lens it laid itself
+  out at its 1360px cap and hung 56px past the canvas. `min-width: 0` does not help: the box
+  is not being squeezed by min-content, it is being sized by max-width. Nothing errored and
+  the console was clean; at 1920 the lens is 1588px wide and the bug is literally invisible.
+  Rules:
+  1. when you turn an existing centred wrap into a flex scrollport, add `width: 100%` —
+     `max-width` then clamps on wide screens and `margin: 0 auto` still centres;
+  2. W20's belt and braces are `min-height: 0` + `min-width: 0` + **`width: 100%`** whenever
+     the child carries a max-width;
+  3. measure every embedded lens at the RAIL-OVERLAY width (1440), not only at 1920 —
+     the shell is narrower there by the 60px rail AND by whatever the phase adds next, so
+     this class of bug surfaces on the laptop and never on the monitor.
+  Gated by `pb_wf_kit/tests/test_p3a_embedding.py::test_the_root_scrollers_move_their_
+  scrollport_inside`.
