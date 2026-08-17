@@ -25,6 +25,21 @@ _HR_GROUPS = ('om_hr_payroll.group_hr_payroll_user',
               'om_hr_payroll.group_hr_payroll_manager',
               'hr.group_hr_user', 'hr.group_hr_manager')
 
+# Who may read the ORG-WIDE queue (P3b §3.1). Deliberately the two MANAGER
+# tiers only — `_HR_GROUPS` also contains the two USER tiers, and an HR user is
+# not an approver for the whole company. Both of these are inside `_HR_GROUPS`,
+# so an org approver already passes `act()`'s team-scope check: the read gate and
+# the mutation gate cannot drift apart into "sees it, cannot act on it".
+_ORG_GROUPS = ('hr.group_hr_manager',
+               'om_hr_payroll.group_hr_payroll_manager')
+
+# Per-source row budget for one queue read (P3b §3.1). The four searches used to
+# be UNBOUNDED: on the 4.5k-employee world an org-wide read would have pulled
+# every pending row into one JSON payload. The cap is per SOURCE so a thousand
+# pending leaves can never starve the three OT requests out of the queue, and
+# `counts` carries the TRUE totals so the header never lies about the backlog.
+_SOURCE_CAP = 20
+
 # Whitelisted (model, action) → the target model's OWN method. `note` = whether
 # the method accepts a refusal note. NOTHING else is callable through act().
 # Source models are existence-checked at call time (soft-hooked phases).
@@ -75,6 +90,30 @@ class PbTeam(models.AbstractModel):
                 continue
         return False
 
+    def _can_org(self):
+        """May this user read the ORG-WIDE queue? (payload flag `can_org`)
+
+        A visibility question AND a gate: the dock only offers the Team/Org
+        toggle when this is true, and `_require_org_approver` enforces it
+        server-side regardless of what the client sends.
+        """
+        u = self.env.user
+        if u._is_admin():
+            return True
+        for g in _ORG_GROUPS:
+            try:
+                if u.has_group(g):
+                    return True
+            except (ValueError, KeyError):
+                continue
+        return False
+
+    def _require_org_approver(self):
+        if not self._can_org():
+            raise AccessError(_(
+                "Organisation-wide approvals are restricted to HR and payroll "
+                "managers."))
+
     def _my_team(self, recursive=False):
         """Direct reports (default) or the whole sub-tree (skip-level).
 
@@ -101,19 +140,60 @@ class PbTeam(models.AbstractModel):
 
     # --------------------------------------------------------- queue data
     @api.model
-    def get_team_data(self, recursive=False):
-        team = self._my_team(recursive=recursive)
-        is_hr = self._is_hr()
+    def get_team_data(self, recursive=False, scope='team', queues_only=False):
+        """The cockpit AND the Mission Control dock read this one payload.
+
+        Every P3b addition is ADDITIVE — the standalone "Team Approvals" cockpit
+        passes neither new argument and gets exactly the keys and shapes it got
+        before, plus three new ones (`scope`, `can_org`, `queues.has_more`) it
+        simply ignores.
+
+        `scope`
+            ``'team'`` (default) = my reports, the historical behaviour.
+            ``'org'`` = every pending item in the active companies, gated by
+            `_require_org_approver` and read sudo behind that gate (the C18.65
+            one-permission-world precedent). Mutations are unaffected: `act()`
+            still runs as the REAL user through each model's own gated method,
+            so seeing a row never implies being allowed to decide it (W12).
+
+        `queues_only`
+            The dock polls every 60 s and needs the QUEUE, not the roster. The
+            metrics and roster builders walk the whole population (shift
+            compliance, OT ceilings, the exception engine) — on org scope that
+            is the entire company, four times a minute. So org scope always
+            returns the blank metric/roster SHAPES, and the dock asks for them
+            blank on team scope too.
+        """
+        scope = 'org' if scope == 'org' else 'team'
+        can_org = self._can_org()
+        if scope == 'org':
+            self._require_org_approver()
+            team = self.env['hr.employee'].browse()
+            has_team = True         # the org always "has" a population
+            size = self._org_headcount()
+        else:
+            team = self._my_team(recursive=recursive)
+            has_team = bool(team)
+            size = len(team)
+        # Org scope is a QUEUE scope: the roster rail and the team metrics are a
+        # manager's view of THEIR people and mean nothing across 4 500 of them.
+        blank = queues_only or scope == 'org'
         return {
-            'has_team': bool(team),
-            'is_hr': is_hr,
+            'has_team': has_team,
+            'is_hr': self._is_hr(),
             'recursive': bool(recursive),
+            'scope': scope,
+            'can_org': can_org,
             'me': self._me_card(),
-            'team_size': len(team),
-            'queues': self._build_queues(team),
-            'metrics': self._build_metrics(team),
-            'roster': self._build_roster(team),
+            'team_size': size,
+            'queues': self._build_queues(team, scope=scope),
+            'metrics': self._blank_metrics() if blank else self._build_metrics(team),
+            'roster': [] if blank else self._build_roster(team),
         }
+
+    def _org_headcount(self):
+        return self.env['hr.employee'].sudo().search_count(
+            [('company_id', 'in', self.env.companies.ids)])
 
     def _me_card(self):
         me = self.env['hr.employee'].sudo().search(
@@ -124,31 +204,67 @@ class PbTeam(models.AbstractModel):
             if me else '/web/image/res.users/%s/avatar_128' % self.env.uid,
         }
 
-    def _build_queues(self, team):
+    def _queue_domain(self, team, scope):
+        """The population leaf every source search starts from.
+
+        Returns None when there is nothing to ask about at all (a user with no
+        reports on team scope) — the caller then answers with the empty payload
+        rather than running four searches with an empty `in` list.
+        """
+        if scope == 'org':
+            return [('employee_id.company_id', 'in', self.env.companies.ids)]
+        if not team:
+            return None
+        return [('employee_id', 'in', team.ids)]
+
+    def _build_queues(self, team, scope='team', limit=_SOURCE_CAP):
         """One flat, source-tagged list of everything awaiting THIS user's
-        action for THIS team, plus per-source counts. Each item reuses the
-        record's own `can_*` compute where present (never re-derived)."""
+        action for this population, plus per-source counts. Each item reuses the
+        record's own `can_*` compute where present (never re-derived).
+
+        Three P3b contracts, all additive:
+          * `total` is ALWAYS present, 0 included — the dock's header reads it
+            directly and a missing key rendered as "undefined";
+          * `counts` are the TRUE totals (a search_count, not `len(items)`), so
+            capping the list can never understate the backlog;
+          * `has_more[source]` says the list was cut, which is what the dock's
+            "+N more" link is for.
+        """
         from odoo import fields as _f
         now = _f.Datetime.now()
         items = []
-        if not team:
-            return {'items': items, 'counts': {}}
-        tids = team.ids
+        counts = {}
+        has_more = {}
+        base = self._queue_domain(team, scope)
+        if base is None:
+            return {'items': items, 'counts': counts, 'total': 0,
+                    'has_more': has_more}
 
         def age(rec):
             cd = rec.create_date
             return max(0, (now - cd).days) if cd else 0
 
-        # Reads are SUDO behind the team gate (review I-H1, C18.65): the team
-        # scope (tids) is server-derived, and a line manager who holds no
+        def page(model, state_domain, key):
+            """search_count for the truth, search(limit) for the payload."""
+            Model = self.env[model].sudo()
+            domain = base + state_domain
+            n = Model.search_count(domain)
+            if n:
+                counts[key] = n
+            recs = Model.search(domain, order='create_date', limit=limit)
+            has_more[key] = n > len(recs)
+            return recs
+
+        # Reads are SUDO behind the scope gate (review I-H1, C18.65): the
+        # population domain is server-derived — `parent_id = me` on team scope,
+        # `_require_org_approver` on org scope — and a line manager who holds no
         # HR/attendance group must still see their own team's queue — the ACL
         # walls (hr.overtime.request is officer-only, hr.employee is
         # hr-user-only) would otherwise crash the cockpit for its primary
         # persona. Mutations stay real-user in act().
         # --- OT (no chain mixin; manager acts via action_approve) ---
         OT = self.env['hr.overtime.request'].sudo()
-        for r in OT.search([('state', '=', 'submitted'),
-                            ('employee_id', 'in', tids)], order='create_date'):
+        for r in page('hr.overtime.request', [('state', '=', 'submitted')], 'ot'):
             items.append({
                 'model': 'hr.overtime.request', 'res_id': r.id,
                 'source': 'ot',
@@ -158,6 +274,7 @@ class PbTeam(models.AbstractModel):
                                r.overtime_type, r.overtime_type)),
                 'subtitle': (r.reason or '')[:120],
                 'when': r.date and r.date.strftime('%d %b') or '',
+                'when_iso': _iso(r.date),
                 'employee': self._emp_card(r.employee_id),
                 'age': age(r),
                 'can_approve': True, 'can_refuse': True,
@@ -165,9 +282,7 @@ class PbTeam(models.AbstractModel):
 
         # --- business trips (chain; manager tier) — soft ---
         if 'pb.business.trip' in self.env:
-            Trip = self.env['pb.business.trip'].sudo()
-            for r in Trip.search([('state', '=', 'submitted'),
-                                  ('employee_id', 'in', tids)], order='create_date'):
+            for r in page('pb.business.trip', [('state', '=', 'submitted')], 'trip'):
                 items.append({
                     'model': 'pb.business.trip', 'res_id': r.id,
                     'source': 'trip',
@@ -175,6 +290,7 @@ class PbTeam(models.AbstractModel):
                     else (r.name or _('Business trip')),
                     'subtitle': (r.purpose if 'purpose' in r._fields else '') or '',
                     'when': self._date_span(r),
+                    'when_iso': self._date_start_iso(r),
                     'employee': self._emp_card(r.employee_id),
                     'age': age(r),
                     'can_approve': bool(getattr(r, 'can_manager_approve', True)),
@@ -183,15 +299,15 @@ class PbTeam(models.AbstractModel):
 
         # --- attendance corrections (chain) — soft ---
         if 'hr.attendance.correction' in self.env:
-            Corr = self.env['hr.attendance.correction'].sudo()
-            for r in Corr.search([('state', '=', 'submitted'),
-                                  ('employee_id', 'in', tids)], order='create_date'):
+            for r in page('hr.attendance.correction',
+                          [('state', '=', 'submitted')], 'correction'):
                 items.append({
                     'model': 'hr.attendance.correction', 'res_id': r.id,
                     'source': 'correction',
                     'title': _('Attendance correction'),
                     'subtitle': (getattr(r, 'reason', '') or '')[:120],
                     'when': r.date.strftime('%d %b') if getattr(r, 'date', False) else '',
+                    'when_iso': _iso(getattr(r, 'date', False)),
                     'employee': self._emp_card(r.employee_id),
                     'age': age(r),
                     'can_approve': bool(getattr(r, 'can_approve', True)),
@@ -200,25 +316,21 @@ class PbTeam(models.AbstractModel):
 
         # --- leaves (core; confirm state awaiting validation) — soft ---
         if 'hr.leave' in self.env:
-            Leave = self.env['hr.leave'].sudo()
-            leaves = Leave.search([('state', '=', 'confirm'),
-                                   ('employee_id', 'in', tids)], order='create_date')
-            for r in leaves:
+            for r in page('hr.leave', [('state', '=', 'confirm')], 'leave'):
                 items.append({
                     'model': 'hr.leave', 'res_id': r.id,
                     'source': 'leave',
                     'title': r.holiday_status_id.name or _('Time off'),
                     'subtitle': (r.name or '')[:120],
                     'when': self._date_span(r),
+                    'when_iso': self._date_start_iso(r),
                     'employee': self._emp_card(r.employee_id),
                     'age': age(r),
                     'can_approve': True, 'can_refuse': True,
                 })
 
-        counts = {}
-        for it in items:
-            counts[it['source']] = counts.get(it['source'], 0) + 1
-        return {'items': items, 'counts': counts, 'total': len(items)}
+        return {'items': items, 'counts': counts,
+                'total': sum(counts.values()), 'has_more': has_more}
 
     def _date_span(self, rec):
         f = rec._fields
@@ -232,7 +344,33 @@ class PbTeam(models.AbstractModel):
                 return '%s → %s' % (sa, sb) if sb and sb != sa else sa
         return ''
 
+    def _date_start_iso(self, rec):
+        """The machine-readable twin of `_date_span`'s START date.
+
+        `when` is a DISPLAY string ("21 Aug → 22 Aug") built with `%d %b`, which
+        is locale-shaped, month-truncated and un-sortable — a client that wants
+        to sort, group or age a queue item has nothing to parse. `when_iso` is
+        the same fact as an ISO-8601 date, and the two are produced side by side
+        so they can never describe different days.
+        """
+        f = rec._fields
+        for a, _b in (('date_from', 'date_to'), ('date_start', 'date_end'),
+                      ('request_date_from', 'request_date_to')):
+            if a in f and rec[a]:
+                return _iso(rec[a])
+        return ''
+
     # ----------------------------------------------------------- metrics
+    def _blank_metrics(self):
+        """The metrics SHAPE with nothing in it.
+
+        `queues_only` and org scope must not change the payload's shape — a
+        consumer that reads `metrics.ot.pct` has to find a number or a documented
+        zero, never a KeyError. Same keys, same types, no work done.
+        """
+        return {'headcount': 0, 'compliance': {}, 'ot': {},
+                'exceptions': 0, 'upcoming_leaves': []}
+
     def _build_metrics(self, team):
         m = {'headcount': len(team), 'compliance': {}, 'ot': {},
              'exceptions': 0, 'upcoming_leaves': []}
@@ -395,6 +533,23 @@ class PbTeam(models.AbstractModel):
 def _timedelta_days(n):
     from datetime import timedelta
     return timedelta(days=n)
+
+
+def _iso(value):
+    """ISO-8601 DATE for a Date or a Datetime field, '' for a falsy one.
+
+    `hr.leave.date_from` is a Datetime and `hr.overtime.request.date` is a Date;
+    both answer the same question ("which day is this about"), so both collapse
+    to a plain `YYYY-MM-DD`. Datetimes are stored UTC — the date part is taken
+    as-is rather than converted, because the display twin (`when`, `%d %b`) does
+    exactly the same thing and the two must never disagree.
+    """
+    if not value:
+        return ''
+    date_part = getattr(value, 'date', None)
+    if callable(date_part):
+        value = date_part()
+    return value.isoformat()
 
 
 def _extract_msg(exc):
