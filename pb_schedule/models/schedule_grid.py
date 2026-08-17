@@ -38,6 +38,7 @@ must never depend on, import, or reason about it. Everything here means
 from datetime import datetime, timedelta
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 # Shared row budget (§2.6) — mirrored from pb_wf_kit's WF_ROW_CAP export.
 # pb_schedule/tests/test_static.py asserts the two still agree.
@@ -915,17 +916,38 @@ class ShiftPlanningGrid(models.TransientModel):
             'required_headcount': int(vals.get('required_headcount') or 0),
         }
         if requirement_id:
-            row = Req.browse(int(requirement_id))
+            row = self._pb_own_requirement(requirement_id)
+            if not row:
+                # `write()` on an EMPTY recordset is a silent success — an
+                # out-of-scope id would look like a saved edit that never
+                # happened. A bad request has to say so.
+                raise UserError(_(
+                    "That coverage requirement is not available in this "
+                    "company."))
             row.write(clean)
             return row.id
         clean['company_id'] = (self.env.companies[:1] or self.env.company).id
         return Req.create(clean).id
 
     @api.model
+    def _pb_own_requirement(self, requirement_id):
+        """Resolve a requirement id INSIDE the caller's company scope.
+
+        `browse(id)` from an RPC argument is a cross-company door: the manager
+        gate on the model asks "may you edit coverage", never "may you edit
+        THIS company's coverage", and this model carries no record rule. The
+        cockpit only ever offers ids it just sent, so scoping here costs
+        nothing and closes the hand-crafted-request case.
+        """
+        return self.env['hr.shift.coverage.requirement'].search([
+            ('id', '=', int(requirement_id)),
+            ('company_id', 'in', self._pb_company_ids()),
+        ], limit=1)
+
+    @api.model
     def delete_coverage_requirement(self, requirement_id):
         self._require_officer()
-        row = self.env['hr.shift.coverage.requirement'].browse(
-            int(requirement_id)).exists()
+        row = self._pb_own_requirement(requirement_id)
         if not row:
             return False
         row.unlink()
