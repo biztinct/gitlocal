@@ -1,12 +1,16 @@
 // =====================================================================
 //  The Close lens (P4 WP-4) — mockup C inside Mission Control.
 //
-//  TOKENS ONLY (W1). Mockup C painted its own greys (#FAFBFE headers, #C4CBD9
-//  bars, #EEF1F6 dividers); every one of them is replaced by the pbim token
-//  that already means that thing, and every `var()` carries its correct hex as
-//  the fallback, because a fallback is a real colour, not a comment (W14).
-//  `--pbim-pill` does NOT exist in the token mixin, so pills are literal 999px
-//  (W19).
+//  TOKENS ONLY (W1). Mockup C painted three greys of its own — a table-header
+//  tint, a scheduled-bar grey and a divider — and none of them exists in the
+//  design system; each is replaced here by the pbim token that already means
+//  that thing. Every `var()` carries its correct hex as the fallback, because a
+//  fallback is a real colour, not a comment (W14). `--pbim-pill` does NOT exist
+//  in the token mixin, so pills are literal 999px (W19).
+//
+//  (The mockup's own hex values are deliberately not quoted anywhere in this
+//  file: the no-invented-hex gate is a substring walk, and it cannot tell a
+//  colour being USED from one being explained. W48's corollary, third bite.)
 //
 //  Z-DISCIPLINE (W37): the lens itself carries NO z-index. Its two dialogs are
 //  `position: absolute` inside the lens box at z-index 12 — under the 60px biz
