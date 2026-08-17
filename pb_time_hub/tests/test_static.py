@@ -112,3 +112,34 @@ class TestWorkforceStaticGates(TransactionCase):
                     if _RE_EMOJI.search(line):
                         bad.append('%s:%s emoji (W2)' % (path, n))
         self.assertFalse(bad, '\n'.join(bad))
+
+    # -------------------------------------------------------------- W5 doors
+    def test_no_surface_dead_ends_on_target_current(self):
+        """W5: a native-form escape uses target:"new" (a dialog you can close),
+        never target:"current", which replaces the cockpit with no way back."""
+        bad = []
+        for module in ('pb_time_hub', 'pb_attendance_flow'):
+            for path in _walk(module, ('.js',), skip_tests=True):
+                with open(path, encoding='utf-8') as fh:
+                    for n, line in enumerate(fh, 1):
+                        stripped = line.strip()
+                        # the rule is allowed to be NAMED in a comment
+                        if stripped.startswith(('//', '*', '/*')):
+                            continue
+                        if re.search(r'target:\s*["\']current["\']', line):
+                            bad.append('%s:%s: %s' % (path, n, stripped))
+        self.assertFalse(bad, 'W5 violated — use target:"new":\n%s' % '\n'.join(bad))
+
+    def test_every_hub_lens_is_handed_the_person_door(self):
+        """Each lens the hub mounts must receive `onPerson`, or its avatars/rows
+        become dead ends the moment they are embedded (W5/WP-6)."""
+        tpl = os.path.join(get_module_path('pb_time_hub'),
+                           'static', 'src', 'xml', 'time_hub.xml')
+        with open(tpl, encoding='utf-8') as fh:
+            body = fh.read()
+        # each mounted lens component, with its attributes, up to the closing />
+        mounts = re.findall(r'<(TimelineLens|AttendanceWeekGrid|PbAttendanceFlow)\b[^>]*?/>',
+                            body, re.S)
+        self.assertGreaterEqual(len(mounts), 4, 'expected four lens mounts')
+        missing = [m.split()[0] for m in mounts if 'onPerson' not in m]
+        self.assertFalse(missing, 'lens mounts without a person door: %s' % missing)

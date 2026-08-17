@@ -34,6 +34,10 @@ export class AttendanceWeekGrid extends Component {
         action: { type: Object, optional: true },
         // mounted as a hub lens rather than as a standalone client action
         embedded: { type: Boolean, optional: true },
+        // host-supplied doors (W5): the person drawer, and "this employee is
+        // over their overtime ceiling — take me to the exceptions queue".
+        onPerson: { type: Function, optional: true },
+        onEscalate: { type: Function, optional: true },
         "*": true,
     };
     static defaultProps = { embedded: false };
@@ -95,6 +99,10 @@ export class AttendanceWeekGrid extends Component {
             onDirty: this.onDirty.bind(this),
             onFocus: this.onFocusRow.bind(this),
             onSaved: this.onGridSaved.bind(this),
+            // Only hand the grid a row door when the host actually has one —
+            // standalone there is nothing to open, and a button that does
+            // nothing is worse than no button.
+            onRowOpen: this.props.onPerson ? (id) => this.props.onPerson(id) : undefined,
         };
 
         onWillStart(async () => {
@@ -295,6 +303,14 @@ export class AttendanceWeekGrid extends Component {
         rows.sort((a, b) => b.pct - a.pct);
         return rows.slice(0, 6).filter((r) => r.mtd > 0);
     }
+    /** Is this employee at or over their monthly overtime ceiling? */
+    isOverCap(v, cap) { return !!(cap && v >= cap); }
+
+    /** The over-cap door: hand the employee to the host's exceptions queue. */
+    escalate(empId) {
+        if (this.props.onEscalate) { this.props.onEscalate(empId); }
+    }
+
     barPct(v, cap) { return cap ? Math.min(100, Math.round((v / cap) * 100)) : 0; }
     barTone(v, cap) {
         const p = cap ? v / cap : 0;

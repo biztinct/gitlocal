@@ -56,7 +56,8 @@
                     onData="_h.onData"
                     onDirty="_h.onDirty"
                     onFocus="_h.onFocus"
-                    onSaved="_h.onSaved"/>
+                    onSaved="_h.onSaved"
+                    onRowOpen="_h.onRowOpen"/>
         </div>
 
         <div class="wfg-rail" t-if="state.railOpen">
@@ -90,6 +91,13 @@
                      t-attf-style="width: {{ barPct(focusCeiling.ytd, focusCeiling.cap_year) }}%;"/>
               </div>
             </div>
+
+            <!-- Over the ceiling is not a dead end (W5): the host routes it to
+                 the exceptions queue where it can actually be dealt with. -->
+            <button class="wfg-escalate" t-if="props.onEscalate and (isOverCap(focusCeiling.mtd, focusCeiling.cap_month) or isOverCap(focusCeiling.ytd, focusCeiling.cap_year))"
+                    t-on-click="() => this.escalate(state.focusEmp)">
+              Over the ceiling — review exceptions →
+            </button>
           </div>
           <div class="wfg-focus wfg-focus--empty" t-else="">
             Click a cell to see an employee's overtime budget.
