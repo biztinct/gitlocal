@@ -234,7 +234,10 @@
               try "Bùi Anh" rather than "Bui Anh".</span>
           </div>
 
-          <div class="wfcp-empty" t-if="!count and !state.searching">
+          <!-- one empty state at a time: the diacritics hint IS the empty state
+               when a person search came back empty, so the generic line stands
+               down for it -->
+          <div class="wfcp-empty" t-if="!count and !state.searching and !showAccentHint">
             <span t-out="ic('search', 16)"/><span>Nothing matches that.</span>
           </div>
         </div>
