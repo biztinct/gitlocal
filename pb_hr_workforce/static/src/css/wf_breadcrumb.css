@@ -32,7 +32,7 @@
 
 .wf-bc-home:hover {
     background: #f0f0f5;
-    color: #1e1b4b;
+    color: #241F52;
 }
 
 .wf-bc-sep {
@@ -42,7 +42,7 @@
 }
 
 .wf-bc-link {
-    color: #7c3aed;
+    color: #5A4BB0;
     cursor: pointer;
     font-weight: 600;
     transition: color 0.12s;
@@ -50,12 +50,12 @@
 }
 
 .wf-bc-link:hover {
-    color: #6d28d9;
+    color: #4A3D96;
     text-decoration: underline;
 }
 
 .wf-bc-current {
-    color: #1e1b4b;
+    color: #241F52;
     font-weight: 700;
     white-space: nowrap;
 }
@@ -80,7 +80,7 @@
 }
 
 .o_dark .wf-bc-link {
-    color: #a78bfa;
+    color: #CBC2EE;
 }
 
 .o_dark .wf-bc-current {
