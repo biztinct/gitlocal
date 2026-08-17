@@ -448,3 +448,71 @@ class TestAttendanceFlow(TransactionCase):
                    and r['date'] == d.isoformat()]
         self.assertFalse(missing,
                          "an early local punch must count for the LOCAL day")
+
+    # =================================================================== 15
+    # Workforce P1a WP-3 — the facade gained an optional window + department so
+    # the Time hub can embed this cockpit as its Exceptions lens (W17). The
+    # no-argument call MUST stay byte-for-byte the historical behaviour.
+    def test_15_get_control_data_default_window_unchanged(self):
+        """No arguments => the rolling 14-day, all-department board."""
+        d_in = self.today - timedelta(days=3)
+        d_out = self.today - timedelta(days=40)        # outside the 14-day window
+        self._shift(self.ework, d_in)
+        self._shift(self.ework, d_out)
+
+        data = self.env['pb.attendance.flow'].get_control_data()
+        self.assertEqual(data['window']['to'], self.today.isoformat())
+        self.assertEqual(
+            data['window']['from'],
+            (self.today - timedelta(days=13)).isoformat(),
+            "the default look-back must remain 14 days for the standalone cockpit")
+        dates = {x['date'] for x in data['exceptions']}
+        self.assertIn(d_in.isoformat(), dates)
+        self.assertNotIn(d_out.isoformat(), dates)
+
+    def test_16_get_control_data_honours_an_explicit_window(self):
+        """A window narrows the feed to exactly those days."""
+        d_hit = self.today - timedelta(days=3)
+        d_miss = self.today - timedelta(days=10)
+        self._shift(self.ework, d_hit)
+        self._shift(self.ework, d_miss)
+
+        data = self.env['pb.attendance.flow'].get_control_data(
+            (self.today - timedelta(days=4)).isoformat(),
+            (self.today - timedelta(days=2)).isoformat())
+        self.assertEqual(data['window'], {
+            'from': (self.today - timedelta(days=4)).isoformat(),
+            'to': (self.today - timedelta(days=2)).isoformat()})
+        dates = {x['date'] for x in data['exceptions']}
+        self.assertIn(d_hit.isoformat(), dates)
+        self.assertNotIn(d_miss.isoformat(), dates)
+
+        # an inverted window is repaired rather than returning nothing
+        flipped = self.env['pb.attendance.flow'].get_control_data(
+            (self.today - timedelta(days=2)).isoformat(),
+            (self.today - timedelta(days=4)).isoformat())
+        self.assertEqual(flipped['window'], data['window'])
+
+    def test_17_get_control_data_honours_the_department(self):
+        """The context department narrows the cohort (W4)."""
+        dept_a = self.env['hr.department'].create({
+            'name': 'P1a Dept A', 'company_id': self.company.id})
+        dept_b = self.env['hr.department'].create({
+            'name': 'P1a Dept B', 'company_id': self.company.id})
+        self.ework.department_id = dept_a
+        self.emp_adult.department_id = dept_b
+        d = self.today - timedelta(days=3)
+        self._shift(self.ework, d)
+        self._shift(self.emp_adult, d)
+
+        df = (self.today - timedelta(days=4)).isoformat()
+        dt = self.today.isoformat()
+        both = self.env['pb.attendance.flow'].get_control_data(df, dt)
+        only_a = self.env['pb.attendance.flow'].get_control_data(df, dt, dept_a.id)
+
+        ids_both = {x['employee_id'] for x in both['exceptions']}
+        ids_a = {x['employee_id'] for x in only_a['exceptions']}
+        self.assertIn(self.ework.id, ids_both)
+        self.assertIn(self.emp_adult.id, ids_both)
+        self.assertEqual(ids_a & {self.ework.id, self.emp_adult.id}, {self.ework.id},
+                         "department filtering must drop the other department's rows")

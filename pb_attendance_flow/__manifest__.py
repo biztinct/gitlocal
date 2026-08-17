@@ -32,7 +32,7 @@ Weekly-Entry grid stays the bulk-entry surface, untouched):
 
 Report-only (C18.38): historical days are surfaced, never mutated.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.0.3',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -42,6 +42,7 @@ Report-only (C18.38): historical days are surfaced, never mutated.
         'biz_approval_chain',   # the generic state machine + stepper
         'pb_sidebar',
         'pb_import_kit',
+        'pb_wf_kit',            # wf_context (embedded lens binds to the shared week)
         # soft-hooks (resolved via `in self.env`, module stays installable
         # without them): pb_business_trip (trip-day exclusion), hr_holidays
         # (validated-leave exclusion — already a pb_hr_workforce dep in practice).

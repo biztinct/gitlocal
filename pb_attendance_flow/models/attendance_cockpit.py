@@ -12,7 +12,7 @@ from datetime import date, datetime, time, timedelta
 
 import pytz
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
 
 _OFFICER_GROUPS = ('hr_attendance.group_hr_attendance_officer',
@@ -46,10 +46,16 @@ class PbAttendanceFlow(models.AbstractModel):
         return False
 
     # ------------------------------------------------------------- cohort
-    def _cohort(self, df, dt):
+    def _cohort(self, df, dt, department_id=False):
         """Employees the feed covers: for an officer, everyone in-company with a
         published shift in the window or an open punch; for anyone else, just
-        themselves. Bounded to _MAX_COHORT."""
+        themselves. Bounded to _MAX_COHORT.
+
+        `department_id` narrows the cohort to the Time hub's context department
+        (W4). The Time hub's ribbon calls THIS method with THIS window so its
+        count is the same number the Exceptions lens shows — the two must never
+        disagree, so they share one cohort definition rather than two.
+        """
         if not self._is_officer():
             return self.env.user.employee_id, 0
         co_ids = self.env.companies.ids or [self.env.company.id]
@@ -67,6 +73,9 @@ class PbAttendanceFlow(models.AbstractModel):
         ])
         emp_ids |= set(opens.mapped('employee_id').ids)
         emps = Emp.browse(sorted(emp_ids)).exists()
+        if department_id:
+            emps = emps.filtered(
+                lambda e: e.department_id.id == int(department_id))
         truncated = 0
         if len(emps) > _MAX_COHORT:
             truncated = len(emps) - _MAX_COHORT
@@ -74,9 +83,9 @@ class PbAttendanceFlow(models.AbstractModel):
         return emps, truncated
 
     # ------------------------------------------------------------- KPIs
-    def _late_pct_week(self, emps):
-        monday = date.today() - timedelta(days=date.today().weekday())
-        sunday = monday + timedelta(days=6)
+    def _late_pct_week(self, emps, df=False, dt=False):
+        monday = df or (date.today() - timedelta(days=date.today().weekday()))
+        sunday = dt or (monday + timedelta(days=6))
         shifts = self.env['hr.shift.planning'].sudo().search([
             ('employee_id', 'in', emps.ids),
             ('date', '>=', monday), ('date', '<=', sunday),
@@ -97,11 +106,21 @@ class PbAttendanceFlow(models.AbstractModel):
 
     # ------------------------------------------------------------- load
     @api.model
-    def get_control_data(self):
+    def get_control_data(self, date_from=False, date_to=False, department_id=False):
+        """Board payload.
+
+        Called with no arguments (the standalone Attendance Control action) the
+        window is the historical rolling 14 days over every in-company employee
+        — unchanged. The Time hub passes its shared context week + department
+        instead (W4), which is also what makes the hub ribbon's count and this
+        board's count the same number by construction.
+        """
         self._require()
-        dt = date.today()
-        df = dt - timedelta(days=_WINDOW_DAYS - 1)
-        emps, truncated = self._cohort(df, dt)
+        dt = fields.Date.to_date(date_to) or date.today()
+        df = fields.Date.to_date(date_from) or (dt - timedelta(days=_WINDOW_DAYS - 1))
+        if df > dt:
+            df, dt = dt, df
+        emps, truncated = self._cohort(df, dt, department_id)
 
         exceptions = self.env['pb.attendance.exception.engine']._get_exceptions(
             emps, df, dt) if emps else []
@@ -120,7 +139,7 @@ class PbAttendanceFlow(models.AbstractModel):
             'kpis': {
                 'open_exceptions': len(exceptions),
                 'pending_corrections': len(pending),
-                'late_pct': self._late_pct_week(emps) if emps else 0,
+                'late_pct': self._late_pct_week(emps, df, dt) if emps else 0,
                 'imports_month': self._imports_this_month(),
             },
             'exceptions': exceptions,

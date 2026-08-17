@@ -5,12 +5,20 @@
  * corrections pipeline), the correction composer (day punches timeline + live
  * before/after + approval stepper), and the import stepper. RPC facade:
  * pb.attendance.flow. pbim-tokenized (.pbaf.pbim). Lucide icons only.
+ *
+ * ONE component, THREE mount points (W17): the client action `pb_attendance_flow`
+ * keeps working untouched, and pb_time_hub mounts this same class twice —
+ * `initialView="board"` as its Exceptions lens and `initialView="import"` as its
+ * Import lens. `embedded` suppresses only the hero (the hub drew the page
+ * header) and binds the feed's date window to the shared week (W4); every
+ * facade call, every state machine and the whole composer are identical.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_attendance_flow/js/pbaf_icons";
+import { addDays } from "@pb_wf_kit/js/wf_context_service";
 
 const MODEL = "pb.attendance.flow";
 
@@ -23,7 +31,20 @@ const KIND_META = {
 
 export class PbAttendanceFlow extends Component {
     static template = "pb_attendance_flow.PbAttendanceFlow";
-    static props = { action: { type: Object, optional: true }, "*": true };
+    static props = {
+        action: { type: Object, optional: true },
+        // mounted as a hub lens rather than as a standalone client action
+        embedded: { type: Boolean, optional: true },
+        // which of the internal views the lens opens on: board | import
+        initialView: { type: String, optional: true },
+        // host-supplied person door (the hub's drawer); absent => native form
+        onPerson: { type: Function, optional: true },
+        // host-supplied hook fired after a correction is filed/applied, so the
+        // hub can refresh its ribbon without knowing anything about this state
+        onChanged: { type: Function, optional: true },
+        "*": true,
+    };
+    static defaultProps = { embedded: false, initialView: "board" };
 
     setup() {
         this.orm = useService("orm");
@@ -31,10 +52,26 @@ export class PbAttendanceFlow extends Component {
         this.action = useService("action");
         this.ic = ic;
         this.KIND_META = KIND_META;
+
+        // Embedded: department + week come from the shared context (W4). The
+        // standalone action keeps its own 14-day look-back — passing no window
+        // leaves the facade on its historical default, so nothing about the
+        // retired-but-still-live cockpit changes.
+        this.ctxSvc = useService("wf_context");
+        this.wf = useState(this.ctxSvc.state);
+        if (this.props.embedded) {
+            // onChange (not a render dep) because a context change must REFETCH,
+            // not merely re-render; unsubscribed on unmount so a lens switch
+            // cannot leave a callback writing into a dead component.
+            const off = this.ctxSvc.onChange(() => this.load());
+            onWillUnmount(off);
+        }
+
         this.state = useState({
             loaded: false,
             busy: false,
-            view: "board",              // board | composer | import
+            // board | composer | import
+            view: this.props.initialView === "import" ? "import" : "board",
             data: null,
             activeKind: "all",
             refuseOpen: false,
@@ -59,10 +96,20 @@ export class PbAttendanceFlow extends Component {
         };
     }
 
+    /** [date_from, date_to, department_id] — the shared week when embedded. */
+    _windowArgs() {
+        if (!this.props.embedded) { return [false, false, false]; }
+        // addDays is the kit's LOCAL-date helper — never rebuild week maths with
+        // toISOString(), it slips a day in every non-UTC timezone.
+        return [this.wf.weekStart, addDays(this.wf.weekStart, 6),
+                this.wf.departmentId || false];
+    }
+
     async load() {
         try {
-            this.state.data = await this.orm.call(MODEL, "get_control_data", []);
+            this.state.data = await this.orm.call(MODEL, "get_control_data", this._windowArgs());
             this.state.loaded = true;
+            if (this.props.onChanged) { this.props.onChanged(this.state.data); }
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
             this.state.loaded = true;
@@ -130,6 +177,12 @@ export class PbAttendanceFlow extends Component {
         this.state.refuseNote = "";
         this.state.view = "composer";
     }
+    /** The view a lens/cockpit returns to when an internal flow is closed. */
+    get rootView() {
+        return this.props.embedded && this.props.initialView === "import" ? "import" : "board";
+    }
+    get canLeaveImport() { return this.rootView !== "import"; }
+
     backToBoard() {
         this.state.view = "board";
         this.state.composer = null;
@@ -300,16 +353,33 @@ export class PbAttendanceFlow extends Component {
         return !!(m.employee && m.date && m.check_in);
     }
     backToMap() { this.state.imp.step = "map"; }
-    backFromImport() { this.state.view = "board"; this.load(); }
+    backFromImport() {
+        // In the hub's Import lens there is no board to go back TO — the lens
+        // IS the importer — so "done" resets the stepper instead of navigating.
+        if (!this.canLeaveImport) {
+            this.state.imp = this._blankImport();
+            return;
+        }
+        this.state.view = "board";
+        this.load();
+    }
 
-    // deep-link an exception's employee to their record (native fallback)
+    // Every record is a door (W5). Inside the Time hub the door is the person
+    // drawer — the host passes `onPerson`, nothing navigates, context is kept.
+    // Standalone there is no drawer, so we fall back to the native form; as a
+    // DIALOG, never target:"current", which would strand the officer with no
+    // way back to the queue.
     openEmployee(employeeId) {
+        if (this.props.onPerson) {
+            this.props.onPerson(employeeId);
+            return;
+        }
         this.action.doAction({
             type: "ir.actions.act_window",
             res_model: "hr.employee",
             res_id: employeeId,
             views: [[false, "form"]],
-            target: "current",
+            target: "new",
         });
     }
 
