@@ -47,6 +47,15 @@
     }
     .pbth-ctx { margin-left: auto; }
 
+    // ------------------------------------------------- embedded (P3a, W17)
+    // The hub is already a flex column with `.pbth-body` as its only scroller,
+    // so hosting it needs no structural change — the head just loses its title
+    // row, and the lens tabs move up to where the title used to be.
+    &.pbth--embedded {
+        .pbth-head { padding-top: 12px; }
+        .pbth-lens { margin-top: 0; }
+    }
+
     // -------------------------------------------------------- lens tabs
     .pbth-lens {
         display: flex;

@@ -16,7 +16,17 @@ const MODEL = "pb.timeoff";
 
 export class PbTimeoff extends Component {
     static template = "pb_timeoff.PbTimeoff";
-    static props = { action: { type: Object, optional: true }, "*": true };
+    static props = {
+        action: { type: Object, optional: true },
+        // W17 (P3a): Mission Control owns the page identity, so `embedded`
+        // suppresses the hero's eyebrow/title/subtitle and nothing else. The
+        // MONTH NAV STAYS (P3a §3.4): the month is this cockpit's own dimension,
+        // not a duplicate of the shared context's week — the shell has no
+        // opinion about it and taking it away would make the board unusable.
+        embedded: { type: Boolean, optional: true },
+        "*": true,
+    };
+    static defaultProps = { embedded: false };
 
     setup() {
         this.orm = useService("orm");

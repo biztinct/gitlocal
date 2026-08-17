@@ -17,6 +17,35 @@
     color: var(--pbim-text, #1b1733);
     font-size: 13.5px;
 
+    // ---------- embedded (P3a, W17/W20) ----------
+    // Standalone, THIS ELEMENT is the scroller: the hero is `position: sticky;
+    // top: 0` against it and the roster rail is `position: sticky; top: 92px`,
+    // i.e. calibrated to clear that sticky hero. Under Mission Control the root
+    // is a flex child of a canvas that does not scroll, so both stickies would
+    // resolve against a box that never moves and hang in mid-air (P2's warning).
+    // Embedded, the scroller moves INSIDE: the hero becomes a static flex header
+    // and `.pbteam-body` becomes the scrollport, so the roster rail sticks to
+    // the top of the content it belongs to — hence `top: 0`, not 92px.
+    &.pbteam--embedded {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+
+        .pbteam-hero { position: static; flex: 0 0 auto; padding: 14px 26px; }
+        .pbteam-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            min-width: 0;       // belt and braces (W20): never overlap the host
+            overflow: auto;
+        }
+        .pbteam-roster { top: 0; }
+        // The no-team / loading branches are the only child in their branch, so
+        // they take the box themselves rather than sitting inside the body.
+        .pbteam-load,
+        .pbteam-empty--noteam { flex: 1 1 auto; min-height: 0; }
+    }
+
     // ---------- loading ----------
     .pbteam-load {
         display: flex; flex-direction: column; align-items: center; justify-content: center;

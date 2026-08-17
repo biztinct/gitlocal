@@ -4,11 +4,14 @@
   <t t-name="pb_time_hub.PbTimeHub">
     <!-- position:relative — the WfDrawer scrim is absolute and belongs to THIS
          surface, not the viewport (it must not cover the rail or breadcrumb). -->
-    <div class="pbim pbth">
+    <div class="pbim pbth" t-att-class="{ 'pbth--embedded': props.embedded }">
 
       <!-- ================= header: title + shared context bar ============= -->
       <div class="pbth-head">
-        <div class="pbth-row">
+        <!-- W17: inside Mission Control the shell already carries the title and
+             ONE WfContextBar; a second bar here would be a second opinion about
+             the same context (W4). The lens tabs and the ribbon stay. -->
+        <div class="pbth-row" t-if="!props.embedded">
           <h1 class="pbth-title">Time</h1>
           <WfContextBar className="'pbth-ctx'"
                         features="{ department: true, week: true, person: true, search: true }"/>

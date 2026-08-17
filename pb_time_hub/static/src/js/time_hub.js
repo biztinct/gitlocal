@@ -37,7 +37,19 @@ export class PbTimeHub extends Component {
         WfContextBar, WfDrawer, WfPersonWeek, WfRibbon,
         TimelineLens, AttendanceWeekGrid, PbAttendanceFlow,
     };
-    static props = { action: { type: Object, optional: true }, "*": true };
+    static props = {
+        // Also the ARRIVAL channel when the hub is embedded: Mission Control
+        // hands it a synthetic `{ context: { pb_lens, pb_focus } }` rather than
+        // inventing a second protocol, so `_arrival()` below is unchanged and
+        // the deep-link contract (W26) has exactly one implementation.
+        action: { type: Object, optional: true },
+        // W17 (P3a): the shell owns the page title and the shared context bar.
+        // `embedded` suppresses those two ONLY — the lens tabs, the exception
+        // ribbon, the person drawer and every facade call stay put.
+        embedded: { type: Boolean, optional: true },
+        "*": true,
+    };
+    static defaultProps = { embedded: false };
 
     setup() {
         this.orm = useService("orm");

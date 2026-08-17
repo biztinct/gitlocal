@@ -4,11 +4,14 @@
   <t t-name="pb_today.PbToday">
     <!-- position:relative — the WfDrawer scrim is absolute and belongs to THIS
          surface, not the viewport (it must not cover the rail or breadcrumb). -->
-    <div class="pbim pbtd">
+    <div class="pbim pbtd" t-att-class="{ 'pbtd--embedded': props.embedded }">
 
       <!-- ================= header: title + shared context bar ============= -->
       <div class="pbtd-head">
-        <div class="pbtd-row">
+        <!-- W17: `embedded` suppresses ONLY the chrome Mission Control already
+             owns — this title row and its context bar. The meta row, the tile
+             strip and every door below are untouched. -->
+        <div class="pbtd-row" t-if="!props.embedded">
           <h1 class="pbtd-title">Today</h1>
           <!-- §2.3: Today is the `day` segment's first and only consumer. No
                week nav and no person typeahead — a day board does not page

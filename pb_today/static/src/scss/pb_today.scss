@@ -175,6 +175,15 @@
                     .pbtd-tile__l i { background: var(--pbim-slate, #64748B); } }
     }
 
+    // ------------------------------------------------- embedded (P3a, W17)
+    // The board was ALREADY host-shaped: a flex column with `height: 100%` and
+    // `.pbtd-body` as the only scroller, so it needs no structural change to sit
+    // in Mission Control's canvas — only the head loses its title row, and the
+    // padding tightens because the shell's command bar is directly above it.
+    &.pbtd--embedded {
+        .pbtd-head { padding-top: 12px; }
+    }
+
     // --------------------------------------------------------------- body
     .pbtd-body {
         flex: 1;

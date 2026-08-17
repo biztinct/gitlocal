@@ -34,6 +34,30 @@
 
     .pbot-wrap { padding: 22px 26px 60px; max-width: 1320px; margin: 0 auto; }
 
+    // ------------------------------------------------- embedded (P3a, W17/W20)
+    // Standalone, THIS ELEMENT is the scroller and the Bonus view's filter rail
+    // (`position: sticky; top: 8px`) is calibrated to it. Under Mission Control
+    // the root is a flex child of the canvas, so the scroller moves INSIDE:
+    // `.pbot-wrap` — which both views use as their outermost box — becomes the
+    // scrollport, and the rail sticks against it exactly as before.
+    &.pbot--embedded {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+
+        .pbot-wrap {
+            flex: 1 1 auto;
+            min-height: 0;
+            min-width: 0;       // belt and braces (W20): never overlap the host
+            overflow: auto;
+            padding-top: 16px;
+        }
+        // Title block gone: keep the Bonus Hours door on the right rather than
+        // letting space-between drop it against the left edge.
+        .pbot-hero { justify-content: flex-end; margin-bottom: 14px; }
+    }
+
     // ---------------------------------------------------------- hero
     .pbot-hero { display: flex; align-items: flex-end; justify-content: space-between;
         gap: 18px; margin-bottom: 18px;

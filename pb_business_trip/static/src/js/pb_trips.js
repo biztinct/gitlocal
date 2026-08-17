@@ -22,7 +22,16 @@ const ADVANCE = {
 
 export class PbTrips extends Component {
     static template = "pb_business_trip.PbTrips";
-    static props = { action: { type: Object, optional: true }, "*": true };
+    static props = {
+        action: { type: Object, optional: true },
+        // W17 (P3a): Mission Control owns the page identity, so `embedded`
+        // suppresses the toolbar's title only. `get_pipeline_data()` takes no
+        // scope arguments at all, so there is nothing here for the shared
+        // context to drive yet — binding it is explicitly out of P3a's scope.
+        embedded: { type: Boolean, optional: true },
+        "*": true,
+    };
+    static defaultProps = { embedded: false };
 
     setup() {
         this.orm = useService("orm");

@@ -43,7 +43,20 @@ const STATES = ["on_shift", "late", "not_started", "checked_out", "on_leave"];
 export class PbToday extends Component {
     static template = "pb_today.PbToday";
     static components = { WfContextBar, WfDrawer, WfPersonWeek, DriverMap };
-    static props = { action: { type: Object, optional: true }, "*": true };
+    static props = {
+        action: { type: Object, optional: true },
+        // W17 (P3a): Mission Control owns the page title and the shared context
+        // bar, so `embedded` suppresses those two and NOTHING else — every
+        // facade call, every tile and every door stay exactly as they are.
+        embedded: { type: Boolean, optional: true },
+        // P3a §3.5: inside the shell the Time hand-off is a LENS SWITCH, not a
+        // doAction to a separate action. The host passes a stable callback;
+        // standalone it is absent and the old doAction path runs unchanged.
+        // Called from a CLICK handler only (W21/W21.1).
+        onHandOff: { type: Function, optional: true },
+        "*": true,
+    };
+    static defaultProps = { embedded: false };
 
     setup() {
         this.orm = useService("orm");
@@ -335,12 +348,20 @@ export class PbToday extends Component {
         // to that day's week (wf_context.set's rule) — exactly the week the
         // Time hub should open on.
         this.ctxSvc.set({ personId: row.id, day });
+        // The W26 arrival payload, written ONCE and used by both routes so the
+        // shell and the standalone board cannot drift: `pb_lens` names the lens,
+        // `pb_focus: "queue"` says the pinned person is a FILTER over there, not
+        // a drawer to pop on top of the queue we just sent the officer to read.
+        const arrival = { pb_lens: "exceptions", pb_focus: "queue" };
+        if (this.props.onHandOff) {
+            // Embedded (P3a §3.5): Time is a sibling lens, so leaving the board
+            // must not leave the workspace. This runs in a click handler, so the
+            // host state write is safe (W21.1 — mount hooks READ, handlers WRITE).
+            this.props.onHandOff("time", arrival);
+            return;
+        }
         this.actionService.doAction("pb_time_hub.action_pb_time_hub", {
-            additionalContext: {
-                pb_lens: "exceptions",
-                // the pinned person is a FILTER over there, not a drawer to pop
-                pb_focus: "queue",
-            },
+            additionalContext: arrival,
         });
     }
 
