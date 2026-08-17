@@ -87,6 +87,10 @@ export class PbSchedule extends Component {
             personLoading: false,
             drawerHidden: !!this.ctxSvc.state.personId,
             publishing: false,
+            // budget dialog (WP-3)
+            budgetOpen: false,
+            budgetValue: "",
+            budgetSaving: false,
         });
 
         // Stable handler identities — a fresh inline arrow makes OWL treat the
@@ -204,6 +208,118 @@ export class PbSchedule extends Component {
     }
 
     dayLabel(day) { return `${day.label} ${day.day_num} ${day.month}`; }
+
+    // ================================================ WP-3: cost & budget
+    get stats() { return (this.d && this.d.stats) || null; }
+
+    /** Day stats keyed by ISO date, so a header cell is an O(1) lookup. */
+    get statsByDay() {
+        const out = {};
+        for (const s of (this.stats && this.stats.days) || []) { out[s.date] = s; }
+        return out;
+    }
+
+    /**
+     * Money, COMPACT. A Vietnamese week of 200 people is nine digits, and nine
+     * digits in a 112-pixel day column is a column of "…". `Intl` does the
+     * locale work; the currency code comes from the company, never guessed.
+     */
+    money(v, compact = true) {
+        const st = this.stats;
+        if (v === null || v === undefined) { return "—"; }
+        const code = (st && st.currency && st.currency.name) || "USD";
+        try {
+            return new Intl.NumberFormat(undefined, {
+                style: "currency",
+                currency: code,
+                notation: compact ? "compact" : "standard",
+                maximumFractionDigits: compact ? 1 : 0,
+            }).format(v);
+        } catch {
+            // an unknown/invalid ISO code must not take the strip down
+            return `${Math.round(v).toLocaleString()} ${code}`;
+        }
+    }
+
+    get budget() { return (this.stats && this.stats.budget) || null; }
+    get canEditBudget() { return !!(this.stats && this.stats.can_edit_budget); }
+
+    /** 0–100 of the bar; the LABEL still reports the true percentage. */
+    get budgetPct() {
+        const b = this.budget;
+        if (!b || !b.amount) { return 0; }
+        return Math.max(0, Math.min(100, (this.stats.total_cost / b.amount) * 100));
+    }
+
+    get budgetRatio() {
+        const b = this.budget;
+        if (!b || !b.amount) { return 0; }
+        return (this.stats.total_cost / b.amount) * 100;
+    }
+
+    /** under budget green · ≥90% amber · over rose (W1 semantics). */
+    get budgetTone() {
+        const r = this.budgetRatio;
+        if (r > 100) { return "over"; }
+        if (r >= 90) { return "near"; }
+        return "under";
+    }
+
+    /** True when a fortnight is being compared against fewer weeks of money. */
+    get budgetPartial() {
+        const b = this.budget;
+        return !!(b && b.weeks_budgeted < b.weeks_in_span);
+    }
+
+    openBudget() {
+        if (!this.canEditBudget) { return; }
+        const b = this.budget;
+        this.state.budgetValue = b && b.amount ? String(b.amount) : "";
+        this.state.budgetOpen = true;
+    }
+
+    closeBudget() { this.state.budgetOpen = false; }
+
+    onBudgetInput(ev) { this.state.budgetValue = ev.target.value; }
+
+    async saveBudget() {
+        if (this.state.budgetSaving) { return; }
+        const raw = parseFloat(String(this.state.budgetValue).replace(/[^\d.-]/g, ""));
+        if (!Number.isFinite(raw) || raw < 0) {
+            this.notif.add(_t("Enter a positive amount."), { type: "warning" });
+            return;
+        }
+        this.state.budgetSaving = true;
+        try {
+            await this.orm.call(MODEL, "set_budget", [
+                this.wf.weekStart, this.wf.departmentId || false, raw,
+            ]);
+            this.state.budgetOpen = false;
+            await this.load();
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message)
+                || _t("Could not save the budget."), { type: "danger" });
+        } finally {
+            this.state.budgetSaving = false;
+        }
+    }
+
+    async clearBudget() {
+        if (this.state.budgetSaving) { return; }
+        this.state.budgetSaving = true;
+        try {
+            await this.orm.call(MODEL, "clear_budget", [
+                this.wf.weekStart, this.wf.departmentId || false,
+            ]);
+            this.state.budgetOpen = false;
+            await this.load();
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message)
+                || _t("Could not remove the budget."), { type: "danger" });
+        } finally {
+            this.state.budgetSaving = false;
+        }
+    }
 
     // ------------------------------------------------------ quick create
     openCreate(employeeId, day) {
