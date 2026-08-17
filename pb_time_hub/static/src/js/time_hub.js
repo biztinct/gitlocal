@@ -24,14 +24,18 @@ import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 import { WfRibbon } from "@pb_wf_kit/js/wf_ribbon";
 import { AttendanceWeekGrid } from "@pb_hr_workforce/js/attendance_weekgrid";
 import { PbAttendanceFlow } from "@pb_attendance_flow/js/pb_attendance_flow";
+import { TimelineLens } from "./timeline_lens";
 
 const MODEL = "pb.time.hub";
 const LENS_KEY = "pbth.lens.v1";
-const LENSES = ["grid", "exceptions", "import"];
+const LENSES = ["timeline", "grid", "exceptions", "import"];
 
 export class PbTimeHub extends Component {
     static template = "pb_time_hub.PbTimeHub";
-    static components = { WfContextBar, WfDrawer, WfRibbon, AttendanceWeekGrid, PbAttendanceFlow };
+    static components = {
+        WfContextBar, WfDrawer, WfRibbon,
+        TimelineLens, AttendanceWeekGrid, PbAttendanceFlow,
+    };
     static props = { action: { type: Object, optional: true }, "*": true };
 
     setup() {
@@ -86,6 +90,7 @@ export class PbTimeHub extends Component {
     // ------------------------------------------------------------ lenses
     get lenses() {
         return [
+            { key: "timeline", label: _t("Timeline"), icon: "activity" },
             { key: "grid", label: _t("Week Grid"), icon: "table" },
             { key: "exceptions", label: _t("Exceptions"), icon: "alert" },
             { key: "import", label: _t("Import"), icon: "upload" },

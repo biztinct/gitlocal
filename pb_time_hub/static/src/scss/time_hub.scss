@@ -297,3 +297,213 @@
 @keyframes pbth-spin {
     to { transform: rotate(360deg); }
 }
+
+// =====================================================================
+//  Timeline lens — the rebuilt Timecards read-model.
+//  Flat fills only (W3): the legacy screen's thirteen gradients and its
+//  2013 palette do not come across. Bar GEOMETRY is reused from the facade,
+//  the ink is pbim's.
+// =====================================================================
+.pbim.pbth .pbtl {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    // ------------------------------------------------------------ states
+    .pbtl-load,
+    .pbtl-empty {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 40px 0;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbtl-empty {
+        flex-direction: column;
+        gap: 6px;
+        text-align: center;
+        svg { color: var(--pbim-primary, #5A4BB0); }
+        .t { font-size: 14px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+        .s { font-size: 12px; }
+    }
+    .pbtl-load svg { animation: pbth-spin 1s linear infinite; }
+
+    // ------------------------------------------------------------ legend
+    .pbtl-legend {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbtl-axis {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-variant-numeric: tabular-nums;
+    }
+    .pbtl-key {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--pbim-text, #1B1733);
+
+        i {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            display: inline-block;
+            background: var(--pbim-slate-soft, #EEF1F5);
+            border: 1px solid var(--pbim-slate, #64748B);
+        }
+        b {
+            font-weight: 700;
+            color: var(--pbim-muted, #64748B);
+            font-variant-numeric: tabular-nums;
+        }
+
+        &--indigo i { background: var(--pbim-soft, #EDEAF8); border-color: var(--pbim-primary, #5A4BB0); }
+        &--amber  i { background: var(--pbim-amber-soft, #FEF3C7); border-color: var(--pbim-amber, #D97706); }
+        &--rose   i { background: var(--pbim-rose-soft, #FCE7EF); border-color: var(--pbim-rose, #DC2668); }
+        &--cyan   i { background: var(--pbim-cyan-soft, #E5EDFD); border-color: var(--pbim-cyan, #2563EB); }
+        &--trip   i { background: var(--pbim-soft, #EDEAF8); border-color: var(--pbim-primary, #5A4BB0); }
+    }
+
+    // ------------------------------------------------------------- table
+    .pbtl-scroll {
+        overflow: auto;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+    }
+    .pbtl-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11.5px;
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-size: 9.5px;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--pbim-muted, #64748B);
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+            background: var(--pbim-surface, #fff);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        td {
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+            vertical-align: middle;
+        }
+        tbody tr:last-child td { border-bottom: 0; }
+        tbody tr:hover td { background: var(--pbim-line-2, #F1F5F9); }
+
+        th.is-we, td.is-we { background: var(--pbim-slate-soft, #EEF1F5); }
+        th.is-today { color: var(--pbim-primary, #5A4BB0); }
+        td.is-today { box-shadow: inset 2px 0 0 var(--pbim-primary, #5A4BB0); }
+
+        .pbtl-th-emp { min-width: 190px; }
+        .pbtl-th-n { text-align: right; }
+    }
+
+    .pbtl-emp { min-width: 190px; }
+    .pbtl-who {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        max-width: 220px;
+
+        &:hover .n { color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbtl-av {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex: none;
+        background: var(--pbim-soft, #EDEAF8);
+    }
+    .pbtl-who__txt {
+        min-width: 0;
+        .n {
+            display: block;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .s {
+            display: block;
+            font-size: 10px;
+            color: var(--pbim-muted, #64748B);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    // -------------------------------------------------------- hour track
+    .pbtl-track {
+        position: relative;
+        min-width: 92px;
+        height: 20px;
+        border-radius: 6px;
+        background: var(--pbim-line-2, #F1F5F9);
+        overflow: hidden;
+    }
+    .pbtl-bar {
+        position: absolute;
+        top: 2px;
+        bottom: 2px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 3px;
+        border: 1px solid transparent;
+
+        svg { width: 11px; height: 11px; }
+
+        &--indigo { background: var(--pbim-soft, #EDEAF8); border-color: var(--pbim-primary, #5A4BB0); color: var(--pbim-primary, #5A4BB0); }
+        &--amber  { background: var(--pbim-amber-soft, #FEF3C7); border-color: var(--pbim-amber, #D97706); color: var(--pbim-amber, #D97706); }
+        &--rose   { background: var(--pbim-rose-soft, #FCE7EF); border-color: var(--pbim-rose, #DC2668); color: var(--pbim-rose, #DC2668); }
+        &--cyan   { background: var(--pbim-cyan-soft, #E5EDFD); border-color: var(--pbim-cyan, #2563EB); color: var(--pbim-cyan, #2563EB); }
+        &--trip   { background: var(--pbim-soft, #EDEAF8); border-color: var(--pbim-primary, #5A4BB0); color: var(--pbim-primary, #5A4BB0); }
+
+        // an open punch: still running, so the edge is emphasised
+        &.is-live { border-width: 2px; }
+    }
+    .pbtl-hrs {
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 9.5px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        font-variant-numeric: tabular-nums;
+        pointer-events: none;
+    }
+
+    .pbtl-n {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        &--tot { font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    }
+}

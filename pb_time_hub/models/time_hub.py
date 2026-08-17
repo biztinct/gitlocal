@@ -63,6 +63,22 @@ _OT_TONE = {
 
 _PLANNED_STATES = ('published', 'completed')
 
+# Timeline bar kind → pbim semantic tone. The legacy Timecards facade ships its
+# own 2013-era hex palette (#e74c3c, #9b59b6 …) in `ot_legend`; we keep its
+# GEOMETRY (bar_left / bar_width percentages are maths, not chrome) and throw
+# the colours away — W1 allows no palette but pbim's.
+_BAR_TONE = {
+    'regular': 'indigo',
+    'overtime': 'amber',
+    'weekend': 'rose',
+    'holiday': 'cyan',
+    'weekday': 'amber',
+    'night': 'indigo',
+    'extended': 'amber',
+    'trip': 'trip',
+}
+_TIMELINE_MAX_ROWS = 120   # perf budget for one dept-week of hour-axis bars
+
 
 class PbTimeHub(models.AbstractModel):
     _name = 'pb.time.hub'
@@ -141,6 +157,72 @@ class PbTimeHub(models.AbstractModel):
             'ribbon': {'tone': tone, 'text': text},
             # per-lens badge counts; a lens absent from this dict shows no badge
             'lens_counts': {'exceptions': total},
+        }
+
+    # ========================================================== timeline
+    @api.model
+    def get_timeline(self, department_id=False, week_start=False, search=False):
+        """Gated, company-scoped read-model for the Timeline lens.
+
+        The day-bar arithmetic (OT classification, night split, the trip overlay
+        contributed by pb_business_trip's `_inherit`) already exists in
+        ``hr.attendance.timecard`` and is worth keeping — but that facade is
+        ungated, is not company-scoped, and caps itself at 50 employees chosen
+        by a plain name-ordered search. So we resolve the cohort ourselves,
+        company-scoped and department/search-filtered, and hand it in as an
+        explicit id list; the facade's `browse()` accepts one, so no legacy code
+        has to change. Reads are sudo, exactly as the Week-Grid facade does, for
+        the same reason: the officer record rules on hr.attendance are own-only,
+        so a plain read would show an officer blank rows for their own team.
+        """
+        self._require_officer()
+        df = self._monday(week_start)
+
+        domain = [('active', '=', True), ('company_id', 'in', self._company_ids())]
+        if department_id:
+            domain.append(('department_id', '=', int(department_id)))
+        if search:
+            domain.append(('name', 'ilike', search))
+        emps = self.env['hr.employee'].sudo().search(
+            domain, order='name', limit=_TIMELINE_MAX_ROWS + 1)
+
+        truncated = 0
+        if len(emps) > _TIMELINE_MAX_ROWS:
+            truncated = len(emps) - _TIMELINE_MAX_ROWS
+            emps = emps[:_TIMELINE_MAX_ROWS]
+
+        if not emps:
+            dt = df + timedelta(days=6)
+            return {
+                'week_start': df.isoformat(), 'week_end': dt.isoformat(),
+                'days': [], 'employees': [], 'legend': [], 'truncated': 0,
+            }
+
+        data = self.env['hr.attendance.timecard'].sudo().get_timecard_data(
+            employee_id=emps.ids, week_start_str=df.isoformat())
+
+        # Re-tint: drop the legacy hexes, hand the lens pbim TONES instead.
+        legend = []
+        for entry in data.get('ot_legend') or []:
+            legend.append({
+                'type': entry.get('type'),
+                'name': entry.get('name'),
+                'rate': entry.get('rate'),
+                'tone': _BAR_TONE.get(entry.get('type'), 'amber'),
+            })
+        for emp in data.get('employees') or []:
+            for card in (emp.get('days') or {}).values():
+                for bar in card.get('entries') or []:
+                    bar['tone'] = _BAR_TONE.get(bar.get('bar_type'), 'indigo')
+
+        return {
+            'week_start': data.get('week_start'),
+            'week_end': data.get('week_end'),
+            'days': data.get('days') or [],
+            'employees': data.get('employees') or [],
+            'hour_labels': data.get('hour_labels') or [],
+            'legend': legend,
+            'truncated': truncated,
         }
 
     # ====================================================== person drawer
