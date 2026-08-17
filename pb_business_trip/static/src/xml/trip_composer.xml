@@ -22,12 +22,12 @@
       <div class="pbtr-receipt__has" t-if="att">
         <img class="pbtr-receipt__thumb" t-if="!isPdf" t-att-src="thumbUrl" alt=""/>
         <span class="pbtr-receipt__pdf" t-if="isPdf">
-          <i class="fa fa-file-pdf-o"/>
+          <t t-out="ic('fileText', 18)"/>
         </span>
         <span class="pbtr-receipt__name" t-esc="att.name"/>
         <button class="pbtr-receipt__x" t-if="!readonly" type="button"
                 t-on-click.stop="() => this.clear()" title="Remove receipt">
-          <i class="fa fa-times"/>
+          <t t-out="ic('x', 14)"/>
         </button>
       </div>
 
@@ -38,10 +38,10 @@
            t-on-dragover="onDragOver" t-on-dragleave="onDragLeave" t-on-drop="onDrop"
            t-on-click="() => this.browse()">
         <t t-if="state.busy">
-          <i class="fa fa-circle-o-notch fa-spin"/> <span>Uploading…</span>
+          <span class="pbtr-receipt__spin" t-out="ic('loader', 14)"/> <span>Uploading…</span>
         </t>
         <t t-else="">
-          <i class="fa fa-cloud-upload"/>
+          <t t-out="ic('upload', 14)"/>
           <span class="pbtr-receipt__cta" t-if="!readonly">Drop receipt or click</span>
           <span class="pbtr-receipt__cta" t-else="">No receipt</span>
         </t>

@@ -17,6 +17,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { formatCurrency } from "@web/core/currency";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
+import { ic } from "@pb_import_kit/js/import_icons";
 
 const MAX_BYTES = 10 * 1024 * 1024;
 const OK_MIME = /^(image\/(png|jpe?g)|application\/pdf)$/i;
@@ -57,6 +58,9 @@ export class ReceiptDrop extends Component {
         this.fileRef = useRef("file");
         this.state = useState({ over: false, busy: false });
     }
+
+    // Lucide icons for the template (W2 — shared pb_import_kit registry only).
+    ic(n, s = 14) { return ic(n, s); }
 
     // current attachment value → [id, name] | false
     get att() {

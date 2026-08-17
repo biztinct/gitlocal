@@ -7,7 +7,7 @@ class AttendanceWeekEntryTrip(models.TransientModel):
     """Virtual trip-presence overlay for the Weekly Entry grid (C18.4).
 
     Trip days arrive on the row as ``flags.trip_days=[iso,…]`` (the grid renders
-    a violet BT chip and locks the REG cell) and a REG write on a trip day is
+    an indigo BT chip and locks the REG cell) and a REG write on a trip day is
     refused SERVER-SIDE — trip presence is system-derived, never hand-entered.
     """
     _inherit = 'hr.attendance.weekentry'
@@ -29,12 +29,12 @@ class AttendanceWeekEntryTrip(models.TransientModel):
                 continue
             flags = r.setdefault('flags', {})
             flags['trip_days'] = sorted(days)
-            # violet "BT" chip on each trip day — the generic WeekGrid renders
+            # indigo "BT" chip on each trip day — the generic WeekGrid renders
             # a consumer-supplied day badge from flags.day_badges (C18.1: the
             # engine stays product-neutral, the trip meaning lives here).
             badges = flags.setdefault('day_badges', {})
             for iso in days:
-                badges[iso] = {'label': _('BT'), 'color': '#7c3aed',
+                badges[iso] = {'label': _('BT'), 'color': '#5A4BB0',
                                'title': badge_title}
                 cell = (r.get('cells') or {}).get(iso)
                 reg = (cell or {}).get('measures', {}).get('reg') if cell else None
