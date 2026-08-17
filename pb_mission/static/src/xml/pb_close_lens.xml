@@ -229,7 +229,7 @@
       <!-- ======================= approve-as-is dialog ======================= -->
       <div class="pbmc-scrim" t-if="state.reviewFor"
            t-on-click="() => this.cancelReview()">
-        <div class="pbmc-modal" t-on-click.stop="">
+        <div class="pbmc-modal" t-on-click.stop="() => {}">
           <h5>Approve as-is</h5>
           <p class="pbmc-modal__p">
             <b t-esc="state.reviewFor.name"/> ·
@@ -254,7 +254,7 @@
       <!-- ============================ reopen dialog ============================ -->
       <div class="pbmc-scrim" t-if="state.reopenOpen"
            t-on-click="() => this.cancelReopen()">
-        <div class="pbmc-modal" t-on-click.stop="">
+        <div class="pbmc-modal" t-on-click.stop="() => {}">
           <h5>Reopen <t t-esc="state.reopenOpen.label"/></h5>
           <p class="pbmc-modal__p">
             Reopening a closed day is recorded against it — this reason is the

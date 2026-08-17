@@ -77,6 +77,11 @@ export class PbCloseLens extends Component {
         // week change made anywhere else in the workspace (W4/W16).
         this.wf = useState(this.ctxSvc.state);
 
+        // Memo for the bar scale — see `_barPeak`. Plain instance fields, not
+        // state: they are derived from state and nothing renders off them.
+        this._peakFor = null;
+        this._peak = 1;
+
         this.state = useState({
             loading: true,
             failed: "",
@@ -177,11 +182,26 @@ export class PbCloseLens extends Component {
         return (this.d.flagged_total || 0) - (this.d.flagged_shown || 0);
     }
 
-    /** Scheduled / actual bar widths in px. Geometry, not chrome. */
+    /**
+     * Scheduled / actual bar widths in px. Geometry, not chrome (W3's
+     * distinction — these are data marks, so they may carry a scale).
+     *
+     * The peak is memoised against the payload that produced it: the template
+     * calls this TWICE PER ROW, and recomputing a max over 200 rows each time
+     * is 80 000 comparisons per render for a number that cannot change between
+     * two of them.
+     */
+    get _barPeak() {
+        if (this._peakFor !== this.state.data) {
+            this._peakFor = this.state.data;
+            this._peak = Math.max(
+                1, ...this.rows.map((r) => Math.max(r.sched || 0, r.actual || 0)));
+        }
+        return this._peak;
+    }
+
     barWidth(hours) {
-        const peak = Math.max(
-            1, ...this.rows.map((r) => Math.max(r.sched || 0, r.actual || 0)));
-        return Math.max(3, Math.round((BAR_MAX * (hours || 0)) / peak));
+        return Math.max(3, Math.round((BAR_MAX * (hours || 0)) / this._barPeak));
     }
 
     deltaTone(row) {
@@ -199,7 +219,10 @@ export class PbCloseLens extends Component {
         return "0.0";
     }
 
-    hours(v) { return (v || 0).toFixed(1); }
+    hours(v) {
+        return Number(v || 0).toLocaleString(undefined, {
+            minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
 
     money(v) {
         const n = Number(v || 0);
