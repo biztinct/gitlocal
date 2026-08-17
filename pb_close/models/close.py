@@ -313,7 +313,12 @@ class PbClose(models.AbstractModel):
                 # hundred Sundays into "auto-approved" and make the headline
                 # number meaningless; counting it flagged would make every
                 # weekend an exception.
-                if not day_shifts and not day_atts:
+                #
+                # A PENDING OVERTIME REQUEST is the exception to that: it says
+                # somebody claims to have worked, and a claim with neither a
+                # shift nor a punch behind it is the most anomalous row of the
+                # week — exactly the one a rest-day skip would have swallowed.
+                if not day_shifts and not day_atts and (emp.id, d) not in ot_pending:
                     continue
                 sched = round(sum(s.planned_hours or 0.0 for s in day_shifts), 2)
                 actual = round(sum(Grid._att_hours(a) for a in day_atts), 2)

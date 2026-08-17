@@ -113,6 +113,16 @@ class TestCloseBoard(CloseCase):
         req.action_approve()
         self.assertNotIn('ot_pending', self._flags(self._data(), self.emp))
 
+    def test_a_pending_ot_on_an_otherwise_empty_day_still_surfaces(self):
+        """The rest-day skip must not swallow the week's most anomalous row: an
+        overtime claim with neither a shift nor a punch behind it."""
+        req = self.OT.sudo().create({
+            'employee_id': self.emp.id, 'date': self.day2,
+            'overtime_type': 'weekday', 'planned_hours': 3.0,
+            'actual_hours': 3.0, 'reason': 'x', 'company_id': self.company.id})
+        req.action_submit()
+        self.assertIn('ot_pending', self._flags(self._data(), self.emp, self.day2))
+
     def test_a_validated_leave_day_is_excused_not_missing(self):
         """An approved absence IS the explanation. Flagging it would make every
         holiday an exception, which is how officers learn to ignore a board."""
