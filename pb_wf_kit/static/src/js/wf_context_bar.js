@@ -15,7 +15,7 @@ import { Component, useState, useRef, useEffect, onWillStart, onWillUnmount } fr
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
 import { ic } from "@pb_import_kit/js/import_icons";
-import { weekLabel } from "./wf_context_service";
+import { dayLabel, weekLabel } from "./wf_context_service";
 
 const PERSON_LIMIT = 8;
 const TYPEAHEAD_MS = 220;
@@ -79,10 +79,14 @@ export class WfContextBar extends Component {
             week: f.week !== false,
             person: f.person !== false,
             search: f.search === true,      // opt-IN: most surfaces have their own search
+            // opt-IN: only day-scoped surfaces (P1b's Today board, day lenses)
+            // want a focused day; a week grid would only be confused by it.
+            day: f.day === true,
         };
     }
 
     get weekLabel() { return weekLabel(this.ctx.weekStart); }
+    get dayLabel() { return dayLabel(this.ctx.day); }
 
     ic(n, s = 14) { return ic(n, s); }
 
@@ -125,6 +129,9 @@ export class WfContextBar extends Component {
     prevWeek() { this.ctxSvc.shiftWeek(-7); }
     nextWeek() { this.ctxSvc.shiftWeek(7); }
     goToday() { this.ctxSvc.today(); }
+
+    prevDay() { this.ctxSvc.shiftDay(-1); }
+    nextDay() { this.ctxSvc.shiftDay(1); }
 
     onPersonInput(ev) {
         this.state.personQuery = ev.target.value;

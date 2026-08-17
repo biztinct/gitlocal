@@ -57,9 +57,54 @@ export function weekLabel(startISO) {
         : `${mo(s)} ${s.getDate()} – ${mo(e)} ${e.getDate()}`;
 }
 
+/** "Mon Aug 11" — the day pill's label. */
+export function dayLabel(dayISO) {
+    return parseLocal(dayISO).toLocaleDateString("en-US", {
+        weekday: "short", month: "short", day: "numeric",
+    });
+}
+
+/** 0 = Monday … 6 = Sunday. The week is Monday-based everywhere in the kit. */
+export function weekdayIndex(dayISO) {
+    const wd = parseLocal(dayISO).getDay();     // 0 = Sunday
+    return wd === 0 ? 6 : wd - 1;
+}
+
+/**
+ * The `day` INVARIANT: `day` always sits inside `[weekStart, weekStart+6]`.
+ *
+ * Clamping keeps the WEEKDAY (mockup A's "‹ Wed 13 ›" stays a Wednesday when
+ * the officer pages to the next week), which is always possible because both
+ * ends are Monday-based — so this is a total function, never a fallback to
+ * weekStart. Exported because it is the piece worth unit-testing (T1).
+ */
+export function clampDayToWeek(dayISO, weekStartISO) {
+    return addDays(weekStartISO, weekdayIndex(dayISO));
+}
+
+/** Normalize an arbitrary day input to a local ISO date, or null when unusable. */
+export function normalizeDay(value) {
+    if (value instanceof Date) { return isoLocal(value); }
+    if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) { return null; }
+    const d = parseLocal(value);
+    // parseLocal rolls invalid components over (2026-02-31 → Mar 3); re-serialize
+    // so callers can only ever store a real calendar day.
+    return isoLocal(d);
+}
+
 // ------------------------------------------------------------------- defaults
 function defaults() {
-    return { departmentId: false, weekStart: monday(new Date()), personId: false, search: "" };
+    const now = new Date();
+    return {
+        departmentId: false,
+        weekStart: monday(now),
+        personId: false,
+        search: "",
+        // P1a: the Time hub's lenses (and P1b's Today board) need ONE focused
+        // day inside the context week — the week stays the canonical range and
+        // day-scoped lenses derive from this.
+        day: isoLocal(now),
+    };
 }
 
 function load() {
@@ -83,6 +128,12 @@ function load() {
     if (typeof raw.search === "string") {
         out.search = raw.search.slice(0, 128);
     }
+    // `day` is an additive field (no storage migration, W-key unchanged): a
+    // payload written by the P0 build simply has none, and the default stands.
+    const day = normalizeDay(raw.day);
+    if (day) { out.day = day; }
+    // restore the invariant even for a hand-edited payload
+    out.day = clampDayToWeek(out.day, out.weekStart);
     return out;
 }
 
@@ -107,6 +158,7 @@ export const wfContextService = {
                     weekStart: state.weekStart,
                     personId: state.personId,
                     search: state.search,
+                    day: state.day,
                 }));
             } catch { /* quota / private mode — context just stops surviving reloads */ }
         }
@@ -114,13 +166,39 @@ export const wfContextService = {
         return {
             state,
 
-            /** Merge a patch, normalize, persist, notify. Unknown keys are ignored. */
+            /**
+             * Merge a patch, normalize, persist, notify. Unknown keys are ignored.
+             *
+             * **W16: this is the ONLY write door.** `state` stays a plain exposed
+             * reactive because every consumer needs `useState(ctx.state)` to
+             * subscribe — but assigning to it directly (`ctx.state.weekStart = x`)
+             * skips normalization, the day invariant, persistence AND the
+             * onChange fan-out, so the other cockpits silently desync. Reviews
+             * and the T4 grep reject direct assignment.
+             *
+             * Reconciliation between `weekStart` and `day` (§2.3):
+             *   • weekStart in the patch wins → `day` is clamped into it;
+             *   • day alone → the week follows the day (weekStart = its Monday);
+             *   • neither → the stored invariant already holds.
+             */
             set(patch = {}) {
                 let changed = false;
                 for (const [k, v] of Object.entries(patch)) {
                     if (!(k in state)) { continue; }
-                    const val = k === "weekStart" && v ? monday(v) : v;
+                    let val = v;
+                    if (k === "weekStart" && v) { val = monday(v); }
+                    if (k === "day") {
+                        val = normalizeDay(v);
+                        if (!val) { continue; }     // junk day → keep the current one
+                    }
                     if (state[k] !== val) { state[k] = val; changed = true; }
+                }
+                if ("weekStart" in patch || !("day" in patch)) {
+                    const clamped = clampDayToWeek(state.day, state.weekStart);
+                    if (state.day !== clamped) { state.day = clamped; changed = true; }
+                } else if ("day" in patch) {
+                    const wk = monday(state.day);
+                    if (state.weekStart !== wk) { state.weekStart = wk; changed = true; }
                 }
                 if (!changed) { return false; }
                 persist();
@@ -140,7 +218,12 @@ export const wfContextService = {
 
             /** Week navigation helpers — every consumer shifts weeks identically. */
             shiftWeek(days) { return this.set({ weekStart: addDays(state.weekStart, days) }); },
-            today() { return this.set({ weekStart: monday(new Date()) }); },
+            /** Day navigation: stepping off either end drags the week with it. */
+            shiftDay(days) { return this.set({ day: addDays(state.day, days) }); },
+            today() {
+                const now = new Date();
+                return this.set({ weekStart: monday(now), day: isoLocal(now) });
+            },
 
             reset() { return this.set(defaults()); },
         };
