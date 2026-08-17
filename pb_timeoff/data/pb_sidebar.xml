@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
-    <!-- WORKFORCE › Leave (Leave Command Center — HR/officer persona). -->
+<odoo noupdate="0">
+    <!-- WORKFORCE › Leave (Leave Command Center — HR/officer persona).
+         noupdate="0": sidebar item records are program-managed (W8/W13); the
+         sequence collided with Timecards (30) until P0 moved it to 32. -->
     <record id="item_leave_center" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Leave</field>
         <field name="icon">calendar</field>
-        <field name="sequence">30</field>
+        <field name="sequence">32</field>
         <field name="action_xmlid">pb_timeoff.action_pb_timeoff</field>
         <field name="action_tag">pb_timeoff</field>
         <field name="match_action_tags">pb_timeoff</field>

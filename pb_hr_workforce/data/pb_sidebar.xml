@@ -22,7 +22,7 @@
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Overtime Desk</field>
         <field name="icon">zap</field>
-        <field name="sequence">37</field>
+        <field name="sequence">38</field>
         <field name="action_xmlid">pb_hr_workforce.action_pb_ot_desk</field>
         <field name="action_tag">pb_ot_desk</field>
         <field name="match_action_tags">pb_ot_desk</field>
