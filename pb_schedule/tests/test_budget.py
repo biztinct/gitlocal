@@ -56,6 +56,21 @@ class TestScheduleBudget(TransactionCase):
                     'department_id': self.dept.id,
                     'week_start': self.week, 'amount': 2000.0})
 
+    def test_the_unique_constraint_really_exists_in_postgres(self):
+        """W33 — Odoo 19 IGNORES `_sql_constraints = [...]` (one WARNING among
+        hundreds, then nothing), so a model-level assertion proves nothing about
+        the database. Read the catalogue."""
+        self.env.cr.execute("""
+            SELECT conname FROM pg_constraint
+             WHERE conrelid = 'pb_schedule_budget'::regclass
+               AND contype = 'u'
+        """)
+        names = {r[0] for r in self.env.cr.fetchall()}
+        self.assertTrue(
+            any('scope_week_uniq' in n for n in names),
+            'the uniqueness constraint is missing from PostgreSQL; found %s'
+            % (sorted(names) or 'none'))
+
     def test_two_company_wide_rows_are_refused_too(self):
         """W30 — the case the SQL constraint structurally cannot catch."""
         self.Budget.create({
