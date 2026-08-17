@@ -29,10 +29,13 @@
 import { Component, useState, useEffect, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
+import { isMacOS } from "@web/core/browser/feature_detection";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
+import { WfCommandPalette } from "@pb_wf_kit/js/wf_command_palette";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 import { WfPersonWeek } from "@pb_wf_kit/js/wf_person_week";
 import { WfDock } from "@pb_mission/js/pb_dock";
@@ -49,6 +52,40 @@ const LENS_KEY = "pbms.lens.v1";
 const PERSON_MODEL = "pb.time.hub";
 
 /**
+ * The ⌘K ACTION registry (§3.5) — the "verbs" third of the palette.
+ *
+ * Each entry names a lens plus ONE of two hand-off channels, and there is a
+ * hard rule about which: an action is listed here only where the target
+ * affordance ALREADY EXISTS. A palette entry that opens nothing is worse than
+ * no palette entry (W5, and W29's lesson about doors that can only error).
+ *
+ *   `arrival` — the W26 deep-link protocol (`pb_lens` / `pb_focus`), already
+ *               implemented by the Time hub. Nothing new is invented for it.
+ *   `cmd`     — the P3b `pb_cmd` protocol: a one-shot instruction handed to the
+ *               lens as a prop and consumed by nonce. Only four lenses
+ *               implement it, and a lens ignoring an unknown cmd is CORRECT.
+ */
+const PALETTE_ACTIONS = [
+    { id: "new_shift", lens: "schedule", cmd: "quick_create", icon: "plus",
+      label: _t("New shift"), sublabel: _t("Schedule") },
+    { id: "copy_week", lens: "schedule", cmd: "copy_week", icon: "copy",
+      label: _t("Copy week forward"), sublabel: _t("Schedule") },
+    { id: "set_budget", lens: "schedule", cmd: "set_budget", icon: "banknote",
+      label: _t("Set labour budget"), sublabel: _t("Schedule") },
+    { id: "import_punches", lens: "time", arrival: { pb_lens: "import" },
+      icon: "upload", label: _t("Import punches"), sublabel: _t("Time") },
+    { id: "file_correction", lens: "time",
+      arrival: { pb_lens: "exceptions", pb_focus: "queue" },
+      icon: "fileText", label: _t("File a correction"), sublabel: _t("Time") },
+    { id: "open_map", lens: "today", cmd: "map", icon: "mapPin",
+      label: _t("Open the driver map"), sublabel: _t("Today") },
+    { id: "apply_leave", lens: "timeoff", cmd: "apply", icon: "umbrella",
+      label: _t("Apply time off on behalf"), sublabel: _t("Time Off") },
+    { id: "bonus_review", lens: "overtime", cmd: "bonus", icon: "sigma",
+      label: _t("Bonus hours review"), sublabel: _t("Overtime") },
+];
+
+/**
  * The seven lenses, in rail order.
  *
  * `features` is the per-lens context map (§3.3) and every object here is
@@ -62,8 +99,13 @@ const PERSON_MODEL = "pb.time.hub";
  *                changes nothing is worse than no chip.
  *   week / day — Schedule and Time are week-scoped; Today is the `day` segment's
  *                only consumer (§2.3).
- *   person     — ALWAYS. This is the command bar's search: it is the one control
- *                that means the same thing on every lens, and P3b takes it over.
+ *   person     — OFF on every lens, since P3b. The bar's person typeahead WAS
+ *                the command bar's search; the ⌘K palette replaces it with one
+ *                input that finds people, lenses AND actions, and the shell
+ *                renders the pinned-person chip itself beside the launcher. The
+ *                kit's `person` feature is untouched and still serves every
+ *                standalone cockpit — this is the shell's opinion, not a
+ *                deletion (W6).
  *   search     — the free-text filter, so only where a lens reads `ctx.search`.
  *                Time Off / Overtime / Trips / Approvals do not (an accepted gap
  *                this phase does not close), so they do not advertise it.
@@ -84,41 +126,41 @@ const LENSES = [
     {
         key: "today", icon: "activity",
         groups: ["hr_attendance.group_hr_attendance_officer"],
-        features: { department: true, week: false, person: true, day: true, search: true },
+        features: { department: true, week: false, person: false, day: true, search: true },
         ownsPersonDrawer: true,
     },
     {
         key: "schedule", icon: "calendar",
         groups: ["hr_attendance.group_hr_attendance_officer"],
-        features: { department: true, week: true, person: true, day: false, search: true },
+        features: { department: true, week: true, person: false, day: false, search: true },
         ownsPersonDrawer: true,
     },
     {
         key: "time", icon: "clock",
         groups: ["hr_attendance.group_hr_attendance_officer"],
-        features: { department: true, week: true, person: true, day: false, search: true },
+        features: { department: true, week: true, person: false, day: false, search: true },
         ownsPersonDrawer: true,
     },
     {
         key: "timeoff", icon: "umbrella",
         groups: ["hr_holidays.group_hr_holidays_user", "hr.group_hr_manager",
                  "om_hr_payroll.group_hr_payroll_manager"],
-        features: { department: false, week: false, person: true, day: false, search: false },
+        features: { department: false, week: false, person: false, day: false, search: false },
     },
     {
         key: "overtime", icon: "zap",
         groups: ["hr_attendance.group_hr_attendance_manager",
                  "om_hr_payroll.group_hr_payroll_manager"],
-        features: { department: false, week: false, person: true, day: false, search: false },
+        features: { department: false, week: false, person: false, day: false, search: false },
     },
     {
         // its retired rail item was ungated — every internal user could open it
         key: "trips", icon: "plane", groups: [],
-        features: { department: false, week: false, person: true, day: false, search: false },
+        features: { department: false, week: false, person: false, day: false, search: false },
     },
     {
         key: "approvals", icon: "inbox", groups: [],
-        features: { department: false, week: false, person: true, day: false, search: false },
+        features: { department: false, week: false, person: false, day: false, search: false },
     },
 ];
 
@@ -136,6 +178,7 @@ export class PbMission extends Component {
         this.orm = useService("orm");
         this.notif = useService("notification");
         this.actionService = useService("action");
+        this.overlay = useService("overlay");
         this.ctxSvc = useService("wf_context");
         // useState() on the service's reactive is what subscribes the shell —
         // the command bar's chips follow a change made by any lens below.
@@ -174,7 +217,21 @@ export class PbMission extends Component {
              */
             personHidden: !!this.ctxSvc.state.personId
                 || arrival.focus === "queue",
+            // the pinned person's NAME, for the command bar's chip
+            personName: "",
+
+            // ----- the pb_cmd channel (§3.6) -----
+            // ONE instruction at a time, consumed by NONCE. The lens tracks the
+            // last nonce it ran, so the shell never has to clear this — and
+            // never has to be written to by a child, which is what a "consumed"
+            // callback from a mount hook would be (W21.1).
+            cmd: { name: "", nonce: 0 },
         });
+
+        // Which employee `state.personName` currently describes.
+        this._nameFor = false;
+        // The overlay's remove() while the palette is up; null when it is not.
+        this._closePalette = null;
 
         // Stable handler identity: a fresh inline arrow makes OWL treat the
         // child's props as changed and recreate it, restarting its onWillStart
@@ -188,6 +245,24 @@ export class PbMission extends Component {
             onClosePerson: () => this.closePerson(),
             onOpenProfile: () => this.openProfile(),
         };
+
+        // ⌘K on macOS, Ctrl-K everywhere else — the hotkey service already maps
+        // meta→"control" per platform. `bypassEditableProtection` because the
+        // officer is usually mid-type in a lens filter when they reach for it,
+        // and a shortcut that only works when nothing is focused is a shortcut
+        // nobody learns. Registered by the SHELL, so it exists exactly as long
+        // as the workspace does.
+        useHotkey("control+k", () => this.openPalette(),
+                  { bypassEditableProtection: true });
+
+        // The chip's label follows the PIN wherever it was set — the dock, the
+        // palette, a lens avatar or a restored context. An effect runs AFTER
+        // the patch, so resolving the name is a read, never a write inside
+        // somebody else's render fiber (W21/W36).
+        useEffect(
+            (personId) => { this._syncPersonName(personId); },
+            () => [this.wf.personId],
+        );
 
         /**
          * Load the drawer's week when — and only when — the SHELL is the one
@@ -423,6 +498,37 @@ export class PbMission extends Component {
             .filter((x) => x).join(" · ");
     }
 
+    /**
+     * The command bar's chip needs a NAME, and every door that pins a person
+     * writes only an id. One `read`, cached against the id it describes, and a
+     * failure degrades to an id-less chip rather than clearing a pin the
+     * officer just set — the drawer's own load is where an unusable person is
+     * detected and cleared.
+     */
+    async _syncPersonName(id) {
+        if (!id) {
+            this._nameFor = false;
+            this.state.personName = "";
+            return;
+        }
+        if (this._nameFor === id) { return; }
+        this._nameFor = id;
+        // the drawer may already have the answer — no second round trip for it
+        const p = this.state.person;
+        if (p && p.employee && p.employee.id === id) {
+            this.state.personName = p.employee.name;
+            return;
+        }
+        try {
+            const [rec] = await this.orm.read("hr.employee", [id], ["name"]);
+            if (this._nameFor !== id) { return; }
+            this.state.personName = rec ? rec.name : "";
+        } catch (e) {
+            console.warn("pb_mission: could not resolve the pinned person", e);
+            this.state.personName = "";
+        }
+    }
+
     /** Native-form escape as a DIALOG with a return path (W5). */
     openProfile() {
         const p = this.state.person;
@@ -434,6 +540,73 @@ export class PbMission extends Component {
             views: [[false, "form"]],
             target: "new",
         });
+    }
+
+    // ------------------------------------------------------------ ⌘K palette
+    /** "⌘K" on macOS, "Ctrl K" elsewhere — the label must match the key. */
+    get paletteHint() { return isMacOS() ? "⌘K" : "Ctrl K"; }
+
+    /**
+     * Mounted through the Odoo OVERLAY service, deliberately.
+     *
+     * The palette has to paint above a lens's `position: fixed; z-index 1050`
+     * modals. Doing that from inside the workspace would mean stacking shell
+     * chrome above 1050, which is exactly the fight W37 exists to prevent — and
+     * the 60px biz rail overlay at 25 would lose it too. The overlay container
+     * is a sibling of the whole action host at 1600, so the palette wins by
+     * LOCATION rather than by z-index, and the shell's stacking rules are
+     * untouched: nothing in pb_mission.scss changes for this feature.
+     */
+    openPalette() {
+        if (this._closePalette) { return; }      // already up; ⌘K is not a toggle
+        this._closePalette = this.overlay.add(WfCommandPalette, {
+            lenses: this.lenses,
+            actions: this.paletteActions,
+            onPickLens: (key) => this.setLens(key),
+            onPickPerson: (id) => this.openPerson(id),
+            onRunAction: (id) => this.runPaletteAction(id),
+            onClose: () => this.closePalette(),
+        }, {
+            onRemove: () => { this._closePalette = null; },
+        });
+    }
+
+    closePalette() {
+        if (this._closePalette) { this._closePalette(); }
+        this._closePalette = null;
+    }
+
+    /**
+     * Only the actions whose LENS this persona can open. The rail already hides
+     * a lens the facade would refuse; offering a verb that lands on it would
+     * put the same dead end back through another door.
+     */
+    get paletteActions() {
+        const allowed = this.state.allowed;
+        return PALETTE_ACTIONS
+            .filter((a) => !allowed || allowed[a.lens])
+            .map((a) => ({ id: a.id, label: a.label, sublabel: a.sublabel,
+                           icon: a.icon }));
+    }
+
+    /**
+     * Run one — from the palette's click/Enter, never from a lifecycle hook.
+     *
+     * Two channels, and which one an action uses is a property of the TARGET,
+     * not a preference: the Time hub already implements the W26 arrival
+     * protocol, so its two verbs ride that unchanged; the other four lenses get
+     * the `pb_cmd` nonce.
+     */
+    runPaletteAction(id) {
+        const a = PALETTE_ACTIONS.find((x) => x.id === id);
+        if (!a) { return; }
+        if (this.state.allowed && !this.state.allowed[a.lens]) { return; }
+        if (a.arrival) {
+            this.handOff(a.lens, a.arrival);
+            return;
+        }
+        this.state.cmd = { name: a.cmd, nonce: this.state.cmd.nonce + 1 };
+        this.setLens(a.lens);
     }
 
     // ------------------------------------------------------------------ user

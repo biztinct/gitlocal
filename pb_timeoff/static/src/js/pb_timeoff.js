@@ -6,7 +6,7 @@
  * apply-on-behalf drawer. RPC facade: pb.timeoff (facade-only, acts as the real
  * user — no sudo, no leave logic). pbim-tokenized (.pbto.pbim), fresh-green tint.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -24,9 +24,12 @@ export class PbTimeoff extends Component {
         // not a duplicate of the shared context's week — the shell has no
         // opinion about it and taking it away would make the board unusable.
         embedded: { type: Boolean, optional: true },
+        // P3b §3.6 — one palette instruction, consumed by nonce. Always an
+        // object, never null: a TYPED optional prop rejects null (W35).
+        pbCmd: { type: Object, optional: true },
         "*": true,
     };
-    static defaultProps = { embedded: false };
+    static defaultProps = { embedded: false, pbCmd: { name: "", nonce: 0 } };
 
     setup() {
         this.orm = useService("orm");
@@ -47,7 +50,12 @@ export class PbTimeoff extends Component {
             empResults: [],
         });
         this._empTimer = null;
-        onWillStart(async () => { await this.load(); });
+        this._cmdNonce = 0;
+        onWillUpdateProps((next) => { this._applyPbCmd(next.pbCmd); });
+        onWillStart(async () => {
+            await this.load();
+            this._applyPbCmd(this.props.pbCmd);
+        });
     }
 
     async load() {
@@ -158,6 +166,24 @@ export class PbTimeoff extends Component {
     balCell(row, typeId) { return (row.cells || {})[typeId] || { balance: 0, allocated: 0, taken: 0 }; }
 
     // ------------------------------------------------------------- apply
+    /**
+     * The `pb_cmd` channel (P3b §3.6).
+     *
+     * Mission Control forwards ONE palette instruction as a prop with a NONCE,
+     * and this lens tracks the last nonce it ran. That is the whole protocol,
+     * and it is shaped that way on purpose: a "consumed" callback would be a
+     * CHILD writing HOST state from a mount hook, which is the bug that cost
+     * P1a 591 junk records and then bit a second time on a keyed child
+     * (W21/W21.1). Nothing here writes anything but this component's own state,
+     * and an unknown command is ignored — a lens that does not implement a verb
+     * is not an error.
+     */
+    _applyPbCmd(cmd) {
+        if (!cmd || !cmd.nonce || cmd.nonce === this._cmdNonce) { return; }
+        this._cmdNonce = cmd.nonce;
+        if (cmd.name === "apply") { this.openApply(); }
+    }
+
     openApply() {
         this.state.apply = { employee_id: "", employee_name: "", type_id: "", date_from: "", date_to: "", note: "" };
         this.state.empQuery = "";

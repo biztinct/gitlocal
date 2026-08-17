@@ -23,7 +23,7 @@
  * host it as a lens without a fork — `embedded` suppresses ONLY the chrome a
  * host would own (its own title row and `<WfContextBar/>`), never a facade call.
  */
-import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUpdateProps, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -59,9 +59,12 @@ export class PbSchedule extends Component {
         // W17: the hub owns the title row and the context bar; the cockpit
         // keeps every facade call and every instrument.
         embedded: { type: Boolean, optional: true },
+        // P3b §3.6 — one palette instruction, consumed by nonce. Always an
+        // object, never null: a TYPED optional prop rejects null (W35).
+        pbCmd: { type: Object, optional: true },
         "*": true,
     };
-    static defaultProps = { embedded: false };
+    static defaultProps = { embedded: false, pbCmd: { name: "", nonce: 0 } };
 
     setup() {
         this.orm = useService("orm");
@@ -115,7 +118,15 @@ export class PbSchedule extends Component {
         const off = this.ctxSvc.onChange(() => this.load());
         onWillUnmount(off);
 
-        onWillStart(async () => { await this.load(); });
+        // The palette's instruction can only be applied once the roster is in
+        // hand (a quick-create needs a day and an employee), so it is consumed
+        // AFTER the load, and again whenever the host sends a new nonce.
+        this._cmdNonce = 0;
+        onWillUpdateProps((next) => { this._applyPbCmd(next.pbCmd); });
+        onWillStart(async () => {
+            await this.load();
+            this._applyPbCmd(this.props.pbCmd);
+        });
     }
 
     ic(n, s = 14) { return ic(n, s); }
@@ -517,6 +528,48 @@ export class PbSchedule extends Component {
                 await this.load();
             },
         });
+    }
+
+        /**
+         * The `pb_cmd` channel (P3b §3.6).
+         *
+         * Mission Control forwards ONE palette instruction as a prop with a
+         * NONCE, and this lens tracks the last nonce it ran. That is the whole
+         * protocol, and it is shaped that way on purpose: a "consumed" callback
+         * would be a CHILD writing HOST state from a mount hook, which is the
+         * bug that cost P1a 591 junk records and then bit a second time on a
+         * keyed child (W21/W21.1). Nothing here writes anything but this
+         * component's own state, and an unknown command is ignored — a lens
+         * that does not implement a verb is not an error.
+         */
+    _applyPbCmd(cmd) {
+        if (!cmd || !cmd.nonce || cmd.nonce === this._cmdNonce) { return; }
+        this._cmdNonce = cmd.nonce;
+        if (cmd.name === "copy_week") {
+            this.openCopy();
+        } else if (cmd.name === "set_budget") {
+            if (this.canEditBudget) {
+                this.openBudget();
+            } else {
+                this.notif.add(
+                    _t("Only a scheduling manager can set the labour budget."),
+                    { type: "warning" });
+            }
+        } else if (cmd.name === "quick_create") {
+            // W29: `hr.shift.planning.employee_id` is REQUIRED, so a create with
+            // no employee is a door that can only ever produce an error. With an
+            // empty roster the honest answer is to say so.
+            const emp = this.employees[0];
+            const day = this.days.find((d) => d.date === this.wf.day)
+                || this.days[0];
+            if (!emp || !day) {
+                this.notif.add(
+                    _t("There is nobody to schedule in this department yet."),
+                    { type: "warning" });
+                return;
+            }
+            this.openCreate(emp.id, day);
+        }
     }
 
     // ------------------------------------------------------ quick create

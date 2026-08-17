@@ -6,7 +6,7 @@
  * review (filter rail + grouped table + CSV export). RPC facade: pb.ot.desk.
  * pbim-tokenized (.pbot.pbim), amber OT tint. Lucide icons only.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -24,9 +24,12 @@ export class PbOtDesk extends Component {
         // facade call stay exactly as they are — the shell has no department or
         // period opinion to replace them with (P3a §3.4).
         embedded: { type: Boolean, optional: true },
+        // P3b §3.6 — one palette instruction, consumed by nonce. Always an
+        // object, never null: a TYPED optional prop rejects null (W35).
+        pbCmd: { type: Object, optional: true },
         "*": true,
     };
-    static defaultProps = { embedded: false };
+    static defaultProps = { embedded: false, pbCmd: { name: "", nonce: 0 } };
 
     setup() {
         this.orm = useService("orm");
@@ -45,7 +48,14 @@ export class PbOtDesk extends Component {
             refuseIds: [],
             bonus: this._blankBonus(),
         });
-        onWillStart(async () => { await this.load(); });
+        // The Bonus door is gated on `can_view_bonus`, which only exists once
+        // the board has loaded — so the instruction is consumed AFTER it.
+        this._cmdNonce = 0;
+        onWillUpdateProps((next) => { this._applyPbCmd(next.pbCmd); });
+        onWillStart(async () => {
+            await this.load();
+            this._applyPbCmd(this.props.pbCmd);
+        });
     }
 
     _blankBonus() {
@@ -176,6 +186,36 @@ export class PbOtDesk extends Component {
     dayLetters() { return ["M", "T", "W", "T", "F", "S", "S"]; }
 
     // -------------------------------------------------------------- bonus tab
+    /**
+     * The `pb_cmd` channel (P3b §3.6).
+     *
+     * Mission Control forwards ONE palette instruction as a prop with a NONCE,
+     * and this lens tracks the last nonce it ran. That is the whole protocol,
+     * and it is shaped that way on purpose: a "consumed" callback would be a
+     * CHILD writing HOST state from a mount hook, which is the bug that cost
+     * P1a 591 junk records and then bit a second time on a keyed child
+     * (W21/W21.1). Nothing here writes anything but this component's own state,
+     * and an unknown command is ignored — a lens that does not implement a verb
+     * is not an error.
+     */
+    _applyPbCmd(cmd) {
+        if (!cmd || !cmd.nonce || cmd.nonce === this._cmdNonce) { return; }
+        this._cmdNonce = cmd.nonce;
+        if (cmd.name === "bonus") {
+            // `openBonus` is a silent no-op without `can_view_bonus`, which is
+            // fine for a button that is not rendered — but the palette entry IS
+            // rendered (the rail gate is the lens, not this tier), so it has to
+            // say why nothing happened rather than look broken (W5).
+            if (this.state.data && this.state.data.can_view_bonus) {
+                this.openBonus();
+            } else {
+                this.notif.add(
+                    _t("Bonus hours review is restricted to payroll and attendance managers."),
+                    { type: "warning" });
+            }
+        }
+    }
+
     openBonus() {
         if (!(this.state.data && this.state.data.can_view_bonus)) { return; }
         this.state.view = "bonus";

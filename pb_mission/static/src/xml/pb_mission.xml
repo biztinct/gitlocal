@@ -15,11 +15,35 @@
         </span>
 
         <!-- The shared context, mounted ONCE for the whole workspace (W4/W6).
-             Its person typeahead is this bar's search; which of the department /
-             week / day / filter segments appear is the current lens's decision
-             (`features`), and switching lens never resets what is in them —
-             that is the entire point of the shell. -->
+             Which of the department / week / day / filter segments appear is
+             the current lens's decision (`features`), and switching lens never
+             resets what is in them — that is the entire point of the shell.
+             Its `person` segment is OFF here since P3b: the palette below is
+             this bar's search. -->
         <WfContextBar className="'pbms-ctx'" features="features"/>
+
+        <!-- ============ the command bar's search: ⌘K ============
+             P3a used the context bar's person typeahead here. P3b replaces it
+             with one input that finds PEOPLE, LENSES and ACTIONS — so the bar's
+             `person` feature is off on every lens (the kit keeps it for every
+             standalone cockpit) and the pinned-person chip moves here, beside
+             the launcher, because the pin is still context and still has to be
+             visible and clearable from the bar. -->
+        <span class="pbms-pin" t-if="wf.personId">
+          <span t-out="ic('user', 12)"/>
+          <span class="pbms-pin__n" t-esc="state.personName"/>
+          <button class="pbms-pin__x" t-on-click="() => this.closePerson()"
+                  title="Clear person" aria-label="Clear person">
+            <span t-out="ic('x', 11)"/>
+          </button>
+        </span>
+
+        <button class="pbms-search" t-on-click="() => this.openPalette()"
+                aria-label="Search people, lenses and actions">
+          <span class="pbms-search__ic" t-out="ic('search', 14)"/>
+          <span class="pbms-search__tx">Search people, lenses, actions…</span>
+          <span class="pbms-search__kbd" t-esc="paletteHint"/>
+        </button>
 
         <span class="pbms-user" t-att-title="userName" t-esc="userInitials"/>
       </header>
@@ -56,11 +80,12 @@
         <main class="pbms-canvas">
 
           <div class="pbms-lens" t-if="state.lens === 'today'">
-            <PbToday t-key="'lens-today'" embedded="true" onHandOff="_h.onHandOff"/>
+            <PbToday t-key="'lens-today'" embedded="true" onHandOff="_h.onHandOff"
+                     pbCmd="state.cmd"/>
           </div>
 
           <div class="pbms-lens" t-if="state.lens === 'schedule'">
-            <PbSchedule t-key="'lens-schedule'" embedded="true"/>
+            <PbSchedule t-key="'lens-schedule'" embedded="true" pbCmd="state.cmd"/>
           </div>
 
           <!-- The Time lens is handed the W26 arrival payload as a synthetic
@@ -72,11 +97,11 @@
           </div>
 
           <div class="pbms-lens" t-if="state.lens === 'timeoff'">
-            <PbTimeoff t-key="'lens-timeoff'" embedded="true"/>
+            <PbTimeoff t-key="'lens-timeoff'" embedded="true" pbCmd="state.cmd"/>
           </div>
 
           <div class="pbms-lens" t-if="state.lens === 'overtime'">
-            <PbOtDesk t-key="'lens-overtime'" embedded="true"/>
+            <PbOtDesk t-key="'lens-overtime'" embedded="true" pbCmd="state.cmd"/>
           </div>
 
           <div class="pbms-lens" t-if="state.lens === 'trips'">
