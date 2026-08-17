@@ -79,9 +79,30 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   | `pb_timeoff/data/pb_sidebar.xml` | **1** → flipped to 0 in P0 WP-H |
   | `pb_business_trip/data/pb_sidebar.xml` | **1** |
   | `pb_attendance_flow/data/pb_sidebar.xml` | **1** |
-  Rule: before editing any `pb.sidebar.item`, check the *declaring* file's `<odoo noupdate=…>`; if it
-  is 1, flip it to 0 in the same commit (sidebar items are program-managed IA, not user data) — never
-  reach for SQL or a migration. Verify the record actually moved after `-u`, don't assume.
+  Rule: before editing any `pb.sidebar.item`, check the *declaring* file's `<odoo noupdate=…>`.
+  **And flipping it to 0 is NOT enough on an existing database — see W13.1.**
+- **W13.1 `noupdate` lives in the DATABASE, and Odoo never refreshes it. (Proven on the live server,
+  2026-08-17 — this cost P0 a second deploy round.)** `ir_model_data.noupdate` is a per-record column.
+  `IrModelData._build_update_xmlids_query` (Odoo 19, `base/models/ir_model.py` ~:2425) writes only
+  `(model, res_id, write_date)` on conflict — the `noupdate` column is never in the UPDATE list — and
+  `Model._load_records` (`odoo/orm/models.py` ~:5163) skips any record whose STORED flag is set:
+  `if not (update and d_noupdate): to_update.append(data)`.
+  Therefore editing `<odoo noupdate="1">` → `"0"` only changes what a *fresh* install records. On
+  every existing database the record stays frozen **forever** and `-u <module>` silently applies
+  nothing — no error, no warning, the log looks perfectly healthy. P0 shipped Leave seq 30→32,
+  `-u pb_timeoff` returned EXIT 0, and the database still said 30.
+  To actually move such a record: flip the file attribute (for future installs) **AND** ship a
+  `migrations/<new-version>/post-migrate.py` that clears the stored flag and applies the value —
+  bumping the manifest version, since migrations only run on a version change. Precedent to clone:
+  `pb_timeoff/migrations/19.0.1.0.3/post-migrate.py`. Keep it idempotent and only overwrite the old
+  value, so an admin's later customization is not overruled.
+  **Still frozen as of P0** (`noupdate="1"`, untouched because P0 had no reason to move them):
+  `pb_business_trip/data/pb_sidebar.xml` (Business Trips) and
+  `pb_attendance_flow/data/pb_sidebar.xml` (Attendance Control). P1 renumbers the whole section —
+  it must ship the same unfreeze migration for both, or those two items will not move.
+  **Always assert the DB value after `-u`.** A repo-only "fix" is indistinguishable from a real one
+  unless something reads the database back; that is what `pb_wf_kit/tests/test_p0.py
+  ::test_moved_items_landed_on_their_new_sequences` is for, and it is what caught this.
 - **W14 A `var()` fallback is a real colour, not a comment.** Surfaces that mount OUTSIDE a `.pbim`
   root — native-form field widgets (`pb_business_trip` trip composer), Leaflet pins rendered at
   document level (`pb_driver_checkin`) — never see the `--pbim-*` custom properties, because those are
