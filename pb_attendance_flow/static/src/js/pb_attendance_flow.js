@@ -39,6 +39,9 @@ export class PbAttendanceFlow extends Component {
         initialView: { type: String, optional: true },
         // host-supplied person door (the hub's drawer); absent => native form
         onPerson: { type: Function, optional: true },
+        // {employee_id, date, kind?} — open the composer prefilled for this
+        // person/day on mount (the hub drawer's "File correction" hand-off)
+        seed: { type: Object, optional: true },
         // host-supplied hook fired after a correction is filed/applied, so the
         // hub can refresh its ribbon without knowing anything about this state
         onChanged: { type: Function, optional: true },
@@ -79,7 +82,15 @@ export class PbAttendanceFlow extends Component {
             composer: null,             // correction detail
             imp: this._blankImport(),
         });
-        onWillStart(async () => { await this.load(); });
+        onWillStart(async () => {
+            await this.load();
+            // The host remounts this lens (a keyed nonce) when it hands over a
+            // seed, so onWillStart is the right — and only — place to consume
+            // it: no prop-diffing, no half-open composer left behind.
+            if (this.props.seed && this.props.seed.employee_id) {
+                await this.seedCorrection(this.props.seed);
+            }
+        });
     }
 
     _blankImport() {
@@ -154,6 +165,31 @@ export class PbAttendanceFlow extends Component {
             this.state.busy = false;
         }
     }
+    /**
+     * Open the composer prefilled for an employee+day that did NOT come from an
+     * exception row — the Time hub's person drawer hands over {employee_id,
+     * date}. Same facade call, same guarded writer, same approval chain: only
+     * the entry point differs.
+     */
+    async seedCorrection({ employee_id, date, kind }) {
+        this.state.busy = true;
+        try {
+            const corr = await this.orm.call(MODEL, "create_correction", [{
+                employee_id,
+                date,
+                correction_type: kind === "missing_punch" ? "create" : "adjust",
+                exception_kind: kind || false,
+                reason: _t("Correction filed from the person drawer for %(date)s.",
+                           { date }),
+            }]);
+            this._openComposer(corr);
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
     _seedReason(x) {
         return _t("%(label)s on %(date)s — %(detail)s",
             { label: this.kindLabel(x.kind), date: x.date, detail: x.detail || "" });

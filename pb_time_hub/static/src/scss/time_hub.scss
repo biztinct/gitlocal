@@ -1,0 +1,299 @@
+// =====================================================================
+//  Time hub — mockup A's Week-Grid screen: page header + shared context bar,
+//  lens tabs, amber exception ribbon, lens body, right person drawer.
+//
+//  Strictly --pbim-* tokens, indigo primary (W1). Flat fills only (W3). Every
+//  declaration carries the correct pbim fallback, because a var() fallback is a
+//  real colour, not a comment (W14).
+// =====================================================================
+
+.pbim.pbth {
+    // The WfDrawer scrim is position:absolute and belongs to THIS surface —
+    // without a positioned root it would escape to the viewport and cover the
+    // sidebar and breadcrumb (wf_kit.scss :160-169).
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+    svg { display: block; }
+
+    // ------------------------------------------------------------- header
+    .pbth-head {
+        flex: none;
+        padding: 16px 22px 0;
+        background: var(--pbim-surface, #fff);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbth-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+    .pbth-title {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbth-ctx { margin-left: auto; }
+
+    // -------------------------------------------------------- lens tabs
+    .pbth-lens {
+        display: flex;
+        gap: 4px;
+        margin-top: 14px;
+        overflow-x: auto;
+    }
+    .pbth-lens__tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        background: transparent;
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        padding: 8px 14px;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover { color: var(--pbim-ink, #1B1733); }
+        &.is-on {
+            color: var(--pbim-primary, #5A4BB0);
+            border-bottom-color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .pbth-lens__ic { flex: none; }
+    .pbth-lens__n {
+        background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668);
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 7px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    // the ribbon sits between the tabs and the content (mockup A zone 4)
+    .wfrb { margin: 0 0 14px; }
+
+    // ------------------------------------------------------------- body
+    .pbth-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto;
+        padding: 14px 22px 22px;
+    }
+    .pbth-lensbody { min-height: 0; }
+    // The Week Grid brings its own internal scrolling; give it a real box.
+    .pbth-lensbody--grid {
+        display: flex;
+        min-height: 480px;
+        > .wfg { flex: 1; min-width: 0; }
+    }
+
+    // ---------------------------------------------------------- drawer
+    .pbth-dr-load {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 30px 0;
+        color: var(--pbim-muted, #64748B);
+        svg { animation: pbth-spin 1s linear infinite; }
+    }
+
+    .pbth-dr-who {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+    }
+    .pbth-av {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex: none;
+        background: var(--pbim-soft, #EDEAF8);
+    }
+    .pbth-dr-who__txt {
+        min-width: 0;
+        .n {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .s { font-size: 10.5px; color: var(--pbim-muted, #64748B); }
+    }
+
+    .pbth-wksum {
+        display: flex;
+        gap: 6px;
+        margin: 12px 0;
+
+        span {
+            flex: 1;
+            background: var(--pbim-slate-soft, #EEF1F5);
+            border-radius: var(--pbim-r-sm, 10px);
+            padding: 7px 6px;
+            text-align: center;
+        }
+        i {
+            display: block;
+            font-style: normal;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--pbim-muted, #64748B);
+        }
+        b {
+            display: block;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+            font-variant-numeric: tabular-nums;
+        }
+        .d-pos { color: var(--pbim-amber, #D97706); }
+        .d-neg { color: var(--pbim-rose, #DC2668); }
+    }
+
+    // the person's week as a table — the owner's named pain point
+    .pbth-dt {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+
+        th {
+            font-size: 9px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--pbim-muted, #64748B);
+            text-align: right;
+            padding: 5px 6px;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+            font-weight: 800;
+            &:first-child { text-align: left; }
+        }
+        td {
+            padding: 5px 6px;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            color: var(--pbim-text, #1B1733);
+            &:first-child {
+                text-align: left;
+                font-weight: 700;
+                color: var(--pbim-ink, #1B1733);
+            }
+        }
+        tr:last-child td { border-bottom: 0; }
+        tr.is-today td { background: var(--pbim-soft, #EDEAF8); }
+
+        .pos { color: var(--pbim-amber, #D97706); font-weight: 700; }
+        .neg { color: var(--pbim-rose, #DC2668); font-weight: 700; }
+    }
+    .pbth-flag {
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--pbim-primary, #5A4BB0);
+        margin-left: 3px;
+    }
+    .pbth-din {
+        display: inline-block;
+        min-width: 36px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 6px;
+        padding: 1px 5px;
+        background: var(--pbim-surface, #fff);
+        text-align: center;
+
+        &.ed {
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 2px var(--pbim-soft, #EDEAF8);
+            font-weight: 700;
+        }
+        &.miss {
+            border-color: var(--pbim-rose, #DC2668);
+            background: var(--pbim-rose-soft, #FCE7EF);
+            color: var(--pbim-rose, #DC2668);
+            font-weight: 700;
+        }
+        &.zero { color: var(--pbim-muted, #64748B); }
+    }
+
+    // -------------------------------------------------------------- chips
+    .pbth-chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin: 12px 0 10px;
+    }
+    .pbth-chips__empty { font-size: 11px; color: var(--pbim-muted, #64748B); }
+
+    .pbth-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 999px;
+        padding: 2px 9px;
+        font-size: 10.5px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        border: 1px solid transparent;
+
+        &--green  { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &--amber  { background: var(--pbim-amber-soft, #FEF3C7); color: var(--pbim-amber, #D97706); }
+        &--rose   { background: var(--pbim-rose-soft, #FCE7EF); color: var(--pbim-rose, #DC2668); }
+        &--cyan   { background: var(--pbim-cyan-soft, #E5EDFD); color: var(--pbim-cyan, #2563EB); }
+        &--indigo { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+        &--slate  { background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #64748B); }
+    }
+
+    // ------------------------------------------------------------ actions
+    .pbth-dr-acts { display: flex; gap: 8px; margin-top: 4px; }
+    .pbth-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: var(--pbim-r-sm, 10px);
+        padding: 8px 10px;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &--ghost {
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            background: var(--pbim-surface, #fff);
+            color: var(--pbim-muted, #64748B);
+            &:hover { color: var(--pbim-primary, #5A4BB0); border-color: var(--pbim-primary, #5A4BB0); }
+        }
+        &--out {
+            border: 1px solid var(--pbim-primary, #5A4BB0);
+            background: var(--pbim-surface, #fff);
+            color: var(--pbim-primary, #5A4BB0);
+            &:hover { background: var(--pbim-soft, #EDEAF8); }
+        }
+    }
+}
+
+@keyframes pbth-spin {
+    to { transform: rotate(360deg); }
+}
