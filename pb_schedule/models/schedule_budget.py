@@ -64,10 +64,16 @@ class PbScheduleBudget(models.Model):
     currency_id = fields.Many2one(
         related='company_id.currency_id', string='Currency', readonly=True)
 
-    _sql_constraints = [
-        ('scope_week_uniq', 'unique(company_id, department_id, week_start)',
-         'There is already a labour budget for that department and week.'),
-    ]
+    # W33: `_sql_constraints = [...]` is NO LONGER SUPPORTED on Odoo 19 — the
+    # registry logs one WARNING per model and then ignores the list entirely,
+    # so the constraint silently does not exist. `models.Constraint` is the
+    # Odoo 19 form (`odoo/addons/base/models/res_currency.py`:49 is the core
+    # precedent). This one still cannot see duplicate NULLs — see W30 and the
+    # Python constraint below.
+    _scope_week_uniq = models.Constraint(
+        'unique(company_id, department_id, week_start)',
+        'There is already a labour budget for that department and week.',
+    )
 
     # ------------------------------------------------------------- guards
     @api.model

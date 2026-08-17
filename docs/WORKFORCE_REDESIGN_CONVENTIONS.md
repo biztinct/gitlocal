@@ -319,3 +319,28 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   `ir.model.access` rows, which cover generic ORM callers), so the facade physically
   cannot be a softer door — and each model ships a test that calls the facade AS an
   officer and asserts the AccessError, while its READ door still works.
+- **W33 Two Odoo-19 API breakages that fail SILENTLY or CATASTROPHICALLY, both hit in one
+  P2 deploy.** (Merged into the ledger as W32 in code comments; numbered W33 here after the
+  renumber.)
+  1. **`_sql_constraints = [...]` is no longer supported.** Odoo 19 logs
+     `Model attribute '_sql_constraints' is no longer supported, please define
+     models.Constraint on the model` once per model — a WARNING among hundreds of other
+     warnings on this codebase — and then ignores the list. The constraint simply does not
+     exist in PostgreSQL, and every test that only checks the Python `@api.constrains`
+     still passes. Use `_name = models.Constraint('unique(...)', 'message')`
+     (core precedent: `odoo/addons/base/models/res_currency.py`:49). Verify with
+     `SELECT indexname FROM pg_indexes WHERE tablename = '…'` after the upgrade; a
+     model-level assertion is not proof.
+  2. **An invalid attribute in a view aborts the WHOLE module upgrade — and the modules
+     that loaded BEFORE it are already committed.** A `<group expand="0" string="Group By">`
+     in a search view (valid for years, rejected by Odoo 19's
+     `odoo/addons/base/rng/search_view.rng` + `common.rng`) produced four
+     `odoo.tools.view_validation` WARNINGs, then `Failed to load registry` /
+     `Failed to initialize database`, and the run exited with the module still at its OLD
+     `latest_version`. Because `load_module_graph` does `module.write({'state':'installed',
+     'latest_version': ver})` **and `cr.commit()` PER MODULE**, half the deploy was live and
+     half was not: `pb_sidebar` had shipped its new rail while `pb_schedule`'s new tables
+     did not exist. Rules: copy view syntax from a CORE Odoo 19 file rather than from
+     memory; after any deploy assert the DB `latest_version` of EVERY module you bumped,
+     not just the one you were watching; and treat "no `Starting post tests` line in the
+     log" as a failed run, because a registry that never loaded never reaches the tests.

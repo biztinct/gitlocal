@@ -7,7 +7,15 @@
          who wants the night shifts, has to scroll. The Schedule drawer is the
          editor of record now, but the native list is still reachable from the
          still-registered `pb_hr_workforce.action_shift_template`, and this is
-         the cheap fix P2 promised (§3.9). -->
+         the cheap fix P2 promised (§3.9).
+
+         W33: the shape below is copied from a CORE Odoo 19 search view
+         (`odoo/addons/base/views/ir_cron_views.xml`), not from memory. The
+         search RelaxNG (`odoo/addons/base/rng/search_view.rng` +
+         `common.rng`'s `group` define) allows a `<group>` of `<filter>`s with
+         NO attributes — `expand` and `string` on it are rejected, and a
+         rejected attribute fails the WHOLE view, which aborts the module load
+         and rolls the upgrade back. -->
     <record id="view_shift_template_search" model="ir.ui.view">
         <field name="name">hr.shift.template.search</field>
         <field name="model">hr.shift.template</field>
@@ -17,6 +25,7 @@
                        filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
                 <field name="code"/>
                 <field name="resource_calendar_id"/>
+                <separator/>
                 <filter name="morning" string="Morning"
                         domain="[('shift_type', '=', 'morning')]"/>
                 <filter name="afternoon" string="Afternoon"
@@ -29,12 +38,11 @@
                 <separator/>
                 <filter name="archived" string="Archived"
                         domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
-                    <filter name="by_type" string="Shift type"
+                <group>
+                    <filter name="by_type" string="Shift type" domain="[]"
                             context="{'group_by': 'shift_type'}"/>
-                    <filter name="by_company" string="Company"
-                            context="{'group_by': 'company_id'}"
-                            groups="base.group_multi_company"/>
+                    <filter name="by_calendar" string="Work schedule" domain="[]"
+                            context="{'group_by': 'resource_calendar_id'}"/>
                 </group>
             </search>
         </field>

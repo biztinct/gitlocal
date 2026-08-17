@@ -81,10 +81,12 @@ class ShiftCoverageRequirement(models.Model):
         string='People needed', required=True, default=1)
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        ('headcount_positive', 'CHECK(required_headcount >= 0)',
-         'A coverage requirement cannot be negative.'),
-    ]
+    # W33: Odoo 19 ignores `_sql_constraints` (one registry warning, then
+    # nothing). `models.Constraint` is the supported form.
+    _headcount_positive = models.Constraint(
+        'CHECK(required_headcount >= 0)',
+        'A coverage requirement cannot be negative.',
+    )
 
     # -------------------------------------------------------------- guards
     @api.model
