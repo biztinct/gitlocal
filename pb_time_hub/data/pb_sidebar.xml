@@ -14,11 +14,17 @@
          officer group covers all three working tiers and reproduces exactly the
          Weekly Entry persona this hub inherits. Timecards was ungated; folding
          it in narrows it on purpose. -->
+    <!-- RETIRED by Workforce P3a: the hub is now the Time LENS of Mission
+         Control (pb_mission mounts this component with embedded="true", W17,
+         and forwards `pb_lens`/`pb_focus` to it through the very same arrival
+         protocol, W26). The action stays registered and reachable; only the
+         rail entry goes, into the 900 band (W18). -->
     <record id="item_wf_time" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Time</field>
         <field name="icon">clock</field>
-        <field name="sequence">30</field>
+        <field name="sequence">908</field>
+        <field name="active" eval="False"/>
         <field name="action_xmlid">pb_time_hub.action_pb_time_hub</field>
         <field name="action_tag">pb_time_hub</field>
         <!-- match the retired cockpits' tags too: a bookmark or a stray

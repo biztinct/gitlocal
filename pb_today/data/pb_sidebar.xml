@@ -4,28 +4,27 @@
      rail again when Mission Control arrives. -->
 <odoo noupdate="0">
 
-    <!-- WORKFORCE › Today — sequence 10, the head of the Option-A rail:
-         Today · Schedule · Time · Time Off · Overtime · Trips · Approvals ·
-         Shift Templates.
+    <!-- RETIRED by Workforce P3a: Today is now the first LENS of the Mission
+         Control shell (pb_mission mounts this very component with
+         embedded="true", W17), so it stops being a rail destination. The client
+         action survives untouched and is still reachable at
+         /odoo/action-pb_today; only the rail entry goes.
 
-         It inherits the sequence the Workforce Dashboard held, which is why
-         that record had to MOVE to the 900 retired band rather than merely go
-         inactive (W18): a deactivated item still occupies its sequence, and a
-         duplicate matters the moment an admin re-enables one.
+         It moves into the 900 retired band because the shell's single
+         "Workforce" item takes sequence 10, and a deactivated item still
+         OCCUPIES its sequence for W8's uniqueness rule (W18) — the moment an
+         admin re-enables this record, a duplicate would matter.
 
-         Gate: `hr_attendance.group_hr_attendance_officer`, matching the
-         `pb.today` facade's own gate (W8: rail gate == surface gate). Live
-         Attendance was already officer-gated; the Workforce Dashboard, whose
-         counts this board absorbs, was NOT — folding it in narrows it on
-         purpose.
-
-         `match_action_tags` carries the retired cockpits' tags too, so a
-         bookmark or a stray doAction to one of them still lights up Today. -->
+         Gate kept as it was (`hr_attendance.group_hr_attendance_officer`): the
+         record has to stay re-enable-able exactly as it was, and the shell asks
+         the SAME question client-side before it puts the Today lens on its
+         rail. -->
     <record id="item_wf_today" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Today</field>
         <field name="icon">activity</field>
-        <field name="sequence">10</field>
+        <field name="sequence">906</field>
+        <field name="active" eval="False"/>
         <field name="action_xmlid">pb_today.action_pb_today</field>
         <field name="action_tag">pb_today</field>
         <field name="match_action_tags">pb_today,attendance_live,pb_driver_map</field>

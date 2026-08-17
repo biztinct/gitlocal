@@ -10,11 +10,19 @@
          its gate are untouched. Icon `umbrella` rather than `calendar`, which
          Schedule now owns — two rail items with the same glyph are two items an
          officer has to read to tell apart. -->
+    <!-- RETIRED by Workforce P3a: the Leave Command Center is now the Time Off
+         LENS of Mission Control (pb_mission mounts this component with
+         embedded="true", W17 — its month nav travels with it, because the month
+         is this cockpit's own dimension and the shell has no opinion about it).
+         The action survives; only the rail entry goes, into the 900 band (W18).
+         This record was the program's FIRST W13.1 casualty (frozen until P0),
+         which is why the file above is noupdate="0" and this edit just lands. -->
     <record id="item_leave_center" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Time Off</field>
         <field name="icon">umbrella</field>
-        <field name="sequence">40</field>
+        <field name="sequence">909</field>
+        <field name="active" eval="False"/>
         <field name="action_xmlid">pb_timeoff.action_pb_timeoff</field>
         <field name="action_tag">pb_timeoff</field>
         <field name="match_action_tags">pb_timeoff</field>

@@ -24,11 +24,22 @@
          day. Flagged in the P1b report for the owner to overrule — the
          alternative fix, renaming the payroll one to "Payroll Approvals", is
          the better long-term answer but belongs to whoever owns Overview. -->
+    <!-- RETIRED by Workforce P3a: the queue is now the Approvals LENS of Mission
+         Control (pb_mission mounts this component with embedded="true", W17).
+         The action survives; only the rail entry goes, into the 900 band (W18).
+
+         The lens is labelled plainly "Approvals" inside the shell. W28's
+         uniqueness rule is about the `pb.sidebar.item` TABLE — where
+         `pb_sidebar.item_approvals` (the payroll payslip-run cockpit) still owns
+         that word — and the shell's lens rail is not that table. Inside a
+         Workforce workspace there is exactly one approvals surface, so the
+         disambiguating word this RECORD needs would only be noise there. -->
     <record id="item_my_team" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Team Approvals</field>
         <field name="icon">inbox</field>
-        <field name="sequence">70</field>
+        <field name="sequence">912</field>
+        <field name="active" eval="False"/>
         <field name="action_xmlid">pb_team.action_pb_team</field>
         <field name="action_tag">pb_team</field>
         <field name="match_action_tags">pb_team</field>

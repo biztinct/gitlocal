@@ -15,11 +15,21 @@
          nouns a manager uses, and the word "Business" carried no information
          next to seven other items that are all about the business. Label and
          sequence only — the cockpit, its action and its gate are untouched. -->
+    <!-- RETIRED by Workforce P3a: Trips is now a LENS of Mission Control
+         (pb_mission mounts this component with embedded="true", W17). The action
+         survives; only the rail entry goes, into the 900 band (W18).
+
+         This is the record W27 was written about — its stored noupdate flag was
+         only cleared in P1b, and the label edit that ran in the same upgrade was
+         silently skipped because the clear happened in a POST-migrate. The flag
+         is clear now, so this edit lands from the data file with no migration;
+         pb_mission/tests/test_sidebar.py reads it back to prove it. -->
     <record id="item_wf_trips" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Trips</field>
         <field name="icon">plane</field>
-        <field name="sequence">60</field>
+        <field name="sequence">911</field>
+        <field name="active" eval="False"/>
         <field name="action_xmlid">pb_business_trip.action_pb_trips</field>
         <field name="action_tag">pb_trips</field>
         <field name="match_action_tags">pb_trips</field>
