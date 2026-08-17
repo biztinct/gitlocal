@@ -63,6 +63,20 @@
               <div class="ttl"><span t-out="ic('inbox',18)"/> Exceptions queue</div>
             </div>
 
+            <!-- The shared context's pinned person, as a clearable chip
+                 (P1b §2.4). A filtered queue that does not SAY it is filtered
+                 reads as "this person has no exceptions" — which is the
+                 opposite of the truth when the pin simply matched nobody. -->
+            <div class="pbaf-pfilter" t-if="personFilter">
+              <span class="i" t-out="ic('user',13)"/>
+              <span class="n" t-esc="personFilter.name or ('#' + personFilter.id)"/>
+              <span class="s">only</span>
+              <button class="x" t-on-click="() => this.clearPersonFilter()"
+                      title="Show everyone" aria-label="Show everyone">
+                <span t-out="ic('x',12)"/>
+              </button>
+            </div>
+
             <div class="pbaf-tabs">
               <button t-attf-class="tab {{ state.activeKind === 'all' ? 'active' : '' }}"
                       t-on-click="() => this.setKind('all')">

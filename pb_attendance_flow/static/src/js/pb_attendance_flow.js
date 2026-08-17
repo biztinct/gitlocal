@@ -111,14 +111,31 @@ export class PbAttendanceFlow extends Component {
         };
     }
 
-    /** [date_from, date_to, department_id] — the shared week when embedded. */
+    /**
+     * [date_from, date_to, department_id, employee_id] — the shared context
+     * when embedded.
+     *
+     * `personId` (P1b §2.4) is what makes the Today board's "File correction"
+     * door land on THAT person's exceptions: Today pins them before navigating,
+     * this lens reads the same context on its mount, and the queue arrives
+     * filtered. It is also why the person chip below is clearable — the pin is
+     * shared state, so dropping it here drops it everywhere.
+     */
     _windowArgs() {
-        if (!this.props.embedded) { return [false, false, false]; }
+        if (!this.props.embedded) { return [false, false, false, false]; }
         // addDays is the kit's LOCAL-date helper — never rebuild week maths with
         // toISOString(), it slips a day in every non-UTC timezone.
         return [this.wf.weekStart, addDays(this.wf.weekStart, 6),
-                this.wf.departmentId || false];
+                this.wf.departmentId || false, this.wf.personId || false];
     }
+
+    /** The person the queue is narrowed to, or null. */
+    get personFilter() {
+        return (this.state.data && this.state.data.person) || null;
+    }
+
+    /** Clearing the chip clears the shared pin — the ONE write door (W16). */
+    clearPersonFilter() { this.ctxSvc.set({ personId: false }); }
 
     /**
      * Tell the host something CHANGED (a correction filed/applied, an import
