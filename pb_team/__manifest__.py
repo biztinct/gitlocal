@@ -20,7 +20,7 @@ a tier the user lacks is refused by the model and the refusal surfaces as a toas
 Soft-hooked: pb_business_trip, pb_attendance_flow (corrections + exception feed),
 hr_holidays. The cockpit degrades gracefully when a source phase is absent.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.0.3',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

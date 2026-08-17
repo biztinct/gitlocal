@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
-    <!-- WORKFORCE › Business Trips (after Weekly Entry, seq 35) -->
+<!-- UNFROZEN by Workforce P1b (W13/W13.1): this file shipped noupdate="1", so
+     `-u pb_business_trip` silently applied nothing to the record below — no
+     error, no warning, a perfectly healthy-looking log and a rail that never
+     moved. The attribute flip only changes what a FRESH install records; on
+     every existing database the stored `ir_model_data.noupdate` flag has to be
+     cleared too, which is what migrations/19.0.1.0.5/post-migrate.py does.
+     Precedent: pb_attendance_flow/migrations/19.0.1.0.4 (P1a), itself cloned
+     from pb_timeoff/migrations/19.0.1.0.3 (P0). -->
+<odoo noupdate="0">
+    <!-- WORKFORCE › Trips (60 on the Option-A rail: Today · Schedule · Time ·
+         Time Off · Overtime · TRIPS · Approvals · Shift Templates).
+
+         Renamed "Business Trips" -> "Trips": the rail is a set of verbs and
+         nouns a manager uses, and the word "Business" carried no information
+         next to seven other items that are all about the business. Label and
+         sequence only — the cockpit, its action and its gate are untouched. -->
     <record id="item_wf_trips" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
-        <field name="name">Business Trips</field>
+        <field name="name">Trips</field>
         <field name="icon">plane</field>
-        <field name="sequence">37</field>
+        <field name="sequence">60</field>
         <field name="action_xmlid">pb_business_trip.action_pb_trips</field>
         <field name="action_tag">pb_trips</field>
         <field name="match_action_tags">pb_trips</field>

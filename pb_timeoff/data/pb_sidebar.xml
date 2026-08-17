@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="0">
-    <!-- WORKFORCE › Leave (Leave Command Center — HR/officer persona).
+    <!-- WORKFORCE › Time Off (Leave Command Center — HR/officer persona).
          noupdate="0": sidebar item records are program-managed (W8/W13); the
-         sequence collided with Timecards (30) until P0 moved it to 32. -->
+         sequence collided with Timecards (30) until P0 moved it to 32, and P1b
+         renumbered the whole section to the Option-A rail (40).
+
+         Renamed "Leave" -> "Time Off" so the rail speaks the market's language
+         (Deputy/Homebase/BambooHR all say Time Off); the cockpit, its action and
+         its gate are untouched. Icon `umbrella` rather than `calendar`, which
+         Schedule now owns — two rail items with the same glyph are two items an
+         officer has to read to tell apart. -->
     <record id="item_leave_center" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
-        <field name="name">Leave</field>
-        <field name="icon">calendar</field>
-        <field name="sequence">32</field>
+        <field name="name">Time Off</field>
+        <field name="icon">umbrella</field>
+        <field name="sequence">40</field>
         <field name="action_xmlid">pb_timeoff.action_pb_timeoff</field>
         <field name="action_tag">pb_timeoff</field>
         <field name="match_action_tags">pb_timeoff</field>

@@ -41,8 +41,7 @@ Lucide icons, flat fills.
     ],
     'data': [
         'views/today_action.xml',
-        # data/pb_sidebar.xml is added by WP-3 (the IA finale), together with
-        # the renumbering that frees sequence 10 for it.
+        'data/pb_sidebar.xml',
     ],
     'assets': {
         'web.assets_backend': [

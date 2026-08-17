@@ -270,16 +270,37 @@
         <field name="active">False</field>
     </record>
 
-    <!-- ============ Workforce (existing pb_hr_workforce cockpits) ============ -->
+    <!-- ============ Workforce ============
+         The Option-A rail, reached in P1b. ACTIVE order (each item's record
+         lives with the module that owns the surface, so this file only holds
+         the ones pb_sidebar itself declares):
+
+           10 Today · 20 Schedule · 30 Time · 40 Time Off · 50 Overtime
+           60 Trips · 70 Approvals · 80 Shift Templates
+
+         Everything else is RETIRED, never deleted: `active` false takes it off
+         the rail, and the record moves into the 900+ band because a deactivated
+         item still OCCUPIES its sequence for W8's uniqueness rule (W18) — the
+         moment an admin re-enables one, a duplicate would matter. The client
+         actions all survive; deleting them is a later cleanup with its own
+         doAction-caller audit. -->
+
+    <!-- RETIRED by Workforce P1b: absorbed into the Today board (pb_today).
+         The Chart.js-in-a-form dashboard had no read-model worth keeping; its
+         counts are Today's tiles now, computed over a bounded day cohort. -->
     <record id="item_wf_dashboard" model="pb.sidebar.item">
         <field name="section_id" ref="sec_workforce"/><field name="name">Workforce Dashboard</field>
-        <field name="icon">trending-up</field><field name="sequence">10</field>
+        <field name="icon">trending-up</field><field name="sequence">901</field>
         <field name="action_xmlid">pb_hr_workforce.action_workforce_dashboard_server</field>
+        <field name="active" eval="False"/>
     </record>
+    <!-- RETIRED by Workforce P1b: rebuilt AS the Today board. Same idea, a body
+         from this decade — and every tile and row is now a door. -->
     <record id="item_wf_live" model="pb.sidebar.item">
         <field name="section_id" ref="sec_workforce"/><field name="name">Live Attendance</field>
-        <field name="icon">users</field><field name="sequence">20</field>
+        <field name="icon">users</field><field name="sequence">902</field>
         <field name="action_xmlid">pb_hr_workforce.action_attendance_live</field>
+        <field name="active" eval="False"/>
     </record>
     <!-- RETIRED by Workforce P1a: absorbed into the Time hub's Timeline lens
          (pb_time_hub). The record stays so an admin can see what happened and
@@ -293,28 +314,44 @@
         <field name="action_xmlid">pb_hr_workforce.action_attendance_timecard</field>
         <field name="active" eval="False"/>
     </record>
+    <!-- RENAMED by Workforce P1b: "Shift Roster" -> "Schedule". Label and
+         sequence only — the action, the cockpit and the persona are untouched;
+         P2 reskins the surface itself. The rail now reads as the manager's
+         week (Today · Schedule · Time · …) rather than as a list of tables. -->
     <record id="item_wf_roster" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_workforce"/><field name="name">Shift Roster</field>
-        <field name="icon">calendar</field><field name="sequence">40</field>
+        <field name="section_id" ref="sec_workforce"/><field name="name">Schedule</field>
+        <field name="icon">calendar</field><field name="sequence">20</field>
         <field name="action_xmlid">pb_hr_workforce.action_shift_planning_grid</field>
     </record>
+    <!-- Last of the configuration surfaces still on the rail; it folds into
+         Schedule's templates drawer in P2 and retires there. -->
     <record id="item_wf_templates" model="pb.sidebar.item">
         <field name="section_id" ref="sec_workforce"/><field name="name">Shift Templates</field>
-        <field name="icon">layers</field><field name="sequence">50</field>
+        <field name="icon">layers</field><field name="sequence">80</field>
         <field name="action_xmlid">pb_hr_workforce.action_shift_template</field>
     </record>
+    <!-- RETIRED by Workforce P1b: the Overtime Desk's config gallery is the
+         editor of record for hr.overtime.config (pb_ot_desk.js openConfig opens
+         the native form), so this second, older dashboard over the same model
+         was a duplicate door with a different opinion. -->
     <record id="item_wf_overtime" model="pb.sidebar.item">
         <field name="section_id" ref="sec_workforce"/><field name="name">Overtime Rules</field>
-        <field name="icon">percent</field><field name="sequence">60</field>
+        <field name="icon">percent</field><field name="sequence">903</field>
         <field name="action_xmlid">pb_hr_workforce.action_overtime_rules_dashboard</field>
+        <field name="active" eval="False"/>
     </record>
-    <!-- Gated to match its legacy menu twin (pb_hr_workforce/views/menu_views.xml
+    <!-- RELOCATED by Workforce P1b: Payroll Report is a PAYROLL surface that
+         happened to live under Workforce — salary aggregates by department, for
+         the payroll persona. It moves to the Pay Run section, after Payslips,
+         and keeps P0's gate.
+
+         Gated to match its legacy menu twin (pb_hr_workforce/views/menu_views.xml
          menu_payroll_report, groups="om_hr_payroll.group_hr_payroll_user"). The
          sidebar entry shipped ungated, so it exposed salary aggregates to any
          Workforce persona (W8). -->
     <record id="item_wf_payroll_report" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_workforce"/><field name="name">Payroll Report</field>
-        <field name="icon">file-text</field><field name="sequence">70</field>
+        <field name="section_id" ref="sec_payrun"/><field name="name">Payroll Report</field>
+        <field name="icon">file-text</field><field name="sequence">45</field>
         <field name="action_xmlid">pb_hr_workforce.action_payroll_report_dashboard</field>
         <field name="groups_id" eval="[(6, 0, [ref('om_hr_payroll.group_hr_payroll_user')])]"/>
     </record>
