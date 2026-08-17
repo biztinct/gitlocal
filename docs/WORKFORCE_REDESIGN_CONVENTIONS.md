@@ -66,4 +66,31 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
 
 ## Ledger
 
-- (append W13+ here as gotchas are hit)
+- **W13 `noupdate` is per-FILE, and the Workforce sidebar items are spread over seven files.**
+  W8 recorded that `pb_sidebar/data/pb_sidebar_data.xml` is `noupdate="0"`. That is only true of
+  *that* file. The 14 Workforce items actually come from seven data files, and three of them ship
+  `<odoo noupdate="1">`, so a plain `-u <module>` silently does nothing to their records:
+  | file | noupdate (before P0) |
+  |---|---|
+  | `pb_sidebar/data/pb_sidebar_data.xml` | 0 |
+  | `pb_hr_workforce/data/pb_sidebar.xml` | 0 |
+  | `pb_team/data/pb_sidebar.xml` | 0 |
+  | `pb_driver_checkin/data/pb_sidebar.xml` | 0 |
+  | `pb_timeoff/data/pb_sidebar.xml` | **1** → flipped to 0 in P0 WP-H |
+  | `pb_business_trip/data/pb_sidebar.xml` | **1** |
+  | `pb_attendance_flow/data/pb_sidebar.xml` | **1** |
+  Rule: before editing any `pb.sidebar.item`, check the *declaring* file's `<odoo noupdate=…>`; if it
+  is 1, flip it to 0 in the same commit (sidebar items are program-managed IA, not user data) — never
+  reach for SQL or a migration. Verify the record actually moved after `-u`, don't assume.
+- **W14 A `var()` fallback is a real colour, not a comment.** Surfaces that mount OUTSIDE a `.pbim`
+  root — native-form field widgets (`pb_business_trip` trip composer), Leaflet pins rendered at
+  document level (`pb_driver_checkin`) — never see the `--pbim-*` custom properties, because those are
+  emitted by `@include pbim-root-vars` inside the `.pbim` selector only (`import_kit.scss` :7-8). In
+  those files the fallback is what actually paints, so it must carry the correct pbim hex. Corollary:
+  `--pbim-primary-soft` **does not exist** in `import_tokens.scss` — the soft indigo token is
+  `--pbim-soft`. Referencing the wrong name yields a permanently-fallback colour that looks like a
+  theme bug. Check the name against the `pbim-root-vars` mixin before using it.
+- **W15 You cannot alpha-suffix a `var()`.** `var(--x, #abc)33` is invalid CSS; the whole declaration
+  is dropped silently (found on two live borders in `trip_composer.scss`). Use
+  `color-mix(in srgb, var(--x, #hex) 20%, transparent)`. Confirmed safe through Dart Sass — unlike
+  mixed-unit `min()/max()`, `color-mix()` passes straight through to the bundle.
