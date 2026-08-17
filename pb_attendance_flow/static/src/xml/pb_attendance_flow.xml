@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_attendance_flow.PbAttendanceFlow">
-    <div class="pbaf pbim">
+    <div class="pbaf pbim" t-att-class="{ 'pbaf--embedded': props.embedded }">
 
       <!-- ============================ loading ============================ -->
       <div t-if="!state.loaded" class="pbaf-loading">
@@ -12,8 +12,10 @@
       <!-- ============================ BOARD ============================= -->
       <div t-elif="state.view === 'board' and state.data" class="pbaf-wrap">
 
-        <!-- hero + KPIs -->
-        <div class="pbaf-hero">
+        <!-- hero + KPIs. Embedded: the Time hub already drew the page header,
+             the window is the hub's week and Import is a sibling lens — so the
+             whole hero goes (W17: suppress only chrome the host owns). -->
+        <div class="pbaf-hero" t-if="!props.embedded">
           <div class="pbaf-hero-main">
             <div class="eyebrow"><span class="i" t-out="ic('clock',15)"/> Attendance Control</div>
             <h1>Exceptions &amp; corrections</h1>
@@ -273,9 +275,10 @@
       <!-- ============================ IMPORT =========================== -->
       <div t-elif="state.view === 'import'" class="pbaf-wrap import">
         <div class="pbaf-sub-head">
-          <button class="pbaf-back" t-on-click="backFromImport" t-out="ic('back',18)"/>
+          <button class="pbaf-back" t-if="canLeaveImport"
+                  t-on-click="backFromImport" t-out="ic('back',18)"/>
           <div class="h">
-            <h1>Import attendance</h1>
+            <h1 t-if="!props.embedded">Import attendance</h1>
             <div class="sub">CSV or XLSX · columns: Employee · Date · Check-in · Check-out</div>
           </div>
         </div>
@@ -379,7 +382,10 @@
           </div>
           <div class="pbaf-actbar center">
             <button class="pbaf-btn ghost" t-on-click="openImport">Import another</button>
-            <button class="pbaf-btn primary" t-on-click="backFromImport">Back to control</button>
+            <button class="pbaf-btn primary" t-on-click="backFromImport">
+              <t t-if="canLeaveImport">Back to control</t>
+              <t t-else="">Done</t>
+            </button>
           </div>
         </div>
       </div>

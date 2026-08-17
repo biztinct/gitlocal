@@ -3,6 +3,12 @@
  * Weekly Entry cockpit — WOW overtime + regular-hours grid for the HR/manager
  * persona. Composes the generic <WeekGrid/> with a live OT-ceiling rail and a
  * submit/approve tray. pbim-tokenized (.pbim.wfg). No employee self-entry.
+ *
+ * ONE component, TWO mount points (W17): the client action `pb_attendance_weekgrid`
+ * keeps working exactly as before, and pb_time_hub mounts the same class with
+ * `embedded="true"` as its Week Grid lens. `embedded` suppresses ONLY the chrome
+ * the hub already owns — the title and the <WfContextBar/> — never any logic or
+ * facade call, so there is no lens fork to keep in sync (W6).
  */
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
@@ -24,7 +30,13 @@ const OT_TYPES = ["weekday", "weekend", "holiday", "night"];
 export class AttendanceWeekGrid extends Component {
     static template = "pb_hr_workforce.AttendanceWeekGrid";
     static components = { WeekGrid, WfContextBar };
-    static props = { action: { type: Object, optional: true }, "*": true };
+    static props = {
+        action: { type: Object, optional: true },
+        // mounted as a hub lens rather than as a standalone client action
+        embedded: { type: Boolean, optional: true },
+        "*": true,
+    };
+    static defaultProps = { embedded: false };
 
     setup() {
         this.actionService = useService("action");

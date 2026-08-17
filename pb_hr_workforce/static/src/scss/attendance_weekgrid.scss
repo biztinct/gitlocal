@@ -29,6 +29,14 @@
 
     .wfg-ic { width: 17px; height: 17px; }
 
+    // The hub lens sits INSIDE a page that already owns the canvas background
+    // and the outer padding; only the grid itself should paint here.
+    &.wfg--embedded {
+        height: auto;
+        min-height: 420px;
+        background: transparent;
+    }
+
     // ---------------------------------------------------------- toolbar
     .wfg-toolbar {
         display: flex; align-items: center; gap: 14px;
@@ -36,6 +44,16 @@
         background: var(--pbim-surface);
         border-bottom: 1px solid var(--pbim-line);
     }
+    // Embedded as the Time hub's Week Grid lens (W17): the hub already drew a
+    // page header and the shared context bar, so the slim toolbar carries only
+    // the ceilings toggle and gives up the second horizontal rule.
+    .wfg-toolbar--slim {
+        padding: 8px 0 10px;
+        background: transparent;
+        border-bottom: 0;
+    }
+    .wfg-tb__spacer { flex: 1; }
+
     .wfg-tb__left { display: flex; align-items: center; gap: 12px; }
     .wfg-tb__center { display: flex; align-items: center; gap: 10px; flex: 1; justify-content: center; }
     .wfg-tb__right { display: flex; align-items: center; gap: 8px; }

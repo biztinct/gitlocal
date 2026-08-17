@@ -48,6 +48,16 @@
 
     .pbaf-wrap { padding: 22px 26px 40px; max-width: 1320px; margin: 0 auto; }
 
+    // Embedded as a Time hub lens (W17): the hub owns the canvas, the page
+    // gutter and the scroll container, so the cockpit stops being a page.
+    &.pbaf--embedded {
+        height: auto;
+        overflow: visible;
+        background: transparent;
+        .pbaf-wrap { padding: 4px 0 8px; max-width: none; }
+        .pbaf-loading { position: static; min-height: 260px; }
+    }
+
     // ------------------------------------------------------------ hero
     .pbaf-hero {
         display: flex; align-items: flex-end; justify-content: space-between;

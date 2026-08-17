@@ -2,10 +2,24 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_hr_workforce.AttendanceWeekGrid">
-    <div class="pbim wfg">
+    <div class="pbim wfg" t-att-class="{ 'wfg--embedded': props.embedded }">
 
-      <!-- toolbar -->
-      <div class="wfg-toolbar">
+      <!-- Embedded (Time hub lens): the hub owns the title and the context bar
+           (W4/W17), so the toolbar collapses to the one control that is really
+           this surface's own — the ceilings rail toggle. -->
+      <div class="wfg-toolbar wfg-toolbar--slim" t-if="props.embedded">
+        <div class="wfg-tb__spacer"/>
+        <button class="wfg-railtoggle" t-att-class="{ 'is-on': state.railOpen }"
+                t-on-click="() => this.toggleRail()" title="Toggle overtime ceilings">
+          <svg class="wfg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
+          </svg>
+          Ceilings
+        </button>
+      </div>
+
+      <!-- toolbar (standalone action) -->
+      <div class="wfg-toolbar" t-if="!props.embedded">
         <div class="wfg-tb__left">
           <div class="wfg-title">
             <svg class="wfg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
