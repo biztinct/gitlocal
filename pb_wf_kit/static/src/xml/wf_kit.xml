@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================== shared context bar -->
+  <t t-name="pb_wf_kit.WfContextBar">
+    <div class="wfctx" t-att-class="props.className">
+
+      <!-- department -->
+      <div class="wfctx-seg" t-if="features.department and !state.deptDenied">
+        <span class="wfctx-seg__ic" t-out="ic('layers', 14)"/>
+        <select class="wfctx-select" t-on-change="onDeptChange"
+                t-att-class="{ 'is-pinned': ctx.state.departmentId }"
+                aria-label="Department">
+          <option value="">All departments</option>
+          <t t-foreach="state.departments" t-as="dep" t-key="dep.id">
+            <option t-att-value="dep.id" t-att-selected="dep.id === ctx.state.departmentId"
+                    t-esc="dep.name"/>
+          </t>
+        </select>
+      </div>
+
+      <!-- week -->
+      <div class="wfctx-seg wfctx-week" t-if="features.week">
+        <button class="wfctx-nav" t-on-click="() => this.prevWeek()"
+                title="Previous week" aria-label="Previous week">
+          <span t-out="ic('chevron', 14)" class="wfctx-flip"/>
+        </button>
+        <span class="wfctx-weeklabel" t-esc="weekLabel"/>
+        <button class="wfctx-today" t-on-click="() => this.goToday()">Today</button>
+        <button class="wfctx-nav" t-on-click="() => this.nextWeek()"
+                title="Next week" aria-label="Next week">
+          <span t-out="ic('chevron', 14)"/>
+        </button>
+      </div>
+
+      <!-- person typeahead -->
+      <div class="wfctx-seg wfctx-person" t-if="features.person and !state.personDenied">
+        <t t-if="ctx.state.personId">
+          <span class="wfctx-chip is-pinned">
+            <span t-out="ic('user', 13)"/>
+            <span t-esc="state.personLabel"/>
+            <button class="wfctx-chip__x" t-on-click="() => this.clearPerson()"
+                    title="Clear person" aria-label="Clear person">
+              <span t-out="ic('x', 12)"/>
+            </button>
+          </span>
+        </t>
+        <t t-else="">
+          <span class="wfctx-seg__ic" t-out="ic('search', 14)"/>
+          <input class="wfctx-input" type="text" t-ref="person"
+                 placeholder="Find a person…" aria-label="Find a person"
+                 t-att-value="state.personQuery"
+                 t-on-input="onPersonInput" t-on-blur="onPersonBlur"/>
+          <div class="wfctx-menu" t-if="state.open">
+            <t t-foreach="state.matches" t-as="m" t-key="m.id">
+              <button class="wfctx-menu__item" t-on-click="() => this.pickPerson(m)">
+                <span t-out="ic('user', 13)"/><span t-esc="m.name"/>
+              </button>
+            </t>
+          </div>
+        </t>
+      </div>
+
+      <!-- optional free-text search -->
+      <div class="wfctx-seg" t-if="features.search">
+        <span class="wfctx-seg__ic" t-out="ic('filter', 14)"/>
+        <input class="wfctx-input" type="text" placeholder="Filter…" aria-label="Filter"
+               t-att-value="ctx.state.search" t-on-input="onSearchInput"/>
+      </div>
+
+    </div>
+  </t>
+
+  <!-- ========================================================= right drawer -->
+  <t t-name="pb_wf_kit.WfDrawer">
+    <div class="wfdr-scrim" t-on-click="() => props.onClose()">
+      <!-- .stop so a click inside the panel does not reach the scrim's close -->
+      <aside class="wfdr" role="dialog" aria-modal="true" t-on-click.stop="() => {}">
+        <header class="wfdr-head">
+          <div class="wfdr-head__txt">
+            <h3 class="wfdr-title" t-esc="props.title"/>
+            <p class="wfdr-sub" t-if="props.subtitle" t-esc="props.subtitle"/>
+          </div>
+          <button class="wfdr-x" t-on-click="() => props.onClose()"
+                  title="Close" aria-label="Close">
+            <span t-out="ic('x', 16)"/>
+          </button>
+        </header>
+        <div class="wfdr-body">
+          <t t-slot="default"/>
+        </div>
+      </aside>
+    </div>
+  </t>
+
+  <!-- ====================================================== exception ribbon -->
+  <t t-name="pb_wf_kit.WfRibbon">
+    <div class="wfrb" t-attf-class="wfrb--{{ tone }}">
+      <span class="wfrb-ic" t-out="ic(icon, 15)"/>
+      <span class="wfrb-txt" t-esc="props.text"/>
+      <button class="wfrb-act" t-if="props.actionLabel and props.onAction"
+              t-on-click="() => props.onAction()" t-esc="props.actionLabel"/>
+    </div>
+  </t>
+
+</templates>

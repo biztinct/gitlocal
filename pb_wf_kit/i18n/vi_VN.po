@@ -1,0 +1,82 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * pb_wf_kit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_wf_kit\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-17 00:00+0000\n"
+"PO-Revision-Date: 2026-08-17 00:00+0000\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/js/wf_context_bar.js:0
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "All departments"
+msgstr "Tất cả phòng ban"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Previous week"
+msgstr "Tuần trước"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Next week"
+msgstr "Tuần sau"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Find a person…"
+msgstr "Tìm nhân viên…"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Find a person"
+msgstr "Tìm nhân viên"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Clear person"
+msgstr "Bỏ chọn nhân viên"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Filter…"
+msgstr "Lọc…"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Filter"
+msgstr "Lọc"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Close"
+msgstr "Đóng"
