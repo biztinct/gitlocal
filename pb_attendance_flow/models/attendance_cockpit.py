@@ -261,6 +261,23 @@ class PbAttendanceFlow(models.AbstractModel):
             vals['new_check_in'] = payload['new_check_in']
         if payload.get('new_check_out'):
             vals['new_check_out'] = payload['new_check_out']
+
+        # `reuse_draft`: hand back the OPEN draft for this person+day+type
+        # instead of minting another one. The Time hub's drawer hand-off is an
+        # idempotent "open the correction for this day" gesture, not "file a new
+        # one every time" — and a mount that runs twice for any reason must not
+        # leave a trail of duplicate drafts in the pipeline. Only ever reuses a
+        # DRAFT: anything submitted/approved/refused is history and is left be.
+        if payload.get('reuse_draft'):
+            existing = self.env['hr.attendance.correction'].search([
+                ('employee_id', '=', emp_id),
+                ('date', '=', vals['date']),
+                ('correction_type', '=', vals['correction_type']),
+                ('state', '=', 'draft'),
+            ], limit=1, order='id desc')
+            if existing:
+                return self.get_correction(existing.id)
+
         corr = self.env['hr.attendance.correction'].create(vals)
         return self.get_correction(corr.id)
 

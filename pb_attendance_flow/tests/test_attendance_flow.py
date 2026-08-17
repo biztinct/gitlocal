@@ -516,3 +516,41 @@ class TestAttendanceFlow(TransactionCase):
         self.assertIn(self.emp_adult.id, ids_both)
         self.assertEqual(ids_a & {self.ework.id, self.emp_adult.id}, {self.ework.id},
                          "department filtering must drop the other department's rows")
+
+    # =================================================================== 18
+    def test_18_create_correction_reuse_draft_is_idempotent(self):
+        """`reuse_draft` reopens this day's DRAFT instead of minting another.
+
+        The Time hub's drawer hand-off is an idempotent "open the correction for
+        this day" gesture. Without this, a component mount that runs twice for
+        any reason leaves duplicate drafts in the pipeline — which is exactly
+        what a P1a render loop did to the live database (W21) before it was
+        caught, 591 times in 90 seconds.
+        """
+        d = self.today - timedelta(days=3)
+        payload = {'employee_id': self.ework.id, 'date': d.isoformat(),
+                   'correction_type': 'adjust', 'reason': 'first',
+                   'reuse_draft': True}
+        first = self.env['pb.attendance.flow'].create_correction(payload)
+        second = self.env['pb.attendance.flow'].create_correction(dict(payload, reason='again'))
+        self.assertEqual(first['id'], second['id'],
+                         'reuse_draft must return the existing draft')
+        self.assertEqual(self.Corr.search_count([
+            ('employee_id', '=', self.ework.id), ('date', '=', d),
+            ('correction_type', '=', 'adjust')]), 1)
+
+        # without the flag the historical behaviour is unchanged: a new draft
+        third = self.env['pb.attendance.flow'].create_correction(
+            {k: v for k, v in payload.items() if k != 'reuse_draft'})
+        self.assertNotEqual(third['id'], first['id'])
+
+        # a SUBMITTED correction is history: it is never silently reopened
+        submitted = self.Corr.browse(first['id'])
+        submitted.write({'reason': 'x'})
+        self.env['pb.attendance.flow'].correction_action(submitted.id, 'submit')
+        submitted.invalidate_recordset()
+        if submitted.state == 'submitted':
+            self.Corr.browse(third['id']).unlink()
+            fourth = self.env['pb.attendance.flow'].create_correction(payload)
+            self.assertNotEqual(fourth['id'], submitted.id,
+                                'a submitted correction must not be reused')

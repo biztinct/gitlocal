@@ -170,4 +170,24 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   hub gives it a bounded box for the lenses that need it (`.pbth-body--fill`: the body stops being
   the scroller and becomes a flex column, the lens takes `flex: 1; min-height: 0`). Belt and braces:
   add `min-width: 0` to the flex child so a future auto-height regression cannot overlap anything.
+- **W21 NEVER let an embedded child write HOST state during its mount. (Cost: 591 junk records on the
+  live database in ~90 seconds, P1a.)** `PbAttendanceFlow.load()` ended with
+  `props.onChanged(...)`, and the hub's handler refreshed its own `useState` summary. `load()` is
+  awaited inside `onWillStart`, i.e. **during the host's render fiber** — so the callback invalidated
+  that fiber, OWL restarted the render, the child remounted, `onWillStart` ran again, and the loop
+  never terminated. The symptom is deceptive: **no console error, no crash**, the surface simply
+  freezes — state writes land (localStorage showed the new lens) while the DOM never repaints, and
+  every other component on the page keeps updating normally because only the host's fiber is stuck.
+  Worse, the child's mount also *did work*: it created a correction record per iteration.
+  Rules:
+  1. a host→child callback fired from `onWillStart` / `onWillUpdateProps` may **read**, never write
+     host state. Fire "something changed" hooks from EVENT HANDLERS only (click, save, commit);
+  2. any mount-time write is idempotent or it does not belong in a mount — the facade's
+     `create_correction` gained `reuse_draft`, which reopens the day's existing DRAFT instead of
+     minting another;
+  3. when a cockpit "stops responding" with a clean console, suspect a pending fiber before
+     suspecting the event handler — check whether state writes are landing while the DOM is frozen;
+  4. after any live UI test that can WRITE, count the rows. `pb_hr_workforce`'s own weekgrid header
+     already warned about this class of bug ("no parent-state mutation during child mount → fetch
+     loop"); P1a proved it applies to callbacks too, not just direct `setState`.
 

@@ -116,11 +116,25 @@ export class PbAttendanceFlow extends Component {
                 this.wf.departmentId || false];
     }
 
+    /**
+     * Tell the host something CHANGED (a correction filed/applied, an import
+     * committed) so it can refresh its own counters.
+     *
+     * Never call this from `load()`. `load()` runs inside `onWillStart`, i.e.
+     * DURING the host's render fiber, and the host's handler writes host state
+     * — which invalidates that fiber, remounts this component, runs
+     * `onWillStart` again, and loops forever while the DOM never updates. That
+     * is not theoretical: it fired 591 duplicate draft corrections on the live
+     * database in about 90 seconds before it was caught (W21).
+     */
+    _changed() {
+        if (this.props.onChanged) { this.props.onChanged(); }
+    }
+
     async load() {
         try {
             this.state.data = await this.orm.call(MODEL, "get_control_data", this._windowArgs());
             this.state.loaded = true;
-            if (this.props.onChanged) { this.props.onChanged(this.state.data); }
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
             this.state.loaded = true;
@@ -181,6 +195,9 @@ export class PbAttendanceFlow extends Component {
                 exception_kind: kind || false,
                 reason: _t("Correction filed from the person drawer for %(date)s.",
                            { date }),
+                // idempotent: reopen this day's existing DRAFT rather than
+                // filing another one (W21 — belt and braces against a remount)
+                reuse_draft: true,
             }]);
             this._openComposer(corr);
         } catch (e) {
@@ -223,6 +240,7 @@ export class PbAttendanceFlow extends Component {
         this.state.view = "board";
         this.state.composer = null;
         this.load();
+        this._changed();
     }
 
     onComposerField(field, ev) { this.state.composer[field] = ev.target.value; }
@@ -276,6 +294,7 @@ export class PbAttendanceFlow extends Component {
             } else {
                 this.notif.add(_t("Done."), { type: "success" });
             }
+            this._changed();
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
         } finally {
@@ -292,6 +311,7 @@ export class PbAttendanceFlow extends Component {
             this.state.refuseOpen = false;
             this.state.refuseNote = "";
             this.notif.add(_t("Correction refused."), { type: "warning" });
+            this._changed();
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
         } finally {
@@ -370,6 +390,7 @@ export class PbAttendanceFlow extends Component {
             imp.result = await this.orm.call(
                 MODEL, "import_commit", [imp.fileB64, imp.fileName, imp.mapping]);
             imp.step = "done";
+            this._changed();
             this.notif.add(
                 _t("%s imported, %s skipped.", imp.result.created, imp.result.skipped),
                 { type: imp.result.skipped ? "warning" : "success" });
