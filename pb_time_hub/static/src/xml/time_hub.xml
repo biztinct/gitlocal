@@ -35,7 +35,7 @@
       </div>
 
       <!-- ============================ lenses ============================= -->
-      <div class="pbth-body">
+      <div class="pbth-body" t-att-class="{ 'pbth-body--fill': state.lens === 'grid' }">
 
         <!-- Timeline — the rebuilt Timecards read-model on pbim tones -->
         <div class="pbth-lensbody" t-if="state.lens === 'timeline'">

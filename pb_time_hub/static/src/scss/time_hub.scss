@@ -96,11 +96,22 @@
         overflow: auto;
         padding: 14px 22px 22px;
     }
+    // A lens that scrolls ITSELF (the Week Grid) must be handed a definite box
+    // instead of the page's scroll: it sizes its interior against its own
+    // height, and an auto height makes it grow to content and overflow its
+    // ceilings rail. So the body stops scrolling and becomes the flex parent
+    // while that lens is showing.
+    .pbth-body--fill {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
     .pbth-lensbody { min-height: 0; }
-    // The Week Grid brings its own internal scrolling; give it a real box.
     .pbth-lensbody--grid {
         display: flex;
-        min-height: 480px;
+        flex: 1 1 auto;
+        min-height: 360px;
+        min-width: 0;
         > .wfg { flex: 1; min-width: 0; }
     }
 

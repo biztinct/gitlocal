@@ -31,10 +31,15 @@
 
     // The hub lens sits INSIDE a page that already owns the canvas background
     // and the outer padding; only the grid itself should paint here.
+    //
+    // It KEEPS height:100% from the rule above on purpose. This cockpit owns
+    // its own internal scrolling, and an auto height makes it grow to the full
+    // content height — at which point `.wfg-main`'s flex child stops shrinking
+    // (min-width:auto resolves against min-content) and the grid slides out
+    // from under the ceilings rail. The host must give it a definite box.
     &.wfg--embedded {
-        height: auto;
-        min-height: 420px;
         background: transparent;
+        .wfg-main > .bwg { min-width: 0; }
     }
 
     // ---------------------------------------------------------- toolbar
