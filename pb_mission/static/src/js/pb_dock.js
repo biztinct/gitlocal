@@ -84,6 +84,7 @@ export class WfDock extends Component {
             refuseNote: "",
             hover: null,       // "model:id" whose hovercard is showing
             hoverAt: { top: 0, right: 0 },
+            batching: false,   // the clean batch is in flight (P4 WP-6)
         });
 
         // READ ONLY (W21). `get_team_data` has no write path in it at all, which
@@ -213,6 +214,91 @@ export class WfDock extends Component {
             });
         }
         return out;
+    }
+
+    /**
+     * The clean batch (P4 §3.7) — mockup B's dock footer.
+     *
+     * `is_clean` is the SERVER's verdict, computed in `pb.team._ot_clean_map`
+     * from three conditions (the request still says what the grid entered,
+     * there is ceiling headroom, the day is not locked) and fail-closed on any
+     * read it could not make. Nothing here re-derives it: a client that decided
+     * for itself which requests are clean would be a client that can be told to
+     * approve anything.
+     *
+     * Only OVERTIME participates in v1, and the copy says so out loud — a
+     * button labelled "approve all clean" over a queue containing trips, leaves
+     * and corrections would promise something it does not do.
+     */
+    get cleanItems() {
+        return this.items.filter(
+            (it) => it.is_clean && !this.state.busy[this.key(it)]);
+    }
+
+    /**
+     * Loop `pb.team.act` SEQUENTIALLY, as the real user (W12).
+     *
+     * Sequential rather than parallel for two reasons that are both about
+     * truth: each approve re-splits the OT against the ceiling allowance at
+     * approval time (`action_approve` recomputes it), so twenty simultaneous
+     * approvals would each be splitting against a stale allowance; and stopping
+     * on the first refusal is only meaningful if there IS a first.
+     *
+     * A partial result is reported as a partial result. The reload afterwards
+     * is not optional — the rest of the queue has moved.
+     */
+    async approveAllClean() {
+        if (this.state.batching) { return; }
+        const todo = this.cleanItems;
+        if (!todo.length) { return; }
+        this.state.batching = true;
+        let done = 0;
+        let failure = "";
+        try {
+            for (const it of todo) {
+                let res;
+                try {
+                    res = await this.orm.call(MODEL, "act", [
+                        it.model, it.res_id, "approve",
+                    ]);
+                } catch (e) {
+                    failure = (e && e.data && e.data.message) || (e && e.message)
+                        || _t("Something went wrong.");
+                    break;
+                }
+                if (!res || !res.ok) {
+                    failure = (res && res.error)
+                        || _t("The request could not be processed.");
+                    break;
+                }
+                // A server guard may refuse the RECORD while the call itself
+                // succeeded — that is not an approval and must not be counted
+                // as one (the `_afterAct` distinction, kept identical).
+                if (res.state === "refused") {
+                    failure = _t("Refused by a server guard · %s",
+                                 it.employee.name);
+                    break;
+                }
+                this.state.removed[this.key(it)] = true;
+                done += 1;
+            }
+        } finally {
+            this.state.batching = false;
+        }
+        if (failure) {
+            this.notif.add(
+                done
+                    ? _t("%(n)s approved, then stopped: %(why)s",
+                         { n: done, why: failure })
+                    : failure,
+                { type: "warning", title: _t("Partly done") });
+        } else {
+            this.notif.add(
+                done === 1 ? _t("1 clean overtime approved")
+                    : _t("%s clean overtime requests approved", done),
+                { type: "success" });
+        }
+        await this.load(true);
     }
 
     sourceIcon(source) {

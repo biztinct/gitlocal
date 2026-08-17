@@ -71,7 +71,7 @@ the retired rail items move to the 900 band (W18).
 pbim tokens only (the command bar is the deep-indigo `--pbim-primary-dark`, not
 a new navy), Lucide icons through the shared `ic()` registry, flat fills.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

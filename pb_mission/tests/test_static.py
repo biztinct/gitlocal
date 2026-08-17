@@ -304,6 +304,9 @@ class TestMissionStaticGates(TransactionCase):
                      '"get_close_data"'):
             self.assertIn(call, self._close_js(),
                           '%s must be a server call' % call)
+        # the dock's clean batch reads the SERVER's verdict and never its own
+        self.assertIn('it.is_clean', self._dock_js())
+        self.assertIn('approveAllClean', self._dock_js())
 
     def test_the_shell_ships_no_models_and_calls_no_facade_of_its_own(self):
         """§3.1 as amended by P3b: the shell is chrome, and every read it makes
@@ -383,6 +386,11 @@ class TestMissionStaticGates(TransactionCase):
         for writer in ('approve', 'confirmRefuse'):
             self.assertIn('this.%s(it)' % writer, self._dock_xml(),
                           '%s must be wired from a t-on-click' % writer)
+        # P4's batch is the same rule with twenty records behind it
+        self.assertNotIn('approveAllClean', setup.group(1),
+                         'the clean batch must not be reachable from setup()')
+        self.assertIn('this.approveAllClean()', self._dock_xml(),
+                      'the clean batch must be wired from a t-on-click')
         # the interval fires the same pure read the mount does
         self.assertRegex(js, re.compile(r'setInterval\(.*?this\.load\(true\)', re.S))
 
