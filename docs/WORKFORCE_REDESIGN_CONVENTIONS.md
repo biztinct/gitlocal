@@ -275,3 +275,14 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   Corollary — this is *why* W13.1 insists on asserting the DB after `-u`: the repo, the
   log and the migration were all "correct", and only reading `pb_sidebar_item.name` back
   showed the rail still had the old word on it.
+- **W28 A rail label is unique across the WHOLE sidebar, not just its section.** P1b's
+  handover specified renaming "My Team" → "Approvals". `pb_sidebar.item_approvals` already
+  carried exactly that label in the OVERVIEW section — the payroll payslip-run approval
+  cockpit (`action_tag` `pb_approval`, `match_models` `hr.payslip.run`), gated to the
+  payroll approver tiers — so the literal rename would have put two identically-named
+  entries on one rail, pointing at two different cockpits in two different domains. W8
+  makes *sequences* unique within a section; nothing was checking LABELS, and a user reads
+  labels, not sequences. Shipped as "Team Approvals". Before renaming any sidebar item,
+  grep the live `pb_sidebar_item` table for the label you intend to use, across every
+  section — the collision is invisible in the data file you are editing, because the twin
+  lives in another module.
