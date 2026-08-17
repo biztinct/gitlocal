@@ -72,6 +72,66 @@
         </div>
 
         <t t-else="">
+          <!-- ==================== week stats strip =====================
+               Replaces the legacy nine-dot summary bar. The PER-DAY numbers
+               live in the day headers below, where they line up with their
+               column by construction instead of by a second scroll listener. -->
+          <div class="pbsc-strip" t-if="stats">
+            <div class="pbsc-strip__f">
+              <span class="l">Scheduled</span>
+              <span class="v"><t t-esc="hrs(stats.total_hours)"/> h</span>
+            </div>
+            <div class="pbsc-strip__f">
+              <span class="l">Scheduled cost</span>
+              <span class="v" t-esc="money(stats.total_cost)"/>
+            </div>
+            <div class="pbsc-strip__f">
+              <span class="l">Actual so far</span>
+              <span class="v" t-esc="money(stats.actual_cost)"/>
+            </div>
+
+            <div class="pbsc-strip__budget">
+              <t t-if="budget">
+                <div class="pbsc-strip__brow">
+                  <span class="l">Budget</span>
+                  <span class="v" t-esc="money(budget.amount)"/>
+                  <span t-attf-class="pbsc-vpill is-{{ budgetTone }}">
+                    <t t-esc="Math.round(budgetRatio)"/>%
+                  </span>
+                  <button class="pbsc-link" t-if="canEditBudget"
+                          t-on-click="() => this.openBudget()">Edit</button>
+                </div>
+                <div class="pbsc-bar">
+                  <span t-attf-class="fill is-{{ budgetTone }}"
+                        t-attf-style="width: {{ budgetPct }}%"/>
+                </div>
+                <div class="pbsc-strip__note" t-if="budgetPartial">
+                  Only <t t-esc="budget.weeks_budgeted"/> of
+                  <t t-esc="budget.weeks_in_span"/> weeks in this span are
+                  budgeted — the comparison is partial.
+                </div>
+              </t>
+              <t t-else="">
+                <div class="pbsc-strip__brow">
+                  <span class="l">No budget set</span>
+                  <button class="pbsc-btn ghost" t-if="canEditBudget"
+                          t-on-click="() => this.openBudget()">
+                    <span t-out="ic('plus', 13)"/><span>Set budget</span>
+                  </button>
+                  <span class="pbsc-strip__note" t-else="">
+                    An attendance or payroll manager can set one.
+                  </span>
+                </div>
+              </t>
+            </div>
+
+            <div class="pbsc-strip__note pbsc-strip__norate" t-if="stats.no_rate">
+              <span t-out="ic('alert', 12)"/>
+              <span><t t-esc="stats.no_rate"/> scheduled people have no wage on
+                a running contract, so their hours are not in the cost.</span>
+            </div>
+          </div>
+
           <div class="pbsc-trunc" t-if="truncated">
             <span t-out="ic('alert', 13)"/>
             <span>Showing <t t-esc="employees.length"/> of
@@ -93,6 +153,15 @@
                 <div t-attf-class="pbsc-h {{ day.is_today ? 'is-today' : '' }} {{ day.is_weekend ? 'is-weekend' : '' }}">
                   <span class="dw" t-esc="day.label"/>
                   <span class="dd"><t t-esc="day.day_num"/> <t t-esc="day.month"/></span>
+                  <t t-set="st" t-value="statsByDay[day.date]"/>
+                  <span class="dst" t-if="st">
+                    <span class="h"><t t-esc="hrs(st.hours)"/> h</span>
+                    <span class="c" t-esc="money(st.cost)"/>
+                    <span class="a" t-if="st.actual_cost !== null and st.actual_cost !== undefined"
+                          t-attf-title="Actual cost for this day">
+                      act <t t-esc="money(st.actual_cost)"/>
+                    </span>
+                  </span>
                 </div>
               </t>
 
@@ -244,6 +313,49 @@
               <button class="pbsc-btn primary" t-att-disabled="state.copying"
                       t-on-click="() => this.doCopy()">
                 <span t-out="ic('check', 14)"/><span>Copy shifts</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== budget dialog ====================== -->
+      <div class="pbsc-scrim" t-if="state.budgetOpen" t-on-click="() => this.closeBudget()">
+        <div class="pbsc-modal pbsc-modal--sm" role="dialog" aria-modal="true"
+             t-on-click.stop="() => {}">
+          <header class="pbsc-modal__h">
+            <div>
+              <div class="eyebrow">Labour budget</div>
+              <h3>Week of <t t-esc="wf.weekStart"/></h3>
+              <div class="sub">
+                <t t-if="wf.departmentId">This department only</t>
+                <t t-else="">Company-wide</t>
+              </div>
+            </div>
+            <button class="pbsc-x" t-on-click="() => this.closeBudget()"
+                    title="Close" aria-label="Close">
+              <span t-out="ic('x', 16)"/>
+            </button>
+          </header>
+          <div class="pbsc-modal__b">
+            <label class="pbsc-field">
+              <span class="l">Amount</span>
+              <input class="i" type="number" min="0" step="any"
+                     t-att-value="state.budgetValue"
+                     t-on-input="onBudgetInput" aria-label="Labour budget amount"/>
+            </label>
+            <p class="pbsc-note">
+              Weekly. The strip compares it against the scheduled cost of this
+              span; leaving it unset simply hides the comparison.
+            </p>
+            <div class="pbsc-modal__actions">
+              <button class="pbsc-btn ghost" t-if="budget"
+                      t-att-disabled="state.budgetSaving"
+                      t-on-click="() => this.clearBudget()">Remove</button>
+              <button class="pbsc-btn ghost" t-on-click="() => this.closeBudget()">Cancel</button>
+              <button class="pbsc-btn primary" t-att-disabled="state.budgetSaving"
+                      t-on-click="() => this.saveBudget()">
+                <span t-out="ic('check', 14)"/><span>Save</span>
               </button>
             </div>
           </div>

@@ -262,7 +262,10 @@ class ShiftPlanningGrid(models.TransientModel):
                 self._pb_shift_card(s, tmap, False))
 
         assigned = scoped.filtered(lambda s: s.employee_id)
+        stats = self._pb_stats(days, assigned, employees, week_start,
+                               num_days, department_id)
         return {
+            'stats': stats,
             'week_start': week_start.isoformat(),
             'week_end': week_end.isoformat(),
             'num_days': num_days,
@@ -282,6 +285,170 @@ class ShiftPlanningGrid(models.TransientModel):
                 'conflicts': len(conflicts),
             },
         }
+
+    # ============================================== WP-3: cost & budget
+    @api.model
+    def _pb_rates(self, employee_ids):
+        """{employee_id: hourly rate} — AGGREGATE INPUT ONLY.
+
+        sudo, behind `_require_officer()`, exactly as the base facade's leave
+        read is documented (C18.73: the sudo lives behind an EXPLICIT gate,
+        never behind the accident of a missing ACL). An attendance officer
+        cannot read `hr.contract.wage`, and they must not learn it here either
+        — so the individual rates never leave this method. Everything the
+        cockpit receives is a day total or a week total (W12).
+        """
+        if not employee_ids:
+            return {}
+        contracts = self.env['hr.contract'].sudo().search(
+            [('employee_id', 'in', list(employee_ids)), ('state', '=', 'open')],
+            order='date_start desc, id desc')
+        rates = {}
+        for c in contracts:
+            eid = c.employee_id.id
+            if eid in rates:
+                continue                  # the most recent running contract wins
+            rates[eid] = c._pb_hourly_rate()
+        return rates
+
+    @api.model
+    def _pb_budget_rows(self, week_start, num_days, department_id):
+        """The budget rows covering the span, most specific scope first.
+
+        A budget is a WEEKLY figure, so a fortnight compares against the sum of
+        the two weeks it spans — and reports how many of them were actually
+        budgeted, because comparing a two-week roster against one week's money
+        is exactly the kind of quiet halving that makes people distrust a
+        dashboard.
+        """
+        Budget = self.env['pb.schedule.budget']
+        mondays = [week_start + timedelta(days=7 * i)
+                   for i in range(0, max(1, num_days // 7))]
+        dept = int(department_id) if department_id else False
+        rows = Budget.search([
+            ('company_id', 'in', self._pb_company_ids()),
+            ('week_start', 'in', mondays),
+            ('department_id', '=', dept),
+        ])
+        return rows, len(mondays)
+
+    @api.model
+    def _pb_stats(self, days, assigned, employees, week_start, num_days,
+                  department_id):
+        """Per-day hours/cost and the week's budget variance.
+
+        Cost = Σ(planned_hours × rate). Actual cost is only reported for days
+        that have already happened: a future day has no actual hours, and
+        printing 0 next to a scheduled figure reads as "we spent nothing"
+        rather than "this has not happened yet".
+        """
+        rates = self._pb_rates(employees.ids)
+        by_day = {d['date']: {'hours': 0.0, 'cost': 0.0, 'actual_cost': 0.0,
+                              'actual_hours': 0.0, 'shifts': 0}
+                  for d in days}
+        no_rate = set()
+        for s in assigned:
+            key = s.date.isoformat()
+            slot = by_day.get(key)
+            if slot is None:
+                continue
+            rate = rates.get(s.employee_id.id) or 0.0
+            if not rate:
+                no_rate.add(s.employee_id.id)
+            slot['shifts'] += 1
+            slot['hours'] += s.planned_hours or 0.0
+            slot['cost'] += (s.planned_hours or 0.0) * rate
+            slot['actual_hours'] += s.actual_hours or 0.0
+            slot['actual_cost'] += (s.actual_hours or 0.0) * rate
+
+        day_stats = []
+        for d in days:
+            slot = by_day[d['date']]
+            day_stats.append({
+                'date': d['date'],
+                'shifts': slot['shifts'],
+                'hours': round(slot['hours'], 1),
+                'cost': round(slot['cost'], 2),
+                # only settled days carry an actual figure
+                'actual_cost': round(slot['actual_cost'], 2) if d['is_past'] else None,
+                'actual_hours': round(slot['actual_hours'], 1) if d['is_past'] else None,
+            })
+
+        budget_rows, weeks = self._pb_budget_rows(
+            week_start, num_days, department_id)
+        budget = None
+        if budget_rows:
+            budget = {
+                'amount': round(sum(budget_rows.mapped('amount')), 2),
+                'weeks_budgeted': len(budget_rows),
+                'weeks_in_span': weeks,
+                # the row the dialog edits is the CONTEXT week's row
+                'id': next((b.id for b in budget_rows
+                            if b.week_start == week_start), False),
+            }
+
+        currency = (self.env.companies[:1] or self.env.company).currency_id
+        return {
+            'days': day_stats,
+            'total_hours': round(sum(x['hours'] for x in day_stats), 1),
+            'total_cost': round(sum(x['cost'] for x in day_stats), 2),
+            'actual_cost': round(sum(x['actual_cost'] or 0.0
+                                     for x in day_stats), 2),
+            'no_rate': len(no_rate),
+            'budget': budget,
+            'can_edit_budget': self.env['pb.schedule.budget']._pb_can_edit(),
+            'currency': {
+                'name': currency.name or 'USD',
+                'symbol': currency.symbol or '',
+                'position': currency.position or 'after',
+                'decimals': currency.decimal_places,
+            },
+        }
+
+    # --------------------------------------------------------- budget CRUD
+    @api.model
+    def set_budget(self, week_start_str, department_id, amount):
+        """Create or update the budget row for (company, department, week).
+
+        The manager gate lives on the MODEL (`pb.schedule.budget._pb_check_edit`)
+        so this facade cannot become a way around it.
+        """
+        self._require_officer()
+        Budget = self.env['pb.schedule.budget']
+        week_start = Budget._monday(fields.Date.from_string(week_start_str))
+        dept = int(department_id) if department_id else False
+        company = self.env.companies[:1] or self.env.company
+        existing = Budget.search([
+            ('company_id', '=', company.id),
+            ('department_id', '=', dept),
+            ('week_start', '=', week_start),
+        ], limit=1)
+        value = float(amount or 0.0)
+        if existing:
+            existing.write({'amount': value})
+            return existing.id
+        return Budget.create({
+            'company_id': company.id,
+            'department_id': dept,
+            'week_start': week_start,
+            'amount': value,
+        }).id
+
+    @api.model
+    def clear_budget(self, week_start_str, department_id):
+        """Remove the budget row for a scope+week. Returns how many went."""
+        self._require_officer()
+        Budget = self.env['pb.schedule.budget']
+        week_start = Budget._monday(fields.Date.from_string(week_start_str))
+        dept = int(department_id) if department_id else False
+        rows = Budget.search([
+            ('company_id', 'in', self._pb_company_ids()),
+            ('department_id', '=', dept),
+            ('week_start', '=', week_start),
+        ])
+        n = len(rows)
+        rows.unlink()
+        return n
 
     @api.model
     def _pb_shift_card(self, shift, tmap, has_conflict):
