@@ -46,7 +46,7 @@ class PbAttendanceFlow(models.AbstractModel):
         return False
 
     # ------------------------------------------------------------- cohort
-    def _cohort(self, df, dt, department_id=False):
+    def _cohort(self, df, dt, department_id=False, employee_id=False):
         """Employees the feed covers: for an officer, everyone in-company with a
         published shift in the window or an open punch; for anyone else, just
         themselves. Bounded to _MAX_COHORT.
@@ -55,9 +55,22 @@ class PbAttendanceFlow(models.AbstractModel):
         (W4). The Time hub's ribbon calls THIS method with THIS window so its
         count is the same number the Exceptions lens shows — the two must never
         disagree, so they share one cohort definition rather than two.
+
+        `employee_id` (P1b §2.4) narrows it to ONE person — the shared context's
+        pinned person, which is how the Today board's "File correction" door
+        lands the officer on that person's exceptions instead of on a queue of
+        four hundred they then have to search. It is a FILTER over the cohort
+        this method already computed, never a way to reach someone the caller
+        could not otherwise see: a non-officer still gets themselves, and a
+        pinned id outside the window simply yields an empty queue.
         """
         if not self._is_officer():
-            return self.env.user.employee_id, 0
+            emp = self.env.user.employee_id
+            if employee_id and emp.id != int(employee_id):
+                # A pinned colleague must not become a way past the own-only
+                # rail; the pin is ignored, not honoured.
+                return emp, 0
+            return emp, 0
         co_ids = self.env.companies.ids or [self.env.company.id]
         Emp = self.env['hr.employee'].sudo()
         shifts = self.env['hr.shift.planning'].sudo().search([
@@ -76,6 +89,8 @@ class PbAttendanceFlow(models.AbstractModel):
         if department_id:
             emps = emps.filtered(
                 lambda e: e.department_id.id == int(department_id))
+        if employee_id:
+            emps = emps.filtered(lambda e: e.id == int(employee_id))
         truncated = 0
         if len(emps) > _MAX_COHORT:
             truncated = len(emps) - _MAX_COHORT
@@ -106,7 +121,8 @@ class PbAttendanceFlow(models.AbstractModel):
 
     # ------------------------------------------------------------- load
     @api.model
-    def get_control_data(self, date_from=False, date_to=False, department_id=False):
+    def get_control_data(self, date_from=False, date_to=False,
+                         department_id=False, employee_id=False):
         """Board payload.
 
         Called with no arguments (the standalone Attendance Control action) the
@@ -114,13 +130,23 @@ class PbAttendanceFlow(models.AbstractModel):
         — unchanged. The Time hub passes its shared context week + department
         instead (W4), which is also what makes the hub ribbon's count and this
         board's count the same number by construction.
+
+        `employee_id` (P1b §2.4) is the shared context's pinned person. It
+        narrows the queue and comes back in `person`, so the board can show a
+        clearable chip: a filtered queue that does not SAY it is filtered reads
+        as "this person has no exceptions", which is the opposite of the truth.
+
+        Deliberately NOT applied to the corrections pipeline: an officer who
+        pins a person is triaging that person's exceptions, and hiding the rest
+        of the approval queue underneath would lose work in progress. Record
+        rules already scope that list.
         """
         self._require()
         dt = fields.Date.to_date(date_to) or date.today()
         df = fields.Date.to_date(date_from) or (dt - timedelta(days=_WINDOW_DAYS - 1))
         if df > dt:
             df, dt = dt, df
-        emps, truncated = self._cohort(df, dt, department_id)
+        emps, truncated = self._cohort(df, dt, department_id, employee_id)
 
         exceptions = self.env['pb.attendance.exception.engine']._get_exceptions(
             emps, df, dt) if emps else []
@@ -149,7 +175,35 @@ class PbAttendanceFlow(models.AbstractModel):
                 if groups.get(k)],
             'corrections': corrections,
             'truncated': truncated,
+            'person': self._person_chip(employee_id, emps),
         }
+
+    def _person_chip(self, employee_id, emps):
+        """{id, name} for the filter chip, or False.
+
+        The chip must render even when the pin matches nobody in the window —
+        "no exceptions for X" and "the queue is empty" are different sentences,
+        and only the chip tells them apart — so the name is resolved
+        independently of the cohort. That resolution is a directory lookup, so
+        it is gated and company-scoped: a NON-officer (who is pinned to their
+        own row anyway) gets an id and no name, never a colleague's identity out
+        of a context value any session can edit.
+        """
+        if not employee_id:
+            return False
+        try:
+            emp_id = int(employee_id)
+        except (TypeError, ValueError):
+            return False
+        name = ''
+        if emp_id in emps.ids:
+            name = emps.browse(emp_id).name or ''
+        elif self._is_officer():
+            co_ids = self.env.companies.ids or [self.env.company.id]
+            emp = self.env['hr.employee'].sudo().browse(emp_id).exists()
+            if emp and (not emp.company_id or emp.company_id.id in co_ids):
+                name = emp.name or ''
+        return {'id': emp_id, 'name': name}
 
     # ------------------------------------------------------------- corrections
     def _correction_cards(self):

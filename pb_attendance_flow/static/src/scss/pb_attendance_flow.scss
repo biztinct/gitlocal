@@ -115,6 +115,26 @@
         }
     }
 
+    // -------------------------------------------------- person filter chip
+    // The shared context's pinned person (P1b §2.4). Indigo, because it is a
+    // scope statement about the queue below it — not a warning.
+    .pbaf-pfilter {
+        display: flex; align-items: center; gap: 7px;
+        margin: 12px 14px 0; padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--soft); color: var(--p);
+        font-size: 12px; font-weight: 700;
+        width: fit-content;
+        .i svg { display: block; }
+        .s { font-weight: 600; opacity: .75; }
+        .x {
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 0; background: transparent; color: inherit;
+            padding: 0; margin-left: 2px; cursor: pointer; opacity: .7;
+            &:hover { opacity: 1; }
+        }
+    }
+
     // ------------------------------------------------------------ tabs
     .pbaf-tabs {
         display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 14px 4px;
