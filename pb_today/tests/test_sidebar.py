@@ -23,7 +23,10 @@ _ACTIVE_RAIL = [
     ('pb_timeoff.item_leave_center',      'Time Off',        40, 'umbrella'),
     ('pb_hr_workforce.item_wf_ot_desk',   'Overtime',        50, 'zap'),
     ('pb_business_trip.item_wf_trips',    'Trips',           60, 'plane'),
-    ('pb_team.item_my_team',              'Approvals',       70, 'inbox'),
+    # "Team Approvals", not the handover's bare "Approvals":
+    # pb_sidebar.item_approvals already owns that exact label in the OVERVIEW
+    # section (the payroll payslip-run cockpit). See pb_team/data/pb_sidebar.xml.
+    ('pb_team.item_my_team',              'Team Approvals',  70, 'inbox'),
     ('pb_sidebar.item_wf_templates',      'Shift Templates', 80, 'layers'),
 ]
 
@@ -185,6 +188,31 @@ class TestP1bSidebar(TransactionCase):
         officer = self.env.ref('hr_attendance.group_hr_attendance_officer')
         self.assertEqual(rec.groups_id.ids, officer.ids,
                          'the rail gate must match the pb.today facade gate (W8)')
+
+    def test_no_two_live_rail_items_share_a_label(self):
+        """W28 — a label is unique across the WHOLE sidebar, not per section.
+
+        P1b's handover specified renaming "My Team" to "Approvals";
+        `pb_sidebar.item_approvals` already carried exactly that label in the
+        Overview section (the payroll payslip-run cockpit). W8 makes SEQUENCES
+        unique within a section and nothing was checking labels — but a user
+        reads labels, and two identical entries pointing at two different
+        cockpits is a rail you cannot navigate. The collision is invisible in
+        the data file you are editing, because the twin lives in another module,
+        so it needs a database-wide test.
+        """
+        items = self.env['pb.sidebar.item'].search([])
+        seen = {}
+        for item in items:
+            seen.setdefault((item.name or '').strip().lower(), []).append(item)
+        dupes = {k: v for k, v in seen.items() if k and len(v) > 1}
+        self.assertFalse(
+            dupes,
+            'two live sidebar items share a label:\n%s' % '\n'.join(
+                '%r -> %s' % (k, ', '.join(
+                    '%s/%s(seq %s)' % (i.section_id.technical_key, i.name, i.sequence)
+                    for i in v))
+                for k, v in dupes.items()))
 
     def test_every_rail_icon_exists_in_the_sidebar_icon_set(self):
         """The rail's icons are a FIXED inline Lucide set in pb_sidebar.js; an

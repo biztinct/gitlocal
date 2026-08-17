@@ -4,14 +4,29 @@
          friendly empty-state when the user has no direct reports); managers see
          their queue.
 
-         RENAMED by Workforce P1b: "My Team" -> "Approvals", icon `inbox`, and
-         moved from the top of the rail (5) to 70. The name now says what the
-         surface is FOR — it is the manager's decision queue, not a directory —
-         and the rail reads as the week's loop with the queue near its end
-         rather than as an org chart at its top. Label/icon/sequence only. -->
+         RENAMED by Workforce P1b: "My Team" -> "Team Approvals", icon `inbox`,
+         and moved from the top of the rail (5) to 70. The name now says what
+         the surface is FOR — it is the manager's decision queue, not a
+         directory — and the rail reads as the week's loop with the queue near
+         its end rather than as an org chart at its top. Label/icon/sequence
+         only; the cockpit, its action and its gate are untouched.
+
+         WHY "Team Approvals" AND NOT THE HANDOVER'S "Approvals":
+         `pb_sidebar.item_approvals` already exists, labelled exactly
+         "Approvals", in the OVERVIEW section (action tag `pb_approval`,
+         `match_models` hr.payslip.run) — it is the PAYROLL approval cockpit,
+         gated to the payroll approver tiers. Shipping the literal label would
+         have put two identically-named entries on one rail, pointing at two
+         different cockpits in two different domains: payslip-run approval
+         versus a manager's own team's overtime/leave/trip requests. The one
+         extra word keeps the rename's whole point (a decision queue, not an
+         org chart) and removes an ambiguity a user would hit on their first
+         day. Flagged in the P1b report for the owner to overrule — the
+         alternative fix, renaming the payroll one to "Payroll Approvals", is
+         the better long-term answer but belongs to whoever owns Overview. -->
     <record id="item_my_team" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
-        <field name="name">Approvals</field>
+        <field name="name">Team Approvals</field>
         <field name="icon">inbox</field>
         <field name="sequence">70</field>
         <field name="action_xmlid">pb_team.action_pb_team</field>
