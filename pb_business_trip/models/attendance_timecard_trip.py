@@ -2,14 +2,16 @@
 
 from odoo import api, models, _
 
-_TRIP_COLOR = '#7c3aed'
+# pbim indigo primary — the one Workforce trip identity (W1). Delivered as a
+# literal because the Gantt paints it inline, outside any .pbim CSS scope.
+_TRIP_COLOR = '#5A4BB0'
 
 
 class AttendanceTimecardTrip(models.TransientModel):
     """Virtual trip-presence overlay for the Timecards Gantt (C18.4).
 
     Approved trip days are injected at READ time — never materialized as
-    hr.attendance rows. An empty trip day gets a full-width violet 'Business
+    hr.attendance rows. An empty trip day gets a full-width indigo 'Business
     Trip' bar; a day the traveller ALSO punched keeps its real bars plus a trip
     tag. A 'trip' legend entry appears whenever any trip bar is shown.
     """

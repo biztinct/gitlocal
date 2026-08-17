@@ -11,7 +11,7 @@ timeline, estimated costs, cash advance — through a 4-tier approval chain
 biz_approval_chain engine and shown as a live stepper.
 
 During an authorized trip the employee is automatically "Business Trip
-(Present)": a VIRTUAL overlay injects violet trip bars into the Timecards Gantt,
+(Present)": a VIRTUAL overlay injects indigo trip bars into the Timecards Gantt,
 locks the Weekly Entry REG cell, and counts the traveller as present on the
 Workforce dashboard — with NO materialized hr.attendance rows (C18.4).
 
@@ -20,7 +20,7 @@ without payroll or hr_expense): per-diem/trip-days → formula inputs
 (pb_trip_payroll_bridge), and receipted lines → draft expenses
 (pb_trip_expense_bridge). Per-diem is paid via payroll XOR expense, never both.
 """,
-    'version': '19.0.1.0.3',
+    'version': '19.0.1.0.4',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
