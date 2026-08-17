@@ -160,3 +160,14 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   from its fallback, which *works* but silently claims a token that isn't there and would survive a
   future token change untouched. Write the literal (`999px`) or add the token; do not fake it.
   Check any `--pbim-*` name against the mixin before using it — colour or not.
+- **W20 An embedded cockpit that scrolls ITSELF needs a DEFINITE height from the host.** Found live
+  in P1a: the Week Grid lens was given `height: auto; min-height: 420px` so it would "just flow"
+  inside the hub's scrolling page. It grew to its full content height (14 563 px on a 196-row week),
+  and once the box was auto-height its flex child stopped shrinking — `.bwg` has `min-width: auto`,
+  which resolves against min-content, so the grid rendered 1 496 px wide inside a 1 305 px parent and
+  slid straight under the overtime-ceilings rail, covering the Save button. Nothing errored; it just
+  looked broken. Rule: a lens whose cockpit owns internal scrolling keeps `height: 100%`, and the
+  hub gives it a bounded box for the lenses that need it (`.pbth-body--fill`: the body stops being
+  the scroller and becomes a flex column, the lens takes `flex: 1; min-height: 0`). Belt and braces:
+  add `min-width: 0` to the flex child so a future auto-height regression cannot overlap anything.
+
