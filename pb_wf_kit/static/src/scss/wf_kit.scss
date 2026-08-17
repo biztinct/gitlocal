@@ -156,6 +156,9 @@
 }
 
 // ---------------------------------------------------------------- drawer
+// position:absolute, so the HOST cockpit root must be position:relative — the
+// drawer belongs to the surface, not the viewport (a fixed overlay would sit on
+// top of the sidebar and the breadcrumb, which is not what mockup A shows).
 .wfdr-scrim {
     position: absolute;
     inset: 0;

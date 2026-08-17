@@ -11,10 +11,9 @@
  * is swallowed and that segment simply does not render — the bar never blocks a
  * cockpit from loading (the handover's "degrade to week-only" rail).
  */
-import { Component, useState, onWillStart, onWillUnmount, useRef } from "@odoo/owl";
+import { Component, useState, useRef, useEffect, onWillStart, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
-import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { weekLabel } from "./wf_context_service";
 
@@ -24,7 +23,7 @@ const TYPEAHEAD_MS = 220;
 export class WfContextBar extends Component {
     static template = "pb_wf_kit.WfContextBar";
     static props = {
-        // which segments to render; omit for all three
+        // which segments to render; omit for dept + week + person
         features: { type: Object, optional: true },
         // extra classes for the host cockpit
         className: { type: String, optional: true },
@@ -32,9 +31,13 @@ export class WfContextBar extends Component {
     static defaultProps = { className: "" };
 
     setup() {
-        this.ctx = useService("wf_context");
+        this.ctxSvc = useService("wf_context");
         this.orm = useService("orm");
-        this.personRef = useRef("person");
+
+        // useState() on the service's reactive object is what subscribes THIS
+        // component to context changes — including changes made by another
+        // surface. No manual re-render, and nothing to leak on unmount.
+        this.ctx = useState(this.ctxSvc.state);
 
         this.state = useState({
             departments: [],
@@ -47,22 +50,23 @@ export class WfContextBar extends Component {
         });
 
         this._timer = null;
+        this.deptRef = useRef("dept");
 
-        // Re-render when ANOTHER surface changes the context (P1 cross-cockpit
-        // sync). Unsubscribing on unmount matters: cockpits are mounted and
-        // destroyed on every sidebar click, and a leaked subscriber would keep
-        // a dead component alive for the whole session.
-        this._unsub = this.ctx.onChange(() => this.render());
+        // A <select>'s current choice is DOM state, not an attribute: re-rendering
+        // with a different `selected` option does not move an already-touched
+        // select. Push the value imperatively so a department set by another
+        // surface (P1 cross-cockpit sync) is reflected here.
+        useEffect(
+            (el, id) => { if (el) { el.value = id ? String(id) : ""; } },
+            () => [this.deptRef.el, this.ctx.departmentId],
+        );
 
-        onWillUnmount(() => {
-            this._unsub();
-            if (this._timer) { clearTimeout(this._timer); }
-        });
+        onWillUnmount(() => { if (this._timer) { clearTimeout(this._timer); } });
 
         onWillStart(async () => {
             if (this.features.department) { await this._loadDepartments(); }
-            if (this.features.person && this.ctx.state.personId) {
-                await this._resolvePersonLabel(this.ctx.state.personId);
+            if (this.features.person && this.ctx.personId) {
+                await this._resolvePersonLabel(this.ctx.personId);
             }
         });
     }
@@ -78,13 +82,7 @@ export class WfContextBar extends Component {
         };
     }
 
-    get weekLabel() { return weekLabel(this.ctx.state.weekStart); }
-
-    get deptLabel() {
-        const id = this.ctx.state.departmentId;
-        const d = id && this.state.departments.find((x) => x.id === id);
-        return d ? d.name : _t("All departments");
-    }
+    get weekLabel() { return weekLabel(this.ctx.weekStart); }
 
     ic(n, s = 14) { return ic(n, s); }
 
@@ -114,19 +112,19 @@ export class WfContextBar extends Component {
             // Persona can't read the employee any more — drop the stale pin
             // rather than showing a blank chip that cannot be cleared.
             this.state.personDenied = true;
-            this.ctx.set({ personId: false });
+            this.ctxSvc.set({ personId: false });
         }
     }
 
     // -------------------------------------------------------------- handlers
     onDeptChange(ev) {
         const v = ev.target.value;
-        this.ctx.set({ departmentId: v ? parseInt(v, 10) : false });
+        this.ctxSvc.set({ departmentId: v ? parseInt(v, 10) : false });
     }
 
-    prevWeek() { this.ctx.shiftWeek(-7); }
-    nextWeek() { this.ctx.shiftWeek(7); }
-    goToday() { this.ctx.today(); }
+    prevWeek() { this.ctxSvc.shiftWeek(-7); }
+    nextWeek() { this.ctxSvc.shiftWeek(7); }
+    goToday() { this.ctxSvc.today(); }
 
     onPersonInput(ev) {
         this.state.personQuery = ev.target.value;
@@ -141,12 +139,12 @@ export class WfContextBar extends Component {
     }
 
     async _search(q) {
-        // The query may have moved on while the RPC was in flight; a late reply
-        // must not repopulate the list under the user's fingers.
         try {
             const res = await this.orm.call("hr.employee", "name_search", [], {
                 name: q, args: [], operator: "ilike", limit: PERSON_LIMIT,
             });
+            // The query may have moved on while the RPC was in flight; a late
+            // reply must not repopulate the list under the user's fingers.
             if (this.state.personQuery !== q) { return; }
             this.state.matches = (res || []).map(([id, name]) => ({ id, name }));
             this.state.open = this.state.matches.length > 0;
@@ -158,7 +156,7 @@ export class WfContextBar extends Component {
     }
 
     pickPerson(m) {
-        this.ctx.set({ personId: m.id });
+        this.ctxSvc.set({ personId: m.id });
         this.state.personLabel = m.name;
         this.state.personQuery = "";
         this.state.matches = [];
@@ -166,7 +164,7 @@ export class WfContextBar extends Component {
     }
 
     clearPerson() {
-        this.ctx.set({ personId: false });
+        this.ctxSvc.set({ personId: false });
         this.state.personLabel = "";
         this.state.personQuery = "";
         this.state.matches = [];
@@ -174,9 +172,11 @@ export class WfContextBar extends Component {
     }
 
     onPersonBlur() {
-        // Let a click on a suggestion land before the list disappears.
-        setTimeout(() => { this.state.open = false; this.render(); }, 150);
+        // Let a click on a suggestion land before the list disappears. Writing
+        // reactive state (rather than calling render()) is what makes this safe
+        // if the cockpit was unmounted while the timer was pending.
+        setTimeout(() => { this.state.open = false; }, 150);
     }
 
-    onSearchInput(ev) { this.ctx.set({ search: ev.target.value }); }
+    onSearchInput(ev) { this.ctxSvc.set({ search: ev.target.value }); }
 }

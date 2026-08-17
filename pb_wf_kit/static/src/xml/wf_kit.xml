@@ -8,13 +8,12 @@
       <!-- department -->
       <div class="wfctx-seg" t-if="features.department and !state.deptDenied">
         <span class="wfctx-seg__ic" t-out="ic('layers', 14)"/>
-        <select class="wfctx-select" t-on-change="onDeptChange"
-                t-att-class="{ 'is-pinned': ctx.state.departmentId }"
+        <select class="wfctx-select" t-ref="dept" t-on-change="onDeptChange"
+                t-att-class="{ 'is-pinned': ctx.departmentId }"
                 aria-label="Department">
           <option value="">All departments</option>
           <t t-foreach="state.departments" t-as="dep" t-key="dep.id">
-            <option t-att-value="dep.id" t-att-selected="dep.id === ctx.state.departmentId"
-                    t-esc="dep.name"/>
+            <option t-att-value="dep.id" t-esc="dep.name"/>
           </t>
         </select>
       </div>
@@ -35,7 +34,7 @@
 
       <!-- person typeahead -->
       <div class="wfctx-seg wfctx-person" t-if="features.person and !state.personDenied">
-        <t t-if="ctx.state.personId">
+        <t t-if="ctx.personId">
           <span class="wfctx-chip is-pinned">
             <span t-out="ic('user', 13)"/>
             <span t-esc="state.personLabel"/>
@@ -47,7 +46,7 @@
         </t>
         <t t-else="">
           <span class="wfctx-seg__ic" t-out="ic('search', 14)"/>
-          <input class="wfctx-input" type="text" t-ref="person"
+          <input class="wfctx-input" type="text"
                  placeholder="Find a person…" aria-label="Find a person"
                  t-att-value="state.personQuery"
                  t-on-input="onPersonInput" t-on-blur="onPersonBlur"/>
@@ -65,7 +64,7 @@
       <div class="wfctx-seg" t-if="features.search">
         <span class="wfctx-seg__ic" t-out="ic('filter', 14)"/>
         <input class="wfctx-input" type="text" placeholder="Filter…" aria-label="Filter"
-               t-att-value="ctx.state.search" t-on-input="onSearchInput"/>
+               t-att-value="ctx.search" t-on-input="onSearchInput"/>
       </div>
 
     </div>
