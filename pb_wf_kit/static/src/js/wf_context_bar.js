@@ -188,17 +188,33 @@ export class WfContextBar extends Component {
     async _search(q) {
         try {
             const res = await this.orm.call("hr.employee", "name_search", [], {
-                name: q, args: [], operator: "ilike", limit: PERSON_LIMIT,
+                // Odoo 19 renamed name_search's second parameter `args` -> `domain`
+                // (`BaseModel.name_search(name, domain, operator, limit)`), so the
+                // old kwarg raises `TypeError: got an unexpected keyword argument
+                // 'args'` on EVERY keystroke. The catch below used to swallow that
+                // and mark the persona denied, which permanently removed the only
+                // person-search control on the page — no console error, no toast,
+                // the segment simply was not there any more. Found in P3a, live,
+                // when the shell made this the command bar's search.
+                name: q, domain: [], operator: "ilike", limit: PERSON_LIMIT,
             });
             // The query may have moved on while the RPC was in flight; a late
             // reply must not repopulate the list under the user's fingers.
             if (this.state.personQuery !== q) { return; }
             this.state.matches = (res || []).map(([id, name]) => ({ id, name }));
             this.state.open = this.state.matches.length > 0;
-        } catch {
-            this.state.personDenied = true;
+        } catch (e) {
             this.state.matches = [];
             this.state.open = false;
+            // Only an ACCESS failure means "this persona has no person search";
+            // anything else is a bug or a blip, and retiring the control for the
+            // rest of the session hides the very error that needs fixing.
+            const name = (e && e.data && e.data.name) || "";
+            if (/AccessError|AccessDenied/.test(name)) {
+                this.state.personDenied = true;
+            } else {
+                console.warn("wf_context: person search failed", e);
+            }
         }
     }
 
