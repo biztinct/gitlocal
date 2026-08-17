@@ -128,6 +128,14 @@
     // own legend floating over the bottom edge.
     &.dm-cockpit--maponly {
         .dm-body { border-radius: inherit; overflow: hidden; }
+        // Lift Leaflet's own bottom row (attribution + any bottom control)
+        // clear of the card legend, which is pinned to the same edge. Without
+        // this the "© OpenStreetMap contributors" credit sits ON the legend and
+        // both become unreadable — and the attribution is not optional, so the
+        // legend is what has to make room for it.
+        // 40px, not 32: the legend measures 33.5px live (two text rows can wrap
+        // at narrow widths), and 32 left the attribution overlapping it by 1.5px.
+        .leaflet-bottom { bottom: 40px; }
     }
     .dm-cardlegend {
         position: absolute; left: 0; right: 0; bottom: 0; z-index: 500;

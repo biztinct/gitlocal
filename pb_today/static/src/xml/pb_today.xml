@@ -38,13 +38,13 @@
           <div class="pbtd-seg" role="tablist">
             <button class="pbtd-seg__b" role="tab"
                     t-att-class="{ 'is-on': state.view === 'board' }"
-                    t-att-aria-selected="state.view === 'board'"
+                    t-att-aria-selected="state.view === 'board' ? 'true' : 'false'"
                     t-on-click="() => this.setView('board')">
               <span t-out="ic('list', 13)"/><span>Board</span>
             </button>
             <button class="pbtd-seg__b" role="tab"
                     t-att-class="{ 'is-on': state.view === 'map' }"
-                    t-att-aria-selected="state.view === 'map'"
+                    t-att-aria-selected="state.view === 'map' ? 'true' : 'false'"
                     t-on-click="() => this.setView('map')">
               <span t-out="ic('mapPin', 13)"/><span>Map</span>
             </button>
@@ -58,7 +58,7 @@
                depends on compiler order. -->
           <button t-foreach="tiles" t-as="t" t-key="t.key"
                   t-attf-class="pbtd-tile pbtd-tile--{{ t.tone }} {{ state.filter === t.key ? 'is-on' : '' }}"
-                  t-att-aria-pressed="state.filter === t.key"
+                  t-att-aria-pressed="state.filter === t.key ? 'true' : 'false'"
                   t-on-click="() => this.setFilter(t.key)">
             <span class="pbtd-tile__v" t-esc="t.n"/>
             <span class="pbtd-tile__l"><i/><t t-esc="t.label"/></span>
