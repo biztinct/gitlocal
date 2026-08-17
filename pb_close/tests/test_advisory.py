@@ -138,27 +138,48 @@ class TestCloseAdvisory(CloseCase):
     # ==================================================================
     #  MRO
     # ==================================================================
-    def test_the_advisory_is_mro_outer_of_the_demo_path(self):
-        """§2's warning: pb_demo replaces create_and_compute / compute_batch for
-        its DIVISION path WITHOUT calling super, so an MRO-INNER wrapper never
-        runs on the demo world. The generic (salary-structure / formula-config)
-        path always calls super and is unaffected either way — which is why this
-        is a proof about the demo world specifically.
+    def test_the_advisory_reaches_the_demo_division_path(self):
+        """§2's warning, and what MEASURING it actually found.
 
-        Cloned from pb_young_worker/tests/test_young_worker.py::test_09.
+        pb_demo replaces create_and_compute / compute_batch for its DIVISION
+        path WITHOUT calling super, so a wrapper that is MRO-INNER of pb_demo
+        never runs there. The handover cites pb_young_worker's `test_09` as the
+        precedent that this works. It does not: on the live registry the order
+        is `pb_demo -> pb_close -> pb_young_worker -> pb_payrun_wizard`, so
+        pb_demo is outer of BOTH advisories and the demo division run has never
+        shown either. `test_09` asserts the opposite and is stale.
+
+        The direction of the fix matters more than the fix. A production module
+        must never depend on the demo module to be correct, so pb_close does
+        NOT depend on pb_demo; instead pb_demo calls the product's advisory
+        hooks explicitly on the path it owns (`_pb_demo_advisories`). This test
+        therefore accepts EITHER route, and fails only if neither exists —
+        because what has to be true is that the advisory reaches the run, not
+        that it reaches it by a particular mechanism.
+
+        The generic (salary-structure) path always calls super and is
+        unaffected either way.
         """
-        mro = type(self.env['pb.payrun.wizard']).mro()
-        mods = [getattr(c, '__module__', '') for c in mro]
+        mods = [getattr(c, '__module__', '')
+                for c in type(self.env['pb.payrun.wizard']).mro()]
         close = next((i for i, m in enumerate(mods) if 'pb_close' in m), None)
         demo = next((i for i, m in enumerate(mods) if 'pb_demo' in m), None)
         self.assertIsNotNone(close, 'pb_close payrun wrapper missing from MRO')
-        if demo is not None:
-            self.assertLess(
-                close, demo,
-                "pb_close must be MRO-outer of pb_demo so super() wraps the "
-                "demo division path. If this fails the fix is NOT to depend on "
-                "pb_demo from a production module — it is to accept that the "
-                "demo division path shows no close advisory, and say so.")
+        if demo is None:
+            return                       # no demo module: nothing to bypass us
+        if close < demo:
+            return                       # MRO-outer: super() wraps the demo path
+        self.assertTrue(
+            hasattr(self.env['pb.payrun.wizard'], '_pb_demo_advisories'),
+            "pb_demo is MRO-outer of pb_close, so its division path skips the "
+            "append-after-super seam. pb_demo must then call the advisory "
+            "hooks itself (_pb_demo_advisories) — the fix is NEVER to depend "
+            "on pb_demo from a production module.")
+        import inspect
+        src = inspect.getsource(type(self.env['pb.payrun.wizard'])
+                                ._pb_demo_advisories)
+        self.assertIn('_close_append_exceptions', src,
+                      'the demo hook must invoke the close advisory')
 
     def test_the_wrapper_is_registered_on_both_seams(self):
         wiz = type(self.env['pb.payrun.wizard'])

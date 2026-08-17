@@ -255,13 +255,18 @@ class TestCloseBoard(CloseCase):
                 week_start=self.week_start.isoformat())
 
     def test_the_board_is_scoped_to_the_active_companies(self):
+        """`allowed_company_ids` is pinned explicitly, because `res.company.
+        create()` ADDS the new company to the creating user's allowed set — so
+        a test that just creates one and looks is testing nothing (found in
+        P4's own run: the twin assertion below passed vacuously)."""
         other = self.env['res.company'].create({'name': 'P4 Foreign Co'})
         foreign = self.env['hr.employee'].sudo().create({
             'name': 'P4 Foreigner', 'company_id': other.id, 'tz': 'UTC'})
         # a shift with no punch — so this row WOULD flag if scoping failed
         self._shift(foreign, self.day)
-        data = self.Close.get_close_data(
-            week_start=self.week_start.isoformat())
+        data = self.Close.with_context(
+            allowed_company_ids=[self.company.id]).get_close_data(
+                week_start=self.week_start.isoformat())
         self.assertNotIn(foreign.id,
                          [r['employee_id'] for r in data['flagged']])
 
@@ -270,8 +275,9 @@ class TestCloseBoard(CloseCase):
         foreign = self.env['hr.employee'].sudo().create({
             'name': 'P4 Foreigner 2', 'company_id': other.id, 'tz': 'UTC'})
         with self.assertRaises(UserError):
-            self.Close.sudo().review_flag(
-                foreign.id, self.day, 'missing_punch')
+            self.Close.sudo().with_context(
+                allowed_company_ids=[self.company.id]).review_flag(
+                    foreign.id, self.day, 'missing_punch')
 
     # ==================================================================
     #  locks on the board

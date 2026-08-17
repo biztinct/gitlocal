@@ -156,7 +156,9 @@ export class PbCloseLens extends Component {
         return _t("Close week %s", this.d.week_no || "");
     }
 
-    /** "within 10-min tolerance" — read from the payload, never hardcoded. */
+    /** "…within N-min tolerance" — N is read from the payload, never a
+     *  literal, so the strip cannot keep quoting a threshold an admin has
+     *  since changed. */
     get toleranceLabel() {
         const t = this.d.tolerance || {};
         return _t("Auto-approved · within %s-min tolerance", t.minutes ?? "—");
