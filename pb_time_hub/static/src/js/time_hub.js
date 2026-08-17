@@ -56,6 +56,8 @@ export class PbTimeHub extends Component {
             // remount nonce for the Exceptions lens — bumped when the drawer
             // hands it a correction to seed (see fileCorrection)
             excNonce: 0,
+            // guards a double-click while the create RPC is in flight
+            filing: false,
             // `{}` rather than null: the prop is a typed optional Object, and a
             // stable identity keeps the lens from re-rendering on every tick.
             seed: {},
@@ -197,21 +199,44 @@ export class PbTimeHub extends Component {
      * if it is in the week, else the Monday. Remounting the lens (nonce) is what
      * makes the hand-off unambiguous — see PbAttendanceFlow.seedCorrection.
      */
-    fileCorrection() {
+    async fileCorrection() {
         const p = this.state.person;
-        if (!p) { return; }
+        if (!p || this.state.filing) { return; }
         const flagged = p.days.find(
             (d) => d.flags.includes("missing") || d.flags.includes("open"))
             || p.days.find((d) => d.is_today)
             || p.days[0];
-        this.state.seed = {
-            employee_id: p.employee.id,
-            date: flagged.date,
-            kind: flagged.flags.includes("missing") ? "missing_punch" : false,
-        };
-        this.state.excNonce += 1;
-        this.setLens("exceptions");
-        this.closePerson();
+        const missing = flagged.flags.includes("missing");
+
+        // The WRITE happens HERE, in the click handler — never in the lens's
+        // mount (W21). OWL restarts an in-flight mount whenever the parent
+        // re-renders, so a create in `onWillStart` fires twice; two concurrent
+        // transactions cannot see each other's row, so even the server-side
+        // reuse guard cannot dedupe them. The lens is handed an ID and only
+        // READS it, which is safe to repeat.
+        this.state.filing = true;
+        try {
+            const corr = await this.orm.call("pb.attendance.flow", "create_correction", [{
+                employee_id: p.employee.id,
+                date: flagged.date,
+                correction_type: missing ? "create" : "adjust",
+                exception_kind: missing ? "missing_punch" : false,
+                reason: _t("Correction filed from the person drawer for %(date)s.",
+                           { date: flagged.date }),
+                // repeated hand-offs for the same person+day reopen the same
+                // draft rather than stacking duplicates in the pipeline
+                reuse_draft: true,
+            }]);
+            this.state.seed = { correction_id: corr.id };
+            this.state.excNonce += 1;
+            this.setLens("exceptions");
+            this.closePerson();
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message) || _t("Could not file a correction."),
+                { type: "danger" });
+        } finally {
+            this.state.filing = false;
+        }
     }
 
     /**

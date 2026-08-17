@@ -39,8 +39,9 @@ export class PbAttendanceFlow extends Component {
         initialView: { type: String, optional: true },
         // host-supplied person door (the hub's drawer); absent => native form
         onPerson: { type: Function, optional: true },
-        // {employee_id, date, kind?} — open the composer prefilled for this
-        // person/day on mount (the hub drawer's "File correction" hand-off)
+        // {correction_id} — open this existing correction's composer on mount
+        // (the hub drawer's "File correction" hand-off). An ID, never a
+        // create-instruction: mount-time work must be read-only (W21).
         seed: { type: Object, optional: true },
         // host-supplied hook fired after a correction is filed/applied, so the
         // hub can refresh its ribbon without knowing anything about this state
@@ -85,10 +86,13 @@ export class PbAttendanceFlow extends Component {
         onWillStart(async () => {
             await this.load();
             // The host remounts this lens (a keyed nonce) when it hands over a
-            // seed, so onWillStart is the right — and only — place to consume
-            // it: no prop-diffing, no half-open composer left behind.
-            if (this.props.seed && this.props.seed.employee_id) {
-                await this.seedCorrection(this.props.seed);
+            // seed. Consuming it here is safe ONLY because it is a pure READ:
+            // the host already created (or reused) the correction in its click
+            // handler and passes an id. A mount can run more than once — OWL
+            // restarts an in-flight mount whenever the parent re-renders — so
+            // nothing that WRITES may live in this hook (W21).
+            if (this.props.seed && this.props.seed.correction_id) {
+                await this.openCorrection(this.props.seed.correction_id);
             }
         });
     }
@@ -179,34 +183,6 @@ export class PbAttendanceFlow extends Component {
             this.state.busy = false;
         }
     }
-    /**
-     * Open the composer prefilled for an employee+day that did NOT come from an
-     * exception row — the Time hub's person drawer hands over {employee_id,
-     * date}. Same facade call, same guarded writer, same approval chain: only
-     * the entry point differs.
-     */
-    async seedCorrection({ employee_id, date, kind }) {
-        this.state.busy = true;
-        try {
-            const corr = await this.orm.call(MODEL, "create_correction", [{
-                employee_id,
-                date,
-                correction_type: kind === "missing_punch" ? "create" : "adjust",
-                exception_kind: kind || false,
-                reason: _t("Correction filed from the person drawer for %(date)s.",
-                           { date }),
-                // idempotent: reopen this day's existing DRAFT rather than
-                // filing another one (W21 — belt and braces against a remount)
-                reuse_draft: true,
-            }]);
-            this._openComposer(corr);
-        } catch (e) {
-            this.notif.add(this._err(e), { type: "danger" });
-        } finally {
-            this.state.busy = false;
-        }
-    }
-
     _seedReason(x) {
         return _t("%(label)s on %(date)s — %(detail)s",
             { label: this.kindLabel(x.kind), date: x.date, detail: x.detail || "" });
