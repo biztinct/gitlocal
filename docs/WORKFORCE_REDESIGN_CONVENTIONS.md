@@ -6,6 +6,7 @@ consolidation, powered by Option C's engine** — per the approved dossier
 
 Every phase handover in `docs/handovers/WORKFORCE_P*.md` references this file. **Opus: when you hit a
 new gotcha or make a binding convention decision, append a numbered W-rule here in the same commit.**
+Ledger closes at **W54** (P4, the final phase). 53 rules, not 54: there is no W32 — see the note below.
 Numbering note: **there is no W32** (it was folded into W33 during a renumber), and the P3a handover
 referred to "W-rules through W34" while the file in fact stopped at W33 — P3a opens the W34 slot, so
 the numbering and the reference agree again from here on.
@@ -572,3 +573,104 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   extras — org scope returns the BLANK metrics/roster shapes rather than walking
   4 500 employees through the OT-ceiling, shift-compliance and exception-engine
   builders four times a minute. Blank SHAPE, not a missing key.
+- **W48 New code never reads the shift model's STORED compliance-status field —
+  derive live.** (P4 §1, promoted from a per-phase non-goal to a standing rule.)
+  `hr.shift.planning`'s compliance status is a STORED compute over `now()` with
+  no cron to re-run it, and its `actual_check_in` / `actual_check_out` inputs are
+  never written by any production code path — only by seeders. So it is stale by
+  construction, and it is stale in the most dangerous way: it holds a plausible
+  value. P4's Close board decides which weeks reach payroll, and deciding that
+  from a field nobody maintains would be confidently wrong rather than obviously
+  broken. The proven shape is live derivation (`pb_today.py`:295-317 for
+  lateness; `pb.close._classify` for the whole week), from batched reads folded
+  in Python. Existing consumers (`pb.team`'s metrics, the exception engine's
+  late/early branch) are NOT being rewritten — this rule is about new code.
+  Gated by `pb_mission/tests/test_static.py::test_new_code_never_reads_
+  compliance_status`, a plain substring walk over `pb_close` and the Close lens.
+  **Corollary about grep gates, learned the expensive way twice in this program:**
+  a word-shaped gate fails on the DOCUMENTATION that explains the rule. P3b's
+  ledger records a gate that forbade the string "Chart.js" and duly failed on the
+  docstring saying the charts had been dropped. P4 therefore does not spell that
+  field's name anywhere in `pb_close` — including in prose — and says so where a
+  reader would otherwise wonder why the docs are vague.
+- **W49 A bypass context key is honoured ONLY under `env.su`.** `wf_lock_bypass`
+  opens every lock guard in `pb_close`, which is exactly the power a forged
+  context would want. A bare `{'wf_lock_bypass': 1}` is trivially reachable over
+  `call_kw` (C18.24, the same reasoning behind the `object()` sentinels in
+  `pb_attendance_flow` and `hr.overtime.request`); `env.su` is not reachable from
+  a JSON-RPC session at all. The PAIR means "a server-side process that has
+  already crossed a real permission boundary", which is the only caller that
+  should be able to rewrite a closed week: `pb_demo`'s regenerator (the key lives
+  in its `_GEN_CTX`, so a lock left behind by a demo of the Close ritual cannot
+  defeat a regen) and emergency shell surgery. Two consequences worth stating:
+  `env.su` ALONE must not open the guard — the correction workflow's single
+  writer `_apply()` runs sudo'd and must still be stopped — and `_is_admin()`
+  must not either, because it opens plenty of other doors in this codebase
+  deliberately. Tested from both sides: bypass works under su,
+  bypass-without-su does nothing.
+- **W50 A lock protects the AUDIT SUBSTRATE, not the money — say which, or the
+  guard will be built in the wrong place.** Nothing on the payroll path reads
+  `hr.attendance`: the `_get_formula_input_values` chain reads
+  `hr.overtime.request` and trips, and OT hours are grid-entered by design. A
+  punch could be rewritten a year after the fact without moving one payslip
+  figure. What a locked day protects is the EVIDENCE behind the decisions the
+  week produced — the OT approved because somebody really was there until 20:00,
+  the correction a manager signed off, the variance an officer waived. Rewriting
+  that after the week went to payroll turns a defensible payroll into an
+  undefensible one, silently, because none of the numbers change. The one guard
+  in P4 that IS about money is the overtime one (`approved_hours` feeds the OT
+  bridge, `hr_payslip.py`:27), and it exists for the opposite reason: a closed
+  week must not be able to GROW new approved overtime. Stating which of the two a
+  guard is for tells you where it belongs — the punch guard is on the ORM (six
+  writers reach that table; guarding each is six places to forget), the OT guard
+  is on the three state transitions.
+- **W51 The lock, the board and the exception engine key a punch by the
+  EMPLOYEE-LOCAL day; the Week Grid and `get_person_week` key it by
+  `check_in.date()`. Know which you are in.** In VN (UTC+7) an 05:58 local punch
+  is stored on the PREVIOUS UTC day, so UTC keying invents exactly the phantom
+  missing punch C18.49 forbids — which is why `pb.attendance.exception.engine`
+  already localizes (review G-M5) and why `pb.wf.lock` and `pb.close` follow it.
+  The consequence that matters is not correctness but AGREEMENT: a lock chip and
+  the board offering to set it must mean the same Tuesday, or an officer locks
+  Tuesday and watches Monday's row go read-only. The pre-existing UTC keying in
+  the grid is left alone (it is lossless for the day shifts it was built for and
+  changing it is a cockpit fix, not an engine one), but any NEW surface that
+  compares punches against shifts, leaves, trips or locks localizes first.
+- **W52 An "unlock" that DELETES the lock deletes its own audit trail.** P4's
+  handover specified `unlink = unlock` and, in the same paragraph, that the
+  reason be `message_post`-ed and its test read the chatter back. Those cannot
+  both be true: a `mail.thread` record takes its messages with it. `pb.wf.lock`
+  therefore keeps the grain the handover asked for — `unique(company_id, date)`,
+  and only a row in state `locked` locks anything — but reopening FLIPS the
+  state. One row per day then accumulates that day's whole history in one place:
+  locked by A, reopened by B because C, re-locked by D. `unlink()` still exists
+  and is still manager-gated, for genuine surgery; it is simply not the door.
+  General form: before modelling a state change as a deletion, ask what the
+  record was the only copy of.
+- **W53 A gated public facade method needs an ungated private twin the moment a
+  SECOND gated caller needs its arithmetic.** `hr.attendance.weekentry.
+  get_ot_ceilings` is `_require_officer`-gated, i.e. the ATTENDANCE tier only.
+  P4's clean-overtime batch needed the same figures inside `pb.team`, which is
+  read by HR and payroll MANAGERS as well — so calling the public door would have
+  raised AccessError for half the dock's personas, been swallowed by the
+  surrounding try/except, and made the whole feature silently not appear. That is
+  W40's exact failure shape, and W40 cost this program its person search for
+  three phases. The fix is not to widen the gate and not to copy the arithmetic
+  (two places to drift): extract the body into an underscore-private method,
+  which is not reachable over `call_kw` (C18.32), and leave the public method as
+  gate + delegate. Each caller then gates itself with the question ITS surface
+  actually asks. Same shape as `pb.attendance.exception.engine._get_exceptions`,
+  which has been private for this reason since Phase G.
+- **W54 A tolerance that accumulates over a period surfaces as ONE row for the
+  period, not one row per day.** P4 §3.3 defines a clean employee-day as inside
+  the per-punch tolerance AND inside the weekly one, which reads as "if the week
+  busts, every day of it is flagged". Implemented literally, a person eight
+  minutes short on each of five days — inside the per-punch tolerance every
+  single time — produces five identical rows a manager must waive one by one,
+  burying the days that genuinely need attention, and on a 200-person department
+  it produces a thousand. The week-level miss is ONE FACT ABOUT ONE PERSON, so
+  `pb.close` emits a single `week_variance` row carried on that person's worst
+  day, reviewable like any other flag. General form: a rollup threshold produces
+  a rollup row. Same instinct as the "a rest day is neither clean nor flagged"
+  and "an approved leave IS the explanation" rules in the same classifier — every
+  one of them is the difference between an instrument and an ignored instrument.
