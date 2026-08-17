@@ -36,6 +36,7 @@ import { WF_ROW_CAP } from "@pb_wf_kit/js/wf_rows";
 const MODEL = "hr.shift.planning.grid";
 const HUB_MODEL = "pb.time.hub";
 const SPAN_KEY = "pbsc.span.v1";
+const COVER_KEY = "pbsc.coverage.v1";
 
 /**
  * Template identity colours: ELEVEN slots, and not one hex in this file.
@@ -91,6 +92,12 @@ export class PbSchedule extends Component {
             budgetOpen: false,
             budgetValue: "",
             budgetSaving: false,
+            // coverage (WP-4)
+            coverageOn: this._restoreFlag(COVER_KEY),
+            coverageDrawer: false,
+            coverageData: null,
+            coverageForm: null,
+            coverageSaving: false,
         });
 
         // Stable handler identities — a fresh inline arrow makes OWL treat the
@@ -108,6 +115,16 @@ export class PbSchedule extends Component {
     ic(n, s = 14) { return ic(n, s); }
 
     // -------------------------------------------------------------- span
+    _restoreFlag(key) {
+        try { return window.localStorage.getItem(key) === "1"; }
+        catch { return false; }
+    }
+
+    _saveFlag(key, on) {
+        try { window.localStorage.setItem(key, on ? "1" : "0"); }
+        catch { /* private mode */ }
+    }
+
     _restoreSpan() {
         try {
             const v = parseInt(window.localStorage.getItem(SPAN_KEY), 10);
@@ -318,6 +335,135 @@ export class PbSchedule extends Component {
                 || _t("Could not remove the budget."), { type: "danger" });
         } finally {
             this.state.budgetSaving = false;
+        }
+    }
+
+    // ==================================================== WP-4: coverage
+    get coverage() { return (this.d && this.d.coverage) || null; }
+
+    /** Chips only render when the scope has actually STATED a requirement. */
+    get hasCoverage() { return !!this.coverage; }
+
+    coverageFor(day) {
+        const c = this.coverage;
+        return (c && c[day.date]) || null;
+    }
+
+    toggleCoverage() {
+        this.state.coverageOn = !this.state.coverageOn;
+        this._saveFlag(COVER_KEY, this.state.coverageOn);
+    }
+
+    async openCoverageDrawer() {
+        this.state.coverageDrawer = true;
+        this.state.coverageForm = null;
+        await this._loadCoverage();
+    }
+
+    closeCoverageDrawer() {
+        this.state.coverageDrawer = false;
+        this.state.coverageForm = null;
+    }
+
+    /**
+     * W21: this runs from a CLICK handler, never a mount hook — and it is a
+     * pure read, so re-entering it cannot mint anything.
+     */
+    async _loadCoverage() {
+        try {
+            this.state.coverageData = await this.orm.call(
+                MODEL, "get_coverage_requirements",
+                [this.wf.departmentId || false]);
+        } catch (e) {
+            this.state.coverageData = null;
+            this.notif.add((e && e.data && e.data.message)
+                || _t("Could not load coverage requirements."), { type: "danger" });
+        }
+    }
+
+    get coverageRows() {
+        return (this.state.coverageData && this.state.coverageData.rows) || [];
+    }
+
+    get coverageWeekdays() {
+        return (this.state.coverageData && this.state.coverageData.weekdays) || [];
+    }
+
+    get canEditCoverage() {
+        return !!(this.state.coverageData && this.state.coverageData.can_edit);
+    }
+
+    newCoverageRow() {
+        this.state.coverageForm = {
+            id: false,
+            department_id: this.wf.departmentId || false,
+            mode: "weekday",
+            weekday: "0",
+            date: this.wf.weekStart,
+            template_id: false,
+            required_headcount: 1,
+        };
+    }
+
+    editCoverageRow(row) {
+        this.state.coverageForm = {
+            id: row.id,
+            department_id: row.department_id,
+            mode: row.date ? "date" : "weekday",
+            weekday: row.weekday || "0",
+            date: row.date || this.wf.weekStart,
+            template_id: row.template_id || false,
+            required_headcount: row.required_headcount,
+        };
+    }
+
+    cancelCoverageForm() { this.state.coverageForm = null; }
+
+    onCoverageField(field, ev) {
+        const f = this.state.coverageForm;
+        if (!f) { return; }
+        let v = ev.target.value;
+        if (field === "required_headcount") { v = parseInt(v, 10) || 0; }
+        if (field === "template_id") { v = v ? parseInt(v, 10) : false; }
+        f[field] = v;
+    }
+
+    async saveCoverageRow() {
+        const f = this.state.coverageForm;
+        if (!f || this.state.coverageSaving) { return; }
+        this.state.coverageSaving = true;
+        try {
+            await this.orm.call(MODEL, "save_coverage_requirement", [{
+                department_id: f.department_id || false,
+                // exactly one of the two, which is what the model constrains
+                weekday: f.mode === "weekday" ? f.weekday : false,
+                date: f.mode === "date" ? f.date : false,
+                template_id: f.template_id || false,
+                required_headcount: f.required_headcount,
+            }, f.id || false]);
+            this.state.coverageForm = null;
+            await this._loadCoverage();
+            await this.load();
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message)
+                || _t("Could not save that requirement."), { type: "danger" });
+        } finally {
+            this.state.coverageSaving = false;
+        }
+    }
+
+    async deleteCoverageRow(row) {
+        if (this.state.coverageSaving) { return; }
+        this.state.coverageSaving = true;
+        try {
+            await this.orm.call(MODEL, "delete_coverage_requirement", [row.id]);
+            await this._loadCoverage();
+            await this.load();
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message)
+                || _t("Could not remove that requirement."), { type: "danger" });
+        } finally {
+            this.state.coverageSaving = false;
         }
     }
 

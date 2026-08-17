@@ -163,6 +163,11 @@ $pbsc-soft: (
             color: var(--pbim-primary, #5A4BB0);
             border-color: var(--pbim-primary, #5A4BB0);
         }
+        &.is-on {
+            color: var(--pbim-primary, #5A4BB0);
+            border-color: var(--pbim-primary, #5A4BB0);
+            background: var(--pbim-soft, #EDEAF8);
+        }
         &.primary {
             background: var(--pbim-primary, #5A4BB0);
             border-color: var(--pbim-primary, #5A4BB0);
@@ -417,6 +422,32 @@ $pbsc-soft: (
             .h { font-size: 10px; font-weight: 700; color: var(--pbim-muted, #64748B); }
             .c { font-size: 10.5px; font-weight: 800; color: var(--pbim-primary, #5A4BB0); }
             .a { font-size: 9.5px; color: var(--pbim-muted, #64748B); }
+        }
+        // coverage chip: gap rose, exact green, surplus muted (§3.5)
+        .pbsc-cov {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            align-self: flex-start;
+            margin-top: 4px;
+            padding: 1px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            .rq { font-weight: 700; opacity: .75; }
+            &.is-gap {
+                background: var(--pbim-rose-soft, #FCE7EF);
+                color: var(--pbim-rose, #DC2668);
+            }
+            &.is-exact {
+                background: var(--pbim-green-soft, #E3F2E9);
+                color: var(--pbim-green, #2E7D4F);
+            }
+            &.is-surplus {
+                background: var(--pbim-slate-soft, #EEF1F5);
+                color: var(--pbim-slate, #64748B);
+            }
         }
         &.is-today {
             box-shadow: inset 0 2px 0 0 var(--pbim-primary, #5A4BB0);
@@ -744,6 +775,59 @@ $pbsc-soft: (
         font-size: 12px;
         line-height: 1.55;
         color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------- coverage drawer
+    .pbsc-cov-drawer {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .pbsc-covadd { align-self: flex-start; }
+    .pbsc-covform {
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-bg, #F5F6FA);
+        padding: 12px 14px;
+
+        &__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .pbsc-field { margin-bottom: 0; }
+    }
+    .pbsc-covlist { display: flex; flex-direction: column; }
+    .pbsc-covrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 2px;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        &:last-child { border-bottom: 0; }
+
+        .n {
+            flex: none;
+            min-width: 30px;
+            text-align: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+            font-size: 11.5px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+        .d { flex: 1; min-width: 0; }
+        .t {
+            display: block;
+            font-size: 12px;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .pbsc-x { width: 24px; height: 24px; }
     }
 
     .pbsc-tmplgrid {
