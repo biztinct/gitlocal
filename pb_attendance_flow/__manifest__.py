@@ -31,8 +31,14 @@ Weekly-Entry grid stays the bulk-entry surface, untouched):
     approval stepper, compliance KPIs, and the import stepper. HR/officer gated.
 
 Report-only (C18.38): historical days are surfaced, never mutated.
+
+Workforce P4 WP-1 adds the CLOSE TOLERANCE to the same pb.attendance.rule row
+(`variance_minutes` / `variance_hours_week`): the threshold the weekly Close
+ritual uses to separate a clean employee-day from one that needs a human. It is
+deliberately a second dimension beside grace, not a re-use of it — grace decides
+who was late, tolerance decides what payroll may see unreviewed.
 """,
-    'version': '19.0.1.0.6',
+    'version': '19.0.1.0.7',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

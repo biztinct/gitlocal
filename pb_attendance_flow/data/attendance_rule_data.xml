@@ -14,5 +14,10 @@
         <field name="grace_out_minutes">15</field>
         <field name="open_checkout_hours">16</field>
         <field name="count_late_as">report_only</field>
+        <!-- Workforce P4 §3.1 close tolerance. On an EXISTING database this
+             file is frozen (noupdate="1" above), so these two land through
+             migrations/19.0.1.0.7/pre-migrate.py instead — see W13.1. -->
+        <field name="variance_minutes">10</field>
+        <field name="variance_hours_week">0.5</field>
     </record>
 </odoo>
