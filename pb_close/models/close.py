@@ -180,8 +180,15 @@ class PbClose(models.AbstractModel):
         flagged = rows[:_MAX_FLAGGED]
         open_flags = sum(1 for r in rows if not r['reviewed'])
 
+        # A day that has not happened yet cannot be closed, so it is not part of
+        # the denominator, not part of the "N days unlocked" tick, and not part
+        # of `all_locked`. Without this the current week always reports its own
+        # future as unfinished business — "3 days unlocked" on a Wednesday,
+        # forever, which is how a checklist teaches people to ignore it.
+        scope_days = [d for d in days if d <= today]
         handoff = self._handoff(emps, df, dt, totals)
-        checklist = self._checklist(emps, df, dt, open_flags, days, locked_days)
+        checklist = self._checklist(emps, df, dt, open_flags,
+                                    scope_days, locked_days)
         can_manage = Lock._pb_can_manage()
 
         return {
@@ -201,8 +208,8 @@ class PbClose(models.AbstractModel):
                 'flagged': open_flags,
                 'reviewed': reviewed_n,
                 'missing': missing_n,
-                'days_locked': len([d for d in days if d in locked_days]),
-                'days_total': len([d for d in days if d <= today]) or 7,
+                'days_locked': len([d for d in scope_days if d in locked_days]),
+                'days_total': len(scope_days) or 7,
             },
             'flagged': flagged,
             'flagged_total': len(rows),
@@ -218,8 +225,8 @@ class PbClose(models.AbstractModel):
             # A week entirely in the future is not "all locked" — `all()` over an
             # empty sequence is True, which would have rendered the handoff rail
             # in its locked state for next week.
-            'all_locked': bool([d for d in days if d <= today]) and all(
-                d in locked_days for d in days if d <= today),
+            'all_locked': bool(scope_days) and all(
+                d in locked_days for d in scope_days),
             'headcount': len(emps),
             'truncated': truncated,
             'tolerance': self._tolerance(),
@@ -558,7 +565,10 @@ class PbClose(models.AbstractModel):
     @api.model
     def _checklist(self, emps, df, dt, open_flags, days, locked_days):
         """Mockup C's four ticks. Each one is a QUESTION the officer would
-        otherwise have to go and check on another screen."""
+        otherwise have to go and check on another screen.
+
+        `days` here is the week's days that have HAPPENED — see the caller.
+        """
         ot_open = corr_open = 0
         if emps:
             ot_open = self.env['hr.overtime.request'].sudo().search_count([
