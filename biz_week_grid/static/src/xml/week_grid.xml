@@ -57,11 +57,24 @@
           <t t-foreach="filteredRows" t-as="row" t-key="row.id">
             <!-- sticky name cell -->
             <div class="bwg-name bwg-sticky-left">
-              <img class="bwg-name__av" t-if="row.avatar_url" t-att-src="row.avatar_url" loading="lazy"/>
-              <div class="bwg-name__txt">
-                <div class="bwg-name__l" t-esc="row.label"/>
-                <div class="bwg-name__s" t-esc="row.sublabel"/>
-              </div>
+              <!-- The host may make the row identity a DOOR (onRowOpen). Without
+                   the prop this renders exactly as before — a plain label. -->
+              <button t-if="props.onRowOpen" class="bwg-name__open"
+                      t-on-click="() => props.onRowOpen(row.id)"
+                      t-attf-title="Open {{ row.label }}">
+                <img class="bwg-name__av" t-if="row.avatar_url" t-att-src="row.avatar_url" loading="lazy"/>
+                <div class="bwg-name__txt">
+                  <div class="bwg-name__l" t-esc="row.label"/>
+                  <div class="bwg-name__s" t-esc="row.sublabel"/>
+                </div>
+              </button>
+              <t t-else="">
+                <img class="bwg-name__av" t-if="row.avatar_url" t-att-src="row.avatar_url" loading="lazy"/>
+                <div class="bwg-name__txt">
+                  <div class="bwg-name__l" t-esc="row.label"/>
+                  <div class="bwg-name__s" t-esc="row.sublabel"/>
+                </div>
+              </t>
               <button class="bwg-name__revert" t-if="anyRowDirty(row)"
                       t-on-click="() => this.revertRow(row)" title="Revert this row">
                 <svg class="bwg-ic bwg-ic--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

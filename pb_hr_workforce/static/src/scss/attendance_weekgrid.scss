@@ -97,6 +97,15 @@
     .wfg-focus--empty { color: var(--pbim-muted); font-size: 12.5px; }
     .wfg-focus__name { font-weight: 800; font-size: 14px; }
     .wfg-focus__sub { color: var(--pbim-muted); font-size: 12px; margin-bottom: 10px; }
+    // the over-ceiling door (W5) — amber, because it is a warning, not an error
+    .wfg-escalate {
+        display: block; width: 100%; margin-top: 10px;
+        border: 1px solid var(--pbim-amber); border-radius: 9px;
+        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+        font: inherit; font-size: 11.5px; font-weight: 700;
+        padding: 6px 10px; cursor: pointer; text-align: left;
+        &:hover { background: var(--pbim-surface); }
+    }
 
     .wfg-bar { margin-top: 12px; }
     .wfg-bar__top {

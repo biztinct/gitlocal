@@ -68,6 +68,7 @@ export class PbTimeHub extends Component {
         this._h = {
             onPerson: (id) => this.openPerson(id),
             onChanged: () => this._loadSummary(),
+            onEscalate: (id) => this.escalate(id),
         };
 
         // Ribbon follows the context week/department, like every lens.
@@ -211,6 +212,19 @@ export class PbTimeHub extends Component {
         this.state.excNonce += 1;
         this.setLens("exceptions");
         this.closePerson();
+    }
+
+    /**
+     * The Week Grid's over-ceiling door: an employee past their monthly or
+     * annual OT cap is a problem the exceptions queue exists to resolve, so
+     * the grid hands them here rather than dead-ending on a red bar.
+     */
+    escalate(employeeId) {
+        this.setLens("exceptions");
+        // Carry the person across with them: the drawer's "File correction" is
+        // the concrete next step for someone past their ceiling, and the queue
+        // stays visible behind it.
+        this.openPerson(employeeId);
     }
 
     /** Native-form escape as a DIALOG with a return path (W5). */

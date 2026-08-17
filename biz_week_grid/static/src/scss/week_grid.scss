@@ -146,6 +146,14 @@
         width: 30px; height: 30px; border-radius: 50%;
         object-fit: cover; flex: 0 0 auto; background: var(--bwg-line-2);
     }
+    // rendered only when the host supplied onRowOpen — the row identity as a door
+    .bwg-name__open {
+        display: flex; align-items: center; gap: 9px;
+        border: none; background: transparent; padding: 0; margin: 0;
+        font: inherit; color: inherit; text-align: left; cursor: pointer;
+        min-width: 0; flex: 1;
+        &:hover .bwg-name__l { color: var(--bwg-primary); }
+    }
     .bwg-name__txt { min-width: 0; flex: 1; }
     .bwg-name__l {
         font-weight: 600; font-size: 13px; line-height: 1.2;

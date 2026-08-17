@@ -38,6 +38,10 @@ export class WeekGrid extends Component {
         onDirty: { type: Function, optional: true },
         onSaved: { type: Function, optional: true },
         onFocus: { type: Function, optional: true },
+        // Optional: makes each row's identity (avatar + label) a clickable door
+        // back to the host — a drawer, a form, whatever the host owns. Absent,
+        // the name cell renders exactly as it always has.
+        onRowOpen: { type: Function, optional: true },
         "*": true,
     };
 

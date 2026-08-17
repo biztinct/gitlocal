@@ -46,7 +46,8 @@
 
         <!-- Week Grid — the Weekly Entry cockpit, embedded (W17) -->
         <div class="pbth-lensbody pbth-lensbody--grid" t-elif="state.lens === 'grid'">
-          <AttendanceWeekGrid t-key="'lens-grid'" embedded="true"/>
+          <AttendanceWeekGrid t-key="'lens-grid'" embedded="true"
+                              onPerson="_h.onPerson" onEscalate="_h.onEscalate"/>
         </div>
 
         <!-- Exceptions — the Attendance Control board + composer, embedded.
