@@ -51,6 +51,13 @@
             flex: 1 1 auto;
             min-height: 0;
             min-width: 0;       // belt and braces (W20): never overlap the host
+            // `width: 100%` is LOAD-BEARING, not decoration. This element already
+            // carried `max-width: 1360px; margin: 0 auto`, and an AUTO MARGIN on
+            // the cross axis cancels a flex item's stretch — so as a flex child it
+            // sized to its max-width and stayed 1360px wide inside a 1304px lens,
+            // hanging 56px past the canvas whenever the workspace was narrower
+            // than ~1412px (i.e. on every laptop). Caught live at 1440 (W39).
+            width: 100%;
             overflow: auto;
             padding-top: 16px;
         }

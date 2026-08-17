@@ -148,6 +148,14 @@ class TestP3aEmbeddability(TransactionCase):
             if 'min-height: 0' not in rules:
                 bad.append('%s: a flex scroll child without `min-height: 0` '
                            'grows to content instead of scrolling (W20)' % module)
+            # W39: pb_timeoff and pb_ot_desk both cap their wrap with
+            # `max-width` + `margin: 0 auto`, and an auto CROSS-AXIS margin
+            # cancels a flex item's stretch — so the wrap sizes to its cap and
+            # hangs past a narrower lens. Only pb_team's body has no such cap.
+            if module != 'pb_team' and 'width: 100%' not in rules:
+                bad.append('%s: the embedded scrollport needs `width: 100%%` — '
+                           'its `margin: 0 auto` cancels the flex stretch and it '
+                           'sizes to its max-width instead (W39)' % module)
         self.assertTrue(checked, 'none of the root-scroller modules is installed')
         self.assertFalse(bad, 'W20 violated:\n%s' % '\n'.join(bad))
 
