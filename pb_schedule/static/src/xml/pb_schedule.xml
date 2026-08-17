@@ -370,7 +370,7 @@
                 </div>
                 <div class="pbsc-report__list" t-if="state.copyReport.skipped.length">
                   <div t-foreach="state.copyReport.skipped" t-as="sk"
-                       t-key="sk.employee_id + '-' + sk.date"
+                       t-key="sk_index"
                        t-attf-class="pbsc-report__row is-{{ sk.severity }}">
                     <span class="who"><t t-esc="sk.employee_name"/></span>
                     <span class="when"><t t-esc="sk.date"/> · <t t-esc="sk.template"/></span>

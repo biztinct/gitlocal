@@ -194,6 +194,19 @@ class TestScheduleBudget(TransactionCase):
         self.assertGreater(stats['total_hours'], 0.0,
                            'the HOURS are still real even with no rate')
 
+    def test_cost_covers_the_whole_scope_not_just_the_visible_page(self):
+        """The rate cohort is every employee WITH A SHIFT, not the capped page
+        of rows. Keying rates off the visible list would silently zero the
+        hours of everyone past row 200 and count them as "no rate" — a cost
+        total that quietly shrinks as a department grows."""
+        import inspect
+
+        from odoo.addons.pb_schedule.models import schedule_grid
+        src = inspect.getsource(schedule_grid.ShiftPlanningGrid._pb_stats)
+        self.assertIn('assigned.employee_id.ids', src,
+                      'rates must be keyed off the shifts, not the page')
+        self.assertNotIn('_pb_rates(employees', src)
+
     def test_no_budget_row_means_no_budget_block(self):
         stats = self.Grid.get_schedule_data(
             self.week.isoformat(), self.dept.id, 7, '')['stats']
