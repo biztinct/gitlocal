@@ -6,6 +6,9 @@ consolidation, powered by Option C's engine** — per the approved dossier
 
 Every phase handover in `docs/handovers/WORKFORCE_P*.md` references this file. **Opus: when you hit a
 new gotcha or make a binding convention decision, append a numbered W-rule here in the same commit.**
+Numbering note: **there is no W32** (it was folded into W33 during a renumber), and the P3a handover
+referred to "W-rules through W34" while the file in fact stopped at W33 — P3a opens the W34 slot, so
+the numbering and the reference agree again from here on.
 Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay in
 `docs/FORMULA_ENGINE_CONVENTIONS.md` — reference them, don't duplicate.
 
@@ -344,3 +347,62 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
      memory; after any deploy assert the DB `latest_version` of EVERY module you bumped,
      not just the one you were watching; and treat "no `Starting post tests` line in the
      log" as a failed run, because a registry that never loaded never reaches the tests.
+- **W34 A `position: sticky` header inside an `overflow-x: auto` wrapper never sticks — and
+  the bug is invisible because it looks like "the header scrolled away".** (Found in P3a
+  while proving the three root-scrollers, and the reason that proof is worth doing at all.)
+  A sticky element resolves against its nearest SCROLLPORT, and per CSS Overflow a box with
+  `overflow-x: auto` computes `overflow-y` to `auto` as well — so it *is* a scroll container
+  even when it only ever scrolls sideways. `pb_timeoff`'s balance table puts
+  `thead th { position: sticky; top: 0 }` inside `.baltable-wrap { overflow-x: auto }`, so
+  its scrollport is that wrapper, which is exactly as tall as its content and never scrolls
+  vertically. The header has therefore been inert since it was written, standalone and
+  embedded alike (verified identical on both mounts, live). Two consequences:
+  1. when you move a cockpit's scrollport for W20, the stickies that DO move are the ones
+     whose scrollport is the root — check each one individually rather than assuming;
+  2. `overflow-x: auto` on a table wrapper is not a free horizontal scroll. If a sticky
+     header has to work, the wrapper needs a bounded height and `overflow: auto`, or the
+     sticky belongs on an element outside it.
+  P3a left pb_timeoff's alone deliberately: it behaves identically to before, and changing
+  it is a cockpit fix, not a shell fix.
+- **W35 A typed OPTIONAL OWL prop still rejects `null`.** `action: { type: Object, optional:
+  true }` means "may be absent", not "may be null" — dev-mode validation throws the moment
+  the prop is present with a null value, which is what a host does naturally when it models
+  "no arrival payload yet" as `state.arrival = null`. Pass `{}` instead (precedent:
+  `pb_time_hub`'s `seed: {}`), and keep the identity stable so the child is not recreated on
+  every render. Corollary for the arrival protocol: because `PbTimeHub._arrival()` reads
+  `props.action.context`, a HOST can deep-link an embedded hub by handing it a synthetic
+  `{ context: {...} }` — W26's protocol works unchanged through a prop, so an embedding
+  phase never needs to invent a second one.
+- **W36 A shared kit component that a HOST re-configures at runtime needs
+  `onWillUpdateProps`, and a shared component that reads a SERVICE needs an effect.** Two
+  holes in `<WfContextBar/>` that only Mission Control could expose, both of which were also
+  live bugs in the Time hub:
+  1. departments were fetched in `onWillStart` only. A host that turns the department
+     segment ON after mount (the shell does, on every lens switch) gets a permanently empty
+     `<select>` — no error, and it looks like a data problem.
+  2. `state.personLabel` was written ONLY by `pickPerson`. Every other person door — a lens
+     avatar calling `openPerson`, a deep link, a restored pin — writes `wf_context.personId`
+     directly, so the chip rendered with no name at all. The fix is a `useEffect` on
+     `ctx.personId`; effects run AFTER the patch, so resolving the name there is a read, not
+     a write inside somebody else's render fiber (W21).
+  Rule: any kit component whose props are a per-context MAP must handle those props
+  changing, and any kit component that mirrors service state must follow the service, not
+  just its own handlers.
+- **W37 The shell may not create a stacking context anywhere a lens can mount.** Cockpit
+  modals are `position: fixed; z-index: 1050` and expect the ROOT stacking context. A
+  z-index (or transform/filter/opacity) on the canvas or the lens box traps them, and 1050
+  then means nothing: the modal renders UNDER the workspace's own command bar. Mission
+  Control therefore stacks only its chrome — command bar 2, rail 1 — and
+  `pb_mission/tests/test_static.py` asserts that `.pbms-canvas` and `.pbms-lens` carry no
+  z-index at all. The ceiling is still 20, because below 1920px the biz sidebar is a 60px
+  absolute hover-overlay at z-25 that must paint OVER the workspace (§2). Proved live by
+  hit-testing `elementFromPoint` at the command bar's centre: with a lens modal open it
+  returns the modal's scrim; with the rail expanded it returns the sidebar.
+- **W38 W28's label-uniqueness rule is about the `pb.sidebar.item` TABLE, not about every
+  rail-shaped thing on screen.** P3a's shell has its own lens rail, and its Approvals lens is
+  labelled plainly "Approvals" while the sidebar record it replaced stays "Team Approvals" —
+  because the collision W28 was written about (`pb_sidebar.item_approvals`, the payroll
+  payslip-run cockpit) lives in that table and cannot appear inside a Workforce workspace.
+  Applying W28 to in-surface navigation would import a disambiguation the user cannot see the
+  reason for. Rule: grep the table before renaming a RECORD; judge an in-surface label by
+  what else is visible in that surface.
