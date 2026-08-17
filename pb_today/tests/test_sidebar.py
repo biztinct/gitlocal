@@ -1,57 +1,36 @@
 # Part of Payobook. See LICENSE file for full copyright and licensing details.
 """Workforce P1b — T3: the IA finale, asserted in the DATABASE.
 
-UPDATED BY P2: Shift Templates folded into Schedule's templates drawer, so the
-rail is SEVEN items, not eight, and `item_wf_templates` joins the 900 retired
-band. These gates are the DB-assert that catches a repo-only sidebar change, so
-they are updated with the change rather than left red — a red gate nobody
-believes is the same as no gate.
+UPDATED BY P3a. This file used to pin the WHOLE Workforce rail: eight live items
+after P1b, seven after P2, with their labels, sequences and icons. P3a folds all
+seven into the Mission Control shell, so an exact-rail assertion here would now
+fail on work that is correct — and it would fail again on every future phase that
+touches the section.
 
-W13.1, learned the hard way in P0 and again in P1a: a repo-only sidebar "fix" is
-indistinguishable from a real one unless something reads the database back.
-`ir_model_data.noupdate` is a per-record column that Odoo never refreshes, so a
-data file can say one thing while the live record says another and `-u` reports
-EXIT 0 either way — no error, no warning, a healthy-looking log and an unchanged
-rail.
+The durable question for THIS file is the narrower one P1b actually owns: did the
+four surfaces the Today board absorbed stay off the rail, at the 900-band
+sequences P1b gave them, and did the Payroll Report relocation hold? The
+whole-rail shape is asserted where it belongs, by the phase that created it —
+pb_mission/tests/test_sidebar.py (one live item, fifteen retired). This is the
+same narrowing pb_time_hub's P1a file went through when P1b superseded it, and
+the reason is the same: these gates exist to catch a repo-only sidebar change, so
+they are updated WITH the change rather than left red. A red gate nobody believes
+is the same as no gate.
 
-Every assertion below therefore resolves the xmlid and reads the RECORD, after
-the upgrade — never the XML. Business Trips is the one that matters most: its
-data file was frozen until this phase, so if the migration did not run, exactly
-one assertion here fails and names it.
+W13.1, learned the hard way in P0 and again in P1a and P1b: a repo-only sidebar
+"fix" is indistinguishable from a real one unless something reads the database
+back. Every assertion below therefore resolves the xmlid and reads the RECORD,
+after the upgrade — never the XML.
 """
 from odoo.tests import TransactionCase, tagged
 
-# The Option-A rail, in full. (xmlid, label, sequence, icon)
-_ACTIVE_RAIL = [
-    ('pb_today.item_wf_today',            'Today',           10, 'activity'),
-    ('pb_sidebar.item_wf_roster',         'Schedule',        20, 'calendar'),
-    ('pb_time_hub.item_wf_time',          'Time',            30, 'clock'),
-    ('pb_timeoff.item_leave_center',      'Time Off',        40, 'umbrella'),
-    ('pb_hr_workforce.item_wf_ot_desk',   'Overtime',        50, 'zap'),
-    ('pb_business_trip.item_wf_trips',    'Trips',           60, 'plane'),
-    # "Team Approvals", not the handover's bare "Approvals":
-    # pb_sidebar.item_approvals already owns that exact label in the OVERVIEW
-    # section (the payroll payslip-run cockpit). See pb_team/data/pb_sidebar.xml.
-    ('pb_team.item_my_team',              'Team Approvals',  70, 'inbox'),
-    # P2: 'Shift Templates' (80) retired into Schedule's drawer -> 905, inactive
-]
-
-# Retired in P1b, parked in the 900 band (W18) — a deactivated item still
-# OCCUPIES its sequence, and the new rail took 10, 20, 60, 70 and 80.
-_RETIRED_900 = [
-    ('pb_sidebar.item_wf_dashboard',           901),
-    ('pb_sidebar.item_wf_live',                902),
-    ('pb_sidebar.item_wf_overtime',            903),
+# Retired by P1b into the 900 band (W18), and still there. Today absorbed the
+# first three; the driver map became Today's map card and its full Map view.
+_RETIRED_BY_P1B = [
+    ('pb_sidebar.item_wf_dashboard', 901),
+    ('pb_sidebar.item_wf_live', 902),
+    ('pb_sidebar.item_wf_overtime', 903),
     ('pb_driver_checkin.item_driver_tracking', 904),
-    # P2 — folded into Schedule's templates drawer
-    ('pb_sidebar.item_wf_templates',           905),
-]
-
-# Retired earlier, left where they were because nothing collides with them.
-_RETIRED_INPLACE = [
-    ('pb_sidebar.item_wf_timecards',              900),
-    ('pb_attendance_flow.item_attendance_control', 25),
-    ('pb_hr_workforce.item_wf_weekentry',          35),
 ]
 
 
@@ -72,28 +51,26 @@ class TestP1bSidebar(TransactionCase):
             self.skipTest('%s is not installed' % name)
         return sec
 
-    # ============================================================ the rail
-    def test_the_option_a_rail_is_exactly_what_the_handover_says(self):
-        """Label, sequence, icon and active flag for all eight live items."""
-        sec = self._section()
+    # ========================================================== retirement
+    def test_the_four_p1b_absorbed_items_stay_retired_in_the_900_band(self):
+        """W18: `active = False` takes an item off the rail but not out of the
+        section, so a retirement that inherits somebody's sequence has to MOVE.
+        P1b's four went to 901-904 and nothing since has disturbed them."""
         checked = 0
-        for xmlid, label, seq, icon in _ACTIVE_RAIL:
+        for xmlid, seq in _RETIRED_BY_P1B:
             rec = self._item(xmlid)
             if not rec:
                 continue
             checked += 1
-            self.assertTrue(rec.active, '%s must be ON the rail' % xmlid)
-            self.assertEqual(rec.name, label, '%s label' % xmlid)
-            self.assertEqual(rec.sequence, seq, '%s sequence' % xmlid)
-            self.assertEqual(rec.icon, icon, '%s icon' % xmlid)
-            self.assertEqual(rec.section_id, sec, '%s section' % xmlid)
-        self.assertEqual(checked, len(_ACTIVE_RAIL),
-                         'the whole Workforce rail must be installed to check it')
+            self.assertFalse(rec.active, '%s must be off the rail' % xmlid)
+            self.assertEqual(rec.sequence, seq, '%s retired sequence' % xmlid)
+        self.assertEqual(checked, len(_RETIRED_BY_P1B),
+                         'all four P1b retirements must be present to check')
 
     def test_business_trips_is_no_longer_frozen(self):
-        """The W13.1 unfreeze. If the migration did not run, `noupdate` is still
-        true here and the sequence assertion above is still 37 — a repo-only
-        change is indistinguishable from a real one without this read."""
+        """The W13.1 unfreeze P1b shipped. If the migration had not run, this
+        record would still be immovable and every later phase that touches it —
+        P3a moved it to 911 — would silently apply nothing."""
         rec = self.env.ref('pb_business_trip.item_wf_trips', raise_if_not_found=False)
         if not rec:
             self.skipTest('pb_business_trip is not installed')
@@ -107,36 +84,6 @@ class TestP1bSidebar(TransactionCase):
             'the P1b migration must clear the stored noupdate flag — until it '
             'does, `-u pb_business_trip` applies nothing and says nothing')
 
-    # ========================================================== retirement
-    def test_the_retired_set_is_exactly_the_expected_one(self):
-        sec = self._section()
-        Item = self.env['pb.sidebar.item']
-        every = Item.with_context(active_test=False).search([('section_id', '=', sec.id)])
-        live = Item.search([('section_id', '=', sec.id)])
-        retired = every - live
-
-        expected = {
-            self.env.ref(x).id
-            for x, _seq in (_RETIRED_900 + _RETIRED_INPLACE)
-            if self.env.ref(x, raise_if_not_found=False)
-        }
-        self.assertEqual(
-            set(retired.ids), expected,
-            'retired set was %s' % ', '.join(
-                '%s(%s)' % (i.name, i.sequence) for i in retired.sorted('sequence')))
-
-    def test_the_retirements_moved_into_the_900_band(self):
-        """W18: `active = False` takes an item off the rail but not out of the
-        section. Today took 10, Schedule 20, Trips 60 and Approvals 70 — so
-        every item that held one of those had to MOVE, and P2's Shift Templates
-        moved out of 80 for the same reason."""
-        for xmlid, seq in _RETIRED_900:
-            rec = self._item(xmlid)
-            if not rec:
-                continue
-            self.assertFalse(rec.active, '%s must be off the rail' % xmlid)
-            self.assertEqual(rec.sequence, seq, '%s retired sequence' % xmlid)
-
     def test_workforce_sequences_are_unique(self):
         """W8, counting retired items too."""
         sec = self._section()
@@ -147,22 +94,6 @@ class TestP1bSidebar(TransactionCase):
         self.assertFalse(dupes, 'duplicated Workforce sequences: %s (%s)' % (
             dupes, ', '.join('%s=%s' % (i.name, i.sequence)
                              for i in items.sorted('sequence') if i.sequence in dupes)))
-
-    def test_exactly_seven_workforce_items_are_live(self):
-        """The sweep count: 14 items before P1a, 8 after P1b, SEVEN after P2 —
-        the final Option-A shape."""
-        sec = self._section()
-        live = self.env['pb.sidebar.item'].search([('section_id', '=', sec.id)])
-        self.assertEqual(
-            len(live), 7,
-            'expected 7 live Workforce items, found %s: %s' % (
-                len(live), ', '.join('%s(%s)' % (i.name, i.sequence)
-                                     for i in live.sorted('sequence'))))
-        self.assertEqual(
-            [i.name for i in live.sorted('sequence')],
-            [label for _x, label, _s, _i in _ACTIVE_RAIL],
-            'the rail must read Today · Schedule · Time · Time Off · Overtime · '
-            'Trips · Team Approvals, in that order')
 
     # ============================================================ relocation
     def test_payroll_report_moved_to_the_pay_run_section_with_its_gate(self):
@@ -191,7 +122,10 @@ class TestP1bSidebar(TransactionCase):
                              for i in items.sorted('sequence') if i.sequence in dupes)))
 
     # ================================================================ gates
-    def test_today_carries_the_officer_gate(self):
+    def test_today_keeps_the_officer_gate_it_can_be_re_enabled_with(self):
+        """Retirement is reversible (W18), so the record has to stay correct.
+        The gate also outlives the rail entry in a second place: Mission Control
+        asks the SAME question client-side before it offers the Today lens."""
         rec = self._item('pb_today.item_wf_today')
         if not rec:
             self.skipTest('pb_today is not installed')

@@ -38,7 +38,7 @@ the 900 band (W18).
 pbim tokens only (the command bar is the deep-indigo `--pbim-primary-dark`, not
 a new navy), Lucide icons through the shared `ic()` registry, flat fills.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -57,6 +57,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     ],
     'data': [
         'views/mission_action.xml',
+        'data/pb_sidebar.xml',
     ],
     'assets': {
         'web.assets_backend': [

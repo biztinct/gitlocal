@@ -29,11 +29,17 @@
          retired into the 900 band, because this cockpit's config gallery opens
          the native hr.overtime.config form and is the editor of record. Label
          and sequence only; the cockpit is untouched. -->
+    <!-- RETIRED by Workforce P3a: the desk is now the Overtime LENS of Mission
+         Control (pb_mission mounts this component with embedded="true", W17 —
+         the Bonus Hours door and the bonus view's filter rail travel with it).
+         The action survives; only the rail entry goes, into the 900 band (W18)
+         because the shell's single "Workforce" item takes sequence 10. -->
     <record id="item_wf_ot_desk" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Overtime</field>
         <field name="icon">zap</field>
-        <field name="sequence">50</field>
+        <field name="sequence">910</field>
+        <field name="active" eval="False"/>
         <field name="action_xmlid">pb_hr_workforce.action_pb_ot_desk</field>
         <field name="action_tag">pb_ot_desk</field>
         <field name="match_action_tags">pb_ot_desk</field>

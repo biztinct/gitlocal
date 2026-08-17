@@ -32,18 +32,32 @@ class TestTimeHubSidebar(TransactionCase):
         return sec
 
     # ------------------------------------------------------------------ new
-    def test_time_item_is_live_at_sequence_30(self):
+    # UPDATED BY P3a: the hub is now the Time LENS of Mission Control, so its
+    # rail entry joined the 900 retired band (W18) — the shell's single
+    # "Workforce" item owns the live sequence now. The RECORD is still P1a's and
+    # still has to be correct, because retirement is reversible.
+    def test_time_item_is_retired_in_the_900_band(self):
         item = self._item('pb_time_hub.item_wf_time')
         self.assertTrue(item, 'the Time sidebar item must exist')
-        self.assertTrue(item.active, 'the Time hub must be ON the rail')
-        self.assertEqual(item.sequence, 30)
+        self.assertFalse(item.active, 'the Time hub is a lens now, not a rail item')
+        self.assertEqual(item.sequence, 908)
         self.assertEqual(item.action_tag, 'pb_time_hub')
         self.assertEqual(item.icon, 'clock')
         self.assertEqual(item.section_id, self._section())
 
+    def test_the_time_hub_action_survives_its_retirement(self):
+        """P3a retires rail entries, never actions: the standalone hub is still
+        reachable, and Today's own hand-off falls back to it when the board is
+        NOT inside the shell."""
+        act = self.env.ref('pb_time_hub.action_pb_time_hub', raise_if_not_found=False)
+        self.assertTrue(act, 'the Time hub action must survive P3a')
+        self.assertEqual(act.tag, 'pb_time_hub')
+
     def test_time_item_carries_the_officer_gate(self):
         """Officer-and-up, matching the Weekly Entry persona it inherits and
-        the pb.time.hub facade's own gate (W8: rail gate == surface gate)."""
+        the pb.time.hub facade's own gate (W8: rail gate == surface gate). The
+        record keeps it so it stays re-enable-able, and Mission Control asks the
+        same question client-side before offering the Time lens."""
         item = self._item('pb_time_hub.item_wf_time')
         officer = self.env.ref('hr_attendance.group_hr_attendance_officer')
         self.assertEqual(item.groups_id.ids, officer.ids,

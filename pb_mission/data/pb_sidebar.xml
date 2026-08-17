@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13): a frozen file means P3b and P4 could never
+     move this record without shipping a migration, and both of them touch the
+     Workforce rail. The three phases before this one each paid for that lesson
+     once (W13.1/W27). -->
+<odoo noupdate="0">
+
+    <!-- WORKFORCE › Workforce — the whole section, in one door.
+
+         Seven items (Today 10 · Schedule 20 · Time 30 · Time Off 40 ·
+         Overtime 50 · Trips 60 · Team Approvals 70) become this one, and they
+         all move into the 900 retired band: a deactivated item still OCCUPIES
+         its sequence for W8's uniqueness rule, and this record takes 10 (W18).
+         None of the seven client actions is touched — every cockpit is still
+         registered and still reachable at its own URL.
+
+         W28: no other `pb.sidebar.item` in any module carries the label
+         "Workforce" (the string exists on the pb.sidebar.SECTION and on an
+         unrelated security group, neither of which shares this table).
+
+         UNGATED, on purpose. The seven it replaces had five different gates
+         between them and TWO of them — Trips and Team Approvals — were open to
+         every internal user, so any gate here would take a door away from
+         somebody who has one today. Instead, the shell's rail asks each lens's
+         own question client-side (`LENSES[].groups` in pb_mission.js) and shows
+         only the lenses this persona could actually read, so nobody is offered
+         a surface that would answer with an AccessError. That is a visibility
+         hint, not a security boundary: every facade still enforces its own gate
+         server-side (W12). -->
+    <record id="item_workforce" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Workforce</field>
+        <field name="icon">compass</field>
+        <field name="sequence">10</field>
+        <field name="action_xmlid">pb_mission.action_pb_workforce</field>
+        <field name="action_tag">pb_workforce</field>
+        <!-- The seven absorbed cockpits keep their client actions (W18), so a
+             bookmark, a stray doAction or the shell's own standalone fallback
+             must light THIS entry rather than leaving the rail with nothing
+             selected. `shift_planning_grid` and the P1a trio ride along for the
+             same reason: they were already matched by the items being retired,
+             and dropping them here would quietly lose that. -->
+        <field name="match_action_tags">pb_workforce,pb_today,pb_schedule,pb_time_hub,pb_timeoff,pb_ot_desk,pb_trips,pb_team,shift_planning_grid,pb_attendance_weekgrid,pb_attendance_flow,attendance_live,pb_driver_map</field>
+    </record>
+
+</odoo>

@@ -28,13 +28,16 @@ class TestP2Sidebar(TransactionCase):
         return sec
 
     # ========================================================== the repoint
+    # UPDATED BY P3a: Schedule is now a LENS of Mission Control, so this record
+    # joined the 900 retired band (W18). P2's repoint still has to hold on it —
+    # retirement is reversible, and the shell's Schedule lens is this cockpit.
     def test_schedule_points_at_the_new_cockpit(self):
         item = self._item('pb_sidebar.item_wf_roster')
         if not item:
             self.skipTest('pb_sidebar is not installed')
-        self.assertTrue(item.active)
+        self.assertFalse(item.active, 'Schedule is a shell lens now, not a rail item')
         self.assertEqual(item.name, 'Schedule')
-        self.assertEqual(item.sequence, 20)
+        self.assertEqual(item.sequence, 907)
         self.assertEqual(item.action_xmlid, 'pb_schedule.action_pb_schedule',
                          'the rail must open the P2 cockpit, not the legacy grid')
         self.assertEqual(item.action_tag, 'pb_schedule')
@@ -69,19 +72,13 @@ class TestP2Sidebar(TransactionCase):
         self.assertEqual(item.groups_id.ids, officer.ids)
 
     # ============================================= the Option-A rail, final
-    def test_the_rail_is_exactly_seven_items_in_order(self):
-        """P2's finale (§3.14 of the roadmap): Today · Schedule · Time ·
-        Time Off · Overtime · Trips · Team Approvals. Shift Templates folded
-        into Schedule's drawer and left the rail."""
-        sec = self._section()
-        live = self.env['pb.sidebar.item'].search([('section_id', '=', sec.id)])
-        self.assertEqual(
-            [i.name for i in live.sorted('sequence')],
-            ['Today', 'Schedule', 'Time', 'Time Off', 'Overtime', 'Trips',
-             'Team Approvals'],
-            'the rail reads: %s' % ', '.join(
-                '%s(%s)' % (i.name, i.sequence) for i in live.sorted('sequence')))
-        self.assertEqual(len(live), 7)
+    # REMOVED BY P3a: `test_the_rail_is_exactly_seven_items_in_order` asserted
+    # P2's finale — Today · Schedule · Time · Time Off · Overtime · Trips · Team
+    # Approvals. P3a folds all seven into the Mission Control shell, so the
+    # whole-rail shape is now asserted by the phase that owns it,
+    # pb_mission/tests/test_sidebar.py (one live item, fifteen retired).
+    # Keeping it here would mean a red gate on work that is correct, and a red
+    # gate nobody believes is the same as no gate.
 
     def test_shift_templates_retired_into_the_900_band(self):
         """W18: `active = False` takes an item off the rail but not out of the
