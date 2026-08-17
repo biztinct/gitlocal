@@ -63,6 +63,13 @@ export const IC = {
     // Schedule cockpit (P2) — Copy Week. Added HERE, never in a per-module
     // icon file: W2 makes this registry the one place a glyph is declared.
     copy:       '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+    // Mission Control (P3a) — the lens rail needs a glyph per lens, and two of
+    // the seven had none here because their cockpits still ship private icon
+    // files (pb_timeoff/pbto_icons.js, pb_team/pbteam_icons.js). W2: a new glyph
+    // is ADDED to this registry rather than reached for in a module-local map.
+    umbrella:   '<path d="M22 12a10.06 10.06 0 0 0-20 0Z"/><path d="M12 12v8a2 2 0 0 0 4 0"/><path d="M12 2v1"/>',
+    inbox:      '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+    compass:    '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
 };
 
 /**

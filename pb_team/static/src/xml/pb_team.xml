@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_team.Cockpit">
-    <div class="pbteam pbim">
+    <div class="pbteam pbim" t-att-class="{ 'pbteam--embedded': props.embedded }">
 
       <!-- loading -->
       <t t-if="state.loading">
@@ -27,7 +27,9 @@
         <t t-else="">
           <!-- hero -->
           <div class="pbteam-hero">
-            <div class="pbteam-hero-id">
+            <!-- W17: embedded, the shell's rail and command bar already carry
+                 the identity — so the hero collapses to its numbers. -->
+            <div class="pbteam-hero-id" t-if="!props.embedded">
               <img class="pbteam-hero-av" t-att-src="state.data.me.avatar_url" alt=""/>
               <div>
                 <!-- P2 §3.10: the rail says "Team Approvals" (W28 — "Approvals"

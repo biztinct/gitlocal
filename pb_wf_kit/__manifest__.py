@@ -33,7 +33,7 @@ their own pickers (W4).
 
 pbim-tokenized throughout, Lucide icons via pb_import_kit's shared ic() registry.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

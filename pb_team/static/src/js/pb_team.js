@@ -14,7 +14,17 @@ const MODEL = "pb.team";
 
 export class PbTeamCockpit extends Component {
     static template = "pb_team.Cockpit";
-    static props = { "*": true };
+    static props = {
+        action: { type: Object, optional: true },
+        // W17 (P3a): Mission Control owns the page identity, so `embedded`
+        // collapses the hero to its numbers and its tools — the avatar, the
+        // "Team Approvals" eyebrow and the manager's name go, because the shell
+        // says all three already. The stats, the skip-level toggle and the
+        // refresh are CONTENT and a door, not chrome, so they stay.
+        embedded: { type: Boolean, optional: true },
+        "*": true,
+    };
+    static defaultProps = { embedded: false };
 
     setup() {
         this.orm = useService("orm");

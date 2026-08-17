@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_hr_workforce.PbOtDesk">
-    <div class="pbot pbim">
+    <div class="pbot pbim" t-att-class="{ 'pbot--embedded': props.embedded }">
 
       <!-- ============================ loading ============================ -->
       <div t-if="!state.loaded" class="pbot-loading">
@@ -14,7 +14,10 @@
 
         <!-- hero -->
         <div class="pbot-hero">
-          <div>
+          <!-- W17: the shell's rail already says "OVERTIME", so the embedded
+               lens drops the title block only. The Bonus Hours button beside it
+               is a door, not chrome, and stays. -->
+          <div t-if="!props.embedded">
             <!-- P2 §3.10: the eyebrow says what the RAIL says. A cockpit whose
                  hero calls itself something the sidebar has never heard of makes
                  the user re-derive where they are on every arrival. -->

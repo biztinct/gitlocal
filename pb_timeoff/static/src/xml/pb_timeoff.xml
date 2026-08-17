@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_timeoff.PbTimeoff">
-    <div class="pbto pbim">
+    <div class="pbto pbim" t-att-class="{ 'pbto--embedded': props.embedded }">
 
       <!-- ============================ loading ============================ -->
       <div t-if="!state.loaded" class="pbto-loading">
@@ -13,7 +13,11 @@
 
         <!-- hero -->
         <div class="pbto-hero">
-          <div>
+          <!-- W17: the shell's rail already says "TIME OFF" and its command bar
+               already carries the identity, so the embedded lens drops the
+               title block only — the tools beside it are the month nav and the
+               apply door, which are this cockpit's own and must survive. -->
+          <div t-if="!props.embedded">
             <!-- P2 §3.10: the eyebrow says what the RAIL says ("Time Off"),
                  not what the model is called. -->
             <div class="eyebrow"><span class="i" t-out="ic('calendar',15)"/> Time Off</div>

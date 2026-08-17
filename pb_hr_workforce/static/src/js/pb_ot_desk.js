@@ -16,7 +16,17 @@ const MODEL = "pb.ot.desk";
 
 export class PbOtDesk extends Component {
     static template = "pb_hr_workforce.PbOtDesk";
-    static props = { action: { type: Object, optional: true }, "*": true };
+    static props = {
+        action: { type: Object, optional: true },
+        // W17 (P3a): Mission Control owns the page identity, so `embedded`
+        // suppresses the hero's eyebrow/title/subtitle and nothing else. The
+        // Bonus Hours door beside it, the bonus view's own filter rail and every
+        // facade call stay exactly as they are — the shell has no department or
+        // period opinion to replace them with (P3a §3.4).
+        embedded: { type: Boolean, optional: true },
+        "*": true,
+    };
+    static defaultProps = { embedded: false };
 
     setup() {
         this.orm = useService("orm");

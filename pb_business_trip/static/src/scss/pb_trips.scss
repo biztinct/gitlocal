@@ -18,6 +18,20 @@
 
     .pbim-busy { padding: 40px; color: var(--pbtr-muted); }
 
+    // ------------------------------------------------- embedded (P3a, W17/W20)
+    // Unlike the other cockpits this one is PAGE-FLOW (`min-height: 100%`), so
+    // standalone it rides the action manager's scroll. Mission Control's canvas
+    // is a definite-height flex box that does NOT scroll, so an unbounded child
+    // would simply overflow it: embedded, the root takes the box and owns its
+    // own scrolling.
+    &.pbtr--embedded {
+        height: 100%;
+        min-height: 0;
+        min-width: 0;
+        overflow: auto;
+        padding-top: 16px;
+    }
+
     // toolbar
     .pbtr-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
     .pbtr-title { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; }
