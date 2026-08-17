@@ -282,10 +282,35 @@ class TestPbTeam(TransactionCase):
         for key in ('model', 'res_id', 'source', 'title', 'subtitle', 'when',
                     'employee', 'age', 'can_approve', 'can_refuse'):
             self.assertIn(key, item, '%s disappeared from a queue item' % key)
-        # …plus the two new ones the dock needs
+        # …plus the new ones the dock needs
         self.assertIn('when_iso', item)
+        self.assertIn('takes_note', item)
         self.assertIn('can_org', data)
         self.assertIn('scope', data)
+
+    def test_19_takes_note_mirrors_the_act_whitelist_exactly(self):
+        """W42. Two of the four refuse actions record a note; two have no note
+        parameter at all. A surface that makes the field REQUIRED has to know
+        which is which, or it demands a reason and then throws it away — so the
+        flag is DERIVED from the same map `act()` dispatches on rather than
+        written down twice."""
+        from odoo.addons.pb_team.models.pb_team import _ACT_MAP, _takes_note
+        expected = {'hr.overtime.request': False, 'hr.leave': False,
+                    'pb.business.trip': True, 'hr.attendance.correction': True}
+        for model, keeps in expected.items():
+            self.assertEqual(_takes_note(model), keeps, model)
+            self.assertEqual(_ACT_MAP[model]['refuse']['note'], keeps,
+                             '%s: the flag and the dispatch must agree' % model)
+        # an unknown model is not a note-taker (and does not raise)
+        self.assertFalse(_takes_note('res.users'))
+
+        data = self.env['pb.team'].with_user(self.manager_user).get_team_data()
+        ot = [i for i in data['queues']['items']
+              if i['model'] == 'hr.overtime.request']
+        self.assertTrue(ot)
+        self.assertFalse(ot[0]['takes_note'],
+                         'OT refusal keeps no note, so the dock must not '
+                         'demand one')
 
     def test_18_act_still_refuses_what_the_real_user_cannot_do(self):
         """Org scope widens the READ. It must not widen the WRITE: `act` is

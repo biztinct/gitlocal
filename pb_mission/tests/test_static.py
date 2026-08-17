@@ -371,12 +371,28 @@ class TestMissionStaticGates(TransactionCase):
 
     def test_the_dock_header_reads_the_servers_total_not_the_row_count(self):
         """The list is capped at 20 per source. Counting the rows on screen
-        would report a SHRINKING backlog as the real one grew past the cap."""
+        would report a SHRINKING backlog as the real one grew past the cap.
+
+        The second assertion is a REGRESSION gate, from P3b's own live run:
+        subtracting the optimistic-removal set wholesale double-counted every
+        approval for exactly one refresh cycle (approve one of five, header says
+        3). Only removals STILL PRESENT in the payload may be subtracted — that
+        needs no ordering between the act, the reload and the render.
+        """
         js = self._dock_js()
-        self.assertIn('queues.total', js)
-        self.assertNotRegex(
-            js, r'get total\(\)\s*\{\s*return this\.items\.length',
-            'the header must not count the rendered rows')
+        block = re.search(r'get total\(\) \{(.*?)\n    \}', js, re.S)
+        self.assertTrue(block, 'no total getter found')
+        body = block.group(1)
+        self.assertIn('q.total', body, 'the header must read the server total')
+        self.assertNotIn('this.items.length', body,
+                         'the header must not count the rendered rows')
+        self.assertIn('this.state.removed[this.key(it)]', body,
+                      'only removals still in the payload may be subtracted')
+        self.assertNotIn('Object.keys(this.state.removed).length', body,
+                         'subtracting the whole removal set double-counts an '
+                         'approval the server has already dropped')
+        # …and the poll prunes the set, so it cannot grow without bound
+        self.assertIn('_pruneRemoved()', js)
 
     def test_the_hovercard_makes_no_request(self):
         """§3.4: everything on it is already in the payload. A hover that fires
@@ -563,11 +579,29 @@ class TestMissionStaticGates(TransactionCase):
         self.assertRegex(self._js(), re.compile(
             r'runPaletteAction\(id\).*?allowed\[a\.lens\]', re.S))
 
-    def test_the_refusal_note_is_required(self):
-        """The Team cockpit's note is optional. In the dock it is not: a refusal
-        with no reason is a support ticket, and two of the four models carry the
-        note into their own refusal chain as the only record of why."""
+    def test_the_refusal_note_is_required_exactly_where_it_is_kept(self):
+        """The Team cockpit's note is optional. In the dock it is required — but
+        only on the two sources that actually KEEP it.
+
+        `pb.business.trip.action_refuse_chain` and `hr.attendance.correction.
+        action_refuse` take a note and record it; `hr.overtime.request` and
+        `hr.leave` have no note parameter at all, so anything typed for them is
+        discarded on the way in. A required field whose value is thrown away is
+        a control that lies about what it does (found in P3b's live run, after
+        the first version demanded a reason for an OT refusal that could not
+        store one). The server answers per item, from the SAME whitelist `act`
+        dispatches on, so the two can never drift apart.
+        """
         js = self._dock_js()
-        self.assertRegex(js, r'get canConfirmRefuse\(\)[^}]*refuseNote\.trim\(\)')
-        self.assertIn('!canConfirmRefuse', self._dock_xml(),
-                      'the confirm button must be disabled without a note')
+        self.assertRegex(js, r'canConfirmRefuse\(it\)[^}]*takesNote\(it\)')
+        self.assertRegex(js, r'canConfirmRefuse\(it\)[^}]*refuseNote\.trim\(\)')
+        self.assertIn('!canConfirmRefuse(it)', self._dock_xml(),
+                      'the confirm button must be disabled without a needed note')
+        self.assertIn('notePlaceholder(it)', self._dock_xml(),
+                      'the placeholder must say which kind of note this is')
+
+        facade = _read('pb_team', 'models', 'pb_team.py')
+        self.assertIn('def _takes_note(model):', facade,
+                      'the flag must be derived from the act whitelist itself')
+        self.assertEqual(facade.count("'takes_note': _takes_note("), 4,
+                         'every queue source must declare it')

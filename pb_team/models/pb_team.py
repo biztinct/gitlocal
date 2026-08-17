@@ -64,6 +64,20 @@ _ACT_MAP = {
     },
 }
 
+
+def _takes_note(model):
+    """Does this model's REFUSE action actually record the note?
+
+    Two of the four do (`pb.business.trip.action_refuse_chain`,
+    `hr.attendance.correction.action_refuse`); the other two have no note
+    parameter at all, so anything typed for them is discarded on the way in.
+    A surface that makes a field REQUIRED must know which it is, or it will
+    demand a reason and then throw it away (found in P3b's live run).
+    """
+    spec = (_ACT_MAP.get(model) or {}).get('refuse') or {}
+    return bool(spec.get('note'))
+
+
 # left-border colour per source (matches the OT grid legend / handover §4.1)
 _SOURCE_META = {
     'hr.overtime.request': {'key': 'ot', 'label': 'Overtime', 'colour': 'ot'},
@@ -278,6 +292,7 @@ class PbTeam(models.AbstractModel):
                 'employee': self._emp_card(r.employee_id),
                 'age': age(r),
                 'can_approve': True, 'can_refuse': True,
+                'takes_note': _takes_note('hr.overtime.request'),
             })
 
         # --- business trips (chain; manager tier) — soft ---
@@ -295,6 +310,7 @@ class PbTeam(models.AbstractModel):
                     'age': age(r),
                     'can_approve': bool(getattr(r, 'can_manager_approve', True)),
                     'can_refuse': bool(getattr(r, 'can_refuse', True)),
+                    'takes_note': _takes_note('pb.business.trip'),
                 })
 
         # --- attendance corrections (chain) — soft ---
@@ -312,6 +328,7 @@ class PbTeam(models.AbstractModel):
                     'age': age(r),
                     'can_approve': bool(getattr(r, 'can_approve', True)),
                     'can_refuse': bool(getattr(r, 'can_refuse', True)),
+                    'takes_note': _takes_note('hr.attendance.correction'),
                 })
 
         # --- leaves (core; confirm state awaiting validation) — soft ---
@@ -327,6 +344,7 @@ class PbTeam(models.AbstractModel):
                     'employee': self._emp_card(r.employee_id),
                     'age': age(r),
                     'can_approve': True, 'can_refuse': True,
+                    'takes_note': _takes_note('hr.leave'),
                 })
 
         return {'items': items, 'counts': counts,

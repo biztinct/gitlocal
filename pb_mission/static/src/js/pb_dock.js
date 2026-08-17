@@ -119,7 +119,15 @@ export class WfDock extends Component {
             });
             this.state.data = data;
             this.state.failed = false;
-            if (!quiet) { this.state.removed = {}; }
+            if (quiet) {
+                // A poll must not clear an optimistic removal the officer can
+                // still see — but a key whose row the SERVER has stopped
+                // sending has done its job, and keeping it would make `total`
+                // subtract the same approval twice (found live, P3b).
+                this._pruneRemoved();
+            } else {
+                this.state.removed = {};
+            }
         } catch (e) {
             // W40: a catch may narrow a feature only for the reason it was
             // written for. This one records the failure and SAYS so on the
@@ -132,6 +140,16 @@ export class WfDock extends Component {
     }
 
     key(it) { return `${it.model}:${it.res_id}`; }
+
+    /** Drop removal keys the server no longer lists — see `load(quiet)`. */
+    _pruneRemoved() {
+        const live = new Set(
+            (((this.state.data || {}).queues || {}).items || [])
+                .map((it) => this.key(it)));
+        for (const k of Object.keys(this.state.removed)) {
+            if (!live.has(k)) { delete this.state.removed[k]; }
+        }
+    }
 
     get items() {
         const items = (this.state.data && this.state.data.queues
@@ -150,15 +168,25 @@ export class WfDock extends Component {
     }
 
     /**
-     * The header number is the SERVER's true total (a search_count), minus what
-     * this session has just cleared. The list is capped at 20 per source, so
-     * counting the rows on screen would report a shrinking backlog as the real
-     * one grew past the cap.
+     * The header number is the SERVER's true total (a search_count), minus the
+     * rows this session has cleared but the server has not caught up with yet.
+     * The list is capped at 20 per source, so counting the rows on screen would
+     * report a shrinking backlog as the real one grew past the cap.
+     *
+     * Subtracting `removed` WHOLESALE was wrong, and it was wrong for exactly
+     * one refresh cycle — long enough to be a live bug, short enough to look
+     * like a rendering glitch (found in P3b's own validation run: approve one
+     * of five and the header said 3). The re-read that follows every act drops
+     * the approved row from `items` AND from `total`, so the optimistic
+     * subtraction has to stop applying at the same moment. Counting only the
+     * removals still present in the payload is self-correcting: it needs no
+     * ordering between the act, the reload and the render.
      */
     get total() {
-        const server = (this.state.data && this.state.data.queues
-                        && this.state.data.queues.total) || 0;
-        return Math.max(0, server - Object.keys(this.state.removed).length);
+        const q = (this.state.data && this.state.data.queues) || {};
+        const pending = (q.items || [])
+            .filter((it) => this.state.removed[this.key(it)]).length;
+        return Math.max(0, (q.total || 0) - pending);
     }
 
     get canOrg() { return !!(this.state.data && this.state.data.can_org); }
@@ -325,17 +353,33 @@ export class WfDock extends Component {
     onRefuseNote(ev) { this.state.refuseNote = ev.target.value; }
 
     /**
-     * The note is REQUIRED here, unlike the Team cockpit's optional one.
-     * A refusal that arrives with no reason is a support ticket: the employee
-     * has to ask a human what happened, and two of the four models (trips,
-     * corrections) carry the note into their own refusal chain where it is the
-     * only record of why.
+     * The note is REQUIRED here, unlike the Team cockpit's optional one —
+     * but only on the two sources that actually KEEP it.
+     *
+     * `pb.business.trip.action_refuse_chain` and `hr.attendance.correction.
+     * action_refuse` take a `note` and record it, and there it is the only
+     * account the employee will ever get of why. `hr.overtime.request` and
+     * `hr.leave` have no note parameter at all, so anything typed for them is
+     * discarded on the way in — and a required field whose value is thrown away
+     * is a control that lies about what it does. The server says which is which
+     * (`takes_note` on each queue item, from the `act` whitelist itself, so the
+     * two can never drift apart).
      */
-    get canConfirmRefuse() { return !!this.state.refuseNote.trim(); }
+    takesNote(it) { return !!it.takes_note; }
+
+    notePlaceholder(it) {
+        return this.takesNote(it)
+            ? _t("Why is this refused? (required)")
+            : _t("Reason (optional) — this request type does not store it");
+    }
+
+    canConfirmRefuse(it) {
+        return !this.takesNote(it) || !!this.state.refuseNote.trim();
+    }
 
     async confirmRefuse(it) {
         const k = this.key(it);
-        if (this.state.busy[k] || !this.canConfirmRefuse) { return; }
+        if (this.state.busy[k] || !this.canConfirmRefuse(it)) { return; }
         this.state.busy[k] = true;
         try {
             const res = await this.orm.call(MODEL, "act", [
