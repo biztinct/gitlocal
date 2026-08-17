@@ -153,6 +153,28 @@
         </div>
 
         <footer class="pbms-dock__f" t-if="items.length">
+
+          <!-- ==== the clean batch (P4 WP-6) ====
+               `is_clean` is the SERVER's verdict: the request still says what
+               the grid entered, there is ceiling headroom, and the day is not
+               locked. Only OVERTIME participates in v1 and the copy says so —
+               a button labelled "approve all clean" over a queue that also
+               holds trips and leaves would promise something it does not do. -->
+          <div class="pbms-dock__clean" t-if="cleanItems.length">
+            <p class="pbms-dock__cleanp">
+              <b><t t-esc="cleanItems.length"/></b> clean overtime —
+              hours match the grid, under every ceiling, on an open day.
+            </p>
+            <button class="pbms-dock__cleanb" t-att-disabled="state.batching"
+                    t-on-click="() => this.approveAllClean()">
+              <span t-out="ic('check', 13)"/>
+              <span t-if="!state.batching">
+                Approve all <t t-esc="cleanItems.length"/> clean
+              </span>
+              <span t-if="state.batching">Approving…</span>
+            </button>
+          </div>
+
           <button class="pbms-dock__full" t-on-click="() => this.openQueue()">
             <span>Open full queue</span>
             <span t-out="ic('chevron', 13)"/>

@@ -333,11 +333,32 @@ class AttendanceWeekEntry(models.TransientModel):
     def get_ot_ceilings(self, employee_ids, ref_date=False):
         """Per-employee OT budget: {emp_id: {mtd, ytd, cap_month, cap_year}}.
 
+        The OFFICER-GATED, RPC-reachable door. The body lives in
+        ``_ot_ceilings`` below so a server-side caller that has already crossed
+        its OWN gate can reuse it without either duplicating the arithmetic or
+        being forced through a second, narrower persona test — see that
+        method's docstring for why that mattered (P4 WP-6).
+        """
+        self._require_officer()
+        return self._ot_ceilings(employee_ids, ref_date)
+
+    @api.model
+    def _ot_ceilings(self, employee_ids, ref_date=False):
+        """The same figures, UNGATED — underscore-private, so not reachable over
+        ``call_kw`` (C18.32), and every caller gates itself first.
+
+        Extracted in P4 WP-6 for the dock's clean-overtime batch. The dock is
+        read by HR and payroll MANAGERS as well as attendance officers, and
+        ``_require_officer`` admits only the attendance tier: routing the
+        headroom test through the public door would have made the batch
+        silently invisible to half the personas it was built for, with a
+        swallowed AccessError and no console message — W40's exact failure
+        shape, which cost this program a search box for three phases.
+
         MTD/YTD sum submitted+approved OT hours (actual_hours, fallback
         approved_hours). Caps come from pb.ot.ceiling config; special-sector
         employees get the higher annual cap.
         """
-        self._require_officer()
         employee_ids = [int(e) for e in (employee_ids or [])]
         if not employee_ids:
             return {}

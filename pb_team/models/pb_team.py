@@ -78,6 +78,11 @@ def _takes_note(model):
     return bool(spec.get('note'))
 
 
+# Float slop for an hours comparison. Grid cells step by 0.5 h and are stored
+# as doubles, so an exact `==` is a coin toss on a value that round-tripped
+# through JSON.
+_HOURS_EPS = 0.01
+
 # left-border colour per source (matches the OT grid legend / handover §4.1)
 _SOURCE_META = {
     'hr.overtime.request': {'key': 'ot', 'label': 'Overtime', 'colour': 'ot'},
@@ -277,8 +282,14 @@ class PbTeam(models.AbstractModel):
         # hr-user-only) would otherwise crash the cockpit for its primary
         # persona. Mutations stay real-user in act().
         # --- OT (no chain mixin; manager acts via action_approve) ---
+        # P4 WP-6: the clean verdict is computed ONCE for the whole page, from
+        # batched reads, and it is the SERVER's opinion. A client that decided
+        # for itself which requests are "clean" would be a client that can be
+        # told to approve anything.
         OT = self.env['hr.overtime.request'].sudo()
-        for r in page('hr.overtime.request', [('state', '=', 'submitted')], 'ot'):
+        ot_recs = page('hr.overtime.request', [('state', '=', 'submitted')], 'ot')
+        clean = self._ot_clean_map(ot_recs)
+        for r in ot_recs:
             items.append({
                 'model': 'hr.overtime.request', 'res_id': r.id,
                 'source': 'ot',
@@ -293,6 +304,7 @@ class PbTeam(models.AbstractModel):
                 'age': age(r),
                 'can_approve': True, 'can_refuse': True,
                 'takes_note': _takes_note('hr.overtime.request'),
+                'is_clean': bool(clean.get(r.id)),
             })
 
         # --- business trips (chain; manager tier) — soft ---
@@ -311,6 +323,11 @@ class PbTeam(models.AbstractModel):
                     'can_approve': bool(getattr(r, 'can_manager_approve', True)),
                     'can_refuse': bool(getattr(r, 'can_refuse', True)),
                     'takes_note': _takes_note('pb.business.trip'),
+                    # v1 of the clean batch is OVERTIME ONLY — the UI copy
+                    # says so. The key is present on every source anyway: a
+                    # missing key is not a False, and JSON will not say which
+                    # one you got (W45).
+                    'is_clean': False,
                 })
 
         # --- attendance corrections (chain) — soft ---
@@ -329,6 +346,11 @@ class PbTeam(models.AbstractModel):
                     'can_approve': bool(getattr(r, 'can_approve', True)),
                     'can_refuse': bool(getattr(r, 'can_refuse', True)),
                     'takes_note': _takes_note('hr.attendance.correction'),
+                    # v1 of the clean batch is OVERTIME ONLY — the UI copy
+                    # says so. The key is present on every source anyway: a
+                    # missing key is not a False, and JSON will not say which
+                    # one you got (W45).
+                    'is_clean': False,
                 })
 
         # --- leaves (core; confirm state awaiting validation) — soft ---
@@ -345,10 +367,90 @@ class PbTeam(models.AbstractModel):
                     'age': age(r),
                     'can_approve': True, 'can_refuse': True,
                     'takes_note': _takes_note('hr.leave'),
+                    # v1 of the clean batch is OVERTIME ONLY — the UI copy
+                    # says so. The key is present on every source anyway: a
+                    # missing key is not a False, and JSON will not say which
+                    # one you got (W45).
+                    'is_clean': False,
                 })
 
         return {'items': items, 'counts': counts,
                 'total': sum(counts.values()), 'has_more': has_more}
+
+    # ------------------------------------------------------ the clean verdict
+    def _ot_clean_map(self, recs):
+        """{request_id: True} for the overtime rows that need no thought.
+
+        "Clean" is a promise, so it is made on the SERVER and it is made
+        conservatively — three conditions, all of which must hold, and any doubt
+        resolves to NOT clean:
+
+        1. **the request still says what the grid entered.** The Weekly-Entry
+           grid writes `planned_hours` and `actual_hours` to the same figure
+           (`_save_ot`); a row where they have since diverged was edited by a
+           human after entry, and a human edit is exactly the thing a batch must
+           not sweep up.
+        2. **there is ceiling headroom.** `pb.ot.ceiling`'s monthly and annual
+           caps, read through the weekentry facade's own arithmetic so this can
+           never drift from what the grid's ceiling rail shows. MTD/YTD already
+           INCLUDE submitted rows, so "under the ceiling" is simply
+           `mtd <= cap_month and ytd <= cap_year`.
+        3. **the day is not locked.** Approving overtime onto a closed week is
+           refused by pb_close anyway — offering it in a batch would produce a
+           row that fails halfway through and stops the rest (W29's door that
+           can only error).
+
+        FAIL-CLOSED: if any of the three reads is unavailable, nothing is clean.
+        A batch button is a promise that these were checked; a promise made on
+        data we could not read is worse than no button.
+        """
+        if not recs:
+            return {}
+        try:
+            emp_ids = recs.mapped('employee_id').ids
+            # The UNGATED private variant (P4 WP-6): this facade has already
+            # gated itself by scope, and the public `get_ot_ceilings` admits
+            # only the attendance tier — routing through it would make the
+            # batch silently invisible to the HR and payroll managers the dock
+            # was built for (W40).
+            ceilings = self.env['hr.attendance.weekentry'].sudo()._ot_ceilings(
+                emp_ids, _f_today(self))
+        except Exception:
+            _logger.debug('pb.team: OT ceilings unavailable for the clean '
+                          'verdict — nothing is clean', exc_info=True)
+            return {}
+
+        locked = set()
+        if 'pb.wf.lock' in self.env:
+            try:
+                Lock = self.env['pb.wf.lock']
+                pairs = {(r.employee_id.company_id.id, r.date)
+                         for r in recs if r.date and r.employee_id.company_id}
+                locked = Lock._locked_pairs([c for c, _d in pairs],
+                                            [d for _c, d in pairs])
+            except Exception:
+                _logger.debug('pb.team: lock state unavailable for the clean '
+                              'verdict — nothing is clean', exc_info=True)
+                return {}
+
+        out = {}
+        for r in recs:
+            entered = r.actual_hours or 0.0
+            planned = r.planned_hours or 0.0
+            if entered <= 0 or abs(entered - planned) > _HOURS_EPS:
+                continue
+            cid = r.employee_id.company_id.id
+            if r.date and (cid, r.date) in locked:
+                continue
+            c = ceilings.get(r.employee_id.id)
+            if not c:
+                continue
+            if c.get('cap_month') and c['mtd'] > c['cap_month'] + _HOURS_EPS:
+                continue
+            if c.get('cap_year') and c['ytd'] > c['cap_year'] + _HOURS_EPS:
+                continue
+            out[r.id] = True
+        return out
 
     def _date_span(self, rec):
         f = rec._fields
@@ -551,6 +653,11 @@ class PbTeam(models.AbstractModel):
 def _timedelta_days(n):
     from datetime import timedelta
     return timedelta(days=n)
+
+
+def _f_today(record):
+    from odoo import fields as _f
+    return _f.Date.context_today(record)
 
 
 def _iso(value):

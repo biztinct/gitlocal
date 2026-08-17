@@ -40,7 +40,7 @@ sees the same shape it always did):
     client as `can_org`. It widens the READ only: `act()` is untouched, still
     real-user, still whitelisted, still scope-checked.
 """,
-    'version': '19.0.1.2.1',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

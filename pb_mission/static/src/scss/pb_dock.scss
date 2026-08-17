@@ -431,6 +431,52 @@
         padding: 9px 12px 12px;
         border-top: 1px solid var(--pbim-line-2, #F1F5F9);
     }
+    // ------------------------------------------------ the clean batch (P4)
+    // Green, because "clean" here means the same thing the promoted-green scale
+    // means everywhere else in this section: nothing needs a human. The button
+    // is the only SOLID green in the workspace, which is what makes it read as
+    // a distinct act rather than a fifth way to approve one card.
+    .pbms-dock__clean {
+        margin-bottom: 9px;
+        padding: 10px;
+        border-radius: 10px;
+        background: var(--pbim-green-soft, #E3F2E9);
+    }
+    .pbms-dock__cleanp {
+        margin: 0 0 8px;
+        font-size: 10.5px;
+        line-height: 1.5;
+        color: var(--pbim-green, #2E7D4F);
+
+        b { font-weight: 800; font-variant-numeric: tabular-nums; }
+    }
+    .pbms-dock__cleanb {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        padding: 7px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--pbim-green, #2E7D4F);
+        color: #fff;
+        font: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+
+        svg { display: block; }
+        // W19: there is no `--pbim-green-hover` in the token mixin, and W1's
+        // canonical hover for this scale is not a pbim hex either — so the
+        // darker step is MIXED rather than invented. color-mix passes straight
+        // through Dart Sass (W15).
+        &:hover:not(:disabled) {
+            background: color-mix(in srgb, var(--pbim-green, #2E7D4F) 88%, #000);
+        }
+        &:disabled { opacity: .6; cursor: default; }
+    }
+
     .pbms-dock__full {
         display: flex;
         align-items: center;
