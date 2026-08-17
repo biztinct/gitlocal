@@ -281,10 +281,17 @@
         <field name="icon">users</field><field name="sequence">20</field>
         <field name="action_xmlid">pb_hr_workforce.action_attendance_live</field>
     </record>
+    <!-- RETIRED by Workforce P1a: absorbed into the Time hub's Timeline lens
+         (pb_time_hub). The record stays so an admin can see what happened and
+         so the standalone action keeps a rail entry to re-enable if needed;
+         `active` false takes it off the rail. It also moves into the 900+
+         RETIRED BAND, because a deactivated item still OCCUPIES its sequence
+         for W8's uniqueness rule — the Time hub now owns 30. -->
     <record id="item_wf_timecards" model="pb.sidebar.item">
         <field name="section_id" ref="sec_workforce"/><field name="name">Timecards</field>
-        <field name="icon">calendar</field><field name="sequence">30</field>
+        <field name="icon">calendar</field><field name="sequence">900</field>
         <field name="action_xmlid">pb_hr_workforce.action_attendance_timecard</field>
+        <field name="active" eval="False"/>
     </record>
     <record id="item_wf_roster" model="pb.sidebar.item">
         <field name="section_id" ref="sec_workforce"/><field name="name">Shift Roster</field>
