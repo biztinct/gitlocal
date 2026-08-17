@@ -87,6 +87,16 @@
             <PbTeamCockpit t-key="'lens-approvals'" embedded="true"/>
           </div>
         </main>
+
+        <!-- ==================== the Needs-you dock =====================
+             The third flex child of `.pbms-low`, mounted ONCE for the whole
+             workspace and never keyed to the lens: the point of an ambient
+             queue is that switching lens does not reload or reset it.
+
+             It carries NO z-index (W37) — it is a flex sibling of the canvas,
+             so a lens's `position: fixed; z-index: 1050` modal still resolves
+             against the root stacking context. -->
+        <WfDock onOpenPerson="_h.onDockPerson" onOpenQueue="_h.onDockQueue"/>
       </div>
     </div>
   </t>

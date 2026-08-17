@@ -80,6 +80,20 @@ class TestMissionStaticGates(TransactionCase):
     def _scss(self):
         return _read('pb_mission', 'static', 'src', 'scss', 'pb_mission.scss')
 
+    # P3b's ambient layer — the dock is a separate file, and every gate below
+    # that says "the shell" has to mean the whole module, not one file of it.
+    def _dock_js(self):
+        return _read('pb_mission', 'static', 'src', 'js', 'pb_dock.js')
+
+    def _dock_xml(self):
+        return _read('pb_mission', 'static', 'src', 'xml', 'pb_dock.xml')
+
+    def _dock_scss(self):
+        return _read('pb_mission', 'static', 'src', 'scss', 'pb_dock.scss')
+
+    def _all_scss(self):
+        return self._scss() + '\n' + self._dock_scss()
+
     # --------------------------------------------------------------- W1/W2/W3
     def test_the_shell_invents_no_hex(self):
         """Mockup B painted the command bar in a navy that exists nowhere in the
@@ -120,8 +134,13 @@ class TestMissionStaticGates(TransactionCase):
         registry_js = _read('pb_import_kit', 'static', 'src', 'js', 'import_icons.js')
         self.assertTrue(registry_js, 'the shared icon registry must be readable')
         known = set(re.findall(r'^\s{4}([A-Za-z][A-Za-z0-9]*):', registry_js, re.M))
-        used = set(re.findall(r"\bic\(\s*'([A-Za-z][A-Za-z0-9]*)'", self._xml()))
-        used |= set(re.findall(r'icon:\s*"([A-Za-z][A-Za-z0-9]*)"', self._js()))
+        used = set()
+        for path in _walk('pb_mission', ('.js', '.xml'), skip_tests=True):
+            with open(path, encoding='utf-8') as fh:
+                body = fh.read()
+            used |= set(re.findall(r"\bic\(\s*'([A-Za-z][A-Za-z0-9]*)'", body))
+            used |= set(re.findall(r'\bic\(\s*"([A-Za-z][A-Za-z0-9]*)"', body))
+            used |= set(re.findall(r'icon:\s*"([A-Za-z][A-Za-z0-9]*)"', body))
         self.assertTrue(used, 'no icon usage found — the scan is broken')
         self.assertFalse(sorted(used - known),
                          'icons missing from pb_import_kit/js/import_icons.js: %s'
@@ -146,7 +165,7 @@ class TestMissionStaticGates(TransactionCase):
         """Below 1920px the biz sidebar becomes a 60px absolute hover-overlay at
         z-25 that must paint OVER this workspace (§2). Anything the shell stacks
         above 20 wins that fight and hides the navigation."""
-        bad = [z for z in _RE_Z.findall(self._scss()) if int(z) > 20]
+        bad = [z for z in _RE_Z.findall(self._all_scss()) if int(z) > 20]
         self.assertFalse(bad, 'shell chrome must stay at z-index <= 20; found %s'
                               % sorted(set(bad), key=int))
 
@@ -245,27 +264,135 @@ class TestMissionStaticGates(TransactionCase):
                 '%s must not fire the hand-off (W21)' % hook)
 
     # ----------------------------------------------------------- non-goals
-    def test_p3b_is_not_smuggled_in(self):
-        """Binding non-goals: no dock, no person hovercard, no Command-K.
+    def test_p4_is_not_smuggled_in(self):
+        """P3b's binding non-goals: no tolerances, no locks, no "N clean,
+        approve all" batch. The dock ships WITHOUT the clean/issues split
+        because the tolerance data it would split on does not exist yet — a
+        batch button over data nobody computed would approve things nobody
+        checked.
 
-        The needles are CODE, not the words — an earlier gate in this program
-        forbade the string "Chart.js" and duly failed on the docstring explaining
-        that the charts had been dropped. A gate that forbids naming the thing it
-        forbids is a gate nobody can document around.
+        The needles are CODE, not the words: an earlier gate in this program
+        forbade the string "Chart.js" and duly failed on the docstring
+        explaining that the charts had been dropped.
         """
-        body = self._js() + self._xml() + self._scss()
-        for needle in ('useHotkey', 'usePopover', 'useService("command")',
-                       'pbms-dock', 'pbms-pop', 'pbms-palette'):
+        body = (self._js() + self._xml() + self._scss()
+                + self._dock_js() + self._dock_xml() + self._dock_scss())
+        for needle in ('approve_all', 'approveAll', 'approve_clean',
+                       'tolerance', 'day_lock', 'week_lock'):
             self.assertNotIn(needle, body,
-                             '%r belongs to P3b, not P3a' % needle)
+                             '%r belongs to P4, not P3b' % needle)
 
-    def test_the_shell_ships_no_models_and_no_rpc_of_its_own(self):
-        """§3.1: the shell is chrome. Any read it needs already existed, and a
-        new facade here would be a new surface to gate, test and migrate."""
-        path = get_module_path('pb_mission')
+    def test_the_shell_ships_no_models_and_calls_no_facade_of_its_own(self):
+        """§3.1 as amended by P3b: the shell is chrome, and every read it makes
+        must be a facade that ALREADY EXISTED.
+
+        P3a could state this as "no RPC at all". The dock is a real queue, so
+        P3b has to state the rule it was actually protecting: no new model, no
+        new endpoint, nothing here to gate, test or migrate. `pb.team` is the
+        Team Approvals cockpit's own facade — same method, same gates, same
+        `act()` door — and `hr.employee` is read for the palette's typeahead
+        exactly as the shared context bar already reads it.
+        """
+        module = get_module_path('pb_mission')
         self.assertFalse(
-            os.path.isdir(os.path.join(path, 'models')),
+            os.path.isdir(os.path.join(module, 'models')),
             'pb_mission must ship no models')
-        js = self._js()
-        self.assertNotIn('orm.call', js, 'the shell must make no facade calls')
-        self.assertNotIn('useService("orm")', js)
+        self.assertFalse(
+            os.path.isdir(os.path.join(module, 'security')),
+            'pb_mission must ship no ACLs of its own')
+
+        allowed = {'pb.team', 'hr.employee'}
+        called = set()
+        for path in _walk('pb_mission', ('.js',), skip_tests=True):
+            with open(path, encoding='utf-8') as fh:
+                body = fh.read()
+            called |= set(re.findall(r'orm\.call\(\s*"([\w.]+)"', body))
+            called |= set(re.findall(r'orm\.call\(\s*([A-Z_]+)\s*,', body))
+        # a bare constant reference is resolved through its definition
+        for name in list(called):
+            if name.isupper():
+                called.discard(name)
+                m = re.search(r'const %s = "([\w.]+)"' % name,
+                              self._js() + self._dock_js())
+                if m:
+                    called.add(m.group(1))
+        self.assertTrue(called, 'no facade call found — the scan is broken')
+        self.assertFalse(called - allowed,
+                         'the shell may only call facades that already existed; '
+                         'found %s' % sorted(called - allowed))
+
+    # ============================================ P3b T2 — the ambient layer
+    def test_the_dock_carries_no_z_index(self):
+        """§2, measured live by P3a: the dock is a FLEX SIBLING of the canvas,
+        268px wide, with no stacking context of its own. A z-index here would
+        trap every lens modal exactly as one on the canvas would (W37)."""
+        block = re.search(r'\.pbms-dock\s*\{(.*?)\n    \}', self._dock_scss(), re.S)
+        self.assertTrue(block, 'no .pbms-dock block in pb_dock.scss')
+        self.assertNotIn('z-index', block.group(1),
+                         '.pbms-dock must not create a stacking context')
+        self.assertIn('flex: 0 0 268px', block.group(1),
+                      'the measured width is 268px (§2)')
+
+    def test_the_dock_never_writes_from_a_lifecycle_hook(self):
+        """W21/W21.1 — the rule that cost P1a 591 junk records, and the reason
+        an always-mounted, 60-second-polled surface may carry approve buttons at
+        all. Every mutation must be reachable ONLY from a click.
+
+        The gate: the two methods that call `act` must not be named inside any
+        lifecycle hook, and the poll's callback must call `load`, which is a
+        pure read.
+        """
+        js = self._dock_js()
+        self.assertIn('"act"', js, 'the dock must route mutations through act()')
+        # setup() is where EVERY lifecycle hook and the poll are registered, so
+        # nothing reachable from it may be a write.
+        setup = re.search(r'\n    setup\(\)\s*\{(.*?)\n    \}\n', js, re.S)
+        self.assertTrue(setup, 'no setup() found in pb_dock.js')
+        for writer in ('this.approve(', 'this.confirmRefuse(', '"act"'):
+            self.assertNotIn(
+                writer, setup.group(1),
+                '%s must not be reachable from setup() — mount hooks READ, '
+                'click handlers WRITE (W21.1)' % writer)
+        # …and the two acts must only ever be called from a template click
+        for writer in ('approve', 'confirmRefuse'):
+            self.assertIn('this.%s(it)' % writer, self._dock_xml(),
+                          '%s must be wired from a t-on-click' % writer)
+        # the interval fires the same pure read the mount does
+        self.assertRegex(js, re.compile(r'setInterval\(.*?this\.load\(true\)', re.S))
+
+    def test_the_dock_asks_the_server_before_offering_org_scope(self):
+        """§3.1: `can_org` is the server's answer. An offer the server would
+        refuse with an AccessError is worse than no offer, and a client that
+        decides its own scope is a client that can be told to lie."""
+        self.assertIn('canOrg', self._dock_js())
+        self.assertIn('data.can_org', self._dock_js())
+        self.assertIn('t-if="canOrg"', self._dock_xml(),
+                      'the Team/Org toggle must be gated on the payload flag')
+
+    def test_the_dock_header_reads_the_servers_total_not_the_row_count(self):
+        """The list is capped at 20 per source. Counting the rows on screen
+        would report a SHRINKING backlog as the real one grew past the cap."""
+        js = self._dock_js()
+        self.assertIn('queues.total', js)
+        self.assertNotRegex(
+            js, r'get total\(\)\s*\{\s*return this\.items\.length',
+            'the header must not count the rendered rows')
+
+    def test_the_hovercard_makes_no_request(self):
+        """§3.4: everything on it is already in the payload. A hover that fires
+        a request fires forty of them while you read the list."""
+        js = self._dock_js()
+        block = re.search(r'onCardEnter\(it, ev\)\s*\{(.*?)\n    \}', js, re.S)
+        self.assertTrue(block, 'onCardEnter not found')
+        for needle in ('orm', 'rpc', 'await'):
+            self.assertNotIn(needle, block.group(1),
+                             'the hovercard must be RPC-free (%s)' % needle)
+
+    def test_the_refusal_note_is_required(self):
+        """The Team cockpit's note is optional. In the dock it is not: a refusal
+        with no reason is a support ticket, and two of the four models carry the
+        note into their own refusal chain as the only record of why."""
+        js = self._dock_js()
+        self.assertRegex(js, r'get canConfirmRefuse\(\)[^}]*refuseNote\.trim\(\)')
+        self.assertIn('!canConfirmRefuse', self._dock_xml(),
+                      'the confirm button must be disabled without a note')

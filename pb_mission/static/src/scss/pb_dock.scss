@@ -1,0 +1,536 @@
+// =====================================================================
+//  Needs-you dock (P3b WP-2) — mockup B's right column.
+//
+//  Tokens only (W1): the four source tints are P0's semantic map — amber
+//  overtime, indigo trips, blue corrections, green leave — and every one of them
+//  is a `--pbim-*` pair with its correct hex as the fallback, because a var()
+//  fallback is a real colour, not a comment (W14). `--pbim-pill` does NOT exist
+//  in the token mixin, so pills are written `999px` (W19).
+//
+//  Z-DISCIPLINE (W37): `.pbms-dock` itself carries NO z-index. It is a flex
+//  sibling of the canvas, so a lens's fixed-position modal (at 1050) still
+//  resolves against the ROOT stacking context. The hovercard is the one
+//  stacked thing here and it stays at 15 — under the 60px biz rail overlay's 25.
+// =====================================================================
+
+.pbim.pbms {
+
+    // ==================================================== the column
+    .pbms-dock {
+        flex: 0 0 268px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        background: var(--pbim-surface, #fff);
+        border-left: 1px solid var(--pbim-line, #E2E8F0);
+
+        &.is-collapsed { flex-basis: 44px; }
+    }
+
+    // ---------------------------------------------------- collapsed strip
+    .pbms-dock__strip {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 7px;
+        padding: 14px 0;
+        border: 0;
+        background: transparent;
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        cursor: pointer;
+
+        svg { display: block; }
+        &:hover { background: var(--pbim-line-2, #F1F5F9); }
+    }
+    .pbms-dock__stripic { display: inline-flex; }
+    .pbms-dock__stripn {
+        min-width: 24px;
+        padding: 2px 5px;
+        border-radius: 999px;
+        background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668);
+        font-size: 10px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+    }
+    .pbms-dock__dot {
+        min-width: 20px;
+        padding: 1px 4px;
+        border-radius: 6px;
+        font-size: 9.5px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+
+        // the same four identities as the expanded cards — a collapsed dock
+        // still has to say WHAT is waiting, not just how much
+        &--ot {
+            background: var(--pbim-amber-soft, #FEF3C7);
+            color: var(--pbim-amber, #D97706);
+        }
+        &--trip {
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+        &--correction {
+            background: var(--pbim-cyan-soft, #E5EDFD);
+            color: var(--pbim-cyan, #2563EB);
+        }
+        &--leave {
+            background: var(--pbim-green-soft, #E3F2E9);
+            color: var(--pbim-green, #2E7D4F);
+        }
+    }
+
+    // ------------------------------------------------------------- header
+    .pbms-dock__h {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 13px 12px 9px;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        color: var(--pbim-muted, #64748B);
+
+        svg { display: block; }
+    }
+    .pbms-dock__hic { display: inline-flex; }
+    .pbms-dock__ht {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+    .pbms-dock__n {
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668);
+        font-size: 10px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+    }
+    .pbms-dock__x {
+        margin-left: auto;
+        display: inline-flex;
+        padding: 3px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--pbim-muted, #64748B);
+        cursor: pointer;
+        &:hover {
+            background: var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+
+    // -------------------------------------------------------- scope toggle
+    .pbms-dock__scope {
+        flex: 0 0 auto;
+        display: flex;
+        gap: 3px;
+        margin: 9px 12px 0;
+        padding: 3px;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-line-2, #F1F5F9);
+    }
+    .pbms-dock__sc {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 5px 4px;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 10.5px;
+        font-weight: 800;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover { color: var(--pbim-ink, #1B1733); }
+        &.is-on {
+            background: var(--pbim-surface, #fff);
+            color: var(--pbim-primary, #5A4BB0);
+            box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+        }
+    }
+
+    // --------------------------------------------------------------- body
+    // The dock scrolls ITSELF; the shell root does not (W20's sibling rule).
+    .pbms-dock__body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 10px 12px 12px;
+    }
+
+    .pbms-dock__msg {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 4px;
+        color: var(--pbim-muted, #64748B);
+        font-size: 11.5px;
+
+        svg { display: block; }
+        &--bad { color: var(--pbim-amber, #D97706); }
+    }
+
+    // ------------------------------------------------------- empty states
+    .pbms-dock__clear {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 34px 10px;
+        text-align: center;
+
+        b { font-size: 12.5px; color: var(--pbim-ink, #1B1733); }
+        p {
+            margin: 0;
+            font-size: 11px;
+            line-height: 1.45;
+            color: var(--pbim-muted, #64748B);
+        }
+        svg { display: block; }
+    }
+    .pbms-dock__clearic {
+        display: inline-flex;
+        margin-bottom: 4px;
+        color: var(--pbim-green, #2E7D4F);
+    }
+    .pbms-dock__clear--noteam .pbms-dock__clearic {
+        color: var(--pbim-slate, #64748B);
+    }
+
+    // ------------------------------------------------------------- groups
+    .pbms-dock__grp + .pbms-dock__grp { margin-top: 12px; }
+    .pbms-dock__gh {
+        padding: 0 2px 5px;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // --------------------------------------------------------------- card
+    .pbms-dcard {
+        border: 1px solid var(--pbim-line-2, #F1F5F9);
+        border-radius: var(--pbim-r-sm, 10px);
+        padding: 8px 9px;
+
+        & + .pbms-dcard { margin-top: 6px; }
+        &:hover { border-color: var(--pbim-line, #E2E8F0); }
+    }
+    .pbms-dcard__who {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        width: 100%;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--pbim-ink, #1B1733);
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+
+        svg { display: block; }
+        &:hover .pbms-dcard__nm { color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbms-dcard__k {
+        flex: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        // P0's semantic source map — one identity per queue, nothing invented
+        &--ot {
+            background: var(--pbim-amber-soft, #FEF3C7);
+            color: var(--pbim-amber, #D97706);
+        }
+        &--trip {
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+        &--correction {
+            background: var(--pbim-cyan-soft, #E5EDFD);
+            color: var(--pbim-cyan, #2563EB);
+        }
+        &--leave {
+            background: var(--pbim-green-soft, #E3F2E9);
+            color: var(--pbim-green, #2E7D4F);
+        }
+        &--slate {
+            background: var(--pbim-slate-soft, #EEF1F5);
+            color: var(--pbim-slate, #64748B);
+        }
+    }
+    .pbms-dcard__nm {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .pbms-dcard__age {
+        flex: none;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: var(--pbim-muted, #64748B);
+        font-variant-numeric: tabular-nums;
+
+        // three days pending is a complaint, not a queue
+        &.old { color: var(--pbim-amber, #D97706); }
+    }
+    .pbms-dcard__sub {
+        margin: 3px 0 7px;
+        padding-left: 27px;
+        font-size: 10.5px;
+        line-height: 1.35;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbms-dcard__acts {
+        display: flex;
+        gap: 6px;
+        padding-left: 27px;
+    }
+    .pbms-dcard__act {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 24px;
+        border-radius: 7px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #fff);
+        cursor: pointer;
+
+        svg { display: block; }
+        &[disabled] { opacity: .4; cursor: not-allowed; }
+
+        &--ok {
+            color: var(--pbim-green, #2E7D4F);
+            &:hover:not([disabled]) {
+                background: var(--pbim-green-soft, #E3F2E9);
+                border-color: var(--pbim-green, #2E7D4F);
+            }
+        }
+        &--no {
+            color: var(--pbim-rose, #DC2668);
+            &:hover:not([disabled]) {
+                background: var(--pbim-rose-soft, #FCE7EF);
+                border-color: var(--pbim-rose, #DC2668);
+            }
+        }
+    }
+
+    // ---------------------------------------------------- refuse-with-note
+    .pbms-dcard__refuse { padding-left: 27px; }
+    .pbms-dcard__note {
+        width: 100%;
+        resize: vertical;
+        padding: 6px 7px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 7px;
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-ink, #1B1733);
+        font: inherit;
+        font-size: 11px;
+
+        &:focus {
+            outline: none;
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(90, 75, 176, .18));
+        }
+    }
+    .pbms-dcard__racts {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+    }
+
+    // ------------------------------------------------------------ buttons
+    .pbms-dock__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 6px 10px;
+        border: 1px solid var(--pbim-primary, #5A4BB0);
+        border-radius: 8px;
+        background: var(--pbim-primary, #5A4BB0);
+        color: #fff;
+        font: inherit;
+        font-size: 10.5px;
+        font-weight: 800;
+        cursor: pointer;
+
+        &:hover:not([disabled]) {
+            background: var(--pbim-primary-hover, #4A3D96);
+            border-color: var(--pbim-primary-hover, #4A3D96);
+        }
+        &[disabled] { opacity: .45; cursor: not-allowed; }
+
+        &--ghost {
+            background: transparent;
+            border-color: var(--pbim-line, #E2E8F0);
+            color: var(--pbim-muted, #64748B);
+            &:hover:not([disabled]) {
+                background: var(--pbim-line-2, #F1F5F9);
+                border-color: var(--pbim-line, #E2E8F0);
+                color: var(--pbim-ink, #1B1733);
+            }
+        }
+        // There is no `--pbim-rose-hover` in the token mixin, and W1 forbids
+        // inventing one. `color-mix()` derives the pressed tone FROM the token,
+        // so a palette change carries it along — and unlike mixed-unit
+        // min()/max() it passes straight through Dart Sass (W15).
+        &--danger {
+            background: var(--pbim-rose, #DC2668);
+            border-color: var(--pbim-rose, #DC2668);
+            &:hover:not([disabled]) {
+                background: color-mix(in srgb, var(--pbim-rose, #DC2668) 86%, #000);
+                border-color: color-mix(in srgb, var(--pbim-rose, #DC2668) 86%, #000);
+            }
+        }
+    }
+
+    .pbms-dock__more {
+        display: block;
+        width: 100%;
+        margin-top: 6px;
+        padding: 5px;
+        border: 1px dashed var(--pbim-line, #E2E8F0);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--pbim-primary, #5A4BB0);
+        font: inherit;
+        font-size: 10.5px;
+        font-weight: 800;
+        cursor: pointer;
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+    }
+
+    // -------------------------------------------------------------- footer
+    .pbms-dock__f {
+        flex: 0 0 auto;
+        padding: 9px 12px 12px;
+        border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+    }
+    .pbms-dock__full {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        padding: 7px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--pbim-primary, #5A4BB0);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+
+        svg { display: block; }
+        &:hover {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary-light, #CBC2EE);
+        }
+    }
+
+    // ----------------------------------------------------------- hovercard
+    // Fixed, not absolute: the dock body is an overflow scroller and would clip
+    // an absolutely-positioned child at the dock's own left edge (W34's
+    // geometry). `pointer-events: none` so the pointer can never land on it and
+    // make it flicker — the DOOR is the card's identity row.
+    .pbms-hovercard {
+        position: fixed;
+        z-index: 15;
+        width: 244px;
+        padding: 11px 12px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-surface, #fff);
+        box-shadow: var(--pbim-sh-lg, 0 18px 44px rgba(40, 50, 90, .12));
+        pointer-events: none;
+
+        svg { display: block; }
+    }
+    .pbms-hovercard__who {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+
+        b {
+            display: block;
+            font-size: 12.5px;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .pbms-hovercard__av {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex: none;
+    }
+    .pbms-hovercard__job {
+        display: block;
+        font-size: 10px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbms-hovercard__row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 9px;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbms-hovercard__when {
+        margin-left: auto;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbms-hovercard__t {
+        margin-top: 5px;
+        font-size: 10.5px;
+        line-height: 1.4;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbms-hovercard__cta {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 9px;
+        padding-top: 8px;
+        border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+        font-size: 10.5px;
+        font-weight: 800;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+
+    // -------------------------------------------------------- narrow screens
+    // Below the small-laptop breakpoint the canvas needs every pixel; the dock
+    // keeps its strip and the officer opens it deliberately.
+    @media (max-width: 1099px) {
+        .pbms-dock { flex-basis: 232px; }
+    }
+}

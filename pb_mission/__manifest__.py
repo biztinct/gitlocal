@@ -30,15 +30,33 @@ full-bleed canvas that hosts the existing cockpits as embedded guests.
     seven scroll themselves and three of those pin sticky chrome to their own
     root.
 
-Binding non-goals for this phase: no Needs-you dock, no person popover, no
-Command-K palette (all P3b); no engine work (P4). Nothing is deleted — all seven
-client actions stay registered and reachable, and the retired rail items move to
-the 900 band (W18).
+P3b adds the ambient layer on top of that shell:
+
+  * the **Needs-you dock** — a 268px right column, mounted once beside every
+    lens, showing everything awaiting this user across FOUR models with inline
+    approve and refuse-with-a-required-note. It reads `pb.team.get_team_data`
+    (the queue the Team Approvals cockpit has always built) and every mutation
+    rides `pb.team.act`, i.e. the target model's own gated method as the real
+    user. Mount hooks and the 60-second poll READ; only click handlers write
+    (W21/W21.1). Collapses to a 44px badge strip, remembered in localStorage.
+  * a **hovercard** on each card, built from data already in the payload — no
+    RPC, no new endpoint.
+  * the **shell person surface** — one shared `<WfPersonWeek/>` drawer for the
+    four lenses that do not own one, so a person pinned from anywhere opens
+    somewhere.
+  * the **⌘K palette** — lenses, people and actions, rendered through the Odoo
+    overlay service so the shell's z-discipline (W37) is untouched, and the
+    `pb_cmd` protocol that carries a palette action into a lens.
+
+Still non-goals: no engine work (tolerances, locks, "approve all clean" — P4).
+
+Nothing is deleted — all seven client actions stay registered and reachable, and
+the retired rail items move to the 900 band (W18).
 
 pbim tokens only (the command bar is the deep-indigo `--pbim-primary-dark`, not
 a new navy), Lucide icons through the shared `ic()` registry, flat fills.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -62,7 +80,10 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     'assets': {
         'web.assets_backend': [
             'pb_mission/static/src/scss/pb_mission.scss',
+            'pb_mission/static/src/scss/pb_dock.scss',
+            'pb_mission/static/src/js/pb_dock.js',
             'pb_mission/static/src/js/pb_mission.js',
+            'pb_mission/static/src/xml/pb_dock.xml',
             'pb_mission/static/src/xml/pb_mission.xml',
         ],
     },
