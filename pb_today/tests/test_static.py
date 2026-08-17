@@ -93,12 +93,20 @@ class TestTodayStaticGates(TransactionCase):
     def test_today_ships_no_charts(self):
         """A binding non-goal: the old dashboard's Chart.js analytics die with
         it. Deep analytics belong to Insights / the Analytics Explorer — Today
-        is triage, and a chart on it is scope creep with a legend."""
+        is triage, and a chart on it is scope creep with a legend.
+
+        The needles are CODE, not the words. An earlier version of this gate
+        looked for the string "Chart.js" and duly failed on its own docstring
+        and on the manifest paragraph explaining that the charts were dropped —
+        a gate that forbids naming the thing it forbids is a gate nobody can
+        document around.
+        """
         bad = []
         for path in _walk('pb_today', ('.js', '.xml', '.py'), skip_tests=True):
             with open(path, encoding='utf-8') as fh:
                 body = fh.read()
-            for needle in ('Chart.js', 'new Chart(', 'loadBundle', 'chartjs'):
+            for needle in ('new Chart(', 'loadBundle(', 'Chart.register',
+                           'chart.umd', 'chartjs'):
                 if needle in body:
                     bad.append('%s: %s' % (path, needle))
         self.assertFalse(bad, 'Today must ship no charts:\n%s' % '\n'.join(bad))
@@ -125,14 +133,26 @@ class TestTodayStaticGates(TransactionCase):
         tpl = _read('pb_today', 'static', 'src', 'xml', 'pb_today.xml')
         self.assertTrue(tpl, 'the Today template must be readable')
 
-        tile = re.search(r'<button[^>]*class="pbtd-tile[^>]*>', tpl, re.S)
-        self.assertTrue(tile, 'the tile strip must be made of buttons')
-        self.assertIn('setFilter', tile.group(0), 'a tile must filter the list')
+        # Anchor + window, NOT `<button[^>]*>`. An OWL tag routinely contains a
+        # `>` that does not close it — every inline handler is an arrow function
+        # (`t-on-click="() => this.setFilter(...)"`), so a `[^>]*` tag match
+        # stops dead at the fat arrow and silently inspects half an attribute.
+        # That is not a hypothetical: it is what the first live run of this gate
+        # did, and it reported a missing door on a template that had one.
+        # Generous window: the anchors are followed by comments explaining the
+        # markup, and a tight budget makes the gate fail on documentation
+        # rather than on a missing door (it did, at 400 chars).
+        def window(anchor, size=1500):
+            i = tpl.find(anchor)
+            self.assertNotEqual(i, -1, 'no %s in the Today template' % anchor)
+            return tpl[i:i + size]
 
-        who = re.search(r'<button class="pbtd-who"[^>]*>', tpl, re.S)
-        self.assertTrue(who, 'the row avatar must be a button')
-        self.assertIn('openPerson', who.group(0),
-                      'the avatar must open the person drawer')
+        tiles = window('class="pbtd-tiles"')
+        self.assertIn('<button', tiles, 'the tile strip must be made of buttons')
+        self.assertIn('setFilter', tiles, 'a tile must filter the list')
+
+        row = window('class="pbtd-who"')
+        self.assertIn('openPerson', row, 'the avatar must open the person drawer')
 
         self.assertIn('fileCorrection', tpl,
                       'a late/missing row must hand over to the Time hub')

@@ -143,7 +143,10 @@ class TestTodayFacade(TransactionCase):
         self.assertEqual(t['total'], 5, 'exactly the five seeded people: %s'
                          % [r['name'] for r in board['rows']])
         self.assertEqual(t['on_shift'], 1)
-        self.assertEqual(t['checked_out'], 1)
+        # TWO: Dora (on time) and Larry (late). Larry arrived at 08:24 and left
+        # at 16:24, so his day is closed — being late does not put a person in a
+        # different bucket, it tags the bucket they are already in.
+        self.assertEqual(t['checked_out'], 2)
         self.assertEqual(t['not_started'], 1)
         self.assertEqual(t['on_leave'], 1)
         # `late` is a CROSS-CUT of the buckets, never a sixth bucket: Larry is
@@ -291,6 +294,15 @@ class TestTodayFacade(TransactionCase):
 
     # =================================================================== T1.4
     def test_cross_company_people_never_reach_the_board(self):
+        """The board is scoped to `env.companies`, so the test has to PIN
+        env.companies.
+
+        `res.company.create()` adds the new company to the creating user's
+        allowed companies, so a naive version of this test creates a second
+        company, widens its own scope by doing so, and then reports a "leak"
+        that is the facade correctly honouring the scope it was given. The
+        context below is what makes the assertion mean what it says.
+        """
         other = self.env['res.company'].create({'name': 'P1b Other Co'})
         stranger = self.env['hr.employee'].create({
             'name': 'P1b Stranger', 'company_id': other.id, 'tz': 'UTC'})
@@ -305,9 +317,17 @@ class TestTodayFacade(TransactionCase):
         })
         self._att(stranger, self.day)
 
-        board = self._board(department=False)
+        board = self.Today.with_context(
+            allowed_company_ids=[self.company.id]).get_today_data(
+                False, self.day.isoformat())
         self.assertNotIn(stranger.id, [r['id'] for r in board['rows']],
                          'an employee outside env.companies leaked onto the board')
+        # ...and the same call WITH the other company allowed does see them, so
+        # the assertion above is proving a scope, not an empty query.
+        wide = self.Today.with_context(
+            allowed_company_ids=[self.company.id, other.id]).get_today_data(
+                False, self.day.isoformat())
+        self.assertIn(stranger.id, [r['id'] for r in wide['rows']])
 
     # =================================================================== T1.5
     def test_department_filter_and_empty_day(self):

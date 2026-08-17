@@ -104,34 +104,35 @@ class TestTimeHubSidebar(TransactionCase):
             dupes, ', '.join('%s=%s' % (i.name, i.sequence)
                              for i in items.sorted('sequence') if i.sequence in dupes)))
 
-    def test_workforce_section_is_down_to_twelve_visible_items(self):
-        """14 before P1a, minus the 3 absorbed, plus Time = 12 (handover T15).
+    def test_the_three_p1a_absorbed_items_stay_retired(self):
+        """P1a's own contribution to the retired set, still retired.
 
-        Asserted two ways so the count survives a deployment that happens not to
-        install every Workforce cockpit: the retired SET is pinned exactly, and
-        the 12 is asserted only when the full 15-record section is present.
+        This test used to pin the retired set EXACTLY and assert a live count of
+        12. P1b retired four more items (Workforce Dashboard, Live Attendance,
+        Overtime Rules, Driver Tracking) and relocated Payroll Report, so an
+        exact-set assertion here would now fail on work that is correct — and,
+        worse, it would fail again on every future phase that retires anything.
+
+        The durable question for THIS phase's test file is narrower and is the
+        one P1a actually owns: did the three surfaces the Time hub absorbed stay
+        off the rail? The whole-rail shape (8 live items, the complete retired
+        set, the 900 band) is asserted where it belongs, by the phase that
+        created it: pb_today/tests/test_sidebar.py.
         """
         sec = self._section()
         Item = self.env['pb.sidebar.item']
-        every = Item.with_context(active_test=False).search([('section_id', '=', sec.id)])
-        live = Item.search([('section_id', '=', sec.id)])
-        retired = every - live
+        live_ids = set(Item.search([('section_id', '=', sec.id)]).ids)
 
-        expected_retired = {
-            self.env.ref(x).id for x in (
-                'pb_sidebar.item_wf_timecards',
-                'pb_hr_workforce.item_wf_weekentry',
-                'pb_attendance_flow.item_attendance_control',
-            ) if self.env.ref(x, raise_if_not_found=False)
-        }
-        self.assertEqual(
-            set(retired.ids), expected_retired,
-            'exactly the three absorbed items may be retired; retired set was %s'
-            % ', '.join('%s(%s)' % (i.name, i.sequence) for i in retired))
-
-        if len(every) == 15:
-            self.assertEqual(
-                len(live), 12,
-                'expected 12 live Workforce items after P1a, found %s: %s' % (
-                    len(live), ', '.join('%s(%s)' % (i.name, i.sequence)
-                                         for i in live.sorted('sequence'))))
+        checked = 0
+        for xmlid in ('pb_sidebar.item_wf_timecards',
+                      'pb_hr_workforce.item_wf_weekentry',
+                      'pb_attendance_flow.item_attendance_control'):
+            rec = self.env.ref(xmlid, raise_if_not_found=False)
+            if not rec:
+                continue
+            checked += 1
+            self.assertNotIn(
+                rec.id, live_ids,
+                '%s was absorbed into the Time hub in P1a and must stay off the '
+                'rail' % xmlid)
+        self.assertEqual(checked, 3, 'all three absorbed items must be present')

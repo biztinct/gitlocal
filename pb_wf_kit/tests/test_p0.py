@@ -61,10 +61,16 @@ class TestWorkforceP0Sidebar(TransactionCase):
         of those files was noupdate="1" until P0. Asserting the value in the DB
         is the only way to catch a repo-only "fix".
         """
+        # P0 moved these off their collisions (32 / 38 / 37); P1b renumbered the
+        # whole section to the Option-A rail, so the CURRENT truth is below.
+        # The test still does its job — it is the W13/W13.1 guard proving each
+        # record's declaring data file can actually reach it — and
+        # pb_business_trip is the interesting one twice over: frozen until P0
+        # for pb_timeoff, frozen until P1b for itself.
         expected = {
-            'pb_timeoff.item_leave_center': 32,
-            'pb_hr_workforce.item_wf_ot_desk': 38,
-            'pb_business_trip.item_wf_trips': 37,
+            'pb_timeoff.item_leave_center': 40,
+            'pb_hr_workforce.item_wf_ot_desk': 50,
+            'pb_business_trip.item_wf_trips': 60,
         }
         checked = 0
         for xmlid, seq in expected.items():
