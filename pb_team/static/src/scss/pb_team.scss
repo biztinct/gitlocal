@@ -1,11 +1,14 @@
 // My Team (MSS) cockpit — bespoke Payobook design-system surface over --pbim-*.
 // White + rail hero, Lucide SVG icons only, no gradients on chrome, source-tinted
-// left borders on queue cards (OT red · trip violet · correction cyan · leave green).
+// left borders on queue cards. The four source tints are pbim semantics (W1):
+// OT amber (Overtime Desk's identity) · trip indigo primary · correction cyan ·
+// leave green. Destructive affordances keep their own rose alias.
 .pbteam {
-    --ot: #dc2626;      --ot-soft: #fef2f2;
-    --trip: #7c3aed;    --trip-soft: #f5f3ff;
-    --correction: #2563eb; --correction-soft: #eff6ff;
-    --leave: #16a34a;   --leave-soft: #f0fdf4;
+    --ot:         var(--pbim-amber, #D97706);   --ot-soft:         var(--pbim-amber-soft, #FEF3C7);
+    --trip:       var(--pbim-primary, #5A4BB0); --trip-soft:       var(--pbim-soft, #EDEAF8);
+    --correction: var(--pbim-cyan, #2563EB);    --correction-soft: var(--pbim-cyan-soft, #E5EDFD);
+    --leave:      var(--pbim-green, #2E7D4F);   --leave-soft:      var(--pbim-green-soft, #E3F2E9);
+    --danger:     var(--pbim-rose, #DC2668);    --danger-soft:     var(--pbim-rose-soft, #FCE7EF);
 
     position: relative;
     height: 100%;
@@ -133,7 +136,7 @@
         svg { display: block; }
         &:disabled { opacity: .4; cursor: not-allowed; }
         &--ok:hover:not(:disabled) { background: var(--leave-soft); border-color: var(--leave); color: var(--leave); }
-        &--no:hover:not(:disabled) { background: var(--ot-soft); border-color: var(--ot); color: var(--ot); }
+        &--no:hover:not(:disabled) { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
     }
 
     // refuse popover
@@ -148,7 +151,8 @@
         border: 1px solid var(--pbim-line); background: var(--pbim-surface); border-radius: 9px;
         padding: 7px 13px; font-size: 12.5px; font-weight: 700; cursor: pointer; color: var(--pbim-text);
         &--ghost:hover { background: var(--pbim-bg); }
-        &--danger { background: var(--ot); border-color: var(--ot); color: #fff; &:hover { background: #b91c1c; } }
+        &--danger { background: var(--danger); border-color: var(--danger); color: #fff;
+            &:hover { background: color-mix(in srgb, var(--danger) 86%, #000); } }
     }
 
     // ---------- empty states ----------
