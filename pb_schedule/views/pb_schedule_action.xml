@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Schedule cockpit's client action. Test URL: /odoo/action-pb_schedule
+         (on this server the backend prefix is /bizapp — biz_deroute).
+
+         The LEGACY action `pb_hr_workforce.action_shift_planning_grid` and its
+         `shift_planning_grid` client tag stay registered and keep working: P2
+         is a W18 retirement, not a deletion, and a bookmark or a stray
+         doAction must not 404 while the old screen still exists. -->
+    <record id="action_pb_schedule" model="ir.actions.client">
+        <field name="name">Schedule</field>
+        <field name="tag">pb_schedule</field>
+    </record>
+</odoo>

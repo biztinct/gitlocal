@@ -1,0 +1,647 @@
+// =====================================================================
+//  Schedule cockpit (Workforce P2). Strictly --pbim-* tokens (W1), flat
+//  fills (W3), Lucide via ic() (W2). Every var() carries the CORRECT pbim
+//  fallback, because a fallback is a real colour, not a comment (W14/W19).
+//
+//  TEMPLATE IDENTITY COLOURS — the eleven tones.
+//  `hr.shift.template.color` is an integer index, so the roster needs a
+//  stable index → identity map. The legacy grid put eleven hand-picked
+//  2013 flat-UI hexes in JavaScript, which is precisely what W1 forbids
+//  and what a design-system change can never reach. Here the JS only ever
+//  emits `pbsc-card--tN`, and the eleven identities below are BUILT from
+//  pbim semantics: six are the semantics themselves, five are
+//  `color-mix()` blends of two of them — so the palette moves when the
+//  tokens move, and there is not one invented colour in the module.
+//  (`color-mix()` passes straight through Dart Sass — W15. Mixed-unit
+//  min()/max() does not, which is why none appears here.)
+// =====================================================================
+
+// Two parallel maps rather than a list-of-pairs: `nth()` on a list whose
+// members are themselves comma-bearing CSS functions is exactly the kind of
+// Sass parsing that fails at BUNDLE time, and an SCSS error on this project
+// only surfaces at page load.
+$pbsc-accent: (
+    0:  var(--pbim-slate,   #64748B),
+    1:  var(--pbim-primary, #5A4BB0),
+    2:  var(--pbim-green,   #2E7D4F),
+    3:  var(--pbim-cyan,    #2563EB),
+    4:  var(--pbim-amber,   #D97706),
+    5:  var(--pbim-rose,    #DC2668),
+    6:  color-mix(in srgb, var(--pbim-green, #2E7D4F) 55%, var(--pbim-cyan, #2563EB)),
+    7:  color-mix(in srgb, var(--pbim-primary, #5A4BB0) 60%, var(--pbim-rose, #DC2668)),
+    8:  color-mix(in srgb, var(--pbim-amber, #D97706) 55%, var(--pbim-green, #2E7D4F)),
+    9:  color-mix(in srgb, var(--pbim-primary, #5A4BB0) 55%, var(--pbim-primary-dark, #241F52)),
+    10: color-mix(in srgb, var(--pbim-cyan, #2563EB) 50%, var(--pbim-slate, #64748B)),
+);
+
+$pbsc-soft: (
+    0:  var(--pbim-slate-soft, #EEF1F5),
+    1:  var(--pbim-soft,       #EDEAF8),
+    2:  var(--pbim-green-soft, #E3F2E9),
+    3:  var(--pbim-cyan-soft,  #E5EDFD),
+    4:  var(--pbim-amber-soft, #FEF3C7),
+    5:  var(--pbim-rose-soft,  #FCE7EF),
+    6:  color-mix(in srgb, var(--pbim-green-soft, #E3F2E9) 55%, var(--pbim-cyan-soft, #E5EDFD)),
+    7:  color-mix(in srgb, var(--pbim-soft, #EDEAF8) 60%, var(--pbim-rose-soft, #FCE7EF)),
+    8:  color-mix(in srgb, var(--pbim-amber-soft, #FEF3C7) 55%, var(--pbim-green-soft, #E3F2E9)),
+    9:  color-mix(in srgb, var(--pbim-soft, #EDEAF8) 70%, var(--pbim-soft2, #DDD6F2)),
+    10: color-mix(in srgb, var(--pbim-cyan-soft, #E5EDFD) 50%, var(--pbim-slate-soft, #EEF1F5)),
+);
+
+.pbim.pbsc {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+    svg { display: block; }
+
+    // ------------------------------------------------------------- head
+    .pbsc-head {
+        flex: none;
+        padding: 16px 22px 12px;
+        background: var(--pbim-surface, #ffffff);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbsc-head__row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+    .pbsc-title {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbsc-ctx { margin-left: auto; }
+
+    // ---------------------------------------------------------- toolbar
+    .pbsc-tools {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 10px 22px;
+        background: var(--pbim-surface, #ffffff);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbsc-spacer { flex: 1; }
+    .pbsc-dot { opacity: .45; margin: 0 2px; }
+
+    .pbsc-counts {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+        b {
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+    .pbsc-warn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--pbim-amber, #D97706);
+        b { color: var(--pbim-amber, #D97706); }
+    }
+
+    .pbsc-seg {
+        display: inline-flex;
+        gap: 3px;
+        padding: 3px;
+        border-radius: 999px;
+        background: var(--pbim-slate-soft, #EEF1F5);
+    }
+    .pbsc-seg__b {
+        border: 0;
+        background: transparent;
+        border-radius: 999px;
+        padding: 5px 13px;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        cursor: pointer;
+        &:hover { color: var(--pbim-primary, #5A4BB0); }
+        &.is-on {
+            background: var(--pbim-surface, #ffffff);
+            color: var(--pbim-primary, #5A4BB0);
+            box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+        }
+    }
+
+    .pbsc-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 6px 13px;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-muted, #64748B);
+        transition: border-color .12s ease, color .12s ease;
+
+        &.ghost:hover {
+            color: var(--pbim-primary, #5A4BB0);
+            border-color: var(--pbim-primary, #5A4BB0);
+        }
+        &.primary {
+            background: var(--pbim-primary, #5A4BB0);
+            border-color: var(--pbim-primary, #5A4BB0);
+            color: #ffffff;
+            &:hover:not(:disabled) {
+                background: var(--pbim-primary-hover, #4A3D96);
+                border-color: var(--pbim-primary-hover, #4A3D96);
+            }
+        }
+        &:disabled { opacity: .45; cursor: not-allowed; }
+    }
+    .pbsc-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-primary, #5A4BB0);
+        font-size: 10.5px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+    }
+
+    // ------------------------------------------------------------- body
+    .pbsc-body {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 14px 22px 18px;
+        gap: 12px;
+        overflow: hidden;
+    }
+
+    .pbsc-load,
+    .pbsc-empty {
+        margin: auto;
+        text-align: center;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbsc-load {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        svg { animation: pbsc-spin 1s linear infinite; }
+    }
+    .pbsc-empty {
+        padding: 40px 24px;
+        svg { margin: 0 auto; color: var(--pbim-primary, #5A4BB0); opacity: .55; }
+        .t { font-weight: 800; color: var(--pbim-ink, #1B1733); margin: 12px 0 5px; }
+        .s { font-size: 12px; line-height: 1.5; max-width: 420px; margin: 0 auto; }
+    }
+
+    .pbsc-trunc {
+        flex: none;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: var(--pbim-r-sm, 10px);
+        font-size: 11.5px;
+        line-height: 1.5;
+        background: var(--pbim-amber-soft, #FEF3C7);
+        color: var(--pbim-amber, #D97706);
+    }
+
+    // ------------------------------------------------------------- grid
+    .pbsc-gridwrap {
+        flex: 1;
+        min-height: 0;
+        min-width: 0;
+        overflow: auto;
+        border-radius: var(--pbim-r, 14px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+    }
+    .pbsc-grid {
+        display: grid;
+        min-width: max-content;
+    }
+
+    // header cells — sticky on scroll so the days never leave the screen
+    .pbsc-h {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        padding: 9px 10px;
+        background: var(--pbim-surface, #ffffff);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        border-left: 1px solid var(--pbim-line-2, #F1F5F9);
+
+        .dw {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--pbim-muted, #64748B);
+        }
+        .dd {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+            font-variant-numeric: tabular-nums;
+        }
+        &.is-today {
+            box-shadow: inset 0 2px 0 0 var(--pbim-primary, #5A4BB0);
+            .dd { color: var(--pbim-primary, #5A4BB0); }
+        }
+        &.is-weekend { background: var(--pbim-line-2, #F1F5F9); }
+    }
+    .pbsc-h--emp {
+        left: 0;
+        z-index: 4;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        border-left: 0;
+        .l {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--pbim-ink, #1B1733);
+        }
+        .n {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--pbim-primary, #5A4BB0);
+            background: var(--pbim-soft, #EDEAF8);
+            border-radius: 999px;
+            padding: 1px 8px;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    // sticky people column
+    .pbsc-emp {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 8px 10px;
+        background: var(--pbim-surface, #ffffff);
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        border-right: 1px solid var(--pbim-line, #E2E8F0);
+        min-width: 0;
+    }
+    .pbsc-emp--open {
+        flex-direction: row;
+        align-items: center;
+        gap: 9px;
+        background: var(--pbim-bg, #F5F6FA);
+    }
+    .pbsc-openav {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        flex: none;
+        border-radius: 50%;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .pbsc-who {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        &:hover .n { color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbsc-av {
+        width: 30px;
+        height: 30px;
+        flex: none;
+        border-radius: 50%;
+        object-fit: cover;
+        background: var(--pbim-soft, #EDEAF8);
+    }
+    .pbsc-emp__txt {
+        min-width: 0;
+        display: block;
+        .n {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .s {
+            display: block;
+            font-size: 10px;
+            color: var(--pbim-muted, #64748B);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+    .pbsc-hours {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        .bar {
+            flex: 1;
+            height: 4px;
+            border-radius: 999px;
+            background: var(--pbim-line-2, #F1F5F9);
+            overflow: hidden;
+        }
+        .fill {
+            display: block;
+            height: 100%;
+            background: var(--pbim-primary, #5A4BB0);
+            &.full { background: var(--pbim-amber, #D97706); }
+            &.over { background: var(--pbim-rose, #DC2668); }
+        }
+        .txt {
+            flex: none;
+            font-size: 10px;
+            color: var(--pbim-muted, #64748B);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    // day cells
+    .pbsc-cell {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 6px;
+        min-height: 62px;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        border-left: 1px solid var(--pbim-line-2, #F1F5F9);
+        cursor: pointer;
+
+        &:hover { background: var(--pbim-bg, #F5F6FA); }
+        &:hover .pbsc-add { opacity: 1; }
+        // W29: the Open Shifts row is not a create door
+        &.is-readonly { cursor: default; background: var(--pbim-bg, #F5F6FA); }
+        &.is-weekend { background: var(--pbim-line-2, #F1F5F9); }
+        &.is-today { box-shadow: inset 2px 0 0 0 var(--pbim-primary, #5A4BB0); }
+        &.is-leave { background: var(--pbim-amber-soft, #FEF3C7); }
+        &.is-leave-pending {
+            background: color-mix(in srgb, var(--pbim-amber-soft, #FEF3C7) 45%, transparent);
+        }
+    }
+    .pbsc-add {
+        position: absolute;
+        right: 5px;
+        bottom: 4px;
+        color: var(--pbim-muted, #64748B);
+        opacity: 0;
+        transition: opacity .12s ease;
+    }
+    .pbsc-leave {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        align-self: flex-start;
+        max-width: 100%;
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        background: var(--pbim-amber, #D97706);
+        color: #ffffff;
+        overflow: hidden;
+        span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        &.is-pending {
+            background: var(--pbim-surface, #ffffff);
+            color: var(--pbim-amber, #D97706);
+            border: 1px dashed var(--pbim-amber, #D97706);
+        }
+    }
+
+    // shift cards
+    .pbsc-card {
+        position: relative;
+        display: block;
+        padding: 4px 7px;
+        border-radius: 8px;
+        border-left: 3px solid var(--pbim-slate, #64748B);
+        background: var(--pbim-slate-soft, #EEF1F5);
+        cursor: pointer;
+        overflow: hidden;
+
+        .tm {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+            font-variant-numeric: tabular-nums;
+        }
+        .nm {
+            display: block;
+            font-size: 10px;
+            color: var(--pbim-text, #1B1733);
+            opacity: .78;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .cf {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            color: var(--pbim-rose, #DC2668);
+        }
+        &:hover { box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07)); }
+        &:hover .pbsc-del { opacity: 1; }
+
+        // a draft is a proposal; a published shift is a commitment
+        &.is-draft { border-left-style: dashed; }
+        &.is-completed { opacity: .62; }
+        &.is-open { border-left-style: dotted; }
+        &.is-conflict { outline: 1px solid var(--pbim-rose, #DC2668); }
+    }
+    .pbsc-del {
+        position: absolute;
+        right: 2px;
+        bottom: 2px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border: 0;
+        border-radius: 5px;
+        padding: 0;
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-rose, #DC2668);
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity .12s ease;
+    }
+
+    // ------------------------------------------------------ tone classes
+    @each $i, $accent in $pbsc-accent {
+        .pbsc-card--t#{$i} {
+            border-left-color: $accent;
+            background: map-get($pbsc-soft, $i);
+        }
+        .pbsc-tmpl--t#{$i} .sw { background: $accent; }
+        .pbsc-tmpl--t#{$i}:hover { border-color: $accent; }
+        .pbsc-swatch--t#{$i} { background: $accent; }
+    }
+
+    // ----------------------------------------------------------- modals
+    .pbsc-scrim {
+        position: absolute;
+        inset: 0;
+        z-index: 60;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: color-mix(in srgb, var(--pbim-primary-dark, #241F52) 34%, transparent);
+    }
+    .pbsc-modal {
+        width: 640px;
+        max-width: 100%;
+        max-height: 100%;
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--pbim-r-lg, 18px);
+        background: var(--pbim-surface, #ffffff);
+        box-shadow: var(--pbim-sh-lg, 0 18px 44px rgba(40, 50, 90, .12));
+        overflow: hidden;
+    }
+    .pbsc-modal--sm { width: 420px; }
+    .pbsc-modal__h {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px 18px 12px;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+
+        .eyebrow {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--pbim-primary, #5A4BB0);
+        }
+        h3 {
+            margin: 2px 0 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+        .sub { font-size: 11.5px; color: var(--pbim-muted, #64748B); margin-top: 2px; }
+    }
+    .pbsc-x {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        flex: none;
+        border-radius: 8px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-muted, #64748B);
+        cursor: pointer;
+        &:hover { color: var(--pbim-primary, #5A4BB0); border-color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbsc-modal__b { padding: 16px 18px 18px; overflow: auto; }
+    .pbsc-modal__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 14px;
+    }
+    .pbsc-note {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbsc-tmplgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 9px;
+    }
+    .pbsc-tmpl {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+        padding: 10px 12px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        &:disabled { opacity: .5; cursor: progress; }
+
+        .sw {
+            width: 22px;
+            height: 4px;
+            border-radius: 999px;
+            background: var(--pbim-slate, #64748B);
+        }
+        .nm {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+        .tm2 {
+            font-size: 11px;
+            color: var(--pbim-muted, #64748B);
+            font-variant-numeric: tabular-nums;
+        }
+        .du {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+}
+
+@keyframes pbsc-spin { to { transform: rotate(360deg); } }

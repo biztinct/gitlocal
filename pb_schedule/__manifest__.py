@@ -29,7 +29,7 @@ pbim tokens, Lucide icons via the shared `ic()` registry, flat fills, and the
 shared `wf_context` for department/week/search (W4). No payroll money path is
 touched: the rate helper is a READ helper for display aggregates only (W12).
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -38,13 +38,23 @@ touched: the rate helper is a READ helper for display aggregates only (W12).
         'pb_wf_kit',            # wf_context + WfContextBar / WfDrawer / WfPersonWeek
         'pb_import_kit',        # pbim tokens + the shared Lucide ic() registry
         'pb_hr_workforce',      # hr.shift.planning / .template / .grid, om_hr_payroll
+        'pb_time_hub',          # pb.time.hub.get_person_week — the shared person drawer
+        'pb_sidebar',           # the rail entry this cockpit repoints
         # NOT pb_young_worker: its night rule is probed with `in self.env` and
         # degrades to silence. NOT hr_shift either — it declares a DIFFERENT
         # model that is also called hr.shift.planning (hr_shift/models/
         # shift_planning.py:15) and nothing here may touch it.
     ],
-    'data': [],
-    'assets': {},
+    'data': [
+        'views/pb_schedule_action.xml',
+    ],
+    'assets': {
+        'web.assets_backend': [
+            'pb_schedule/static/src/scss/pb_schedule.scss',
+            'pb_schedule/static/src/js/pb_schedule.js',
+            'pb_schedule/static/src/xml/pb_schedule.xml',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,

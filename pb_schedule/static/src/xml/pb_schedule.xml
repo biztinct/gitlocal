@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_schedule.PbSchedule">
+    <!-- position:relative — the WfDrawer scrim is absolute and belongs to THIS
+         surface, not the viewport (wf_kit.scss). -->
+    <div class="pbim pbsc">
+
+      <!-- ==================== head: title + shared context ==============
+           `embedded` (W17) suppresses ONLY what a host would already own. -->
+      <div class="pbsc-head" t-if="!props.embedded">
+        <div class="pbsc-head__row">
+          <h1 class="pbsc-title">Schedule</h1>
+          <WfContextBar className="'pbsc-ctx'"
+                        features="{ department: true, week: true, person: false,
+                                    day: false, search: true }"/>
+        </div>
+      </div>
+
+      <!-- ============================ toolbar ========================== -->
+      <div class="pbsc-tools">
+        <div class="pbsc-seg" role="tablist" aria-label="Roster span">
+          <button class="pbsc-seg__b" role="tab"
+                  t-att-class="{ 'is-on': state.span === 7 }"
+                  t-att-aria-selected="state.span === 7 ? 'true' : 'false'"
+                  t-on-click="() => this.setSpan(7)">Week</button>
+          <button class="pbsc-seg__b" role="tab"
+                  t-att-class="{ 'is-on': state.span === 14 }"
+                  t-att-aria-selected="state.span === 14 ? 'true' : 'false'"
+                  t-on-click="() => this.setSpan(14)">Fortnight</button>
+        </div>
+
+        <span class="pbsc-counts" t-if="d">
+          <b t-esc="counts.shifts"/><span> shifts</span>
+          <span class="pbsc-dot">·</span>
+          <b t-esc="counts.published"/><span> published</span>
+          <span class="pbsc-dot" t-if="counts.open">·</span>
+          <t t-if="counts.open"><b t-esc="counts.open"/><span> open</span></t>
+          <span class="pbsc-dot" t-if="counts.conflicts">·</span>
+          <span class="pbsc-warn" t-if="counts.conflicts">
+            <t t-out="ic('alert', 12)"/><b t-esc="counts.conflicts"/><span> conflicts</span>
+          </span>
+        </span>
+
+        <span class="pbsc-spacer"/>
+
+        <button class="pbsc-btn ghost" t-on-click="() => this.refresh()"
+                title="Reload the roster" aria-label="Reload the roster">
+          <span t-out="ic('refresh', 14)"/>
+        </button>
+        <button class="pbsc-btn ghost" t-on-click="() => this.openCopy()">
+          <span t-out="ic('layers', 14)"/><span>Copy week</span>
+        </button>
+        <button class="pbsc-btn primary" t-on-click="() => this.publishAll()"
+                t-att-disabled="!counts.draft or state.publishing">
+          <span t-out="ic('upload', 14)"/><span>Publish</span>
+          <span class="pbsc-badge" t-if="counts.draft" t-esc="counts.draft"/>
+        </button>
+      </div>
+
+      <!-- ============================== body =========================== -->
+      <div class="pbsc-body">
+
+        <div class="pbsc-load" t-if="state.loading and !d">
+          <span t-out="ic('loader', 22)"/><span>Loading the roster…</span>
+        </div>
+
+        <div class="pbsc-empty" t-elif="emptyState">
+          <span t-out="ic(emptyState.icon, 28)"/>
+          <div class="t" t-esc="emptyState.title"/>
+          <div class="s" t-esc="emptyState.sub"/>
+        </div>
+
+        <t t-else="">
+          <div class="pbsc-trunc" t-if="truncated">
+            <span t-out="ic('alert', 13)"/>
+            <span>Showing <t t-esc="employees.length"/> of
+              <t t-esc="employees.length + truncated"/> people (the roster shows
+              everyone with a shift first). Narrow by department or search to
+              see the rest.</span>
+          </div>
+
+          <!-- =========================== the grid ====================== -->
+          <div class="pbsc-gridwrap">
+            <div class="pbsc-grid" t-att-style="gridStyle">
+
+              <!-- header row -->
+              <div class="pbsc-h pbsc-h--emp">
+                <span class="l">People</span>
+                <span class="n"><t t-esc="employees.length"/></span>
+              </div>
+              <t t-foreach="days" t-as="day" t-key="day.date">
+                <div t-attf-class="pbsc-h {{ day.is_today ? 'is-today' : '' }} {{ day.is_weekend ? 'is-weekend' : '' }}">
+                  <span class="dw" t-esc="day.label"/>
+                  <span class="dd"><t t-esc="day.day_num"/> <t t-esc="day.month"/></span>
+                </div>
+              </t>
+
+              <!-- Open shifts row: unassigned demand. Rendered only when the
+                   payload actually carries some, and NOT a create door — see
+                   `hasOpenShifts` in pb_schedule.js for why (W29). -->
+              <t t-if="hasOpenShifts">
+                <div class="pbsc-emp pbsc-emp--open">
+                  <span class="pbsc-openav" t-out="ic('users', 15)"/>
+                  <span class="pbsc-emp__txt">
+                    <span class="n">Open shifts</span>
+                    <span class="s">Unassigned</span>
+                  </span>
+                </div>
+                <t t-foreach="days" t-as="day" t-key="'open-' + day.date">
+                  <div t-attf-class="pbsc-cell is-readonly {{ day.is_today ? 'is-today' : '' }} {{ day.is_weekend ? 'is-weekend' : '' }}">
+                    <t t-foreach="openShiftsForDay[day.date] or []" t-as="os" t-key="os.id">
+                      <div t-attf-class="pbsc-card pbsc-card--t{{ tone(os.color) }} is-open"
+                           t-on-click.stop="() => this.openShift(os)">
+                        <span class="tm"><t t-esc="os.start"/>–<t t-esc="os.end"/></span>
+                        <span class="nm" t-esc="os.template_name"/>
+                      </div>
+                    </t>
+                  </div>
+                </t>
+              </t>
+
+              <!-- employee rows -->
+              <t t-foreach="employees" t-as="emp" t-key="emp.id">
+                <div class="pbsc-emp">
+                  <button class="pbsc-who" t-on-click="() => this.openPerson(emp.id)"
+                          t-attf-title="Open {{ emp.name }}'s week">
+                    <img class="pbsc-av" t-att-src="emp.avatar_url" alt=""/>
+                    <span class="pbsc-emp__txt">
+                      <span class="n" t-esc="emp.name"/>
+                      <span class="s" t-esc="emp.job_title"/>
+                    </span>
+                  </button>
+                  <span class="pbsc-hours">
+                    <span class="bar">
+                      <span t-attf-class="fill {{ hoursTone(emp) }}"
+                            t-attf-style="width: {{ hoursPct(emp) }}%"/>
+                    </span>
+                    <span class="txt">
+                      <t t-esc="hrs(emp.total_hours)"/>/<t t-esc="hrs(emp.contracted_hours)"/> h
+                    </span>
+                  </span>
+                </div>
+
+                <t t-foreach="days" t-as="day" t-key="emp.id + '-' + day.date">
+                  <div t-attf-class="pbsc-cell {{ day.is_today ? 'is-today' : '' }} {{ day.is_weekend ? 'is-weekend' : '' }} {{ emp.leaves[day.date] ? (emp.leaves[day.date].is_approved ? 'is-leave' : 'is-leave-pending') : '' }}"
+                       t-on-click="() => this.openCreate(emp.id, day)">
+
+                    <span t-if="emp.leaves[day.date]"
+                          t-attf-class="pbsc-leave {{ emp.leaves[day.date].is_approved ? '' : 'is-pending' }}">
+                      <t t-out="ic('calendar', 11)"/>
+                      <span t-esc="emp.leaves[day.date].type"/>
+                    </span>
+
+                    <t t-foreach="emp.shifts[day.date] or []" t-as="sh" t-key="sh.id">
+                      <div t-attf-class="pbsc-card pbsc-card--t{{ tone(sh.color) }} is-{{ sh.state }} {{ sh.conflict ? 'is-conflict' : '' }}"
+                           t-on-click.stop="() => this.openShift(sh)">
+                        <span class="tm"><t t-esc="sh.start"/>–<t t-esc="sh.end"/></span>
+                        <span class="nm" t-esc="sh.template_name"/>
+                        <span class="cf" t-if="sh.conflict" title="Overlapping shift"
+                              t-out="ic('alert', 11)"/>
+                        <button class="pbsc-del" t-if="sh.state === 'draft'"
+                                t-on-click.stop="() => this.deleteShift(sh)"
+                                t-attf-title="Remove this draft shift">
+                          <span t-out="ic('x', 11)"/>
+                        </button>
+                      </div>
+                    </t>
+
+                    <span class="pbsc-add" t-if="!emp.leaves[day.date]" t-out="ic('plus', 13)"/>
+                  </div>
+                </t>
+              </t>
+
+            </div>
+          </div>
+        </t>
+      </div>
+
+      <!-- ====================== quick create modal ===================== -->
+      <div class="pbsc-scrim" t-if="state.create" t-on-click="() => this.closeCreate()">
+        <div class="pbsc-modal" role="dialog" aria-modal="true" t-on-click.stop="() => {}">
+          <header class="pbsc-modal__h">
+            <div>
+              <div class="eyebrow">Add a shift</div>
+              <h3>
+                <t t-if="state.create.employeeName" t-esc="state.create.employeeName"/>
+                <t t-else="">Open shift</t>
+              </h3>
+              <div class="sub" t-esc="state.create.label"/>
+            </div>
+            <button class="pbsc-x" t-on-click="() => this.closeCreate()"
+                    title="Close" aria-label="Close">
+              <span t-out="ic('x', 16)"/>
+            </button>
+          </header>
+
+          <div class="pbsc-modal__b">
+            <div class="pbsc-tmplgrid">
+              <button t-foreach="templates" t-as="tm" t-key="tm.id"
+                      t-attf-class="pbsc-tmpl pbsc-tmpl--t{{ tone(tm.color) }}"
+                      t-att-disabled="state.creating"
+                      t-on-click="() => this.createShift(tm.id)">
+                <span class="sw"/>
+                <span class="nm" t-esc="tm.name"/>
+                <span class="tm2">
+                  <t t-esc="fmtHour(tm.start_hour)"/> – <t t-esc="fmtHour(tm.end_hour)"/>
+                </span>
+                <span class="du"><t t-esc="hrs(tm.duration)"/> h</span>
+              </button>
+            </div>
+            <p class="pbsc-note" t-if="!templates.length">
+              No shift templates yet. Create one from Schedule's templates drawer
+              and it appears here.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= copy week modal ===================== -->
+      <div class="pbsc-scrim" t-if="state.copyOpen" t-on-click="() => this.closeCopy()">
+        <div class="pbsc-modal pbsc-modal--sm" role="dialog" aria-modal="true"
+             t-on-click.stop="() => {}">
+          <header class="pbsc-modal__h">
+            <div>
+              <div class="eyebrow">Copy week</div>
+              <h3>Repeat this roster forward</h3>
+              <div class="sub">
+                <t t-esc="d and d.week_start"/> → <t t-esc="nextSpanStart"/>
+              </div>
+            </div>
+            <button class="pbsc-x" t-on-click="() => this.closeCopy()"
+                    title="Close" aria-label="Close">
+              <span t-out="ic('x', 16)"/>
+            </button>
+          </header>
+          <div class="pbsc-modal__b">
+            <p class="pbsc-note">
+              Every shift in the current span is recreated as a DRAFT on the
+              matching day of the next one. Nothing is published.
+            </p>
+            <div class="pbsc-modal__actions">
+              <button class="pbsc-btn ghost" t-on-click="() => this.closeCopy()">Cancel</button>
+              <button class="pbsc-btn primary" t-att-disabled="state.copying"
+                      t-on-click="() => this.doCopy()">
+                <span t-out="ic('check', 14)"/><span>Copy shifts</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== person drawer ====================== -->
+      <WfDrawer t-if="drawerOpen" title="drawerTitle" subtitle="drawerSubtitle"
+                onClose="() => this.closePerson()">
+        <WfPersonWeek data="state.person" onOpenProfile="_h.onOpenProfile"/>
+      </WfDrawer>
+
+    </div>
+  </t>
+
+</templates>

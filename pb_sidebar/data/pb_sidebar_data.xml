@@ -318,10 +318,20 @@
          sequence only — the action, the cockpit and the persona are untouched;
          P2 reskins the surface itself. The rail now reads as the manager's
          week (Today · Schedule · Time · …) rather than as a list of tables. -->
+    <!-- REPOINTED by Workforce P2: the rail's Schedule entry now opens the
+         `pb_schedule` cockpit. `action_xmlid` is a plain Char resolved lazily,
+         so this file does not gain a dependency on pb_schedule and the record
+         is harmless on a database where that module is not installed.
+         `match_action_tags` keeps the LEGACY tag listed so the retired
+         `shift_planning_grid` screen — which is still registered and still
+         reachable, W18 — lights this rail item rather than none. -->
     <record id="item_wf_roster" model="pb.sidebar.item">
         <field name="section_id" ref="sec_workforce"/><field name="name">Schedule</field>
         <field name="icon">calendar</field><field name="sequence">20</field>
-        <field name="action_xmlid">pb_hr_workforce.action_shift_planning_grid</field>
+        <field name="action_xmlid">pb_schedule.action_pb_schedule</field>
+        <field name="action_tag">pb_schedule</field>
+        <field name="match_action_tags">pb_schedule,shift_planning_grid</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
     </record>
     <!-- Last of the configuration surfaces still on the rail; it folds into
          Schedule's templates drawer in P2 and retires there. -->
