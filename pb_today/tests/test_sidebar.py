@@ -1,6 +1,12 @@
 # Part of Payobook. See LICENSE file for full copyright and licensing details.
 """Workforce P1b — T3: the IA finale, asserted in the DATABASE.
 
+UPDATED BY P2: Shift Templates folded into Schedule's templates drawer, so the
+rail is SEVEN items, not eight, and `item_wf_templates` joins the 900 retired
+band. These gates are the DB-assert that catches a repo-only sidebar change, so
+they are updated with the change rather than left red — a red gate nobody
+believes is the same as no gate.
+
 W13.1, learned the hard way in P0 and again in P1a: a repo-only sidebar "fix" is
 indistinguishable from a real one unless something reads the database back.
 `ir_model_data.noupdate` is a per-record column that Odoo never refreshes, so a
@@ -27,7 +33,7 @@ _ACTIVE_RAIL = [
     # pb_sidebar.item_approvals already owns that exact label in the OVERVIEW
     # section (the payroll payslip-run cockpit). See pb_team/data/pb_sidebar.xml.
     ('pb_team.item_my_team',              'Team Approvals',  70, 'inbox'),
-    ('pb_sidebar.item_wf_templates',      'Shift Templates', 80, 'layers'),
+    # P2: 'Shift Templates' (80) retired into Schedule's drawer -> 905, inactive
 ]
 
 # Retired in P1b, parked in the 900 band (W18) — a deactivated item still
@@ -37,6 +43,8 @@ _RETIRED_900 = [
     ('pb_sidebar.item_wf_live',                902),
     ('pb_sidebar.item_wf_overtime',            903),
     ('pb_driver_checkin.item_driver_tracking', 904),
+    # P2 — folded into Schedule's templates drawer
+    ('pb_sidebar.item_wf_templates',           905),
 ]
 
 # Retired earlier, left where they were because nothing collides with them.
@@ -117,10 +125,11 @@ class TestP1bSidebar(TransactionCase):
             'retired set was %s' % ', '.join(
                 '%s(%s)' % (i.name, i.sequence) for i in retired.sorted('sequence')))
 
-    def test_p1b_retirements_moved_into_the_900_band(self):
+    def test_the_retirements_moved_into_the_900_band(self):
         """W18: `active = False` takes an item off the rail but not out of the
-        section. Today took 10, Schedule 20, Trips 60, Approvals 70 and Shift
-        Templates 80 — so every item that held one of those had to MOVE."""
+        section. Today took 10, Schedule 20, Trips 60 and Approvals 70 — so
+        every item that held one of those had to MOVE, and P2's Shift Templates
+        moved out of 80 for the same reason."""
         for xmlid, seq in _RETIRED_900:
             rec = self._item(xmlid)
             if not rec:
@@ -139,20 +148,21 @@ class TestP1bSidebar(TransactionCase):
             dupes, ', '.join('%s=%s' % (i.name, i.sequence)
                              for i in items.sorted('sequence') if i.sequence in dupes)))
 
-    def test_exactly_eight_workforce_items_are_live(self):
-        """The handover's sweep count (WP-4): 14 items before P1a, 8 after P1b."""
+    def test_exactly_seven_workforce_items_are_live(self):
+        """The sweep count: 14 items before P1a, 8 after P1b, SEVEN after P2 —
+        the final Option-A shape."""
         sec = self._section()
         live = self.env['pb.sidebar.item'].search([('section_id', '=', sec.id)])
         self.assertEqual(
-            len(live), 8,
-            'expected 8 live Workforce items, found %s: %s' % (
+            len(live), 7,
+            'expected 7 live Workforce items, found %s: %s' % (
                 len(live), ', '.join('%s(%s)' % (i.name, i.sequence)
                                      for i in live.sorted('sequence'))))
         self.assertEqual(
             [i.name for i in live.sorted('sequence')],
             [label for _x, label, _s, _i in _ACTIVE_RAIL],
             'the rail must read Today · Schedule · Time · Time Off · Overtime · '
-            'Trips · Approvals · Shift Templates, in that order')
+            'Trips · Team Approvals, in that order')
 
     # ============================================================ relocation
     def test_payroll_report_moved_to_the_pay_run_section_with_its_gate(self):

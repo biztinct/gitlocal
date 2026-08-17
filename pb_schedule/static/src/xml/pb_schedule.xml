@@ -171,7 +171,7 @@
                   <span t-if="state.coverageOn and cov"
                         t-attf-class="pbsc-cov is-{{ cov.state }}"
                         t-attf-title="{{ cov.scheduled }} scheduled of {{ cov.required }} needed">
-                    <t t-if="cov.state === 'gap'">&#8722;<t t-esc="cov.gap"/></t>
+                    <t t-if="cov.state === 'gap'">−<t t-esc="cov.gap"/></t>
                     <t t-elif="cov.state === 'surplus'">+<t t-esc="cov.surplus"/></t>
                     <t t-else=""><t t-out="ic('check', 10)"/></t>
                     <span class="rq"><t t-esc="cov.scheduled"/>/<t t-esc="cov.required"/></span>
