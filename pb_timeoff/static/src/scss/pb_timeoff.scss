@@ -11,10 +11,10 @@
     * { box-sizing: border-box; }
     svg { display: inline-block; vertical-align: middle; }
 
-    // fresh-green token aliases (leave identity)
-    --p:   #059669;
-    --ph:  #047857;
-    --soft: #D1FAE5;
+    // promoted-green token aliases (leave identity — canonical pbim green, W1)
+    --p:   #2E7D4F;
+    --ph:  #246A42;
+    --soft: #E3F2E9;
     --line: var(--pbim-line, #E2E8F0);
     --muted: var(--pbim-muted, #64748B);
     --surface: #fff;
@@ -106,7 +106,7 @@
             &.lv1 { background: #A7F3D0; color: #065F46; }
             &.lv2 { background: #6EE7B7; color: #065F46; }
             &.lv3 { background: #34D399; color: #04543a; }
-            &.lv4 { background: #059669; color: #fff; }
+            &.lv4 { background: var(--p); color: #fff; }
             &.td { box-shadow: 0 0 0 2px var(--p); } } }
 
     // ---------------------------------------------------------- balances
