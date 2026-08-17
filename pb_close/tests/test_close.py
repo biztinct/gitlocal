@@ -264,6 +264,25 @@ class TestCloseBoard(CloseCase):
             self.Close.with_user(plain).get_close_data(
                 week_start=self.week_start.isoformat())
 
+    def test_a_payroll_manager_can_read_the_board_without_the_attendance_tier(self):
+        """The lens is offered to payroll managers (§3.5) and the payroll
+        manager group does NOT imply the attendance officer group. A read gate
+        that admitted only the attendance tier would put the lens on their rail
+        and answer their first click with an AccessError — W29's door that can
+        only produce an error, offered to the persona the ritual exists for."""
+        payroll = self._mk_user('p4_payroll_only', [
+            'om_hr_payroll.group_hr_payroll_manager'])
+        self.assertFalse(
+            payroll.has_group('hr_attendance.group_hr_attendance_officer'),
+            'the fixture is pointless if payroll manager implies the '
+            'attendance tier on this database')
+        data = self.Close.with_user(payroll).get_close_data(
+            department_id=self.dept.id, week_start=self.week_start.isoformat())
+        self.assertIn('stats', data)
+        # …and they may lock and review, because the lens offers them both
+        self.assertTrue(data['can_manage_locks'])
+        self.assertTrue(data['can_review'])
+
     def test_the_board_is_scoped_to_the_active_companies(self):
         """`allowed_company_ids` is pinned explicitly, because `res.company.
         create()` ADDS the new company to the creating user's allowed set — so

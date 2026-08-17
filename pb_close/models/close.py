@@ -67,7 +67,24 @@ from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
-_OFFICER_GROUP = 'hr_attendance.group_hr_attendance_officer'
+# Who may READ the board. The attendance officer tier (the manager group
+# implies it) PLUS the payroll manager — and that second one is not generosity,
+# it is the W47 rule about a read gate and the surface that advertises it.
+#
+# The Close LENS is offered to attendance managers and payroll managers (§3.5,
+# it is gated like the locks it sets). `has_group` is evaluated against the real
+# user even under sudo — verified in core, `res_users.py`:1066 — and
+# `om_hr_payroll.group_hr_payroll_manager` does NOT imply the attendance
+# officer group. So an officer-only read gate would have put the lens on a
+# payroll manager's rail and then answered their first click with an
+# AccessError: W29's door that can only ever produce an error, offered to the
+# exact persona the whole ritual exists for ("hand the week to payroll").
+# Caught in P4's self-review, before it could be found live.
+_READ_GROUPS = (
+    'hr_attendance.group_hr_attendance_officer',
+    'om_hr_payroll.group_hr_payroll_manager',
+    'base.group_system',
+)
 
 # The shared Workforce row budget (pb_wf_kit/js/wf_rows.js `WF_ROW_CAP`, mirrored
 # by the Week Grid and the Timeline). One number across the section, so
@@ -101,9 +118,15 @@ class PbClose(models.AbstractModel):
     @api.model
     def _require_officer(self):
         u = self.env.user
-        if not (u.has_group(_OFFICER_GROUP) or u.has_group('base.group_system')):
-            raise AccessError(_(
-                "The weekly Close board is restricted to attendance officers."))
+        for g in _READ_GROUPS:
+            try:
+                if u.has_group(g):
+                    return True
+            except (ValueError, KeyError):
+                continue
+        raise AccessError(_(
+            "The weekly Close board is restricted to attendance officers and "
+            "payroll managers."))
 
     @api.model
     def _company_ids(self):
@@ -482,6 +505,12 @@ class PbClose(models.AbstractModel):
         individual rates never leave this method, and the payload reports how
         many people had no resolvable rate rather than printing a confident,
         wrong total (the P2 cost-strip posture).
+
+        What it deliberately does NOT do: apply the overtime MULTIPLIER. The OT
+        rate lives on `hr.overtime.config` and is a payroll fact; reaching for
+        it here would make this look like a payslip preview, which it is not and
+        must never become (W12). The figure is labelled "Est." on the rail and
+        is a floor, not a forecast — the real number comes from the run.
         """
         out = {
             'regular': totals.get('regular', 0.0),
