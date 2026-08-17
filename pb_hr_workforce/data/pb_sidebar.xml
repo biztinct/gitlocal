@@ -22,12 +22,18 @@
     <!-- Overtime Desk cockpit — Workforce section (manager persona). Native OT
          menus retired (Phase K); this is the approval queue + config gallery +
          server-gated Bonus Hours review. Bonus viewers who are also managers
-         reach the tab here; super admin (system) sees everything. -->
+         reach the tab here; super admin (system) sees everything.
+
+         RENAMED by Workforce P1b: "Overtime Desk" -> "Overtime" (50). It is now
+         the ONLY overtime door on the rail — the old Overtime Rules dashboard
+         retired into the 900 band, because this cockpit's config gallery opens
+         the native hr.overtime.config form and is the editor of record. Label
+         and sequence only; the cockpit is untouched. -->
     <record id="item_wf_ot_desk" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
-        <field name="name">Overtime Desk</field>
+        <field name="name">Overtime</field>
         <field name="icon">zap</field>
-        <field name="sequence">38</field>
+        <field name="sequence">50</field>
         <field name="action_xmlid">pb_hr_workforce.action_pb_ot_desk</field>
         <field name="action_tag">pb_ot_desk</field>
         <field name="match_action_tags">pb_ot_desk</field>

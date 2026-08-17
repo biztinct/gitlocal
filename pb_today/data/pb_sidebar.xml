@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13): a frozen file means a later phase can
+     never move this item without shipping a migration, and P3 renumbers the
+     rail again when Mission Control arrives. -->
+<odoo noupdate="0">
+
+    <!-- WORKFORCE › Today — sequence 10, the head of the Option-A rail:
+         Today · Schedule · Time · Time Off · Overtime · Trips · Approvals ·
+         Shift Templates.
+
+         It inherits the sequence the Workforce Dashboard held, which is why
+         that record had to MOVE to the 900 retired band rather than merely go
+         inactive (W18): a deactivated item still occupies its sequence, and a
+         duplicate matters the moment an admin re-enables one.
+
+         Gate: `hr_attendance.group_hr_attendance_officer`, matching the
+         `pb.today` facade's own gate (W8: rail gate == surface gate). Live
+         Attendance was already officer-gated; the Workforce Dashboard, whose
+         counts this board absorbs, was NOT — folding it in narrows it on
+         purpose.
+
+         `match_action_tags` carries the retired cockpits' tags too, so a
+         bookmark or a stray doAction to one of them still lights up Today. -->
+    <record id="item_wf_today" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Today</field>
+        <field name="icon">activity</field>
+        <field name="sequence">10</field>
+        <field name="action_xmlid">pb_today.action_pb_today</field>
+        <field name="action_tag">pb_today</field>
+        <field name="match_action_tags">pb_today,attendance_live,pb_driver_map</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
+    </record>
+
+</odoo>

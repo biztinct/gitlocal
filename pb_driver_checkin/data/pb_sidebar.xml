@@ -2,12 +2,23 @@
 <odoo noupdate="0">
 
     <!-- Driver Tracking cockpit — Workforce section, gated to attendance
-         officers and up (drivers themselves see NO Payobook sidebar). -->
+         officers and up (drivers themselves see NO Payobook sidebar).
+
+         RETIRED by Workforce P1b: the map is now part of the Today board — the
+         SAME DriverMap component, mounted embedded as the map card and as
+         Today's full Map view (W17). The field is not a separate destination,
+         it is part of "who is working right now", so it stops being a rail item
+         and becomes a lens. The client action `pb_driver_map` is untouched and
+         still reachable at /odoo/action-pb_driver_map; only the rail entry
+         goes, and it moves into the 900 retired band because a deactivated item
+         still occupies its sequence (W18) — Approvals owns 70, Shift Templates
+         owns 80. -->
     <record id="item_driver_tracking" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Driver Tracking</field>
         <field name="icon">map-pin</field>
-        <field name="sequence">80</field>
+        <field name="sequence">904</field>
+        <field name="active" eval="False"/>
         <field name="action_xmlid">pb_driver_checkin.action_pb_driver_map</field>
         <field name="action_tag">pb_driver_map</field>
         <field name="match_action_tags">pb_driver_map</field>
