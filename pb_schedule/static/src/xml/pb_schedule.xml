@@ -284,10 +284,21 @@
           </header>
 
           <div class="pbsc-modal__b">
+            <!-- warnings that do not depend on which shift you pick, stated
+                 ONCE at the top instead of on every tile -->
+            <div class="pbsc-warns" t-if="contextWarnings.length">
+              <div t-foreach="contextWarnings" t-as="w" t-key="w.code"
+                   t-attf-class="pbsc-warnrow is-{{ w.severity }}">
+                <span t-out="ic(w.severity === 'info' ? 'clock' : 'alert', 13)"/>
+                <span t-esc="w.text"/>
+              </div>
+            </div>
+
             <div class="pbsc-tmplgrid">
               <button t-foreach="templates" t-as="tm" t-key="tm.id"
-                      t-attf-class="pbsc-tmpl pbsc-tmpl--t{{ tone(tm.color) }}"
+                      t-attf-class="pbsc-tmpl pbsc-tmpl--t{{ tone(tm.color) }} {{ templateTone(tm.id) ? 'has-' + templateTone(tm.id) : '' }}"
                       t-att-disabled="state.creating"
+                      t-attf-title="{{ warningsFor(tm.id).length ? warningsFor(tm.id)[0].text : '' }}"
                       t-on-click="() => this.createShift(tm.id)">
                 <span class="sw"/>
                 <span class="nm" t-esc="tm.name"/>
@@ -295,6 +306,10 @@
                   <t t-esc="fmtHour(tm.start_hour)"/> – <t t-esc="fmtHour(tm.end_hour)"/>
                 </span>
                 <span class="du"><t t-esc="hrs(tm.duration)"/> h</span>
+                <span class="fl" t-if="templateTone(tm.id)">
+                  <span t-out="ic('alert', 11)"/>
+                  <span t-esc="warningsFor(tm.id)[0].text"/>
+                </span>
               </button>
             </div>
             <p class="pbsc-note" t-if="!templates.length">
@@ -323,17 +338,53 @@
             </button>
           </header>
           <div class="pbsc-modal__b">
-            <p class="pbsc-note">
-              Every shift in the current span is recreated as a DRAFT on the
-              matching day of the next one. Nothing is published.
-            </p>
-            <div class="pbsc-modal__actions">
-              <button class="pbsc-btn ghost" t-on-click="() => this.closeCopy()">Cancel</button>
-              <button class="pbsc-btn primary" t-att-disabled="state.copying"
-                      t-on-click="() => this.doCopy()">
-                <span t-out="ic('check', 14)"/><span>Copy shifts</span>
-              </button>
-            </div>
+            <t t-if="!state.copyReport">
+              <p class="pbsc-note">
+                Every shift in the current span is recreated as a DRAFT on the
+                matching day of the next one. Nothing is published — and every
+                target is checked first: anyone who would land on approved
+                leave, on a shift they already have, or on a night they are
+                barred from is SKIPPED and listed.
+              </p>
+              <div class="pbsc-modal__actions">
+                <button class="pbsc-btn ghost" t-on-click="() => this.closeCopy()">Cancel</button>
+                <button class="pbsc-btn primary" t-att-disabled="state.copying"
+                        t-on-click="() => this.doCopy()">
+                  <span t-out="ic('check', 14)"/><span>Copy shifts</span>
+                </button>
+              </div>
+            </t>
+
+            <t t-else="">
+              <div class="pbsc-report">
+                <div class="pbsc-report__h">
+                  <span class="ok"><b t-esc="state.copyReport.created"/> copied</span>
+                  <span class="sk" t-if="state.copyReport.skipped.length">
+                    <b t-esc="state.copyReport.skipped.length"/> skipped
+                  </span>
+                  <span class="of">of <t t-esc="state.copyReport.considered"/> considered</span>
+                </div>
+                <div class="pbsc-report__list" t-if="state.copyReport.skipped.length">
+                  <div t-foreach="state.copyReport.skipped" t-as="sk"
+                       t-key="sk.employee_id + '-' + sk.date"
+                       t-attf-class="pbsc-report__row is-{{ sk.severity }}">
+                    <span class="who"><t t-esc="sk.employee_name"/></span>
+                    <span class="when"><t t-esc="sk.date"/> · <t t-esc="sk.template"/></span>
+                    <span class="why">
+                      <t t-foreach="sk.reasons" t-as="r" t-key="r_index">
+                        <span class="r" t-esc="r"/>
+                      </t>
+                    </span>
+                  </div>
+                </div>
+                <p class="pbsc-note" t-else="">
+                  Nothing had to be refused — every shift landed.
+                </p>
+              </div>
+              <div class="pbsc-modal__actions">
+                <button class="pbsc-btn primary" t-on-click="() => this.closeCopy()">Done</button>
+              </div>
+            </t>
           </div>
         </div>
       </div>
