@@ -544,13 +544,24 @@ class TestAttendanceFlow(TransactionCase):
             {k: v for k, v in payload.items() if k != 'reuse_draft'})
         self.assertNotEqual(third['id'], first['id'])
 
-        # a SUBMITTED correction is history: it is never silently reopened
-        submitted = self.Corr.browse(first['id'])
-        submitted.write({'reason': 'x'})
-        self.env['pb.attendance.flow'].correction_action(submitted.id, 'submit')
-        submitted.invalidate_recordset()
-        if submitted.state == 'submitted':
-            self.Corr.browse(third['id']).unlink()
-            fourth = self.env['pb.attendance.flow'].create_correction(payload)
-            self.assertNotEqual(fourth['id'], submitted.id,
-                                'a submitted correction must not be reused')
+        # a SUBMITTED correction is history: it is never silently reopened.
+        # An `adjust` needs a target punch before it can be submitted
+        # (_check_ready_to_submit), so give it one — same recipe as test_04.
+        self.Corr.browse(third['id']).unlink()
+        att = self._att(self.ework, d, start_h=8, hours=8, source='grid')
+        opened = self.Corr.browse(first['id'])
+        opened.write({
+            'attendance_id': att.id,
+            'new_check_in': datetime.combine(d, time(8, 0)),
+            'new_check_out': datetime.combine(d, time(17, 0)),
+            'reason': 'ready to submit',
+        })
+        opened.action_submit()
+        self.assertEqual(opened.state, 'submitted')
+
+        fourth = self.env['pb.attendance.flow'].create_correction(payload)
+        self.assertNotEqual(fourth['id'], opened.id,
+                            'a submitted correction must never be silently reopened')
+        self.assertEqual(
+            self.Corr.browse(fourth['id']).state, 'draft',
+            'reuse_draft falls back to creating a fresh DRAFT')
