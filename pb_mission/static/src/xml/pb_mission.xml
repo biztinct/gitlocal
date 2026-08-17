@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_mission.PbMission">
+    <!-- position:relative — each lens's own drawer scrim is absolute and belongs
+         to the LENS box, not the viewport; the shell root only has to be a
+         positioned, definite-height column (W20). -->
+    <div class="pbim pbms">
+
+      <!-- ===================== command bar (mockup B) ===================== -->
+      <header class="pbms-top">
+        <span class="pbms-brand">
+          <span class="pbms-brand__ic" t-out="ic('compass', 15)"/>
+          <span class="pbms-brand__tx">Workforce</span>
+        </span>
+
+        <!-- The shared context, mounted ONCE for the whole workspace (W4/W6).
+             Its person typeahead is this bar's search; which of the department /
+             week / day / filter segments appear is the current lens's decision
+             (`features`), and switching lens never resets what is in them —
+             that is the entire point of the shell. -->
+        <WfContextBar className="'pbms-ctx'" features="features"/>
+
+        <span class="pbms-user" t-att-title="userName" t-esc="userInitials"/>
+      </header>
+
+      <div class="pbms-low">
+
+        <!-- ========================= lens rail ========================== -->
+        <nav class="pbms-rail" aria-label="Workforce lenses">
+          <!-- ONE class attribute: a static `class` plus `t-att-class` is the
+               documented-safe pair; both t-att-class and t-attf-class compile to
+               `class`, so an element carrying both keeps whichever the compiler
+               wrote last (W23). -->
+          <button t-foreach="lenses" t-as="l" t-key="l.key"
+                  class="pbms-rail__b"
+                  t-att-class="{ 'is-on': state.lens === l.key }"
+                  t-att-aria-current="state.lens === l.key ? 'page' : false"
+                  t-att-title="l.label"
+                  t-on-click="() => this.setLens(l.key)">
+            <span class="pbms-rail__ic" t-out="ic(l.icon, 17)"/>
+            <span class="pbms-rail__l" t-esc="l.label"/>
+          </button>
+        </nav>
+
+        <!-- ==================== canvas: one lens ========================
+             Every branch is its own `t-if`, never a t-elif chain: a comment
+             between a branch and its `t-else`/`t-elif` breaks the pairing, and
+             it fails at RUNTIME, not at -u (W23).
+
+             Each lens sits in `.pbms-lens`, a definite-height flex box, because
+             five of the seven own their internal scrolling and an auto-height
+             host makes them grow to content and overlap their own chrome (W20).
+
+             `t-key` remounts on every switch — P3a keeps no lens state cache. -->
+        <main class="pbms-canvas">
+
+          <div class="pbms-lens" t-if="state.lens === 'today'">
+            <PbToday t-key="'lens-today'" embedded="true" onHandOff="_h.onHandOff"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'schedule'">
+            <PbSchedule t-key="'lens-schedule'" embedded="true"/>
+          </div>
+
+          <!-- The Time lens is handed the W26 arrival payload as a synthetic
+               `action` prop, which is exactly what the hub already reads. The
+               nonce is what makes a repeated hand-off unambiguous. -->
+          <div class="pbms-lens" t-if="state.lens === 'time'">
+            <PbTimeHub t-key="'lens-time-' + state.timeNonce" embedded="true"
+                       action="state.timeArrival"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'timeoff'">
+            <PbTimeoff t-key="'lens-timeoff'" embedded="true"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'overtime'">
+            <PbOtDesk t-key="'lens-overtime'" embedded="true"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'trips'">
+            <PbTrips t-key="'lens-trips'" embedded="true"/>
+          </div>
+
+          <div class="pbms-lens" t-if="state.lens === 'approvals'">
+            <PbTeamCockpit t-key="'lens-approvals'" embedded="true"/>
+          </div>
+        </main>
+      </div>
+    </div>
+  </t>
+
+</templates>

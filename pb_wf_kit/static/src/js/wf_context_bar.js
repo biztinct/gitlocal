@@ -11,7 +11,9 @@
  * is swallowed and that segment simply does not render — the bar never blocks a
  * cockpit from loading (the handover's "degrade to week-only" rail).
  */
-import { Component, useState, useRef, useEffect, onWillStart, onWillUnmount } from "@odoo/owl";
+import {
+    Component, useState, useRef, useEffect, onWillStart, onWillUpdateProps, onWillUnmount,
+} from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
 import { ic } from "@pb_import_kit/js/import_icons";
@@ -50,6 +52,8 @@ export class WfContextBar extends Component {
         });
 
         this._timer = null;
+        // which employee id `state.personLabel` currently describes
+        this._labelFor = false;
         this.deptRef = useRef("dept");
 
         // A <select>'s current choice is DOM state, not an attribute: re-rendering
@@ -61,11 +65,34 @@ export class WfContextBar extends Component {
             () => [this.deptRef.el, this.ctx.departmentId],
         );
 
+        // The chip's label must follow the PIN wherever it was set. `pickPerson`
+        // is only ONE of the doors: a lens avatar calls `openPerson`, which pins
+        // straight on the service, and a P3-style shell keeps ONE bar mounted
+        // across every lens — so without this the chip renders with no name at
+        // all. Effects run AFTER the patch, so this is a plain read, never a
+        // write inside somebody else's render fiber (W21).
+        useEffect(
+            (personId) => { this._syncPersonLabel(personId); },
+            () => [this.ctx.personId],
+        );
+
+        // A host may turn a segment ON after mount — Mission Control does
+        // exactly that when the officer switches from a lens with no department
+        // scope to one that has it. `onWillStart` has long since run, so without
+        // this the select would render permanently empty.
+        onWillUpdateProps(async (next) => {
+            const wantsDept = ((next.features || {}).department) !== false;
+            if (wantsDept && !this.state.deptDenied && !this.state.departments.length) {
+                await this._loadDepartments();
+            }
+        });
+
         onWillUnmount(() => { if (this._timer) { clearTimeout(this._timer); } });
 
         onWillStart(async () => {
             if (this.features.department) { await this._loadDepartments(); }
             if (this.features.person && this.ctx.personId) {
+                this._labelFor = this.ctx.personId;
                 await this._resolvePersonLabel(this.ctx.personId);
             }
         });
@@ -106,6 +133,19 @@ export class WfContextBar extends Component {
             this.state.deptDenied = true;
             this.state.departments = [];
         }
+    }
+
+    /** Keep `state.personLabel` in step with `ctx.personId`, whoever pinned it. */
+    _syncPersonLabel(id) {
+        if (!this.features.person) { return; }
+        if (!id) {
+            this._labelFor = false;
+            this.state.personLabel = "";
+            return;
+        }
+        if (this._labelFor === id) { return; }   // already resolved (or in flight)
+        this._labelFor = id;
+        this._resolvePersonLabel(id);
     }
 
     async _resolvePersonLabel(id) {
@@ -164,6 +204,9 @@ export class WfContextBar extends Component {
 
     pickPerson(m) {
         this.ctxSvc.set({ personId: m.id });
+        // record the resolution BEFORE the effect fires, so picking from the
+        // typeahead never costs a second name_search round-trip
+        this._labelFor = m.id;
         this.state.personLabel = m.name;
         this.state.personQuery = "";
         this.state.matches = [];
@@ -172,6 +215,7 @@ export class WfContextBar extends Component {
 
     clearPerson() {
         this.ctxSvc.set({ personId: false });
+        this._labelFor = false;
         this.state.personLabel = "";
         this.state.personQuery = "";
         this.state.matches = [];
