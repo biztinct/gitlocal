@@ -26,7 +26,7 @@
 
         <!-- KPIs -->
         <div class="pbot-kpis">
-          <div t-attf-class="kpi {{ kpis.pending > 0 ? '' : '' }}">
+          <div class="kpi">
             <span class="ico" t-out="ic('inbox',18)"/>
             <span class="n" t-esc="kpis.pending"/>
             <span class="l">pending approvals</span>
