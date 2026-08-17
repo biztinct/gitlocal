@@ -31,7 +31,10 @@ _RE_CTX_ALIAS = re.compile(
 
 _RE_Z = re.compile(r'z-index:\s*(-?\d+)')
 
-# The seven lenses, in rail order, with the component each must mount.
+# The eight lenses, in rail order, with the component each must mount.
+# P4 adds `close` — the only one that is NOT an existing cockpit mounted with
+# `embedded="true"`, because there was no Close surface to embed. W17 is about
+# never forking a surface that exists, not about forbidding a new one.
 _LENSES = [
     ('today', 'PbToday'),
     ('schedule', 'PbSchedule'),
@@ -40,6 +43,7 @@ _LENSES = [
     ('overtime', 'PbOtDesk'),
     ('trips', 'PbTrips'),
     ('approvals', 'PbTeamCockpit'),
+    ('close', 'PbCloseLens'),
 ]
 
 
@@ -91,8 +95,20 @@ class TestMissionStaticGates(TransactionCase):
     def _dock_scss(self):
         return _read('pb_mission', 'static', 'src', 'scss', 'pb_dock.scss')
 
+    # P4's Close lens — same rule as the dock: every gate below that says "the
+    # shell" has to mean the whole module, not the two files it started with.
+    def _close_js(self):
+        return _read('pb_mission', 'static', 'src', 'js', 'pb_close_lens.js')
+
+    def _close_xml(self):
+        return _read('pb_mission', 'static', 'src', 'xml', 'pb_close_lens.xml')
+
+    def _close_scss(self):
+        return _read('pb_mission', 'static', 'src', 'scss', 'pb_close_lens.scss')
+
     def _all_scss(self):
-        return self._scss() + '\n' + self._dock_scss()
+        return (self._scss() + '\n' + self._dock_scss() + '\n'
+                + self._close_scss())
 
     # --------------------------------------------------------------- W1/W2/W3
     def test_the_shell_invents_no_hex(self):
@@ -212,7 +228,7 @@ class TestMissionStaticGates(TransactionCase):
                           '%s has no branch in the canvas' % key)
             self.assertIn('<%s ' % component, xml,
                           '%s is not mounted by the shell' % component)
-        # every lens is mounted EMBEDDED, or the shell shows seven heroes
+        # every lens is mounted EMBEDDED, or the shell shows eight heroes
         self.assertEqual(
             xml.count('embedded="true"'), len(_LENSES),
             'every lens must be mounted with embedded="true" (W17)')
@@ -264,23 +280,30 @@ class TestMissionStaticGates(TransactionCase):
                 '%s must not fire the hand-off (W21)' % hook)
 
     # ----------------------------------------------------------- non-goals
-    def test_p4_is_not_smuggled_in(self):
-        """P3b's binding non-goals: no tolerances, no locks, no "N clean,
-        approve all" batch. The dock ships WITHOUT the clean/issues split
-        because the tolerance data it would split on does not exist yet — a
-        batch button over data nobody computed would approve things nobody
-        checked.
+    def test_the_p4_engine_arrived_and_is_wired_to_a_real_facade(self):
+        """Replaces P3b's `test_p4_is_not_smuggled_in`.
 
-        The needles are CODE, not the words: an earlier gate in this program
-        forbade the string "Chart.js" and duly failed on the docstring
-        explaining that the charts had been dropped.
+        That gate existed because a batch button over data nobody had computed
+        would approve things nobody checked. P4 computes the data, so the gate
+        inverts: the engine must now be here, and — the part that still matters
+        — each piece of it must be wired to a SERVER answer rather than to a
+        client-side guess. A "clean" flag the browser decided is exactly the
+        thing the original gate was protecting against.
         """
-        body = (self._js() + self._xml() + self._scss()
-                + self._dock_js() + self._dock_xml() + self._dock_scss())
-        for needle in ('approve_all', 'approveAll', 'approve_clean',
-                       'tolerance', 'day_lock', 'week_lock'):
-            self.assertNotIn(needle, body,
-                             '%r belongs to P4, not P3b' % needle)
+        shell = self._js() + self._xml()
+        close = self._close_js() + self._close_xml()
+
+        self.assertIn('key: "close"', shell, 'the Close lens must be on the rail')
+        # the lens reads the tolerance from the PAYLOAD, never a literal
+        self.assertIn('this.d.tolerance', self._close_js())
+        self.assertNotRegex(
+            close, r'\b10-min\b',
+            'the tolerance must come from the payload, not from the template')
+        # locks and reviews are SERVER calls on the facade
+        for call in ('"lock_days"', '"unlock_days"', '"review_flag"',
+                     '"get_close_data"'):
+            self.assertIn(call, self._close_js(),
+                          '%s must be a server call' % call)
 
     def test_the_shell_ships_no_models_and_calls_no_facade_of_its_own(self):
         """§3.1 as amended by P3b: the shell is chrome, and every read it makes
@@ -301,7 +324,10 @@ class TestMissionStaticGates(TransactionCase):
             os.path.isdir(os.path.join(module, 'security')),
             'pb_mission must ship no ACLs of its own')
 
-        allowed = {'pb.team', 'hr.employee', 'pb.time.hub'}
+        # `pb.close` is P4's own facade, in pb_close — it is a facade that
+        # exists BEFORE the shell calls it, with its own model, ACLs and tests,
+        # which is the property this gate is actually protecting.
+        allowed = {'pb.team', 'hr.employee', 'pb.time.hub', 'pb.close'}
         called = set()
         for path in _walk('pb_mission', ('.js',), skip_tests=True):
             with open(path, encoding='utf-8') as fh:
@@ -417,7 +443,7 @@ class TestMissionStaticGates(TransactionCase):
             self.assertTrue(block, '%s not found in LENSES' % key)
             self.assertIn('ownsPersonDrawer: true', block.group(0),
                           '%s owns a drawer and must say so' % key)
-        for key in ('timeoff', 'overtime', 'trips', 'approvals'):
+        for key in ('timeoff', 'overtime', 'trips', 'approvals', 'close'):
             block = re.search(r'key: "%s".*?\n    \},' % key, js, re.S)
             self.assertNotIn('ownsPersonDrawer', block.group(0),
                              '%s has no drawer of its own' % key)
@@ -516,8 +542,8 @@ class TestMissionStaticGates(TransactionCase):
         js, xml = self._js(), self._xml()
         self.assertEqual(js.count('person: true'), 0,
                          'the context bar no longer owns the search')
-        self.assertEqual(js.count('person: false'), 7,
-                         'all seven lenses must say so explicitly')
+        self.assertEqual(js.count('person: false'), len(_LENSES),
+                         'every lens must say so explicitly')
         self.assertIn('openPalette()', xml)
         self.assertIn('class="pbms-pin"', xml,
                       'the pinned person must stay visible on the bar')
@@ -546,13 +572,15 @@ class TestMissionStaticGates(TransactionCase):
         body = block.group(1)
         entries = re.findall(
             r'lens: "(\w+)",\s*(?:cmd: "(\w+)"|arrival: \{([^}]*)\})', body)
-        self.assertEqual(len(entries), 8, 'the handover specifies eight actions')
+        self.assertEqual(len(entries), 9,
+                         'P3b specified eight actions; P4 adds "Lock the week"')
 
         handlers = {
             'schedule': _read('pb_schedule', 'static', 'src', 'js', 'pb_schedule.js'),
             'today': _read('pb_today', 'static', 'src', 'js', 'pb_today.js'),
             'timeoff': _read('pb_timeoff', 'static', 'src', 'js', 'pb_timeoff.js'),
             'overtime': _read('pb_hr_workforce', 'static', 'src', 'js', 'pb_ot_desk.js'),
+            'close': self._close_js(),
         }
         for lens, cmd, arrival in entries:
             if cmd:
@@ -578,7 +606,8 @@ class TestMissionStaticGates(TransactionCase):
         for module, fname in (('pb_schedule', 'pb_schedule.js'),
                               ('pb_today', 'pb_today.js'),
                               ('pb_timeoff', 'pb_timeoff.js'),
-                              ('pb_hr_workforce', 'pb_ot_desk.js')):
+                              ('pb_hr_workforce', 'pb_ot_desk.js'),
+                              ('pb_mission', 'pb_close_lens.js')):
             src = _read(module, 'static', 'src', 'js', fname)
             self.assertIn('cmd.nonce === this._cmdNonce', src,
                           '%s must consume by nonce' % module)
@@ -621,3 +650,113 @@ class TestMissionStaticGates(TransactionCase):
                       'the flag must be derived from the act whitelist itself')
         self.assertEqual(facade.count("'takes_note': _takes_note("), 4,
                          'every queue source must declare it')
+
+    # ================================================ P4 T6 — the Close lens
+    def test_the_close_lens_never_writes_from_a_lifecycle_hook(self):
+        """W21/W21.1 with the highest stakes in the program: this is the lens
+        that can LOCK A WEEK. `setup()` is where every lifecycle hook and the
+        `wf_context` subscription are registered, so nothing reachable from it
+        may be a mutation — and the three mutations must each be wired from a
+        `t-on-click`.
+        """
+        js = self._close_js()
+        setup = re.search(r'\n    setup\(\)\s*\{(.*?)\n    \}\n', js, re.S)
+        self.assertTrue(setup, 'no setup() found in pb_close_lens.js')
+        body = setup.group(1)
+        for writer in ('review_flag', 'lock_days', 'unlock_days',
+                       'this.lockWeek(', 'this.confirmReview(',
+                       'this.confirmReopen(', 'this.toggleDay('):
+            self.assertNotIn(
+                writer, body,
+                '%s must not be reachable from setup() — mount hooks READ, '
+                'click handlers WRITE (W21.1)' % writer)
+        # the context subscription fires the same pure read the mount does
+        self.assertRegex(js, r'onChange\(\(\) => this\.load\(\)\)')
+        xml = self._close_xml()
+        for handler in ('this.confirmReview()', 'this.confirmReopen()',
+                        'this.lockWeek()', 'this.toggleDay(day)'):
+            self.assertIn('t-on-click="() => %s"' % handler, xml,
+                          '%s must be wired from a click' % handler)
+
+    def test_the_close_lens_creates_no_stacking_context(self):
+        """W37: a z-index on `.pbmc` would trap the OTHER lenses' fixed-position
+        modals at 1050 the moment the shell rendered this one — and its own two
+        dialogs must stay under the 60px biz rail overlay's 25."""
+        scss = self._close_scss()
+        block = re.search(r'\.pbmc\s*\{(.*?)\n    \}', scss, re.S)
+        self.assertTrue(block, 'no .pbmc block in pb_close_lens.scss')
+        self.assertNotIn('z-index', block.group(1),
+                         '.pbmc must not create a stacking context')
+        zs = [int(z) for z in _RE_Z.findall(scss)]
+        self.assertTrue(zs, 'the dialogs must stack over the board')
+        self.assertLessEqual(max(zs), 20)
+
+    def test_the_close_lens_owns_a_bounded_scrollport(self):
+        """W20/W39: the lens scrolls itself, so its box needs a definite height
+        and every flex child needs min-height/min-width 0 — an auto-height
+        regression is what made P1a's Week Grid slide under its own rail, with
+        a clean console."""
+        scss = self._close_scss()
+        block = re.search(r'\.pbmc\s*\{(.*?)\n    \}', scss, re.S)
+        rules = block.group(1)
+        for needle in ('height: 100%', 'min-height: 0', 'min-width: 0',
+                       'overflow: hidden'):
+            self.assertIn(needle, rules, '.pbmc needs %s' % needle)
+        body = re.search(r'\.pbmc-body\s*\{(.*?)\n    \}', scss, re.S)
+        self.assertTrue(body, 'no .pbmc-body block')
+        self.assertIn('min-height: 0', body.group(1))
+        self.assertIn('overflow: auto', body.group(1),
+                      'the body is the scroller, not the shell root')
+
+    def test_the_close_lens_reads_the_context_and_owns_no_picker(self):
+        """W4: department, week and search come from `wf_context`. A private
+        week picker on the one surface that decides what payroll sees would be
+        a second opinion about which week is being closed."""
+        js = self._close_js()
+        self.assertIn('useService("wf_context")', js)
+        self.assertIn('this.wf.weekStart', js)
+        self.assertIn('this.wf.departmentId', js)
+        self.assertNotIn('<select', self._close_xml(),
+                         'the lens must not ship its own picker')
+
+    def test_the_close_lens_offers_nothing_the_server_would_refuse(self):
+        """W47: `can_manage_locks` / `can_review` are the SERVER's answers. An
+        offer that ends in an AccessError is worse than no offer."""
+        xml = self._close_xml()
+        self.assertIn('state.data.can_manage_locks', xml)
+        self.assertIn('state.data.can_review', xml)
+        self.assertIn('state.data.can_lock', xml)
+
+    def test_the_reopen_reason_is_required_by_disabling_the_button(self):
+        """W42's first corollary: where the note IS kept, enforce it by
+        DISABLING confirm, not by validating on submit — nobody should compose
+        a reopen that is then rejected."""
+        js, xml = self._close_js(), self._close_xml()
+        self.assertRegex(js, r'get canConfirmReopen\(\)[^}]*reopenReason\.trim\(\)')
+        self.assertIn('!canConfirmReopen', xml)
+        # …and the review note is OPTIONAL, and says so
+        self.assertIn('Note (optional)', xml)
+
+    def test_new_code_never_reads_compliance_status(self):
+        """P4's binding non-goal, now a W-rule: `hr.shift.planning.
+        compliance_status` is a STORED compute over now() with no cron, whose
+        actual_check_* inputs no production path writes. A surface deciding what
+        payroll sees from a field nobody maintains would be confidently wrong.
+        """
+        offenders = []
+        for module in ('pb_close',):
+            for path in _walk(module, ('.py', '.js', '.xml')):
+                with open(path, encoding='utf-8') as fh:
+                    for n, line in enumerate(fh, 1):
+                        if 'compliance_status' in line:
+                            offenders.append('%s:%s' % (path, n))
+        for path in (os.path.join(get_module_path('pb_mission'),
+                                  'static', 'src', 'js', 'pb_close_lens.js'),):
+            if os.path.exists(path):
+                with open(path, encoding='utf-8') as fh:
+                    if 'compliance_status' in fh.read():
+                        offenders.append(path)
+        self.assertFalse(
+            offenders,
+            'new P4 code must derive live, never read compliance_status:\n%s'
+            % '\n'.join(offenders))

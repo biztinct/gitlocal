@@ -46,6 +46,7 @@ import { PbTimeoff } from "@pb_timeoff/js/pb_timeoff";
 import { PbOtDesk } from "@pb_hr_workforce/js/pb_ot_desk";
 import { PbTrips } from "@pb_business_trip/js/pb_trips";
 import { PbTeamCockpit } from "@pb_team/js/pb_team";
+import { PbCloseLens } from "@pb_mission/js/pb_close_lens";
 
 const LENS_KEY = "pbms.lens.v1";
 /** The person drawer's data contract, documented in pb_time_hub/models. */
@@ -83,6 +84,8 @@ const PALETTE_ACTIONS = [
       label: _t("Apply time off on behalf"), sublabel: _t("Time Off") },
     { id: "bonus_review", lens: "overtime", cmd: "bonus", icon: "sigma",
       label: _t("Bonus hours review"), sublabel: _t("Overtime") },
+    { id: "lock_week", lens: "close", cmd: "lock_week", icon: "lock",
+      label: _t("Lock the week"), sublabel: _t("Close") },
 ];
 
 /**
@@ -162,6 +165,22 @@ const LENSES = [
         key: "approvals", icon: "inbox", groups: [],
         features: { department: false, week: false, person: false, day: false, search: false },
     },
+    {
+        // P4's eighth lens, and the only one that is not an embedded cockpit —
+        // there was no Close surface to embed (W17 is about REUSE, not about
+        // forbidding a new surface). It sits LAST on the rail on purpose: the
+        // manager's week is Today -> Plan -> Approve -> Close, and Close is the
+        // end of the loop.
+        //
+        // Gated like the lock gates it drives (§3.5): a plain attendance
+        // officer may READ the board's facade, but locking a week and waiving a
+        // flag are manager decisions, so offering them a lens whose every
+        // action would be refused is W29's door that can only produce an error.
+        key: "close", icon: "lock",
+        groups: ["hr_attendance.group_hr_attendance_manager",
+                 "om_hr_payroll.group_hr_payroll_manager"],
+        features: { department: true, week: true, person: false, day: false, search: true },
+    },
 ];
 
 const LENS_KEYS = LENSES.map((l) => l.key);
@@ -171,6 +190,7 @@ export class PbMission extends Component {
     static components = {
         WfContextBar, WfDock, WfDrawer, WfPersonWeek,
         PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbTrips, PbTeamCockpit,
+        PbCloseLens,
     };
     static props = { action: { type: Object, optional: true }, "*": true };
 
@@ -386,6 +406,7 @@ export class PbMission extends Component {
             timeoff: _t("Time Off"),
             overtime: _t("Overtime"),
             trips: _t("Trips"),
+            close: _t("Close"),
             // The shell's rail, not the sidebar's: `pb_sidebar.item_approvals`
             // owns the label "Approvals" on the SIDEBAR (the payroll payslip-run
             // cockpit), and W28's uniqueness rule is about that table. Inside

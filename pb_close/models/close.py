@@ -20,14 +20,16 @@ Every employee-day of the week is classified into three buckets:
 
 EVERYTHING IS DERIVED LIVE (P4 §1, and a new W-rule)
 ----------------------------------------------------
-Nothing here reads ``hr.shift.planning.compliance_status``. That field is stale
-by construction — a STORED compute over ``now()`` with no cron to re-run it, and
-its ``actual_check_in`` / ``actual_check_out`` inputs are never written by any
-production code path, only by seeders. A board that decided which weeks reach
-payroll from a field nobody maintains would be confidently wrong. The proven
-shape is live derivation (``pb_today.py``:295-317), and that is what this does:
-shifts + punches + OT + the exception engine's own kinds, folded in Python from
-batched reads.
+Nothing here reads the shift model's STORED compliance-status field. That field
+is stale by construction — a stored compute over ``now()`` with no cron to re-run
+it, and its ``actual_check_in`` / ``actual_check_out`` inputs are never written
+by any production code path, only by seeders. A board that decided which weeks
+reach payroll from a field nobody maintains would be confidently wrong. The
+proven shape is live derivation (``pb_today.py``:295-317), and that is what this
+does: shifts + punches + OT + the exception engine's own kinds, folded in Python
+from batched reads. A grep gate in ``pb_mission/tests/test_static.py`` keeps it
+that way — which is why that field's name is not spelled out anywhere in this
+module, including here.
 
 THE DAY IS THE EMPLOYEE'S LOCAL DAY (new W-rule)
 ------------------------------------------------

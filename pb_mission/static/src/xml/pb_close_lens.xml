@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==== the Close lens (P4 WP-4) — mockup C ====
+     XML comment rules that take the WHOLE file down at runtime if broken: never
+     a double hyphen inside a comment, and never a comment between a t-if and
+     its t-else. Both fail as "Missing template" pointing at an innocent
+     component (W22/W23). One `class` attribute per element: a static `class`
+     plus `t-att-class` is the documented-safe pair, and a `t-attf-class` that
+     interpolates is the safe way to combine a computed tone with a state class.
+-->
+<templates xml:space="preserve">
+
+  <t t-name="pb_mission.PbCloseLens">
+    <div class="pbmc">
+
+      <div class="pbmc-msg" t-if="state.loading and !state.data">
+        <span t-out="ic('loader', 20)"/><span>Loading the week…</span>
+      </div>
+
+      <div class="pbmc-msg pbmc-msg--bad" t-if="state.failed">
+        <span t-out="ic('alert', 18)"/><span t-esc="state.failed"/>
+      </div>
+
+      <t t-if="state.data">
+
+        <!-- ===================== verb header + day chips ===================== -->
+        <header class="pbmc-head">
+          <h1 class="pbmc-title" t-esc="weekTitle"/>
+          <span class="pbmc-pill pbmc-pill--amber" t-if="stats.flagged"
+                t-esc="flaggedLabel"/>
+          <span class="pbmc-pill pbmc-pill--green" t-if="!stats.flagged">
+            <span t-out="ic('check', 11)"/>
+            <span>Nothing left to review</span>
+          </span>
+
+          <!-- Day locks. Clicking is a WRITE, so it lives only here, in a
+               handler (W21.1) — and a locked chip opens the reopen dialog
+               rather than toggling silently, because a reopen needs a reason. -->
+          <div class="pbmc-chips">
+            <button t-foreach="days" t-as="day" t-key="day.iso"
+                    class="pbmc-chip"
+                    t-attf-class="{{ day.locked ? 'is-locked' : 'is-open' }} {{ day.is_future ? 'is-future' : '' }}"
+                    t-att-disabled="!state.data.can_manage_locks or day.is_future or state.busy"
+                    t-attf-title="{{ day.sublabel }} · {{ day.locked ? 'locked' : 'open' }}"
+                    t-on-click="() => this.toggleDay(day)">
+              <span class="pbmc-chip__ic" t-if="day.locked" t-out="ic('lock', 10)"/>
+              <span t-esc="day.label"/>
+            </button>
+          </div>
+        </header>
+
+        <!-- ========================== the stat strip ========================== -->
+        <div class="pbmc-stats">
+          <div class="pbmc-stat pbmc-stat--green">
+            <div class="pbmc-stat__v" t-esc="stats.clean or 0"/>
+            <div class="pbmc-stat__l" t-esc="toleranceLabel"/>
+          </div>
+          <div class="pbmc-stat pbmc-stat--amber">
+            <div class="pbmc-stat__v">
+              <span t-esc="stats.flagged or 0"/>
+              <span class="pbmc-stat__sub" t-if="stats.reviewed">
+                · <t t-esc="stats.reviewed"/> reviewed
+              </span>
+            </div>
+            <div class="pbmc-stat__l">Flagged for review</div>
+          </div>
+          <div class="pbmc-stat pbmc-stat--rose">
+            <div class="pbmc-stat__v" t-esc="stats.missing or 0"/>
+            <div class="pbmc-stat__l">Missing punches</div>
+          </div>
+          <div class="pbmc-stat">
+            <div class="pbmc-stat__v">
+              <span t-esc="stats.days_locked or 0"/>
+              <span class="pbmc-stat__sub">/<t t-esc="stats.days_total or 0"/></span>
+            </div>
+            <div class="pbmc-stat__l">Days locked</div>
+          </div>
+        </div>
+
+        <!-- ============================== the body ============================== -->
+        <div class="pbmc-body">
+
+          <div class="pbmc-table">
+            <div class="pbmc-empty" t-if="!rows.length">
+              <span t-out="ic('checkCircle', 26)"/>
+              <b>This week is clean.</b>
+              <span>Every scheduled day is inside tolerance and every request
+                    is decided. Lock it and hand it to payroll.</span>
+            </div>
+
+            <table class="pbmc-t" t-if="rows.length">
+              <thead>
+                <tr>
+                  <th>Person · day</th>
+                  <th>Scheduled vs actual</th>
+                  <th class="pbmc-t__num">&#916;</th>
+                  <th>Why flagged</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="rows" t-as="row" t-key="rowKey(row)"
+                    class="pbmc-row"
+                    t-att-class="{ 'is-reviewed': row.reviewed }">
+                  <td>
+                    <button class="pbmc-emp" t-on-click="() => this.openPerson(row)"
+                            t-attf-title="Open {{ row.name }}">
+                      <img class="pbmc-emp__a" t-att-src="row.avatar_url"
+                           alt="" loading="lazy"/>
+                      <span class="pbmc-emp__t">
+                        <span class="pbmc-emp__n" t-esc="row.name"/>
+                        <span class="pbmc-emp__d" t-esc="row.day_label"/>
+                      </span>
+                    </button>
+                  </td>
+                  <td>
+                    <div class="pbmc-bars">
+                      <span class="pbmc-bar pbmc-bar--s">
+                        <i t-attf-style="width:{{ barWidth(row.sched) }}px"/>
+                        <t t-esc="hours(row.sched)"/>
+                      </span>
+                      <span class="pbmc-bar pbmc-bar--a">
+                        <i t-attf-style="width:{{ barWidth(row.actual) }}px"/>
+                        <t t-esc="hours(row.actual)"/>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="pbmc-t__num">
+                    <span t-attf-class="pbmc-delta pbmc-delta--{{ deltaTone(row) }}"
+                          t-esc="deltaLabel(row)"/>
+                  </td>
+                  <td>
+                    <span t-attf-class="pbmc-reason pbmc-reason--{{ row.tone }}"
+                          t-esc="row.kind_label"/>
+                    <span class="pbmc-note" t-if="row.reviewed and row.review_note"
+                          t-esc="row.review_note"/>
+                  </td>
+                  <td class="pbmc-acts">
+                    <span class="pbmc-done" t-if="row.reviewed">
+                      <span t-out="ic('check', 11)"/><span>Reviewed</span>
+                    </span>
+                    <t t-if="!row.reviewed">
+                      <button class="pbmc-b pbmc-b--ghost"
+                              t-on-click="() => this.fix(row)">Fix</button>
+                      <button class="pbmc-b pbmc-b--out"
+                              t-if="state.data.can_review"
+                              t-att-disabled="state.busy"
+                              t-on-click="() => this.openReview(row)">Approve as-is</button>
+                    </t>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="pbmc-more" t-if="hasMoreRows">
+              <span t-out="ic('list', 12)"/>
+              <span><t t-esc="moreRows"/> more flagged rows are not shown —
+                    narrow the department or the search to reach them.</span>
+            </div>
+          </div>
+
+          <!-- ========================= the handoff rail ========================= -->
+          <aside class="pbmc-rail">
+            <h6>Payroll handoff</h6>
+            <div class="pbmc-tot">
+              <span>Regular hours</span><b t-esc="hours(handoff.regular)"/>
+            </div>
+            <div class="pbmc-tot">
+              <span>Overtime</span><b t-esc="hours(handoff.overtime)"/>
+            </div>
+            <div class="pbmc-tot">
+              <span>Bonus hours</span><b t-esc="hours(handoff.bonus)"/>
+            </div>
+            <div class="pbmc-tot pbmc-tot--last">
+              <span>Est. gross</span><b t-esc="money(handoff.est_gross)"/>
+            </div>
+            <p class="pbmc-foot" t-if="handoff.rate_missing">
+              <t t-esc="handoff.rate_missing"/> worked without a resolvable
+              contract rate and are not in that estimate.
+            </p>
+
+            <div class="pbmc-sep"/>
+
+            <div t-foreach="checklist" t-as="c" t-key="c.key"
+                 class="pbmc-chk" t-att-class="{ 'is-done': c.done }">
+              <span class="pbmc-chk__ic" t-if="c.done" t-out="ic('check', 13)"/>
+              <span class="pbmc-chk__ic" t-if="!c.done" t-out="ic('x', 13)"/>
+              <span t-esc="c.label"/>
+            </div>
+
+            <!-- The CTA is DISABLED, never hidden: the officer has to be able
+                 to see what they are working towards, and the checklist above
+                 it says exactly what is missing. -->
+            <t t-if="!state.data.all_locked">
+              <button class="pbmc-cta"
+                      t-att-class="{ 'is-on': state.data.can_lock and state.data.can_manage_locks }"
+                      t-att-disabled="!state.data.can_lock or !state.data.can_manage_locks or state.busy"
+                      t-on-click="() => this.lockWeek()">
+                <span t-out="ic('lock', 13)"/>
+                <span>Lock week &amp; send to payroll</span>
+              </button>
+              <p class="pbmc-note2" t-if="!state.data.can_manage_locks">
+                Locking a week is an attendance or payroll manager's decision.
+              </p>
+              <p class="pbmc-note2"
+                 t-if="state.data.can_manage_locks and !state.data.can_lock">
+                Clear or review every flag first.
+              </p>
+            </t>
+
+            <t t-if="state.data.all_locked">
+              <div class="pbmc-locked">
+                <span t-out="ic('shieldCheck', 15)"/>
+                <b>Week locked</b>
+                <span>Handed to payroll. Punches, corrections and overtime for
+                      these days are read-only.</span>
+              </div>
+              <button class="pbmc-reopen" t-if="state.data.can_manage_locks"
+                      t-att-disabled="state.busy"
+                      t-on-click="() => this.openReopen()">Reopen…</button>
+            </t>
+          </aside>
+        </div>
+      </t>
+
+      <!-- ======================= approve-as-is dialog ======================= -->
+      <div class="pbmc-scrim" t-if="state.reviewFor"
+           t-on-click="() => this.cancelReview()">
+        <div class="pbmc-modal" t-on-click.stop="">
+          <h5>Approve as-is</h5>
+          <p class="pbmc-modal__p">
+            <b t-esc="state.reviewFor.name"/> ·
+            <t t-esc="state.reviewFor.day_label"/> ·
+            <t t-esc="state.reviewFor.kind_label"/>.
+            This records that you looked at it and accepted it — the flag stops
+            blocking the close but the row stays on the board.
+          </p>
+          <textarea class="pbmc-ta" rows="3"
+                    placeholder="Note (optional) — it is kept with the review"
+                    t-att-value="state.reviewNote"
+                    t-on-input="(ev) => this.onReviewNote(ev)"/>
+          <div class="pbmc-modal__a">
+            <button class="pbmc-b pbmc-b--ghost"
+                    t-on-click="() => this.cancelReview()">Cancel</button>
+            <button class="pbmc-b pbmc-b--pri" t-att-disabled="state.busy"
+                    t-on-click="() => this.confirmReview()">Approve as-is</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ reopen dialog ============================ -->
+      <div class="pbmc-scrim" t-if="state.reopenOpen"
+           t-on-click="() => this.cancelReopen()">
+        <div class="pbmc-modal" t-on-click.stop="">
+          <h5>Reopen <t t-esc="state.reopenOpen.label"/></h5>
+          <p class="pbmc-modal__p">
+            Reopening a closed day is recorded against it — this reason is the
+            only account anyone reviewing this payroll will have of why the week
+            was taken back.
+          </p>
+          <textarea class="pbmc-ta" rows="3"
+                    placeholder="Why is this being reopened? (required)"
+                    t-att-value="state.reopenReason"
+                    t-on-input="(ev) => this.onReopenReason(ev)"/>
+          <div class="pbmc-modal__a">
+            <button class="pbmc-b pbmc-b--ghost"
+                    t-on-click="() => this.cancelReopen()">Cancel</button>
+            <button class="pbmc-b pbmc-b--warn"
+                    t-att-disabled="!canConfirmReopen or state.busy"
+                    t-on-click="() => this.confirmReopen()">Reopen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
