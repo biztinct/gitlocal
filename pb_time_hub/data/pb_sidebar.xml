@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13): a frozen file means later phases can never
+     move this item without shipping a migration. P1b renumbers the Workforce
+     section — it must be able to just edit this file. -->
+<odoo noupdate="0">
+
+    <!-- WORKFORCE › Time — the hub that replaces Timecards (seq 30), Weekly
+         Entry (35) and Attendance Control (25). It takes 30, the middle of the
+         three, so the section keeps its shape until P1b renumbers it.
+
+         Gate: `hr_attendance.group_hr_attendance_officer`. In Odoo 19 the
+         attendance groups nest own_reader < officer < user < manager
+         (hr_attendance/security/hr_attendance_security.xml :9-38), so the
+         officer group covers all three working tiers and reproduces exactly the
+         Weekly Entry persona this hub inherits. Timecards was ungated; folding
+         it in narrows it on purpose. -->
+    <record id="item_wf_time" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Time</field>
+        <field name="icon">clock</field>
+        <field name="sequence">30</field>
+        <field name="action_xmlid">pb_time_hub.action_pb_time_hub</field>
+        <field name="action_tag">pb_time_hub</field>
+        <!-- match the retired cockpits' tags too: a bookmark or a stray
+             doAction to one of them still lights up the Time entry. -->
+        <field name="match_action_tags">pb_time_hub,pb_attendance_weekgrid,pb_attendance_flow</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
+    </record>
+
+</odoo>

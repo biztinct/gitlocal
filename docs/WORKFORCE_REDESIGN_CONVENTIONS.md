@@ -78,7 +78,7 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   | `pb_driver_checkin/data/pb_sidebar.xml` | 0 |
   | `pb_timeoff/data/pb_sidebar.xml` | **1** → flipped to 0 in P0 WP-H |
   | `pb_business_trip/data/pb_sidebar.xml` | **1** |
-  | `pb_attendance_flow/data/pb_sidebar.xml` | **1** |
+  | `pb_attendance_flow/data/pb_sidebar.xml` | **1** → flipped to 0 in P1a WP-5 |
   Rule: before editing any `pb.sidebar.item`, check the *declaring* file's `<odoo noupdate=…>`.
   **And flipping it to 0 is NOT enough on an existing database — see W13.1.**
 - **W13.1 `noupdate` lives in the DATABASE, and Odoo never refreshes it. (Proven on the live server,
@@ -96,10 +96,11 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   bumping the manifest version, since migrations only run on a version change. Precedent to clone:
   `pb_timeoff/migrations/19.0.1.0.3/post-migrate.py`. Keep it idempotent and only overwrite the old
   value, so an admin's later customization is not overruled.
-  **Still frozen as of P0** (`noupdate="1"`, untouched because P0 had no reason to move them):
-  `pb_business_trip/data/pb_sidebar.xml` (Business Trips) and
-  `pb_attendance_flow/data/pb_sidebar.xml` (Attendance Control). P1 renumbers the whole section —
-  it must ship the same unfreeze migration for both, or those two items will not move.
+  **Still frozen as of P1a**: `pb_business_trip/data/pb_sidebar.xml` (Business Trips) only —
+  `pb_attendance_flow` was unfrozen by P1a WP-5
+  (`pb_attendance_flow/migrations/19.0.1.0.4/post-migrate.py`, cloned from the pb_timeoff
+  precedent). P1b renumbers the section and must ship the same unfreeze for pb_business_trip,
+  or Business Trips will not move.
   **Always assert the DB value after `-u`.** A repo-only "fix" is indistinguishable from a real one
   unless something reads the database back; that is what `pb_wf_kit/tests/test_p0.py
   ::test_moved_items_landed_on_their_new_sequences` is for, and it is what caught this.
@@ -144,3 +145,18 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
      because the hub depends on the module.
   Applied twice in P1a: `AttendanceWeekGrid` (Week Grid lens) and `PbAttendanceFlow`
   (Exceptions + Import lenses, `initialView` `board` / `import`).
+- **W18 A retired sidebar item still OCCUPIES its sequence.** `active = False` takes an item off
+  the rail but not out of the section: `pb_wf_kit/tests/test_p0.py::test_workforce_sequences_are_
+  unique` deliberately searches with `active_test=False`, because a duplicate only has to matter
+  the moment an admin re-enables the record. So when a new surface inherits a retired item's
+  sequence, the retired one must MOVE, not merely deactivate. P1a parks retirements in a **900+
+  retired band** (`item_wf_timecards` 30 → 900) and leaves non-colliding retirements where they
+  are (`item_wf_weekentry` 35, `item_attendance_control` 25), which keeps the live section's
+  numbering readable while the uniqueness rule still holds over the whole set.
+- **W19 A `var()` fallback also has to be a real *value*, not just a real colour.** W14's corollary
+  extends past colours: `--pbim-pill` **does not exist** in the `pbim-root-vars` mixin
+  (`import_tokens.scss` :55-86 emits `--pbim-r`, `--pbim-r-sm`, `--pbim-r-lg`, `--pbim-sh`,
+  `--pbim-sh-lg` — no pill). `border-radius: var(--pbim-pill, 999px)` therefore renders permanently
+  from its fallback, which *works* but silently claims a token that isn't there and would survive a
+  future token change untouched. Write the literal (`999px`) or add the token; do not fake it.
+  Check any `--pbim-*` name against the mixin before using it — colour or not.

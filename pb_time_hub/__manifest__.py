@@ -36,11 +36,13 @@ ships no private pickers. pbim indigo tokens, Lucide icons, no gradients.
         'pb_import_kit',        # pbim tokens + the shared Lucide ic() registry
         'pb_hr_workforce',      # hr.attendance.weekentry + the Week Grid lens
         'pb_attendance_flow',   # pb.attendance.flow + the Exceptions/Import lens
+        'pb_sidebar',           # the rail entry that replaces the three retired ones
         # soft-hook (resolved via `in self.env`): pb_business_trip contributes
         # trip days to the drawer and trip bars to the Timeline read-model.
     ],
     'data': [
         'views/time_hub_action.xml',
+        'data/pb_sidebar.xml',
     ],
     'assets': {
         'web.assets_backend': [

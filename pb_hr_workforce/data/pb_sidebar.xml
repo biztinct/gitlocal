@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="0">
 
-    <!-- Weekly Entry cockpit — Workforce section, right after Timecards.
-         Officer-and-up (HR/manager persona; no ESS/self-entry this phase). -->
+    <!-- RETIRED by Workforce P1a: this cockpit is now the Time hub's Week Grid
+         lens (pb_time_hub mounts the very same component with embedded="true").
+         The client action survives for P1b to retire; only the rail entry goes.
+         Sequence 35 does not collide with anything, so unlike Timecards it can
+         keep it — see the 900 retired band in pb_sidebar_data.xml for why that
+         one had to move. -->
     <record id="item_wf_weekentry" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_workforce"/>
         <field name="name">Weekly Entry</field>
         <field name="icon">table</field>
         <field name="sequence">35</field>
+        <field name="active" eval="False"/>
         <field name="action_xmlid">pb_hr_workforce.action_pb_attendance_weekgrid</field>
         <field name="action_tag">pb_attendance_weekgrid</field>
         <field name="match_action_tags">pb_attendance_weekgrid</field>
