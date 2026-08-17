@@ -2,3 +2,4 @@
 from . import common
 from . import test_locks
 from . import test_close
+from . import test_advisory
