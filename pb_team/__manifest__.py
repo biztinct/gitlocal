@@ -19,8 +19,24 @@ a tier the user lacks is refused by the model and the refusal surfaces as a toas
 
 Soft-hooked: pb_business_trip, pb_attendance_flow (corrections + exception feed),
 hr_holidays. The cockpit degrades gracefully when a source phase is absent.
+
+Workforce P3b — `get_team_data` is now also the Mission Control DOCK's read, so
+the payload gained four ADDITIVE things (the cockpit passes no new argument and
+sees the same shape it always did):
+
+  * `queues.total` is always emitted, 0 included — it used to exist only on the
+    has_team branch, so a manager with no reports rendered "Needs you · undefined";
+  * `queues.items[].when_iso` — the ISO-8601 twin of the `%d %b` display string,
+    so a client can sort and age a queue item;
+  * each source search is CAPPED at 20 (they were unbounded), with the TRUE
+    totals in `queues.counts` and `queues.has_more[source]` saying the list was
+    cut — capping the list must never understate the backlog;
+  * `scope='org'` — every pending item in the active companies, gated by
+    `_require_org_approver` (HR manager | payroll manager) and advertised to the
+    client as `can_org`. It widens the READ only: `act()` is untouched, still
+    real-user, still whitelisted, still scope-checked.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
