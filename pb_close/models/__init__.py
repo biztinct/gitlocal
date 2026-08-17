@@ -9,3 +9,4 @@ from . import attendance_import
 from . import attendance_weekentry
 from . import close_review
 from . import close
+from . import payrun_wizard

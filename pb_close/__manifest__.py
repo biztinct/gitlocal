@@ -48,10 +48,15 @@ the shape `pb_today.py`:295-317 proved, and a grep gate keeps it so.
         'pb_hr_workforce',      # hr.shift.planning, the weekentry grid, OT
         'pb_attendance_flow',   # pb.attendance.rule tolerance + the exception engine
         'pb_time_hub',          # the person drawer the Close lens hands over to
+        # A HARD dependency, not a soft hook: `_inherit = 'pb.payrun.wizard'`
+        # is resolved when the registry is built, so a conditional import is
+        # not available — the model has to exist. The advisory itself is still
+        # incapable of affecting a run (see models/payrun_wizard.py).
+        'pb_payrun_wizard',
         # soft-hooks (resolved via `in self.env`, never a hard dependency):
-        #   pb.payrun.wizard   — the advisory; absent on a payroll-less tenant
         #   pb.ot.ceiling      — the clean-batch headroom test
         #   hr.leave           — leave-day exclusion in the classifier
+        #   hr.attendance.correction — the checklist's second tick
     ],
     'data': [
         'security/ir.model.access.csv',
