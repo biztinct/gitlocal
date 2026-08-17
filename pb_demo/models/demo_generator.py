@@ -69,8 +69,15 @@ class PbDemoGenerator(models.TransientModel):
     months = fields.Integer(string='History Months', default=7)
     include_history = fields.Boolean(string='Include Payroll History', default=True)
 
+    # `wf_lock_bypass` (Workforce P4 §3.2): the regenerator rewrites a year of
+    # historical punches, shifts and OT, and a day lock left behind by a demo of
+    # the Close ritual must not be able to defeat a regen. The key is honoured
+    # ONLY under `env.su` (pb_close/models/wf_lock.py) — every seeder here
+    # already writes through `.sudo()`, and a browser session can neither reach
+    # env.su nor forge it, so this widens nothing for anybody else.
     _GEN_CTX = {'tracking_disable': True, 'mail_create_nolog': True,
-                'mail_create_nosubscribe': True, 'mail_notrack': True}
+                'mail_create_nosubscribe': True, 'mail_notrack': True,
+                'wf_lock_bypass': True}
 
     # ------------------------------------------------------------------ helpers
     def _ensure_languages(self):
