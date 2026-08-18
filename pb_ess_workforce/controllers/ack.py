@@ -29,7 +29,7 @@ on anything — and that is exactly why the write behind it is sentinel-guarded
 down to two named fields.
 """
 
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 
@@ -58,11 +58,23 @@ class PbEssAckPortal(http.Controller):
                 'start': Ess._hhmm(shift.start_datetime, tz) if shift else '',
                 'end': Ess._hhmm(shift.end_datetime, tz) if shift else '',
                 'name': (shift.shift_template_id.name or '') if shift else '',
-                'hours': round(shift.planned_hours or 0.0, 2) if shift else 0.0,
+                'hours_label': _('%(hours)s h',
+                                 hours=round(shift.planned_hours or 0.0, 2))
+                if shift else '',
                 'who': (emp.name or '').split(' ')[-1] if emp else '',
                 'acked_on': (shift.acked_at.date().isoformat()
                              if shift and shift.acked_at else ''),
             } if shift else {},
+            # W80.2 — one sentence, one msgid. Neither of these may be
+            # assembled from template fragments around a `<t t-esc/>`: a
+            # translator cannot reorder fragments, and both of these sentences
+            # put the variable somewhere else in Vietnamese.
+            'greeting': _('Hi %(name)s — please confirm you have seen this shift.',
+                          name=(emp.name or '').split(' ')[-1]) if emp else '',
+            'already': _('You confirmed this shift on %(date)s. There is '
+                         'nothing left to do.',
+                         date=(shift.acked_at.date().isoformat()
+                               if shift and shift.acked_at else '')),
         })
 
     @http.route('/work/ack/<string:token>', type='http', auth='public',

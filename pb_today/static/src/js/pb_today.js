@@ -218,6 +218,21 @@ export class PbToday extends Component {
         return p && p.shown ? p : null;
     }
 
+    /** W80.2 — one sentence, one msgid, built here rather than assembled from
+     *  `<t>` fragments in the template. */
+    get pulseLabel() {
+        const p = this.pulse;
+        return p ? _t("Team pulse · %(count)s ratings", { count: p.count }) : "";
+    }
+
+    get pulseTitle() {
+        const p = this.pulse;
+        return p
+            ? _t("Average of %(count)s anonymous shift ratings over the last %(days)s days",
+                 { count: p.count, days: p.window })
+            : "";
+    }
+
     get pulseFace() {
         const a = this.pulse && this.pulse.avg;
         if (!a) { return ""; }

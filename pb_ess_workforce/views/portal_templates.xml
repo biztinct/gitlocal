@@ -122,7 +122,8 @@
         <div t-if="pulse and pulse.get('show')" class="pbew-pulse">
           <div class="pbew-pulse__q">
             <div class="t">How did your shift go?</div>
-            <div class="s"><t t-esc="pulse['shift']"/> · your answer is anonymous — it is never linked to your name</div>
+            <div class="s"><t t-esc="pulse['shift']"/></div>
+            <div class="s">Your answer is anonymous — it is never linked to your name.</div>
           </div>
           <form action="/my/work/pulse" method="post" class="pbew-pulse__row">
             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -142,10 +143,8 @@
           <a class="pbme-btn pbme-btn--ghost" t-attf-href="/my/work/schedule?week=#{sched['prev_week']}">
             <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">arrow-left</t><t t-set="isz" t-value="14"/></t>Earlier
           </a>
-          <span class="pbew-weeknav__l" t-if="sched['pending']">
-            <t t-esc="sched['pending']"/> shift(s) still to confirm
-          </span>
-          <span class="pbew-weeknav__l pbew-ok" t-else="">Everything confirmed</span>
+          <span t-attf-class="pbew-weeknav__l #{sched['pending'] and '' or 'pbew-ok'}"
+                t-esc="sched['pending_label']"/>
           <a class="pbme-btn pbme-btn--ghost" t-attf-href="/my/work/schedule?week=#{sched['next_week']}">
             Later<t t-call="pb_ess_workforce.work_icon"><t t-set="icon">arrow-right</t><t t-set="isz" t-value="14"/></t>
           </a>
@@ -156,14 +155,14 @@
             <div class="pbew-week__h">
               <div>
                 <h3 class="pbme-card-title"><t t-esc="w['label']"/></h3>
-                <div class="pbme-muted"><t t-esc="w['hours']"/> h scheduled</div>
+                <div class="pbme-muted" t-esc="w['hours_label']"/>
               </div>
               <form t-if="w['pending']" action="/my/work/schedule/ack" method="post">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                 <input type="hidden" name="week_start" t-att-value="w['week_start']"/>
                 <button type="submit" class="pbme-btn pbme-btn--primary">
                   <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">check</t><t t-set="isz" t-value="15"/></t>
-                  Confirm week (<t t-esc="w['pending']"/>)
+                  <t t-esc="w['confirm_label']"/>
                 </button>
               </form>
               <span t-else="" class="pbew-chip pbew-chip--ok">
@@ -183,7 +182,7 @@
                     <div t-attf-class="pbew-shift pbew-shift--#{s['ack_state']}">
                       <div class="pbew-shift__t"><t t-esc="s['start']"/> – <t t-esc="s['end']"/></div>
                       <div class="pbew-shift__n"><t t-esc="s['name']"/></div>
-                      <div class="pbew-shift__h"><t t-esc="s['hours']"/> h</div>
+                      <div class="pbew-shift__h" t-esc="s['hours_label']"/>
                       <t t-if="s['ack_state'] == 'acked'">
                         <span class="pbew-chip pbew-chip--ok">
                           <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">check</t><t t-set="isz" t-value="12"/></t>Confirmed
@@ -322,8 +321,8 @@
           <t t-foreach="lv['balances']" t-as="b">
             <div class="pbme-tile">
               <div class="pbme-tile-l"><t t-esc="b['name']"/></div>
-              <div t-attf-class="pbme-tile-v #{b['low'] and 'pbew-low' or ''}"><t t-esc="b['balance']"/> d</div>
-              <div class="pbme-tile-y"><t t-esc="b['taken']"/> of <t t-esc="b['allocated']"/> used</div>
+              <div t-attf-class="pbme-tile-v #{b['low'] and 'pbew-low' or ''}" t-esc="b['balance_label']"/>
+              <div class="pbme-tile-y" t-esc="b['used_label']"/>
             </div>
           </t>
         </div>

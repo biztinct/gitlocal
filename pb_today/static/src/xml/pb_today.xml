@@ -72,12 +72,11 @@
                worse than no door (W5/W29). Rendered only when the server
                cleared the anonymity floor — below it the payload carries no
                figures at all, so there is nothing here to leak. -->
-          <div class="pbtd-pulse" t-if="pulse"
-               t-attf-title="Average of {{ pulse.count }} anonymous shift ratings over the last {{ pulse.window }} days">
+          <div class="pbtd-pulse" t-if="pulse" t-att-title="pulseTitle">
             <span class="pbtd-pulse__f" t-out="ic(pulseFace, 20)"/>
             <span class="pbtd-pulse__b">
               <span class="v"><t t-esc="pulse.avg"/><small>/5</small></span>
-              <span class="l">Team pulse · <t t-esc="pulse.count"/> ratings</span>
+              <span class="l" t-esc="pulseLabel"/>
             </span>
           </div>
         </div>

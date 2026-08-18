@@ -167,7 +167,8 @@ class HrShiftPlanningNotify(models.Model):
             Ess = self.env['pb.ess.workforce'].sudo()
             body = self.env['ir.qweb']._render(
                 'pb_ess_workforce.ack_mail_body', {
-                    'who': (emp.name or '').split(' ')[-1],
+                    'greeting': _('Hi %(name)s,',
+                                  name=(emp.name or '').split(' ')[-1]),
                     'day': self.date.strftime('%A %d %B %Y') if self.date else '',
                     'start': Ess._hhmm(self.start_datetime, tz),
                     'end': Ess._hhmm(self.end_datetime, tz),
