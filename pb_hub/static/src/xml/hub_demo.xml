@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ============================================== the demo client action -->
+  <t t-name="pb_hub.PbHubDemo">
+    <HubShell config="config" action="props.action or {}"/>
+  </t>
+
+  <!-- ================================================== a demo lens body
+       `.pbhub-demo` sits INSIDE the shell's `.pbim` root, so the pbim custom
+       properties resolve here normally (unlike the palette, W14). -->
+  <t t-name="pb_hub.HubDemoLens">
+    <div class="pbhub-demo">
+      <div class="pbhub-demo__card">
+        <h2 class="pbhub-demo__t" t-esc="props.title"/>
+        <p class="pbhub-demo__n" t-esc="props.note"/>
+
+        <p class="pbhub-demo__n" t-if="props.arrival and props.arrival.lens">
+          Arrived with pb_lens = <b t-esc="props.arrival.lens"/>.
+        </p>
+
+        <div class="pbhub-demo__row">
+          <button class="pbhub-demo__b" t-on-click="() => this.bump()">
+            <span t-out="ic('plus', 14)"/>
+            <span>Clicked <b t-esc="state.clicks"/> times</span>
+          </button>
+          <button class="pbhub-demo__b pbhub-demo__b--ghost"
+                  t-if="props.onDeepLink" t-on-click="() => this.deepLink()">
+            <span t-out="ic('arrow', 14)"/>
+            <span>Deep-link to Records with a back door</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ==================================================== dock placeholder -->
+  <t t-name="pb_hub.HubDemoDock">
+    <div class="pbhub-demo-dock">
+      <div class="pbhub-demo-dock__h">
+        <span t-out="ic('inbox', 14)"/><span>Dock</span>
+      </div>
+      <p class="pbhub-demo-dock__n">
+        268px, mounted once beside every lens and never keyed to it — an ambient
+        column must not reload when the lens changes.
+      </p>
+    </div>
+  </t>
+
+</templates>
