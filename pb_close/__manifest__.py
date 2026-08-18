@@ -38,7 +38,7 @@ field (stale by construction: a stored compute over now(), no cron, and
 `actual_check_*` never written by production code). Everything is derived live,
 the shape `pb_today.py`:295-317 proved, and a grep gate keeps it so.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.0.3',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

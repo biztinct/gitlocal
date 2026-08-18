@@ -6,6 +6,7 @@ breaches for check_period are seeded with the rule momentarily deactivated.
 """
 
 from datetime import datetime, date, time, timedelta
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 
@@ -297,20 +298,122 @@ class TestYoungWorker(TransactionCase):
             'company_id': co_b.id})
         self.assertTrue(req.id)
 
-    # ---------------------------------------------------- §6.9 payroll MRO
-    def test_09_payroll_wrapper_is_mro_outer(self):
-        """The advisory wrapper must sit OUTSIDE pb_demo in the MRO, or the demo
-        division path (which doesn't call super) skips it entirely (§2 ⚠)."""
+    # ------------------------------------------- §6.9 the payroll advisory paths
+    #
+    # WHAT THIS USED TO ASSERT, AND WHY IT WAS WRONG (P7 WP-1).
+    #
+    # `test_09_payroll_wrapper_is_mro_outer` asserted
+    # `mro.index(pb_young_worker) < mro.index(pb_demo)` — "we sit outside the
+    # demo module, so our super() wraps its division path". Two things were
+    # wrong with it. The measured order is the OPPOSITE
+    # (`pb_demo -> pb_close -> pb_young_worker -> pb_payrun_wizard`: none of the
+    # four declares a dependency on another, so their relative order is Odoo's
+    # `(depth, name)` accident, and pb_demo happens to load last). And the test
+    # could not fail on the machines that ran it, because the whole assertion
+    # sat behind `if demo is not None` and CI databases install pb_young_worker
+    # without pb_demo — a green test asserting a false thing about a
+    # configuration it never saw.
+    #
+    # What actually makes the advisory reach a payroll run is TWO different
+    # mechanisms, and this asserts both of them instead:
+    #   * the GENERIC (salary-structure) path calls super, so the classic
+    #     append-after-super seam fires — proven end to end, not by index;
+    #   * the DEMO division path never calls super, so pb_demo calls the
+    #     product's hooks explicitly (`_pb_demo_advisories`, P4). The dependency
+    #     direction is deliberate: a production module must not depend on the
+    #     demo module to be correct.
+    # An MRO INDEX proves neither of them, and would keep passing if both
+    # broke.
+    def test_09_the_advisory_is_registered_on_both_payroll_seams(self):
+        """Registration, on the real registry — the precondition for the seam.
+
+        Asserted as "some class in the wizard's MRO that belongs to this module
+        defines this method", which is what "the wrapper is installed" means.
+        Position in that list is deliberately NOT asserted: it is an accident of
+        load order that nothing declares and nothing needs.
+        """
         mro = type(self.env['pb.payrun.wizard']).mro()
-        mods = [getattr(c, '__module__', '') for c in mro]
-        yw = next((i for i, m in enumerate(mods) if 'pb_young_worker' in m), None)
-        demo = next((i for i, m in enumerate(mods) if 'pb_demo' in m), None)
-        self.assertIsNotNone(yw, "pb_young_worker payrun wrapper missing from MRO")
-        if demo is not None:
-            self.assertLess(
-                yw, demo,
-                "pb_young_worker must be MRO-outer of pb_demo so super() wraps "
-                "the demo division path (add pb_demo to depends if this fails)")
+        mine = [c for c in mro
+                if 'pb_young_worker' in getattr(c, '__module__', '')]
+        self.assertTrue(mine, 'the young-worker payrun wrapper is not installed')
+        for seam in ('create_and_compute', 'compute_batch'):
+            self.assertTrue(
+                any(seam in vars(c) for c in mine),
+                'the young-worker advisory does not wrap %s' % seam)
+
+    def test_09b_the_generic_path_appends_after_super(self):
+        """The append-after-super seam, end to end through `compute_batch`.
+
+        The payload carries a minor with a week over the cap and no running
+        contract, so the BASE implementation appends its own row first and the
+        wrapper appends after it. Both must be present: an advisory that
+        replaces the run's own exceptions instead of adding to them would pass
+        any test that only looked for a young-worker row.
+        """
+        for i in range(6):
+            self._att(self.emp17, self.monday + timedelta(days=i), 7.0)
+        Wiz = self.env['pb.payrun.wizard'].sudo()
+        out = Wiz.compute_batch({
+            'run_id': False, 'name': 'P7 advisory probe',
+            'date_start': self.monday.isoformat(),
+            'date_end': (self.monday + timedelta(days=6)).isoformat(),
+            'emp_ids': [self.emp17.id, self.emp_adult.id],
+        })
+        self.assertIn('exceptions', out)
+        whys = [r['why'] for r in out['exceptions']]
+        self.assertTrue(
+            any(w.startswith('Young worker:') for w in whys),
+            'the advisory never reached the generic path: %s' % whys)
+        self.assertTrue(
+            any('No running contract' in w for w in whys),
+            "the run's own exceptions were lost — the wrapper replaced the "
+            'list instead of appending to it: %s' % whys)
+
+    def test_09c_the_demo_division_path_reaches_us_by_explicit_hook(self):
+        """The demo path, asserted through the MECHANISM rather than the source.
+
+        `pb_demo` short-circuits `compute_batch` / `create_and_compute` for a
+        division run and returns without calling super, so no wrapper below it
+        ever runs. P4's answer was for the DEMO to call the product's advisory
+        hooks by name. This calls that hook exactly as the division path does
+        and asserts our rows come out of it — which is the only thing that would
+        still be true after somebody renames `_yw_append_exceptions`.
+        """
+        Wiz = self.env['pb.payrun.wizard'].sudo()
+        hook = getattr(Wiz, '_pb_demo_advisories', None)
+        if hook is None:
+            self.skipTest('pb_demo is not installed on this database')
+        for i in range(6):
+            self._att(self.emp17, self.monday + timedelta(days=i), 7.0)
+        seeded = [{'emp': 'Someone', 'why': 'No running contract'}]
+        hook(seeded, [self.emp17.id],
+             self.monday.isoformat(),
+             (self.monday + timedelta(days=6)).isoformat())
+        self.assertEqual(seeded[0]['why'], 'No running contract',
+                         'the demo hook must append, never rebuild')
+        self.assertTrue(
+            any(r['why'].startswith('Young worker:') for r in seeded),
+            'the demo division path shows no young-worker warning: %s' % seeded)
+
+    def test_09d_the_advisory_can_never_break_a_payroll_run(self):
+        """The cardinal rule for anything riding this seam. The failure is
+        INJECTED rather than imagined: a bad week of data must cost a warning,
+        never the run."""
+        Wiz = self.env['pb.payrun.wizard'].sudo()
+        payload = {
+            'run_id': False, 'name': 'P7 advisory probe',
+            'date_start': self.monday.isoformat(),
+            'date_end': (self.monday + timedelta(days=6)).isoformat(),
+            'emp_ids': [self.emp17.id],
+        }
+        with patch.object(type(Wiz), '_yw_append_exceptions',
+                          side_effect=RuntimeError('advisory exploded')):
+            try:
+                out = Wiz.compute_batch(payload)
+            except RuntimeError:
+                self.fail('the young-worker advisory raised into a payroll run')
+        self.assertIsInstance(out, dict)
+        self.assertIn('exceptions', out)
 
     # ---------------------------------------------------- §6.10 adults untouched
     def test_10_adults_untouched(self):

@@ -7,12 +7,34 @@ list — the same surface the Run Payroll cockpit already renders. It NEVER rais
 and NEVER skips a slip: a violating minor is still paid (labor-law remediation is
 HR's job, not the payroll engine's).
 
-MRO note (handover §2 ⚠): pb_demo replaces create_and_compute/compute_batch for
-its division path WITHOUT calling super, so this wrapper must sit OUTSIDE
-pb_demo's override in the MRO to see its result. Load order guarantees that
-(pb_young_worker resolves after pb_demo); test 9 verifies the demo path surfaces
-the warnings. The append is wrapped defensively so a check failure can never
-break a payroll run.
+HOW THIS REACHES A RUN — TWO PATHS, ONLY ONE OF THEM THIS SEAM (corrected P7)
+-----------------------------------------------------------------------------
+The GENERIC (salary-structure) path calls super all the way down, so the append
+above fires and the warnings arrive. That is the whole mechanism there.
+
+The DEMO DIVISION path does not. `pb_demo` replaces `create_and_compute` /
+`compute_batch` for a division run and returns WITHOUT calling super, so every
+wrapper below it — this one included — is skipped.
+
+This docstring used to claim that was handled: "this wrapper must sit OUTSIDE
+pb_demo's override in the MRO. Load order guarantees that (pb_young_worker
+resolves after pb_demo); test 9 verifies". All three clauses were wrong.
+Measured on the live registry the order is the OPPOSITE
+(`pb_demo -> pb_close -> pb_young_worker -> pb_payrun_wizard`) — none of these
+four modules depends on another, so their relative order is Odoo's
+`(depth, name)` accident and pb_demo simply loads last. And "test 9" asserted
+the false claim behind an `if pb_demo is installed` guard, on CI databases
+where pb_demo is not, so it could never fail.
+
+What actually covers the division path is P4's fix, and it runs in the other
+direction: `pb_demo._pb_demo_advisories` calls `_yw_append_exceptions` (and
+pb_close's twin) BY NAME. The demo module depends on the product, never the
+reverse — making `pb_close` or this module depend on `pb_demo` to be correct
+would be a far worse bargain than an explicit hook list. `test_09c` drives that
+hook and asserts our rows come out of it.
+
+The append is wrapped defensively so a check failure can never break a payroll
+run — asserted by injection in `test_09d`, not assumed.
 """
 
 import logging
