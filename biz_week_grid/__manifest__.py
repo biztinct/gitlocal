@@ -10,7 +10,7 @@ dirty tracking, an undo stack, per-row revert and an explicit Save that surfaces
 per-cell results. No HR / Payobook / country dependencies — reuse for timesheets,
 roster hours, meal counts, overtime entry. Themeable via --bwg-* CSS custom props.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.2.0.0',
     'category': 'Extra Tools',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -19,8 +19,15 @@ roster hours, meal counts, overtime entry. Themeable via --bwg-* CSS custom prop
     'assets': {
         'web.assets_backend': [
             'biz_week_grid/static/src/scss/week_grid.scss',
+            'biz_week_grid/static/src/scss/week_cell_editor.scss',
+            'biz_week_grid/static/src/js/week_cell_editor.js',
             'biz_week_grid/static/src/js/week_grid.js',
             'biz_week_grid/static/src/xml/week_grid.xml',
+            'biz_week_grid/static/src/xml/week_cell_editor.xml',
+        ],
+        # Loaded only by /web/tests — never part of the backend bundle.
+        'web.assets_unit_tests': [
+            'biz_week_grid/static/tests/**/*',
         ],
     },
     'installable': True,

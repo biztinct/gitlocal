@@ -7,14 +7,21 @@ from pytz import timezone, utc, UnknownTimeZoneError
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
 
-# OT types offered as chip measures + their frozen palette (kept identical to the
-# Timecards legend, attendance_timecard.py:293-300, for cross-screen continuity).
+# OT types offered as chip measures, in the order the LEGEND prints them, and
+# their palette.
+#
+# P5: these were the old Timecards colours (#e74c3c / #9b59b6 / #e67e22 /
+# #2c3e50) — four invented hexes inherited from a Gen-1 screen that the redesign
+# retires, i.e. a straight W1 violation that survived because the pills they
+# painted were themselves the thing nobody wanted to look at. They are now the
+# W1 CATEGORICAL ORDER, assigned by position in this tuple, which is also the
+# order the legend renders in. Nothing else may pick a colour for a chip.
 OT_TYPES = ('weekday', 'weekend', 'holiday', 'night')
 OT_COLORS = {
-    'weekday': '#e74c3c',
-    'weekend': '#9b59b6',
-    'holiday': '#e67e22',
-    'night': '#2c3e50',
+    'weekday': '#5A4BB0',
+    'weekend': '#D97706',
+    'holiday': '#2563EB',
+    'night': '#DC2668',
 }
 _DAY_FIELDS = ('apply_monday', 'apply_tuesday', 'apply_wednesday',
                'apply_thursday', 'apply_friday', 'apply_saturday', 'apply_sunday')
@@ -163,8 +170,15 @@ class AttendanceWeekEntry(models.TransientModel):
             cfg_by_type.setdefault(c.overtime_type, c)  # first (lowest sequence) wins
         holidays = self._holidays(week_start, week_end)
 
-        # week-level measure list: REG first, then each OT type with a config
-        measures = [{'key': 'reg', 'label': _('Reg'), 'min': 0, 'max': 24, 'step': 0.5}]
+        # Week-level measure list: REG first, then each OT type with a config.
+        #
+        # `label` used to BE the rate ("150%"), because the rate was what the
+        # per-cell pills printed. P5 splits the two: `name` is the config's own
+        # name and `rate` is the rate, and the grid writes them in its legend
+        # and its cell editor — never in a cell. `label` is kept as the short
+        # fallback for a consumer that reads neither.
+        measures = [{'key': 'reg', 'label': _('Reg'), 'name': _('Regular hours'),
+                     'min': 0, 'max': 24, 'step': 0.5}]
         for t in OT_TYPES:
             c = cfg_by_type.get(t)
             if not c:
@@ -172,6 +186,8 @@ class AttendanceWeekEntry(models.TransientModel):
             measures.append({
                 'key': t,
                 'label': '%s' % (c.rate_display or t.title()),
+                'name': c.name or t.title(),
+                'rate': c.rate_display or '',
                 'color': OT_COLORS[t],
                 'min': 0, 'max': 24, 'step': 0.5,
             })
@@ -265,14 +281,17 @@ class AttendanceWeekEntry(models.TransientModel):
                         # grid must not invite an edit that will fail (review F6);
                         # re-entry after refusal goes through the OT request form.
                         locked = req.state in ('submitted', 'approved', 'refused')
-                        # the generic chip renders `state` as its small suffix —
-                        # show the Bonus-Hours split there (amber `+Nb` via the
-                        # overlay SCSS); fall back to the plain state otherwise.
-                        state_txt = ('+%gb' % bonus) if bonus > 0 else req.state
+                        # `state` is the RAW workflow state now. It used to be
+                        # overloaded — "+2b" when there was a bonus split,
+                        # otherwise the state — because the old chip had exactly
+                        # one text slot for both. The P5 cell renders the state
+                        # as a micro-dot and reads `bonus` separately (dashed
+                        # chip + the amount spelled out in the editor), so the
+                        # two facts no longer have to fight over one string.
                         cell_measures[t] = {
                             'value': round(val, 2),
                             'editable': not locked,
-                            'state': state_txt,
+                            'state': req.state,
                             'bonus': bonus,
                             'approved': round(req.approved_hours or 0.0, 2),
                             'request_id': req.id,
