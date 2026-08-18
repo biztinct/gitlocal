@@ -7,7 +7,8 @@ consolidation, powered by Option C's engine** — per the approved dossier
 Every phase handover in `docs/handovers/WORKFORCE_P*.md` references this file. **Opus: when you hit a
 new gotcha or make a binding convention decision, append a numbered W-rule here in the same commit.**
 P4 closed the ledger at **W54**; **P6 reopened it** (demo-world sync was a post-P4 closure item) and
-takes it to **W61**. 60 rules, not 61: there is no W32 — see the note below.
+takes it to **W61**; **P5** (the Week Grid redesign, run after P6) takes it to **W67**.
+66 rules, not 67: there is no W32 — see the note below.
 Numbering note: **there is no W32** (it was folded into W33 during a renumber), and the P3a handover
 referred to "W-rules through W34" while the file in fact stopped at W33 — P3a opens the W34 slot, so
 the numbering and the reference agree again from here on.
@@ -764,3 +765,51 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   `ps -eo pid,cmd | grep "[o]doo-bin"` (the bracket keeps grep from matching its
   own command line, which is what made the first check lie), repeated until it
   is empty, and the fix is `sudo kill <PID>` — BY PID, never `pkill -f odoo-bin`.
+- **W62 When two surfaces answer the same question, they read the same
+  threshold from the same place — and a boolean is not a threshold.**
+  `pb.close._classify` flagged `missing_checkout` on `any(not a.check_out)`,
+  with no threshold at all, while
+  `pb.attendance.exception.engine._get_exceptions` has always gated the same
+  kind on the company's `open_checkout_hours`
+  (`attendance_exception.py`:214). Nothing errored and nothing looked wrong in
+  isolation: on a SETTLED week the two agree perfectly, because every open
+  punch there is days past any threshold. The disagreement only appears on the
+  CURRENT day, which is the only day an officer looks at in the morning — on
+  the P6 cohort roughly fifty of sixty-six Close flags were people who had
+  simply clocked in, and the one genuinely forgotten Friday punch was buried
+  under them. The officer cannot tell which surface to believe, so the
+  instrument is worse than absent.
+  Rules: (1) a "problem" predicate that has a configured tolerance ANYWHERE in
+  the codebase must resolve it through the same helper
+  (`pb.attendance.rule._grace_for_company`), never restate it and never omit
+  it; (2) test the AGREEMENT, not the number — `pb_close/tests/test_close.py
+  ::test_the_board_and_the_exception_engine_agree_on_open_punches` moves the
+  company threshold and asserts both surfaces flip together, which no
+  assertion about "16" could have caught; (3) a predicate that is exactly true
+  on settled data and wrong on live data will pass every fixture-based suite in
+  the repository — the fixture week has to be TODAY for the bug to exist.
+- **W63 A wall-clock hour written into a `fields.Datetime` is a defect with no
+  symptom until something localizes — and then it is a different shift, not a
+  rounding error.** `hr.shift.template.start_hour` is a float meaning "08:00
+  where the person works"; `hr.shift.planning.start_datetime` is a
+  `fields.Datetime`, i.e. UTC by Odoo's contract.
+  `quick_create_shift` (and `pb_schedule._pb_shift_window`, byte-identical to
+  it on purpose) stored the wall clock verbatim, so on the VN tenant an 08:00
+  shift sat at 08:00 UTC = 15:00 local. Every consumer that treats the column
+  as UTC was quietly wrong about it: `_compute_compliance_status` compared a
+  real punch to a start seven hours late, `weekentry._save_reg` derived a
+  check-in from it, and `pb_schedule`'s roster printed it raw. Meanwhile
+  `pb_demo` writes true UTC (W55), so ONE column held two conventions and the
+  same code was right about half the rows.
+  Rules: (1) fix the WRITE as well as the READ — P5 shipped `_pb_hhmm(dt, tz)`
+  and would have made every quick-created shift render +7 if the create path
+  had been left alone, i.e. a render-only fix trades one wrong screen for
+  another; (2) keep the conversion in ONE place that both the writer and its
+  predictor call (`hr.shift.planning.grid._pb_shift_utc` /
+  `_pb_shift_tzname`, on the BASE facade, because the predictor lives in a
+  module that depends on it — W53's shape); (3) any test of a stored time
+  asserts the LOCAL wall clock AND the UTC value, on an employee whose tz is
+  deliberately not UTC, or it proves nothing (W55's lesson again); (4) the
+  retired legacy `get_grid_data` cockpit still prints the raw stored value —
+  left alone under W18, and named here so the next reader does not think it is
+  a second bug to hunt.

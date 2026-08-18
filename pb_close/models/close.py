@@ -265,13 +265,17 @@ class PbClose(models.AbstractModel):
         problems, not days).
         """
         Grid = self.env['hr.attendance.weekentry']
-        var_min, var_week = self.env['pb.attendance.rule']._variance_for_company(
-            self.env.company)
+        Rule = self.env['pb.attendance.rule']
+        var_min, var_week = Rule._variance_for_company(self.env.company)
         if not emps:
             return [], {'clean': 0}, {'regular': 0.0, 'overtime': 0.0,
                                       'bonus': 0.0, 'emp_hours': {}}
 
         emp_ids = emps.ids
+        # The board and the exception engine must answer "is this punch a
+        # missing check-out?" the same way — see `_open_punch_is_stale`.
+        now = fields.Datetime.now()
+        open_h_cache = {}
 
         # --- shifts (1 query) — published AND completed (W24) --------------
         shifts = self.env['hr.shift.planning'].sudo().search([
@@ -365,7 +369,8 @@ class PbClose(models.AbstractModel):
                 kinds = []
                 if day_shifts and not day_atts:
                     kinds.append('missing_punch')
-                if any(not a.check_out for a in day_atts):
+                if any(self._open_punch_is_stale(a, now, Rule, open_h_cache)
+                       for a in day_atts):
                     kinds.append('missing_checkout')
                 if day_atts and not day_shifts and actual > 0:
                     kinds.append('unscheduled_day')
@@ -446,6 +451,38 @@ class PbClose(models.AbstractModel):
                  'overtime': round(ot_approved, 2),
                  'bonus': round(ot_bonus, 2),
                  'emp_hours': emp_hours})
+
+    @api.model
+    def _open_punch_is_stale(self, att, now, Rule, cache):
+        """Is this still-open punch a MISSING CHECK-OUT, or just somebody at work?
+
+        Until P5 the board answered "open punch → flag", with no threshold at
+        all. On a live day that is not a defect you can argue about: at 09:00
+        every single person who has clocked in is an exception, ~50 of the 66
+        flags on the P6 cohort were people standing at their machines, and the
+        one row that really was a forgotten Friday punch is buried under them.
+
+        ``pb.attendance.exception.engine`` has never done that — it gates the
+        same kind on ``open_checkout_hours`` (attendance_exception.py:214). Two
+        surfaces that disagree about what an exception IS are worse than either
+        of them being wrong on its own, because the officer cannot tell which
+        one to believe. So the threshold is READ FROM THE SAME PLACE, per
+        company, with the same ``>=`` comparison and the same
+        "hours the punch has been open" arithmetic.
+
+        Consequence, stated because it is the point: a punch opened this morning
+        stops being a flag until it has been open longer than the company's
+        threshold (16 h by default), whatever day it sits on. A settled day's
+        forgotten punch is hours past that by definition and still flags.
+        """
+        if att.check_out or not att.check_in:
+            return False
+        company = att.employee_id.company_id
+        cid = company.id if company else False
+        if cid not in cache:
+            cache[cid] = Rule._grace_for_company(company)[2]
+        hours_open = (now - att.check_in).total_seconds() / 3600.0
+        return hours_open >= cache[cid]
 
     @api.model
     def _local_day(self, employee, dt_utc, cache):

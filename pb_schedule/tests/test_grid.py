@@ -31,11 +31,16 @@ class TestScheduleGrid(TransactionCase):
             'name': 'P2 Schedule Dept', 'company_id': cls.company.id})
         cls.other_dept = cls.env['hr.department'].create({
             'name': 'P2 Other Dept', 'company_id': cls.company.id})
+        # An explicit, non-UTC timezone on purpose (P5 WP-0b): a roster time is
+        # a WALL CLOCK, and every "08:00" below is only a real assertion if the
+        # employee lives somewhere the stored UTC value is NOT 08:00.
         cls.emp = cls.env['hr.employee'].create({
             'name': 'P2 Zoe Scheduler', 'job_title': 'Line lead',
+            'tz': 'Asia/Ho_Chi_Minh',
             'department_id': cls.dept.id, 'company_id': cls.company.id})
         cls.emp2 = cls.env['hr.employee'].create({
             'name': 'P2 Yann Elsewhere', 'job_title': 'Packer',
+            'tz': 'Asia/Ho_Chi_Minh',
             'department_id': cls.other_dept.id, 'company_id': cls.company.id})
         cls.tmpl = cls.env['hr.shift.template'].create({
             'name': 'P2 Day', 'code': 'P2DAY', 'shift_type': 'morning',
@@ -47,7 +52,8 @@ class TestScheduleGrid(TransactionCase):
 
     def _shift(self, employee, day, state='draft', tmpl=None):
         tmpl = tmpl or self.tmpl
-        start, end = self.Grid._pb_shift_window(tmpl, day)
+        start, end = self.Grid._pb_shift_window(
+            tmpl, day, self.Grid._pb_shift_tzname(employee))
         rec = self.env['hr.shift.planning'].create({
             'employee_id': employee.id,
             'shift_template_id': tmpl.id,
@@ -219,18 +225,68 @@ class TestScheduleGrid(TransactionCase):
     def test_the_shift_window_matches_the_create_path_exactly(self):
         """The warning engine predicts a row `quick_create_shift` will write;
         if the two disagree by a minute the warnings are about a shift nobody
-        is making."""
+        is making.
+
+        P5 WP-0b moved BOTH sides onto UTC, so the identity claim is the same
+        claim and the absolute values are the ones the column is supposed to
+        hold: 22:00 in Ho Chi Minh City is 15:00 UTC the same evening, and an
+        overnight 06:00 end is 23:00 UTC on the DAY OF THE SHIFT — which is
+        exactly the midnight crossing that makes storing a wall clock as UTC a
+        real defect rather than a cosmetic one.
+        """
         night = self.env['hr.shift.template'].create({
             'name': 'P2 Night', 'code': 'P2NIGHT', 'shift_type': 'night',
             'start_hour': 22.0, 'end_hour': 6.0, 'break_duration': 0.5,
             'is_overnight': True, 'company_id': self.company.id})
         day = self.week + timedelta(days=5)
-        start, end = self.Grid._pb_shift_window(night, day)
-        self.assertEqual(start, datetime(day.year, day.month, day.day, 22, 0))
-        nxt = day + timedelta(days=1)
-        self.assertEqual(end, datetime(nxt.year, nxt.month, nxt.day, 6, 0))
+        tzname = self.Grid._pb_shift_tzname(self.emp2)
+        self.assertEqual(tzname, 'Asia/Ho_Chi_Minh')
+        start, end = self.Grid._pb_shift_window(night, day, tzname)
+        self.assertEqual(start, datetime(day.year, day.month, day.day, 15, 0))
+        self.assertEqual(end, datetime(day.year, day.month, day.day, 23, 0))
 
         created = self.env['hr.shift.planning'].browse(
             self.Grid.quick_create_shift(self.emp2.id, day.isoformat(), night.id))
         self.assertEqual(created.start_datetime, start)
         self.assertEqual(created.end_datetime, end)
+        # and it reads back as the wall clock the planner typed
+        self.assertEqual(self.Grid._pb_hhmm(created.start_datetime, tzname), '22:00')
+        self.assertEqual(self.Grid._pb_hhmm(created.end_datetime, tzname), '06:00')
+
+    # ------------------------------------------------- P5 WP-0b: local time
+    def test_a_shift_prints_the_employees_wall_clock_not_utc(self):
+        """The roster said 01:00 for every 08:00 Vietnamese shift — not a
+        rounding error, a different shift. Same family as W51/W55: pb_today,
+        pb_time_hub and the exception engine all localize before they say a
+        time out loud, and the roster is the surface a planner reads first."""
+        day = self.week + timedelta(days=1)
+        shift = self._shift(self.emp, day)
+        # the STORE is UTC (08:00 ICT = 01:00 UTC) …
+        self.assertEqual(shift.start_datetime.hour, 1)
+        self.assertEqual(shift.end_datetime.hour, 10)
+        # … and the CARD is the employee's morning
+        card = self._row(self._data())['shifts'][day.isoformat()][0]
+        self.assertEqual(card['start'], '08:00')
+        self.assertEqual(card['end'], '17:00')
+
+    def test_the_cost_strip_keys_the_same_local_day_as_the_card(self):
+        """A shift whose UTC start lands on the previous calendar day must
+        still be counted on the day its card is drawn on — the strip keys the
+        roster DAY, and the two may not disagree."""
+        day = self.week + timedelta(days=2)
+        early = self.env['hr.shift.template'].create({
+            'name': 'P2 Early', 'code': 'P2EARLY', 'shift_type': 'morning',
+            'start_hour': 6.0, 'end_hour': 14.0, 'break_duration': 0.0,
+            'company_id': self.company.id})
+        shift = self._shift(self.emp, day, state='published', tmpl=early)
+        # 06:00 ICT is 23:00 UTC on the PREVIOUS calendar day
+        self.assertEqual(shift.start_datetime.date(), day - timedelta(days=1))
+        self.assertEqual(shift.start_datetime.hour, 23)
+
+        data = self._data()
+        card = self._row(data)['shifts'][day.isoformat()][0]
+        self.assertEqual(card['start'], '06:00')
+        by_day = {d['date']: d for d in data['stats']['days']}
+        self.assertEqual(by_day[day.isoformat()]['shifts'], 1)
+        self.assertEqual(
+            by_day[(day - timedelta(days=1)).isoformat()]['shifts'], 0)
