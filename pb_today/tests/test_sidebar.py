@@ -107,8 +107,14 @@ class TestP1bSidebar(TransactionCase):
                          'Payroll Report must sit under Pay Run now')
         self.assertEqual(rec.sequence, 45)
         payroll_user = self.env.ref('om_hr_payroll.group_hr_payroll_user')
-        self.assertEqual(
-            rec.groups_id.ids, payroll_user.ids,
+        # CONTAINS, not EQUALS (P6). A rail gate is a floor, not an inventory:
+        # `pb_demo._pb_demo_rewire` legitimately joins "Payobook Demo User" onto
+        # every gated item on a demo database, so an equality assertion here
+        # tests whether pb_demo happens to be installed rather than whether the
+        # gate survived the relocation. Same shape as the pb_wf_kit precedent
+        # (`test_p0.py::test_payroll_report_keeps_its_payroll_gate`).
+        self.assertIn(
+            payroll_user.id, rec.groups_id.ids,
             'the relocation must not drop P0 gate — it exposes salary aggregates')
 
     def test_pay_run_sequences_are_unique_after_the_relocation(self):
@@ -130,8 +136,9 @@ class TestP1bSidebar(TransactionCase):
         if not rec:
             self.skipTest('pb_today is not installed')
         officer = self.env.ref('hr_attendance.group_hr_attendance_officer')
-        self.assertEqual(rec.groups_id.ids, officer.ids,
-                         'the rail gate must match the pb.today facade gate (W8)')
+        # CONTAINS, not EQUALS — see the note on the Payroll Report test above.
+        self.assertIn(officer.id, rec.groups_id.ids,
+                      'the rail gate must match the pb.today facade gate (W8)')
 
     def test_no_two_live_rail_items_share_a_label(self):
         """W28 — a label is unique across the WHOLE sidebar, not per section.
