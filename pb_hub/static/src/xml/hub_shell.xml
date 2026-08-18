@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================== the hub shell
+       Cloned from pb_mission.PbMission's geometry, with Workforce taken out.
+       Section comments use `=` rules, never a double hyphen: a doubled dash
+       inside an XML comment is a PARSE ERROR that takes the whole template
+       file down, and every t-name in it with it (W22). It also means a comment
+       may not spell the pbim custom-property prefix, which is two dashes. -->
+  <t t-name="pb_hub.HubShell">
+    <div class="pbim pbhub">
+
+      <!-- ===================== command bar ===================== -->
+      <header class="pbhub-top">
+        <span class="pbhub-brand">
+          <span class="pbhub-brand__ic" t-out="ic(brand.icon, 15)"/>
+          <span class="pbhub-brand__tx" t-esc="brand.label"/>
+        </span>
+
+        <!-- The return door, when the caller passed one (hub_nav.js). It sits
+             next to the brand because that is where a user looks for "where am
+             I and how do I get out". -->
+        <HubBackChip t-if="back" back="back"/>
+
+        <!-- The hub's own context segments. A SLOT, not a component: the kit
+             has no opinion about whether a hub scopes by company, period,
+             department or nothing at all. -->
+        <span class="pbhub-ctx" t-if="props.slots and props.slots.context">
+          <t t-slot="context"/>
+        </span>
+
+        <HubTracker t-if="tracker" label="tracker.label" stage="tracker.stage"
+                    total="tracker.total" onClick="tracker.onClick"/>
+
+        <button class="pbhub-search" t-on-click="() => this.openPalette()"
+                aria-label="Search surfaces and actions">
+          <span class="pbhub-search__ic" t-out="ic('search', 14)"/>
+          <span class="pbhub-search__tx">Search surfaces, actions…</span>
+          <span class="pbhub-search__kbd" t-esc="paletteHint"/>
+        </button>
+
+        <button class="pbhub-cog" t-if="hasCog" t-on-click="() => this.openCog()"
+                title="Settings" aria-label="Settings">
+          <span t-out="ic('settings', 15)"/>
+        </button>
+
+        <span class="pbhub-user" t-att-title="userName" t-esc="userInitials"/>
+      </header>
+
+      <div class="pbhub-low">
+
+        <!-- ========================= lens rail ========================= -->
+        <nav class="pbhub-rail" t-attf-aria-label="{{ brand.label }} lenses">
+          <!-- ONE class attribute: a static `class` plus `t-att-class` is the
+               documented-safe pair; t-att-class and t-attf-class both compile
+               to `class` and the last one written wins (W23). -->
+          <button t-foreach="lenses" t-as="l" t-key="l.key"
+                  class="pbhub-rail__b"
+                  t-att-class="{ 'is-on': state.lens === l.key }"
+                  t-att-aria-current="state.lens === l.key ? 'page' : false"
+                  t-att-title="l.label"
+                  t-on-click="() => this.setLens(l.key)">
+            <span class="pbhub-rail__ic" t-out="ic(l.icon, 17)"/>
+            <span class="pbhub-rail__l" t-esc="l.label"/>
+          </button>
+        </nav>
+
+        <!-- ==================== canvas: one lens ====================
+             `.pbhub-lens` is a definite-height flex box because an embedded
+             cockpit that owns its internal scrolling grows to its content
+             height in an auto-height host, and its flex child then stops
+             shrinking — that is how a 14 563px grid ended up covering its own
+             Save button (W20). `min-width: 0` / `min-height: 0` / `width: 100%`
+             on the guest are the belt and braces (W39).
+
+             `t-key` on the lens key remounts on every switch: the kit keeps no
+             lens state cache, exactly like Mission Control. -->
+        <main class="pbhub-canvas">
+          <div class="pbhub-lens" t-if="lensDef and lensDef.Component">
+            <t t-component="lensDef.Component" t-key="'lens-' + state.lens"
+               t-props="lensProps"/>
+          </div>
+
+          <!-- A lens with no component yet is the kit's honest placeholder, and
+               it says so. It is not a door: nothing here navigates, so it cannot
+               be a door that only produces an error (W29). -->
+          <div class="pbhub-lens" t-if="lensDef and !lensDef.Component">
+            <div class="pbhub-empty">
+              <span class="pbhub-empty__ic" t-out="ic(lensDef.icon, 22)"/>
+              <span class="pbhub-empty__t" t-esc="lensDef.label"/>
+              <span class="pbhub-empty__s" t-esc="emptyLensLabel"/>
+            </div>
+          </div>
+
+          <div class="pbhub-lens" t-if="!lensDef">
+            <div class="pbhub-empty">
+              <span class="pbhub-empty__ic" t-out="ic('lock', 22)"/>
+              <span class="pbhub-empty__s">No lens here is available to you.</span>
+            </div>
+          </div>
+        </main>
+
+        <!-- ======================= the right dock =======================
+             A flex SIBLING of the canvas, mounted once beside every lens and
+             never keyed to the lens: the point of an ambient column is that
+             switching lens does not reload it. It carries no z-index (W37). -->
+        <aside class="pbhub-dock" t-if="config.dock">
+          <t t-component="config.dock"/>
+        </aside>
+      </div>
+    </div>
+  </t>
+
+  <!-- ====================================================== back chip -->
+  <t t-name="pb_hub.HubBackChip">
+    <button class="pbhub-back" t-on-click="() => this.goBack()"
+            t-att-title="'Back to ' + label">
+      <span class="pbhub-back__ic" t-out="ic('back', 12)"/>
+      <span class="pbhub-back__tx" t-esc="label"/>
+    </button>
+  </t>
+
+  <!-- ================================================= period tracker -->
+  <t t-name="pb_hub.HubTracker">
+    <button class="pbhub-trk" t-att-class="{ 'is-live': !!props.onClick }"
+            t-att-title="title" t-on-click="() => this.onClick()">
+      <span class="pbhub-trk__l" t-esc="props.label"/>
+      <span class="pbhub-trk__s" t-if="hasStage">
+        <span>· Stage </span><b t-esc="props.stage"/><span>/</span><b t-esc="props.total"/>
+      </span>
+    </button>
+  </t>
+
+</templates>
