@@ -80,6 +80,92 @@
         <div class="pbmc-body">
 
           <div class="pbmc-table">
+
+            <!-- ==== group by KIND, then act on one group ====
+                 The counts are the WEEK's, never the page's. Clicking a kind
+                 filters the table below; the bulk button appears beside the
+                 active one because "review all N" is a decision about a
+                 homogeneous set and the officer has to be able to see the set
+                 first. -->
+            <div class="pbmc-kinds" t-if="kinds.length">
+              <button t-foreach="kinds" t-as="k" t-key="k.kind"
+                      class="pbmc-kind"
+                      t-attf-class="pbmc-kind--{{ k.tone }} {{ state.filterKind === k.kind ? 'is-on' : '' }}"
+                      t-att-disabled="state.busy"
+                      t-on-click="() => this.setKind(k.kind)">
+                <span class="pbmc-kind__n" t-esc="k.open"/>
+                <span class="pbmc-kind__l" t-esc="k.label"/>
+                <span class="pbmc-kind__r" t-if="k.reviewed">
+                  +<t t-esc="k.reviewed"/>
+                </span>
+              </button>
+
+              <div class="pbmc-kinds__spacer"/>
+
+              <button class="pbmc-chipf"
+                      t-att-class="{ 'is-on': state.filterReviewed === 'done' }"
+                      t-att-disabled="state.busy"
+                      t-on-click="() => this.setReviewed('done')"
+                      title="Show only the flags somebody has already waived">
+                <span t-out="ic('check', 11)"/>
+                <span>Reviewed</span>
+              </button>
+              <button class="pbmc-chipf"
+                      t-att-class="{ 'is-on': state.filterReviewed === 'open' }"
+                      t-att-disabled="state.busy"
+                      t-on-click="() => this.setReviewed('open')"
+                      title="Show only the flags still blocking the close">
+                <span>Open</span>
+              </button>
+              <button class="pbmc-chipf pbmc-chipf--clear" t-if="isFiltered"
+                      t-att-disabled="state.busy"
+                      t-on-click="() => this.clearFilters()">Clear</button>
+            </div>
+
+            <!-- The batch. Offered only when a kind is selected and only when
+                 that kind still has OPEN rows — waiving an already-waived flag
+                 is not a decision, and counting it would inflate this number. -->
+            <div class="pbmc-bulk" t-if="activeKind and activeKind.open and state.data.can_review">
+              <span t-out="ic('layers', 13)"/>
+              <span class="pbmc-bulk__t">
+                <t t-esc="activeKind.open"/> open
+                <t t-esc="activeKind.label"/> flag<t t-if="activeKind.open != 1">s</t>
+                on this board.
+              </span>
+              <button class="pbmc-b pbmc-b--out" t-att-disabled="state.busy"
+                      t-on-click="() => this.openBulk(activeKind)">
+                Review all <t t-esc="activeKind.open"/>…
+              </button>
+            </div>
+
+            <!-- What the last batch did. On the SURFACE, not in a toast: the
+                 skipped rows are the half of the answer that matters and a
+                 notification takes them away after four seconds. -->
+            <div class="pbmc-bres" t-if="state.bulkResult">
+              <div class="pbmc-bres__h">
+                <span t-out="ic('check', 13)"/>
+                <b><t t-esc="state.bulkResult.reviewed"/> of
+                   <t t-esc="state.bulkResult.requested"/></b>
+                <span t-esc="state.bulkResult.kind_label"/>
+                <span>flags reviewed.</span>
+                <div class="pbmc-bres__sp"/>
+                <button class="pbmc-bres__x"
+                        t-on-click="() => this.dismissBulkResult()">Dismiss</button>
+              </div>
+              <div class="pbmc-bres__s" t-if="state.bulkResult.skipped.length">
+                <div class="pbmc-bres__st">
+                  <t t-esc="state.bulkResult.skipped.length"/> could not be
+                  reviewed by you:
+                </div>
+                <div t-foreach="state.bulkResult.skipped" t-as="s"
+                     t-key="s.name + s.date" class="pbmc-bres__r">
+                  <b t-esc="s.name"/>
+                  <span t-esc="s.date"/>
+                  <span t-esc="s.reason"/>
+                </div>
+              </div>
+            </div>
+
             <div class="pbmc-empty" t-if="!rows.length">
               <span t-out="ic('checkCircle', 26)"/>
               <b>This week is clean.</b>
@@ -155,10 +241,33 @@
               </tbody>
             </table>
 
-            <div class="pbmc-more" t-if="hasMoreRows">
-              <span t-out="ic('list', 12)"/>
-              <span><t t-esc="moreRows"/> more flagged rows are not shown —
-                    narrow the department or the search to reach them.</span>
+            <!-- ==== paging ====
+                 "Showing 26-50 of 137" — every number off the payload, none of
+                 them `rows.length`. A capped read that reports what it is
+                 holding tells the officer the backlog is shrinking while it
+                 grows (W45). -->
+            <div class="pbmc-pager" t-if="rows.length">
+              <span class="pbmc-pager__t" t-esc="rangeLabel"/>
+              <span class="pbmc-pager__cap" t-if="state.data.table_capped">
+                <span t-out="ic('alert', 11)"/>
+                <span>Only the first <t t-esc="state.data.max_bulk"/> rows of
+                      this selection are reachable — narrow the department or
+                      the search.</span>
+              </span>
+              <div class="pbmc-pager__sp"/>
+              <button class="pbmc-pg" t-att-disabled="!canPrev or state.busy"
+                      t-on-click="() => this.goPage(-1)"
+                      title="Previous page">
+                <span t-out="ic('back', 13)"/>
+              </button>
+              <span class="pbmc-pg__n">
+                <t t-esc="page"/> / <t t-esc="pages"/>
+              </span>
+              <button class="pbmc-pg" t-att-disabled="!canNext or state.busy"
+                      t-on-click="() => this.goPage(1)"
+                      title="Next page">
+                <span t-out="ic('arrow', 13)"/>
+              </button>
             </div>
           </div>
 
@@ -247,6 +356,41 @@
                     t-on-click="() => this.cancelReview()">Cancel</button>
             <button class="pbmc-b pbmc-b--pri" t-att-disabled="state.busy"
                     t-on-click="() => this.confirmReview()">Approve as-is</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= review-all dialog =========================
+           Deliberately wordier than the single-row one. A batch is the action
+           where the officer most needs to be told exactly what they are about
+           to sign, including the part they cannot do. -->
+      <div class="pbmc-scrim" t-if="state.bulkFor"
+           t-on-click="() => this.cancelBulk()">
+        <div class="pbmc-modal" t-on-click.stop="() => {}">
+          <h5>Review all <t t-esc="state.bulkFor.open"/></h5>
+          <p class="pbmc-modal__p">
+            This records that you looked at
+            <b><t t-esc="state.bulkFor.open"/></b> open
+            <b t-esc="state.bulkFor.label"/> flag<t t-if="state.bulkFor.open != 1">s</t>
+            on this department and week, and accepted them. They stop blocking
+            the close; the rows stay on the board with your note.
+          </p>
+          <p class="pbmc-modal__p pbmc-modal__p--warn">
+            Flags on your OWN attendance are refused — that is signing off on
+            your own payslip inputs — and any that are skipped will be listed
+            afterwards.
+          </p>
+          <textarea class="pbmc-ta" rows="3"
+                    placeholder="Note (optional) — the same note is kept with every one of them"
+                    t-att-value="state.bulkNote"
+                    t-on-input="(ev) => this.onBulkNote(ev)"/>
+          <div class="pbmc-modal__a">
+            <button class="pbmc-b pbmc-b--ghost"
+                    t-on-click="() => this.cancelBulk()">Cancel</button>
+            <button class="pbmc-b pbmc-b--pri" t-att-disabled="state.busy"
+                    t-on-click="() => this.confirmBulk()">
+              Review all <t t-esc="state.bulkFor.open"/>
+            </button>
           </div>
         </div>
       </div>

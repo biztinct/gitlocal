@@ -63,7 +63,7 @@ from datetime import datetime, time, timedelta
 import pytz
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -96,6 +96,16 @@ _MAX_ROWS = 200
 # capped list (W45) — a capped read that reports `len(items)` tells the officer
 # the backlog is shrinking while it grows.
 _MAX_FLAGGED = 200
+# One page of the flagged table. The cap above still applies to the whole
+# result set — paging is about what travels per request, not about pretending
+# the backlog is smaller than it is (W45: the TRUE total always rides along).
+_PAGE_SIZE = 25
+# How many rows one "Review all N" click may waive. A bulk action is a promise
+# that a human made ONE decision about a homogeneous set; past a few hundred
+# rows it stops being a decision and starts being a way to empty the board, and
+# it is also a request that will time out halfway and leave the week in a state
+# nobody chose.
+_MAX_BULK = 200
 
 _PLANNED_STATES = ('published', 'completed')
 
@@ -140,45 +150,113 @@ class PbClose(models.AbstractModel):
 
     # =============================================================== the read
     @api.model
-    def get_close_data(self, department_id=False, week_start=False, search=False):
-        """Mockup C's whole payload for one department-week. Pure READ.
+    def _rows_for(self, department_id, week_start, search):
+        """Every flag row of one department-week, with its review state on it.
 
-        There is no write path anywhere in this method or anything it calls —
-        which is what makes it safe for a lens that re-fetches on every context
-        change to call it (W25/W41). Every mutation on this board goes through
-        `pb.wf.lock.lock_day` / `unlock_day` or `pb.close.review_flag`, and all
-        three are reachable only from a click handler.
+        Extracted in P7 so the READ and the BULK WAIVE cannot disagree about
+        what is on the board. The bulk action must waive exactly the rows the
+        officer was looking at; if it rebuilt that set with its own domain, the
+        two would drift the first time either side changed — and the failure
+        would be silent and unrecoverable (rows waived that were never shown).
+        Returns ``(rows, emps, df, dt, days, today, locked_days, stats,
+        totals)``.
         """
-        self._require_officer()
         df = self._monday(week_start)
         dt = df + timedelta(days=6)
         days = [df + timedelta(days=i) for i in range(7)]
         today = fields.Date.context_today(self)
 
         emps, truncated = self._population(department_id, search)
-        Lock = self.env['pb.wf.lock']
-        locked_days = Lock._locked_dates(self.env.company, days)
+        locked_days = self.env['pb.wf.lock']._locked_dates(self.env.company, days)
 
         rows, stats, totals = self._classify(emps, df, dt, days, today)
         reviews = self._reviews(emps, df, dt)
-
-        flagged, reviewed_n, clean_n, missing_n = [], 0, 0, 0
         for row in rows:
             key = (row['employee_id'], row['date'], row['kind'])
             row['reviewed'] = key in reviews
             if row['reviewed']:
                 row['review_note'] = reviews[key]
-                reviewed_n += 1
-            else:
-                if row['kind'] in ('missing_punch', 'missing_checkout'):
-                    missing_n += 1
             row['locked'] = fields.Date.to_date(row['date']) in locked_days
-        clean_n = stats['clean']
         # unreviewed first, then by day, then by name — the officer works down
         # the list and the rows they have already dealt with sink.
         rows.sort(key=lambda r: (r['reviewed'], r['date'], r['name']))
-        flagged = rows[:_MAX_FLAGGED]
+        return {'rows': rows, 'emps': emps, 'truncated': truncated,
+                'df': df, 'dt': dt, 'days': days, 'today': today,
+                'locked_days': locked_days, 'stats': stats, 'totals': totals}
+
+    @api.model
+    def _kind_summary(self, rows):
+        """One line per KIND that actually occurs, with its open and reviewed
+        counts. The order is `_KINDS`' own, not frequency: a summary whose rows
+        move between two visits is a summary nobody can learn.
+
+        This is what makes a bulk action honest. "Review all 41" is a decision a
+        manager can defend only when the 41 are the SAME KIND of thing — 41
+        assorted problems is not one decision, it is a way of emptying a board.
+        """
+        counts = {}
+        for r in rows:
+            c = counts.setdefault(r['kind'], {'open': 0, 'reviewed': 0})
+            c['reviewed' if r['reviewed'] else 'open'] += 1
+        out = []
+        for kind, (label, tone) in _KINDS.items():
+            c = counts.get(kind)
+            if not c:
+                continue
+            out.append({'kind': kind, 'label': label(), 'tone': tone,
+                        'open': c['open'], 'reviewed': c['reviewed'],
+                        'total': c['open'] + c['reviewed']})
+        return out
+
+    @api.model
+    def get_close_data(self, department_id=False, week_start=False, search=False,
+                       kind=False, reviewed=False, page=1):
+        """Mockup C's whole payload for one department-week. Pure READ.
+
+        There is no write path anywhere in this method or anything it calls —
+        which is what makes it safe for a lens that re-fetches on every context
+        change to call it (W25/W41). Every mutation on this board goes through
+        `pb.wf.lock.lock_day` / `unlock_day`, `pb.close.review_flag` or
+        `review_kind`, and all four are reachable only from a click handler.
+
+        `kind`, `reviewed` and `page` are P7 additions and all three are
+        ADDITIVE: a caller that passes none of them gets the first page of the
+        same board it always got. They filter and page the TABLE only — every
+        stat, the kind summary, the checklist and `can_lock` are computed over
+        the whole week, because a filter is a way of looking at a week and must
+        never change what the week IS. (The opposite is the classic version of
+        this bug: filter to one kind, watch "can lock" turn green.)
+        """
+        self._require_officer()
+        ctx = self._rows_for(department_id, week_start, search)
+        rows, df, dt, days = ctx['rows'], ctx['df'], ctx['dt'], ctx['days']
+        today, locked_days = ctx['today'], ctx['locked_days']
+        emps, stats, totals = ctx['emps'], ctx['stats'], ctx['totals']
+
+        reviewed_n = sum(1 for r in rows if r['reviewed'])
+        missing_n = sum(1 for r in rows if not r['reviewed']
+                        and r['kind'] in ('missing_punch', 'missing_checkout'))
+        clean_n = stats['clean']
         open_flags = sum(1 for r in rows if not r['reviewed'])
+        kinds = self._kind_summary(rows)
+
+        # --- the TABLE's own view of that set: filter, then cap, then page ---
+        shown = rows
+        if kind:
+            shown = [r for r in shown if r['kind'] == kind]
+        if reviewed == 'open':
+            shown = [r for r in shown if not r['reviewed']]
+        elif reviewed == 'done':
+            shown = [r for r in shown if r['reviewed']]
+        filtered_total = len(shown)
+        shown = shown[:_MAX_FLAGGED]
+        pages = max(1, (len(shown) + _PAGE_SIZE - 1) // _PAGE_SIZE)
+        try:
+            page = max(1, min(int(page or 1), pages))
+        except (TypeError, ValueError):
+            page = 1
+        flagged = shown[(page - 1) * _PAGE_SIZE:page * _PAGE_SIZE]
+        truncated = ctx['truncated']
 
         # A day that has not happened yet cannot be closed, so it is not part of
         # the denominator, not part of the "N days unlocked" tick, and not part
@@ -189,7 +267,7 @@ class PbClose(models.AbstractModel):
         handoff = self._handoff(emps, df, dt, totals)
         checklist = self._checklist(emps, df, dt, open_flags,
                                     scope_days, locked_days)
-        can_manage = Lock._pb_can_manage()
+        can_manage = self.env['pb.wf.lock']._pb_can_manage()
 
         return {
             'week_start': df.isoformat(),
@@ -212,8 +290,26 @@ class PbClose(models.AbstractModel):
                 'days_total': len(scope_days) or 7,
             },
             'flagged': flagged,
+            # W45, and now three numbers rather than one, because a paged table
+            # can lie in two directions at once. `flagged_total` is the WEEK —
+            # what the stat strip and `can_lock` are about. `filtered_total` is
+            # what the current chips select. `flagged_shown` is what is in this
+            # payload. Reporting only the last one is the classic capped-read
+            # bug: the officer watches the backlog shrink while it grows.
             'flagged_total': len(rows),
+            'filtered_total': filtered_total,
             'flagged_shown': len(flagged),
+            'kinds': kinds,
+            'filter_kind': kind or False,
+            'filter_reviewed': reviewed or False,
+            'page': page,
+            'pages': pages,
+            'page_size': _PAGE_SIZE,
+            # The table caps at `_MAX_FLAGGED` before paging, so a very large
+            # filtered set is reachable only down to that line. Said out loud
+            # rather than left for the officer to infer from a page count.
+            'table_capped': filtered_total > _MAX_FLAGGED,
+            'max_bulk': _MAX_BULK,
             'handoff': handoff,
             'checklist': checklist,
             # `can_lock` — flags == 0, or every one of them reviewed. The CTA is
@@ -670,6 +766,82 @@ class PbClose(models.AbstractModel):
             'kind': kind,
             'note': (note or '').strip() or False,
         }).id
+
+    @api.model
+    def review_kind(self, kind, note=False, department_id=False,
+                    week_start=False, search=False):
+        """"Review all N…" — waive every OPEN flag of ONE kind on this board.
+
+        WHY IT IS PER-KIND AND NOT "REVIEW ALL". A review records that a human
+        looked at a flag and accepted it, and that record is the evidence the
+        week is defensible. One note stretched over forty assorted problems is
+        not evidence of a decision, it is evidence of a button. Forty instances
+        of the SAME problem is a decision somebody can actually make and defend
+        ("the gate reader was down on Tuesday"), which is why the board groups
+        by kind first and the batch is offered per group.
+
+        THE SET IS THE ONE ON SCREEN. It is rebuilt through `_rows_for` — the
+        exact call `get_close_data` makes — rather than from a domain of this
+        method's own. A second opinion about which rows are on the board would
+        waive things the officer never saw, and nothing would ever surface it.
+
+        NOTHING IS SILENTLY SKIPPED. The no-self-review rule is enforced per
+        ROW by the model (a manager may not waive a flag on their own
+        attendance), and it must survive a batch — so each row is created in its
+        own savepoint and a refusal is COLLECTED, not swallowed. The caller gets
+        back what landed and what did not and why; a batch that reports "40
+        reviewed" when 39 landed is worse than one that refuses outright.
+        """
+        self._require_officer()
+        Review = self.env['pb.close.review']
+        # The manager gate is checked ONCE up front so an unauthorised click is
+        # refused before it writes anything — the model re-checks it on every
+        # create anyway (W31: the gate is on the model), so this is the early
+        # exit, never the enforcement.
+        Review._pb_check_review()
+        if kind not in dict(Review._fields['kind'].selection):
+            raise UserError(_("Unknown flag type."))
+
+        ctx = self._rows_for(department_id, week_start, search)
+        targets = [r for r in ctx['rows']
+                   if r['kind'] == kind and not r['reviewed']]
+        if len(targets) > _MAX_BULK:
+            raise UserError(_(
+                "That is %(n)s flags. A single review note can cover at most "
+                "%(cap)s — narrow the department or the search first, so the "
+                "decision you are recording is one somebody could defend.",
+                n=len(targets), cap=_MAX_BULK))
+
+        note = (note or '').strip() or False
+        done, skipped = 0, []
+        for row in targets:
+            try:
+                with self.env.cr.savepoint():
+                    Review.create({
+                        'company_id': (self.env['hr.employee'].sudo().browse(
+                            row['employee_id']).company_id.id
+                            or self.env.company.id),
+                        'week_start': ctx['df'],
+                        'employee_id': row['employee_id'],
+                        'date': fields.Date.to_date(row['date']),
+                        'kind': kind,
+                        'note': note,
+                    })
+                done += 1
+            except (AccessError, UserError, ValidationError) as e:
+                # The message is the MODEL's own words, not a summary of them:
+                # "you cannot waive a flag on your own attendance" is the whole
+                # point of the refusal and paraphrasing it loses it (W40).
+                skipped.append({'name': row['name'], 'date': row['date'],
+                                'reason': str(e)})
+            except Exception:       # pragma: no cover - defensive
+                _logger.exception('pb.close: bulk review row failed')
+                skipped.append({'name': row['name'], 'date': row['date'],
+                                'reason': _("Unexpected error.")})
+        label, _tone = _KINDS.get(kind, (lambda: kind, ''))
+        return {'kind': kind, 'kind_label': label(),
+                'reviewed': done, 'skipped': skipped,
+                'requested': len(targets)}
 
     @api.model
     def lock_days(self, days, reason=False):

@@ -90,14 +90,40 @@ export class PbCloseLens extends Component {
             // the "Approve as-is" dialog: the row it is about, plus its note
             reviewFor: null,
             reviewNote: "",
+            // the "Review all N…" dialog (P7). Holds the KIND summary row it
+            // is about, so the copy can name the kind and the count.
+            bulkFor: null,
+            bulkNote: "",
+            // what a bulk waive actually did — kept on screen until dismissed,
+            // because "37 reviewed, 2 skipped" is the whole point of the
+            // action and a toast that fades takes the second number with it.
+            bulkResult: null,
             // the "Reopen…" dialog: the reason is REQUIRED and RECORDED (W42)
             reopenOpen: false,
             reopenReason: "",
+            // TABLE-only view state. Deliberately not in `wf_context`: the
+            // week, the department and the search are the WORKSPACE's context
+            // and every lens shares them (W4), but "show me the missing punches
+            // on page 2" is one officer's position inside one table and would
+            // be meaningless to the Time lens.
+            filterKind: false,
+            filterReviewed: false,
+            page: 1,
         });
 
         // A context change is a RE-READ, never a write. The subscription is
         // registered in setup and torn down with the component.
-        const off = this.ctxSvc.onChange(() => this.load());
+        //
+        // It also resets the PAGE. A new week or department is a different set
+        // of rows, and "page 4" carried across into a two-page result is how a
+        // table greets an officer with an empty screen and no explanation. The
+        // kind/reviewed chips deliberately survive: those express what the
+        // officer is working on, and re-picking "missing punches" for every
+        // department in turn is exactly the tedium the chips exist to remove.
+        const off = this.ctxSvc.onChange(() => {
+            this.state.page = 1;
+            this.load();
+        });
         onWillUnmount(off);
 
         // W44: consumed by NONCE, so the shell never has to be told, and the
@@ -125,6 +151,9 @@ export class PbCloseLens extends Component {
                 department_id: this.wf.departmentId || false,
                 week_start: this.wf.weekStart,
                 search: this.wf.search || "",
+                kind: this.state.filterKind || false,
+                reviewed: this.state.filterReviewed || false,
+                page: this.state.page,
             });
             this.state.data = data;
             this.state.failed = "";
@@ -174,12 +203,34 @@ export class PbCloseLens extends Component {
         return n === 1 ? _t("1 flagged remains") : _t("%s flagged remain", n);
     }
 
-    get hasMoreRows() {
-        return (this.d.flagged_total || 0) > (this.d.flagged_shown || 0);
+    get kinds() { return this.d.kinds || []; }
+
+    /** "Showing 26–50 of 137" — the honest sentence W45 is about. Every number
+     *  in it comes off the payload; none is `rows.length`. */
+    get rangeLabel() {
+        const total = this.d.filtered_total || 0;
+        const shown = this.d.flagged_shown || 0;
+        if (!total) { return ""; }
+        const from = ((this.d.page || 1) - 1) * (this.d.page_size || 25) + 1;
+        return _t("Showing %(from)s–%(to)s of %(total)s", {
+            from, to: from + shown - 1, total });
     }
 
-    get moreRows() {
-        return (this.d.flagged_total || 0) - (this.d.flagged_shown || 0);
+    get pages() { return this.d.pages || 1; }
+    get page() { return this.d.page || 1; }
+    get canPrev() { return this.page > 1; }
+    get canNext() { return this.page < this.pages; }
+
+    /** Is the table showing something narrower than the week? The chips row
+     *  renders a "clear" affordance only when there is something to clear. */
+    get isFiltered() {
+        return !!(this.state.filterKind || this.state.filterReviewed);
+    }
+
+    /** The kind currently filtered to, as its summary row — the bulk button
+     *  lives beside the chips and needs the count. */
+    get activeKind() {
+        return this.kinds.find((k) => k.kind === this.state.filterKind) || null;
     }
 
     /**
@@ -249,9 +300,95 @@ export class PbCloseLens extends Component {
         }
     }
 
+    // -------------------------------------------------- table view controls
+    // These are WRITES to local view state and reads from the server; they are
+    // click handlers like everything else below (W21.1).
+    setKind(kind) {
+        this.state.filterKind = this.state.filterKind === kind ? false : kind;
+        this.state.page = 1;
+        this.load();
+    }
+
+    setReviewed(mode) {
+        this.state.filterReviewed =
+            this.state.filterReviewed === mode ? false : mode;
+        this.state.page = 1;
+        this.load();
+    }
+
+    clearFilters() {
+        this.state.filterKind = false;
+        this.state.filterReviewed = false;
+        this.state.page = 1;
+        this.load();
+    }
+
+    goPage(delta) {
+        const next = this.page + delta;
+        if (next < 1 || next > this.pages) { return; }
+        this.state.page = next;
+        this.load();
+    }
+
     openReview(row) {
         this.state.reviewFor = row;
         this.state.reviewNote = "";
+    }
+
+    // ------------------------------------------------------- the bulk waive
+    /** Offered per KIND and only for the OPEN ones — waiving a row that is
+     *  already waived is not a decision, and counting it would inflate the
+     *  number in the button. */
+    openBulk(k) {
+        if (!this.d.can_review || !k || !k.open) { return; }
+        this.state.bulkFor = k;
+        this.state.bulkNote = "";
+        this.state.bulkResult = null;
+    }
+
+    cancelBulk() {
+        this.state.bulkFor = null;
+        this.state.bulkNote = "";
+    }
+
+    onBulkNote(ev) { this.state.bulkNote = ev.target.value; }
+
+    dismissBulkResult() { this.state.bulkResult = null; }
+
+    /**
+     * One note, one kind, every open row of it on this board.
+     *
+     * The result is put ON THE SURFACE rather than into a toast: the server
+     * reports what it could not waive (the no-self-review rule is enforced per
+     * row and survives a batch), and a notification that fades after four
+     * seconds is not where you put the sentence "2 of these were yours".
+     */
+    async confirmBulk() {
+        const k = this.state.bulkFor;
+        if (!k || this.state.busy) { return; }
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(MODEL, "review_kind", [], {
+                kind: k.kind,
+                note: this.state.bulkNote.trim(),
+                department_id: this.wf.departmentId || false,
+                week_start: this.wf.weekStart,
+                search: this.wf.search || "",
+            });
+            this.state.bulkFor = null;
+            this.state.bulkNote = "";
+            this.state.bulkResult = res;
+            const n = (res && res.reviewed) || 0;
+            this.notif.add(
+                n === 1 ? _t("1 flag reviewed") : _t("%s flags reviewed", n),
+                { type: (res && res.skipped && res.skipped.length)
+                    ? "warning" : "success" });
+            await this.load();
+        } catch (e) {
+            this._error(e);
+        } finally {
+            this.state.busy = false;
+        }
     }
 
     cancelReview() {

@@ -511,8 +511,22 @@ class PbTeam(models.AbstractModel):
         today = _f.Date.context_today(self)
 
         # --- OT budget vs caps (sum of the team) ---
+        # The UNGATED private variant, for the same reason `_ot_clean_map` uses
+        # it (P4 WP-6) — and this call was missed when that one was fixed.
+        # `get_ot_ceilings` admits only the attendance tier, this facade is read
+        # by HR and payroll managers too, and the `except` below is broad: an
+        # AccessError raised here does not surface anywhere, it simply leaves
+        # `m['ot']` as the empty dict `_blank_metrics` documents. The dock then
+        # renders an OT tile with no numbers in it for exactly the personas the
+        # dock exists for, with nothing in the log and nothing on the console —
+        # W40's failure shape, and W53's shape too: the gate belongs on the
+        # DOOR, and a caller that has already gated itself must use the twin.
+        # This facade IS gated by scope before it gets here — `_build_metrics`
+        # is only ever reached on TEAM scope, whose population is the caller's
+        # own `parent_id` sub-tree (`_my_team`); org scope returns
+        # `_blank_metrics()` without calling this at all.
         try:
-            ceil = self.env['hr.attendance.weekentry'].sudo().get_ot_ceilings(
+            ceil = self.env['hr.attendance.weekentry'].sudo()._ot_ceilings(
                 tids, today)
             mtd = sum((ceil.get(i, {}) or {}).get('mtd', 0) for i in tids)
             cap_m = sum((ceil.get(i, {}) or {}).get('cap_month', 0) for i in tids)
