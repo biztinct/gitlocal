@@ -21,6 +21,7 @@
  */
 import { Component } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 /** The context key a plain pb_hub shell reads its arrival lens from. */
@@ -93,7 +94,10 @@ export class HubBackChip extends Component {
 
     ic(n, s = 12) { return ic(n, s); }
 
-    get label() { return this.props.back.label || "Back"; }
+    get label() { return this.props.back.label || _t("Back"); }
+
+    /** Translated here rather than interpolated in the template. */
+    get title() { return _t("Back to %s", this.label); }
 
     /** A CLICK handler, never a lifecycle hook (W21). */
     goBack() {
