@@ -26,6 +26,12 @@ from . import demo_catalog as cat
 _logger = logging.getLogger(__name__)
 
 
+# Every product advisory that rides `pb.payrun.wizard`'s append-after-super
+# seam. The division path below never calls super, so this list is the ONLY way
+# those advisories reach a demo run — see `_pb_demo_advisories`.
+_ADVISORY_HOOKS = ('_yw_append_exceptions', '_close_append_exceptions')
+
+
 class PbPayrunWizardDemo(models.AbstractModel):
     _inherit = 'pb.payrun.wizard'
 
@@ -39,7 +45,8 @@ class PbPayrunWizardDemo(models.AbstractModel):
         live registry, none of them does — the order is
         `pb_demo -> pb_close -> pb_young_worker -> pb_payrun_wizard`, so a
         division run has never shown either set of warnings. (pb_young_worker's
-        own `test_09` asserts the opposite and is stale; P4 found this.)
+        own `test_09` asserted the opposite; P4 found this and P7 rewrote that
+        test to assert the mechanism below instead.)
 
         The direction of the fix matters. A production module must never depend
         on the demo module to be correct, and adding `pb_demo` to `pb_close`'s
@@ -49,8 +56,20 @@ class PbPayrunWizardDemo(models.AbstractModel):
 
         The generic (salary-structure) path is unaffected either way — it calls
         super, so the wrappers fire normally there.
+
+        THE KNOWN COST OF A HARD-CODED LIST (P7 WP-1's audit, filed not fixed).
+        `_ADVISORY_HOOKS` names the two advisories that exist today. A THIRD
+        module riding the same append-after-super seam would work perfectly on
+        the generic path and be silently absent from every division run, and no
+        test would catch it — the failure is a warning that does not appear.
+        The honest fix is a registry the advisories opt into rather than a
+        tuple the demo maintains, and that is a product-side design change
+        (where does the registry live, who may write to it, what happens on
+        uninstall) rather than something to bolt on inside a demo module. Until
+        then, this constant is the checklist: an advisory added to the seam adds
+        its hook name HERE.
         """
-        for hook in ('_yw_append_exceptions', '_close_append_exceptions'):
+        for hook in _ADVISORY_HOOKS:
             fn = getattr(self, hook, None)
             if fn is None:
                 continue

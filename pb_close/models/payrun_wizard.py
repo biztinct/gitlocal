@@ -12,13 +12,21 @@ was not closed is a PROCESS problem for HR to resolve; refusing to pay people
 over it would be the payroll engine taking a position it has no business taking.
 The worst thing this file may ever do is stay silent.
 
-MRO (§2's warning, same as the young-worker gate)
---------------------------------------------------
+THE TWO PATHS (§2's warning, same as the young-worker gate)
+-----------------------------------------------------------
 `pb_demo` replaces `create_and_compute` / `compute_batch` for its DIVISION path
-WITHOUT calling super, so an MRO-INNER wrapper never runs on the demo world.
-`test_advisory.py::test_the_advisory_is_mro_outer_of_the_demo_path` proves the
-position, with the fix in its failure message. The generic (salary-structure and
-formula-config) path always calls super and is unaffected either way.
+WITHOUT calling super, so an MRO-INNER wrapper never runs on the demo world —
+and measured on the live registry this module IS inner (`pb_demo -> pb_close ->
+pb_young_worker -> pb_payrun_wizard`). The generic (salary-structure and
+formula-config) path always calls super and is unaffected.
+
+The division path is covered instead by `pb_demo._pb_demo_advisories`, which
+calls `_close_append_exceptions` by name — the demo depending on the product
+rather than the product depending on the demo.
+`test_advisory.py::test_the_advisory_reaches_the_demo_division_path` accepts
+either route and reports which one it found. (That test used to be called
+`test_the_advisory_is_mro_outer_of_the_demo_path`; this reference was left
+pointing at the old name and was corrected in P7.)
 
 WHY THE MESSAGE HAS TWO SHAPES
 ------------------------------
