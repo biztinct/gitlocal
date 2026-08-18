@@ -26,9 +26,14 @@
     --bwg-green:        #2E7D4F;
     --bwg-green-soft:   #E3F2E9;
     --bwg-radius:       12px;
-    --bwg-namecol:      248px;
+    // Sized so the whole week PLUS the total column fits the narrowest host
+    // this component has: the Time-hub lens at 1440, which is 1036px wide once
+    // the 60px rail overlay and the 300px ceilings rail are taken out
+    // (216 + 7x104 + 76 = 1020). W39's lesson, applied to the one column P5
+    // added — a summary you have to scroll to is a summary nobody reads.
+    --bwg-namecol:      216px;
     --bwg-daymin:       104px;
-    --bwg-totcol:       84px;
+    --bwg-totcol:       76px;
     --bwg-cellh:        62px;
 
     display: flex;

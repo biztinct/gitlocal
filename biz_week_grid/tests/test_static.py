@@ -121,7 +121,13 @@ class TestWeekGridStatic(TransactionCase):
         the panel would make the tray a decoration and re-introduce the exact
         thing the handover forbids."""
         src = _read('static/src/js/week_cell_editor.js')
-        for banned in ('adapter', 'rpc(', '.save(', 'orm'):
+        # Deliberately NOT the bare word "orm": it is a substring of `format`,
+        # `normalize` and `performance`, so that gate would fail on a future
+        # `performance.now()` and teach the next contributor that the rule is
+        # arbitrary (W48's corollary, one level down — a gate that cries wolf
+        # gets deleted, and then the rule is gone).
+        for banned in ('adapter', 'rpc(', '.save(', 'useService("orm")',
+                       'this.orm', 'env.services.orm'):
             self.assertNotIn(banned, src,
                              'the cell editor must not be able to write (%r)'
                              % banned)
