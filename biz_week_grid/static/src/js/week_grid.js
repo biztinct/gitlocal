@@ -46,6 +46,7 @@
  */
 import { Component, useState, useRef, useEffect, onWillStart, onWillUpdateProps, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { WeekCellEditor } from "@biz_week_grid/js/week_cell_editor";
 
 const cellKey = (rowId, dayISO, mKey) => `${rowId}|${dayISO}|${mKey}`;
@@ -152,18 +153,57 @@ export class WeekGrid extends Component {
     measureName(m) { return m.name || m.label || m.key; }
     measureRate(m) { return m.rate || ""; }
 
+    // ---- strings the TEMPLATE used to hold inside a t-att expression ----
+    // Odoo extracts a template's text nodes and its translatable attributes;
+    // it does NOT reach a string literal inside `t-att-…="expr or 'Locked'"`.
+    // Those read perfectly in English and are simply absent from every .po, so
+    // they stay English forever in a translated UI and nothing reports it.
+    // Anything the user can read therefore comes through a method here.
+    /** The row-identity door's tooltip. */
+    openRowTitle(row) { return _t("Open %s", row.label || ""); }
+    /** A cell nobody may edit — the consumer's reason if it gave one. */
+    cellLockTitle(row, dayISO) {
+        return this.lockReason(row, dayISO, this.primaryKey) || _t("Locked");
+    }
+    get emptyText() { return this.props.emptyText || _t("No rows to show"); }
+    get filterPlaceholder() { return _t("Filter rows…"); }
+    get entriesOnlyTitle() {
+        return _t("Show only rows that have hours this week");
+    }
+    get helpTitle() { return _t("Keyboard shortcuts"); }
+    get revertRowTitle() { return _t("Revert this row"); }
+    get undoTitle() { return _t("Undo (Ctrl/Cmd+Z)"); }
+    /** "3 cells edited · 4.5 h overtime drafted" — built here rather than
+     *  assembled from fragments in the template, because a sentence split
+     *  across `<t>` elements cannot be reordered by a translator. */
+    get trayLabel() {
+        const n = this.dirtyCount;
+        const base = n === 1 ? _t("1 cell edited") : _t("%s cells edited", n);
+        const h = this.dirtyExtraHours;
+        return h ? _t("%(cells)s · %(hours)s h overtime drafted",
+                      { cells: base, hours: h }) : base;
+    }
+    get rowCountLabel() {
+        const n = this.filteredRows.length;
+        return n === 1 ? _t("1 row") : _t("%s rows", n);
+    }
+    get saveLabel() { return _t("Save %s", this.dirtyCount); }
+
     chipTitle(row, dayISO, m) {
         const err = this.cellError(row, dayISO, m.key);
         const who = this.measureName(m) + (m.rate ? ` · ${m.rate}` : "");
         if (err) { return `${who}: ${err}`; }
         if (!this.isEditable(row, dayISO, m.key)) {
-            return this.lockReason(row, dayISO, m.key) || `${who} (locked)`;
+            return this.lockReason(row, dayISO, m.key)
+                || _t("%(measure)s (locked)", { measure: who });
         }
         const bits = [who];
         const st = this.chipState(row, dayISO, m.key);
         if (st) { bits.push(this.stateLabel(st)); }
         const bonus = this.chipBonus(row, dayISO, m.key);
-        if (bonus > 0) { bits.push(`${bonus} h recorded as bonus hours`); }
+        if (bonus > 0) {
+            bits.push(_t("%s h recorded as bonus hours", bonus));
+        }
         return bits.join(" · ");
     }
 
@@ -357,10 +397,12 @@ export class WeekGrid extends Component {
         if (state) { return "draft"; }
         return "";
     }
+    /** The workflow state, in words, for a TITLE or the editor — never inside
+     *  a cell (W64: a cell renders outcomes, the dot carries the state). */
     stateLabel(state) {
         const L = {
-            draft: "Draft", submitted: "Submitted",
-            approved: "Approved", refused: "Refused",
+            draft: _t("Draft"), submitted: _t("Submitted"),
+            approved: _t("Approved"), refused: _t("Refused"),
         };
         return L[state] || state || "";
     }
