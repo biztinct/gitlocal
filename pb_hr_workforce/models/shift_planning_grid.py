@@ -3,6 +3,8 @@
 import json
 from datetime import date, datetime, timedelta
 
+import pytz
+
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
 
@@ -11,6 +13,44 @@ class ShiftPlanningGrid(models.TransientModel):
     """Backend API for the Deputy-style shift planning grid."""
     _name = 'hr.shift.planning.grid'
     _description = 'Shift Planning Grid API'
+
+    # ------------------------------------------------- shift wall clock (P5)
+    @api.model
+    def _pb_shift_tzname(self, employee=None):
+        """The timezone a shift template's hours are expressed IN.
+
+        Employee first — a shift describes that person's morning — then the
+        calendar they work to, then the requesting user, then UTC. Same ladder
+        as `hr.attendance.weekentry._emp_tz`. A junk name degrades to UTC
+        instead of exploding a roster load.
+
+        Lives on the BASE facade on purpose: `pb_schedule._pb_shift_window`
+        exists to predict byte-for-byte what `quick_create_shift` writes, and
+        two copies of this ladder would be two things to drift (W53).
+        """
+        company = (employee.company_id if employee else False) or self.env.company
+        cal = ((employee.resource_calendar_id if employee else False)
+               or company.resource_calendar_id)
+        name = ((employee.tz if employee else False)
+                or (cal.tz if cal else False)
+                or self.env.user.tz or 'UTC')
+        try:
+            pytz.timezone(name)
+        except Exception:
+            name = 'UTC'
+        return name
+
+    @api.model
+    def _pb_shift_utc(self, start_dt, end_dt, employee=None, tzname=False):
+        """Wall-clock (start, end) → the naive UTC pair Odoo actually stores."""
+        tz = pytz.timezone(tzname or self._pb_shift_tzname(employee))
+
+        def conv(dt):
+            if not dt:
+                return dt
+            return tz.localize(dt).astimezone(pytz.UTC).replace(tzinfo=None)
+
+        return conv(start_dt), conv(end_dt)
 
     @api.model
     def _require_officer(self):
@@ -234,6 +274,17 @@ class ShiftPlanningGrid(models.TransientModel):
         else:
             end_dt = datetime.combine(shift_date, datetime.min.time().replace(
                 hour=end_h, minute=end_m))
+
+        # P5 WP-0b: a template hour is a WALL CLOCK ("08:00" means 8 in the
+        # morning where the person works) and `start_datetime` is a
+        # fields.Datetime, i.e. UTC. Storing the wall clock verbatim made an
+        # 08:00 VN shift sit at 15:00 local, which every consumer that DOES
+        # localize then reported wrongly — the roster's own printed times, the
+        # lateness compute, and `_save_reg`'s derived check-in. Converted here,
+        # and byte-identically in `pb.schedule`'s `_pb_shift_window`, which is
+        # the warning engine's prediction of exactly this create.
+        emp = self.env['hr.employee'].browse(employee_id) if employee_id else None
+        start_dt, end_dt = self._pb_shift_utc(start_dt, end_dt, emp)
 
         vals = {
             'shift_template_id': template_id,

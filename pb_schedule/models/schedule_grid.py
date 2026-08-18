@@ -37,6 +37,8 @@ must never depend on, import, or reason about it. Everything here means
 
 from datetime import datetime, timedelta
 
+import pytz
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -61,14 +63,23 @@ class ShiftPlanningGrid(models.TransientModel):
         return self.env.companies.ids or [self.env.company.id]
 
     @api.model
-    def _pb_shift_window(self, template, shift_date):
-        """(start, end) naive datetimes for a template on a day.
+    def _pb_shift_window(self, template, shift_date, tzname=False):
+        """(start, end) UTC-naive datetimes for a template on a day.
 
-        Byte-identical to `quick_create_shift`'s arithmetic (the base facade,
-        :229-237) ON PURPOSE: the warning engine must predict exactly the row
-        the create would write, or it would warn about a shift nobody is about
-        to make. Template hours are wall-clock floats stored naive, which is the
-        existing convention for this model and not P2's to change.
+        Byte-identical to `quick_create_shift`'s arithmetic (the base facade)
+        ON PURPOSE: the warning engine must predict exactly the row the create
+        would write, or it would warn about a shift nobody is about to make.
+
+        P5 WP-0b: template hours are WALL-CLOCK floats ("08:00 means 8 in the
+        morning where the employee is"), and `start_datetime` is an
+        `fields.Datetime`, i.e. UTC by Odoo's contract. Those two facts were
+        never reconciled — both this method and the base facade stored the wall
+        clock verbatim, so on a UTC+7 tenant an 08:00 shift was persisted as
+        08:00 UTC = 15:00 Ho Chi Minh City, which silently mis-answered every
+        consumer that DOES localize (the lateness compute, `_save_reg`'s
+        derived check-in, and now the roster's own printed times). The
+        conversion happens here and in `quick_create_shift`, and nowhere else,
+        so the two stay identical.
         """
         start_h = int(template.start_hour)
         start_m = int(round((template.start_hour % 1) * 60))
@@ -79,17 +90,29 @@ class ShiftPlanningGrid(models.TransientModel):
         end_day = shift_date + timedelta(days=1) if template.is_overnight else shift_date
         end_dt = datetime.combine(
             end_day, datetime.min.time().replace(hour=end_h, minute=end_m))
-        return start_dt, end_dt
+        return self._pb_shift_utc(start_dt, end_dt, tzname=tzname or None)
 
     @api.model
-    def _pb_hhmm(self, dt):
-        """"08:00" — 24h, tabular, unambiguous.
+    def _pb_hhmm(self, dt, tzname=False):
+        """"08:00" — 24h, tabular, unambiguous, in the READER's wall clock.
 
         The legacy grid printed `%I:%M%p` ("8am"), which is fine in an English
         roster and unreadable in a Vietnamese one; every other P0–P1 Workforce
         surface prints HH:MM and the strip's numbers line up under it.
+
+        P5 WP-0b: it also printed the STORED value, which is UTC. On the VN
+        tenant every card on the roster therefore read 01:00 for an 08:00 shift
+        — not a rounding error, a different shift. `tzname` is the employee's
+        (W51 family: pb_today, pb_time_hub and the exception engine all
+        localize before they say a time out loud). Omitted, the value is
+        formatted as given, which is what a caller holding an already-local
+        wall clock wants.
         """
-        return dt.strftime('%H:%M') if dt else ''
+        if not dt:
+            return ''
+        if tzname:
+            dt = pytz.UTC.localize(dt).astimezone(pytz.timezone(tzname))
+        return dt.strftime('%H:%M')
 
     @api.model
     def _pb_template_map(self):
@@ -589,9 +612,14 @@ class ShiftPlanningGrid(models.TransientModel):
         """The warning worker. Pure read; caches are passed in so a 400-shift
         Copy Week is a handful of queries rather than 1 600."""
         warnings = []
-        start, end = self._pb_shift_window(template, day)
+        tzname = self._pb_shift_tzname(employee)
+        start, end = self._pb_shift_window(template, day, tzname)
 
         # --- overlap (the same question `_detect_conflicts` asks) -----------
+        # Both sides are now UTC — the candidate window because
+        # `_pb_shift_window` converts, the stored ones because that is what the
+        # column holds — so the comparison is apples to apples for the first
+        # time, and the printed times are put back into the employee's clock.
         for (o_start, o_end, o_id) in windows.get(employee.id, []):
             if exclude_shift_id and o_id == exclude_shift_id:
                 continue
@@ -601,7 +629,8 @@ class ShiftPlanningGrid(models.TransientModel):
                     'text': _("%(name)s already has a shift that overlaps "
                               "%(a)s–%(b)s on this day.",
                               name=employee.name,
-                              a=self._pb_hhmm(o_start), b=self._pb_hhmm(o_end)),
+                              a=self._pb_hhmm(o_start, tzname),
+                              b=self._pb_hhmm(o_end, tzname)),
                 })
                 break
 
@@ -762,7 +791,8 @@ class ShiftPlanningGrid(models.TransientModel):
                         w['severity'] == 'block' for w in hard) else 'warn',
                 })
                 continue
-            start, end = self._pb_shift_window(template, target_day)
+            start, end = self._pb_shift_window(
+                template, target_day, self._pb_shift_tzname(employee))
             self.env['hr.shift.planning'].create({
                 'employee_id': employee.id,
                 'shift_template_id': template.id,
@@ -999,8 +1029,10 @@ class ShiftPlanningGrid(models.TransientModel):
         return n
 
     @api.model
-    def _pb_shift_card(self, shift, tmap, has_conflict):
+    def _pb_shift_card(self, shift, tmap, has_conflict, tzname=False):
         tmpl = tmap.get(shift.shift_template_id.id) or {}
+        # WP-0b: the card prints the EMPLOYEE's wall clock, not the stored UTC.
+        tzname = tzname or self._pb_shift_tzname(shift.employee_id or None)
         return {
             'id': shift.id,
             'template_id': shift.shift_template_id.id,
@@ -1008,8 +1040,8 @@ class ShiftPlanningGrid(models.TransientModel):
             'template_code': tmpl.get('code', ''),
             'color': tmpl.get('color', 0),
             'shift_type': tmpl.get('shift_type', ''),
-            'start': self._pb_hhmm(shift.start_datetime),
-            'end': self._pb_hhmm(shift.end_datetime),
+            'start': self._pb_hhmm(shift.start_datetime, tzname),
+            'end': self._pb_hhmm(shift.end_datetime, tzname),
             'state': shift.state,
             'planned_hours': round(shift.planned_hours or 0.0, 2),
             'actual_hours': round(shift.actual_hours or 0.0, 2),
