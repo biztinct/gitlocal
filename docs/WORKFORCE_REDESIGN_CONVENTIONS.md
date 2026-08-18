@@ -6,7 +6,8 @@ consolidation, powered by Option C's engine** — per the approved dossier
 
 Every phase handover in `docs/handovers/WORKFORCE_P*.md` references this file. **Opus: when you hit a
 new gotcha or make a binding convention decision, append a numbered W-rule here in the same commit.**
-Ledger closes at **W54** (P4, the final phase). 53 rules, not 54: there is no W32 — see the note below.
+P4 closed the ledger at **W54**; **P6 reopened it** (demo-world sync was a post-P4 closure item) and
+takes it to **W61**. 60 rules, not 61: there is no W32 — see the note below.
 Numbering note: **there is no W32** (it was folded into W33 during a renumber), and the P3a handover
 referred to "W-rules through W34" while the file in fact stopped at W33 — P3a opens the W34 slot, so
 the numbering and the reference agree again from here on.
@@ -674,3 +675,92 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   a rollup row. Same instinct as the "a rest day is neither clean nor flagged"
   and "an approved leave IS the explanation" rules in the same classifier — every
   one of them is the difference between an instrument and an ignored instrument.
+- **W55 A demo world's WALL CLOCK is not in its `resource.calendar`. (Found live in
+  P6, and it cost the phase a whole seeding run.)** The demo company's working
+  calendar is Odoo's stock "Standard 40 hours/week" and carries
+  `tz = Europe/Brussels` — nobody ever set it, because nothing in payroll reads
+  it. `pb_demo`'s workforce seeders nevertheless derived their shift hours from
+  it (`demo_workforce.py`:71-72), so an "08:00" shift in a company called
+  *Payobook Vietnam JSC* was written at 06:00 UTC, i.e. **13:00 in Ho Chi Minh
+  City**, and the afternoon template ended at 03:00 the following local morning
+  — straight across the midnight W51's surfaces key their days on. The visible
+  symptom was worse than the cosmetics and pointed nowhere near the cause: at
+  08:56 Vietnamese time the P6 seeder produced `open_today: 0`, because in
+  Brussels the working day had not started, so the Today board came out EMPTY
+  from the run whose entire purpose was to fill it. Rules: a seeder pins the
+  demo world's timezone to its COUNTRY (`_p6_tz` returns `Asia/Ho_Chi_Minh`
+  outright, with the reasoning in its docstring), and any test of seeded times
+  asserts the LOCAL wall clock, not just that the UTC value is plausible — the
+  Brussels rows passed a "punch is before 16:00 UTC" check without trouble.
+- **W56 Completing a shift DELETES the exception it raised — so a seeder that
+  tidies up the past empties the very queue it exists to fill.** W24 records
+  that `pb.attendance.exception.engine._get_exceptions` only reads
+  `state = 'published'` shifts, and that pb_demo completes every past punched
+  shift. P6 makes the consequence a rule, because the naive shape of "settle
+  the past" is to complete every day that has a punch pair: `late` and
+  `early_leave` are DERIVED from a published shift's stored compliance status,
+  so completing a day that went wrong is indistinguishable from deleting its
+  exception, and Time·Exceptions ends up showing absences only. The seeder
+  therefore carries an explicit `_COMPLETABLE` whitelist of day flavours
+  (on-time, within-grace, long day) and leaves late / early / missing-checkout
+  days published on purpose. General form: when a state transition is also a
+  filter somewhere else, enumerate what may cross it rather than defaulting.
+- **W57 A deliberately OPEN punch costs that employee every LATER punch until it
+  is closed.** Core `hr.attendance` refuses a create while the employee's
+  previous punch is open ("Cannot create new attendance record for X, the
+  employee hasn't checked out since …"). A demo that seeds two or three open
+  punches as `missing_checkout` material therefore cannot also clock those
+  people in today — the batch create is refused, the row-by-row fallback logs
+  three warnings, and the counter says it made something it did not. Two rules
+  came out of it: exclude the still-open population from the next day's punch
+  plan (the resulting story is the CORRECT one — a person whose Friday punch was
+  never closed is an open exception, not somebody who quietly started a new
+  day), and **count what LANDED, never what was intended** — `open_today` is now
+  computed from the created recordset, so a refusal can never be reported as a
+  success.
+- **W58 A rail gate is a FLOOR, not an inventory — never assert `groups_id` by
+  equality.** Four sidebar tests asserted `item.groups_id.ids == [the one
+  group]`, and all four fail on any database where pb_demo is installed:
+  `pb_demo._pb_demo_rewire` (`data/pb_demo_sidebar_access.xml`, a `<function>`
+  that re-runs on every upgrade) deliberately joins "Payobook Demo User" onto
+  every gated rail item, so the live apex database has two ids where the test
+  demanded one. The failure reports which MODULES are installed, not whether the
+  gate survived — and W8's actual requirement is only that the rail never
+  advertise a cockpit the facade would refuse. `assertIn`, matching the
+  pb_wf_kit precedent that already got this right
+  (`test_p0.py::test_payroll_report_keeps_its_payroll_gate`). Fixed in P6 for
+  pb_today (×2), pb_time_hub and pb_schedule.
+- **W59 An idempotency test asserts the WORLD, not the run's creation counts.**
+  P6's first version of "it seeded something" checked
+  `counts['punches'] > 0` — true on a virgin database and false on every
+  correct rerun, which is precisely the state the live demo is in and precisely
+  what the neighbouring idempotency test demands. The two assertions were
+  therefore in direct contradiction, and the one that failed was the one that
+  was wrong. A seeder has two separate contracts and they need two separate
+  shapes: *this run created nothing* (counts, on a rerun) and *the window is
+  full* (`search_count` over the seeded window, always).
+- **W60 Demo ownership is the EMPLOYEE, and that is enough — do not add an
+  `is_demo` column to a satellite table.** P6 seeds shifts, punches, overtime,
+  leaves, trips and corrections, none of which carry `is_demo`. The instinct to
+  add one is wrong twice over: `pb_demo.clean_demo_employees` already unlinks
+  every one of those models BY `employee_id` (attendance cascades), and §5's
+  safety proof is itself phrased over the employee ("count the rows whose
+  employee is NOT a demo employee, before and after"). Adding the column would
+  ALTER six tables, one of which is the punch table, to restate a fact the
+  employee row already carries. What the seeder owes instead is the *never
+  destructive* rule: because it cannot tell a previous run's row from an
+  officer's, it treats every existing row on a seeded day as the officer's and
+  only ever adds. The two exceptions are stated and bounded — closing an open
+  punch on a past day, and completing a settled shift — both of which are what
+  an officer would have done anyway.
+- **W61 `service odoo-server stop` can leave the old process alive, and it holds
+  `ir_ui_view`.** P6 stopped the service, waited 4 s, saw no `odoo-bin` in a
+  racy `pgrep`, and launched a detached `odoo-bin shell`. `systemctl is-active`
+  said *inactive* while PID 2637869 was still running, and the shell died 80 s
+  into its registry load with
+  `psycopg2.errors.LockNotAvailable: canceling statement due to lock timeout —
+  while updating tuple in relation "ir_ui_view"`. Nothing was written; the run
+  simply cost eight minutes and looked like a code failure. The check is
+  `ps -eo pid,cmd | grep "[o]doo-bin"` (the bracket keeps grep from matching its
+  own command line, which is what made the first check lie), repeated until it
+  is empty, and the fix is `sudo kill <PID>` — BY PID, never `pkill -f odoo-bin`.
