@@ -301,6 +301,48 @@ class TestWorkforceCurrent(TransactionCase):
             {k: (v['start'], v['end'], v['co'], v['draft']) for k, v in a.items()},
             {k: (v['start'], v['end'], v['co'], v['draft']) for k, v in b.items()})
 
+    def test_the_demo_employees_carry_their_own_countrys_timezone(self):
+        """`pb.today._tzinfo` is `emp.tz or the VIEWER's tz or UTC`, and a demo
+        employee had no tz at all — so a correctly-seeded 08:00 Vietnamese shift
+        printed as "03:00–11:00" for a European admin. The same field is what
+        pb.close / pb.wf.lock / the exception engine key the employee-local day
+        on (W51), so a blank one also made them disagree with this seeder."""
+        blank = self.env['hr.employee'].sudo().with_context(
+            active_test=False).search_count([
+                ('is_demo', '=', True), ('company_id', '=', self.company.id),
+                '|', ('tz', '=', False), ('tz', '=', '')])
+        self.assertFalse(
+            blank, '%s demo employees still have no timezone — every Workforce '
+                   'surface would render them in the viewer\'s zone' % blank)
+        self.assertEqual(self.cohort[0].tz, 'Asia/Ho_Chi_Minh')
+
+    def test_an_uneventful_day_is_worth_exactly_its_planned_hours(self):
+        """Otherwise the Close board fills with rollup noise.
+
+        `hr.shift.template.duration` is PAID time; `end_hour − start_hour`
+        includes the unpaid break. A seeder that builds the shift from
+        `end_hour` overshoots by an hour every day — inside the per-punch
+        tolerance, outside the weekly one — and every person in the cohort
+        arrives with a "Week outside tolerance" row. Seen live before the fix.
+        """
+        tz = self.gen._p6_tz(self.company)
+        specs = self.gen._p6_specs(self.cohort, tz, self.today, self.start,
+                                   self.end, {})
+        minors = set(_MINORS)
+        checked = 0
+        for (eid, d), spec in specs.items():
+            emp = self.cohort.browse(eid)
+            if emp.name in minors:
+                continue
+            planned = spec['tpl'].duration
+            span = (spec['end'] - spec['start']).total_seconds() / 3600.0
+            self.assertAlmostEqual(
+                span, planned, places=2,
+                msg='the shift on %s spans %.2f h but is worth %.2f h — every '
+                    'clean day would post a variance' % (d, span, planned))
+            checked += 1
+        self.assertTrue(checked, 'no adult shift in the plan to check')
+
     def test_the_mix_is_realistic_rather_than_uniform(self):
         """A board where everybody is on time teaches nothing. The wheel has to
         produce absences, forgiven lateness and real lateness."""
