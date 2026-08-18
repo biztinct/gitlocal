@@ -169,12 +169,19 @@ class PbEssWorkforce(models.AbstractModel):
                     'shifts': cards,
                     'leave': leave_days.get(iso, ''),
                 })
+            hours = round(sum(c['hours'] for d in days for c in d['shifts']), 1)
+            n_pending = sum(1 for d in days for c in d['shifts'] if c['can_ack'])
             weeks.append({
                 'week_start': wstart.isoformat(),
                 'label': _('This week') if w == 0 else _('Next week'),
                 'days': days,
-                'hours': round(sum(c['hours'] for d in days for c in d['shifts']), 1),
-                'pending': sum(1 for d in days for c in d['shifts'] if c['can_ack']),
+                # W80.2 — a SENTENCE is one msgid. Assembled here rather than
+                # from `<t>` fragments in the template, because a translator
+                # cannot reorder fragments and word order is exactly what
+                # differs between English and Vietnamese.
+                'hours_label': _('%(hours)s h scheduled', hours=hours),
+                'confirm_label': _('Confirm week (%(count)s)', count=n_pending),
+                'pending': n_pending,
             })
 
         return {
@@ -183,6 +190,8 @@ class PbEssWorkforce(models.AbstractModel):
             'next_week': (first + timedelta(days=7)).isoformat(),
             'weeks': weeks,
             'pending': pending,
+            'pending_label': (_('%(count)s shifts still to confirm', count=pending)
+                              if pending else _('Everything confirmed')),
             'employee': {'id': emp.id, 'name': emp.name or ''},
         }
 
@@ -203,6 +212,8 @@ class PbEssWorkforce(models.AbstractModel):
             'start': self._hhmm(shift.start_datetime, tzinfo),
             'end': self._hhmm(shift.end_datetime, tzinfo),
             'hours': round(shift.planned_hours or 0.0, 2),
+            'hours_label': _('%(hours)s h',
+                             hours=round(shift.planned_hours or 0.0, 2)),
             'state': shift.state,
             'ack_state': shift.ack_state,
             'acked_at': self._hhmm(shift.acked_at, tzinfo) if shift.acked_at else '',
@@ -386,6 +397,10 @@ class PbEssWorkforce(models.AbstractModel):
                     'id': t.id, 'name': t.name,
                     'allocated': round(a, 2), 'taken': round(k, 2),
                     'balance': round(a - k, 2),
+                    'balance_label': _('%(balance)s days left',
+                                       balance=round(a - k, 2)),
+                    'used_label': _('%(taken)s of %(allocated)s days used',
+                                    taken=round(k, 2), allocated=round(a, 2)),
                     'low': (a - k) <= 2.0 and a > 0,
                 })
 

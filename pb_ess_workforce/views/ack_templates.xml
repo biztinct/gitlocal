@@ -18,13 +18,11 @@
               <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">calendar</t><t t-set="isz" t-value="28"/></t>
             </div>
             <h1>Confirm your shift</h1>
-            <p class="pbew-ackcard__sub" t-if="shift['who']">
-              Hi <t t-esc="shift['who']"/> — please confirm you have seen this shift.
-            </p>
+            <p class="pbew-ackcard__sub" t-if="shift['who']" t-esc="greeting"/>
             <div class="pbew-ackcard__shift">
               <div class="d"><t t-esc="shift['day']"/></div>
               <div class="t"><t t-esc="shift['start']"/> – <t t-esc="shift['end']"/></div>
-              <div class="n"><t t-esc="shift['name']"/> · <t t-esc="shift['hours']"/> h</div>
+              <div class="n"><t t-esc="shift['name']"/> · <t t-esc="shift['hours_label']"/></div>
             </div>
             <form t-attf-action="/work/ack/#{token}/confirm" method="post">
               <button type="submit" class="pbme-btn pbme-btn--primary pbme-btn--block">
@@ -54,7 +52,7 @@
               <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">check-circle</t><t t-set="isz" t-value="28"/></t>
             </div>
             <h1>Already confirmed</h1>
-            <p class="pbew-ackcard__sub">You confirmed this shift on <t t-esc="shift['acked_on']"/>. There is nothing left to do.</p>
+            <p class="pbew-ackcard__sub" t-esc="already"/>
           </t>
 
           <!-- ==== the shift has started ==== -->
@@ -97,7 +95,7 @@
   <!-- ============================================================= -->
   <template id="ack_mail_body" name="Shift published email body">
     <div style="font-family: Inter, Arial, sans-serif; color: #1F2333; font-size: 14px; line-height: 1.55;">
-      <p>Hi <t t-esc="who"/>,</p>
+      <p t-esc="greeting"/>
       <p>Your shift has been published:</p>
       <table style="border-collapse: collapse; margin: 14px 0;">
         <tr><td style="padding: 4px 14px 4px 0; color: #6B7280;">Day</td><td style="padding: 4px 0; font-weight: 700;"><t t-esc="day"/></td></tr>
