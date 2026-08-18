@@ -77,12 +77,55 @@ class TestWorkforceCurrent(TransactionCase):
                             '%s punched at %s UTC — outside the safe window'
                             % (a.employee_id.name, a.check_in))
 
+    def test_the_demo_world_runs_on_vietnamese_office_hours(self):
+        """The bug this test exists for cost a whole live run: the demo
+        company's `resource.calendar` is Odoo's stock 40-hour one and carries
+        `tz = Europe/Brussels`, so a seeder that trusts it puts an "08:00" shift
+        at 13:00 in Ho Chi Minh City — and at 09:00 Vietnamese time the Today
+        board's live population is still empty, because in Brussels nobody has
+        started. `_p6_tz` therefore pins the country, and this asserts it stays
+        pinned even if somebody "fixes" it back to the calendar."""
+        tz = self.gen._p6_tz(self.company)
+        eight_local = self.gen._p6_utc(tz, self.today, 8.0)
+        self.assertEqual(
+            eight_local.hour, 1,
+            '08:00 in the demo world must be 01:00 UTC (Vietnam, UTC+7) — got '
+            '%s, which means the seeder is reading a foreign calendar tz'
+            % eight_local)
+        # Every shift the PLAN describes must begin and end on its own local
+        # day — a foreign row somebody else created is not this test's business.
+        specs = self.gen._p6_specs(self.cohort, tz, self.today, self.start,
+                                   self.end, {})
+        for (_eid, d), spec in specs.items():
+            for label, dt in (('start', spec['start']), ('end', spec['end'])):
+                self.assertEqual(
+                    (dt + timedelta(hours=7)).date(), d,
+                    'the planned %s for %s lands on another local day — a '
+                    'punch against it would be keyed to the wrong day (W51)'
+                    % (label, d))
+
     # --------------------------------------------------------------- content
-    def test_it_seeded_something_on_every_lens_it_promises(self):
-        c = self.counts
-        self.assertGreaterEqual(c['cohort'], 40, 'cohort too small to look real')
-        self.assertGreater(c['shifts'] + c['drafts'], 0)
-        self.assertGreater(c['punches'], 0)
+    def test_it_leaves_a_populated_world_behind(self):
+        """Asserted on the WORLD, not on this run's creation counts.
+
+        The counts are zero on any database that is already current — which is
+        the normal state of the live demo and exactly what the idempotency test
+        below demands — so asserting them here would make a correct rerun fail.
+        What must hold after the seeder returns is that the window is full.
+        """
+        self.assertGreaterEqual(self.counts['cohort'], 40,
+                                'cohort too small to look real')
+        Shift = self.env['hr.shift.planning'].sudo()
+        Att = self.env['hr.attendance'].sudo()
+        self.assertGreater(
+            Shift.search_count([('employee_id', 'in', self.cohort.ids),
+                                ('date', '>=', self.start),
+                                ('date', '<=', self.end)]), 100,
+            'the roster is empty — every Schedule/Time lens would be blank')
+        self.assertGreater(
+            Att.search_count([('employee_id', 'in', self.cohort.ids),
+                              ('check_in', '>=', self.start)]), 100,
+            'nobody punched — the Week Grid and Close board would be blank')
 
     def test_today_has_a_live_on_shift_population(self):
         """The Today board's whole reason to exist is the open punch."""
