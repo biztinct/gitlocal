@@ -131,3 +131,46 @@
         .pbew-nav__i { padding: 7px 11px; font-size: 12px; }
     }
 }
+
+// ---------------------------------------------------------------------------
+// The login-less acknowledgment page (/work/ack/<token>).
+//
+// This is the only surface in the module a STRANGER can land on, and it is the
+// one an employee opens on a phone from an SMS-shaped email. One card, one
+// decision, nothing else on the page — no navigation, no branding beyond the
+// name, and nothing that could be mistaken for a way into the backend.
+// ---------------------------------------------------------------------------
+.pbme.pbew.pbew-ackpage {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 72vh; padding: 28px 16px;
+
+    .pbew-ackcard {
+        width: 100%; max-width: 420px; text-align: center;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh-lg);
+        padding: 34px 28px 30px;
+
+        h1 { font-size: 21px; font-weight: 800; margin: 0 0 6px; }
+    }
+    .pbew-ackcard__brand {
+        font-size: 11px; font-weight: 800; letter-spacing: .16em;
+        text-transform: uppercase; color: var(--pbim-primary-strong);
+        margin-bottom: 18px;
+    }
+    .pbew-ackcard__ic {
+        width: 66px; height: 66px; border-radius: 50%;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        display: grid; place-items: center; margin: 0 auto 16px;
+        &--ok { background: var(--pbim-green-soft); color: var(--pbim-green); }
+        &--warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    }
+    .pbew-ackcard__sub { color: var(--pbim-muted); font-size: 13.5px; margin: 0 0 18px; }
+    .pbew-ackcard__shift {
+        background: var(--pbim-bg); border: 1px solid var(--pbim-line-2);
+        border-radius: var(--pbim-r-sm); padding: 16px; margin-bottom: 20px;
+        .d { font-size: 13px; font-weight: 700; color: var(--pbim-muted); }
+        .t { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 3px 0; }
+        .n { font-size: 12.5px; color: var(--pbim-muted); }
+    }
+    .pbew-ackcard__fine { font-size: 11.5px; color: var(--pbim-muted); margin: 12px 0 0; }
+}

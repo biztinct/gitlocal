@@ -69,6 +69,7 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
         'security/ir.model.access.csv',
         'security/pb_ess_workforce_security.xml',
         'views/portal_templates.xml',
+        'views/ack_templates.xml',
     ],
     'assets': {
         # The same LEAN frontend bundle pb_me_portal established: pbim tokens
