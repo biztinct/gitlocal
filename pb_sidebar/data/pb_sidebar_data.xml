@@ -79,7 +79,13 @@
         <field name="icon">download</field><field name="sequence">40</field>
         <field name="action_xmlid"></field>
         <field name="action_tag">pb_import</field>
-        <field name="match_models">hr.payroll.import.batch,hr.integration.connector</field>
+        <!-- IA audit A3: `hr.integration.connector` used to be claimed HERE as
+             well as by `item_integrations` (Setup). The rail's active-item index
+             is FLAT and last-writer-wins (`pb_sidebar.js::_buildIndex`), so with
+             both claiming the model the highlight went to whichever item was
+             indexed last — Integrations — and opening a connector lit up the
+             wrong section. Import keeps the model it actually owns. -->
+        <field name="match_models">hr.payroll.import.batch</field>
         <field name="match_action_tags">pb_import</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_integration_user'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
@@ -211,15 +217,23 @@
         <field name="action_xmlid">base.action_res_company_form</field>
         <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
     </record>
+    <!-- IA audit A2: ADMIN sequences.
+         `pb_audit.item_audit_console` also declares sequence 30 in this section,
+         from another module — so the ORM's `sequence, id` order made the rail's
+         ADMIN block depend on which module happened to be installed first, which
+         is exactly what W8/W18 forbid. pb_audit keeps 30 (it is the item a user
+         reads as belonging between Companies and the configuration tools); the
+         two navigation-configuration items move up into a 50+ band, which also
+         keeps them below `pb_tenants.item_tenants` (40). -->
     <record id="item_menu_cfg" model="pb.sidebar.item">
         <field name="section_id" ref="sec_admin"/><field name="name">Menu &amp; Sidebar</field>
-        <field name="icon">compass</field><field name="sequence">30</field>
+        <field name="icon">compass</field><field name="sequence">50</field>
         <field name="action_xmlid">pb_sidebar.action_pb_sidebar_item</field>
         <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
     </record>
     <record id="item_section_cfg" model="pb.sidebar.item">
         <field name="section_id" ref="sec_admin"/><field name="name">Sidebar Sections</field>
-        <field name="icon">layers</field><field name="sequence">35</field>
+        <field name="icon">layers</field><field name="sequence">55</field>
         <field name="action_xmlid">pb_sidebar.action_pb_sidebar_section</field>
         <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
     </record>
@@ -267,7 +281,14 @@
         <field name="section_id" ref="sec_setup"/><field name="name">Employee/Contract Mapping</field>
         <field name="icon">database</field><field name="sequence">70</field>
         <field name="action_xmlid">pb_hr_payroll_formula.action_payslip_import_mapping_wizard</field>
-        <field name="active">False</field>
+        <!-- IA audit A1: this used to read `<field name="active">False</field>`,
+             i.e. the STRING "False", which Odoo's Boolean converter coerces to
+             True — so the item the comment above says was retired has been on the
+             SETUP rail ever since. `eval` is what makes a boolean a boolean.
+             Sequence 70 is kept rather than parked in W18's 900 band: nothing
+             else in SETUP claims it, and W18 leaves non-colliding retirements
+             where they are. -->
+        <field name="active" eval="False"/>
     </record>
 
     <!-- ============ Workforce ============
