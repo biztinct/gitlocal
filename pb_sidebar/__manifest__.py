@@ -14,7 +14,10 @@ Payobook payroll suite. Native Odoo top menu sections are hidden; the systray
 - Role-aware via standard Odoo security groups (groups_id)
 - Lucide SVG icons, Indigo solid theme (pairs with pb_theme)
 ''',
-    'version': '19.0.2.1.0',
+    # 19.0.2.2.0 — IA redesign Cycle 1: the three audit fixes. The bump is what
+    # makes migrations/19.0.2.2.0/pre-migrate.py run at all (Odoo only runs
+    # migration scripts on a version CHANGE).
+    'version': '19.0.2.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
