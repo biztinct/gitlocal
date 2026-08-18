@@ -1034,3 +1034,140 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   "The browser is already running for …" and then orphans a browser of its own
   on every call — a dedicated `--user-data-dir` per session (and a driver of
   your own over `/json/list` + the CDP websocket) is worth the twenty lines.
+- **W76 "Retire, never delete" has a shelf life, and it expires the day the
+  thing it points at stops existing.** W18 was right for five phases: a
+  replaced cockpit kept its client action and its rail record with
+  `active = False`, so the decision stayed reversible and a bookmark kept
+  working. P7 deleted the five Gen-0 surfaces themselves, and at that moment
+  every one of those "reversible" records became the opposite of what the rule
+  intended — an `ir.actions.client` whose tag nothing registers answers a
+  bookmark with a broken screen, an `ir.ui.menu` whose action is gone is not a
+  dead link but a module that will not INSTALL (Odoo resolves `action=` at load
+  time), and a retired `pb.sidebar.item` whose `action_xmlid` no longer
+  resolves is a button an admin can re-enable into nothing.
+  Rules: (1) a retirement record and the surface it points at have exactly one
+  lifetime — delete them in the same commit or neither; (2) the caller audit
+  runs at IMPLEMENTATION time, not at design time, and a LIVE caller outside
+  the phase's scope means keep-and-report, never a cascade into a module you
+  were not asked to touch (P7 kept `hr.workforce.dashboard` for exactly this
+  reason: `pb_business_trip` inherits it); (3) a gate that asserted the OLD
+  rule gets its reversal written at the site, not silently flipped — six gates
+  changed in P7 and each carries the paragraph explaining why the thing it used
+  to demand is now forbidden, because a gate whose history is invisible is one
+  the next reader will "fix" back.
+- **W77 A program can pin a timezone in two places and still be wrong, because
+  the WRITE path resolves a third one first.** W55 pinned Vietnam for
+  everything `pb_demo` writes; P6 stamped `Asia/Ho_Chi_Minh` on 4 502 demo
+  employees. Neither reached `hr.attendance.weekentry._emp_tz`, whose order is
+  `emp.resource_calendar_id or company.resource_calendar_id` FIRST, employee
+  second, viewer third — and the demo company shipped Odoo's stock 40-hour
+  calendar, which carries `Europe/Brussels`. So every seeded row was in the
+  right place and every HAND-ENTERED one was five hours out: typing "8" into a
+  Week Grid cell wrote 08:00 Brussels = 13:00 in Ho Chi Minh City, straight
+  past the UTC-day rule (W51) the whole seeder is built around.
+  Rules: (1) when a value has a RESOLUTION CHAIN, the fix belongs at the first
+  hop the chain actually takes, and you find that hop by reading the resolver,
+  not by fixing the field you already know about; (2) assert it THROUGH the
+  facade (`_emp_tz(emp)`), never on the field — the resolution order is the
+  thing that was wrong, so a test on `emp.tz` passes while the bug is live;
+  (3) no fixture suite can see this class of bug, because a fixture calendar is
+  whatever the test made it — it is found on live data or not at all.
+- **W78 A test guarded by `if <optional module> is installed`, on machines that
+  never install it, is a test that cannot fail.** `pb_young_worker`'s test_09
+  asserted `mro.index(pb_young_worker) < mro.index(pb_demo)` inside
+  `if demo is not None`. The claim was false (the real order is
+  `pb_demo -> pb_close -> pb_young_worker -> pb_payrun_wizard`; none of the four
+  declares a dependency on another, so it is Odoo's `(depth, name)` accident),
+  and CI installs pb_young_worker WITHOUT pb_demo — so a green test asserted a
+  false statement about a configuration it had never seen, for three phases,
+  while two module docstrings quoted it as proof.
+  Rules: (1) a conditional guard around the ONLY assertion in a test is a smell
+  — either the dependency is real and the test should skip loudly, or the
+  assertion belongs somewhere it always runs; (2) never assert MRO POSITION,
+  assert the MECHANISM: "the wrapper is registered on both seams", "the generic
+  path appends after super and the run's own rows survive", "the demo hook
+  produces our rows", "an injected failure does not reach the run" — four tests
+  that each fail for one reason, none of which is an index nothing declares;
+  (3) an ordering that no `depends` expresses is not a guarantee, and code that
+  needs one must create it (an explicit hook call) rather than document it.
+- **W79 A silent fallback makes a DEAD entry indistinguishable from an ABSENT
+  one, so behaviour alone can never gate it.** `hr.flow.wizard.
+  get_tertiary_action` maps ~100 route keys to xmlids and returns
+  `act_window_close` both for an unknown key and for an xmlid that will not
+  resolve. That is correct — the map names optional modules, and a launcher
+  that raised on a database missing one would be worse — but it means a tile
+  pointing at a DELETED action renders normally and answers a click with
+  nothing: no traceback, no console message, nothing in the log. Five of them
+  survived that way until P7 went looking.
+  Rules: (1) any resolver with a swallowing fallback needs a SOURCE gate beside
+  its behaviour tests, because only reading the file can distinguish "did
+  nothing because absent" from "did nothing because wrong"; (2) the behaviour
+  test compares the action's IDENTITY against `env.ref(expected).id`, never
+  just "a dict came back"; (3) when a key is remapped, the user-facing LABEL
+  moves with it — a tile still called "Live Attendance" that opens Today is a
+  broken promise even though the click works.
+- **W80 Odoo's translation extractor reads text nodes and translatable
+  attributes; it does not reach a string literal inside a `t-att` EXPRESSION.**
+  `t-esc="x or 'Locked'"`, `t-attf-title="Open {{ row.label }}"`,
+  `props.emptyText || 'No rows to show'` — six of these in `biz_week_grid`.
+  They read perfectly in English, never appear in any `.po`, and stay English
+  forever in a translated UI with nothing to report them. The visible half of
+  the module was translatable and the invisible half was not.
+  Rules: (1) anything a user can read comes through `_t` in JS or a plain text
+  node — an expression is not a place for a user-facing string; (2) a SENTENCE
+  is one msgid: "3 cells edited · 4.5 h overtime drafted" is built by one getter,
+  not assembled from `<t>` fragments, because a translator cannot reorder
+  fragments and word order is exactly what differs; (3) keyboard glyphs (Tab,
+  Esc, ⌫, Ctrl/⌘ D) are NOT translated — they are what is printed on the key;
+  (4) `msgfmt --check-format` is the gate for placeholder drift, and named
+  placeholders (`%(cells)s`) are what let the order change at all.
+- **W81 A committed test suite that nothing executes is worse than no suite:
+  it costs maintenance and reads as coverage.** `biz_week_grid`'s 23 hoot cases
+  shipped in P5, registered in `web.assets_unit_tests`, and `-u` never built
+  that bundle — compiled, served, never run. The trap in fixing it is sharper
+  than the gap: hoot's URL filter is a HASH of the suite descriptor, so a
+  descriptor that matches nothing filters EVERYTHING out, hoot runs zero tests
+  and prints "[HOOT] Test suite succeeded". A green gate proving nothing is the
+  one outcome worse than the original silence.
+  Rules: (1) pair a browser runner with a STATIC gate that always runs — the
+  suite still exists, is still in the unit bundle, still holds cases, still has
+  unique names — because that half catches a suite silently ceasing to exist;
+  (2) make the static gate a FLOOR (">= 15"), never a count, or every added case
+  is a failing build; (3) derive the hash's input from the file's real path and
+  assert it equals the constant the runner uses, so descriptor drift is loud
+  rather than green; (4) tag the browser runner out of the standard run when the
+  deploy host has no Chrome — a gate that errors on every deploy is a gate the
+  next person disables — and write the manual `/web/tests` ritual down instead.
+- **W82 A filter is a way of LOOKING at a week; it must never change what the
+  week IS — and a batch must waive exactly the rows that were on screen.** Both
+  halves of P7's Close work are the same mistake in two costumes. If the kind
+  chip narrowed the stats, an officer could filter to one kind and watch "Lock
+  week" turn green. If `review_kind` rebuilt its target set from a domain of its
+  own instead of the read model's `_rows_for`, it would waive rows nobody saw
+  and nothing would ever surface it.
+  Rules: (1) stats, checklist and `can_lock` are computed over the whole scope;
+  only the TABLE is filtered and paged, and the payload carries three numbers
+  (scope total, filtered total, page size) because a paged table can lie in two
+  directions at once (W45); (2) the read and the bulk write share ONE set
+  builder — a second opinion about what is on the board is a silent data bug;
+  (3) a per-row gate must survive a batch: each row in its own savepoint,
+  refusals COLLECTED with the model's own words and reported to the caller, so
+  "37 reviewed, 2 skipped" is possible — a batch reporting 40 when 39 landed is
+  worse than one that refuses; (4) the batch is per KIND, because one note over
+  forty assorted problems is not a decision anybody can defend; (5) past a cap
+  it REFUSES rather than truncating — 200 of 300 leaves a board that looks
+  almost clear with nobody knowing which hundred were left.
+- **W83 `service odoo-server stop` can leave the process running, and systemd
+  says so in one line nobody reads.** Twice during P7's deploy the journal
+  logged `odoo-server.service: Unit process NNNN (python3) remains running
+  after unit stopped` — `systemctl is-active` reported *inactive*, port 8069
+  was closed, and an odoo-bin was still up holding database connections. That
+  is not a foreign run and it is not a live server: it is an orphan, and it is
+  exactly W61's kill-by-PID case. The way to tell the three apart, in order:
+  a FOREIGN run has `-u`/`-i` in its command line (wait, never kill — W68); a
+  LIVE server is listening on 8069; an ORPHAN is neither.
+  Corollary, learned the same afternoon: `ps -eo pid,cmd | grep odoo-bin | grep
+  -E " -u "` matches YOUR OWN ssh command line when the command you are about
+  to run contains `-u`, so the foreign-run check reports a collision with
+  itself and aborts the deploy. Put the check in a script FILE on the server
+  and run that, rather than passing it as an ssh argument.
