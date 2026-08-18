@@ -50,14 +50,37 @@
       <!-- body: grid + ceiling rail -->
       <div class="wfg-body">
         <div class="wfg-main">
+          <!-- ONE tray (§3.6): the cockpit's submit/approve actions are handed
+               to the grid's tray slot rather than drawn in a second bar under
+               it, so the whole screen has a single commit point. -->
           <WeekGrid t-key="'wg'" adapter="adapter" params="_gridParams" paramsKey="paramsKey"
                     showFilter="true"
                     emptyText="emptyText"
+                    showTray="hasQueue"
                     onData="_h.onData"
                     onDirty="_h.onDirty"
                     onFocus="_h.onFocus"
                     onSaved="_h.onSaved"
-                    onRowOpen="_h.onRowOpen"/>
+                    onRowOpen="_h.onRowOpen"
+                    editorInfo="_h.editorInfo">
+            <t t-set-slot="tray">
+              <span class="wfg-tray__info" t-if="state.summary.draft_count > 0">
+                <strong t-esc="state.summary.draft_count"/> OT request<t t-if="state.summary.draft_count != 1">s</t>
+                · <t t-esc="fmtH(state.summary.draft_hours)"/> h drafted
+              </span>
+              <span class="wfg-tray__info wfg-tray__info--muted" t-if="state.summary.pending_count > 0">
+                <t t-esc="state.summary.pending_count"/> awaiting approval
+              </span>
+              <button class="wfg-btn wfg-btn--ghost" t-if="state.summary.pending_count > 0"
+                      t-on-click="() => this.approvePending()">
+                Approve <t t-esc="state.summary.pending_count"/>
+              </button>
+              <button class="wfg-btn wfg-btn--submit" t-if="state.summary.draft_count > 0"
+                      t-on-click="() => this.submitAll()">
+                Submit all
+              </button>
+            </t>
+          </WeekGrid>
         </div>
 
         <div class="wfg-rail" t-if="state.railOpen">
@@ -120,25 +143,6 @@
         </div>
       </div>
 
-      <!-- submit / approve tray -->
-      <div class="wfg-tray" t-if="state.summary.draft_count > 0 or state.summary.pending_count > 0">
-        <div class="wfg-tray__info" t-if="state.summary.draft_count > 0">
-          <strong t-esc="state.summary.draft_count"/> OT request<t t-if="state.summary.draft_count != 1">s</t>
-          · <t t-esc="fmtH(state.summary.draft_hours)"/> h drafted
-        </div>
-        <div class="wfg-tray__info wfg-tray__info--muted" t-if="state.summary.pending_count > 0">
-          <t t-esc="state.summary.pending_count"/> awaiting approval
-        </div>
-        <div class="wfg-tray__spacer"/>
-        <button class="wfg-btn wfg-btn--ghost" t-if="state.summary.pending_count > 0"
-                t-on-click="() => this.approvePending()">
-          Approve <t t-esc="state.summary.pending_count"/>
-        </button>
-        <button class="wfg-btn wfg-btn--primary" t-if="state.summary.draft_count > 0"
-                t-on-click="() => this.submitAll()">
-          Submit all
-        </button>
-      </div>
     </div>
   </t>
 

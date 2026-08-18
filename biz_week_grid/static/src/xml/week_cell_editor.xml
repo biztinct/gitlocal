@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==== the cell editor: one focused editing state, in the overlay ==== -->
+  <t t-name="biz_week_grid.WeekCellEditor">
+    <div class="bwgx" t-ref="root" t-on-keydown="onKeydown"
+         t-att-style="'top:' + state.pos.top + 'px; left:' + state.pos.left + 'px;'
+                      + (state.placed ? '' : ' opacity:0;')">
+
+      <div class="bwgx-head">
+        <div class="bwgx-head__t" t-esc="props.title"/>
+        <div class="bwgx-head__s" t-esc="props.subtitle"/>
+        <button class="bwgx-x" t-on-click="() => props.onClose()" title="Close (Esc)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- primary measure -->
+      <div class="bwgx-row bwgx-row--prim">
+        <label class="bwgx-lbl" t-esc="props.primary.name"/>
+        <div class="bwgx-ctl" t-if="props.primary.editable">
+          <button class="bwgx-step" t-on-click="() => this.step(props.primary, -1)">−</button>
+          <input class="bwgx-in" type="text" inputmode="decimal" t-ref="primary"
+                 t-att-value="state.values[props.primary.key]"
+                 t-on-input="(ev) => this.onInput(props.primary, ev)"
+                 t-on-blur="(ev) => this.onBlur(props.primary, ev)"/>
+          <button class="bwgx-step" t-on-click="() => this.step(props.primary, 1)">+</button>
+        </div>
+        <div class="bwgx-locked" t-else="">
+          <span class="bwgx-locked__v" t-esc="fmt(props.primary.value)"/>
+          <span class="bwgx-locked__r" t-esc="props.primary.lockReason or 'Locked'"/>
+        </div>
+      </div>
+
+      <!-- one stepper per extra measure that APPLIES on this day; the name and
+           the rate are written here (and in the legend) and nowhere else -->
+      <div class="bwgx-sect" t-if="props.chips.length">
+        <div class="bwgx-sect__h">Overtime</div>
+        <t t-foreach="props.chips" t-as="c" t-key="c.key">
+          <div class="bwgx-row" t-attf-style="--bwg-chip-c: {{ c.color or '#5A4BB0' }};">
+            <label class="bwgx-lbl">
+              <span class="bwgx-sw"/>
+              <span t-esc="c.name"/>
+              <span class="bwgx-rate" t-if="c.rate" t-esc="c.rate"/>
+              <span t-if="c.state" t-attf-class="bwgx-badge bwgx-badge--{{ c.state }}"
+                    t-esc="c.stateLabel"/>
+            </label>
+            <div class="bwgx-ctl" t-if="c.editable">
+              <button class="bwgx-step" t-on-click="() => this.step(c, -1)">−</button>
+              <input class="bwgx-in" type="text" inputmode="decimal"
+                     t-att-value="state.values[c.key]"
+                     t-on-input="(ev) => this.onInput(c, ev)"
+                     t-on-blur="(ev) => this.onBlur(c, ev)"/>
+              <button class="bwgx-step" t-on-click="() => this.step(c, 1)">+</button>
+            </div>
+            <div class="bwgx-locked" t-else="">
+              <span class="bwgx-locked__v" t-esc="fmt(c.value)"/>
+              <span class="bwgx-locked__r" t-esc="c.lockReason or 'Locked'"/>
+            </div>
+          </div>
+        </t>
+      </div>
+
+      <!-- the consumer's live budget bar — no RPC, it reads what the host
+           already loaded and recomputes as the steppers move -->
+      <div class="bwgx-ceil" t-if="ceiling">
+        <div class="bwgx-ceil__top">
+          <span t-esc="ceiling.label or 'Budget'"/>
+          <span><t t-esc="fmt(ceiling.used)"/> / <t t-esc="fmt(ceiling.cap)"/> h</span>
+        </div>
+        <div class="bwgx-ceil__track">
+          <div t-attf-class="bwgx-ceil__fill bwgx-ceil__fill--{{ barTone(ceiling.used, ceiling.cap) }}"
+               t-attf-style="width: {{ barPct(ceiling.used, ceiling.cap) }}%;"/>
+        </div>
+      </div>
+
+      <!-- advisory only: nothing here can block a stage or a save -->
+      <t t-foreach="warnings" t-as="w" t-key="w_index">
+        <div t-attf-class="bwgx-warn bwgx-warn--{{ w.tone or 'warn' }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 9v4"/><path d="M12 17h.01"/>
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>
+          </svg>
+          <span t-esc="w.text"/>
+        </div>
+      </t>
+
+      <div class="bwgx-foot">
+        <!-- deliberately NOT "Save": this panel stages into the grid, and the
+             tray at the bottom is the one thing that writes (§3.2, no autosave) -->
+        <span class="bwgx-hint">Enter applies · Esc cancels</span>
+        <button class="bwgx-btn" t-on-click="() => props.onClose()">Cancel</button>
+        <button class="bwgx-btn bwgx-btn--primary" t-if="anyEditable"
+                t-on-click="() => this.commit()">Done</button>
+      </div>
+    </div>
+  </t>
+
+</templates>

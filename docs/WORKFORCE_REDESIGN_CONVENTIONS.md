@@ -813,3 +813,69 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   retired legacy `get_grid_data` cockpit still prints the raw stored value —
   left alone under W18, and named here so the next reader does not think it is
   a second bug to hunt.
+- **W64 A cell is a place to READ a value, not a place to declare what values
+  mean — and the gate that keeps it that way has to be BOUNDED.** The old Week
+  Grid drew one pill per APPLICABLE overtime rate in every cell, whether or not
+  any hours existed: `150%` `130%` `200%` on 1 183 cells of an empty week, so
+  the single real entry read as noise inside its own row. Every one of those
+  pills said the same thing as every other pill in its column, which is the
+  definition of configuration rather than data. The owner's whole review of the
+  live screen was one sentence: *"the % pills are very confusing."*
+  The rule: a rate, a multiplier, a policy name or any other fact that is
+  IDENTICAL DOWN A COLUMN belongs in a legend (once) and in the editor where it
+  is being applied (once) — never in the cell. A cell renders outcomes: the
+  number, a chip for what was actually entered, a status dot, the consumer's
+  badges. An empty cell is EMPTY; the affordance appears on hover/focus.
+  And the gate: `biz_week_grid/tests/test_static.py::test_no_rate_ever_reaches_
+  a_cell` greps a region of the template delimited by explicit
+  `<!-- ==== day cells ==== -->` / `<!-- row total -->` markers, not the whole
+  file. W48's corollary is why — a word-shaped gate over a whole file fails on
+  the prose that explains the rule, and this file has to be able to say the
+  word "rate" in a docstring. Its complement
+  (`test_the_cell_region_still_renders_the_things_it_must`) exists because a
+  region that renders NOTHING would pass the first gate perfectly.
+- **W65 One payload key, one fact.** `get_week_entries` sent
+  `state = '+2b'` when an overtime request had bonus hours and
+  `state = 'draft'` otherwise — two unrelated facts multiplexed through one
+  string, because the old chip had exactly one text slot and whoever needed the
+  second one took it. Nothing errored: a client that renders `state` verbatim
+  shows something plausible in both cases, so the overload survived until a
+  redesign wanted to draw the state as a DOT and discovered that half the time
+  it is not a state. The cost is not the string, it is that no consumer can
+  ever ask "is this approved?" without knowing about the other meaning.
+  Rule: when a renderer needs a second fact, add the second KEY (`bonus` was
+  already there, unused); never widen the meaning of an existing one. Corollary
+  for reviews: a field whose values come from two disjoint vocabularies
+  (`draft|submitted|approved` and `+Nb`) is the signature, and it is visible in
+  the producing expression long before it is visible on screen.
+- **W66 A panel that mounts in the OVERLAY re-declares its own token block —
+  fallbacks alone are a promise the next contributor will not keep.** W14
+  established that `--pbim-*` does not resolve outside a `.pbim` root and W43
+  that the overlay container is outside EVERYTHING, so `var()` fallbacks are
+  what paint there. P5's cell editor is the first surface in this program that
+  is overlaid AND heavily styled (50 `var()` uses), and "every one of them
+  carries the right literal" is not a property you can maintain by care. So
+  `.bwgx` opens by declaring the whole `--bwg-*` default set ON ITSELF — the
+  same values the `.bwg` root declares — which makes the fallbacks a belt to
+  the block's braces rather than the only thing standing up. The gate
+  (`test_the_overlaid_panel_carries_real_fallbacks`) still walks every
+  `var()` in the file and fails any that has no fallback, and skips the
+  declaration lines themselves, because they are the source values.
+  Corollary: an overlaid panel therefore CANNOT be re-themed by its host. That
+  is a real limitation and it is the right trade — a host that needs a themed
+  popover passes colours through props (the chips do exactly that with
+  `--bwg-chip-c`), rather than hoping a custom property crosses a boundary it
+  cannot cross.
+- **W67 An OWL getter read inside a `t-foreach` is re-evaluated on every
+  iteration — hoist aggregates with `t-set`.** The new footer needs a per-day
+  sum and the row column needs a per-row sum, and the obvious shape is a
+  `dayTotal(iso)` / `rowTotal(row)` method called from the template. On the
+  live cohort that is 169 rows × 7 days, each walking 169 rows × 7 days × 5
+  measures — about 700 000 reads per render, for a number that changes only
+  when an edit lands. Nothing errors; the grid simply gets slow in exactly the
+  case it exists for (a dense week), which is the hardest kind of regression to
+  attribute. `totals` is therefore ONE getter returning
+  `{byDay, byRow, grand}` from a single pass, read once via
+  `<t t-set="tot" t-value="totals"/>` ABOVE the row loop and indexed from
+  there. General form: a template may read a getter once per render; putting it
+  inside a loop turns an O(n) computation into O(n²) silently.

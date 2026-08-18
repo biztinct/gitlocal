@@ -103,7 +103,13 @@ export class AttendanceWeekGrid extends Component {
             // standalone there is nothing to open, and a button that does
             // nothing is worse than no button.
             onRowOpen: this.props.onPerson ? (id) => this.props.onPerson(id) : undefined,
+            // The cell editor's live budget bar + advisory warnings. PURE and
+            // SYNCHRONOUS by contract — it reads the ceilings this cockpit
+            // already fetched and the dirty ledger the grid already told us
+            // about, so opening an editor costs no RPC (§3.2).
+            editorInfo: this.editorInfo.bind(this),
         };
+        this._dirtyList = [];
 
         onWillStart(async () => {
             // The department list is the context bar's job now; the cockpit only
@@ -127,6 +133,14 @@ export class AttendanceWeekGrid extends Component {
     // string prop, so it must come through _t here rather than the template).
     get emptyText() {
         return _t("No employees with entries this week — adjust the department or week.");
+    }
+
+    /** Does this cockpit have tray content of its own? The grid's tray shows
+     *  itself whenever there are staged edits; this keeps the ONE bar on
+     *  screen when the only thing to say is "12 awaiting approval". */
+    get hasQueue() {
+        return (this.state.summary.draft_count > 0
+                || this.state.summary.pending_count > 0);
     }
 
     async _doFetch() {
@@ -225,6 +239,13 @@ export class AttendanceWeekGrid extends Component {
         // Only commit to reactive state when it actually changed (the empty-list
         // call fired during the child's mount must NOT setState — that would
         // remount the grid, C-gotcha).
+        //
+        // The raw list is kept on a PLAIN field (not reactive state, for the
+        // same reason): the cell editor's ceiling bar has to subtract the cell
+        // it is itself editing from the employee's staged total, or it would
+        // count those hours twice the moment a second edit lands on the same
+        // day.
+        this._dirtyList = list;
         const delta = {};
         for (const d of list) {
             if (!OT_TYPES.includes(d.measureKey)) { continue; }
@@ -261,6 +282,68 @@ export class AttendanceWeekGrid extends Component {
             ytd: Math.max(0, base.ytd + dl.ytd),
             cap_month: base.cap_month,
             cap_year: base.cap_year,
+        };
+    }
+
+    // -------------------------------------------------------- cell editor
+    /**
+     * What the cell editor shows beside its steppers: this employee's live
+     * MONTHLY overtime budget and the advisory consequences of the values
+     * currently in the panel.
+     *
+     * Pure, synchronous, no RPC — the ceilings arrived with `get_week_entries`
+     * and the staged edits arrived through `onDirty`. Deliberately ADVISORY:
+     * an over-ceiling entry is something an officer may legitimately record,
+     * and the server's Phase-K `_split` already decides what happens to it, so
+     * the panel says what that will be instead of refusing the entry. The
+     * blocking question is still asked once, at save time, by the existing
+     * over-cap confirm — one dialog per commit, not one per keystroke.
+     */
+    editorInfo({ rowId, dayISO, values, prev }) {
+        const base = this.state.ceilings[rowId]
+            || { mtd: 0, ytd: 0, cap_month: 40, cap_year: 200 };
+        const inMonth = (dayISO || "").slice(0, 7) === this._monthKey;
+
+        // staged OT hours on this employee's OTHER days this month
+        let others = 0;
+        for (const d of this._dirtyList) {
+            if (String(d.rowId) !== String(rowId)) { continue; }
+            if (!OT_TYPES.includes(d.measureKey)) { continue; }
+            if (d.dayISO === dayISO) { continue; }   // this day is `values`
+            if ((d.dayISO || "").slice(0, 7) !== this._monthKey) { continue; }
+            others += Number(d.value || 0) - Number(d.prevValue || 0);
+        }
+        // and the cell the panel is holding right now
+        let here = 0;
+        for (const t of OT_TYPES) {
+            if (!(t in values)) { continue; }
+            here += Number(values[t] || 0) - Number((prev || {})[t] || 0);
+        }
+
+        const cap = base.cap_month || 0;
+        const used = Math.max(0, base.mtd + others + (inMonth ? here : 0));
+        const warnings = [];
+        if (cap && used > cap) {
+            const over = Math.round((used - cap) * 10) / 10;
+            warnings.push({
+                tone: "warn",
+                text: _t(
+                    "%(h)s h past the monthly ceiling of %(cap)s h. The excess is "
+                    + "recorded as bonus hours, not overtime pay — you can still "
+                    + "enter it.", { h: over, cap: cap }),
+            });
+        }
+        const capY = base.cap_year || 0;
+        const usedY = Math.max(0, base.ytd + others + here);
+        if (capY && usedY > capY) {
+            warnings.push({
+                tone: "bad",
+                text: _t("Also past this employee's annual ceiling of %s h.", capY),
+            });
+        }
+        return {
+            ceiling: { label: _t("Overtime this month"), used, cap },
+            warnings,
         };
     }
 

@@ -356,3 +356,79 @@ class TestWeekEntry(TransactionCase):
             self.WE.with_user(self.plain).get_week_entries(self.monday.isoformat())
         with self.assertRaises(AccessError):
             self.WE.with_user(self.plain).get_ot_ceilings([self.emp1.id])
+
+    # ================================================================
+    #  P5 — the payload the redesigned grid reads
+    # ================================================================
+    def test_15_a_measure_carries_its_name_and_its_rate_separately(self):
+        """The old payload put the RATE in `label`, because the rate was what
+        the per-cell pills printed. P5 splits them: the legend prints the
+        config's name AND its rate, once, and a cell prints neither."""
+        data = self.WE.with_user(self.officer).get_week_entries(
+            self.monday.isoformat())
+        by_key = {m['key']: m for m in data['measures']}
+        self.assertEqual(data['measures'][0]['key'], 'reg',
+                         'the primary measure must stay first')
+        wd = by_key['weekday']
+        cfgs = self.env['hr.overtime.config'].search(
+            [('active', '=', True), ('overtime_type', '=', 'weekday')])
+        self.assertIn(wd['name'], cfgs.mapped('name'))
+        self.assertIn(wd['rate'], cfgs.mapped('rate_display'))
+        self.assertTrue(wd['rate'], 'the legend has nothing to print')
+        # `label` is kept as the short fallback for a consumer reading neither
+        self.assertTrue(wd['label'])
+
+    def test_16_the_chip_palette_is_the_w1_categorical_order(self):
+        """W1: the four OT tints were invented hexes inherited from a Gen-1
+        screen (#e74c3c / #9b59b6 / #e67e22 / #2c3e50). They are the
+        CVD-validated categorical order now, assigned by POSITION in OT_TYPES
+        — which is also the order the legend renders in."""
+        from odoo.addons.pb_hr_workforce.models.attendance_weekentry import (
+            OT_COLORS, OT_TYPES)
+        self.assertEqual([OT_COLORS[t] for t in OT_TYPES],
+                         ['#5A4BB0', '#D97706', '#2563EB', '#DC2668'])
+        data = self.WE.with_user(self.officer).get_week_entries(
+            self.monday.isoformat())
+        extras = data['measures'][1:]
+        self.assertTrue(extras, 'no overtime measures in the payload')
+        for m in extras:
+            self.assertEqual(m['color'], OT_COLORS[m['key']])
+        # and they arrive in the OT_TYPES order the legend prints
+        order = [t for t in OT_TYPES if t in {m['key'] for m in extras}]
+        self.assertEqual([m['key'] for m in extras], order)
+
+    def test_17_state_is_the_raw_workflow_state_and_bonus_is_its_own_key(self):
+        """`state` used to be overloaded — "+2b" when there was a bonus split,
+        otherwise the state — because the old chip had one text slot for both.
+        The cell renders a micro-dot from `state` and a dashed chip from
+        `bonus`, so the two facts stop fighting over one string."""
+        req = self.env['hr.overtime.request'].create({
+            'employee_id': self.emp1.id, 'date': self.tue,
+            'overtime_type': 'weekday', 'planned_hours': 4.0,
+            'actual_hours': 4.0, 'approved_hours': 3.0, 'bonus_hours': 1.0,
+            'reason': 'x',
+        })
+        self.assertEqual(req.state, 'draft')
+        data = self.WE.with_user(self.officer).get_week_entries(
+            self.monday.isoformat())
+        row = next(r for r in data['rows'] if r['id'] == self.emp1.id)
+        meas = row['cells'][self.tue.isoformat()]['measures']['weekday']
+        self.assertEqual(meas['state'], 'draft')
+        self.assertAlmostEqual(meas['bonus'], 1.0)
+        self.assertNotIn('b', str(meas['state']))
+
+    def test_18_an_inapplicable_ot_type_is_absent_not_zeroed(self):
+        """Presence in the payload IS the applicability rule — it is what the
+        old pills were drawn from and what the new cell EDITOR offers. A type
+        that does not apply must be missing, not present with a 0."""
+        data = self.WE.with_user(self.officer).get_week_entries(
+            self.monday.isoformat())
+        row = next(r for r in data['rows'] if r['id'] == self.emp1.id)
+        weekday_cell = row['cells'][self.tue.isoformat()]['measures']
+        self.assertIn('weekday', weekday_cell)
+        self.assertNotIn('weekend', weekday_cell,
+                         'weekend overtime does not apply on a Tuesday')
+        sat = self.monday + timedelta(days=5)
+        sat_cell = row['cells'][sat.isoformat()]['measures']
+        self.assertIn('weekend', sat_cell)
+        self.assertNotIn('weekday', sat_cell)

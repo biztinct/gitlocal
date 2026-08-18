@@ -5,43 +5,72 @@
     <div class="bwg" t-att-class="{ 'bwg--saving': state.saving }"
          t-on-keydown="onGridKeydown" tabindex="0" t-ref="grid">
 
-      <!-- header: local filter + dirty state + Save -->
+      <!-- ==== head: filters + legend + shortcuts ==== -->
       <div class="bwg-head">
         <div class="bwg-head__left" t-if="props.showFilter !== false">
-          <svg class="bwg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-          </svg>
-          <input type="text" class="bwg-filter" placeholder="Filter rows…"
-                 t-att-value="state.filter" t-on-input="setFilter"/>
+          <span class="bwg-search">
+            <svg class="bwg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input type="text" class="bwg-filter" placeholder="Filter rows…"
+                   t-att-value="state.filter" t-on-input="setFilter"/>
+          </span>
+          <button class="bwg-chipbtn" t-att-class="{ 'is-on': state.entriesOnly }"
+                  t-on-click="() => this.toggleEntriesOnly()"
+                  title="Show only rows that have hours this week">
+            <svg class="bwg-ic bwg-ic--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/>
+            </svg>
+            Only rows with entries
+          </button>
         </div>
+
+        <!-- ==== the legend: the ONE place a rate is written (§3.4) ==== -->
+        <div class="bwg-legend" t-if="legendMeasures.length">
+          <t t-foreach="legendMeasures" t-as="lm" t-key="lm.key">
+            <span class="bwg-lg"
+                  t-attf-style="--bwg-chip-c: {{ lm.color or 'var(--bwg-primary)' }};">
+              <span class="bwg-lg__sw"/>
+              <span class="bwg-lg__n" t-esc="measureName(lm)"/>
+              <span class="bwg-lg__r" t-if="lm.rate" t-esc="lm.rate"/>
+            </span>
+          </t>
+          <span class="bwg-lg bwg-lg--keys">
+            <span class="bwg-sdot bwg-sdot--draft"/> draft
+            <span class="bwg-sdot bwg-sdot--sent"/> submitted
+            <span class="bwg-sdot bwg-sdot--ok"/> approved
+          </span>
+        </div>
+
         <div class="bwg-head__spacer"/>
         <div class="bwg-head__right">
-          <span class="bwg-dirty" t-if="dirtyCount > 0">
-            <span class="bwg-dot"/> <t t-esc="dirtyCount"/> unsaved
-          </span>
-          <button class="bwg-btn bwg-btn--ghost" t-if="dirtyCount > 0"
-                  t-on-click="() => this.undo()" title="Undo (Ctrl/Cmd+Z)">
-            <svg class="bwg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
-            </svg>
-            Undo
-          </button>
-          <button class="bwg-btn bwg-btn--primary" t-att-disabled="dirtyCount === 0 || state.saving"
-                  t-on-click="() => this.save()">
-            <span t-if="state.saving">Saving…</span>
-            <span t-else="">Save <t t-if="dirtyCount > 0">(<t t-esc="dirtyCount"/>)</t></span>
-          </button>
+          <div class="bwg-helpwrap">
+            <button class="bwg-helpbtn" t-att-class="{ 'is-on': state.helpOpen }"
+                    t-on-click="() => this.toggleHelp()" title="Keyboard shortcuts">?</button>
+            <div class="bwg-help" t-if="state.helpOpen">
+              <div class="bwg-help__t">Keyboard</div>
+              <div class="bwg-help__r"><kbd>← ↑ → ↓</kbd><span>move</span></div>
+              <div class="bwg-help__r"><kbd>0–9</kbd><span>type hours in place</span></div>
+              <div class="bwg-help__r"><kbd>Enter</kbd><span>open the cell editor</span></div>
+              <div class="bwg-help__r"><kbd>Tab</kbd><span>next day</span></div>
+              <div class="bwg-help__r"><kbd>⌫</kbd><span>clear the cell</span></div>
+              <div class="bwg-help__r"><kbd>Ctrl/⌘ D</kbd><span>fill down</span></div>
+              <div class="bwg-help__r"><kbd>Ctrl/⌘ Z</kbd><span>undo</span></div>
+              <div class="bwg-help__r"><kbd>Esc</kbd><span>cancel</span></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- loading -->
+      <!-- ==== loading ==== -->
       <div class="bwg-loading" t-if="state.loading">
         <span class="bwg-spin"/> <span>Loading…</span>
       </div>
 
-      <!-- grid -->
+      <!-- ==== grid ==== -->
       <div class="bwg-scroll" t-if="!state.loading">
-        <div class="bwg-grid" t-att-style="'grid-template-columns: var(--bwg-namecol) repeat(' + state.days.length + ', minmax(var(--bwg-daymin), 1fr));'">
+        <t t-set="tot" t-value="totals"/>
+        <div class="bwg-grid" t-att-style="'grid-template-columns: var(--bwg-namecol) repeat(' + state.days.length + ', minmax(var(--bwg-daymin), 1fr)) var(--bwg-totcol);'">
 
           <!-- header row -->
           <div class="bwg-hcell bwg-hcell--corner bwg-sticky-left bwg-sticky-top"/>
@@ -52,6 +81,10 @@
               <div class="bwg-hcell__s" t-esc="day.sublabel"/>
             </div>
           </t>
+          <div class="bwg-hcell bwg-hcell--tot bwg-sticky-top">
+            <div class="bwg-hcell__d">Total</div>
+            <div class="bwg-hcell__s">week</div>
+          </div>
 
           <!-- body rows -->
           <t t-foreach="filteredRows" t-as="row" t-key="row.id">
@@ -83,18 +116,23 @@
               </button>
             </div>
 
-            <!-- day cells -->
+            <!-- ==== day cells ==== -->
+            <!-- CELL ANATOMY v2 — outcomes only. Hours, chips for what was
+                 ENTERED, a status dot, the consumer's badge. No measure label,
+                 no rate: those live in the legend and the editor, once. -->
             <t t-foreach="state.days" t-as="day" t-key="day.iso">
               <div class="bwg-cell"
+                   t-attf-data-cell="{{ row.id }}|{{ day.iso }}"
                    t-att-class="{
                        'bwg-cell--weekend': day.is_weekend,
                        'bwg-cell--today': day.is_today,
                        'bwg-cell--focus': isFocused(row, day.iso),
-                       'bwg-cell--dirty': isDirtyCell(row, day.iso, primaryKey),
-                       'bwg-cell--error': !!cellError(row, day.iso, primaryKey),
-                       'bwg-cell--locked': !isEditable(row, day.iso, primaryKey),
+                       'bwg-cell--open': isEditorOpen(row, day.iso),
+                       'bwg-cell--dirty': isDirtyAnywhere(row, day.iso),
+                       'bwg-cell--error': anyCellError(row, day.iso),
+                       'bwg-cell--locked': !isCellOpenable(row, day.iso),
                    }"
-                   t-on-mousedown="() => this.onCellMouseDown(row, day.iso)">
+                   t-on-click="(ev) => this.onCellClick(ev, row, day.iso)">
 
                 <!-- optional generic day badge (e.g. a consumer status chip) -->
                 <t t-set="badge" t-value="dayBadge(row, day.iso)"/>
@@ -104,62 +142,79 @@
                   <t t-esc="badge.label"/>
                 </span>
 
-                <!-- dirty / error markers -->
-                <span class="bwg-mark bwg-mark--dirty" t-if="isDirtyCell(row, day.iso, primaryKey)"/>
-                <span class="bwg-mark bwg-mark--lock" t-if="!isEditable(row, day.iso, primaryKey)"
+                <!-- dirty / lock markers -->
+                <span class="bwg-mark bwg-mark--dirty" t-if="isDirtyAnywhere(row, day.iso)"/>
+                <span class="bwg-mark bwg-mark--lock" t-if="!isCellOpenable(row, day.iso)"
                       t-att-title="lockReason(row, day.iso, primaryKey) or 'Locked'">
                   <svg class="bwg-ic bwg-ic--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
                 </span>
 
-                <!-- primary measure -->
+                <!-- primary measure: a bold tabular number, blank when zero -->
                 <div class="bwg-prim">
                   <input t-if="isEditing(row, day.iso, primaryKey)"
                          class="bwg-input" type="text" inputmode="decimal"
                          t-att-value="state.editing.buffer"
                          t-on-input="onEditInput" t-on-keydown="onEditKeydown"
                          t-on-blur="() => this.commitEditing(false)"
-                         t-on-mousedown="(ev) => ev.stopPropagation()"
+                         t-on-click="(ev) => ev.stopPropagation()"
                          t-ref="activeInput"/>
-                  <span t-else="" class="bwg-prim__v"
-                        t-att-class="{ 'bwg-prim__v--zero': !displayed(row, day.iso, primaryKey) }">
-                    <t t-esc="fmtVal(displayed(row, day.iso, primaryKey))"/>
-                  </span>
+                  <t t-else="">
+                    <t t-set="pv" t-value="displayed(row, day.iso, primaryKey)"/>
+                    <span class="bwg-prim__v" t-if="pv" t-esc="fmtVal(pv)"/>
+                    <span class="bwg-plus" t-elif="isEditable(row, day.iso, primaryKey)"
+                          aria-hidden="true">+</span>
+                  </t>
                 </div>
 
-                <!-- OT chip measures -->
+                <!-- extra-measure chips — ONLY where hours were entered -->
                 <div class="bwg-chips" t-if="chipMeasures.length">
-                  <t t-foreach="chipMeasures" t-as="m" t-key="m.key">
-                    <t t-set="mc" t-value="measureCell(row, day.iso, m.key)"/>
-                    <t t-if="mc">
-                      <div class="bwg-chip"
-                           t-att-class="{
-                               'bwg-chip--dirty': isDirtyCell(row, day.iso, m.key),
-                               'bwg-chip--error': !!cellError(row, day.iso, m.key),
-                               'bwg-chip--locked': !isEditable(row, day.iso, m.key),
-                           }"
-                           t-attf-style="--bwg-chip-c: {{ m.color or 'var(--bwg-primary)' }};"
-                           t-att-title="chipTitle(row, day.iso, m)"
-                           t-on-mousedown="(ev) => this.onChipMouseDown(ev, row, day.iso, m.key)">
-                        <input t-if="isEditing(row, day.iso, m.key)"
-                               class="bwg-input bwg-input--chip" type="text" inputmode="decimal"
-                               t-att-value="state.editing.buffer"
-                               t-on-input="onEditInput" t-on-keydown="onEditKeydown"
-                               t-on-blur="() => this.commitEditing(false)"
-                               t-on-mousedown="(ev) => ev.stopPropagation()"
-                               t-ref="activeInput"/>
-                        <span t-else="" class="bwg-chip__txt">
-                          <span class="bwg-chip__lbl" t-esc="m.label"/>
-                          <span class="bwg-chip__v" t-esc="fmtVal(displayed(row, day.iso, m.key))"/>
-                          <span class="bwg-chip__st" t-if="mc.state" t-esc="mc.state"/>
-                        </span>
-                      </div>
-                    </t>
+                  <t t-foreach="enteredMeasures(row, day.iso)" t-as="m" t-key="m.key">
+                    <t t-set="st" t-value="chipState(row, day.iso, m.key)"/>
+                    <span class="bwg-chip"
+                          t-att-class="{
+                              'bwg-chip--dirty': isDirtyCell(row, day.iso, m.key),
+                              'bwg-chip--error': !!cellError(row, day.iso, m.key),
+                              'bwg-chip--split': chipBonus(row, day.iso, m.key) > 0,
+                          }"
+                          t-attf-style="--bwg-chip-c: {{ m.color or 'var(--bwg-primary)' }};"
+                          t-att-title="chipTitle(row, day.iso, m)">
+                      <span class="bwg-chip__v">+<t t-esc="fmtVal(displayed(row, day.iso, m.key))"/></span>
+                      <span t-if="st" t-attf-class="bwg-sdot bwg-sdot--{{ stateTone(st) }}"/>
+                    </span>
                   </t>
                 </div>
               </div>
             </t>
+
+            <!-- row total -->
+            <div class="bwg-tot">
+              <span class="bwg-tot__v" t-esc="fmtTot((tot.byRow[row.id] or {}).reg)"/>
+              <span class="bwg-tot__x" t-if="(tot.byRow[row.id] or {}).extra">
+                +<t t-esc="fmtTot(tot.byRow[row.id].extra)"/>
+              </span>
+            </div>
+          </t>
+
+          <!-- ==== sticky footer: the week's shape at a glance ==== -->
+          <t t-if="filteredRows.length">
+            <div class="bwg-foot bwg-foot--corner bwg-sticky-left bwg-sticky-bottom">
+              <t t-esc="filteredRows.length"/> row<t t-if="filteredRows.length != 1">s</t>
+            </div>
+            <t t-foreach="state.days" t-as="day" t-key="'f' + day.iso">
+              <div class="bwg-foot bwg-sticky-bottom"
+                   t-att-class="{ 'bwg-foot--weekend': day.is_weekend, 'bwg-foot--today': day.is_today }">
+                <span class="bwg-foot__v" t-esc="fmtTot(tot.byDay[day.iso].reg)"/>
+                <span class="bwg-foot__x" t-if="tot.byDay[day.iso].extra">
+                  +<t t-esc="fmtTot(tot.byDay[day.iso].extra)"/>
+                </span>
+              </div>
+            </t>
+            <div class="bwg-foot bwg-foot--tot bwg-sticky-bottom">
+              <span class="bwg-foot__v" t-esc="fmtTot(tot.grand.reg)"/>
+              <span class="bwg-foot__x" t-if="tot.grand.extra">+<t t-esc="fmtTot(tot.grand.extra)"/></span>
+            </div>
           </t>
         </div>
 
@@ -170,6 +225,33 @@
           </svg>
           <div class="bwg-empty__t" t-esc="props.emptyText || 'No rows to show'"/>
         </div>
+      </div>
+
+      <!-- ==== the tray: the SINGLE commit point ==== -->
+      <div class="bwg-tray" t-if="trayOpen">
+        <t t-if="dirtyCount > 0">
+          <span class="bwg-tray__dot"/>
+          <span class="bwg-tray__info">
+            <strong t-esc="dirtyCount"/> cell<t t-if="dirtyCount != 1">s</t> edited<t t-if="dirtyExtraHours">
+              · <strong t-esc="dirtyExtraHours"/> h overtime drafted</t>
+          </span>
+        </t>
+        <div class="bwg-tray__spacer"/>
+        <t t-slot="tray" t-if="props.slots and props.slots.tray"/>
+        <button class="bwg-btn bwg-btn--ghost" t-if="dirtyCount > 0"
+                t-on-click="() => this.undo()" title="Undo (Ctrl/Cmd+Z)">
+          <svg class="bwg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+          </svg>
+          Undo
+        </button>
+        <button class="bwg-btn" t-if="dirtyCount > 0"
+                t-on-click="() => this.discardAll()">Discard</button>
+        <button class="bwg-btn bwg-btn--primary" t-if="dirtyCount > 0"
+                t-att-disabled="state.saving" t-on-click="() => this.save()">
+          <span t-if="state.saving">Saving…</span>
+          <span t-else="">Save <t t-esc="dirtyCount"/></span>
+        </button>
       </div>
     </div>
   </t>

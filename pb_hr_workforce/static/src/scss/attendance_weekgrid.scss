@@ -25,6 +25,9 @@
     --bwg-amber-soft:   var(--pbim-amber-soft);
     --bwg-rose:         var(--pbim-rose);
     --bwg-rose-soft:    var(--pbim-rose-soft);
+    // P5: the approved-overtime micro-dot. The canonical promoted green (W1).
+    --bwg-green:        var(--pbim-green);
+    --bwg-green-soft:   var(--pbim-green-soft);
     --bwg-radius:       var(--pbim-r);
 
     .wfg-ic { width: 17px; height: 17px; }
@@ -157,27 +160,27 @@
     .wfg-lead__v { font-size: 11px; color: var(--pbim-muted); flex: 0 0 auto; }
 
     // ----------------------------------------------------------- tray
-    .wfg-tray {
-        display: flex; align-items: center; gap: 14px;
-        padding: 11px 18px;
-        background: var(--pbim-surface);
-        border-top: 1px solid var(--pbim-line);
-        box-shadow: 0 -6px 18px rgba(16, 12, 40, .05);
-    }
-    .wfg-tray__info { font-size: 13px; }
+    // There is no `.wfg-tray` any more: the cockpit's submit/approve actions
+    // live INSIDE the grid's tray slot, so the screen has one commit bar
+    // instead of two stacked ones (§3.6). These classes now style what is
+    // rendered into `.bwg-tray`.
+    .wfg-tray__info { font-size: 12.5px; color: var(--pbim-muted); }
     .wfg-tray__info--muted { color: var(--pbim-muted); }
-    .wfg-tray__spacer { flex: 1; }
+    .wfg-tray__info strong { color: var(--pbim-text); }
 
     .wfg-btn {
         display: inline-flex; align-items: center; gap: 6px;
         border: 1px solid var(--pbim-line); border-radius: 9px;
-        padding: 8px 16px; font-weight: 700; font-size: 13px;
+        padding: 7px 15px; font-weight: 700; font-size: 13px;
         background: #fff; color: var(--pbim-text); cursor: pointer;
         &:hover { background: var(--pbim-line-2); }
     }
-    .wfg-btn--primary {
-        background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff;
-        &:hover { filter: brightness(.94); background: var(--pbim-primary); }
+    // "Submit all" is a workflow action, not the commit — the grid's own Save
+    // is the primary in that bar and there may be only one.
+    .wfg-btn--submit {
+        color: var(--pbim-amber); border-color: var(--pbim-amber);
+        background: var(--pbim-amber-soft);
+        &:hover { background: #fff; }
     }
     .wfg-btn--ghost { color: var(--pbim-primary); border-color: var(--pbim-primary); background: var(--pbim-soft); }
 }
