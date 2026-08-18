@@ -684,8 +684,25 @@ class TestMissionStaticGates(TransactionCase):
                 writer, body,
                 '%s must not be reachable from setup() — mount hooks READ, '
                 'click handlers WRITE (W21.1)' % writer)
-        # the context subscription fires the same pure read the mount does
-        self.assertRegex(js, r'onChange\(\(\) => this\.load\(\)\)')
+        # The context subscription fires the same pure READ the mount does.
+        # Asserted on the callback's CONTENTS rather than on its exact one-line
+        # shape: P7 gave it a body (it resets the table's page, because "page 4"
+        # carried into a two-page result greets the officer with an empty
+        # screen), and a gate pinned to `onChange(() => this.load())` character
+        # for character went red on a change that could not possibly violate the
+        # rule it defends. What matters is that the callback READS and writes
+        # nothing but local view state.
+        sub = re.search(r'onChange\(\(\) => \{(.*?)\}\)|onChange\(\(\) => (this\.load\(\))\)',
+                        js, re.S)
+        self.assertTrue(sub, 'the wf_context subscription is gone')
+        body_sub = sub.group(1) or sub.group(2)
+        self.assertIn('this.load()', body_sub,
+                      'the context subscription must re-READ the board')
+        for writer in ('review_flag', 'review_kind', 'lock_days', 'unlock_days'):
+            self.assertNotIn(
+                writer, body_sub,
+                'a context change may not %s — it is a re-read (W21/W25)'
+                % writer)
         xml = self._close_xml()
         for handler in ('this.confirmReview()', 'this.confirmReopen()',
                         'this.lockWeek()', 'this.toggleDay(day)'):

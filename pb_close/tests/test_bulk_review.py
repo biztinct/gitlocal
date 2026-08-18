@@ -25,9 +25,40 @@ from .common import CloseCase
 
 @tagged('post_install', '-at_install')
 class TestBulkReview(CloseCase):
+    """EVERY assertion here is scoped to a department this suite creates.
+
+    `pb.close._population` searches the whole company, so on the live demo
+    database an unscoped `get_close_data` returns the real cohort — the first
+    run of this suite came back with nine pre-existing missing punches and
+    twenty-eight variance flags mixed into its fixtures, and the counts it was
+    asserting were somebody else's data. A board test that does not own its
+    population is not testing the board, it is testing the database it happens
+    to run on.
+
+    So `setUp` puts the two shared fixture employees and every seeded ghost into
+    `P7 Bulk Dept`, and `_data` / `_review` always pass `department_id`. That is
+    also the honest shape: a department IS how an officer narrows this board,
+    so the suite exercises the same path the UI does.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.dept = self.env['hr.department'].create({
+            'name': 'P7 Bulk Dept', 'company_id': self.company.id})
+        (self.emp | self.emp2).write({'department_id': self.dept.id})
 
     def _week(self):
         return self.week_start.isoformat()
+
+    def _data(self, **kw):
+        kw.setdefault('department_id', self.dept.id)
+        kw.setdefault('week_start', self._week())
+        return self.env['pb.close'].get_close_data(**kw)
+
+    def _review(self, kind, **kw):
+        kw.setdefault('department_id', self.dept.id)
+        kw.setdefault('week_start', self._week())
+        return self.env['pb.close'].review_kind(kind, **kw)
 
     def _seed_missing_punches(self, n):
         """`n` employees with a published shift and NO punch on the Monday —
@@ -36,7 +67,8 @@ class TestBulkReview(CloseCase):
         made = Emp.browse()
         for i in range(n):
             e = Emp.create({'name': 'P7 Ghost %02d' % i,
-                            'company_id': self.company.id, 'tz': 'UTC'})
+                            'company_id': self.company.id, 'tz': 'UTC',
+                            'department_id': self.dept.id})
             self._shift(emp=e, day=self.day)
             made |= e
         return made
@@ -48,7 +80,7 @@ class TestBulkReview(CloseCase):
         self._seed_missing_punches(3)
         # one unscheduled day: a punch with no shift behind it
         self._punch(emp=self.emp2, day=self.day2)
-        data = self.env['pb.close'].get_close_data(week_start=self._week())
+        data = self._data()
         kinds = {k['kind']: k for k in data['kinds']}
         self.assertIn('missing_punch', kinds)
         self.assertGreaterEqual(kinds['missing_punch']['open'], 3)
@@ -63,7 +95,7 @@ class TestBulkReview(CloseCase):
         from odoo.addons.pb_close.models.close import _KINDS
         self._seed_missing_punches(2)
         self._punch(emp=self.emp2, day=self.day2)
-        data = self.env['pb.close'].get_close_data(week_start=self._week())
+        data = self._data()
         got = [k['kind'] for k in data['kinds']]
         expected = [k for k in _KINDS if k in got]
         self.assertEqual(got, expected)
@@ -71,9 +103,7 @@ class TestBulkReview(CloseCase):
     # ========================================================== the batch
     def test_review_all_waives_every_open_flag_of_one_kind(self):
         emps = self._seed_missing_punches(4)
-        Close = self.env['pb.close']
-        res = Close.review_kind('missing_punch', note='Gate reader was down',
-                                week_start=self._week())
+        res = self._review('missing_punch', note='Gate reader was down')
         self.assertEqual(res['reviewed'], 4)
         self.assertFalse(res['skipped'])
         reviews = self.env['pb.close.review'].search([
@@ -87,9 +117,8 @@ class TestBulkReview(CloseCase):
         "review all 66" button this design exists to refuse."""
         self._seed_missing_punches(2)
         self._punch(emp=self.emp2, day=self.day2)     # unscheduled_day
-        Close = self.env['pb.close']
-        Close.review_kind('missing_punch', note='x', week_start=self._week())
-        data = Close.get_close_data(week_start=self._week())
+        self._review('missing_punch', note='x')
+        data = self._data()
         kinds = {k['kind']: k for k in data['kinds']}
         self.assertEqual(kinds['missing_punch']['open'], 0)
         self.assertEqual(kinds['unscheduled_day']['open'], 1,
@@ -100,11 +129,8 @@ class TestBulkReview(CloseCase):
         second click is the same decision, and the unique constraint on
         (company, employee, day, kind) must not surface as an error."""
         self._seed_missing_punches(3)
-        Close = self.env['pb.close']
-        self.assertEqual(Close.review_kind('missing_punch', note='a',
-                                           week_start=self._week())['reviewed'], 3)
-        again = Close.review_kind('missing_punch', note='b',
-                                  week_start=self._week())
+        self.assertEqual(self._review('missing_punch', note='a')['reviewed'], 3)
+        again = self._review('missing_punch', note='b')
         self.assertEqual(again['requested'], 0)
         self.assertEqual(again['reviewed'], 0)
         self.assertFalse(again['skipped'])
@@ -116,25 +142,23 @@ class TestBulkReview(CloseCase):
         shape — asserted by counting one against the other under the SAME
         department filter."""
         emps = self._seed_missing_punches(3)
-        dept = self.env['hr.department'].create({
+        other = self.env['hr.department'].create({
             'name': 'P7 Scoped', 'company_id': self.company.id})
-        emps[0].department_id = dept.id
-        Close = self.env['pb.close']
-        data = Close.get_close_data(department_id=dept.id, week_start=self._week())
+        emps[0].department_id = other.id
+        data = self._data(department_id=other.id)
         on_screen = [r for r in data['flagged'] if r['kind'] == 'missing_punch']
         self.assertEqual(len(on_screen), 1)
-        res = Close.review_kind('missing_punch', note='scoped',
-                                department_id=dept.id, week_start=self._week())
+        res = self._review('missing_punch', note='scoped',
+                           department_id=other.id)
         self.assertEqual(res['reviewed'], 1,
                          'the batch stepped outside the department filter')
-        # the other two are untouched
-        left = Close.get_close_data(week_start=self._week())
-        kinds = {k['kind']: k for k in left['kinds']}
+        # the other two, still in the suite's own department, are untouched
+        kinds = {k['kind']: k for k in self._data()['kinds']}
         self.assertEqual(kinds['missing_punch']['open'], 2)
 
     def test_an_unknown_kind_is_refused(self):
         with self.assertRaises(UserError):
-            self.env['pb.close'].review_kind('not_a_kind', week_start=self._week())
+            self._review('not_a_kind')
 
     def test_a_batch_bigger_than_the_cap_is_refused_rather_than_truncated(self):
         """Silently doing 200 of 300 would be the worst outcome: the board would
@@ -143,11 +167,11 @@ class TestBulkReview(CloseCase):
         self._seed_missing_punches(3)
         with self.patch_cap(close_mod, 2):
             with self.assertRaises(UserError):
-                self.env['pb.close'].review_kind('missing_punch',
-                                                 week_start=self._week())
+                self._review('missing_punch')
         # and nothing was written on the way to refusing
         self.assertFalse(self.env['pb.close.review'].search_count(
-            [('kind', '=', 'missing_punch'), ('date', '=', self.day)]))
+            [('kind', '=', 'missing_punch'), ('date', '=', self.day),
+             ('employee_id.department_id', '=', self.dept.id)]))
 
     def patch_cap(self, module, value):
         from unittest.mock import patch
@@ -162,12 +186,13 @@ class TestBulkReview(CloseCase):
         mgr = self._manager('p7_selfmgr')
         me = self.env['hr.employee'].create({
             'name': 'P7 The Manager', 'company_id': self.company.id,
-            'tz': 'UTC', 'user_id': mgr.id})
+            'tz': 'UTC', 'user_id': mgr.id, 'department_id': self.dept.id})
         self._shift(emp=me, day=self.day)              # my own missing punch
         others = self._seed_missing_punches(2)
 
         res = self.env['pb.close'].with_user(mgr).review_kind(
-            'missing_punch', note='batch', week_start=self._week())
+            'missing_punch', note='batch', department_id=self.dept.id,
+            week_start=self._week())
         self.assertEqual(res['reviewed'], 2, 'the two other rows must land')
         self.assertEqual(len(res['skipped']), 1,
                          'my own row must be refused, not waived')
@@ -189,9 +214,11 @@ class TestBulkReview(CloseCase):
         officer = self._officer('p7_plainofficer')
         with self.assertRaises(AccessError):
             self.env['pb.close'].with_user(officer).review_kind(
-                'missing_punch', note='x', week_start=self._week())
+                'missing_punch', note='x', department_id=self.dept.id,
+                week_start=self._week())
         self.assertFalse(self.env['pb.close.review'].sudo().search_count(
-            [('date', '=', self.day)]))
+            [('date', '=', self.day),
+             ('employee_id.department_id', '=', self.dept.id)]))
 
     # ============================================================= paging
     def test_the_table_pages_and_reports_true_totals(self):
@@ -199,15 +226,14 @@ class TestBulkReview(CloseCase):
         the WEEK's total (what `can_lock` is about), the FILTERED total (what
         the chips select) and what is in this payload."""
         self._seed_missing_punches(30)
-        Close = self.env['pb.close']
-        p1 = Close.get_close_data(week_start=self._week())
+        p1 = self._data()
         self.assertEqual(p1['page'], 1)
         self.assertGreaterEqual(p1['pages'], 2)
         self.assertEqual(p1['flagged_shown'], p1['page_size'])
         self.assertGreaterEqual(p1['flagged_total'], 30)
         self.assertEqual(p1['filtered_total'], p1['flagged_total'])
 
-        p2 = Close.get_close_data(week_start=self._week(), page=2)
+        p2 = self._data(page=2)
         self.assertEqual(p2['page'], 2)
         self.assertEqual(p2['flagged_total'], p1['flagged_total'],
                          'the true total must not depend on the page')
@@ -218,14 +244,12 @@ class TestBulkReview(CloseCase):
     def test_a_page_past_the_end_lands_on_the_last_one(self):
         """Rather than an empty screen with no explanation."""
         self._seed_missing_punches(3)
-        data = self.env['pb.close'].get_close_data(week_start=self._week(),
-                                                   page=99)
+        data = self._data(page=99)
         self.assertEqual(data['page'], data['pages'])
         self.assertTrue(data['flagged'])
 
     def test_a_junk_page_is_page_one(self):
-        data = self.env['pb.close'].get_close_data(week_start=self._week(),
-                                                   page='banana')
+        data = self._data(page='banana')
         self.assertEqual(data['page'], 1)
 
     # ============================================================ filters
@@ -235,10 +259,8 @@ class TestBulkReview(CloseCase):
         "can lock" turn green."""
         self._seed_missing_punches(3)
         self._punch(emp=self.emp2, day=self.day2)     # unscheduled_day
-        Close = self.env['pb.close']
-        allrows = Close.get_close_data(week_start=self._week())
-        narrowed = Close.get_close_data(week_start=self._week(),
-                                        kind='unscheduled_day')
+        allrows = self._data()
+        narrowed = self._data(kind='unscheduled_day')
         self.assertEqual(narrowed['filtered_total'], 1)
         self.assertTrue(all(r['kind'] == 'unscheduled_day'
                             for r in narrowed['flagged']))
@@ -252,19 +274,18 @@ class TestBulkReview(CloseCase):
 
     def test_the_reviewed_chip_selects_the_waived_rows(self):
         self._seed_missing_punches(3)
-        Close = self.env['pb.close']
-        Close.review_kind('missing_punch', note='ok', week_start=self._week())
-        done = Close.get_close_data(week_start=self._week(), reviewed='done')
+        self._review('missing_punch', note='ok')
+        done = self._data(reviewed='done')
         self.assertEqual(done['filtered_total'], 3)
         self.assertTrue(all(r['reviewed'] for r in done['flagged']))
-        openr = Close.get_close_data(week_start=self._week(), reviewed='open')
+        openr = self._data(reviewed='open')
         self.assertEqual(openr['filtered_total'], 0)
 
     def test_the_default_payload_is_unchanged_for_a_caller_that_passes_nothing(self):
         """The three new arguments are additive — a client that has not been
         updated must get the board it always got."""
         self._seed_missing_punches(2)
-        data = self.env['pb.close'].get_close_data(week_start=self._week())
+        data = self._data()
         for key in ('week_start', 'days', 'stats', 'flagged', 'flagged_total',
                     'flagged_shown', 'handoff', 'checklist', 'can_lock',
                     'can_manage_locks', 'can_review', 'all_locked',
