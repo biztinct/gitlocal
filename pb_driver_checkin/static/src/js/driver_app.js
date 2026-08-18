@@ -18,6 +18,9 @@
             just_now: "just now", offline_queued: "Offline — pings queued",
             checking_in: "Checking in…", checking_out: "Checking out…",
             your_location: "Your location", sending: "Sending…", photo_added: "Photo added",
+            how_was_shift: "How was your shift?",
+            pulse_anonymous: "Anonymous — never linked to your name",
+            pulse_thanks: "Thanks for the feedback",
         },
         vi: {
             off_duty: "Chưa làm việc", on_duty: "Đang làm việc", check_in: "Vào ca",
@@ -29,6 +32,9 @@
             just_now: "vừa xong", offline_queued: "Ngoại tuyến — đã xếp hàng",
             checking_in: "Đang vào ca…", checking_out: "Đang ra ca…",
             your_location: "Vị trí của bạn", sending: "Đang gửi…", photo_added: "Đã thêm ảnh",
+            how_was_shift: "Ca làm hôm nay thế nào?",
+            pulse_anonymous: "Ẩn danh — không gắn với tên của bạn",
+            pulse_thanks: "Cảm ơn phản hồi của bạn",
         },
     };
     var T = STRINGS[LANG] || STRINGS.en;
@@ -325,7 +331,53 @@
             stopTracking();
             closeSheet(sheet);
             render();
+            offerPulse();
         }).catch(function () { closeSheet(sheet); refresh(); });
+    }
+
+    // ---------------------------------------------------------------- pulse
+    /* The anonymous end-of-shift rating (pb_ess_workforce, P8).
+     *
+     * Offered right after CHECK-OUT and nowhere else: this is the one moment a
+     * driver is holding the phone with the shift fresh and nothing left to do.
+     * `pulse_enabled` is decided server-side, so this app never renders a
+     * control the backend would 404 on.
+     *
+     * The five faces are the RATING SCALE, not decoration — they are the data.
+     * A row of outline icons cannot say "how did it go" to somebody standing
+     * beside a truck, and everything else in this app is still Lucide/pbim.
+     *
+     * Fire and forget: no error is surfaced. A rating that fails to send is a
+     * rating that was never given, and a driver who has just finished a shift
+     * must not be handed a retry dialog for a courtesy question. */
+    function offerPulse() {
+        if (!(S.state && S.state.pulse_enabled)) { return; }
+        var faces = [
+            { v: 1, g: "😞" }, { v: 2, g: "🙁" },
+            { v: 3, g: "😐" }, { v: 4, g: "🙂" },
+            { v: 5, g: "😄" },
+        ];
+        var row = faces.map(function (f) {
+            return '<button class="pbdrv-face" data-v="' + f.v + '">' + f.g + "</button>";
+        }).join("");
+        var sheet = openSheet(
+            _t("how_was_shift"),
+            '<div class="pbdrv-faces">' + row + "</div>" +
+            '<div class="pbdrv-anon">' + _t("pulse_anonymous") + "</div>" +
+            '<button class="pbdrv-btn pbdrv-btn--ghost" id="pbdrv-pskip">' + _t("skip") + "</button>");
+        sheet.querySelector("#pbdrv-pskip").addEventListener("click", function () {
+            closeSheet(sheet);
+        });
+        Array.prototype.forEach.call(sheet.querySelectorAll(".pbdrv-face"), function (b) {
+            b.addEventListener("click", function () {
+                closeSheet(sheet);
+                rpc("/work/pulse", { rating: Number(b.getAttribute("data-v")) })
+                    .then(function (res) {
+                        if (res && res.ok) { toast(_t("pulse_thanks")); }
+                    })
+                    .catch(function () { /* courtesy question, silent failure */ });
+            });
+        });
     }
 
     // ---------------------------------------------------------------- selfie

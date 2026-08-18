@@ -147,3 +147,31 @@ html, body.pbdrv-body {
 }
 .pbdrv-gate__card h1 { font-size: 20px; margin: 0 0 10px; color: var(--pbdrv-navy); }
 .pbdrv-gate__card p { color: var(--pbdrv-muted); font-size: 14px; line-height: 1.5; margin: 0; }
+
+/* P8 — the anonymous end-of-shift pulse (pb_ess_workforce).
+   The five faces ARE the rating scale, so they are sized as a control, not as
+   text: a thumb has to hit one of them on a phone, in a hurry, outdoors. */
+.pbdrv-faces {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    margin: 6px 0 10px;
+}
+.pbdrv-face {
+    flex: 1;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, .06);
+    border-radius: 14px;
+    font-size: 30px;
+    line-height: 1;
+    padding: 12px 0;
+    cursor: pointer;
+    transition: transform .12s ease, background .12s ease;
+}
+.pbdrv-face:active { transform: scale(.92); background: rgba(255, 255, 255, .14); }
+.pbdrv-anon {
+    font-size: 12px;
+    opacity: .68;
+    text-align: center;
+    margin-bottom: 12px;
+}

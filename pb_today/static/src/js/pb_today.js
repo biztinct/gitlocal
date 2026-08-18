@@ -200,6 +200,33 @@ export class PbToday extends Component {
         return ((this.state.data && this.state.data.tiles) || {}).total || 0;
     }
 
+    /**
+     * P8 — the Team pulse tile.
+     *
+     * Deliberately NOT in `tiles` above: those five are states of the day and
+     * every one of them is a FILTER on the people list. A pulse average filters
+     * nothing and drills into nothing, so putting it in that strip would have
+     * made it a door that opens onto an empty room (W5/W29).
+     *
+     * The anonymity floor is resolved SERVER-side inside `get_pulse_tile`,
+     * which returns no figures at all below it — this getter cannot decide to
+     * show a number it was never given, which is the point. `shown: false` and
+     * an absent key (pb_ess_workforce not installed) are the same answer here.
+     */
+    get pulse() {
+        const p = this.state.data && this.state.data.pulse;
+        return p && p.shown ? p : null;
+    }
+
+    get pulseFace() {
+        const a = this.pulse && this.pulse.avg;
+        if (!a) { return ""; }
+        if (a >= 4.5) { return "smilePlus"; }
+        if (a >= 3.5) { return "smile"; }
+        if (a >= 2.5) { return "meh"; }
+        return "frown";
+    }
+
     get updatedAt() { return (this.state.data && this.state.data.updated_at) || ""; }
 
     get truncated() { return (this.state.data && this.state.data.truncated) || 0; }

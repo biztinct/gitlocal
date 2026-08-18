@@ -53,6 +53,12 @@ class DriverApp(http.Controller, GeoPwaShell):
             'today_hours': round(emp.hours_today or 0.0, 2),
             'last_ping_age': age,
             'has_selfie': bool(att and att.pb_selfie_attachment_id) if att else False,
+            # P8 soft hook: the anonymous shift pulse (pb_ess_workforce). A
+            # SERVER-side presence test, so the PWA never offers a control the
+            # backend would 404 — the driver app has no module loader and
+            # cannot feature-detect a route on its own. Absent module = absent
+            # prompt, with nothing to configure.
+            'pulse_enabled': 'pb.shift.pulse' in request.env,
         }
 
     # ------------------------------------------------------------- PWA shell

@@ -114,6 +114,30 @@
         <t t-call="pb_ess_workforce.work_nav"/>
         <t t-call="pb_ess_workforce.work_flash"/>
 
+        <!-- ==== the anonymous shift pulse ====
+             Shown only after a shift the person actually worked has ENDED
+             today, and only until they answer or dismiss. The five faces ARE
+             the rating control — they are the data, not chrome, which is the
+             one place W2's no-emoji rule does not apply. -->
+        <div t-if="pulse and pulse.get('show')" class="pbew-pulse">
+          <div class="pbew-pulse__q">
+            <div class="t">How did your shift go?</div>
+            <div class="s"><t t-esc="pulse['shift']"/> · your answer is anonymous — it is never linked to your name</div>
+          </div>
+          <form action="/my/work/pulse" method="post" class="pbew-pulse__row">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <button type="submit" name="rating" value="1" class="pbew-face" title="Bad">😞</button>
+            <button type="submit" name="rating" value="2" class="pbew-face" title="Not great">🙁</button>
+            <button type="submit" name="rating" value="3" class="pbew-face" title="OK">😐</button>
+            <button type="submit" name="rating" value="4" class="pbew-face" title="Good">🙂</button>
+            <button type="submit" name="rating" value="5" class="pbew-face" title="Great">😄</button>
+          </form>
+          <form action="/my/work/pulse/dismiss" method="post">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <button type="submit" class="pbew-pulse__skip">Not now</button>
+          </form>
+        </div>
+
         <div class="pbew-weeknav">
           <a class="pbme-btn pbme-btn--ghost" t-attf-href="/my/work/schedule?week=#{sched['prev_week']}">
             <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">arrow-left</t><t t-set="isz" t-value="14"/></t>Earlier
