@@ -2,9 +2,10 @@
 /**
  * The Schedule cockpit — the Deputy-shaped roster, rebuilt as an instrument.
  *
- * The Gen-0 screen it replaces (`shift_planning_grid`) is still registered and
- * still works (W18 retirement, not deletion); this is a NEW component over NEW
- * facade methods, so nothing the old screen consumes can drift underneath it.
+ * The Gen-0 screen it replaces (`shift_planning_grid`) was kept registered
+ * through P2-P6 under W18 and was finally deleted in P7. This is a NEW
+ * component over NEW facade methods, which is why that deletion cost this file
+ * nothing: the two never shared a payload.
  *
  * What carried over, deliberately: the employee × day grid, the sticky people
  * column with its hours-vs-contract bar, the Open Shifts row, the leave

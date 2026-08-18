@@ -113,12 +113,17 @@ const tertiaryData = {
     attendance: {
         title: _t('Attendance & Workforce'),
         items: [
-            { label: _t('Workforce Dashboard'), icon: 'fa-tachometer', desc: _t('KPI overview & analytics'), disabled: false, route: 'wf-dashboard' },
-            { label: _t('Live Attendance'), icon: 'fa-wifi', desc: _t('Real-time check-in feed'), disabled: false, route: 'wf-live-attendance' },
-            { label: _t('Timecards'), icon: 'fa-clock-o', desc: _t('Visual Gantt timeline'), disabled: false, route: 'wf-timecards' },
-            { label: _t('Shift Roster'), icon: 'fa-calendar', desc: _t('Weekly shift grid'), disabled: false, route: 'wf-shift-roster' },
+            // P7: the first four tiles named the Gen-0 cockpits, which were
+            // deleted with their client actions. The ROUTES are kept (they are
+            // the wizard's map keys and the map now points them at the surfaces
+            // that absorbed each one), but a tile has to say what it actually
+            // opens — "Live Attendance" landing on Today is a broken promise
+            // even though the click works.
+            { label: _t('Today'), icon: 'fa-tachometer', desc: _t('Live board: who is in, who is late'), disabled: false, route: 'wf-dashboard' },
+            { label: _t('Time'), icon: 'fa-clock-o', desc: _t('Timeline, exceptions and timecards'), disabled: false, route: 'wf-timecards' },
+            { label: _t('Schedule'), icon: 'fa-calendar', desc: _t('Weekly shift roster'), disabled: false, route: 'wf-shift-roster' },
             { label: _t('Payroll Report'), icon: 'fa-bar-chart', desc: _t('Employee pay run comparison'), disabled: false, route: 'wf-payroll-report' },
-            { label: _t('Overtime Rules'), icon: 'fa-balance-scale', desc: _t('Rate rules & applicability'), disabled: false, route: 'wf-overtime-rules' },
+            { label: _t('Overtime Desk'), icon: 'fa-balance-scale', desc: _t('Requests, ceilings and rate rules'), disabled: false, route: 'wf-overtime-rules' },
             { label: _t('Shift Templates'), icon: 'fa-clone', desc: _t('Reusable shift patterns'), disabled: false, route: 'wf-shift-templates' },
             { label: _t('Leave Dashboard'), icon: 'fa-leaf', desc: _t('Leave overview'), disabled: false, route: 'leaves-dashboard' },
         ],

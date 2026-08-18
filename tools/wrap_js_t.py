@@ -22,45 +22,6 @@ BASE_DIR = '/Users/adity/Documents/GitHub/gitlocal'
 # Map of JS file paths (relative) to strings that should be wrapped in _t()
 # Only includes user-visible UI strings, not debug/console/internal strings
 JS_TRANSLATIONS = {
-    'pb_hr_workforce/static/src/js/overtime_rules.js': {
-        '"Weekday"': '_t("Weekday")',
-        '"Extra hours on regular work days"': '_t("Extra hours on regular work days")',
-        '"Weekend"': '_t("Weekend")',
-        '"Holiday"': '_t("Holiday")',
-        '"All hours on public holidays"': '_t("All hours on public holidays")',
-        '"Night Shift"': '_t("Night Shift")',
-        '"Hours within night time window"': '_t("Hours within night time window")',
-        '"Extended"': '_t("Extended")',
-        '"OT exceeding daily max cap"': '_t("OT exceeding daily max cap")',
-        '"Every day"': '_t("Every day")',
-        '"No days selected"': '_t("No days selected")',
-        '"Please enter a rule name"': '_t("Please enter a rule name")',
-        '"Rule updated"': '_t("Rule updated")',
-        '"Rule created"': '_t("Rule created")',
-        '"Rule deleted"': '_t("Rule deleted")',
-    },
-    'pb_hr_workforce/static/src/js/shift_planning_grid.js': {
-        '"Copy shifts to next week"': '_t("Copy shifts to next week")',
-        '"Shift conflict detected"': '_t("Shift conflict detected")',
-        '"Failed to load shift grid"': '_t("Failed to load shift grid")',
-        '"Employee is on leave this day"': '_t("Employee is on leave this day")',
-        '"Shift created"': '_t("Shift created")',
-        '"Failed to create shift"': '_t("Failed to create shift")',
-        '"Shift deleted"': '_t("Shift deleted")',
-        '"Cannot delete this shift"': '_t("Cannot delete this shift")',
-        '"Publish failed"': '_t("Publish failed")',
-        '"Copy failed"': '_t("Copy failed")',
-    },
-    'pb_hr_workforce/static/src/js/attendance_live.js': {
-        '"Attendance data refreshed"': '_t("Attendance data refreshed")',
-    },
-    'pb_hr_workforce/static/src/js/attendance_timecard.js': {
-        '"With hours only"': '_t("With hours only")',
-    },
-    'pb_hr_workforce/static/src/js/workforce_dashboard.js': {
-        '"Total Hours"': '_t("Total Hours")',
-        '"OT Hours"': '_t("OT Hours")',
-    },
     'pb_hr_workforce/static/src/js/payroll_report.js': {
         '"Failed to load payroll report"': '_t("Failed to load payroll report")',
     },

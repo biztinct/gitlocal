@@ -4,7 +4,6 @@ from . import shift_planning_grid
 from . import overtime_config
 from . import overtime_request
 from . import workforce_dashboard
-from . import attendance_live
 from . import payroll_report
 from . import attendance_timecard
 from . import hr_attendance

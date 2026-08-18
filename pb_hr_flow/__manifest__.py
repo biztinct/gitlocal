@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'HR Workflow Flow',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'summary': 'Interactive circular workflow dashboard for HR operations',
     'description': """
@@ -42,7 +42,6 @@ Technical Features:
         'security/ir.model.access.csv',
         'views/hr_flow_views.xml',
         'views/hr_payslip_line_analytics_views.xml',
-        'views/menu_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

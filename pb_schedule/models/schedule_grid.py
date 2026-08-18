@@ -3,13 +3,16 @@
 
 STRATEGY (P2 §3.2, binding)
 ---------------------------
-The legacy cockpit (`pb_hr_workforce/static/src/js/shift_planning_grid.js`) is
-still registered and still works; it is retired by W18, not deleted. So this
-file may only ADD methods. `get_grid_data`, `quick_create_shift`, `delete_shift`,
-`publish_shifts`, `copy_week`, `get_departments` and `get_job_positions` keep
-their exact payload shapes — the old screen consumes them until a later cleanup
-phase removes it, and a "small improvement" to one of those dicts would break a
-surface nobody is looking at.
+This file may only ADD methods. `get_grid_data`, `quick_create_shift`,
+`delete_shift`, `publish_shifts`, `copy_week`, `get_departments` and
+`get_job_positions` keep their exact payload shapes.
+
+P2's reason was that the legacy cockpit still consumed them. P7 deleted that
+cockpit — and the rule survives it, for a better reason: those seven methods
+are now the FACADE, the base every consumer of this model inherits, and their
+shapes are read by `pb_schedule`'s own cockpit and by `pb_close._handoff`
+(`_pb_rates`). "The old screen depends on it" was always the weaker argument;
+"this is the published contract of a base model" is the real one.
 
 `get_schedule_data` is therefore a NEW read model, not a patched one. It differs
 from `get_grid_data` in four ways that matter:

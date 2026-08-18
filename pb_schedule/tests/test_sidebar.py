@@ -42,24 +42,53 @@ class TestP2Sidebar(TransactionCase):
                          'the rail must open the P2 cockpit, not the legacy grid')
         self.assertEqual(item.action_tag, 'pb_schedule')
 
-    def test_the_legacy_grid_still_lights_the_rail_item(self):
-        """W18 is a retirement, not a deletion: the old client action is still
-        registered and still reachable, and it must highlight Schedule rather
-        than leaving the rail with nothing selected."""
+    # UPDATED BY P7 (WP-3). These two used to assert the OPPOSITE of what
+    # follows: that `pb_hr_workforce.action_shift_planning_grid` was still
+    # registered, and that `item_wf_roster` still listed the legacy
+    # `shift_planning_grid` tag so a bookmark into the Gen-0 grid would light
+    # the Schedule rail item. Both were correct for P2, whose binding non-goal
+    # was "no deletion" — and both became false the moment P7 deleted that
+    # cockpit's JS, CSS and client action. A `match_action_tags` entry naming a
+    # tag no longer in the browser's action registry can never be the active
+    # one; keeping it asserted would have been a gate defending a screen that
+    # does not exist.
+    def test_the_rail_item_only_claims_tags_that_still_exist(self):
+        """W71's rule from the other side: a match dimension is a CLAIM on a
+        real surface. The legacy grid's tag is gone from the registry, so the
+        list must not name it — otherwise the next reader believes there is a
+        second Schedule screen somewhere."""
         item = self._item('pb_sidebar.item_wf_roster')
         if not item:
             self.skipTest('pb_sidebar is not installed')
         tags = [t.strip() for t in (item.match_action_tags or '').split(',')]
-        self.assertIn('shift_planning_grid', tags)
         self.assertIn('pb_schedule', tags)
+        self.assertNotIn(
+            'shift_planning_grid', tags,
+            'the Gen-0 grid was deleted in P7 — a rail item may not claim a '
+            'client tag that nothing registers')
 
-    def test_the_legacy_action_is_still_registered(self):
-        """A bookmark or a stray doAction must not 404 while the old screen
-        exists (binding non-goal: no deletion in P2)."""
-        act = self.env.ref('pb_hr_workforce.action_shift_planning_grid',
-                           raise_if_not_found=False)
-        self.assertTrue(act, 'the legacy Shift Roster action must survive P2')
-        self.assertEqual(act.tag, 'shift_planning_grid')
+    def test_the_legacy_grid_action_is_gone_but_the_facade_is_not(self):
+        """The P7 deletion, asserted from the database (W13.1), and the line it
+        stopped at.
+
+        The client ACTION and its OWL component are deleted: nothing renders
+        `shift_planning_grid` any more, so leaving the record would have left a
+        door that can only ever produce an error (W29). The `hr.shift.planning
+        .grid` MODEL is untouched and must stay untouched — `pb_schedule`
+        inherits it and every one of this cockpit's reads and writes goes
+        through it.
+        """
+        self.assertFalse(
+            self.env.ref('pb_hr_workforce.action_shift_planning_grid',
+                         raise_if_not_found=False),
+            'the Gen-0 Shift Roster action survived P7 with no component '
+            'behind it')
+        self.assertIn(
+            'hr.shift.planning.grid', self.env,
+            'the grid FACADE must survive — pb_schedule is built on it')
+        self.assertTrue(
+            hasattr(self.env['hr.shift.planning.grid'], 'get_grid_data'),
+            'the facade lost the method pb_schedule inherits')
 
     def test_the_rail_gate_matches_the_facade_gate(self):
         """W8: `hr.shift.planning.grid._require_officer` refuses anyone below

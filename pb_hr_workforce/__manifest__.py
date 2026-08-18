@@ -1,6 +1,6 @@
 {
     'name': 'Workforce Management',
-    'version': '19.0.4.13.0',
+    'version': '19.0.4.14.0',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
@@ -39,7 +39,6 @@ Workforce Management — Deputy & Rippling-Style HR Tools
         'views/shift_planning_views.xml',
         'views/overtime_request_views.xml',
         'views/overtime_config_views.xml',
-        'views/workforce_dashboard_views.xml',
         'views/shift_planning_grid_views.xml',
         'views/attendance_weekentry_views.xml',
         'views/ot_desk_action.xml',
@@ -49,19 +48,9 @@ Workforce Management — Deputy & Rippling-Style HR Tools
     ],
     'assets': {
         'web.assets_backend': [
-            'pb_hr_workforce/static/src/css/workforce_dashboard.css',
-            'pb_hr_workforce/static/src/css/shift_planning_grid.css',
             'pb_hr_workforce/static/src/css/wf_breadcrumb.css',
-            'pb_hr_workforce/static/src/css/attendance_live.css',
             'pb_hr_workforce/static/src/css/payroll_report.css',
-            'pb_hr_workforce/static/src/css/attendance_timecard.css',
-            'pb_hr_workforce/static/src/css/overtime_rules.css',
-            'pb_hr_workforce/static/src/js/workforce_dashboard.js',
-            'pb_hr_workforce/static/src/js/shift_planning_grid.js',
-            'pb_hr_workforce/static/src/js/attendance_live.js',
             'pb_hr_workforce/static/src/js/payroll_report.js',
-            'pb_hr_workforce/static/src/js/attendance_timecard.js',
-            'pb_hr_workforce/static/src/js/overtime_rules.js',
             'pb_hr_workforce/static/src/scss/attendance_weekgrid.scss',
             'pb_hr_workforce/static/src/js/attendance_weekgrid.js',
             'pb_hr_workforce/static/src/xml/attendance_weekgrid.xml',

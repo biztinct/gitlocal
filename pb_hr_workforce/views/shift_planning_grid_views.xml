@@ -1,34 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Client Action: Shift Planning Grid -->
-    <record id="action_shift_planning_grid" model="ir.actions.client">
-        <field name="name">Shift Roster</field>
-        <field name="tag">shift_planning_grid</field>
-    </record>
+    <!-- ==== the last Gen-0 client action ====
+         This file used to declare five. Four of them (Shift Roster, Live
+         Attendance, Timecards, Overtime Rules) were the Gen-0 cockpits that the
+         Workforce redesign replaced surface by surface, and P7 deleted their
+         JS/CSS: an ir.actions.client whose tag is no longer in the action
+         registry is a door that can only ever produce an error (W29), so the
+         records went with the code rather than being left behind as a rail of
+         dead tags.
 
-    <!-- Client Action: Live Attendance Feed -->
-    <record id="action_attendance_live" model="ir.actions.client">
-        <field name="name">Live Attendance</field>
-        <field name="tag">attendance_live</field>
-    </record>
-
-    <!-- Client Action: Payroll Report Dashboard -->
+         `payroll_report_dashboard` is NOT one of them. It is live, it is on the
+         Pay Run section of the rail, and `pb_payruns`' kanban calls
+         `action_open_payroll_report` to reach it — which is also why
+         `wf_breadcrumb.css` stays: this cockpit is its only remaining
+         consumer. -->
     <record id="action_payroll_report_dashboard" model="ir.actions.client">
         <field name="name">Payroll Report</field>
         <field name="tag">payroll_report_dashboard</field>
-    </record>
-
-    <!-- Client Action: Attendance Timecard -->
-    <record id="action_attendance_timecard" model="ir.actions.client">
-        <field name="name">Timecards</field>
-        <field name="tag">attendance_timecard</field>
-    </record>
-
-    <!-- Client Action: Overtime Rules Dashboard (Deputy-style) -->
-    <record id="action_overtime_rules_dashboard" model="ir.actions.client">
-        <field name="name">Overtime Rules</field>
-        <field name="tag">overtime_rules_dashboard</field>
     </record>
 
 </odoo>

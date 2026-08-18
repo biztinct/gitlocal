@@ -27,7 +27,7 @@
         <field name="active" eval="False"/>
         <field name="action_xmlid">pb_today.action_pb_today</field>
         <field name="action_tag">pb_today</field>
-        <field name="match_action_tags">pb_today,attendance_live,pb_driver_map</field>
+        <field name="match_action_tags">pb_today,pb_driver_map</field>
         <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
     </record>
 
