@@ -57,8 +57,31 @@ it. No autosave. Don't touch Timeline/Exceptions/Import lenses.
 7. **Both hosts verified** (Time-hub lens + standalone action), embedded and not (W17 discipline
    already in place).
 
+## §3.5 P6 grounding (measured live — calibrate against it)
+
+- `get_week_entries` timings on the seeded cohort: unfiltered current week ~1.4s / 200 rows;
+  dept-filtered ~500ms / 169 rows; settled week 2026-08-10 unfiltered 746ms with **267 filled REG
+  cells** vs the current week's ~49. **Judge the redesign on BOTH**: the settled week (density) and
+  the current week (sparseness is data-honest — elapsed days only, and today's open punches
+  contribute 0.0).
+- OT chip density is deliberately low (2–5 chips/week). Your live edit round-trip creates its own
+  chips; no wider seeding needed.
+- The unfiltered grid is alphabetical over 4,505 employees — the department filter is the honest
+  demo view; use "Stores - North" (169 rows) for screenshots.
+
 ## §4 Work packages (one commit each)
 
+- **WP-0 Two P6-exposed defects (surgical, first, own tests):**
+  (a) `pb.close._classify` flags every currently-open punch as `missing_checkout` with NO
+  threshold — on a live day ~50 of 66 flags are just people at work. Reuse the exception engine's
+  own open-hours threshold semantics (read how `pb.attendance.exception.engine` gates
+  `missing_checkout` via open-hours before flagging) so the Close board and the engine agree; a
+  punch open less than the threshold on the CURRENT day is not a flag. Tests: open-punch today →
+  not flagged; open past threshold → flagged; settled missing checkout → still flagged.
+  (b) `pb_schedule` renders shift times in UTC — `schedule_grid._pb_hhmm` is a bare
+  `strftime('%H:%M')`. Localize to the employee's tz (fallback company tz), matching what
+  pb_today/pb_time_hub render (W55/W51 family). Tests: an 08:00 Asia/Ho_Chi_Minh shift renders
+  08:00, not 01:00, and the day-column cost strip keys the same local day.
 - **WP-1** Cell anatomy v2 + legend + summaries (+ hoot tests: render-state matrix, the
   no-%-in-cells gate, flags/badges still render).
 - **WP-2** Cell editor popover + inline warnings + ceiling bar (+ hoot tests: open/edit/stage/
