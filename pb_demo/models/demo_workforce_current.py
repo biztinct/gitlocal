@@ -74,6 +74,11 @@ _logger = logging.getLogger(__name__)
 _DAYS_BACK = 14
 _DAYS_FWD = 7
 
+# The demo world's country clock. Used for the seeded shift/punch wall times AND
+# stamped onto the demo employees themselves — see `_p6_tz` (W55) and
+# `_p6_align_timezones`, each of which cost this phase a live run to find.
+_DEMO_TZ = 'Asia/Ho_Chi_Minh'
+
 # The cohort. A union of two shapes on purpose:
 #   * `_GLOBAL_TAKE` demo adults by NAME across the whole company, so the
 #     UNFILTERED Week Grid / roster (which is `order='name', limit=200`) opens
@@ -126,9 +131,10 @@ class PbDemoGenerator(models.TransientModel):
         is what the tests assert on and what a live run is reported from.
         """
         self = self.with_context(**self._GEN_CTX)
-        out = {'cohort': 0, 'healed': 0, 'shifts': 0, 'drafts': 0,
-               'completed': 0, 'punches': 0, 'open_today': 0, 'overtime': 0,
-               'leaves': 0, 'trips': 0, 'corrections': 0, 'drivers': 0}
+        out = {'cohort': 0, 'timezones': 0, 'healed': 0, 'shifts': 0,
+               'drafts': 0, 'completed': 0, 'punches': 0, 'open_today': 0,
+               'overtime': 0, 'leaves': 0, 'trips': 0, 'corrections': 0,
+               'drivers': 0}
 
         company = self.get_group_company()
         if not company:
@@ -161,6 +167,7 @@ class PbDemoGenerator(models.TransientModel):
         # Each section in its own savepoint: one refusal (a young-worker cap, a
         # trip overlap, a leave-validation quirk) must never abort the rest.
         # The InFailedSqlTransaction lesson — see demo_timeoff.ensure_timeoff_demos.
+        self._p6_section(out, 'timezones', self._p6_align_timezones, company)
         self._p6_section(out, 'self-heal', self._p6_heal_open_punches,
                          cohort, tz, specs, today, start)
         self._p6_section(out, 'shifts', self._p6_seed_shifts,
@@ -254,7 +261,7 @@ class PbDemoGenerator(models.TransientModel):
         sibling seeders already fall back to this same zone, and a wrong tz here
         is silent in every test that does not know what time it should be.
         """
-        return timezone('Asia/Ho_Chi_Minh')
+        return timezone(_DEMO_TZ)
 
     def _p6_utc(self, tz, d, hour):
         """Naive-UTC datetime for local wall-clock `hour` (8.5 → 08:30) on `d`."""
@@ -327,12 +334,25 @@ class PbDemoGenerator(models.TransientModel):
         return ('on_time', float(-6 + (v % 5) * 2), 0.0)
 
     def _p6_window(self, tpl, emp):
-        """(start_hour, end_hour) in LOCAL hours for this person's shift."""
+        """(start_hour, end_hour) in LOCAL hours — the template's NET duration,
+        never its `end_hour`.
+
+        `hr.shift.template.duration` is the paid time, `end_hour − start_hour`
+        includes the unpaid break: the AM template runs 08:00–17:00 and is worth
+        8 h. Building the shift (and the punch that matches it) from `end_hour`
+        makes every single day a +1.0 h overshoot, which is inside the per-punch
+        variance and OUTSIDE the weekly one — so the Close board fills with one
+        "Week outside tolerance" row per person and buries the days that really
+        do need attention (W54's failure mode, arrived at from the data side).
+        Observed live before this was fixed: a wall of +1.0 rows across the
+        whole cohort. `demo_workforce.py` already punched 08:00–16:00 for the
+        same reason; this makes the shift agree with it.
+        """
         start = tpl.start_hour or 8.0
         shape = _MINOR_SHAPE.get(emp.name)
         if shape:
             return (start, start + shape[0])
-        return (start, tpl.end_hour or (start + 8.0))
+        return (start, start + (tpl.duration or 8.0))
 
     # ========================================================== the day plan
     def _p6_specs(self, cohort, tz, today, start, end, excused):
@@ -433,6 +453,45 @@ class PbDemoGenerator(models.TransientModel):
             except Exception as e:   # pragma: no cover
                 _logger.warning('pb_demo P6: %s row skipped: %s', label, e)
         return made
+
+    # ============================================================ timezones
+    def _p6_align_timezones(self, company):
+        """Give the demo employees the timezone of the country they work in.
+
+        Found live, one lens after W55's calendar bug: with the roster correctly
+        seeded at 08:00 Vietnam time, the Today board rendered
+        "Morning Shift · 03:00–11:00". `pb.today._tzinfo` resolves an employee's
+        clock as ``emp.tz or self.env.user.tz or UTC`` — and a demo employee has
+        NO tz, because `demo_employees.generate_employees` never set one — so
+        every time on every Workforce surface was being printed in whatever zone
+        the person LOOKING at the demo happens to sit in. A Vietnamese factory
+        whose morning shift starts at three in the morning is not a demo.
+
+        The same field is what `pb.close`, `pb.wf.lock` and the exception engine
+        key their employee-LOCAL day on (W51), so setting it also makes the day
+        they mean identical to the day this seeder wrote — which is the whole
+        point of the 07:00–22:00 band in the module docstring.
+
+        This OVERWRITES rather than fills a blank, and the live data is why: the
+        first version only touched employees with no tz and changed exactly
+        nothing, because `hr.employee.tz` is `resource_resource.tz` and Odoo
+        seeds it from whoever ran the create. On the apex database that is
+        **Europe/Brussels for 4 500 demo employees and Australia/Sydney for the
+        two demo minors** — nobody chose either, and neither is a decision worth
+        preserving in a company called Payobook Vietnam JSC. Scoped to
+        `is_demo` employees of the demo company, which pb_demo owns outright.
+        """
+        Employee = self.env['hr.employee'].sudo().with_context(active_test=False)
+        wrong = Employee.search([
+            ('is_demo', '=', True), ('company_id', '=', company.id),
+            ('tz', '!=', _DEMO_TZ),
+        ])
+        if not wrong:
+            return {}
+        wrong.write({'tz': _DEMO_TZ})
+        _logger.info('pb_demo P6: set the VN timezone on %s demo employees.',
+                     len(wrong))
+        return {'timezones': len(wrong)}
 
     # ============================================================ self-heal
     def _p6_heal_open_punches(self, cohort, tz, specs, today, start):
