@@ -14,6 +14,8 @@ the counts of what it created are all zero and the row totals did not move.
 
 from datetime import date, timedelta
 
+from pytz import timezone as _tzname, utc as _utc
+
 from odoo import fields
 from odoo.tests.common import TransactionCase, tagged
 
@@ -240,8 +242,9 @@ class TestWorkforceCurrent(TransactionCase):
         self.assertEqual(before, after,
                          'a second run moved the row counts: %s → %s'
                          % (before, after))
-        for key in ('shifts', 'drafts', 'punches', 'overtime', 'leaves',
-                    'trips', 'corrections'):
+        for key in ('shifts', 'drafts', 'punches', 'overtime', 'dept_overtime',
+                    'grid_punches', 'calendars', 'leaves', 'trips',
+                    'corrections'):
             self.assertEqual(again.get(key, 0), 0,
                              'the second run created %s %s' % (again[key], key))
 
@@ -315,6 +318,146 @@ class TestWorkforceCurrent(TransactionCase):
             blank, '%s demo employees still have no timezone — every Workforce '
                    'surface would render them in the viewer\'s zone' % blank)
         self.assertEqual(self.cohort[0].tz, 'Asia/Ho_Chi_Minh')
+
+    # --------------------------------------------------------- P7: the clocks
+    def test_the_demo_companys_calendars_run_on_the_demo_worlds_clock(self):
+        """The THIRD clock (P7). W55 fixed the seeder's wall time and P6 the
+        employees'; `hr.attendance.weekentry._emp_tz` reads neither first — it
+        resolves the working CALENDAR, falls back to the employee, and only then
+        to the viewer. The demo company shipped Odoo's stock 40-hour calendar,
+        which carries Europe/Brussels, so an officer typing "8" into a Week Grid
+        cell wrote a punch at 13:00 Vietnamese time. Asserted through the FACADE
+        rather than on the field, because the facade's resolution order is the
+        thing that was wrong."""
+        Cal = self.env['resource.calendar'].sudo().with_context(
+            active_test=False)
+        mine = Cal.search([('company_id', '=', self.company.id)])
+        self.assertTrue(mine, 'the demo company has no working calendar')
+        for cal in mine:
+            self.assertEqual(
+                cal.tz, 'Asia/Ho_Chi_Minh',
+                '%s is on %s — a hand-entered punch would be written in that '
+                'zone (attendance_weekentry._emp_tz reads the calendar FIRST)'
+                % (cal.display_name, cal.tz))
+        # the resolution the grid actually performs, on a real cohort member
+        self.assertEqual(
+            self.env['hr.attendance.weekentry']._emp_tz(self.cohort[0]),
+            'Asia/Ho_Chi_Minh')
+
+    def test_it_does_not_restamp_a_calendar_the_demo_company_does_not_own(self):
+        """The scope rail. A calendar with no company is GLOBAL and shared with
+        real companies; "fix the demo world" must never rewrite their working
+        hours. Proven on the rows that exist rather than on the domain."""
+        Cal = self.env['resource.calendar'].sudo().with_context(
+            active_test=False)
+        foreign = Cal.search([('company_id', '!=', self.company.id)])
+        stamped = foreign.filtered(lambda c: c.tz == 'Asia/Ho_Chi_Minh')
+        # A Vietnamese company legitimately elsewhere on the database would own
+        # one; what must not happen is the demo company's seeder producing it.
+        for cal in stamped:
+            self.assertNotEqual(
+                cal.company_id, self.company,
+                'the seeder reached a calendar outside the demo company')
+
+    # ------------------------------------------------------- P7: the grid slice
+    def test_one_department_is_editable_in_the_week_grid(self):
+        """`get_week_entries` unlocks a REG cell only for a day with exactly one
+        punch carrying `pb_entry_source='grid'`. Every seeded punch is a DEVICE
+        punch, which is right and which also left the grid's keyboard story
+        undemonstrable — so one named department is stamped."""
+        people = self.gen._p6_dept_slice(self.cohort, self.company,
+                                         'Stores - North')
+        if not people:
+            self.skipTest('the demo world has no "Stores - North" department')
+        Att = self.env['hr.attendance'].sudo()
+        n = Att.search_count([
+            ('employee_id', 'in', [e.id for e in people]),
+            ('check_in', '>=', self.start),
+            ('pb_entry_source', '=', 'grid')])
+        self.assertGreater(
+            n, 0, 'no grid-entered punch in the demo — every REG cell in the '
+                  'Week Grid is read-only and the keyboard demo needs an edit '
+                  'before it can show an edit')
+
+    def test_the_stamp_only_ever_claims_a_row_the_plan_predicts(self):
+        """Why this seeder is allowed to rewrite a row at all: it can prove the
+        row is its own. A punch is stamped only when its check-in AND check-out
+        equal the deterministic plan to the second — so an officer's correction,
+        an import, or a punch somebody nudged by a minute is left alone."""
+        people = self.gen._p6_dept_slice(self.cohort, self.company,
+                                         'Stores - North')
+        if not people:
+            self.skipTest('the demo world has no "Stores - North" department')
+        tz = self.gen._p6_tz(self.company)
+        specs = self.gen._p6_specs(self.cohort, tz, self.today, self.start,
+                                   self.end, {})
+        Att = self.env['hr.attendance'].sudo()
+        marked = Att.search([
+            ('employee_id', 'in', [e.id for e in people]),
+            ('check_in', '>=', self.start),
+            ('pb_entry_source', '=', 'grid')])
+        for a in marked:
+            day = _utc.localize(a.check_in).astimezone(tz).date()
+            spec = specs.get((a.employee_id.id, day))
+            self.assertTrue(spec, 'a stamped punch has no plan behind it')
+            self.assertEqual(a.check_in, spec['ci'])
+            self.assertEqual(a.check_out, spec['co'])
+
+    def test_a_hand_entered_punch_lands_in_the_right_country(self):
+        """The end-to-end shape of the calendar bug, through the write path that
+        had it: `_save_reg` builds the check-in from `_emp_tz`. Asserted as the
+        LOCAL wall clock and the UTC value together (W55/W63), on a cohort whose
+        zone is deliberately not UTC — a single-sided assertion here proves
+        nothing."""
+        emp = self.cohort[0]
+        name = self.env['hr.attendance.weekentry']._emp_tz(emp)
+        eight_utc = _tzname(name).localize(
+            fields.Datetime.to_datetime('%s 08:00:00' % self.today)
+        ).astimezone(_utc).replace(tzinfo=None)
+        self.assertEqual(
+            eight_utc.hour, 1,
+            '08:00 entered by hand becomes %s UTC — in %s that is %02d:00 '
+            'local, not eight in the morning'
+            % (eight_utc, name, (eight_utc.hour + 7) % 24))
+
+    # ----------------------------------------------------- P7: the OT chips
+    def test_the_editable_department_carries_visible_overtime(self):
+        """A grid whose chip vocabulary can only be seen by first entering
+        overtime cannot be demonstrated read-only. The settled week and the
+        current one both carry chips, and they sit on days the person really
+        worked — an OT claim on an empty day is an anomaly, and seeding
+        anomalies to make a screen look busy teaches the wrong reflex."""
+        people = self.gen._p6_dept_slice(self.cohort, self.company,
+                                         'Stores - North')
+        if not people:
+            self.skipTest('the demo world has no "Stores - North" department')
+        ids = [e.id for e in people]
+        monday = self.today - timedelta(days=self.today.weekday())
+        OT = self.env['hr.overtime.request'].sudo()
+        reqs = OT.search([('employee_id', 'in', ids),
+                          ('date', '>=', monday - timedelta(days=7)),
+                          ('date', '<=', self.today)])
+        self.assertGreaterEqual(
+            len(reqs), 6,
+            'only %s overtime chips in the editable department — the grid '
+            'cannot show its chip vocabulary' % len(reqs))
+        self.assertTrue(
+            any(r.date < monday for r in reqs), 'the settled week has no chip')
+        self.assertTrue(
+            any(r.date >= monday for r in reqs), 'the current week has no chip')
+        # every chip on a day that was actually worked
+        Att = self.env['hr.attendance'].sudo()
+        for r in reqs:
+            self.assertTrue(
+                Att.search_count([('employee_id', '=', r.employee_id.id),
+                                  ('check_in', '>=',
+                                   fields.Datetime.to_datetime(
+                                       '%s 00:00:00' % r.date)),
+                                  ('check_in', '<=',
+                                   fields.Datetime.to_datetime(
+                                       '%s 23:59:59' % r.date))]),
+                '%s claims overtime on %s but never punched in'
+                % (r.employee_id.name, r.date))
 
     def test_an_uneventful_day_is_worth_exactly_its_planned_hours(self):
         """Otherwise the Close board fills with rollup noise.
