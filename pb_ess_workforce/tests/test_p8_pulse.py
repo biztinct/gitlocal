@@ -21,8 +21,30 @@ from ..models.shift_pulse import PULSE_FLOOR, PULSE_WINDOW_DAYS
 @tagged('post_install', '-at_install')
 class TestP8Pulse(EssWorkforceCase):
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Every aggregation assertion in this file is SCOPED to this department
+        # and every count assertion is a DELTA. The suite runs against the live
+        # demo world, which carries the seeded pulse rows this very phase put
+        # there — a test that asserts `search_count([]) == 1` is measuring the
+        # demo, not the feature, and it goes red the moment the demo grows
+        # (W59: assert the world you made, never the world you are in).
+        cls.dept_fx = cls.env['hr.department'].create(
+            {'name': 'P8 Pulse Fixture', 'company_id': cls.company.id})
+        (cls.emp_a | cls.emp_b).write({'department_id': cls.dept_fx.id})
+
     def _pulse(self, user=None):
         return self.env['pb.shift.pulse'].with_user(user or self.user_a)
+
+    def _count(self):
+        """Rows in the FIXTURE's scope only."""
+        return self.env['pb.shift.pulse'].sudo().search_count(
+            [('department_id', '=', self.dept_fx.id)])
+
+    def _tile(self, department=None):
+        return self.env['pb.shift.pulse'].get_pulse_tile(
+            (department or self.dept_fx).id)
 
     def _rater_today(self, user=None):
         """The day the RATER is in, not the day the test runner is in.
@@ -41,6 +63,7 @@ class TestP8Pulse(EssWorkforceCase):
     _seed_n = 0
 
     def _seed(self, n, rating=4, department=None, days_ago=0):
+        department = department or self.dept_fx
         """Rows straight through the ORM — the only way to build a population
         without inventing n employees, and legitimate because the model's own
         submission path is tested separately."""
@@ -139,21 +162,24 @@ class TestP8Pulse(EssWorkforceCase):
 
     # ========================================================= submission
     def test_a_rating_outside_one_to_five_is_refused(self):
+        before = self._count()
         for bad in (0, 6, -1, 'x', None, ''):
             with self.assertRaises(UserError):
                 self._pulse().submit_pulse(bad)
-        self.assertEqual(self.env['pb.shift.pulse'].sudo().search_count([]), 0)
+        self.assertEqual(self._count(), before, 'a refused rating still landed')
 
     def test_one_rating_per_person_per_day(self):
+        before = self._count()
         self._pulse().submit_pulse(4)
         with self.assertRaises(UserError):
             self._pulse().submit_pulse(2)
-        self.assertEqual(self.env['pb.shift.pulse'].sudo().search_count([]), 1)
+        self.assertEqual(self._count() - before, 1)
 
     def test_two_people_may_rate_the_same_day(self):
+        before = self._count()
         self._pulse(self.user_a).submit_pulse(4)
         self._pulse(self.user_b).submit_pulse(2)
-        self.assertEqual(self.env['pb.shift.pulse'].sudo().search_count([]), 2)
+        self.assertEqual(self._count() - before, 2)
 
     def test_the_same_person_may_rate_again_the_next_day(self):
         """Proven on the hash rather than by travelling in time: the digest is
@@ -165,10 +191,12 @@ class TestP8Pulse(EssWorkforceCase):
         h_tmrw = Pulse._pulse_hash(self.company.id, self.emp_a.id,
                                    today + timedelta(days=1))
         self.assertNotEqual(h_today, h_tmrw)
+        before = self._count()
         self._pulse().submit_pulse(4)
         Pulse.create({'company_id': self.company.id, 'date': today + timedelta(days=1),
-                      'rating': 5, 'uniq_hash': h_tmrw})
-        self.assertEqual(Pulse.search_count([]), 2)
+                      'rating': 5, 'uniq_hash': h_tmrw,
+                      'department_id': self.dept_fx.id})
+        self.assertEqual(self._count() - before, 2)
 
     def test_the_database_and_not_a_python_check_is_the_guard(self):
         """W33.1 — `_sql_constraints` is silently ignored on Odoo 19 and the
@@ -223,14 +251,14 @@ class TestP8Pulse(EssWorkforceCase):
         number it has been handed, and a number that arrives is a number that
         leaks — so `avg` and `count` are ABSENT, not zeroed."""
         self._seed(PULSE_FLOOR - 1)
-        tile = self.env['pb.shift.pulse'].get_pulse_tile()
+        tile = self._tile()
         self.assertFalse(tile['shown'])
         self.assertNotIn('avg', tile)
         self.assertNotIn('count', tile)
 
     def test_at_the_floor_the_tile_appears(self):
         self._seed(PULSE_FLOOR, rating=4)
-        tile = self.env['pb.shift.pulse'].get_pulse_tile()
+        tile = self._tile()
         self.assertTrue(tile['shown'])
         self.assertEqual(tile['count'], PULSE_FLOOR)
         self.assertEqual(tile['avg'], 4.0)
@@ -238,14 +266,14 @@ class TestP8Pulse(EssWorkforceCase):
     def test_the_average_is_the_average(self):
         self._seed(3, rating=5)
         self._seed(3, rating=1)
-        tile = self.env['pb.shift.pulse'].get_pulse_tile()
+        tile = self._tile()
         self.assertEqual(tile['count'], 6)
         self.assertEqual(tile['avg'], 3.0)
 
     def test_ratings_outside_the_window_are_not_counted(self):
         self._seed(PULSE_FLOOR + 3, days_ago=PULSE_WINDOW_DAYS + 2)
         self.assertFalse(
-            self.env['pb.shift.pulse'].get_pulse_tile()['shown'],
+            self._tile()['shown'],
             'a rating from a fortnight ago is still in the week window')
 
     def test_a_department_scope_uses_that_departments_ratings_only(self):
@@ -253,15 +281,17 @@ class TestP8Pulse(EssWorkforceCase):
             {'name': 'P8 Stores', 'company_id': self.company.id})
         other = self.env['hr.department'].create(
             {'name': 'P8 Depot', 'company_id': self.company.id})
+        before = self.env['pb.shift.pulse'].get_pulse_tile().get('count', 0)
         self._seed(PULSE_FLOOR, rating=5, department=dept)
         self._seed(PULSE_FLOOR, rating=1, department=other)
         self.assertEqual(
             self.env['pb.shift.pulse'].get_pulse_tile(dept.id)['avg'], 5.0)
         self.assertEqual(
             self.env['pb.shift.pulse'].get_pulse_tile(other.id)['avg'], 1.0)
-        # and unscoped is everybody
-        self.assertEqual(
-            self.env['pb.shift.pulse'].get_pulse_tile()['count'], PULSE_FLOOR * 2)
+        # …and the unscoped tile is everybody, asserted as a DELTA: this suite
+        # runs against a world that already has ratings in it.
+        after = self.env['pb.shift.pulse'].get_pulse_tile()['count']
+        self.assertEqual(after - before, PULSE_FLOOR * 2)
 
     def test_a_department_below_the_floor_gets_nothing_even_when_the_company_clears_it(self):
         """The scope the officer is LOOKING at is the scope that must clear the
@@ -271,7 +301,7 @@ class TestP8Pulse(EssWorkforceCase):
             {'name': 'P8 Tiny', 'company_id': self.company.id})
         self._seed(2, department=dept)
         self._seed(PULSE_FLOOR + 5)
-        self.assertTrue(self.env['pb.shift.pulse'].get_pulse_tile()['shown'])
+        self.assertTrue(self._tile()['shown'])
         self.assertFalse(self.env['pb.shift.pulse'].get_pulse_tile(dept.id)['shown'])
 
     # ========================================================= Today tile
