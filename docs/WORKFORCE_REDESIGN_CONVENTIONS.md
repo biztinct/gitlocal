@@ -7,8 +7,13 @@ consolidation, powered by Option C's engine** — per the approved dossier
 Every phase handover in `docs/handovers/WORKFORCE_P*.md` references this file. **Opus: when you hit a
 new gotcha or make a binding convention decision, append a numbered W-rule here in the same commit.**
 P4 closed the ledger at **W54**; **P6 reopened it** (demo-world sync was a post-P4 closure item) and
-takes it to **W61**; **P5** (the Week Grid redesign, run after P6) takes it to **W68**.
-67 rules, not 68: there is no W32 — see the note below.
+takes it to **W61**; **P5** (the Week Grid redesign, run after P6) takes it to **W68**; the
+**IA redesign programme** (`docs/handovers/ia/`) starts contributing at **W69** and Cycle 1 takes
+it to **W74**. 73 rules, not 74: there is no W32 — see the note below.
+Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
+two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
+renumbered W69-W74. If a handover written that day cites a W-number in the 68-72 range, check the
+text, not the number.
 Numbering note: **there is no W32** (it was folded into W33 during a renumber), and the P3a handover
 referred to "W-rules through W34" while the file in fact stopped at W33 — P3a opens the W34 slot, so
 the numbering and the reference agree again from here on.
@@ -879,78 +884,6 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   `<t t-set="tot" t-value="totals"/>` ABOVE the row loop and indexed from
   there. General form: a template may read a getter once per render; putting it
   inside a loop turns an O(n) computation into O(n²) silently.
-- **W68 A boolean written as TEXT in a data file is `True`, whatever the text
-  says — and a "retired" record can therefore ship for months.** (IA redesign
-  Cycle 1, audit fix A1.) `pb_sidebar.item_emp_mapping` carried
-  `<field name="active">False</field>` above a comment explaining that the item
-  had been retired into the Formula Engine's Mapping canvas. Odoo's Boolean
-  converter reads the element's TEXT and coerces any non-empty string to true,
-  so the field was set to `True` on every install and upgrade, and the retired
-  item was on the SETUP rail the entire time. Nothing warns: the record loads,
-  the rail renders, the comment reads as documentation of a change that never
-  happened. Booleans in data files take `eval` (`<field name="active"
-  eval="False"/>`); the same trap covers any `eval`-shaped value written as
-  text (`0`, `[]`, `{}` are all truthy strings). Corollary for reviews: when a
-  comment claims a record is off, the proof is the DATABASE (W13.1), and
-  `pb_sidebar/tests/test_ia_c1.py` asserts it through `get_sidebar_data()` —
-  the payload the rail actually renders — rather than through the field.
-- **W69 W8's sequence-uniqueness rule is invisible from inside the file you are
-  editing, because the twin lives in another module.** (Cycle 1, audit fix A2 —
-  the sequence counterpart of W28's label collision.) `pb_sidebar.item_menu_cfg`
-  and `pb_audit.item_audit_console` both declared ADMIN sequence 30, in two data
-  files neither of which mentions the other. The ORM orders by `sequence, id`,
-  so the rail's ADMIN block silently ordered itself by whichever module happened
-  to be installed first — a rail that differs between two databases with the
-  same code. Rule: before setting a `pb.sidebar.item` sequence, scan the section
-  across EVERY module's data files, not the one in front of you. Gated for good
-  by `test_a2_no_section_has_two_items_on_one_sequence`, which buckets the whole
-  table by `(section, parent)` with `active_test=False` (W18: a retired item
-  still occupies its number).
-- **W70 The rail's active-item index is FLAT and last-writer-wins, so a
-  `match_models` / `match_action_tags` value claimed twice silently steals the
-  highlight.** (Cycle 1, audit fix A3.) `pb_sidebar.js::_buildIndex` folds every
-  item's match dimensions into three plain objects — `{model: itemId}` — with no
-  collision check, and `_resolveActive` reads them in xmlid → tag → model order.
-  `item_import` and `item_integrations` both claimed `hr.integration.connector`,
-  so opening the connector cockpit lit up **Integrations** and Import Data could
-  never light up for it. There is no error, no console warning and no visible
-  tie: the user simply learns that the rail is unreliable. Rule: a res_model, an
-  action tag and an action xmlid each belong to exactly ONE rail item, and the
-  general form is gated by `test_a3_no_model_is_claimed_by_two_items` and
-  `test_action_tags_are_claimed_once_too` rather than by the specific pair.
-- **W71 An XML comment may not even NAME a CSS custom property.** (Cycle 1,
-  caught by `xmllint` before commit — the cheap gate W22 already prescribes.)
-  W22 records that a doubled hyphen inside an XML comment is a parse error that
-  takes the whole template file down. Cycle 1 found the shape that makes it easy
-  to walk into: the hub kit's template header EXPLAINED W22, and the palette's
-  explained W14 by writing the pbim custom-property prefix — which is two
-  hyphens — so three template files were parse errors written by someone
-  thinking about the rule. This is W48's corollary about grep gates failing on
-  their own documentation, one layer down: prose is not exempt from the parser.
-  Write "the pbim custom properties" in a comment, and keep the literal token
-  name in the SCSS where it belongs.
-- **W72 Odoo's hotkey service dispatches ONE registration, newest first — so a
-  global shortcut is defeated by mount ORDER, which is a coincidence until you
-  declare it.** (Cycle 1, the global ⌘K.) `hotkey_service.dispatch()` builds its
-  candidate list from `Array.from(registrations.values()).reverse()` and calls
-  `candidates.shift()`: exactly one winner, newest registration first. A service
-  starts before any component mounts, so a service-registered `control+k` is
-  always the OLDEST and always loses to a component's `useHotkey("control+k")` —
-  which is precisely the behaviour a global palette wants against Mission
-  Control's and Formula Studio's own palettes. It is also invisible, untestable
-  and one refactor away from silently producing two overlays.
-  So `pb_hub_palette` states the rule instead of relying on it: the registration
-  carries `isAvailable: () => !localPaletteOwnerOnScreen()`, and the owners are
-  CSS root selectors in a `pb_hub_palette_yield` registry (`.pbms`, `.pbfs`).
-  A candidate that fails `isAvailable` is filtered before the winner is picked,
-  so the local palette wins by declaration; a third surface that grows its own
-  ⌘K adds one line to that registry. Two things the gates then have to check,
-  because each failure is silent in the opposite direction:
-  `test_the_yield_selectors_match_real_roots` (a stale selector gives the global
-  palette back and you get two overlays) and
-  `test_both_local_palettes_still_register_their_own_hotkey` (an owner that
-  stops registering ⌘K is left with NO palette, because the global one has
-  already stood down for it).
 - **W68 The live server is SHARED, and `service odoo-server stop` takes the
   whole site down for whoever else is on it. Check before you deploy; treat a
   broken bundle you did not write as a REPORT, not a fix.** P5's WP-4
@@ -980,3 +913,124 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
      way to name it precisely is to fetch the served bundle, split it on the
      `/* path/to/file.js */` markers Odoo emits, and `new Function()` each
      chunk — that returns the exact file in one pass over 1 800 of them.
+- **W69 A boolean written as TEXT in a data file is `True`, whatever the text
+  says — and a "retired" record can therefore ship for months.** (IA redesign
+  Cycle 1, audit fix A1.) `pb_sidebar.item_emp_mapping` carried
+  `<field name="active">False</field>` above a comment explaining that the item
+  had been retired into the Formula Engine's Mapping canvas. Odoo's Boolean
+  converter reads the element's TEXT and coerces any non-empty string to true,
+  so the field was set to `True` on every install and upgrade, and the retired
+  item was on the SETUP rail the entire time. Nothing warns: the record loads,
+  the rail renders, the comment reads as documentation of a change that never
+  happened. Booleans in data files take `eval` (`<field name="active"
+  eval="False"/>`); the same trap covers any `eval`-shaped value written as
+  text (`0`, `[]`, `{}` are all truthy strings). Corollary for reviews: when a
+  comment claims a record is off, the proof is the DATABASE (W13.1), and
+  `pb_sidebar/tests/test_ia_c1.py` asserts it through `get_sidebar_data()` —
+  the payload the rail actually renders — rather than through the field.
+- **W70 W8's sequence-uniqueness rule is invisible from inside the file you are
+  editing, because the twin lives in another module.** (Cycle 1, audit fix A2 —
+  the sequence counterpart of W28's label collision.) `pb_sidebar.item_menu_cfg`
+  and `pb_audit.item_audit_console` both declared ADMIN sequence 30, in two data
+  files neither of which mentions the other. The ORM orders by `sequence, id`,
+  so the rail's ADMIN block silently ordered itself by whichever module happened
+  to be installed first — a rail that differs between two databases with the
+  same code. Rule: before setting a `pb.sidebar.item` sequence, scan the section
+  across EVERY module's data files, not the one in front of you. Gated for good
+  by `test_a2_no_section_has_two_items_on_one_sequence`, which buckets the whole
+  table by `(section, parent)` with `active_test=False` (W18: a retired item
+  still occupies its number).
+- **W71 The rail's active-item index is FLAT and last-writer-wins, so a
+  `match_models` / `match_action_tags` value claimed twice silently steals the
+  highlight.** (Cycle 1, audit fix A3.) `pb_sidebar.js::_buildIndex` folds every
+  item's match dimensions into three plain objects — `{model: itemId}` — with no
+  collision check, and `_resolveActive` reads them in xmlid → tag → model order.
+  `item_import` and `item_integrations` both claimed `hr.integration.connector`,
+  so opening the connector cockpit lit up **Integrations** and Import Data could
+  never light up for it. There is no error, no console warning and no visible
+  tie: the user simply learns that the rail is unreliable. Rule: a res_model, an
+  action tag and an action xmlid each belong to exactly ONE rail item, and the
+  general form is gated by `test_a3_no_model_is_claimed_by_two_items` and
+  `test_action_tags_are_claimed_once_too` rather than by the specific pair.
+- **W72 An XML comment may not even NAME a CSS custom property.** (Cycle 1,
+  caught by `xmllint` before commit — the cheap gate W22 already prescribes.)
+  W22 records that a doubled hyphen inside an XML comment is a parse error that
+  takes the whole template file down. Cycle 1 found the shape that makes it easy
+  to walk into: the hub kit's template header EXPLAINED W22, and the palette's
+  explained W14 by writing the pbim custom-property prefix — which is two
+  hyphens — so three template files were parse errors written by someone
+  thinking about the rule. This is W48's corollary about grep gates failing on
+  their own documentation, one layer down: prose is not exempt from the parser.
+  Write "the pbim custom properties" in a comment, and keep the literal token
+  name in the SCSS where it belongs.
+- **W73 Odoo's hotkey service dispatches ONE registration, newest first — so a
+  global shortcut is defeated by mount ORDER, which is a coincidence until you
+  declare it.** (Cycle 1, the global ⌘K.) `hotkey_service.dispatch()` builds its
+  candidate list from `Array.from(registrations.values()).reverse()` and calls
+  `candidates.shift()`: exactly one winner, newest registration first. A service
+  starts before any component mounts, so a service-registered `control+k` is
+  always the OLDEST and always loses to a component's `useHotkey("control+k")` —
+  which is precisely the behaviour a global palette wants against Mission
+  Control's and Formula Studio's own palettes. It is also invisible, untestable
+  and one refactor away from silently producing two overlays.
+  So `pb_hub_palette` states the rule instead of relying on it: the registration
+  carries `isAvailable: () => !localPaletteOwnerOnScreen()`, and the owners are
+  CSS root selectors in a `pb_hub_palette_yield` registry (`.pbms`, `.pbfs`).
+  A candidate that fails `isAvailable` is filtered before the winner is picked,
+  so the local palette wins by declaration; a third surface that grows its own
+  ⌘K adds one line to that registry. Two things the gates then have to check,
+  because each failure is silent in the opposite direction:
+  `test_the_yield_selectors_match_real_roots` (a stale selector gives the global
+  palette back and you get two overlays) and
+  `test_both_local_palettes_still_register_their_own_hotkey` (an owner that
+  stops registering ⌘K is left with NO palette, because the global one has
+  already stood down for it).
+- **W74 The JS habit that blanks the whole backend: Python-style implicit
+  string concatenation.** W68 records the *consequence* — one unparseable file
+  blanks `web.assets_backend` for every user and every cockpit, with a clean
+  server log — from the outside, as the session that got hit by it. This is the
+  same defect from the inside, so the next author does not write it again.
+  `_t("first half "` on one line and `"second half")` on the next is Python.
+  In JavaScript two adjacent string literals are a `SyntaxError`, and Odoo's
+  asset pipeline CONCATENATES and MINIFIES without ever parsing: `-u` exits 0,
+  the module's own tests pass, and the bundle is served with a 200 and a
+  plausible byte count. Nothing in the Python test suite can see it.
+  Rules: (1) `node --check <file>` every JS file you touched before rsync — it
+  is instant and it catches this whole class; (2) after deploying JS, fetch the
+  served `web.assets_web.min.js` and `node --check` THAT, because the bundle is
+  what the browser parses and a 200 proves nothing (W68.3 has the finer tool for
+  attributing an error to a file you did not write); (3) a blank backend with a
+  clean log means the BUNDLE, not your surface — look for `SyntaxError` and its
+  knock-on `Unexpected token '<' ... is not valid JSON` (the webclient's
+  translations fetch getting an error page) before suspecting your component.
+  The cheap half is gated by `pb_hub/tests/test_static.py
+  ::test_no_python_style_implicit_string_concatenation`.
+- **W75 A backgrounded Chrome renders NOTHING, and it looks exactly like a
+  broken build.** (IA redesign Cycle 1. Cost: an hour of hunting a defect that
+  did not exist, immediately after fixing one that did — which is what made it
+  so convincing.) OWL flushes a completed render through its scheduler on
+  `requestAnimationFrame`. Chrome throttles rAF to zero in a window that is
+  occluded, minimised or simply behind another one, so a headful automation
+  browser that never comes to the front boots the whole web client — every
+  module loads, every service starts, `load_menus` / `translations` /
+  `mail/data` all return 200, the root fiber renders to completion — and then
+  never paints. `document.body` keeps the 50 bytes of whitespace the server
+  sent. There is no error, no console output, no failed request and no
+  traceback: on a server log it is indistinguishable from a healthy page load,
+  and in the browser it is indistinguishable from W74's blanked bundle.
+  How to tell them apart in one step, and the reason `__OWL_DEVTOOLS__` is worth
+  knowing about: walk `window.__OWL_DEVTOOLS__.apps` and read the root fiber.
+  `counter === 0` with every node at `status 0` and no pending `onWillStart`
+  means the render FINISHED and only the paint is missing — that is throttling
+  or a scheduler problem, never your component. A real bundle error leaves the
+  loader with failed modules; a real hanging mount leaves nodes whose
+  `fiber.bdom` is still null, and that names the component.
+  Rule for any Chrome-MCP or CDP validation from here on: launch with
+  `--headless=new`, or at minimum
+  `--disable-backgrounding-occluded-windows --disable-renderer-backgrounding
+  --disable-background-timer-throttling`. Headless is the honest default,
+  because an automation browser is by definition never in the foreground.
+  Second rule: when two sessions share one Chrome profile the second one gets
+  "The browser is already running for …" and then orphans a browser of its own
+  on every call — a dedicated `--user-data-dir` per session (and a driver of
+  your own over `/json/list` + the CDP websocket) is worth the twenty lines.
