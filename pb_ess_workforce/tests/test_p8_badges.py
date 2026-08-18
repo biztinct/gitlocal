@@ -55,19 +55,26 @@ class TestP8Badges(EssWorkforceCase):
         self.assertEqual(row['ack'], {'acked': 2, 'total': 2, 'all': True})
 
     def test_the_summary_counts_people_not_shifts(self):
+        """Asserted as a DELTA, because this suite runs against the live demo
+        world and the unfiltered roster is 200 people wide. The first live run
+        came back `people: 86` — a true statement about the database and a
+        useless one about the feature. What the summary has to get right is
+        that two more people with two shifts each, one of them fully confirmed,
+        move the four counters by 2 / 1 / 4 / 2."""
+        base = self._data()['ack']
         for emp in (self.emp_a, self.emp_b):
             self._shift(emp, self._future_day(1), state='published')
             self._shift(emp, self._future_day(2), state='published')
-        self.env['hr.shift.planning'].sudo().search([
-            ('employee_id', '=', self.emp_a.id),
-            ('state', '=', 'published')]).mapped(
-                lambda s: s._ess_ack('test'))
+        for s in self.env['hr.shift.planning'].sudo().search([
+                ('employee_id', '=', self.emp_a.id),
+                ('state', '=', 'published')]):
+            s._ess_ack('test')
         summary = self._data()['ack']
         self.assertTrue(summary['shown'])
-        self.assertEqual(summary['people'], 2)
-        self.assertEqual(summary['people_done'], 1)
-        self.assertEqual(summary['total'], 4)
-        self.assertEqual(summary['acked'], 2)
+        self.assertEqual(summary['people'] - base.get('people', 0), 2)
+        self.assertEqual(summary['people_done'] - base.get('people_done', 0), 1)
+        self.assertEqual(summary['total'] - base.get('total', 0), 4)
+        self.assertEqual(summary['acked'] - base.get('acked', 0), 2)
 
     def test_one_persons_ack_never_leaks_into_another_persons_badge(self):
         self._shift(self.emp_a, self._future_day(1), state='published')

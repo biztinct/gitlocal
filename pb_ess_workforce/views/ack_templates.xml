@@ -15,7 +15,7 @@
           <!-- ==== the live case: a shift to confirm ==== -->
           <t t-if="status == 'ok'">
             <div class="pbew-ackcard__ic">
-              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">calendar</t><t t-set="isz" t-value="28"/></t>
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="28"/></t>
             </div>
             <h1>Confirm your shift</h1>
             <p class="pbew-ackcard__sub" t-if="shift['who']" t-esc="greeting"/>
@@ -26,7 +26,7 @@
             </div>
             <form t-attf-action="/work/ack/#{token}/confirm" method="post">
               <button type="submit" class="pbme-btn pbme-btn--primary pbme-btn--block">
-                <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">check</t><t t-set="isz" t-value="16"/></t>
+                <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>
                 Yes, I have seen it
               </button>
             </form>
@@ -36,7 +36,7 @@
           <!-- ==== just confirmed ==== -->
           <t t-elif="status == 'acked'">
             <div class="pbew-ackcard__ic pbew-ackcard__ic--ok">
-              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">check-circle</t><t t-set="isz" t-value="28"/></t>
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="28"/></t>
             </div>
             <h1>Thank you</h1>
             <p class="pbew-ackcard__sub">Your manager can now see that you have this shift.</p>
@@ -49,7 +49,7 @@
           <!-- ==== already used ==== -->
           <t t-elif="status == 'used'">
             <div class="pbew-ackcard__ic pbew-ackcard__ic--ok">
-              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">check-circle</t><t t-set="isz" t-value="28"/></t>
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="28"/></t>
             </div>
             <h1>Already confirmed</h1>
             <p class="pbew-ackcard__sub" t-esc="already"/>
@@ -58,7 +58,7 @@
           <!-- ==== the shift has started ==== -->
           <t t-elif="status == 'expired'">
             <div class="pbew-ackcard__ic pbew-ackcard__ic--warn">
-              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">clock</t><t t-set="isz" t-value="28"/></t>
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="28"/></t>
             </div>
             <h1>This shift has already started</h1>
             <p class="pbew-ackcard__sub">Confirmations close when a shift begins. Speak to your manager if something is wrong.</p>
@@ -67,7 +67,7 @@
           <!-- ==== pulled back or cancelled ==== -->
           <t t-elif="status == 'stale'">
             <div class="pbew-ackcard__ic pbew-ackcard__ic--warn">
-              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">alert</t><t t-set="isz" t-value="28"/></t>
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="28"/></t>
             </div>
             <h1>This shift has changed</h1>
             <p class="pbew-ackcard__sub">It was withdrawn or rescheduled after this link was sent. Your manager will send a new one.</p>
@@ -76,7 +76,7 @@
           <!-- ==== nothing matches ==== -->
           <t t-else="">
             <div class="pbew-ackcard__ic pbew-ackcard__ic--warn">
-              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon">alert</t><t t-set="isz" t-value="28"/></t>
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="28"/></t>
             </div>
             <h1>This link is not valid</h1>
             <p class="pbew-ackcard__sub">Check that you copied the whole address, or ask your manager to send it again.</p>

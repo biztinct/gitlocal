@@ -24,6 +24,22 @@ class TestP8Pulse(EssWorkforceCase):
     def _pulse(self, user=None):
         return self.env['pb.shift.pulse'].with_user(user or self.user_a)
 
+    def _rater_today(self, user=None):
+        """The day the RATER is in, not the day the test runner is in.
+
+        `fields.Date.context_today` resolves against the CALLING user's tz, and
+        this suite's employees are deliberately UTC+7 while the test runner is
+        not (W55/W63). At 21:07 UTC it is already tomorrow in Ho Chi Minh City,
+        so a fixture that asks the runner for "today" and then compares it with
+        what the employee's own submission stored is wrong for seven hours out
+        of every twenty-four — green all morning, red all evening, and blamed on
+        the code. Three P8 tests failed on exactly that.
+        """
+        return fields.Date.context_today(
+            self.env['pb.shift.pulse'].with_user(user or self.user_a))
+
+    _seed_n = 0
+
     def _seed(self, n, rating=4, department=None, days_ago=0):
         """Rows straight through the ORM — the only way to build a population
         without inventing n employees, and legitimate because the model's own
@@ -37,10 +53,17 @@ class TestP8Pulse(EssWorkforceCase):
                 'department_id': department.id if department else False,
                 'date': day,
                 'rating': rating,
-                'uniq_hash': 'seed-%s-%s-%s-%s' % (
-                    id(self), days_ago, i, department.id if department else 0),
+                # A MONOTONIC counter, not (day, index): two `_seed` calls in
+                # one test with the same day and the same range of indices
+                # produce the same digests, and the unique constraint is doing
+                # its job when it refuses them.
+                'uniq_hash': 'seed-%s-%s' % (id(self), self._next_seed()),
             })
         return made
+
+    def _next_seed(self):
+        type(self)._seed_n += 1
+        return type(self)._seed_n
 
     # ======================================================= the contract
     def test_the_table_cannot_hold_an_employee(self):
@@ -49,8 +72,16 @@ class TestP8Pulse(EssWorkforceCase):
         the point of this test is that it fails the moment somebody adds one
         "just for reporting"."""
         fields_ = self.env['pb.shift.pulse']._fields
+        # `create_uid` / `write_uid` are the ORM's own audit columns: every
+        # model has them and they cannot be removed. They are excluded HERE and
+        # pinned to the superuser by
+        # `test_the_row_is_written_by_the_superuser_not_the_rater` instead —
+        # which is the assertion that actually protects them, and the one that
+        # caught the `sudo()` hole.
+        _ORM_AUDIT = ('create_uid', 'write_uid')
         forbidden = [n for n, f in fields_.items()
-                     if getattr(f, 'comodel_name', None) in (
+                     if n not in _ORM_AUDIT
+                     and getattr(f, 'comodel_name', None) in (
                          'hr.employee', 'res.users', 'res.partner')]
         self.assertEqual(forbidden, [],
                          'pb.shift.pulse grew a link to a person: %s' % forbidden)
@@ -58,12 +89,23 @@ class TestP8Pulse(EssWorkforceCase):
             self.assertNotIn(name, fields_)
 
     def test_the_row_is_written_by_the_superuser_not_the_rater(self):
-        """`create_uid` is an identity column and the ORM fills it in
-        unconditionally. Writing the row under sudo is what makes it say
-        "the system" instead of "the person who said their shift was bad"."""
+        """`create_uid` and `write_uid` are identity columns the ORM fills in
+        unconditionally, and they are the reason `submit_pulse` uses
+        `with_user(SUPERUSER_ID)` rather than `sudo()`.
+
+        This test found a real hole on its first live run: `sudo()` raises the
+        `su` flag and leaves `env.uid` alone, so every pulse row was stamped
+        with its rater's id in a table whose whole purpose is that no row is
+        about a person. Both columns are asserted, because a future refactor
+        that fixes one and forgets the other leaks just as completely.
+        """
+        before = self.env['pb.shift.pulse'].sudo().search([], order='id desc', limit=1)
         self._pulse().submit_pulse(4)
         row = self.env['pb.shift.pulse'].sudo().search([], order='id desc', limit=1)
-        self.assertEqual(row.create_uid.id, self.env.ref('base.user_root').id)
+        self.assertNotEqual(row, before, 'no pulse row was created')
+        root = self.env.ref('base.user_root').id
+        self.assertEqual(row.create_uid.id, root)
+        self.assertEqual(row.write_uid.id, root)
         self.assertNotEqual(row.create_uid, self.user_a)
 
     def test_a_forged_identity_in_the_payload_is_ignored(self):
@@ -80,7 +122,7 @@ class TestP8Pulse(EssWorkforceCase):
         row = self.env['pb.shift.pulse'].sudo().search([], order='id desc', limit=1)
         self.assertEqual(row.department_id, self.emp_a.department_id)
         self.assertEqual(row.company_id, self.company)
-        self.assertEqual(row.date, fields.Date.context_today(self.env['hr.employee']))
+        self.assertEqual(row.date, self._rater_today())
         self.assertNotEqual(row.uniq_hash, 'chosen-by-me')
 
     def test_the_hash_field_is_system_restricted(self):
@@ -118,7 +160,7 @@ class TestP8Pulse(EssWorkforceCase):
         what the uniqueness rests on, so if today's and tomorrow's differ, the
         constraint cannot bind them together."""
         Pulse = self.env['pb.shift.pulse'].sudo()
-        today = fields.Date.context_today(self.env['hr.employee'])
+        today = self._rater_today()          # the day submit_pulse will use
         h_today = Pulse._pulse_hash(self.company.id, self.emp_a.id, today)
         h_tmrw = Pulse._pulse_hash(self.company.id, self.emp_a.id,
                                    today + timedelta(days=1))
@@ -154,7 +196,7 @@ class TestP8Pulse(EssWorkforceCase):
         self.assertFalse(self._pulse().get_my_prompt()['show'])
 
     def test_the_prompt_appears_after_a_shift_ended_today(self):
-        today = fields.Date.context_today(self.env['hr.employee'])
+        today = self._rater_today()
         shift = self._shift(self.emp_a, today, start=0, end=1, state='published')
         # end it in the past whatever hour the suite runs at
         shift.sudo().write({
@@ -165,7 +207,7 @@ class TestP8Pulse(EssWorkforceCase):
         self.assertIn('–', prompt['shift'])
 
     def test_the_prompt_stops_once_the_person_has_answered(self):
-        today = fields.Date.context_today(self.env['hr.employee'])
+        today = self._rater_today()
         shift = self._shift(self.emp_a, today, start=0, end=1, state='published')
         shift.sudo().write({
             'start_datetime': fields.Datetime.now() - timedelta(hours=9),

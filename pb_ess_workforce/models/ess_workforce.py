@@ -170,11 +170,27 @@ class PbEssWorkforce(models.AbstractModel):
                     'leave': leave_days.get(iso, ''),
                 })
             hours = round(sum(c['hours'] for d in days for c in d['shifts']), 1)
-            n_pending = sum(1 for d in days for c in d['shifts'] if c['can_ack'])
+            # `n_pending` is what the employee can still ACT on (a shift that has
+            # started can no longer be confirmed), and it drives the button.
+            # `n_acked` / `n_total` are what actually HAPPENED, and they drive
+            # the badge — found live: a week holding two unconfirmed past shifts
+            # was crowned "All confirmed" because the button had nothing left to
+            # do. A control that is stricter or softer than the fact beneath it
+            # has to derive from the fact (W42), so the badge is now a count and
+            # only a genuinely complete week turns green.
+            week_cards = [c for d in days for c in d['shifts']]
+            n_pending = sum(1 for c in week_cards if c['can_ack'])
+            n_acked = sum(1 for c in week_cards if c['ack_state'] == 'acked')
+            n_total = len(week_cards)
             weeks.append({
                 'week_start': wstart.isoformat(),
                 'label': _('This week') if w == 0 else _('Next week'),
                 'days': days,
+                'acked': n_acked,
+                'total': n_total,
+                'all_acked': bool(n_total) and n_acked == n_total,
+                'ack_label': _('%(acked)s of %(total)s confirmed',
+                               acked=n_acked, total=n_total),
                 # W80.2 — a SENTENCE is one msgid. Assembled here rather than
                 # from `<t>` fragments in the template, because a translator
                 # cannot reorder fragments and word order is exactly what
@@ -190,7 +206,12 @@ class PbEssWorkforce(models.AbstractModel):
             'next_week': (first + timedelta(days=7)).isoformat(),
             'weeks': weeks,
             'pending': pending,
-            'pending_label': (_('%(count)s shifts still to confirm', count=pending)
+            # Plural-safe by construction. English "1 shifts" and Vietnamese's
+            # lack of a plural form are the same problem, and a msgid that has
+            # to agree with a number in two languages is a msgid that will be
+            # wrong in one of them. The number is a value, not part of a
+            # conjugated noun phrase.
+            'pending_label': (_('Still to confirm: %(count)s', count=pending)
                               if pending else _('Everything confirmed')),
             'employee': {'id': emp.id, 'name': emp.name or ''},
         }
@@ -393,6 +414,14 @@ class PbEssWorkforce(models.AbstractModel):
             for t in types:
                 a = a_by.get(t.id, 0.0)
                 k = t_by.get(t.id, 0.0)
+                # A tile per configured leave type is CONFIGURATION, not data
+                # (W64). This database carries 32 allocation-based types and the
+                # live page rendered 32 tiles all reading "0.0 days left" — a
+                # wall of identical values that buries the two an employee
+                # actually has. Only a type this person has an allocation for,
+                # or has taken, is a fact ABOUT THEM.
+                if not (a or k):
+                    continue
                 balances.append({
                     'id': t.id, 'name': t.name,
                     'allocated': round(a, 2), 'taken': round(k, 2),

@@ -4,8 +4,11 @@
 THE PRIVACY CONTRACT (read this before adding a field)
 ======================================================
 This table has NO link to an employee, and it never will. Not a many2one, not
-an id in a comment, not a `create_uid` — the row is written under sudo precisely
-so the ORM's own stamp is the superuser rather than the person who submitted it.
+an id in a comment, and not a `create_uid` — the row is written under
+`with_user(SUPERUSER_ID)` precisely so the ORM's own audit stamp is the system
+rather than the person who submitted it. `sudo()` is NOT enough and was the
+first version of this file: it raises the `su` flag but leaves `env.uid` alone,
+so every row carried its rater's id until the live test run said so.
 The columns are: company, department, date, rating, optional comment, and a
 hash. That is the whole record.
 
@@ -49,7 +52,7 @@ import logging
 import secrets
 from datetime import timedelta
 
-from odoo import _, api, fields, models
+from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -144,11 +147,17 @@ class PbShiftPulse(models.Model):
         company = emp.company_id or self.env.company
         digest = self._pulse_hash(company.id, emp.id, day)
 
-        # sudo, and that is the POINT: it makes `create_uid` the superuser
-        # instead of the person rating their own shift. A row created as the
-        # real user would carry their identity in the ORM's own audit columns,
-        # which is exactly what this model exists not to do.
-        Pulse = self.sudo()
+        # WITH_USER(SUPERUSER_ID), NOT sudo(). This one line is the anonymity.
+        #
+        # `sudo()` sets the `su` FLAG and leaves `env.uid` alone — it has worked
+        # that way since Odoo 13 — so a row created under `self.sudo()` is still
+        # stamped `create_uid = <the person who rated their own shift>`, in a
+        # table whose entire purpose is that no row is about a person. The live
+        # test run caught it: `create_uid` came back 1903, the rater's id, from
+        # a method whose docstring claimed the opposite.
+        # `with_user(SUPERUSER_ID)` moves the uid AND raises su, so both audit
+        # columns say "the system". Never soften this to sudo() again.
+        Pulse = self.with_user(SUPERUSER_ID)
         if Pulse.search_count([('uniq_hash', '=', digest)]):
             raise UserError(_("You have already rated today. Thank you."))
         note = (comment or '').strip()[:_MAX_COMMENT] or False

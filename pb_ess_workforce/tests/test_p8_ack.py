@@ -160,8 +160,16 @@ class TestP8Ack(EssWorkforceCase):
             self._shift(emp, day)
 
         before = Mail.search_count([])
+        # Scoped to the FIXTURE employees, not to the day. This suite runs
+        # against the live demo world, where "every shift on this date" is
+        # several hundred other people's — the first live run came back
+        # `portal: 4` because two demo employees happened to be rostered too.
+        # A test whose population is whatever else is in the database is a test
+        # that reports a different number every week.
         res = self.env['hr.shift.planning'].sudo().search([
-            ('date', '=', day)])._ess_notify_published()
+            ('date', '=', day),
+            ('employee_id', 'in', (self.emp_a | self.emp_b | emp_c).ids),
+        ])._ess_notify_published()
         after = Mail.search_count([])
 
         self.assertFalse(res['mail_enabled'])
@@ -244,3 +252,42 @@ class TestP8Ack(EssWorkforceCase):
                     'no_channel', 'mail_enabled', 'capped'):
             self.assertIn(key, res)
         self.assertGreaterEqual(res['published'], 1)
+
+    # ========================================================== the backfill
+    def test_the_backfill_catches_shifts_published_before_the_module_existed(self):
+        """The gap psql found on the live world, pinned.
+
+        `action_publish` only sees the future. A module installed onto a tenant
+        whose roster was published last week arrives with the token channel
+        dead for every existing shift — and nothing errors, which is why the
+        live row count was the only thing that could say so.
+        """
+        shift = self._published()
+        # simulate the pre-module world: a published shift with no token
+        shift._ess_ack_env().write({'ack_token': False})
+        self.assertFalse(self._token(shift))
+
+        n = self.env['hr.shift.planning']._ess_backfill_tokens()
+        self.assertGreaterEqual(n, 1)
+        self.assertTrue(self._token(shift))
+        _s, status = self.env['hr.shift.planning']._ess_shift_for_token(
+            self._token(shift))
+        self.assertEqual(status, 'ok')
+
+    def test_the_backfill_is_idempotent_and_never_remints(self):
+        shift = self._published()
+        token = self._token(shift)
+        self.env['hr.shift.planning']._ess_backfill_tokens()
+        self.assertEqual(self._token(shift), token,
+                         'the backfill revoked a link somebody already has')
+
+    def test_the_backfill_mints_nothing_for_a_shift_nobody_can_confirm(self):
+        """A credential nobody needs is a credential somebody can leak."""
+        from datetime import timedelta as _td
+        past = fields.Date.context_today(self.env['hr.employee']) - _td(days=3)
+        old = self._shift(self.emp_a, past, state='published')
+        old._ess_ack_env().write({'ack_token': False})
+        draft = self._shift(self.emp_a, self._future_day(5))
+        self.env['hr.shift.planning']._ess_backfill_tokens()
+        self.assertFalse(self._token(old), 'a started shift was given a link')
+        self.assertFalse(self._token(draft), 'a draft shift was given a link')
