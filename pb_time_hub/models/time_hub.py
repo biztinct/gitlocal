@@ -260,7 +260,26 @@ class PbTimeHub(models.AbstractModel):
         # company_id may legitimately be unset (a shared employee record)
         if emp.company_id and emp.company_id.id not in self._company_ids():
             return {}
+        return self._person_week(emp, week_start)
 
+    @api.model
+    def _person_week(self, emp, week_start=False):
+        """The person-week ARITHMETIC, with no gate of its own (W53).
+
+        `get_person_week` is the officer door and keeps its gate; this twin
+        exists because P8's ESS portal needs the identical numbers for the
+        caller's OWN week, and an employee is not an attendance officer. Calling
+        the public method there would have raised AccessError for every employee
+        on earth — W40's failure shape, swallowed by a controller's try/except
+        and shipped as a missing feature.
+
+        Underscore-private on purpose: not reachable over `call_kw` (C18.32), so
+        the only way in is a server-side caller that has already answered its own
+        access question. `pb.ess.workforce.get_my_week` answers "is this MY
+        employee record", which is a narrower question than the officer one.
+        """
+        if not emp:
+            return {}
         df = self._monday(week_start)
         dt = df + timedelta(days=6)
         days = self._week_days(df)
