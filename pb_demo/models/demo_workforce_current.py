@@ -231,9 +231,30 @@ class PbDemoGenerator(models.TransientModel):
 
     # ============================================================== helpers
     def _p6_tz(self, company):
-        """The demo world's wall clock — the working calendar's tz, else VN."""
-        cal = self.get_calendar(company)
-        return timezone((cal and cal.tz) or 'Asia/Ho_Chi_Minh')
+        """The demo world's wall clock. VIETNAM, and deliberately NOT the
+        working calendar's tz.
+
+        Found live, and it cost this seeder a whole run. The demo company's
+        `resource.calendar` is Odoo's stock "Standard 40 hours/week", which
+        carries `tz = Europe/Brussels` — nobody ever set it, because nothing in
+        payroll reads it. Deriving the demo's wall clock from it (which is what
+        `demo_workforce.py` does) puts an "08:00" Vietnamese shift at 06:00 UTC,
+        i.e. 13:00 in Ho Chi Minh City, and it puts the afternoon shift's end at
+        03:00 the NEXT morning local — straight through the midnight the
+        Workforce surfaces key their days on (W51).
+
+        The visible symptom was worse than the cosmetics: at 08:56 in Vietnam
+        the working day had not started yet in Brussels, so the Today board's
+        live population came out EMPTY on a run whose entire purpose was to
+        fill it. A demo world whose clock is seven hours behind its own country
+        is alive only in the afternoon.
+
+        Pinned rather than looked up: this generator builds one country
+        (`demo_catalog.GROUP_COMPANY_NAME` is "Payobook Vietnam JSC"), the two
+        sibling seeders already fall back to this same zone, and a wrong tz here
+        is silent in every test that does not know what time it should be.
+        """
+        return timezone('Asia/Ho_Chi_Minh')
 
     def _p6_utc(self, tz, d, hour):
         """Naive-UTC datetime for local wall-clock `hour` (8.5 → 08:30) on `d`."""
@@ -555,21 +576,36 @@ class PbDemoGenerator(models.TransientModel):
         lo, _x = self._p6_day_bounds(tz, start)
         _y, hi = self._p6_day_bounds(tz, today)
         taken = set()
+        # Core `hr.attendance` refuses a new punch while the employee's previous
+        # one is still open ("hasn't checked out since …"), and the seeder leaves
+        # two or three open ON PURPOSE. Those people therefore cannot clock in
+        # today — which is not a bug to work around but the correct story: a
+        # person whose Friday punch was never closed shows up as an open
+        # exception, not as somebody who quietly started a new day.
+        still_open = set()
         for a in Att.search([('employee_id', 'in', cohort.ids),
                              ('check_in', '>=', lo), ('check_in', '<=', hi)]):
             taken.add((a.employee_id.id,
                        utc.localize(a.check_in).astimezone(tz).date()))
+            if not a.check_out:
+                still_open.add(a.employee_id.id)
+        for (eid, d), spec in specs.items():
+            if d < today and spec['ci'] and not spec['co']:
+                still_open.add(eid)
 
         vals_list = []
-        open_today = 0
         for (eid, d), spec in specs.items():
             if d > today or not spec['ci'] or (eid, d) in taken:
                 continue
+            if d == today and eid in still_open:
+                continue
             vals_list.append({'employee_id': eid, 'check_in': spec['ci'],
                               'check_out': spec['co'] or False})
-            if not spec['co'] and d == today:
-                open_today += 1
         made = self._p6_bulk_create(Att, vals_list, 'punch')
+        # Counted from what LANDED, never from what was intended.
+        open_today = len(made.filtered(
+            lambda a: not a.check_out
+            and utc.localize(a.check_in).astimezone(tz).date() == today))
 
         # Link the punch to a shift that pre-dates this run and therefore has no
         # `actual_*` of its own (the rerun path — a fresh run set them at create).
