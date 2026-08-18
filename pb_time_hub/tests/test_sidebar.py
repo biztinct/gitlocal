@@ -60,8 +60,12 @@ class TestTimeHubSidebar(TransactionCase):
         same question client-side before offering the Time lens."""
         item = self._item('pb_time_hub.item_wf_time')
         officer = self.env.ref('hr_attendance.group_hr_attendance_officer')
-        self.assertEqual(item.groups_id.ids, officer.ids,
-                         'the Time item must require exactly the attendance officer group')
+        # CONTAINS, not EQUALS (P6): a rail gate is a floor, not an inventory.
+        # `pb_demo._pb_demo_rewire` joins "Payobook Demo User" onto every gated
+        # item on a demo database, so equality here asserts which modules are
+        # installed rather than that the officer gate is in place.
+        self.assertIn(officer.id, item.groups_id.ids,
+                      'the Time item must require the attendance officer group')
 
     # -------------------------------------------------------------- retired
     def test_the_three_absorbed_items_are_deactivated(self):

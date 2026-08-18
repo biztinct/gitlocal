@@ -69,7 +69,11 @@ class TestP2Sidebar(TransactionCase):
         if not item:
             self.skipTest('pb_sidebar is not installed')
         officer = self.env.ref('hr_attendance.group_hr_attendance_officer')
-        self.assertEqual(item.groups_id.ids, officer.ids)
+        # CONTAINS, not EQUALS (P6): `pb_demo._pb_demo_rewire` joins "Payobook
+        # Demo User" onto every gated rail item on a demo database. The gate the
+        # test is about is the FLOOR — that nobody below the officer tier is
+        # offered a cockpit that would only give them an AccessError.
+        self.assertIn(officer.id, item.groups_id.ids)
 
     # ============================================= the Option-A rail, final
     # REMOVED BY P3a: `test_the_rail_is_exactly_seven_items_in_order` asserted
