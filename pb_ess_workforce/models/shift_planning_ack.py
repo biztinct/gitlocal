@@ -145,6 +145,39 @@ class HrShiftPlanningAck(models.Model):
         self.filtered(lambda r: r.state == 'draft')._ess_mint_tokens()
         return res
 
+    @api.model
+    def _ess_backfill_tokens(self, limit=None):
+        """Give already-published shifts a token. Idempotent; safe to re-run.
+
+        Found by psql on the live world, not by a test: every gate was green
+        and `tokens_minted` came back **0**. `action_publish` mints for the
+        rows it moved from draft, which is exactly right — and it means a
+        module installed onto a world whose roster was published LAST WEEK
+        arrives with the token channel silently dead for every existing shift.
+        Nothing errors: the portal ack still works, the badge still counts, and
+        only the mailed link — the channel for the people who have no login,
+        i.e. the ones the feature was built for — has nothing to point at.
+
+        General form worth remembering: a feature that hooks a STATE TRANSITION
+        only ever sees the future. If the records it is about already exist, the
+        install has to catch them up, and the only way to notice is to count the
+        live rows rather than to test the transition.
+
+        Bounded to shifts that could still be acknowledged (published, and not
+        yet started): back-filling history would mint thousands of credentials
+        that can never be used, and a credential nobody needs is a credential
+        somebody can leak.
+        """
+        domain = [('state', '=', _PUBLISHED),
+                  ('ack_token', '=', False),
+                  ('start_datetime', '>', fields.Datetime.now())]
+        shifts = self.sudo().search(domain, limit=limit or None)
+        for shift in shifts:
+            shift._ess_ack_env().write({
+                'ack_token': secrets.token_urlsafe(_TOKEN_BYTES),
+            })
+        return len(shifts)
+
     # ------------------------------------------------------------ the ack
     def _ess_can_ack(self, now=False):
         """The ONE predicate. The portal button, the token page and both write

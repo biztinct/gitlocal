@@ -27,6 +27,11 @@ _logger = logging.getLogger(__name__)
 _MINOR_NAMES = [d['name'] for d in _YW_DEMOS]
 _MINOR_17 = 'Demo Minor 17 (Young Worker)'
 
+# The demo world's wall clock (W55). Restated here rather than imported from
+# demo_workforce_current so a change there is a visible conflict, not a silent
+# re-timezoning of every demo login.
+_DEMO_TZ = 'Asia/Ho_Chi_Minh'
+
 _ESS_MANAGER_LOGIN = 'manager.demo@payobook.com'
 _ESS_EMPLOYEE_LOGIN = 'employee.demo@payobook.com'
 _ESS_MINOR_LOGIN = 'minor.demo@payobook.com'
@@ -55,7 +60,11 @@ class PbDemoGenerator(models.TransientModel):
 
     def _ensure_demo_login(self, login, name, company, manager=False):
         """Idempotent by login; passwordless (C18.14). Refreshes groups/company
-        on an existing user so a regen re-asserts the demo state."""
+        on an existing user so a regen re-asserts the demo state.
+
+        `tz` is set explicitly, and it is not cosmetic — see `_link_user_employee`
+        for what a tz-less demo login does to the employee behind it.
+        """
         Users = self.env['res.users'].sudo().with_context(
             no_reset_password=True, mail_create_nosubscribe=True)
         gids = self._ess_group_ids(manager)
@@ -65,6 +74,7 @@ class PbDemoGenerator(models.TransientModel):
             'name': name, 'email': login,
             'company_id': company.id, 'company_ids': [(6, 0, [company.id])],
             'group_ids': [(6, 0, gids)], 'active': True,
+            'tz': _DEMO_TZ,
         }
         if user:
             user.write(vals)   # NO password — stays passwordless
@@ -73,8 +83,24 @@ class PbDemoGenerator(models.TransientModel):
         return Users.create(vals)   # NO password field (C18.14)
 
     def _link_user_employee(self, user, employee):
-        """Link user ↔ employee, clearing any stale link (a user maps to one
-        employee per company; demo employees are recreated each run)."""
+        """Link user ↔ employee, then RE-ASSERT the employee's timezone.
+
+        W77, one hop further out than P6 found it. `hr.employee.tz` is a related
+        write-through onto `resource.resource.tz`, and giving an employee a
+        `user_id` makes Odoo sync that tz from the USER. P6 stamped
+        Asia/Ho_Chi_Minh onto 4 502 demo employees; linking a login created
+        without a tz then silently re-timezoned the one employee behind it to
+        the SERVER's zone — Australia/Sydney on this box.
+
+        Found live and it looked like a product bug, not a seeding one: the ESS
+        portal printed an 08:00 Vietnamese shift as 11:00, from a column holding
+        the correct 01:00 UTC, because the facade localizes to the employee's
+        own zone exactly as W63 requires and the employee's own zone had been
+        rewritten underneath it.
+
+        So the write ORDER matters and the re-assert is not belt-and-braces: the
+        link has to come first, and the timezone after it.
+        """
         if not (user and employee):
             return
         Employee = self.env['hr.employee'].sudo().with_context(active_test=False)
@@ -82,6 +108,8 @@ class PbDemoGenerator(models.TransientModel):
         if stale:
             stale.write({'user_id': False})
         employee.user_id = user.id
+        if employee.tz != _DEMO_TZ:
+            employee.tz = _DEMO_TZ
 
     # ----------------------------------------------------------- queue seed
     def _seed_team_queue(self, manager, company):
@@ -321,6 +349,16 @@ class PbDemoGeneratorEssWorkforce(models.TransientModel):
         Pulse = self.env['pb.shift.pulse'].sudo()
         dept = self._ess_work_department(company)
         today = fields.Date.context_today(self)
+        # Idempotent per WINDOW, not per row. The hash embeds the day, so a run
+        # on a NEW day mints eight fresh rows even though the previous eight are
+        # still inside the seven-day aggregation window — found live after the
+        # date rolled over mid-validation, which is precisely when nobody looks.
+        # If the window already clears the floor with room to spare, there is
+        # nothing to demonstrate and nothing to add.
+        window_start = today - timedelta(days=6)
+        if Pulse.search_count([('uniq_hash', '=like', _ESS_PULSE_TAG + '%'),
+                               ('date', '>=', window_start)]) >= len(_ESS_PULSE_RATINGS):
+            return {'pulse': 0}
         made = 0
         for i, rating in enumerate(_ESS_PULSE_RATINGS):
             day = today - timedelta(days=i % 6)

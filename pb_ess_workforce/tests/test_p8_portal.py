@@ -157,3 +157,46 @@ class TestP8Portal(EssWorkforceCase):
         self._shift(self.emp_b, day, state='published')
         self.assertEqual(self._as(self.user_a).get_my_counters()['shift_pending'], 1)
         self.assertEqual(self._as(self.user_b).get_my_counters()['shift_pending'], 1)
+
+    # ================================================== WP-6 live findings
+    def test_the_week_badge_never_says_all_confirmed_over_a_pending_shift(self):
+        """Found live: a week holding two unconfirmed PAST shifts was crowned
+        "All confirmed", because the badge was driven by what the employee could
+        still act on rather than by what had actually happened. A control that
+        is softer than the fact beneath it has to derive from the fact (W42)."""
+        from datetime import timedelta as _td
+        past = fields.Date.context_today(self.env['hr.employee']) - _td(days=1)
+        monday = self.monday
+        if past < monday:
+            past = monday
+        self._shift(self.emp_a, past, state='published')          # unconfirmable
+        future = self._shift(self.emp_a, self._future_day(), state='published')
+        future._ess_ack('test')
+
+        week = self._as(self.user_a).get_my_schedule()['weeks'][0]
+        self.assertEqual(week['pending'], 0, 'nothing is still actionable')
+        self.assertFalse(week['all_acked'],
+                         'the badge claimed a week with an unconfirmed shift')
+        self.assertLess(week['acked'], week['total'])
+
+    def test_a_leave_type_the_employee_has_nothing_of_is_not_a_tile(self):
+        """W64 on the portal: 32 tiles all reading "0.0 days left" is
+        configuration, not data, and it buries the one balance that matters.
+        Only a type this person has an allocation for, or has taken, is a fact
+        about them."""
+        types = self.env['hr.leave.type'].sudo().search(
+            [('requires_allocation', '=', True)])
+        if not types:
+            self.skipTest('no allocation-based leave type on this database')
+        balances = self._as(self.user_a).get_my_leave()['balances']
+        self.assertEqual(balances, [],
+                         'an employee with no allocations was given tiles')
+
+    def test_the_pending_sentence_is_plural_safe(self):
+        """"1 shifts still to confirm" is what an English plural inside a msgid
+        buys you, and Vietnamese has no plural form to agree with at all. The
+        number is a value, not part of a conjugated noun phrase."""
+        self._shift(self.emp_a, self._future_day(), state='published')
+        label = self._as(self.user_a).get_my_schedule()['pending_label']
+        self.assertNotIn('1 shifts', label)
+        self.assertIn('1', label)

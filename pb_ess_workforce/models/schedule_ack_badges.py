@@ -75,7 +75,15 @@ class ShiftPlanningGridAck(models.TransientModel):
             if not emp:
                 continue
             slot = by_emp.setdefault(emp[0], {'acked': 0, 'total': 0})
-            n = g.get('__count') or g.get('id_count') or 0
+            # `read_group` names its count key differently depending on `lazy`
+            # and on the Odoo minor (`__count` / `<field>_count`). Reading it
+            # by SHAPE rather than by one hard-coded name is the difference
+            # between a badge that silently reads 0/0 forever and one that
+            # breaks loudly if the API moves again.
+            n = g.get('__count')
+            if n is None:
+                n = next((v for k, v in g.items()
+                          if k.endswith('_count') and isinstance(v, int)), 0)
             slot['total'] += n
             if g.get('ack_state') == 'acked':
                 slot['acked'] += n

@@ -47,7 +47,7 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
      double-submit guard is a salted daily hash, and the Today tile refuses to
      render an aggregate below the anonymity floor SERVER-side.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -65,6 +65,7 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
         'pb_schedule',          # get_schedule_data — the ack badges ride its payload
         'pb_today',             # pb.today — the Team pulse tile
     ],
+    'post_init_hook': 'post_init_hook',
     'data': [
         'security/ir.model.access.csv',
         'security/pb_ess_workforce_security.xml',

@@ -131,3 +131,47 @@ class TestP8Demo(EssWorkforceCase):
             ('state', '=', 'published')]).mapped('ack_state'))
         self.assertTrue(res['acked'] or 'acked' in states,
                         'nothing in the cohort week is confirmed')
+
+    def test_a_demo_login_never_re_timezones_the_employee_behind_it(self):
+        """W77, one hop further out. `hr.employee.tz` writes through to
+        `resource.resource.tz`, and giving an employee a `user_id` makes Odoo
+        sync that tz FROM THE USER — so a login created without one silently
+        re-timezoned its employee to the server's zone (Australia/Sydney on this
+        box), and the ESS portal then printed an 08:00 Vietnamese shift as
+        11:00 from a column holding the correct 01:00 UTC.
+
+        Asserted THROUGH the linked employee, never on the user: the resolution
+        order is the thing that was wrong, so a test on `user.tz` passes while
+        the bug is live.
+        """
+        if not self.gen.get_group_company():
+            self.skipTest('no demo company on this database')
+        self.gen.ensure_ess_workforce_cohort()
+        linked = self.env['hr.employee'].sudo().search(
+            [('user_id.login', 'like', 'ess%.demo@payobook.com')])
+        if not linked:
+            self.skipTest('the demo world has no Stores - North cohort')
+        self.assertEqual(set(linked.mapped('tz')), {'Asia/Ho_Chi_Minh'},
+                         'a demo login re-timezoned its employee')
+
+    def test_the_pulse_seed_is_idempotent_across_a_day_boundary(self):
+        """The hash embeds the DAY, so a run after midnight minted eight more
+        rows while the previous eight were still inside the seven-day window.
+        Found live, when the date rolled over mid-validation — which is exactly
+        when nobody is looking. Idempotency has to be per WINDOW, not per row.
+        """
+        if not self.gen.get_group_company():
+            self.skipTest('no demo company on this database')
+        self.gen.ensure_ess_workforce_cohort()
+        Pulse = self.env['pb.shift.pulse'].sudo()
+        before = Pulse.search_count([('uniq_hash', '=like', 'pbdemo:p8:%')])
+        # a "next day" run, simulated by asking the seeder again in a context
+        # whose today is tomorrow
+        from datetime import timedelta as _td
+        tomorrow = self.env['pb.demo.generator'].sudo().with_context(
+            tz='Pacific/Kiritimati')          # +14: reliably a different day
+        res = tomorrow.create({})._ess_seed_pulse(self.gen.get_group_company())
+        self.assertEqual(res.get('pulse'), 0,
+                         'a run on the next day duplicated the pulse seed')
+        self.assertEqual(
+            Pulse.search_count([('uniq_hash', '=like', 'pbdemo:p8:%')]), before)

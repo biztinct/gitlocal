@@ -793,3 +793,24 @@ msgstr "Vui lòng xác nhận bạn đã xem:"
 #: model_terms:ir.ui.view,arch_db:pb_ess_workforce.ack_mail_body
 msgid "Confirm this shift"
 msgstr "Xác nhận ca làm này"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Still to confirm: %(count)s"
+msgstr "Còn phải xác nhận: %(count)s"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%(acked)s of %(total)s confirmed"
+msgstr "Đã xác nhận %(acked)s trên %(total)s"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid ""
+"You have no leave allocations yet. Your balances appear here once HR grants "
+"them."
+msgstr ""
+"Bạn chưa được cấp ngày phép nào. Số ngày phép sẽ hiện ở đây khi bộ phận nhân "
+"sự cấp."

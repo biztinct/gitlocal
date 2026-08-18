@@ -1171,3 +1171,116 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   to run contains `-u`, so the foreign-run check reports a collision with
   itself and aborts the deploy. Put the check in a script FILE on the server
   and run that, rather than passing it as an ssh argument.
+- **W84 The stop→upgrade→start ritual has an UNBOUNDED outage window, because
+  the only thing that starts the service again is the operator. (Cost: ~2 h of
+  502s on payobook.com during P8, and the owner found it, not the session that
+  caused it.)** P8's first deploy stopped the service, launched the detached
+  upgrade, and then the session hit a usage limit between those two steps. The
+  upgrade itself completed perfectly — `EXIT=0`, every module at its new
+  version — and the box sat with port 8069 closed until a human noticed the
+  site was down. Nothing in the ritual notices, because every check it has runs
+  *inside* the session that is no longer there.
+  Two rules, and they are cheap:
+  1. **Everything the window needs exists BEFORE `service odoo-server stop`** —
+     the rsync done and md5-verified, the sentinel script written to the server,
+     the foreign-run check (W83) already run. The stopped window is then exactly
+     one registry load long and never waits on a decision, a file, or a
+     round-trip. P8's later windows were built this way and each was ~7 minutes
+     of a single `systemd-run` unit;
+  2. **On ANY resume — a new session, a recovered one, a hand-back — the FIRST
+     action is `systemctl is-active odoo-server` plus a public HTTP check, and
+     restarting if the box was left stopped.** Before reading the diff, before
+     re-orienting, before anything: an interrupted deploy is far more likely to
+     have left a dead site than a corrupted one, and the dead site is the part
+     that has users on it.
+  Corollary on the health check itself: right after a stale-asset purge the
+  first request rebuilds every bundle and legitimately takes 2–3 minutes, so a
+  25-second `curl` timeout reports `000` and looks exactly like an outage. Warm
+  the box with a long-timeout request before concluding anything from a fast one.
+- **W85 `sudo()` does NOT change `create_uid`, so it cannot make a row
+  anonymous. (Found by P8's own live test run, in the one model whose entire
+  purpose is that no row is about a person.)** `pb.shift.pulse` was written with
+  `self.sudo()` and a docstring explaining that this made the ORM's audit stamp
+  say "the system" rather than the employee rating their own shift. That has
+  been false since Odoo 13: `sudo()` raises the `su` FLAG and leaves `env.uid`
+  exactly where it was, so every pulse row carried its rater's user id in
+  `create_uid` — in a table with no employee column, behind a salted hash, under
+  an anonymity floor, all of which were then decoration. The test asserted the
+  claim (`create_uid == base.user_root`) and came back `1903 != 1`, which is the
+  rater's id.
+  Rules: (1) when anonymity or attribution is the POINT, write with
+  `with_user(SUPERUSER_ID)` — it moves the uid and raises su; (2) assert BOTH
+  `create_uid` and `write_uid`, because a refactor that fixes one and forgets
+  the other leaks just as completely; (3) more generally, a privacy property
+  that is only stated in a docstring is not a property — the reason this was
+  caught at all is that the docstring's claim had been written down as an
+  assertion.
+- **W86 A feature that hooks a STATE TRANSITION only ever sees the future, so
+  installing it onto a live world leaves the existing records outside its own
+  contract — and only a row count says so.** P8 mints an acknowledgment token in
+  `hr.shift.planning.action_publish`, which is the right seam (every publisher
+  gets it, W31's shape). Every test passed, the deploy was clean, and
+  `SELECT count(*) FROM hr_shift_planning WHERE ack_token IS NOT NULL` came back
+  **0**: this tenant's roster had been published the week before the module
+  existed, so no shift had ever crossed the transition. Nothing errored. The
+  portal ack still worked and the badges still counted — only the mailed link,
+  the channel built for the people who have no login, pointed at nothing.
+  Rules: (1) a transition-hooked feature ships an idempotent BACK-FILL and calls
+  it from `post_init_hook`, so the install brings the existing world into the
+  contract; (2) bound the back-fill to records the feature can still act on
+  (P8 mints only for published, not-yet-started shifts — a credential nobody
+  can use is a credential somebody can leak); (3) after any install that adds a
+  column the code is supposed to populate, COUNT THE POPULATED ROWS on the live
+  database. A green suite proves the transition works, never that anything has
+  taken it.
+- **W87 A QWeb `t-set` BODY is rendered markup, and on a `website=True` page the
+  editor's branding rewrites it — so `<t t-set="icon">calendar</t>` is not the
+  string "calendar".** Every icon in P8's portal rendered as the same empty
+  circle: the shared `work_icon` template compares `icon == 'calendar'`, and the
+  value arriving from the call site was Markup carrying `data-oe-model` branding
+  attributes, so every branch was False and all 24 call sites fell through to
+  the else. There is no error, no console message and no visual clue beyond
+  "the icons look wrong", and the identical pattern in `pb_me_portal` had been
+  shipping the same way unnoticed because its else-branch is a plausible file
+  icon.
+  Rule: pass a literal with `t-value="'name'"`, never as a `t-set` body, whenever
+  the value is COMPARED rather than printed. A body is for content; a value is
+  for data. (`t-set` with a body remains correct for the markup blocks it was
+  designed for — a hero's action buttons, a slot.)
+- **W88 A badge derived from what the user can still DO will lie about what has
+  HAPPENED.** P8's week header showed "All confirmed" over a week containing two
+  unconfirmed past shifts, because its counter was `can_ack` — and a shift that
+  has started can no longer be acknowledged, so it counted as nothing left to
+  do. Both facts are real and they are different questions: the BUTTON is about
+  remaining actions, the BADGE is about the record. Derived from the same
+  number, one of them is always wrong. W42's rule ("a surface stricter than the
+  model must derive the strictness from the model") has this mirror image:
+  a surface SOFTER than the record has to derive from the record too.
+  Same phase, same shape, second instance: 32 leave-type tiles all reading
+  "0.0 days left" — every allocation-based type in the database rendered for an
+  employee who had none. That is W64's "configuration in a cell" on a portal,
+  and the fix is the same: a tile is a fact ABOUT THIS PERSON, so a type they
+  have neither been allocated nor taken is not one.
+- **W89 A raw SQL write does not reach the ORM cache, so the running server
+  keeps serving the old value.** P8 restored a demo user's language with
+  `UPDATE res_partner SET lang=...` after the psql-set value had been verified;
+  `psql` showed `en_US`, and the session kept reporting `vi_VN` through a
+  logout, a fresh login and a new browser context, because the worker held a
+  cached `res.partner`. The database was right and the product was wrong, which
+  is the opposite of W13.1's failure and the same lesson: the two have to be
+  checked separately. Raw SQL is legitimate for setting a value nothing has read
+  yet (the temp-password ritual) and wrong for correcting one the server is
+  already serving — use the ORM (`res.users.write`) so the cache invalidates,
+  and re-read through the SESSION rather than through psql to prove it landed.
+  Related, from the same afternoon and worth knowing before it costs an hour:
+  **this server cannot render ANY non-English backend.** `web_debranding`'s
+  `_get_translations_for_webclient` (`addons/web_debranding/models/ir_http.py`
+  :21) does `message["id"] = debrand(...)` on what Odoo 19 now hands it as a
+  `ReadonlyDict`, so `/web/webclient/translations?lang=vi_VN` 500s, the
+  webclient's boot rejects at `fetchTranslations` and the page stays blank with
+  a clean module loader (W74's signature is absent: `odoo.loader.failed` is
+  empty and 1 772 modules are loaded — that is how to tell this apart from a
+  bundle error in one step). It is another module's defect and it is REPORTED,
+  not patched (W68.3); until it is fixed, no Vietnamese backend surface can be
+  visually validated on this box, and `.po` correctness has to be evidenced from
+  the files and the database instead.
