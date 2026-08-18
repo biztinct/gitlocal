@@ -75,6 +75,7 @@ class PbEssWorkforcePortal(CustomerPortal):
             'page_name': 'work_schedule',
             'sched': data,
             'flash': self._flash(kw),
+            'pulse': self._pulse_prompt(),
         })
 
     @http.route(['/my/work/schedule/ack'], type='http', auth='user',
@@ -156,6 +157,62 @@ class PbEssWorkforcePortal(CustomerPortal):
             'ot': data,
             'flash': self._flash(kw),
         })
+
+    # ===================================================== the shift pulse
+    def _pulse_prompt(self):
+        """Ask, unless the visitor has already said no TODAY.
+
+        The dismissal lives in the HTTP SESSION, not in a table. Storing "this
+        employee dismissed the pulse" would be a per-employee row about the
+        pulse, in a feature whose entire premise is that no row is about an
+        employee — and it would outlive the thing it refers to. A session flag
+        costs nothing, forgets by itself, and cannot be joined to anything.
+        """
+        try:
+            if request.session.get('pb_ess_pulse_off') == str(
+                    request.env['pb.ess.workforce']._monday()):
+                return {'show': False}
+            return request.env['pb.shift.pulse'].get_my_prompt()
+        except Exception:
+            return {'show': False}
+
+    @http.route(['/my/work/pulse'], type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_my_work_pulse(self, **post):
+        """The portal half of the anonymous pulse.
+
+        Note what is NOT forwarded: nothing identifying. The rating and the
+        optional comment are the whole payload; the model resolves the company,
+        the department and the day itself, from the session."""
+        try:
+            request.env['pb.shift.pulse'].submit_pulse(
+                post.get('rating'), post.get('comment'))
+        except _ERRORS:
+            # Voluntary feedback. A double submission or a stale form must
+            # never cost the employee their page.
+            return request.redirect('/my/work/schedule')
+        return request.redirect('/my/work/schedule?done=pulse')
+
+    @http.route(['/my/work/pulse/dismiss'], type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_my_work_pulse_dismiss(self, **post):
+        request.session['pb_ess_pulse_off'] = str(
+            request.env['pb.ess.workforce']._monday())
+        return request.redirect('/my/work/schedule')
+
+    @http.route(['/work/pulse'], type='jsonrpc', auth='user')
+    def work_pulse_rpc(self, rating=None, comment=None, **kw):
+        """The SAME submission, for the driver PWA (plain fetch, no Odoo bundle).
+
+        Two entry points, one write path. `**kw` swallows anything else a caller
+        sends — including an employee_id — and `submit_pulse`'s signature has
+        nowhere to put it even if this route tried to pass it on.
+        """
+        try:
+            request.env['pb.shift.pulse'].submit_pulse(rating, comment)
+        except _ERRORS as e:
+            return {'ok': False, 'error': (e.args and e.args[0]) or str(e)}
+        return {'ok': True}
 
     # ------------------------------------------------------------- errors
     def _error_page(self, page_name, exc, back_url):

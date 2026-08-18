@@ -25,7 +25,7 @@ Department, day and search come from the shared `wf_context` (W4): Today is the
 first and only consumer of the bar's `day` segment (§2.3). pbim indigo tokens,
 Lucide icons, flat fills.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

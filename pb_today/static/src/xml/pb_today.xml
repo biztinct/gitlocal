@@ -66,6 +66,20 @@
             <span class="pbtd-tile__v" t-esc="t.n"/>
             <span class="pbtd-tile__l"><i/><t t-esc="t.label"/></span>
           </button>
+
+          <!-- P8 Team pulse. NOT a filter tile and not a button: an average
+               drills into nothing, and a door that opens onto an empty room is
+               worse than no door (W5/W29). Rendered only when the server
+               cleared the anonymity floor — below it the payload carries no
+               figures at all, so there is nothing here to leak. -->
+          <div class="pbtd-pulse" t-if="pulse"
+               t-attf-title="Average of {{ pulse.count }} anonymous shift ratings over the last {{ pulse.window }} days">
+            <span class="pbtd-pulse__f" t-out="ic(pulseFace, 20)"/>
+            <span class="pbtd-pulse__b">
+              <span class="v"><t t-esc="pulse.avg"/><small>/5</small></span>
+              <span class="l">Team pulse · <t t-esc="pulse.count"/> ratings</span>
+            </span>
+          </div>
         </div>
       </div>
 

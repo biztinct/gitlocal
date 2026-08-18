@@ -175,6 +175,33 @@
                     .pbtd-tile__l i { background: var(--pbim-slate, #64748B); } }
     }
 
+    // P8 — the Team pulse. Sits in the tile strip but is NOT a tile: no hover
+    // border, no pressed state, no cursor. It is a reading, not a filter, and
+    // it must not look like something that can be clicked.
+    .pbtd-pulse {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px dashed var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #ffffff);
+
+        &__f { color: var(--pbim-primary-strong, #453A8C); flex: none; display: inline-flex; }
+        &__b { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .v {
+            font-size: 22px; font-weight: 800; line-height: 1;
+            font-variant-numeric: tabular-nums;
+            color: var(--pbim-ink, #1B1733);
+            small { font-size: 12px; font-weight: 700; color: var(--pbim-muted, #64748B); }
+        }
+        .l {
+            font-size: 10px; font-weight: 800; letter-spacing: .06em;
+            text-transform: uppercase; color: var(--pbim-muted, #64748B);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+    }
+
     // ------------------------------------------------- embedded (P3a, W17)
     // The board was ALREADY host-shaped: a flex column with `height: 100%` and
     // `.pbtd-body` as the only scroller, so it needs no structural change to sit
