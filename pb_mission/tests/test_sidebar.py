@@ -26,11 +26,16 @@ _RETIRED_BY_P3A = [
 ]
 
 # Retired by P0/P1a/P1b/P2, still where those phases left them.
+#
+# P7 (WP-3) removed four that used to head this list — `item_wf_timecards`
+# (900), `item_wf_dashboard` (901), `item_wf_live` (902) and `item_wf_overtime`
+# (903). Their cockpits were DELETED, so each was a retired item whose
+# `action_xmlid` no longer resolved: not the reversible decision the 900 band
+# exists for (W18) but a button an admin could re-enable into nothing. Their
+# sequences are deliberately left vacant rather than backfilled — a retired
+# item still occupies its number for W8's uniqueness rule, and nothing needs
+# 900-903.
 _RETIRED_BEFORE = [
-    ('pb_sidebar.item_wf_timecards', 900),
-    ('pb_sidebar.item_wf_dashboard', 901),
-    ('pb_sidebar.item_wf_live', 902),
-    ('pb_sidebar.item_wf_overtime', 903),
     ('pb_driver_checkin.item_driver_tracking', 904),
     ('pb_sidebar.item_wf_templates', 905),
     ('pb_attendance_flow.item_attendance_control', 25),
@@ -145,7 +150,14 @@ class TestP3aSidebar(TransactionCase):
             for x, _seq in (_RETIRED_BY_P3A + _RETIRED_BEFORE)
             if self.env.ref(x, raise_if_not_found=False)
         }
-        self.assertEqual(len(expected), 15,
+        # UPDATED BY P7 (WP-3): fifteen minus the four whose cockpits were
+        # deleted (`item_wf_dashboard`, `item_wf_live`, `item_wf_timecards`,
+        # `item_wf_overtime`). Those four could not stay retired — a retired
+        # item pointing at a missing action is not the reversible decision the
+        # 900 band exists for — so they went with the code, from the data file
+        # and from the database. The number is asserted rather than derived so
+        # that a record vanishing for any OTHER reason is still loud.
+        self.assertEqual(len(expected), 11,
                          'the full Workforce module set must be installed')
         self.assertEqual(
             set(retired.ids), expected,

@@ -26,10 +26,20 @@ from odoo.tests import TransactionCase, tagged
 
 # Retired by P1b into the 900 band (W18), and still there. Today absorbed the
 # first three; the driver map became Today's map card and its full Map view.
+# UPDATED BY P7 (WP-3). Three of P1b's four retirements are GONE, not retired:
+# `item_wf_dashboard`, `item_wf_live` and `item_wf_overtime` pointed at the
+# Gen-0 Workforce Dashboard, Live Attendance and Overtime Rules cockpits, and
+# P7 deleted those cockpits — JS, CSS and client action. A retired item whose
+# `action_xmlid` no longer resolves is not a reversible decision (which is the
+# entire justification for the 900 band, W18); it is a button an admin can
+# re-enable into nothing, and `test_sweep.py::test_retired_items_keep_their_
+# actions` refuses it. They were deleted from the data file and from the
+# database (pb_hr_workforce/migrations/19.0.4.14.0/post-migrate.py) and their
+# absence is asserted in `test_sweep.py`.
+#
+# The driver map survives untouched: its cockpit is alive, so its retirement is
+# still the reversible thing W18 describes.
 _RETIRED_BY_P1B = [
-    ('pb_sidebar.item_wf_dashboard', 901),
-    ('pb_sidebar.item_wf_live', 902),
-    ('pb_sidebar.item_wf_overtime', 903),
     ('pb_driver_checkin.item_driver_tracking', 904),
 ]
 
@@ -55,7 +65,9 @@ class TestP1bSidebar(TransactionCase):
     def test_the_four_p1b_absorbed_items_stay_retired_in_the_900_band(self):
         """W18: `active = False` takes an item off the rail but not out of the
         section, so a retirement that inherits somebody's sequence has to MOVE.
-        P1b's four went to 901-904 and nothing since has disturbed them."""
+        P1b's four went to 901-904; P7 deleted three of them along with the
+        cockpits they pointed at, and the one whose cockpit is still alive has
+        not been disturbed."""
         checked = 0
         for xmlid, seq in _RETIRED_BY_P1B:
             rec = self._item(xmlid)
@@ -65,7 +77,8 @@ class TestP1bSidebar(TransactionCase):
             self.assertFalse(rec.active, '%s must be off the rail' % xmlid)
             self.assertEqual(rec.sequence, seq, '%s retired sequence' % xmlid)
         self.assertEqual(checked, len(_RETIRED_BY_P1B),
-                         'all four P1b retirements must be present to check')
+                         'every surviving P1b retirement must be present to '
+                         'check (three were deleted with their cockpits in P7)')
 
     def test_business_trips_is_no_longer_frozen(self):
         """The W13.1 unfreeze P1b shipped. If the migration had not run, this

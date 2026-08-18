@@ -175,11 +175,22 @@ class TestCloseAdvisory(CloseCase):
             "append-after-super seam. pb_demo must then call the advisory "
             "hooks itself (_pb_demo_advisories) — the fix is NEVER to depend "
             "on pb_demo from a production module.")
-        import inspect
-        src = inspect.getsource(type(self.env['pb.payrun.wizard'])
-                                ._pb_demo_advisories)
-        self.assertIn('_close_append_exceptions', src,
-                      'the demo hook must invoke the close advisory')
+        # UPDATED BY P7. This used to `inspect.getsource` the hook and look for
+        # the literal `_close_append_exceptions`. That broke the moment P7
+        # hoisted the two hook names into an `_ADVISORY_HOOKS` constant — the
+        # mechanism was unchanged and the test went red, which is the signature
+        # of a gate asserting an IMPLEMENTATION rather than a behaviour.
+        # So it drives the hook instead: seed a list, call it exactly as the
+        # division path does, and require our row to come out. That survives a
+        # rename, a constant, or a registry.
+        seeded = [{'emp': 'Someone', 'why': 'No running contract'}]
+        self.env['pb.payrun.wizard'].sudo()._pb_demo_advisories(
+            seeded, self.emp.ids, self.ds.isoformat(), self.de.isoformat())
+        self.assertEqual(seeded[0]['why'], 'No running contract',
+                         'the demo hook must append, never rebuild')
+        self.assertTrue(
+            any('not closed' in r.get('why', '') for r in seeded[1:]),
+            'the demo division path shows no close advisory: %s' % seeded)
 
     def test_the_wrapper_is_registered_on_both_seams(self):
         wiz = type(self.env['pb.payrun.wizard'])
