@@ -16,6 +16,7 @@ Team queue is non-empty on a fresh demo (cleaned by clean_demo_employees).
 """
 
 import logging
+from datetime import timedelta
 
 from odoo import fields, models
 
@@ -149,3 +150,203 @@ class PbDemoGenerator(models.TransientModel):
             'employee=%s, minor=%s', mgr_user.login, len(manager.child_ids),
             emp_user.login, minor_user.login)
         return {'manager': mgr_user, 'employee': emp_user, 'minor': minor_user}
+
+
+# =========================================================================
+#  P8 — the ESS WORKFORCE cohort (Workforce redesign, "My Work")
+# =========================================================================
+# Phase I seeded three logins because three personas were all the ESS story
+# needed. P8's story is a ROSTER: an ack badge that reads "12 of 16", a Today
+# tile that clears an anonymity floor of five, and a manager watching
+# confirmations arrive. Three people cannot demonstrate any of that, so this
+# adds a cohort — ten logins in one named department, which is also the
+# department every other P6 instrument is concentrated in, so the whole demo
+# happens on one filter rather than four.
+
+# The department the demo world is dense in (`demo_workforce_current._GRID_DEPT`
+# — restated rather than imported so a change there is a visible conflict here
+# rather than a silent re-aim of the ESS cohort).
+_ESS_WORK_DEPT = 'Stores - North'
+_ESS_COHORT_SIZE = 10
+_ESS_WORK_LOGIN = 'ess%s.demo@payobook.com'
+
+# The ack MIX. Not "everything confirmed" (a badge that is always green is an
+# instrument nobody reads) and not "nothing confirmed" (which looks broken).
+# Roughly three in four, deterministic by index so a regen produces the same
+# picture and a screenshot stays true.
+_ESS_ACK_SKIP = 4          # every 4th cohort member leaves their week pending
+
+# The pulse. The Today tile's floor is 5, so a demo that seeds four rows shows
+# nothing and reads as a broken feature — this seeds comfortably past it, spread
+# over the window rather than stacked on one day.
+_ESS_PULSE_RATINGS = (5, 4, 4, 3, 5, 4, 2, 5)
+# Demo pulse rows carry no employee (that is the model's whole point), so W60's
+# "the employee owns the demo data" rule cannot reach them. They are marked in
+# the one column they have: a `uniq_hash` prefix, which is also what makes the
+# seeder idempotent without a second lookup.
+_ESS_PULSE_TAG = 'pbdemo:p8:'
+
+
+class PbDemoGeneratorEssWorkforce(models.TransientModel):
+    _inherit = 'pb.demo.generator'
+
+    # ------------------------------------------------------------- cohort
+    def _ess_work_department(self, company):
+        return self.env['hr.department'].sudo().search(
+            [('name', '=', _ESS_WORK_DEPT), ('company_id', '=', company.id)],
+            limit=1)
+
+    def _ess_work_cohort(self, company):
+        """The ten demo employees who get a login.
+
+        Alphabetical head of the department, which is EXACTLY the slice
+        `demo_workforce_current._p6_dept_slice` seeds shifts, punches and
+        overtime for — so every person who can log in has a week worth looking
+        at. A random pick would have produced logins onto empty schedules.
+        """
+        dept = self._ess_work_department(company)
+        if not dept:
+            return self.env['hr.employee'].sudo().browse()
+        return self.env['hr.employee'].sudo().search([
+            ('is_demo', '=', True), ('active', '=', True),
+            ('company_id', '=', company.id),
+            ('department_id', '=', dept.id),
+            ('user_id', '=', False),
+        ], order='name', limit=_ESS_COHORT_SIZE)
+
+    def ensure_ess_workforce_cohort(self):
+        """Ten passwordless ESS logins + a realistic ack mix + a live pulse.
+
+        Idempotent by login (the users) and by hash prefix (the pulse); never
+        destructive (W60) — an ack an officer or a demo visitor already gave is
+        left exactly where it is.
+        """
+        self = self.with_context(**self._GEN_CTX)
+        out = {'users': 0, 'linked': 0, 'acked': 0, 'pending': 0, 'pulse': 0}
+        company = self.get_group_company()
+        if not company:
+            _logger.warning('pb_demo P8: no demo company; skipping ESS cohort')
+            return out
+
+        # --- the logins --------------------------------------------------
+        Users = self.env['res.users'].sudo().with_context(active_test=False)
+        existing = Users.search(
+            [('login', 'like', 'ess%.demo@payobook.com')])
+        need = _ESS_COHORT_SIZE - len(existing)
+        fresh = self._ess_work_cohort(company) if need > 0 else \
+            self.env['hr.employee'].sudo().browse()
+
+        cohort_emps = self.env['hr.employee'].sudo().browse()
+        for i in range(_ESS_COHORT_SIZE):
+            login = _ESS_WORK_LOGIN % (i + 1)
+            user = Users.search([('login', '=', login)], limit=1)
+            emp = self.env['hr.employee'].sudo().browse()
+            if user:
+                # Re-link: demo employees are recreated on every regen, so a
+                # surviving login is re-pointed at a current employee rather
+                # than left dangling (the Phase-I rule, restated for ten).
+                emp = self.env['hr.employee'].sudo().search(
+                    [('user_id', '=', user.id)], limit=1)
+                if not emp and fresh:
+                    emp, fresh = fresh[0], fresh[1:]
+            elif fresh:
+                emp, fresh = fresh[0], fresh[1:]
+            if not emp:
+                continue
+            if not user:
+                out['users'] += 1
+            user = self._ensure_demo_login(login, emp.name or login, company)
+            self._link_user_employee(user, emp)
+            out['linked'] += 1
+            cohort_emps |= emp
+
+        if not cohort_emps:
+            _logger.warning('pb_demo P8: no %s employees free for ESS logins',
+                            _ESS_WORK_DEPT)
+            return out
+
+        out.update(self._ess_seed_acks(cohort_emps))
+        out.update(self._ess_seed_pulse(company))
+        _logger.info(
+            'pb_demo P8: ESS cohort ready — %(linked)s logins, %(acked)s shifts '
+            'confirmed, %(pending)s left pending, %(pulse)s pulse ratings', out)
+        return out
+
+    # ---------------------------------------------------------------- acks
+    def _ess_seed_acks(self, cohort):
+        """Confirm most of the cohort's published week; leave a few pending.
+
+        Only FUTURE shifts are marked, because that is the only set the portal
+        would let a person confirm — a demo state a user could not have produced
+        is a demo that lies about the product (`_ess_can_ack` is the same
+        predicate the button uses).
+        """
+        if 'ack_state' not in self.env['hr.shift.planning']._fields:
+            return {}                     # pb_ess_workforce not installed
+        Shift = self.env['hr.shift.planning'].sudo()
+        now = fields.Datetime.now()
+        acked = pending = 0
+        for idx, emp in enumerate(cohort.sorted(key=lambda e: (e.name or '', e.id))):
+            shifts = Shift.search([
+                ('employee_id', '=', emp.id),
+                ('state', '=', 'published'),
+                ('start_datetime', '>', now),
+            ], order='start_datetime')
+            if idx % _ESS_ACK_SKIP == 3:
+                pending += len(shifts.filtered(
+                    lambda s: s.ack_state == 'pending'))
+                continue
+            for s in shifts:
+                if s.ack_state == 'acked':
+                    continue
+                # one shift each stays pending, so every badge is "n of m"
+                # rather than a wall of green checks
+                if s == shifts[-1] and len(shifts) > 1:
+                    pending += 1
+                    continue
+                if s._ess_ack('demo'):
+                    acked += 1
+        return {'acked': acked, 'pending': pending}
+
+    # --------------------------------------------------------------- pulse
+    def _ess_seed_pulse(self, company):
+        """Enough anonymous ratings, spread over the window, to clear the floor.
+
+        No employee is involved and none can be: the rows are tagged in their
+        uniqueness hash, which is the only column they have that is not a fact
+        about a department and a day.
+        """
+        if 'pb.shift.pulse' not in self.env:
+            return {}
+        Pulse = self.env['pb.shift.pulse'].sudo()
+        dept = self._ess_work_department(company)
+        today = fields.Date.context_today(self)
+        made = 0
+        for i, rating in enumerate(_ESS_PULSE_RATINGS):
+            day = today - timedelta(days=i % 6)
+            digest = '%s%s:%s' % (_ESS_PULSE_TAG, day.isoformat(), i)
+            if Pulse.search_count([('uniq_hash', '=', digest)]):
+                continue
+            Pulse.create({
+                'company_id': company.id,
+                'department_id': dept.id if dept else False,
+                'date': day,
+                'rating': rating,
+                'uniq_hash': digest,
+            })
+            made += 1
+        return {'pulse': made}
+
+    # -------------------------------------------------------------- cleanup
+    def clean_demo_employees(self):
+        """Take the demo pulse rows with the demo employees.
+
+        They are the one piece of P8 demo residue `clean_demo_employees` cannot
+        find by employee (W60), because having no employee is the point. The
+        tag is the handle, and it is scoped tightly enough that a real rating
+        can never match it.
+        """
+        if 'pb.shift.pulse' in self.env:
+            self.env['pb.shift.pulse'].sudo().search(
+                [('uniq_hash', '=like', _ESS_PULSE_TAG + '%')]).unlink()
+        return super().clean_demo_employees()

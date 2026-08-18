@@ -323,6 +323,10 @@ class PbDemoGenerator(models.TransientModel):
         # present" entry point, so a stale demo can be brought to today without
         # regenerating 4 500 employees and a year of payslips.
         self.ensure_workforce_current()
+        # demo_ess.py — the P8 "My Work" cohort. AFTER the present, not before:
+        # it confirms shifts and those shifts have to exist first, and it links
+        # ten logins to employees the P6 seeder has just given a week to.
+        self.ensure_ess_workforce_cohort()
         if self.include_history:
             self.generate_history()    # demo_history.py
         self.generate_extras()         # demo_extras.py (F&F, proration, retro, insurance adj, dependents)
