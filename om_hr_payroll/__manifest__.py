@@ -3,7 +3,7 @@
 {
     'name': 'HR Payroll',
     'category': 'Generic Modules/Human Resources',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'sequence': 1,
     'author': 'Odoo Mates, Odoo SA',
     'summary': 'Generic Payroll system',
