@@ -33,9 +33,27 @@ WHAT IT GUARANTEES
 * **Never destructive.** It only ever ADDS. It does not rewrite a shift, punch,
   leave or trip that already exists on a seeded day, because it cannot tell a
   previous run's row from an officer's — so it treats every existing row as the
-  officer's. The single exception is the self-heal above (closing an open punch
-  on a past day, which is what an officer would do anyway) and advancing a
-  settled published shift to ``completed``.
+  officer's. The exceptions are all cases where it CAN tell: the self-heal above
+  (closing an open punch on a past day, which is what an officer would do
+  anyway), advancing a settled published shift to ``completed``, and the grid
+  provenance stamp below, which only ever touches a punch whose timestamps match
+  the deterministic plan to the second — i.e. a row this seeder demonstrably
+  wrote itself.
+
+THE CALENDAR'S TIMEZONE (P7)
+---------------------------
+``_p6_tz`` pins Vietnam for everything this seeder writes, and W55 put the same
+zone on the demo EMPLOYEES. Neither of those reaches the third place a Workforce
+surface looks for a clock: ``hr.attendance.weekentry._emp_tz`` resolves the
+working CALENDAR first (``emp.resource_calendar_id or
+company.resource_calendar_id``), and only then the employee. The demo company's
+calendar is Odoo's stock 40-hour one, which ships ``Europe/Brussels`` — so an
+officer typing "8" into a Week Grid cell got a punch written at 08:00 Brussels,
+which is 13:00 in Ho Chi Minh City. Every seeded row was in the right place and
+every HAND-ENTERED one was five hours out. ``_p6_align_calendars`` stamps the
+demo company's own calendars so the three clocks finally agree; a calendar the
+demo company does not OWN is left alone even if a demo employee is on it, because
+that row is shared with real companies (see the method).
 
 UTC-DAY SAFETY (W51)
 --------------------
@@ -89,6 +107,26 @@ _GLOBAL_TAKE = 24
 _DEPT_TAKE = 16
 _DEPT_NAMES = ('Stores - North', 'Assembly Line A', 'Fleet - HCMC', 'Finance')
 
+# The ONE department that enters its hours by hand (P7). Everything else in the
+# demo world punches on a device, which is the truth for a factory and is also
+# what makes the Week Grid's REG cells read-only there — `get_week_entries`
+# offers an editable REG cell only when the day holds exactly one punch AND that
+# punch carries `pb_entry_source='grid'` (attendance_weekentry.py:256). With no
+# grid punch anywhere in the demo, the grid's whole keyboard story — type, Tab,
+# fill-down, undo, the tray — could not be shown without first making an edit,
+# and the first edit is the thing you are trying to demonstrate.
+#
+# Concentrated in one named department rather than sprinkled, for two reasons:
+# a department filter then produces a screen that is entirely editable instead
+# of a checkerboard, and the rest of the world keeps its honest device
+# provenance for the Attendance-Control story.
+_GRID_DEPT = 'Stores - North'
+# How many OT chips that department carries across the settled + current week.
+# Enough that the chip vocabulary (draft / submitted / approved, weekday /
+# weekend, a bonus split) is all visible on one screen; few enough that the
+# cells are still mostly hours.
+_DEPT_OT_TAKE = 8
+
 # Shift templates by code (hr.shift.template). NEVER the night template: see the
 # UTC-day note in the module docstring, and minors may not be assigned it at all.
 _TPL_DAY = 'AM'        # 08:00–17:00, 8 h net
@@ -131,9 +169,10 @@ class PbDemoGenerator(models.TransientModel):
         is what the tests assert on and what a live run is reported from.
         """
         self = self.with_context(**self._GEN_CTX)
-        out = {'cohort': 0, 'timezones': 0, 'healed': 0, 'shifts': 0,
-               'drafts': 0, 'completed': 0, 'punches': 0, 'open_today': 0,
-               'overtime': 0, 'leaves': 0, 'trips': 0, 'corrections': 0,
+        out = {'cohort': 0, 'timezones': 0, 'calendars': 0, 'healed': 0,
+               'shifts': 0, 'drafts': 0, 'completed': 0, 'punches': 0,
+               'open_today': 0, 'grid_punches': 0, 'overtime': 0,
+               'dept_overtime': 0, 'leaves': 0, 'trips': 0, 'corrections': 0,
                'drivers': 0}
 
         company = self.get_group_company()
@@ -168,14 +207,22 @@ class PbDemoGenerator(models.TransientModel):
         # trip overlap, a leave-validation quirk) must never abort the rest.
         # The InFailedSqlTransaction lesson — see demo_timeoff.ensure_timeoff_demos.
         self._p6_section(out, 'timezones', self._p6_align_timezones, company)
+        self._p6_section(out, 'calendars', self._p6_align_calendars, company)
         self._p6_section(out, 'self-heal', self._p6_heal_open_punches,
                          cohort, tz, specs, today, start)
         self._p6_section(out, 'shifts', self._p6_seed_shifts,
                          cohort, company, specs, today, start, end)
         self._p6_section(out, 'punches', self._p6_seed_punches,
                          cohort, tz, specs, today, start)
+        # After the punches exist: the stamp identifies a row this seeder wrote
+        # by matching the plan to the second, so it has to run once the plan has
+        # been realised.
+        self._p6_section(out, 'grid punches', self._p6_mark_grid_punches,
+                         cohort, company, tz, specs, today, start)
         self._p6_section(out, 'overtime', self._p6_seed_overtime,
                          cohort, company, today)
+        self._p6_section(out, 'dept overtime', self._p6_seed_dept_overtime,
+                         cohort, company, specs, today, excused)
         self._p6_section(out, 'leave', self._p6_seed_leave,
                          cohort, company, today)
         self._p6_section(out, 'trips', self._p6_seed_trips,
@@ -493,6 +540,59 @@ class PbDemoGenerator(models.TransientModel):
                      len(wrong))
         return {'timezones': len(wrong)}
 
+    def _p6_align_calendars(self, company):
+        """Give the demo company's WORKING CALENDARS the country's timezone.
+
+        The third clock, and the last one still set to Belgium. W55 fixed the
+        seeder's own wall time and P6 fixed the employees', but
+        ``hr.attendance.weekentry._emp_tz`` (attendance_weekentry.py:70) reads
+        the working CALENDAR first and the employee only as a fallback:
+
+            cal = emp.resource_calendar_id or emp.company_id.resource_calendar_id
+            name = (cal.tz or emp.tz or self.env.user.tz or 'UTC')
+
+        So the field this seeder so carefully set was never consulted by the one
+        surface that WRITES punches. `_save_reg` builds a check-in from the
+        cell's hours in that zone, which means an officer typing "8" into a
+        Vietnamese demo produced a punch at 08:00 Brussels = 13:00 local — a row
+        that then failed the seeder's own UTC-day rule (W51) and read as an
+        afternoon shift on every board. The bug is invisible in every fixture
+        suite, because a fixture calendar is whatever the test made it.
+
+        SCOPE, and why it is narrower than it looks. Only calendars the demo
+        company OWNS (`company_id == company`) are stamped. A calendar with no
+        company is GLOBAL — Odoo ships several — and a demo employee sitting on
+        one would make "fix the demo world" quietly rewrite the working hours of
+        every real company on the database. If that is ever the case here, it is
+        logged and skipped rather than followed: pb_demo owns demo rows, not the
+        rows they happen to point at.
+        """
+        Cal = self.env['resource.calendar'].sudo().with_context(active_test=False)
+        mine = Cal.search([('company_id', '=', company.id)])
+        wrong = mine.filtered(lambda c: c.tz != _DEMO_TZ)
+
+        # Loud about the case the scope rule refuses to handle silently.
+        foreign = self.env['hr.employee'].sudo().with_context(
+            active_test=False).search([
+                ('is_demo', '=', True), ('company_id', '=', company.id),
+                ('resource_calendar_id', '!=', False),
+                ('resource_calendar_id', 'not in', mine.ids),
+            ])
+        if foreign:
+            _logger.warning(
+                'pb_demo P7: %s demo employees work a calendar the demo company '
+                'does not own (%s) — left alone, it is shared with real '
+                'companies. Their Week Grid cells will still resolve a foreign '
+                'timezone.', len(foreign),
+                ', '.join(sorted(set(foreign.mapped(
+                    'resource_calendar_id.display_name')))))
+        if not wrong:
+            return {}
+        wrong.write({'tz': _DEMO_TZ})
+        _logger.info('pb_demo P7: set the VN timezone on %s demo calendars (%s).',
+                     len(wrong), ', '.join(wrong.mapped('display_name')))
+        return {'calendars': len(wrong)}
+
     # ============================================================ self-heal
     def _p6_heal_open_punches(self, cohort, tz, specs, today, start):
         """Close the open check-ins a PREVIOUS run left on earlier days.
@@ -691,6 +791,78 @@ class PbDemoGenerator(models.TransientModel):
         return {'punches': len(made), 'open_today': open_today,
                 'completed': settled}
 
+    # ========================================================= grid provenance
+    def _p6_dept_slice(self, cohort, company, dept_name):
+        """The demo employees of one named cost centre, in the cohort's own
+        stable order. Adults only — a minor's hours are a hard constraint, not a
+        demo surface, and neither the grid slice nor the OT desk may bend them.
+        """
+        dept = self.env['hr.department'].sudo().search(
+            [('name', '=', dept_name), ('company_id', '=', company.id)], limit=1)
+        if not dept:
+            return []
+        return [e for e in cohort
+                if e.department_id == dept and e.name not in _MINOR_SHAPE]
+
+    def _p6_mark_grid_punches(self, cohort, company, tz, specs, today, start):
+        """Make ONE department's week editable in the Week Grid.
+
+        `get_week_entries` unlocks a REG cell only for a day holding exactly one
+        punch whose `pb_entry_source` is `'grid'`; a blank source means a device
+        punch, and the grid refuses to edit those on purpose (safety rail 2 —
+        the device is the system of record and the correction flow is where you
+        argue with it). Every punch this seeder writes is a device punch, which
+        is correct and which also left the grid's entire keyboard story
+        undemonstrable on a fresh demo.
+
+        WHY THIS MAY REWRITE A ROW when §"never destructive" says it may not.
+        The rule exists because the seeder cannot normally tell its own row from
+        an officer's. Here it can, exactly: the plan (`_p6_specs`) is pure and
+        deterministic, so a punch is one this seeder wrote if and only if its
+        check-in and check-out equal the planned ones TO THE SECOND. Anything
+        else — an officer's correction, an imported row, a punch somebody moved
+        by a minute — fails the match and is left alone. The write itself
+        changes provenance only; no time, no employee, no day moves.
+        """
+        people = self._p6_dept_slice(cohort, company, _GRID_DEPT)
+        if not people:
+            _logger.info('pb_demo P7: no "%s" department — no grid slice',
+                         _GRID_DEPT)
+            return {}
+        ids = [e.id for e in people]
+        Att = self.env['hr.attendance'].sudo()
+        lo, _x = self._p6_day_bounds(tz, start)
+        _y, hi = self._p6_day_bounds(tz, today)
+
+        by_day = {}
+        for a in Att.search([('employee_id', 'in', ids),
+                             ('check_in', '>=', lo), ('check_in', '<=', hi)]):
+            key = (a.employee_id.id,
+                   utc.localize(a.check_in).astimezone(tz).date())
+            by_day.setdefault(key, []).append(a)
+
+        todo = Att.browse()
+        for key, atts in by_day.items():
+            # two punches on a day are not editable in the grid whatever their
+            # source, so stamping them would promise an edit the cell refuses
+            if len(atts) != 1:
+                continue
+            att = atts[0]
+            spec = specs.get(key)
+            if not spec or not spec['ci'] or not spec['co']:
+                continue
+            if att.pb_entry_source == 'grid':
+                continue
+            if att.check_in != spec['ci'] or att.check_out != spec['co']:
+                continue          # somebody else's row, or somebody edited ours
+            todo |= att
+        if not todo:
+            return {}
+        todo.write({'pb_entry_source': 'grid'})
+        _logger.info('pb_demo P7: %s punches in %s are now grid-entered.',
+                     len(todo), _GRID_DEPT)
+        return {'grid_punches': len(todo)}
+
     # ============================================================== overtime
     def _p6_seed_overtime(self, cohort, company, today):
         """A small, deliberately-shaped overtime desk.
@@ -744,6 +916,105 @@ class PbDemoGenerator(models.TransientModel):
             except Exception as e:   # pragma: no cover
                 _logger.warning('pb_demo P6: OT %s/%s skipped: %s', emp.name, d, e)
         return {'overtime': made}
+
+    def _p6_seed_dept_overtime(self, cohort, company, specs, today, excused):
+        """A DENSE overtime week for the one department the grid can edit.
+
+        `_p6_seed_overtime` above shapes the OT DESK — six requests chosen so
+        the dock's "approve all N clean" batch has honest material. They are
+        spread across the whole company by design, which means the Week Grid,
+        filtered to any one department, shows at most one chip and usually none.
+        A grid whose chip vocabulary (draft / submitted / approved, weekday /
+        weekend, the hours themselves) can only be seen by first entering some
+        overtime is a grid that cannot be demonstrated read-only.
+
+        So the same department that got the editable REG cells also carries
+        `_DEPT_OT_TAKE` chips, across the SETTLED week and the CURRENT one — the
+        two weeks an officer actually opens. Every one of them sits on a day the
+        person really worked (there is a shift and a punch): an OT claim on an
+        empty day is an anomaly, and seeding anomalies to make a screen look
+        busy is how a demo teaches the wrong reflex.
+
+        Mostly `approved` and `draft` on purpose. A `submitted` row is an
+        `ot_pending` flag on the Close board, and this method exists to fill a
+        grid, not to inflate somebody else's queue — exactly one is submitted so
+        the state's dot is on screen.
+        """
+        if 'hr.overtime.request' not in self.env:
+            return {}
+        people = self._p6_dept_slice(cohort, company, _GRID_DEPT)
+        if not people:
+            return {}
+        OT = self.env['hr.overtime.request'].sudo()
+
+        monday = today - timedelta(days=today.weekday())
+        last_monday = monday - timedelta(days=7)
+        # settled week first — a chip on a closed-looking week is the one that
+        # proves the grid reads history, not just this morning
+        candidates = [last_monday + timedelta(days=i) for i in range(6)]
+        candidates += [monday + timedelta(days=i) for i in range(6)
+                       if monday + timedelta(days=i) <= today]
+
+        # hours and state wheels: deterministic, and both prime-ish against the
+        # number of people so the mix does not stripe by row
+        hours_wheel = (2.0, 1.5, 3.0, 2.5, 2.0, 1.5, 3.0)
+        state_wheel = ('approved', 'draft', 'approved', 'submitted',
+                       'approved', 'draft', 'approved', 'draft')
+
+        # `filled` counts SLOTS (including ones a previous run filled) so the
+        # target is reached once and not re-reached every week; `created` counts
+        # only what THIS run wrote, which is what the idempotency test reads and
+        # what every other section here reports.
+        filled = created = 0
+        used = set()
+        for i, emp in enumerate(people):
+            if filled >= _DEPT_OT_TAKE:
+                break
+            away = excused.get(emp.id, ())
+            day = None
+            for j in range(len(candidates)):
+                d = candidates[(i * 3 + j) % len(candidates)]
+                if (emp.id, d) in used or d.isoformat() in away:
+                    continue
+                spec = specs.get((emp.id, d))
+                # a day with a shift AND a completed punch — the only kind an
+                # overtime claim can honestly sit on
+                if not spec or not spec['ci'] or not spec['co']:
+                    continue
+                day = d
+                break
+            if not day:
+                continue
+            otype = 'weekend' if day.weekday() >= 5 else 'weekday'
+            if OT.search_count([('employee_id', '=', emp.id), ('date', '=', day),
+                                ('overtime_type', '=', otype)]):
+                used.add((emp.id, day))
+                filled += 1        # already there: this slot is filled
+                continue
+            hrs = hours_wheel[i % len(hours_wheel)]
+            target = state_wheel[i % len(state_wheel)]
+            try:
+                with self.env.cr.savepoint():
+                    r = OT.create({
+                        'employee_id': emp.id, 'company_id': company.id,
+                        'date': day, 'overtime_type': otype,
+                        'planned_hours': hrs, 'actual_hours': hrs,
+                        'reason': 'Stock take (demo)',
+                    })
+                    if target in ('submitted', 'approved'):
+                        r.action_submit()
+                    if target == 'approved':
+                        r.action_approve()
+                    used.add((emp.id, day))
+                    filled += 1
+                    created += 1
+            except Exception as e:   # pragma: no cover
+                _logger.warning('pb_demo P7: dept OT %s/%s skipped: %s',
+                                emp.name, day, e)
+        if created:
+            _logger.info('pb_demo P7: %s new overtime chips in %s (%s slots '
+                         'filled).', created, _GRID_DEPT, filled)
+        return {'dept_overtime': created}
 
     # ================================================================= leave
     def _p6_plan_excused(self, cohort, today):
