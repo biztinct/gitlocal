@@ -600,4 +600,193 @@
         gap: 8px;
         margin-top: 12px;
     }
+
+    // ==================================================== P7: kinds + paging
+    // A flag is waived per KIND, so the board groups by kind before it lists
+    // anything. Every colour is a --pbim-* token with a real literal fallback
+    // (W14) — this lens can mount inside the shell or standalone.
+    .pbmc-kinds {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbmc-kinds__spacer { flex: 1 1 auto; }
+
+    .pbmc-kind {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+        padding: 5px 10px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-muted, #64748B);
+        font-size: 11.5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color .12s ease, background .12s ease;
+
+        &:hover:not(:disabled) { border-color: var(--pbim-primary-light, #CBC2EE); }
+        &:disabled { opacity: .55; cursor: default; }
+
+        &.is-on {
+            border-color: var(--pbim-primary, #5A4BB0);
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .pbmc-kind__n {
+        font-size: 13px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-ink, #1B1733);
+    }
+    // the reviewed tail: present but subordinate, so the OPEN count stays the
+    // number the eye lands on
+    .pbmc-kind__r {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--pbim-green, #2E7D4F);
+    }
+    .pbmc-kind--rose  .pbmc-kind__n { color: var(--pbim-rose, #DC2668); }
+    .pbmc-kind--amber .pbmc-kind__n { color: var(--pbim-amber, #D97706); }
+    .pbmc-kind--cyan  .pbmc-kind__n { color: var(--pbim-cyan, #2563EB); }
+
+    .pbmc-chipf {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-muted, #64748B);
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+
+        svg { display: block; }
+        &:hover:not(:disabled) { border-color: var(--pbim-primary-light, #CBC2EE); }
+        &:disabled { opacity: .55; cursor: default; }
+        &.is-on {
+            border-color: var(--pbim-primary, #5A4BB0);
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-ink, #1B1733);
+        }
+        &--clear { color: var(--pbim-rose, #DC2668); }
+    }
+
+    .pbmc-bulk {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        background: var(--pbim-soft, #EDEAF8);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        font-size: 12px;
+        color: var(--pbim-ink, #1B1733);
+
+        svg { display: block; color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbmc-bulk__t { flex: 1 1 auto; }
+
+    // The batch RESULT stays on screen until dismissed. The skipped list is the
+    // half of the answer a toast would take away.
+    .pbmc-bres {
+        margin: 10px 12px 0;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-bg, #F5F6FA);
+        font-size: 12px;
+    }
+    .pbmc-bres__h {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 11px;
+        color: var(--pbim-ink, #1B1733);
+
+        svg { display: block; color: var(--pbim-green, #2E7D4F); }
+        b { font-variant-numeric: tabular-nums; }
+    }
+    .pbmc-bres__sp { flex: 1 1 auto; }
+    .pbmc-bres__x {
+        border: 0;
+        background: none;
+        padding: 0;
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover { color: var(--pbim-ink, #1B1733); }
+    }
+    .pbmc-bres__s {
+        padding: 0 11px 10px;
+        border-top: 1px dashed var(--pbim-line, #E2E8F0);
+    }
+    .pbmc-bres__st {
+        margin: 8px 0 5px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--pbim-amber, #D97706);
+    }
+    .pbmc-bres__r {
+        display: flex;
+        gap: 8px;
+        padding: 3px 0;
+        font-size: 11px;
+        color: var(--pbim-muted, #64748B);
+
+        b { color: var(--pbim-ink, #1B1733); font-weight: 700; }
+    }
+
+    .pbmc-pager {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbmc-pager__sp { flex: 1 1 auto; }
+    .pbmc-pager__t { font-variant-numeric: tabular-nums; }
+    .pbmc-pager__cap {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--pbim-amber, #D97706);
+
+        svg { display: block; }
+    }
+    .pbmc-pg {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-ink, #1B1733);
+        cursor: pointer;
+
+        svg { display: block; }
+        &:hover:not(:disabled) { border-color: var(--pbim-primary-light, #CBC2EE); }
+        &:disabled { opacity: .4; cursor: default; }
+    }
+    .pbmc-pg__n {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+    }
+
+    .pbmc-modal__p--warn {
+        color: var(--pbim-amber, #D97706);
+    }
 }

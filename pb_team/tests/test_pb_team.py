@@ -52,6 +52,59 @@ class TestPbTeam(TransactionCase):
         ot.action_submit()
         return ot
 
+    # --------------------------------------------------- P7: the metrics gate
+    def test_20_an_hr_manager_without_attendance_groups_sees_the_ot_metrics(self):
+        """`_build_metrics` routed its OT ceilings through `get_ot_ceilings`,
+        which is OFFICER-gated, inside a broad `except`. For an HR or payroll
+        manager — half the personas this dock was built for — the AccessError
+        was swallowed and `m['ot']` stayed the empty dict `_blank_metrics`
+        documents, so the tile rendered with no numbers in it. Nothing in the
+        log, nothing on the console: W40's failure shape, and W53's rule about
+        the gate belonging on the DOOR while a self-gated caller uses the twin.
+
+        P4 fixed exactly this call for `_ot_clean_map` and missed this one, so
+        the test is written against the PERSONA rather than against the method.
+        """
+        internal = self.env.ref('base.group_user')
+        hr_mgr = self.env.ref('hr.group_hr_manager', raise_if_not_found=False)
+        payroll_mgr = self.env.ref('om_hr_payroll.group_hr_payroll_manager',
+                                   raise_if_not_found=False)
+        gids = [internal.id]
+        for grp in (hr_mgr, payroll_mgr):
+            if grp:
+                gids.append(grp.id)
+        user = self.env['res.users'].with_context(
+            no_reset_password=True).create({
+                'name': 'HR Only Manager', 'login': 'test_team_hr_only',
+                'group_ids': [(6, 0, gids)]})
+        # the point of the persona: NOT in the attendance tier
+        for xmlid in ('hr_attendance.group_hr_attendance_officer',
+                      'hr_attendance.group_hr_attendance_manager'):
+            grp = self.env.ref(xmlid, raise_if_not_found=False)
+            if grp:
+                self.assertNotIn(grp.id, user.group_ids.ids)
+
+        metrics = self.env['pb.team'].with_user(user)._build_metrics(self.report)
+        self.assertTrue(
+            metrics['ot'],
+            'the OT tile came back EMPTY for an HR/payroll manager — the '
+            'officer-gated ceilings door raised into a silent except')
+        for key in ('mtd', 'cap_month', 'ytd', 'pct'):
+            self.assertIn(key, metrics['ot'])
+
+    def test_21_the_metrics_builder_uses_the_ungated_ceilings_twin(self):
+        """The general form, so a future edit cannot quietly route back through
+        the officer door and reintroduce a blank tile nobody can see. The
+        persona test above would catch it too — this one says WHY in its
+        failure message, at the line that has to change."""
+        import inspect
+        src = inspect.getsource(type(self.env['pb.team'])._build_metrics)
+        self.assertIn('_ot_ceilings(', src)
+        self.assertNotIn(
+            'get_ot_ceilings(', src,
+            'the metrics builder is back on the officer-gated door — it will '
+            'be silently blank for HR and payroll managers (W53)')
+
     # ------------------------------------------------------------- team
     def test_01_my_team_direct(self):
         team = self.env['pb.team'].with_user(self.manager_user)._my_team()
