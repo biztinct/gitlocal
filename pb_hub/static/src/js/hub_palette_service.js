@@ -75,6 +75,10 @@ export const hubPaletteService = {
         // not. Keeping the handle is what stops ⌘K opening a second panel on top
         // of the first (W43).
         let removeOverlay = null;
+        // True between the ⌘K and the overlay actually being added. The first
+        // open awaits a real `has_group` round trip, and two presses inside that
+        // window would both pass the `removeOverlay` check and mount two panels.
+        let opening = false;
         // group xmlid -> Promise<boolean>. `user.hasGroup` is itself cached, but
         // caching the promise means one palette open is one pass, not one pass
         // per entry that names the same group.
@@ -127,7 +131,13 @@ export const hubPaletteService = {
                 label: e.label,
                 sublabel: e.sublabel || "",
                 icon: e.icon || "chevron",
-                group: e.group || "Surfaces",
+                // Passed through UNCHANGED, including undefined: the palette
+                // groups its rows into a Map keyed by this value, and `_t()`
+                // returns a new String subclass every call — defaulting here to
+                // a fresh "Surfaces" would give an entry that omitted `group`
+                // its own heading, next to the shared one. The component owns
+                // the default so there is exactly one of it.
+                group: e.group,
             }));
         }
 
@@ -150,17 +160,21 @@ export const hubPaletteService = {
         }
 
         async function open() {
-            if (removeOverlay) { return; }       // ⌘K is not a toggle
-            const entries = await resolveEntries();
-            // A second ⌘K during the await must not produce a second panel.
-            if (removeOverlay) { return; }
-            removeOverlay = overlay.add(HubPalette, {
-                entries,
-                onRun: run,
-                onClose: close,
-            }, {
-                onRemove: () => { removeOverlay = null; },
-            });
+            if (removeOverlay || opening) { return; }   // ⌘K is not a toggle
+            opening = true;
+            try {
+                const entries = await resolveEntries();
+                if (removeOverlay) { return; }
+                removeOverlay = overlay.add(HubPalette, {
+                    entries,
+                    onRun: run,
+                    onClose: close,
+                }, {
+                    onRemove: () => { removeOverlay = null; },
+                });
+            } finally {
+                opening = false;
+            }
         }
 
         function close() {
