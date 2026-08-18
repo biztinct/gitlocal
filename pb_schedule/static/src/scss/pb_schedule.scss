@@ -579,6 +579,28 @@ $pbsc-soft: (
         }
     }
 
+    // P8 — the shift-acknowledgment read receipt (When-I-Work's pattern).
+    // Muted by default and green only when the WHOLE window is confirmed: the
+    // eye should be drawn to the rows that have not landed, not to the ones
+    // that have.
+    .pbsc-ack {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 10px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        padding: 1px 6px;
+        border-radius: 999px;
+        background: var(--pbim-slate-soft, #EEF1F5);
+        color: var(--pbim-slate, #64748B);
+        &.is-all {
+            background: var(--pbim-green-soft, #E3F2E9);
+            color: var(--pbim-green, #2E7D4F);
+        }
+    }
+
     // day cells
     .pbsc-cell {
         position: relative;

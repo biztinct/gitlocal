@@ -2,3 +2,4 @@
 from . import test_p8_portal
 from . import test_p8_adversarial
 from . import test_p8_ack
+from . import test_p8_badges
