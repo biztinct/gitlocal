@@ -12,12 +12,13 @@
             <svg class="bwg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
             </svg>
-            <input type="text" class="bwg-filter" placeholder="Filter rows…"
+            <input type="text" class="bwg-filter"
+                   t-att-placeholder="filterPlaceholder"
                    t-att-value="state.filter" t-on-input="setFilter"/>
           </span>
           <button class="bwg-chipbtn" t-att-class="{ 'is-on': state.entriesOnly }"
                   t-on-click="() => this.toggleEntriesOnly()"
-                  title="Show only rows that have hours this week">
+                  t-att-title="entriesOnlyTitle">
             <svg class="bwg-ic bwg-ic--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/>
             </svg>
@@ -46,7 +47,8 @@
         <div class="bwg-head__right">
           <div class="bwg-helpwrap">
             <button class="bwg-helpbtn" t-att-class="{ 'is-on': state.helpOpen }"
-                    t-on-click="() => this.toggleHelp()" title="Keyboard shortcuts">?</button>
+                    t-on-click="() => this.toggleHelp()"
+                    t-att-title="helpTitle">?</button>
             <div class="bwg-help" t-if="state.helpOpen">
               <div class="bwg-help__t">Keyboard</div>
               <div class="bwg-help__r"><kbd>← ↑ → ↓</kbd><span>move</span></div>
@@ -94,7 +96,7 @@
                    the prop this renders exactly as before — a plain label. -->
               <button t-if="props.onRowOpen" class="bwg-name__open"
                       t-on-click="() => props.onRowOpen(row.id)"
-                      t-attf-title="Open {{ row.label }}">
+                      t-att-title="openRowTitle(row)">
                 <img class="bwg-name__av" t-if="row.avatar_url" t-att-src="row.avatar_url" loading="lazy"/>
                 <div class="bwg-name__txt">
                   <div class="bwg-name__l" t-esc="row.label"/>
@@ -109,7 +111,8 @@
                 </div>
               </t>
               <button class="bwg-name__revert" t-if="anyRowDirty(row)"
-                      t-on-click="() => this.revertRow(row)" title="Revert this row">
+                      t-on-click="() => this.revertRow(row)"
+                      t-att-title="revertRowTitle">
                 <svg class="bwg-ic bwg-ic--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
                 </svg>
@@ -145,7 +148,7 @@
                 <!-- dirty / lock markers -->
                 <span class="bwg-mark bwg-mark--dirty" t-if="isDirtyAnywhere(row, day.iso)"/>
                 <span class="bwg-mark bwg-mark--lock" t-if="!isCellOpenable(row, day.iso)"
-                      t-att-title="lockReason(row, day.iso, primaryKey) or 'Locked'">
+                      t-att-title="cellLockTitle(row, day.iso)">
                   <svg class="bwg-ic bwg-ic--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
@@ -199,9 +202,8 @@
 
           <!-- ==== sticky footer: the week's shape at a glance ==== -->
           <t t-if="filteredRows.length">
-            <div class="bwg-foot bwg-foot--corner bwg-sticky-left bwg-sticky-bottom">
-              <t t-esc="filteredRows.length"/> row<t t-if="filteredRows.length != 1">s</t>
-            </div>
+            <div class="bwg-foot bwg-foot--corner bwg-sticky-left bwg-sticky-bottom"
+                 t-esc="rowCountLabel"/>
             <t t-foreach="state.days" t-as="day" t-key="'f' + day.iso">
               <div class="bwg-foot bwg-sticky-bottom"
                    t-att-class="{ 'bwg-foot--weekend': day.is_weekend, 'bwg-foot--today': day.is_today }">
@@ -223,7 +225,7 @@
           <svg class="bwg-empty__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
             <path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>
           </svg>
-          <div class="bwg-empty__t" t-esc="props.emptyText || 'No rows to show'"/>
+          <div class="bwg-empty__t" t-esc="emptyText"/>
         </div>
       </div>
 
@@ -231,15 +233,12 @@
       <div class="bwg-tray" t-if="trayOpen">
         <t t-if="dirtyCount > 0">
           <span class="bwg-tray__dot"/>
-          <span class="bwg-tray__info">
-            <strong t-esc="dirtyCount"/> cell<t t-if="dirtyCount != 1">s</t> edited<t t-if="dirtyExtraHours">
-              · <strong t-esc="dirtyExtraHours"/> h overtime drafted</t>
-          </span>
+          <span class="bwg-tray__info" t-esc="trayLabel"/>
         </t>
         <div class="bwg-tray__spacer"/>
         <t t-slot="tray" t-if="props.slots and props.slots.tray"/>
         <button class="bwg-btn bwg-btn--ghost" t-if="dirtyCount > 0"
-                t-on-click="() => this.undo()" title="Undo (Ctrl/Cmd+Z)">
+                t-on-click="() => this.undo()" t-att-title="undoTitle">
           <svg class="bwg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
           </svg>
@@ -250,7 +249,7 @@
         <button class="bwg-btn bwg-btn--primary" t-if="dirtyCount > 0"
                 t-att-disabled="state.saving" t-on-click="() => this.save()">
           <span t-if="state.saving">Saving…</span>
-          <span t-else="">Save <t t-esc="dirtyCount"/></span>
+          <span t-else="" t-esc="saveLabel"/>
         </button>
       </div>
     </div>

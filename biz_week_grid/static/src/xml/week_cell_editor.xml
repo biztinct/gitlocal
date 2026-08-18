@@ -10,7 +10,8 @@
       <div class="bwgx-head">
         <div class="bwgx-head__t" t-esc="props.title"/>
         <div class="bwgx-head__s" t-esc="props.subtitle"/>
-        <button class="bwgx-x" t-on-click="() => props.onClose()" title="Close (Esc)">
+        <button class="bwgx-x" t-on-click="() => props.onClose()"
+                t-att-title="closeTitle">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
           </svg>
@@ -30,7 +31,7 @@
         </div>
         <div class="bwgx-locked" t-else="">
           <span class="bwgx-locked__v" t-esc="fmt(props.primary.value)"/>
-          <span class="bwgx-locked__r" t-esc="props.primary.lockReason or 'Locked'"/>
+          <span class="bwgx-locked__r" t-esc="props.primary.lockReason or lockedLabel"/>
         </div>
       </div>
 
@@ -57,7 +58,7 @@
             </div>
             <div class="bwgx-locked" t-else="">
               <span class="bwgx-locked__v" t-esc="fmt(c.value)"/>
-              <span class="bwgx-locked__r" t-esc="c.lockReason or 'Locked'"/>
+              <span class="bwgx-locked__r" t-esc="c.lockReason or lockedLabel"/>
             </div>
           </div>
         </t>
@@ -67,7 +68,7 @@
            already loaded and recomputes as the steppers move -->
       <div class="bwgx-ceil" t-if="ceiling">
         <div class="bwgx-ceil__top">
-          <span t-esc="ceiling.label or 'Budget'"/>
+          <span t-esc="ceiling.label or budgetLabel"/>
           <span><t t-esc="fmt(ceiling.used)"/> / <t t-esc="fmt(ceiling.cap)"/> h</span>
         </div>
         <div class="bwgx-ceil__track">

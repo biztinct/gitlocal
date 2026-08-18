@@ -26,6 +26,7 @@
  * event handlers write (W21/W21.1). There is no autosave and no RPC in here.
  */
 import { Component, useState, useRef, useEffect, onMounted, onWillUnmount } from "@odoo/owl";
+import { _t } from "@web/core/l10n/translation";
 
 export class WeekCellEditor extends Component {
     static template = "biz_week_grid.WeekCellEditor";
@@ -138,6 +139,17 @@ export class WeekCellEditor extends Component {
         return "ok";
     }
     fmt(v) { return String(Math.round(Number(v || 0) * 100) / 100); }
+
+    // ---- the strings the template used to hold inside a t-att expression ----
+    // Odoo's extractor reads text nodes and translatable attributes, never a
+    // literal inside `t-esc="x or 'Locked'"`. Those read fine in English and
+    // never appear in a .po, so they stay English in a translated UI with
+    // nothing to report them. Every one now comes through here.
+    get closeTitle() { return _t("Close (Esc)"); }
+    get lockedLabel() { return _t("Locked"); }
+    /** The consumer names its own budget; this is the fallback when it does
+     *  not (the panel still has to label the bar). */
+    get budgetLabel() { return _t("Budget"); }
 
     // ------------------------------------------------------------ commands
     commit() {

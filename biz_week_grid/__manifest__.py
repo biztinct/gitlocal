@@ -10,7 +10,7 @@ dirty tracking, an undo stack, per-row revert and an explicit Save that surfaces
 per-cell results. No HR / Payobook / country dependencies — reuse for timesheets,
 roster hours, meal counts, overtime entry. Themeable via --bwg-* CSS custom props.
 """,
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.1.0',
     'category': 'Extra Tools',
     'license': 'LGPL-3',
     'author': 'Payobook',
