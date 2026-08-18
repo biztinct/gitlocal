@@ -8,6 +8,7 @@ from . import demo_employees
 from . import demo_ess
 from . import demo_timeoff
 from . import demo_workforce
+from . import demo_workforce_current
 from . import demo_history
 from . import demo_payrun
 from . import demo_extras

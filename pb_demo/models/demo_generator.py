@@ -318,6 +318,11 @@ class PbDemoGenerator(models.TransientModel):
         self.ensure_ess_demo_users()   # demo_ess.py — MSS/ESS demo logins + queue
         self.ensure_timeoff_demos()    # demo_timeoff.py — leave + OT overflow story
         self.ensure_workforce_demos()  # demo_workforce.py — attendance, shifts, trips
+        # demo_workforce_current.py — the TODAY-anchored present (Workforce P6).
+        # Separate on purpose: it is also the standalone "refresh the demo world's
+        # present" entry point, so a stale demo can be brought to today without
+        # regenerating 4 500 employees and a year of payslips.
+        self.ensure_workforce_current()
         if self.include_history:
             self.generate_history()    # demo_history.py
         self.generate_extras()         # demo_extras.py (F&F, proration, retro, insurance adj, dependents)
