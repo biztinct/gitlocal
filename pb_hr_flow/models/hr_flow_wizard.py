@@ -177,13 +177,35 @@ class HRFlowWizard(models.TransientModel):
         """
         # Map keys to action xmlid and optional menu xmlid
         mapping = {
-            # Workforce (Attendance tile actions)
-            'wf-dashboard': ('pb_hr_workforce.action_workforce_dashboard_server', False),
-            'wf-live-attendance': ('pb_hr_workforce.action_attendance_live', False),
-            'wf-timecards': ('pb_hr_workforce.action_attendance_timecard', False),
-            'wf-shift-roster': ('pb_hr_workforce.action_shift_planning_grid', False),
+            # Workforce (Attendance tile actions).
+            #
+            # P7 REMAP. Five of these keys used to name the Gen-0 cockpits —
+            # the Workforce Dashboard, Live Attendance, Timecards, the Shift
+            # Roster grid and the Overtime Rules board. Every one of them was
+            # replaced surface by surface during the Workforce redesign, and P7
+            # deleted their JS/CSS and their `ir.actions.client` records.
+            #
+            # An unknown key here is NOT an error: `mapping.get(key, (False,
+            # False))` below falls through to `act_window_close`, so a stale
+            # tile renders normally and then does nothing at all when clicked.
+            # That is the worst of the three possible outcomes — worse than a
+            # traceback, which someone would at least report. So each key is
+            # pointed at the surface that ABSORBED it rather than deleted:
+            #   dashboard + live attendance -> Today (the live board)
+            #   timecards                   -> the Time hub (its Timeline lens
+            #                                   reads the same
+            #                                   `hr.attendance.timecard` facade)
+            #   shift roster                -> Schedule (built on the same
+            #                                   `hr.shift.planning.grid` facade)
+            #   overtime rules              -> the Overtime Desk
+            # `wf-payroll-report` is untouched: that cockpit is alive and on the
+            # Pay Run rail.
+            'wf-dashboard': ('pb_today.action_pb_today', False),
+            'wf-live-attendance': ('pb_today.action_pb_today', False),
+            'wf-timecards': ('pb_time_hub.action_pb_time_hub', False),
+            'wf-shift-roster': ('pb_schedule.action_pb_schedule', False),
             'wf-payroll-report': ('pb_hr_workforce.action_payroll_report_dashboard', False),
-            'wf-overtime-rules': ('pb_hr_workforce.action_overtime_rules_dashboard', False),
+            'wf-overtime-rules': ('pb_hr_workforce.action_pb_ot_desk', False),
             'wf-shift-templates': ('pb_hr_workforce.action_shift_template', False),
             # Overtime
             'overtime-request': ('ohrms_overtime.hr_overtime_action', False),

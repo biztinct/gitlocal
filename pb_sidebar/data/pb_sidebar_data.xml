@@ -281,39 +281,27 @@
          Everything else is RETIRED, never deleted: `active` false takes it off
          the rail, and the record moves into the 900+ band because a deactivated
          item still OCCUPIES its sequence for W8's uniqueness rule (W18) — the
-         moment an admin re-enables one, a duplicate would matter. The client
-         actions all survive; deleting them is a later cleanup with its own
-         doAction-caller audit. -->
+         moment an admin re-enables one, a duplicate would matter.
 
-    <!-- RETIRED by Workforce P1b: absorbed into the Today board (pb_today).
-         The Chart.js-in-a-form dashboard had no read-model worth keeping; its
-         counts are Today's tiles now, computed over a bounded day cohort. -->
-    <record id="item_wf_dashboard" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_workforce"/><field name="name">Workforce Dashboard</field>
-        <field name="icon">trending-up</field><field name="sequence">901</field>
-        <field name="action_xmlid">pb_hr_workforce.action_workforce_dashboard_server</field>
-        <field name="active" eval="False"/>
-    </record>
-    <!-- RETIRED by Workforce P1b: rebuilt AS the Today board. Same idea, a body
-         from this decade — and every tile and row is now a door. -->
-    <record id="item_wf_live" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_workforce"/><field name="name">Live Attendance</field>
-        <field name="icon">users</field><field name="sequence">902</field>
-        <field name="action_xmlid">pb_hr_workforce.action_attendance_live</field>
-        <field name="active" eval="False"/>
-    </record>
-    <!-- RETIRED by Workforce P1a: absorbed into the Time hub's Timeline lens
-         (pb_time_hub). The record stays so an admin can see what happened and
-         so the standalone action keeps a rail entry to re-enable if needed;
-         `active` false takes it off the rail. It also moves into the 900+
-         RETIRED BAND, because a deactivated item still OCCUPIES its sequence
-         for W8's uniqueness rule — the Time hub now owns 30. -->
-    <record id="item_wf_timecards" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_workforce"/><field name="name">Timecards</field>
-        <field name="icon">calendar</field><field name="sequence">900</field>
-        <field name="action_xmlid">pb_hr_workforce.action_attendance_timecard</field>
-        <field name="active" eval="False"/>
-    </record>
+         WORKFORCE P7 QUALIFIED THAT RULE. "Retire, never delete" is only worth
+         anything while re-enabling the item would still WORK — the point of
+         keeping the row is that the surface is one click from coming back. P7
+         was the "later cleanup with its own doAction-caller audit" this comment
+         used to promise, and it deleted the Gen-0 cockpits themselves: the
+         Workforce Dashboard, Live Attendance, Timecards and Overtime Rules
+         boards, their JS, their CSS and their client actions. Their four rail
+         records went with them, because a retired item pointing at a missing
+         action is not a reversible decision, it is a button that answers an
+         admin's click with nothing — and `pb_today/tests/test_sweep.py`
+         asserts exactly that (every retired item's `action_xmlid` must still
+         resolve).
+
+         The rows are dropped from the database by
+         `pb_hr_workforce/migrations/19.0.4.14.0/post-migrate.py` — removing a
+         record from a data file does not delete it, and the module that
+         deleted the actions is the one that owes the cleanup. Every retired
+         item still HERE points at a live action. -->
+
     <!-- RENAMED by Workforce P1b: "Shift Roster" -> "Schedule". Label and
          sequence only — the action, the cockpit and the persona are untouched;
          P2 reskins the surface itself. The rail now reads as the manager's
@@ -322,9 +310,10 @@
          `pb_schedule` cockpit. `action_xmlid` is a plain Char resolved lazily,
          so this file does not gain a dependency on pb_schedule and the record
          is harmless on a database where that module is not installed.
-         `match_action_tags` keeps the LEGACY tag listed so the retired
-         `shift_planning_grid` screen — which is still registered and still
-         reachable, W18 — lights this rail item rather than none. -->
+         `match_action_tags` used to keep the LEGACY `shift_planning_grid` tag
+         listed as well, so the Gen-0 grid lit this item rather than none.
+         Workforce P7 deleted that cockpit and its client action, so the tag can
+         never be the active one again and the list names only what exists. -->
     <!-- RETIRED by Workforce P3a: Schedule is now a LENS of the Mission Control
          shell (pb_mission mounts the same component with embedded="true", W17).
          Both actions — the P2 cockpit and the legacy grid — survive untouched;
@@ -337,7 +326,7 @@
         <field name="active" eval="False"/>
         <field name="action_xmlid">pb_schedule.action_pb_schedule</field>
         <field name="action_tag">pb_schedule</field>
-        <field name="match_action_tags">pb_schedule,shift_planning_grid</field>
+        <field name="match_action_tags">pb_schedule</field>
         <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
     </record>
     <!-- RETIRED by Workforce P2: folded into Schedule's templates drawer
@@ -354,16 +343,6 @@
         <field name="section_id" ref="sec_workforce"/><field name="name">Shift Templates</field>
         <field name="icon">layers</field><field name="sequence">905</field>
         <field name="action_xmlid">pb_hr_workforce.action_shift_template</field>
-        <field name="active" eval="False"/>
-    </record>
-    <!-- RETIRED by Workforce P1b: the Overtime Desk's config gallery is the
-         editor of record for hr.overtime.config (pb_ot_desk.js openConfig opens
-         the native form), so this second, older dashboard over the same model
-         was a duplicate door with a different opinion. -->
-    <record id="item_wf_overtime" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_workforce"/><field name="name">Overtime Rules</field>
-        <field name="icon">percent</field><field name="sequence">903</field>
-        <field name="action_xmlid">pb_hr_workforce.action_overtime_rules_dashboard</field>
         <field name="active" eval="False"/>
     </record>
     <!-- RELOCATED by Workforce P1b: Payroll Report is a PAYROLL surface that

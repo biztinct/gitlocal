@@ -2,11 +2,14 @@
 """Workforce P2 — the `get_schedule_data` read model, and the promise that the
 LEGACY payloads are untouched.
 
-§3.2 is binding: `pb_schedule` may only ADD facade methods. The retired
-`shift_planning_grid` screen is still registered and still consumes
-`get_grid_data`'s exact dict, so `test_the_legacy_payload_shape_is_untouched`
-is not ceremony — it is the only thing standing between a convenient tweak here
-and a silently broken surface nobody is looking at.
+§3.2 is binding: `pb_schedule` may only ADD facade methods.
+
+P2 justified that by the retired `shift_planning_grid` screen, which consumed
+`get_grid_data`'s exact dict. P7 deleted that screen, and
+`test_the_legacy_payload_shape_is_untouched` stays anyway: `get_grid_data` and
+its siblings are the published contract of a BASE model that `pb_schedule`
+inherits and `pb_close` reads, and a base model's payload does not get to
+change shape because one of its consumers went away.
 
 Everything runs inside the TransactionCase rollback: on a live database this
 suite creates shifts and leaves and leaves NOTHING behind.

@@ -156,9 +156,10 @@ class PbToday(models.AbstractModel):
             ('check_in', '>=', day_start), ('check_in', '<=', day_end),
         ], order='check_in')
         # sudo on leave: the presence strip is system-derived context, and
-        # without it a viewer lacking hr.leave.type read crashes the whole board
-        # on the holiday_status_id dereference (the same rail the legacy feed
-        # documented at attendance_live.py:116-119).
+        # without it a viewer lacking hr.leave.type read crashes the whole
+        # board on the holiday_status_id dereference. The legacy Live
+        # Attendance feed documented the same rail; that file was deleted in P7,
+        # so the reasoning lives here now rather than behind a dead reference.
         leaves = self.env['hr.leave'].sudo().search([
             ('employee_id.company_id', 'in', co_ids),
             ('state', 'in', _APPROVED_LEAVE_STATES),

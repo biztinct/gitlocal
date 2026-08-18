@@ -48,13 +48,17 @@
         <field name="sequence">10</field>
         <field name="action_xmlid">pb_mission.action_pb_workforce</field>
         <field name="action_tag">pb_workforce</field>
-        <!-- The seven absorbed cockpits keep their client actions (W18), so a
+        <!-- The absorbed cockpits keep their client actions (W18), so a
              bookmark, a stray doAction or the shell's own standalone fallback
              must light THIS entry rather than leaving the rail with nothing
-             selected. `shift_planning_grid` and the P1a trio ride along for the
-             same reason: they were already matched by the items being retired,
-             and dropping them here would quietly lose that. -->
-        <field name="match_action_tags">pb_workforce,pb_today,pb_schedule,pb_time_hub,pb_timeoff,pb_ot_desk,pb_trips,pb_team,shift_planning_grid,pb_attendance_weekgrid,pb_attendance_flow,attendance_live,pb_driver_map</field>
+             selected.
+             P7 removed `shift_planning_grid` and `attendance_live` from this
+             list: those two cockpits were DELETED, component and action, so
+             the tags no longer name anything the action registry can produce.
+             A match dimension is a claim on a real surface (W71) — an entry
+             that can never match is not harmless, it is a reader being told
+             there is a screen somewhere that there is not. -->
+        <field name="match_action_tags">pb_workforce,pb_today,pb_schedule,pb_time_hub,pb_timeoff,pb_ot_desk,pb_trips,pb_team,pb_attendance_weekgrid,pb_attendance_flow,pb_driver_map</field>
     </record>
 
 </odoo>

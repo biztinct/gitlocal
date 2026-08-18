@@ -8,26 +8,13 @@
               groups="hr_attendance.group_hr_attendance_officer"
               sequence="245"/>
 
-    <!-- Dashboard -->
-    <menuitem id="menu_workforce_dashboard"
-              name="Dashboard"
-              parent="menu_workforce_root"
-              action="action_workforce_dashboard_server"
-              sequence="1"/>
-
-    <!-- Live Attendance -->
-    <menuitem id="menu_attendance_live"
-              name="Live Attendance"
-              parent="menu_workforce_root"
-              action="action_attendance_live"
-              sequence="5"/>
-
-    <!-- Timecards -->
-    <menuitem id="menu_attendance_timecard"
-              name="Timecards"
-              parent="menu_workforce_root"
-              action="action_attendance_timecard"
-              sequence="6"/>
+    <!-- The Dashboard, Live Attendance, Timecards and Shift Roster menuitems
+         lived here until P7. Each pointed at a Gen-0 client action whose JS was
+         deleted in the same pass, and a menuitem is not allowed to outlive its
+         action: Odoo resolves `action=` at LOAD time, so a dangling one is not
+         a dead link, it is a module that will not install. Their replacements
+         are on the Workforce rail (Today, Time, Schedule) and in Mission
+         Control. -->
 
     <!-- Weekly Entry (WOW overtime + regular-hours grid) -->
     <menuitem id="menu_attendance_weekgrid"
@@ -49,12 +36,6 @@
               name="Shift Management"
               parent="menu_workforce_root"
               sequence="10"/>
-
-    <menuitem id="menu_shift_planning"
-              name="Shift Roster"
-              parent="menu_shift_management"
-              action="action_shift_planning_grid"
-              sequence="1"/>
 
     <menuitem id="menu_shift_planning_list"
               name="Shift List"

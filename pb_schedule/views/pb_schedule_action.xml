@@ -3,10 +3,12 @@
     <!-- The Schedule cockpit's client action. Test URL: /odoo/action-pb_schedule
          (on this server the backend prefix is /bizapp — biz_deroute).
 
-         The LEGACY action `pb_hr_workforce.action_shift_planning_grid` and its
-         `shift_planning_grid` client tag stay registered and keep working: P2
-         is a W18 retirement, not a deletion, and a bookmark or a stray
-         doAction must not 404 while the old screen still exists. -->
+         P2 left the LEGACY action `pb_hr_workforce.action_shift_planning_grid`
+         registered under W18 (retire, never delete), so a bookmark into the
+         Gen-0 grid kept working. P7 deleted that cockpit's component, so the
+         action went with it: a client action whose tag nothing registers is a
+         worse answer to a bookmark than no action at all. The FACADE it read,
+         `hr.shift.planning.grid`, is this cockpit's own base and is untouched. -->
     <record id="action_pb_schedule" model="ir.actions.client">
         <field name="name">Schedule</field>
         <field name="tag">pb_schedule</field>
