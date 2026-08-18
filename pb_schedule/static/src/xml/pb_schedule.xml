@@ -231,6 +231,16 @@
                     <span class="txt">
                       <t t-esc="hrs(emp.total_hours)"/>/<t t-esc="hrs(emp.contracted_hours)"/> h
                     </span>
+                    <!-- P8 ack read receipt. Rendered only when pb_ess_workforce
+                         decorated the row; an absent key means no badge, which
+                         is also the right answer for somebody with nothing
+                         published in this window (W64). -->
+                    <span t-if="emp.ack"
+                          t-attf-class="pbsc-ack {{ emp.ack.all ? 'is-all' : '' }}"
+                          t-att-title="ackLabel(emp)">
+                      <t t-if="emp.ack.all"><t t-out="ic('check', 11)"/></t>
+                      <t t-else=""><t t-esc="emp.ack.acked"/>/<t t-esc="emp.ack.total"/></t>
+                    </span>
                   </span>
                 </div>
 

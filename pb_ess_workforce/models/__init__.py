@@ -2,3 +2,4 @@
 from . import ess_workforce
 from . import shift_planning_ack
 from . import publish_notify
+from . import schedule_ack_badges

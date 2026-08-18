@@ -208,6 +208,30 @@ export class PbSchedule extends Component {
         return Object.values(this.openShiftsForDay).some((a) => a && a.length);
     }
 
+    /**
+     * P8 — the shift-acknowledgment read receipt.
+     *
+     * `pb_ess_workforce` decorates each employee row with `ack` and the payload
+     * with an `ack` summary. Both are ADDITIVE and both are optional: on a
+     * database where that module is absent the keys are simply missing, these
+     * getters answer null, and every `t-if` in the template renders nothing.
+     * That is the whole guard — a soft hook, not a feature flag.
+     */
+    get ackSummary() {
+        const a = this.d && this.d.ack;
+        return a && a.shown ? a : null;
+    }
+
+    /** Per-person badge text. Null means "no published shift here" — an empty
+     *  badge on an empty row is noise (W64: a cell renders outcomes). */
+    ackLabel(row) {
+        if (!row.ack) { return ""; }
+        return row.ack.all
+            ? _t("Confirmed")
+            : _t("%(acked)s of %(total)s confirmed",
+                 { acked: row.ack.acked, total: row.ack.total });
+    }
+
     /** The grid's column template — one sticky people column + N days. */
     get gridStyle() {
         return `grid-template-columns: 232px repeat(${this.days.length}, minmax(112px, 1fr));`;
@@ -701,14 +725,52 @@ export class PbSchedule extends Component {
     }
 
     // ----------------------------------------------------------- publish
+    /**
+     * P8 — publishing is not the same as delivering.
+     *
+     * `publish_shifts_notified` (pb_ess_workforce) publishes through the SAME
+     * `action_publish` the base facade uses and additionally reports who could
+     * actually be reached. `publish_shifts` is untouched and still returns an
+     * int; this is a new method beside it, so a database without the ESS module
+     * falls back to the old call and the old sentence.
+     *
+     * The sentence is built by ONE getter with named placeholders rather than
+     * assembled from fragments — a translator cannot reorder fragments, and
+     * word order is exactly what differs (W80.2).
+     */
+    _publishMessage(res) {
+        if (typeof res === "number") { return _t("%s shifts published.", res); }
+        if (res.no_channel) {
+            return _t("%(published)s shifts published · %(notified)s people notified · %(blind)s with no way to reach them.",
+                      { published: res.published, notified: res.notified,
+                        blind: res.no_channel });
+        }
+        return _t("%(published)s shifts published · %(notified)s people notified.",
+                  { published: res.published, notified: res.notified });
+    }
+
     async publishAll() {
         if (this.state.publishing || !this.counts.draft) { return; }
         this.state.publishing = true;
         try {
-            const n = await this.orm.call(MODEL, "publish_shifts", [
-                this.wf.weekStart, this.wf.departmentId || false, this.state.span,
-            ]);
-            this.notif.add(_t("%s shifts published.", n), { type: "success" });
+            let res;
+            try {
+                res = await this.orm.call(MODEL, "publish_shifts_notified", [
+                    this.wf.weekStart, this.wf.departmentId || false, this.state.span,
+                ]);
+            } catch (missing) {
+                // The ESS module is not installed on this database. Degrade to
+                // the base facade — and only for THAT reason (W40): anything
+                // else is re-raised into the outer handler below.
+                if (!(missing && missing.message
+                      && /publish_shifts_notified/.test(String(missing.message)))) {
+                    throw missing;
+                }
+                res = await this.orm.call(MODEL, "publish_shifts", [
+                    this.wf.weekStart, this.wf.departmentId || false, this.state.span,
+                ]);
+            }
+            this.notif.add(this._publishMessage(res), { type: "success" });
             await this.load();
         } catch (e) {
             this.notif.add((e && e.data && e.data.message)
