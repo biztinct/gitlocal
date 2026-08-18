@@ -32,7 +32,7 @@
 
     position: fixed;
     z-index: 1100;
-    width: 322px;
+    width: 344px;
     max-width: calc(100vw - 16px);
     background: var(--bwg-surface, #ffffff);
     border: 1px solid var(--bwg-line, #e2e8f0);
@@ -116,13 +116,13 @@
     }
     .bwgx-step {
         border: 0; background: transparent; cursor: pointer;
-        width: 26px; height: 30px; line-height: 1;
+        width: 24px; height: 30px; line-height: 1;
         font-size: 15px; font-weight: 700;
         color: var(--bwg-muted, #64748b);
         &:hover { background: var(--bwg-line-2, #f1f5f9); color: var(--bwg-primary, #5A4BB0); }
     }
     .bwgx-in {
-        width: 54px; border: 0; outline: none; text-align: center;
+        width: 48px; border: 0; outline: none; text-align: center;
         font-size: 14px; font-weight: 800;
         font-variant-numeric: tabular-nums;
         color: var(--bwg-ink, #1b1733);
