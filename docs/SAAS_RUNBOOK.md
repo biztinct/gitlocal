@@ -105,6 +105,18 @@ Same staged-rsync + detached `systemd-run` ritual as before, with two changes:
   rewrite the date math with `datetime`) and `-u payroll_analytics_approval`.
 - Tenants get the stock `website` homepage on `/` (pb_website is apex-only);
   backend entry is `/odoo`. Cosmetic; revisit if clients notice.
+- **`pb_explorer`'s fact builder cannot run on a database without `pb_demo`.**
+  `pb_fact_builder._coverage()` selects `fc.pb_division` from `hr_formula_config`,
+  and that column is declared by `pb_demo/models/demo_generator.py:37` — a field
+  the demo module adds to a shared model. On `abm`, `acme` and
+  `payobook_template` the build raises
+  `psycopg2.errors.UndefinedColumn: column fc.pb_division does not exist`
+  (11 of `pb_explorer`'s tests fail there for this one reason). Latent today
+  because those databases have no payslip runs to build facts FROM; it becomes a
+  failing "Payobook: build analytics facts" cron the first time a tenant runs
+  payroll. Found in IA Cycle 7, NOT fixed there (untouched module, its own tests
+  needed): the fix is a column probe like `pb_insights._dept_source()`, or moving
+  the field out of `pb_demo`.
 - RAM: the box has 1.9 GB. Each *served* database (apex + every active tenant) holds a
   registry in the threaded process. **Upgrade the Lightsail bundle to ≥4 GB before
   onboarding real client tenants.**
@@ -150,9 +162,16 @@ skipped module. See **W116** in `docs/WORKFORCE_REDESIGN_CONVENTIONS.md`.
 **Repair, per tenant DB** (`/tmp/tenant_repair.sh <db>`, run detached):
 
 ```bash
-# 1. refresh the per-database module list (`-u base` runs update_list())
-sudo -u odoo python3 /odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf \
-  -d <db> --http-port=8198 --max-cron-threads=0 -u base --stop-after-init
+# 1. refresh the per-database module list — update_list() ALONE, from a shell.
+#    NOT `-u base`: that upgrades base AND every dependent, i.e. the whole
+#    database. Measured on a clone of acme (Cycle 6): pb_sidebar went
+#    19.0.1.7.1 -> 19.0.3.0.0, which ran the Cycle-5 rail cutover on a tenant
+#    holding none of the hub modules and took the rail from 50 active items
+#    to 2. The block below said `-u base` until Cycle 7 corrected it; if you
+#    are reading this from an older copy, do not run that line.
+echo "env['ir.module.module'].update_list(); env.cr.commit()" | \
+sudo -u odoo python3 /odoo/odoo-server/odoo-bin shell -c /etc/odoo-server.conf \
+  -d <db> --no-http --max-cron-threads=0
 # 2. install ONLY the two roots of the skip chain; their own deps come with them
 sudo -u odoo python3 /odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf \
   -d <db> --http-port=8198 --max-cron-threads=0 -i pb_hub,pb_wf_kit --stop-after-init
@@ -181,3 +200,51 @@ skipped module is invisible in `ir_module_module.state`.
 **Standing rule this creates.** Adding a `depends` to an existing module is a
 deploy step on EVERY database on the cluster, not only the one being worked on.
 Enumerate `pg_database` and refresh each module list.
+
+## Bringing a tenant DB up to the apex's module set (abm, 2026-08-19, IA Cycle 7)
+
+The repair above stops the crons failing. It does **not** give the tenant the
+product: `abm` was 18 custom modules and 38 stale module versions behind
+`payobook`. The owner authorised the catch-up for `abm` specifically ("ABM is
+not live yet so you can do that"); the same procedure is what a deliberate
+tenant rollout looks like, and it needs the same authorisation each time.
+
+**No code deploy is involved.** The addons tree is shared, so every module is
+already on disk — verified before starting by diffing repo manifest versions
+against `/odoo/odoo-server/addons` for all 251 custom modules (3 mismatches,
+all of them this cycle's own pending changes). A module missing from the tree
+is a STOP, not an improvisation.
+
+**Decide the list from three databases, not one.** `payobook` is the product
+reference; `payobook_template`/`acme` are the tenant reference. Modules only
+`payobook` has and no tenant has are the ones to argue about:
+
+| module | payobook | template/acme | decision |
+|---|---|---|---|
+| `pb_demo`, `pb_demo_portal` | yes | no | EXCLUDE — the demo world would inject 4.5k fake employees into a client database |
+| `pb_tenants` | yes | no | EXCLUDE — the SaaS platform cockpit belongs to the apex |
+| `pb_website` | yes | no | EXCLUDE — apex-only marketing site; tenants keep the stock homepage |
+| the other 14 | yes | partly | INSTALL — product modules (`pb_hub`, `pb_wf_kit`, the six hubs, `pb_today`, `pb_schedule`, `pb_close`, `pb_ess_workforce`, `pb_settings`, `pb_mission`) |
+
+**The four-step unit** (rehearse on a `pg_dump` clone first — the clone caught
+step 4):
+
+```bash
+# 1  update_list() alone, as above. NEVER -u base.
+# 2  targeted -u of the already-installed modules whose version is behind the
+#    reference. Beware W120: -u cascades to reverse dependencies, so check the
+#    closure of anything you meant to exclude.
+# 3  targeted -i of the delta list. Odoo pulls community dependencies itself;
+#    never hand-install those.
+# 4  -u pb_timeoff a SECOND time. Step 2 crossed pb_timeoff's unfreeze
+#    migration, and a post-migrate runs AFTER that upgrade's data load, so the
+#    Leave rail item lands on its file's values only on the next pass (W121).
+```
+
+**Evidence that the catch-up worked**, in this order: installed-module count and
+the enumerated remaining diff (must equal the deliberate exclusions exactly); a
+version diff per module against the reference DB; `pb_sidebar_item` joined to
+`ir_model_data` and diffed row-by-row against the reference (this is what proves
+the RAIL, and it is where W121 showed up); a fresh registry load with zero
+skipped modules; a >=15 minute cron window with zero errors; and the apex plus
+every other tenant's log clean across the same window.
