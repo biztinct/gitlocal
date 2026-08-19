@@ -26,6 +26,7 @@ from . import formula_boundary
 from . import integration_connector
 from . import integration_field_mapping
 from . import integration_mapping_template
+from . import integration_endpoint
 from . import formula_mapping_template
 from . import api_data_store
 from . import api_transformation_rule

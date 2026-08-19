@@ -46,6 +46,12 @@ class HrIntegrationMappingTemplate(models.Model):
     verify = fields.Boolean(default=False)
     note = fields.Char(help="Vendor doc citation and any traps.")
     sequence = fields.Integer(default=10)
+    # Which FEED this field arrives on, by the endpoint template's `code`.
+    # Empty on every row that exists today; Cycle 3's vendor catalogue stamps
+    # it, and `action_apply_mapping_template` resolves it against the
+    # connector's own endpoints when it is set.
+    endpoint_code = fields.Char(
+        help="Code of the hr.integration.endpoint this field is read from.")
 
 
 class HrIntegrationOnboardingWizard(models.TransientModel):

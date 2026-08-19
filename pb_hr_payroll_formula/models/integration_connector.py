@@ -155,6 +155,20 @@ class HrIntegrationConnector(models.Model):
     )
 
     # ==========================================
+    # ENDPOINTS — one connector, many feeds
+    # ==========================================
+    endpoint_ids = fields.One2many(
+        'hr.integration.endpoint',
+        'connector_id',
+        string='Endpoints',
+    )
+
+    endpoint_count = fields.Integer(
+        string='Endpoints',
+        compute='_compute_endpoint_count',
+    )
+
+    # ==========================================
     # API DATA STORE & TRANSFORMATION RULES
     # ==========================================
     data_store_ids = fields.One2many(
@@ -277,6 +291,169 @@ class HrIntegrationConnector(models.Model):
                 ('state', '!=', 'archived'),
             ])
 
+    @api.depends('endpoint_ids')
+    def _compute_endpoint_count(self):
+        for record in self:
+            record.endpoint_count = len(record.endpoint_ids)
+
+    # ==========================================
+    # ENDPOINT CATALOGUE
+    # ==========================================
+    @api.model_create_multi
+    def create(self, vals_list):
+        """A new connector catalogues its own feeds.
+
+        Nothing has to be pulled for that to be useful: the vendor catalogue
+        (Cycle 3's data) knows what a Zoho People connector talks to before it
+        has ever been connected. The sync is create-only and idempotent, so
+        running it here costs a new connector one query and can never overwrite
+        anything.
+        """
+        records = super().create(vals_list)
+        for record in records:
+            record.action_sync_endpoint_catalog()
+        return records
+
+    @api.model
+    def _free_endpoint_code(self, base, taken):
+        """A code no endpoint on this connector holds yet.
+
+        `(connector_id, code)` is a database UNIQUE, so a derived feed whose
+        natural code was already claimed by a vendor template row for ANOTHER
+        data type must not simply be dropped — that would leave a data type
+        sitting in the store with no feed describing it, silently.
+        """
+        if base not in taken:
+            return base
+        for suffix in ('_feed', '_feed2', '_feed3'):
+            if base + suffix not in taken:
+                return base + suffix
+        return '%s_%s' % (base, len(taken))
+
+    def action_sync_endpoint_catalog(self):
+        """Catalogue this connector's feeds from the two sources we have.
+
+        (a) the vendor catalogue — every `hr.integration.endpoint.template` row
+            for this connector type; and
+        (b) the evidence — every distinct `data_type` already present in this
+            connector's stored rows that no endpoint covers yet.
+
+        CREATE-ONLY, and that is the whole contract: this runs on create, from
+        the cockpit's "Detect feeds" button and from the demo seeder, so it will
+        meet endpoints an operator has renamed, re-pathed or deactivated. A row
+        that already exists by `code` (or, for the derived half, by `data_type`)
+        is counted as SKIPPED and left exactly as it is — the same
+        never-overwrite semantics `action_apply_mapping_template` has.
+
+        Returns `{'created': n, 'skipped': n}`.
+        """
+        self.ensure_one()
+        Endpoint = self.env['hr.integration.endpoint']
+        Template = self.env['hr.integration.endpoint.template']
+
+        # `active_test=False`: a DEACTIVATED endpoint still owns its code, and
+        # re-creating it because it is filtered out of the o2m would be the
+        # rudest possible reading of "create-only".
+        existing = self.env['hr.integration.endpoint'].with_context(
+            active_test=False).search([('connector_id', '=', self.id)])
+        codes = {e.code for e in existing if e.code}
+        covered_types = {e.data_type for e in existing if e.data_type}
+
+        vals_list = []
+        skipped = 0
+
+        for t in Template.with_context(active_test=False).search(
+                [('connector_type', '=', self.connector_type)]):
+            if not t.code or t.code in codes:
+                skipped += 1
+                continue
+            vals_list.append({
+                'connector_id': self.id,
+                'name': t.name or t.code,
+                'code': t.code,
+                'data_type': t.data_type,
+                'http_method': t.http_method or 'get',
+                'path': t.path or False,
+                'params_note': t.params_note or False,
+                'description': t.description or False,
+                'sequence': t.sequence or 10,
+                'is_legacy_abm': t.is_legacy_abm,
+                'active': t.active,
+            })
+            codes.add(t.code)
+            covered_types.add(t.data_type)
+
+        # The derived half: a data type sitting in the store with no feed
+        # describing it is a feed somebody ran before this model existed.
+        labels = dict(self.env['hr.api.data.store']._fields['data_type'].selection)
+        present = [
+            dt for dt, in self.env['hr.api.data.store']._read_group(
+                [('connector_id', '=', self.id)], ['data_type'])
+            if dt
+        ]
+        for dt in sorted(present):
+            if dt in covered_types:
+                skipped += 1
+                continue
+            vals_list.append({
+                'connector_id': self.id,
+                'name': labels.get(dt, dt),
+                'code': self._free_endpoint_code(dt, codes),
+                'data_type': dt,
+                'http_method': 'get',
+                'description': _(
+                    'Derived from records already in the API data store.'),
+                'sequence': 50,
+            })
+            codes.add(vals_list[-1]['code'])
+            covered_types.add(dt)
+
+        if vals_list:
+            Endpoint.create(vals_list)
+        return {'created': len(vals_list), 'skipped': skipped}
+
+    def _stamp_endpoint(self, data_type, status, error=False):
+        """Record a pull's outcome on the feed that produced it.
+
+        Create-if-missing through the same catalogue path, so a connector that
+        pulls a data type nobody catalogued ends up with the feed rather than
+        with the outcome silently going nowhere. One endpoint per data type is
+        stamped — the first by sequence — because `action_pull_data` pulls a
+        TYPE, not a path.
+        """
+        self.ensure_one()
+        Endpoint = self.env['hr.integration.endpoint']
+        ep = Endpoint.search(
+            [('connector_id', '=', self.id), ('data_type', '=', data_type)],
+            order='sequence, id', limit=1)
+        if not ep:
+            self.action_sync_endpoint_catalog()
+            ep = Endpoint.search(
+                [('connector_id', '=', self.id), ('data_type', '=', data_type)],
+                order='sequence, id', limit=1)
+        if not ep:
+            # A pull that produced no rows leaves the catalogue nothing to
+            # derive from, and "this feed failed" is exactly the outcome that
+            # must not be dropped. Mint the generic feed here, under the same
+            # code the catalogue would have used, so a later sync skips it.
+            labels = dict(
+                self.env['hr.api.data.store']._fields['data_type'].selection)
+            taken = set(Endpoint.with_context(active_test=False).search(
+                [('connector_id', '=', self.id)]).mapped('code'))
+            ep = Endpoint.create({
+                'connector_id': self.id,
+                'name': labels.get(data_type, data_type),
+                'code': self._free_endpoint_code(data_type, taken),
+                'data_type': data_type,
+                'sequence': 50,
+            })
+        ep.write({
+            'last_sync': fields.Datetime.now(),
+            'last_sync_status': status,
+            'last_error': (error or '')[:512] or False,
+        })
+        return ep
+
     # ==========================================
     # CONNECTION ACTIONS
     # ==========================================
@@ -300,6 +477,18 @@ class HrIntegrationConnector(models.Model):
             config = self.env['hr.formula.config'].sudo().search([('connector_id', '=', self.id)], limit=1)
         existing_src = set((self.field_mapping_ids.mapped('source_field')) or [])
         applied = suggested = 0
+        # Which feed each template row reads from, by endpoint code. Resolved
+        # ONCE against this connector's own endpoints — a template's
+        # `endpoint_code` is a vendor's name for an API, and the connector may
+        # not have catalogued it (or may have renamed the row). An unresolved
+        # code leaves `endpoint_id` empty rather than inventing a feed.
+        endpoints_by_code = {
+            e.code: e.id
+            for e in self.env['hr.integration.endpoint'].with_context(
+                active_test=False).search([('connector_id', '=', self.id)])
+            if e.code
+        }
+
         def _norm(s):
             return ''.join(ch for ch in (s or '').upper() if ch.isalnum())
 
@@ -335,6 +524,7 @@ class HrIntegrationConnector(models.Model):
                 'default_value': t.default_value or 0.0,
                 'notes': t.note or False,
                 'active_state': state,
+                'endpoint_id': endpoints_by_code.get(t.endpoint_code or ''),
             })
             existing_src.add(t.source_path)
             if state == 'active':
@@ -624,6 +814,11 @@ class HrIntegrationConnector(models.Model):
                             triggered_by=triggered_by,
                             results=results,
                         )
+                # The employee branch has no inner try/except — a failure here
+                # propagates to the outer one, which stamps nothing because the
+                # whole pull failed and the CONNECTOR carries that. What this
+                # records is the branch that ran.
+                self._stamp_endpoint('employee', 'success')
 
             # Pull salary/payroll data
             if 'salary' in data_types:
@@ -661,9 +856,11 @@ class HrIntegrationConnector(models.Model):
                                     triggered_by=triggered_by,
                                     results=results,
                                 )
+                    self._stamp_endpoint('salary', 'success')
                 except Exception as e:
                     results['errors'].append(f"Salary pull error: {str(e)}")
                     _logger.warning("Salary pull failed for connector %s: %s", self.name, str(e))
+                    self._stamp_endpoint('salary', 'failed', str(e))
 
             # Pull dependent data (one record per dependent)
             if 'dependent' in data_types and hasattr(connector, 'fetch_dependents'):
@@ -691,9 +888,11 @@ class HrIntegrationConnector(models.Model):
                                     triggered_by=triggered_by,
                                     results=results,
                                 )
+                    self._stamp_endpoint('dependent', 'success')
                 except Exception as e:
                     results['errors'].append(f"Dependent pull error: {str(e)}")
                     _logger.warning("Dependent pull failed for connector %s: %s", self.name, str(e))
+                    self._stamp_endpoint('dependent', 'failed', str(e))
 
             # Pull attendance data
             if 'attendance' in data_types and hasattr(connector, 'fetch_attendance'):
@@ -720,9 +919,11 @@ class HrIntegrationConnector(models.Model):
                                 triggered_by=triggered_by,
                                 results=results,
                             )
+                    self._stamp_endpoint('attendance', 'success')
                 except Exception as e:
                     results['errors'].append(f"Attendance pull error: {str(e)}")
                     _logger.warning("Attendance pull failed for connector %s: %s", self.name, str(e))
+                    self._stamp_endpoint('attendance', 'failed', str(e))
 
             # Pull leave data (one record per leave entry)
             if 'leave' in data_types and hasattr(connector, 'fetch_leaves'):
@@ -750,9 +951,11 @@ class HrIntegrationConnector(models.Model):
                                     triggered_by=triggered_by,
                                     results=results,
                                 )
+                    self._stamp_endpoint('leave', 'success')
                 except Exception as e:
                     results['errors'].append(f"Leave pull error: {str(e)}")
                     _logger.warning("Leave pull failed for connector %s: %s", self.name, str(e))
+                    self._stamp_endpoint('leave', 'failed', str(e))
 
             # Update connector sync status
             self.write({

@@ -10,6 +10,24 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+# The vocabulary of "what kind of thing a connector pulls", declared ONCE.
+#
+# `hr.integration.endpoint` describes the FEED that produces these rows, so the
+# two models have to agree exactly or a feed can be catalogued for a data type
+# the store cannot hold (and its counts would silently always be zero). Sharing
+# the list is the only way that stays true through a later edit — the endpoint
+# model imports this constant rather than retyping it.
+DATA_TYPES = [
+    ('employee', 'Employee Master Data'),
+    ('salary', 'Salary / Compensation'),
+    ('attendance', 'Attendance'),
+    ('leave', 'Leave / Time-Off'),
+    ('dependent', 'Dependents / Family'),
+    ('benefit', 'Benefits'),
+    ('tax', 'Tax Information'),
+    ('custom', 'Custom / Other'),
+]
+
 
 class HrApiDataStore(models.Model):
     """
@@ -33,16 +51,8 @@ class HrApiDataStore(models.Model):
         'hr.integration.connector', string='Source Connector',
         required=True, ondelete='cascade', index=True,
     )
-    data_type = fields.Selection([
-        ('employee', 'Employee Master Data'),
-        ('salary', 'Salary / Compensation'),
-        ('attendance', 'Attendance'),
-        ('leave', 'Leave / Time-Off'),
-        ('dependent', 'Dependents / Family'),
-        ('benefit', 'Benefits'),
-        ('tax', 'Tax Information'),
-        ('custom', 'Custom / Other'),
-    ], string='Data Type', required=True, index=True)
+    data_type = fields.Selection(
+        DATA_TYPES, string='Data Type', required=True, index=True)
 
     employee_external_id = fields.Char(
         string='External Employee ID', index=True,

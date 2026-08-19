@@ -33,6 +33,19 @@ class HrIntegrationFieldMapping(models.Model):
         store=True
     )
 
+    # Which FEED this mapping reads from. Optional: mappings predate endpoints,
+    # and a connector with one implied API is still a legitimate connector. The
+    # `set null` is deliberate — deleting a feed must not delete the mapping
+    # work somebody did against it; it only stops claiming which API it came
+    # from.
+    endpoint_id = fields.Many2one(
+        'hr.integration.endpoint',
+        string='Endpoint',
+        ondelete='set null',
+        index=True,
+        help="The connector feed this source field arrives on."
+    )
+
     # ==========================================
     # SOURCE FIELD
     # ==========================================
