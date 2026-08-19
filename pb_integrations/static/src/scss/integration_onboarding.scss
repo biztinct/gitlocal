@@ -1,0 +1,125 @@
+// "Connect an HR system" — the stepped flow (IA Cycle 3).
+//
+// The card, the stepper, the footer and the inputs are the SHARED wizard shell
+// (`.pplw-*`, pb_import_kit/wizard_shell.scss) that People, Structures and
+// Statutory already use — a fourth guided flow that looked like its own product
+// would be the thing the kit exists to prevent (W6). Only the parts this flow
+// has and the others do not live here.
+//
+// Strictly --pbim-* tokens with correct hex fallbacks (W14/W19), flat fills (W3).
+.itgw {
+    .itgw-head-right { display: flex; align-items: center; gap: 10px; }
+
+    .pplw-card { width: 900px; }
+
+    .itgw-lead {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--pbim-text, #1B1733);
+        margin-bottom: 6px;
+    }
+    .itgw-sub {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 14px;
+    }
+
+    .itgw-err {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-bottom: 14px;
+        padding: 10px 13px;
+        border: 1px solid var(--pbim-rose, #DC2668);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668);
+        font-size: 12.5px;
+        font-weight: 600;
+        svg { display: block; flex: none; margin-top: 1px; }
+    }
+
+    // ==================================================== step 1
+    .itgw-vendors {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-bottom: 6px;
+    }
+    .itgw-vendor {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 13px 15px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-surface, #ffffff);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: left;
+        color: var(--pbim-text, #1B1733);
+        cursor: pointer;
+        transition: .14s;
+
+        &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+        &.is-on {
+            border-color: var(--pbim-primary, #5A4BB0);
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .itgw-vendor__ic {
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border-radius: var(--pbim-r-sm, 10px);
+        display: grid;
+        place-items: center;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+    .itgw-vendor__l { min-width: 0; }
+
+    // ==================================================== step 2
+    .itgw-guide {
+        margin-bottom: 16px;
+        padding: 12px 15px;
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-soft, #EDEAF8);
+    }
+    .itgw-guide__badge {
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: var(--pbim-primary-strong, #5A4BB0);
+        margin-bottom: 5px;
+    }
+    .itgw-guide__tx {
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--pbim-primary-dark, #241F52);
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 11.5px;
+            background: var(--pbim-surface, #ffffff);
+            border-radius: 5px;
+            padding: 1px 5px;
+        }
+    }
+    .itgw-status { margin-top: 12px; }
+
+    // ==================================================== step 3
+    .itgw-tw { max-height: 330px; overflow: auto; }
+    .itgw-more {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+}

@@ -4,4 +4,14 @@
         <field name="name">Integrations</field>
         <field name="tag">pb_integrations</field>
     </record>
+
+    <!-- IA Cycle 3, flow doctrine 1: the full-screen replacement for the stock
+         `hr.integration.onboarding.wizard` modal. That modal's action
+         (`pb_hr_payroll_formula.action_hr_integration_onboarding`) stays
+         registered — other callers and hidden menus keep working — and nothing
+         in Payobook opens it any more. -->
+    <record id="action_pb_integration_onboarding" model="ir.actions.client">
+        <field name="name">Connect an HR system</field>
+        <field name="tag">pb_integration_onboarding</field>
+    </record>
 </odoo>
