@@ -49,7 +49,12 @@ export const GROUP_DEFAULT = _t("Surfaces");
 export class HubPalette extends Component {
     static template = "pb_hub.HubPalette";
     static props = {
-        // [{ id, label, sublabel?, icon, group }] — already gated by the service
+        // [{ id, label, sublabel?, icon, group, restricted }] — already gated
+        // by the service. `restricted` is the UPSELL TEXT when the rail shows
+        // this door with a padlock, and "" otherwise; the row renders a lock
+        // and the service answers the click with a dialog rather than a
+        // navigation. It is "" on every database where nothing is restricted,
+        // which is every database except a demo one.
         entries: { type: Array },
         onRun: { type: Function },
         onClose: { type: Function },

@@ -134,6 +134,21 @@
     color: var(--pbim-muted, #64748B);
 }
 
+/* Restriction parity with the rail (IA Cycle 6). The padlock sits AFTER the
+   sublabel and takes no width from it: the sublabel is the flexible column, so
+   a `flex: none` lock cannot make a long label truncate differently on a demo
+   database than it does in production.
+
+   Rendered OUTSIDE every `.pbim` root (W43.1), so the fallback hex is what
+   actually paints here — it is the muted token's real value, not a placeholder. */
+.pbhub-pal-row__lock {
+    display: inline-flex;
+    flex: none;
+    margin-left: 2px;
+    color: var(--pbim-muted, #64748B);
+}
+.pbhub-pal-row.is-on .pbhub-pal-row__lock { color: var(--pbim-amber, #D97706); }
+
 .pbhub-pal-empty {
     display: flex;
     align-items: flex-start;

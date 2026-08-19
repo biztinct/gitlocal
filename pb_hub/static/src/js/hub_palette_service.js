@@ -46,6 +46,7 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { user } from "@web/core/user";
+import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { HubPalette } from "@pb_hub/js/hub_palette";
 import { openHub } from "@pb_hub/js/hub_nav";
 
@@ -68,9 +69,9 @@ export function localPaletteOwnerOnScreen() {
 }
 
 export const hubPaletteService = {
-    dependencies: ["overlay", "hotkey", "action", "notification"],
+    dependencies: ["overlay", "hotkey", "action", "notification", "orm", "dialog"],
 
-    start(env, { overlay, hotkey, action: actionService, notification }) {
+    start(env, { overlay, hotkey, action: actionService, notification, orm, dialog }) {
         // The overlay's own remove(), while the palette is up; null when it is
         // not. Keeping the handle is what stops ⌘K opening a second panel on top
         // of the first (W43).
@@ -98,6 +99,83 @@ export const hubPaletteService = {
             return groupCache.get(xmlid);
         }
 
+        // ------------------------------------------------------ restrictions
+        //
+        // The rail can LOCK a door: `pb.sidebar.section.restricted` (and
+        // `.item.restricted`, which only bites on a GATED item — W106) makes
+        // `get_sidebar_data` serve the entry with a padlock, refuse the click
+        // and answer with an upsell dialog. pb_demo uses it to fence off
+        // configuration on demo databases.
+        //
+        // The palette bypassed all of that, because it never asked. After the
+        // Cycle-5 cutover the lock lives on the SYSTEM section, whose one item
+        // claims Formula Engine, Structures, Statutory and Integrations through
+        // its match matrix — so a demo persona who could not open any of them
+        // from the rail could open all four with ⌘K.
+        //
+        // So the palette asks the SAME server call the rail renders from and
+        // builds a set of locked action refs out of it. Consequences worth
+        // stating, because each is load-bearing:
+        //
+        //  * on a database where nothing is restricted the set is EMPTY and
+        //    every code path below is a no-op — production behaviour is
+        //    byte-identical, which is the requirement;
+        //  * an administrator is never locked: `get_sidebar_data` computes
+        //    `sec_locked = restricted AND NOT is_admin` server-side, so the set
+        //    an admin receives is empty for the same reason the rail shows them
+        //    no padlock. The palette does not re-decide that anywhere;
+        //  * a LOCKED ITEM is served with its action refs nulled, so only its
+        //    match_* claims can be harvested — which is right: the refs it no
+        //    longer ships are refs the palette must not resolve either;
+        //  * it FAILS OPEN. A database without pb_sidebar, or a call that
+        //    errors, leaves the set empty and every row navigating. A palette
+        //    that locked rows because a lookup failed would hide the product
+        //    from the people who paid for it, which is a far worse failure than
+        //    the one it is guarding against.
+        //
+        // Fetched once per palette open, not once per keystroke: the answer is
+        // a property of the session, and the panel is already awaiting a
+        // has_group round trip before it mounts.
+        let lockedRefs = null;          // Map<ref, reason> | null (= not fetched)
+
+        async function loadRestrictions() {
+            const locked = new Map();
+            try {
+                const sections = await orm.call(
+                    "pb.sidebar.item", "get_sidebar_data", []);
+                for (const section of sections || []) {
+                    const secReason = section.restricted
+                        ? (section.restriction_reason || "") : "";
+                    const walk = (item) => {
+                        const reason = item.restricted
+                            ? (item.restriction_reason || secReason) : secReason;
+                        if (reason) {
+                            for (const ref of [item.action_tag, item.action_xmlid,
+                                               ...(item.match_action_tags || []),
+                                               ...(item.match_action_xmlids || [])]) {
+                                if (ref) { locked.set(ref, reason); }
+                            }
+                        }
+                        for (const child of item.children || []) { walk(child); }
+                    };
+                    for (const item of section.items || []) { walk(item); }
+                }
+            } catch (e) {
+                // W40: narrows nothing, hides nothing, and says so out loud.
+                console.warn("pb_hub: palette could not read the rail's "
+                             + "restrictions; every row stays open", e);
+            }
+            lockedRefs = locked;
+            return locked;
+        }
+
+        /** The upsell text for this entry, or "" when it is not locked. */
+        function restrictionFor(entry) {
+            if (!lockedRefs || !lockedRefs.size) { return ""; }
+            const a = entry.action || {};
+            return lockedRefs.get(a.tag) || lockedRefs.get(a.xmlid) || "";
+        }
+
         /**
          * Is the surface behind this entry actually on this database?
          *
@@ -118,6 +196,7 @@ export const hubPaletteService = {
 
         /** The rows this persona may see, in registry (sequence) order. */
         async function resolveEntries() {
+            if (lockedRefs === null) { await loadRestrictions(); }
             const all = registry.category("pb_hub_palette").getAll()
                 .filter(isPresent);
             const flags = await Promise.all(all.map(async (e) => {
@@ -131,6 +210,9 @@ export const hubPaletteService = {
                 label: e.label,
                 sublabel: e.sublabel || "",
                 icon: e.icon || "chevron",
+                // "" on every unrestricted database, which is every database
+                // except a demo one — the row then renders exactly as before.
+                restricted: restrictionFor(e),
                 // Passed through UNCHANGED, including undefined: the palette
                 // groups its rows into a Map keyed by this value, and `_t()`
                 // returns a new String subclass every call — defaulting here to
@@ -146,6 +228,22 @@ export const hubPaletteService = {
                 .find((e) => e.id === id);
             if (!entry) { return; }
             const a = entry.action || {};
+            // Restriction parity with the rail. The rail answers a click on a
+            // locked door with an upsell dialog and no navigation
+            // (`pb_sidebar.js::toggleSection` / `onItemClick`); the palette must
+            // answer the same click the same way, or the lock is a decoration
+            // on one surface and absent on the other — which is exactly the gap
+            // Cycle 5 left when it moved pb_demo's lock up to the SYSTEM
+            // section and the four Setup cockpits stayed reachable by ⌘K.
+            const lock = restrictionFor(entry);
+            if (lock) {
+                dialog.add(AlertDialog, {
+                    title: _t("Available in the full platform"),
+                    body: lock,
+                    confirmLabel: _t("Got it"),
+                });
+                return;
+            }
             try {
                 openHub(actionService, {
                     tag: a.tag, xmlid: a.xmlid, lens: a.lens, lensKey: a.lensKey,

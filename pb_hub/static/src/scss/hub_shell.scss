@@ -68,40 +68,8 @@
     }
     .pbhub-brand__tx { white-space: nowrap; }
 
-    // ------------------------------------------------------- the back chip
-    // Quieter than the brand beside it and quieter than the tracker: it is the
-    // way OUT, so it must be findable without competing with where you are.
-    .pbhub-back {
-        flex: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        max-width: 200px;
-        height: 28px;
-        padding: 0 10px 0 8px;
-        border: 1px solid color-mix(in srgb, #fff 22%, transparent);
-        border-radius: var(--pbim-r-sm, 10px);
-        background: color-mix(in srgb, #fff 9%, transparent);
-        color: #fff;
-        font: inherit;
-        font-size: 11.5px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background .12s, border-color .12s;
-
-        svg { display: block; }
-        &:hover {
-            background: color-mix(in srgb, #fff 17%, transparent);
-            border-color: color-mix(in srgb, #fff 34%, transparent);
-        }
-    }
-    .pbhub-back__ic { display: inline-flex; flex: none; }
-    .pbhub-back__tx {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+    // The back chip's dark styles live at ROOT scope — see the block after
+    // this one. They have two hosts, and only one of them is `.pbhub`.
 
     // ------------------------------------------------- the hub's own context
     // 0 1: the segments keep their natural size and shrink under pressure; the
@@ -476,6 +444,51 @@
 //  here. Sizes stay identical to the dark chip on purpose: one chip, two
 //  backgrounds, not two chips.
 // =====================================================================
+// ------------------------------------------------------------ the back chip
+// DARK tone. It sits at root scope, listing BOTH dark Payobook command bars it
+// can mount on: pb_hub's shell (`.pbhub`) and Mission Control's workspace
+// (`.pbms`), which is its own shell and, from IA Cycle 6, mounts this same kit
+// chip so a drill into the Workforce lenses has a way home.
+//
+// It is ONE copy with two hosts rather than two copies, deliberately (W6). The
+// alternative — pb_mission restating twenty lines — is how two return doors
+// start looking different, and the failure would be silent: an unmatched
+// selector renders an unstyled button, not an error (W14's shape, which is
+// exactly what this chip's own header comment warns about for the light tone).
+.pbim.pbhub, .pbim.pbms {
+    .pbhub-back {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 200px;
+        height: 28px;
+        padding: 0 10px 0 8px;
+        border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: color-mix(in srgb, #fff 9%, transparent);
+        color: #fff;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .12s, border-color .12s;
+
+        svg { display: block; }
+        &:hover {
+            background: color-mix(in srgb, #fff 17%, transparent);
+            border-color: color-mix(in srgb, #fff 34%, transparent);
+        }
+    }
+    .pbhub-back__ic { display: inline-flex; flex: none; }
+    .pbhub-back__tx {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
 .pbhub-back--lite {
     flex: none;
     display: inline-flex;
