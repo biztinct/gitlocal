@@ -61,6 +61,10 @@
                     t-on-click="() => this.setCat(c.key)">
               <span class="pbst-nav__ic" t-out="ic(c.icon, 15)"/>
               <span class="pbst-nav__l" t-esc="c.label"/>
+              <!-- A category with one door IS that door: the click opens it
+                   rather than a section page (see setCat), so the entry says
+                   so instead of looking like every other tab. -->
+              <span t-if="soleCard(c)" class="pbst-nav__go" t-out="ic('chevron', 13)"/>
             </button>
           </nav>
 

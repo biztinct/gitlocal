@@ -332,8 +332,39 @@ export class PbSettingsHub extends Component {
         return c ? this.cardsOf(c) : [];
     }
 
+    /**
+     * A category with exactly ONE door is not a page, it is that door.
+     *
+     * Integrations is the case that forced it: a category headline, a blurb, a
+     * single card and an "Open" button, so reaching the connectors cost two
+     * clicks and one screen that said the same word three times. The rule is
+     * GENERIC rather than a special case for that key — the moment Cycle 2 adds
+     * a second card to the category, the section page comes back on its own,
+     * with nothing to remember to undo.
+     *
+     * Resolved AFTER `_resolveGroups` and `_cardPresent`, so "one card" means
+     * one card THIS persona can actually see on THIS database: a category whose
+     * second card is absent behaves like a single-card one, which is the honest
+     * answer rather than a page listing one tile.
+     */
+    soleCard(cat) {
+        const cards = this.cardsOf(cat);
+        return cards.length === 1 ? cards[0] : null;
+    }
+
     /** A CLICK handler. */
     setCat(key) {
+        const cat = this.categories.find((c) => c.key === key);
+        const sole = cat && this.soleCard(cat);
+        if (sole) {
+            // Straight through. `state.cat` is NOT moved and nothing is
+            // persisted: the remembered rail state is a preference about which
+            // PAGE to show, and this category does not have one — writing it
+            // would bring the user back to a section page that only exists to
+            // be skipped. The way back is the `pb_back` chip openCard writes.
+            this.openCard(sole);
+            return;
+        }
         if (this.state.cat === key) { return; }
         this.state.cat = key;
         try { window.localStorage.setItem(STORAGE_KEY, key); }
@@ -368,8 +399,16 @@ export class PbSettingsHub extends Component {
         this._opening = true;
         try {
             if (card.tag) {
-                openHub(this.actionService,
-                        { tag: card.tag, back: this.backToSettings });
+                // `context` is per-card and optional: a card that wants to land
+                // its cockpit on a particular lens or scope says so in the
+                // descriptor, and `openHub` merges it (hub_nav.js:63). Nothing
+                // needs it today; the alternative is every future deep-linking
+                // card editing this method.
+                openHub(this.actionService, {
+                    tag: card.tag,
+                    context: card.context || {},
+                    back: this.backToSettings,
+                });
             } else {
                 // Native Odoo views. `clearBreadcrumbs: false` keeps "Settings"
                 // in the trail — these render Odoo's control panel, so the crumb

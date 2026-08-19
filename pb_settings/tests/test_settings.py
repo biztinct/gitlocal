@@ -64,6 +64,17 @@ _RE_GROUP_CONST = re.compile(
 # whole backend with a clean server log (W74).
 _RE_ADJACENT_STRINGS = re.compile(r"""["']\s*\n\s*["']""")
 
+# A source gate written the obvious way fails on the paragraph that explains it
+# (W101, and W114's fifth and sixth bites) — the comment above `setCat` has to
+# be able to name `soleCard`. Every gate below reads the CODE, not the file.
+_RE_BLOCK_COMMENT = re.compile(r'/\*.*?\*/', re.S)
+_RE_LINE_COMMENT = re.compile(r'(?<![:"\'])//[^\n]*')
+
+
+def _code(src):
+    """The file with its `/* … */` and `//` comments removed."""
+    return _RE_LINE_COMMENT.sub('', _RE_BLOCK_COMMENT.sub('', src))
+
 
 @tagged('post_install', '-at_install')
 class TestSettingsDescriptor(TransactionCase):
@@ -141,6 +152,47 @@ class TestSettingsDescriptor(TransactionCase):
                 name, known,
                 "icon '%s' is not in pb_import_kit's IC registry — ic() would "
                 "silently render its fallback" % name)
+
+    def test_a_single_card_category_opens_its_one_door_directly(self):
+        """Integrations Cycle 1 — the rule, and the fact that it fires.
+
+        Two halves, because each fails in the opposite direction and both are
+        invisible at runtime. The RULE lives in `setCat`, which is a click
+        handler — reading it out of the source is the only way to tell "the
+        category has one card and the hub still renders a page for it" from
+        "the category has two cards". And the FACT that Integrations has
+        exactly one card is what makes the rule fire today; the moment Cycle 2
+        adds a Mapping Studio card, the section page returns on its own and
+        this half of the assertion is what will say so.
+
+        The source is read with its comments stripped (W101/W114): the
+        paragraph above `setCat` has to be able to say `soleCard` out loud.
+        """
+        src = _code(_js())
+        self.assertIn(
+            'soleCard(', src,
+            "the single-card rule is gone from settings_hub.js — a category "
+            "with one door would render a page whose only content is that door")
+        setcat = src.split('setCat(key)', 1)[1].split('\n    }', 1)[0]
+        self.assertIn('this.openCard(sole)', setcat,
+                      "setCat must navigate for a single-card category")
+        self.assertNotIn(
+            'localStorage.setItem', setcat.split('this.openCard(sole)', 1)[0],
+            "a category that is skipped must not become the remembered one")
+
+        body = _js().split('export const CATEGORIES = [', 1)[1].split('\n];', 1)[0]
+        block = body.split('key: "integrations"', 1)[1].split('cards: [', 1)[1]
+        block = block.split('\n    },', 1)[0]
+        self.assertEqual(
+            len(_RE_CARD_ID.findall(block)), 1,
+            "Integrations is the category the single-card rule was written for")
+
+    def test_a_card_may_carry_its_own_arrival_context(self):
+        # `openHub` merges an arbitrary context (hub_nav.js:63); forwarding it
+        # is what lets a later card deep-link a cockpit onto a lens without
+        # every such card editing openCard.
+        opencard = _code(_js()).split('openCard(card) {', 1)[1].split('\n    }', 1)[0]
+        self.assertIn('card.context', opencard)
 
     def test_no_python_style_implicit_string_concatenation(self):
         for fname in ('settings_hub.js', 'settings_palette.js'):
