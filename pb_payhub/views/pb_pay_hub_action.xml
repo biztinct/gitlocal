@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Pay Run hub. No menu and no `pb.sidebar.item` on purpose: the rail
+         cutover is Cycle 5, and until then the eight rail items keep working
+         exactly as they do today. This cycle reaches the hub through ONE door,
+         the "Pay Run Hub (preview)" entry in the global command palette.
+
+         Test URL: /odoo/action-pb_pay_hub
+                   (/bizapp/action-pb_pay_hub on the live server - biz_deroute)
+
+         Deep-linking, per pb_hub/static/src/js/hub_nav.js:
+             openHub(actionService, { tag: "pb_pay_hub", lens: "runs" })
+         which writes `pb_lens` into the action context. -->
+    <record id="action_pb_pay_hub" model="ir.actions.client">
+        <field name="name">Pay Run Hub</field>
+        <field name="tag">pb_pay_hub</field>
+    </record>
+</odoo>
