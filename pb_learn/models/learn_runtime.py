@@ -225,6 +225,143 @@ class LearnRuntime(models.AbstractModel):
         item = self.env.ref(sidebar_key, raise_if_not_found=False)
         return item.sudo() if item else None
 
+    # --------------------------------------------------------- reachability
+    #
+    # SCREEN IDENTITY and RAIL REACHABILITY are two different questions about
+    # the same leaf, and until IA Cycle 5 one record answered both.
+    #
+    #   identity      "which action IS this screen"   → _primary / _matchers
+    #   reachability  "how does a reader GET there"   → this block
+    #
+    # They agreed for as long as every screen had its own rail item. The
+    # cutover retired thirty-four of them into eight hubs, and the two answers
+    # came apart: `_leaf` still resolves a retired record (env.ref is
+    # active-agnostic), so identity kept working perfectly, while
+    # `_visible_sidebar_item_ids` — which searches active=True — stopped
+    # containing any of them. Every station went dark and `_capability`
+    # answered `no_access` for every screen (W108).
+    #
+    # The obvious repair, re-pointing each station's `sidebar_key` at its hub,
+    # is the wrong one and W108 says why: seven pay-run screens sharing one Pay
+    # Run leaf would make `_primary` ground all seven on whichever resolved
+    # first — a confidently wrong answer traded for a wrong label. So the
+    # sidebar_key stays where it is, and reachability gets its own resolver.
+    #
+    # That resolver asks the SAME question the rail itself asks. `pb_sidebar.js`
+    # `_buildIndex` folds every LIVE item's four match dimensions into three
+    # flat maps and `_isClaimed` probes them to decide whether the rail belongs
+    # on a surface at all (W109). This is that index, server-side, built from
+    # the same `get_sidebar_data()` payload `_visible_sidebar_item_ids` already
+    # fetches — so "the rail is here", "this item is lit" and "you can reach
+    # this station" can never disagree.
+
+    @api.model
+    def _reach_index(self):
+        """{'tags': {tag: reach}, 'xmlids': {...}, 'models': {...}}.
+
+        `reach` is a plain dict — the payload crosses JSON-RPC, and a recordset
+        would not.
+        """
+        idx = {'tags': {}, 'xmlids': {}, 'models': {}}
+
+        def add(item, section, parent):
+            reach = {
+                'item_id': item['id'],
+                'item': item.get('name') or '',
+                'section': section.get('name') or '',
+                'parent': parent,
+            }
+            if item.get('action_tag'):
+                idx['tags'].setdefault(item['action_tag'], reach)
+            if item.get('action_xmlid'):
+                idx['xmlids'].setdefault(item['action_xmlid'], reach)
+            for tag in item.get('match_action_tags') or []:
+                idx['tags'].setdefault(tag, reach)
+            for xmlid in item.get('match_action_xmlids') or []:
+                idx['xmlids'].setdefault(xmlid, reach)
+            for model in item.get('match_models') or []:
+                idx['models'].setdefault(model, reach)
+
+        # setdefault, not assignment: the rail's own index is last-writer-wins
+        # (W71) and a double claim there is a bug the sidebar tests forbid.
+        # Here first-writer-wins is the safer half of the same coin — a reader
+        # is sent to the item that declared the surface first rather than to
+        # whichever happened to be indexed last.
+        for section in self.env['pb.sidebar.item'].get_sidebar_data():
+            for item in section.get('items') or []:
+                add(item, section, '')
+                for child in item.get('children') or []:
+                    add(child, section, item.get('name') or '')
+        return idx
+
+    @api.model
+    def _reaching(self, item, index=None):
+        """The LIVE rail item a reader opens to get to this leaf's screen.
+
+        `item` may perfectly well be a retired record — that is the whole
+        point. Returns the reach dict, or None when nothing on the rail claims
+        this surface (a genuinely unreachable screen, which the map should
+        still say so about).
+
+        Probe order is TAG FIRST, deliberately, and it differs from
+        `_resolveActive`'s xmlid-first order for a reason worth stating: four of
+        the retired leaves (Full & Final, Proration, Retro, Government Reports)
+        declare an `action_xmlid` that no live item claims, while every one of
+        the thirty-four is claimed by tag. Resolving by xmlid first would answer
+        None for those four and look like "these really are unreachable".
+        """
+        if not item:
+            return None
+        idx = index if index is not None else self._reach_index()
+        item = item.sudo()
+
+        for tag in [item.action_tag] + sorted(self._split(item.match_action_tags)):
+            if tag and tag in idx['tags']:
+                return idx['tags'][tag]
+        for xmlid in [item.action_xmlid] + sorted(self._split(item.match_action_xmlids)):
+            if xmlid and xmlid in idx['xmlids']:
+                return idx['xmlids'][xmlid]
+        for model in sorted(self._split(item.match_models)):
+            if model in idx['models']:
+                return idx['models'][model]
+        return None
+
+    @api.model
+    def _reach_path(self, reach):
+        """The rail path a reader follows, as one string: "Pay Run"."""
+        if not reach:
+            return ''
+        parts = [p for p in (reach.get('parent'), reach.get('item')) if p]
+        return ' → '.join(parts)
+
+    @api.model
+    def _station_reach(self, sidebar_key, visible_ids=None, index=None):
+        """(visible, missing, reach) for one station's leaf.
+
+        The single place the three verdicts are decided, so `bootstrap` and
+        `learn.intent._capability` cannot answer differently about one screen —
+        which is exactly what happened before: the map said "not in your menu"
+        and the Coach said `no_access`, from two separate readings of the same
+        set.
+        """
+        if not sidebar_key:
+            # Teaches something other than a leaf. Visible by definition.
+            return True, False, None
+        item = self.env.ref(sidebar_key, raise_if_not_found=False)
+        if not item:
+            # The leaf's module is not installed here. Say so rather than
+            # showing a station that opens nothing — an honest "not on this
+            # tenant" beats a dead node the learner blames themselves for.
+            return False, True, None
+        ids = visible_ids if visible_ids is not None else self._visible_sidebar_item_ids()
+        if item.id in ids:
+            return True, False, None
+        reach = self._reaching(item, index=index)
+        # Reachable through a hub is REACHABLE. The station is open, and the
+        # map names the door instead of telling a payroll manager they cannot
+        # see Payslips on a database where they can.
+        return bool(reach), False, reach
+
     @staticmethod
     def _split(val):
         return {v.strip() for v in (val or '').split(',') if v.strip()}
@@ -454,22 +591,18 @@ class LearnRuntime(models.AbstractModel):
         Content = self.env['learn.content']
 
         visible = self._visible_sidebar_item_ids()
+        index = self._reach_index()
         stations = {}
         for station in Content.stations():
-            key = station.get('sidebar_key')
-            if not key:
-                # Teaches something other than a leaf. Visible by definition.
-                stations[station['key']] = {'visible': True, 'missing': False}
-                continue
-            item = self.env.ref(key, raise_if_not_found=False)
-            if not item:
-                # The leaf's module is not installed here. Say so rather than
-                # showing a station that opens nothing — an honest "not on this
-                # tenant" beats a dead node the learner blames themselves for.
-                stations[station['key']] = {'visible': False, 'missing': True}
-            else:
-                stations[station['key']] = {'visible': item.id in visible,
-                                            'missing': False}
+            is_visible, missing, reach = self._station_reach(
+                station.get('sidebar_key'), visible_ids=visible, index=index)
+            stations[station['key']] = {
+                'visible': is_visible,
+                'missing': missing,
+                # Empty when the leaf is on the rail in its own right — there is
+                # no path worth naming for a screen the reader can already see.
+                'reach': self._reach_path(reach),
+            }
 
         contested = self._contested_models()
         screens = {}

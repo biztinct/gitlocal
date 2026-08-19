@@ -22,3 +22,6 @@ from . import test_practice
 # LEARNOS Phase 6 — the "what next" decision table and the streak, both
 # pure functions so both actually execute offline.
 from . import test_nextbest
+# IA Cycle 6 — W108: screen identity vs rail reachability, split apart
+# (and the gate that would have caught the cutover going dark).
+from . import test_reachability

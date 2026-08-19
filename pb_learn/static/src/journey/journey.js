@@ -250,6 +250,12 @@ export class LearnJourney extends Component {
         this.progress = this.bundle.progress || {};
         this.visible = new Set(
             this.bundle.stations.filter((s) => s.visible).map((s) => s.key));
+        // The rail path for a screen that is reachable but has no menu line of
+        // its own — "Pay Run", "People". Empty for everything the reader can
+        // already see on the rail, so a card only says something when there is
+        // something to say.
+        this.reachOf = new Map(
+            this.bundle.stations.filter((s) => s.reach).map((s) => [s.key, s.reach]));
         // The server knows the user's own language; honour it the first time
         // and let the toggle win afterwards.
         if (!window.localStorage.getItem(LOCAL_PREFS)) {
@@ -664,10 +670,14 @@ export class LearnJourney extends Component {
         const need = s.required
             ? `<span class="lrn-chip a">${esc(T("required"))}</span>`
             : `<span class="lrn-chip">${esc(T("optional"))}</span>`;
-        const gate = s.missing
+        // Three states, not two. A screen that moved into a hub is REACHABLE —
+        // saying "not in your menu" about it was the wrong word in the
+        // direction that makes a reader stop looking, so it gets a plain chip
+        // naming the door instead of a padlock.
+        const gate = (s.missing || !s.visible)
             ? `<span class="lrn-chip warn">${ic("lock")}${esc(T("notVisible"))}</span>`
-            : (!s.visible
-                ? `<span class="lrn-chip warn">${ic("lock")}${esc(T("notVisible"))}</span>`
+            : (s.reach
+                ? `<span class="lrn-chip">${ic("compass")}${esc(T("reachVia"))}${SP}${esc(s.reach)}</span>`
                 : "");
         // "Start here" is a PULSE, never an auto-play. The demo greeting opens
         // the map and points; the learner presses the card. A spotlight that
@@ -851,7 +861,10 @@ export class LearnJourney extends Component {
         ${s.kind !== "lesson"
             ? `<p class="lrn-callout">${ic("info")}${esc(T("outlineNote"))}</p>` : ""}
         ${!s.visible
-            ? `<p class="lrn-callout warn">${ic("lock")}${esc(T("notVisibleBody"))}</p>` : ""}
+            ? `<p class="lrn-callout warn">${ic("lock")}${esc(T("notVisibleBody"))}</p>`
+            : (s.reach
+                ? `<p class="lrn-callout">${ic("compass")}<b>${esc(T("reachVia"))}${SP}${esc(s.reach)}.</b>${SP}${esc(T("reachViaBody"))}</p>`
+                : "")}
         <div class="lrn-obls">
             ${block("help-circle", T("whatIs"), o.what)}
             ${block("target", T("whyMatters"), o.why)}
