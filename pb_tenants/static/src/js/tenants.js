@@ -6,6 +6,7 @@ import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_d
 import { ConnectionLostError } from "@web/core/network/rpc";
 import { ic as kitIc } from "@pb_import_kit/js/import_icons";
 import { TIC, tic } from "@pb_tenants/js/pbtn_icons";
+import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 
 const COUNTRIES = [
     ["", "— pick later —"], ["VN", "Vietnam"], ["ID", "Indonesia"], ["IN", "India"],
@@ -18,6 +19,7 @@ const STATE_BADGE = {
 
 export class PbTenants extends Component {
     static template = "pb_tenants.PbTenants";
+    static components = { HubBackChip };
     static props = ["*"];
 
     setup() {
@@ -25,6 +27,11 @@ export class PbTenants extends Component {
         this.action = useService("action");
         this.notif = useService("notification");
         this.dialog = useService("dialog");
+        // The return door a caller passed (Settings, a hub, another cockpit).
+        // Read ONCE, from props, never written back — the arrival protocol's
+        // rule since Cycle 1. Null when nobody sent us, and the chip is then
+        // ABSENT rather than inert (W5/W29).
+        this.back = hubBack(this.props);
         this.countries = COUNTRIES;
         this.stateBadge = STATE_BADGE;
         this._slugTimer = null;
