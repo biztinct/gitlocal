@@ -364,6 +364,18 @@ class TestFilingFlow(TransactionCase):
         self.assertNotIn('getattr(w, vals', code)
         self.assertNotIn("vals.get('method')", code)
 
+    def test_the_two_adapter_tables_describe_the_same_countries(self):
+        """`ADAPTERS` says which model; `_GENERATE` says which button.
+
+        `generate` indexes the second one directly, so a country added to only
+        one table is a KeyError traceback on the button rather than a refusal —
+        and it would be added by whoever adds the fifth country, months from
+        now, in a file they are reading for the first time.
+        """
+        from odoo.addons.pb_govt_reports.models.pb_filing_flow import (
+            ADAPTERS, _GENERATE)
+        self.assertEqual(set(ADAPTERS), set(_GENERATE))
+
     def test_the_client_never_names_a_server_method_it_should_not(self):
         js = _read(self.GOV, 'static', 'src', 'js', 'filing_flow.js')
         called = set(re.findall(r'orm\.call\(MODEL,\s*"(\w+)"', js))
