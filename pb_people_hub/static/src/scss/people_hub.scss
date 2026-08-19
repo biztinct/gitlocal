@@ -1,0 +1,143 @@
+// The Plan lens — the People hub's launcher over the existing Planning screens.
+//
+// Deliberately the smallest stylesheet in the programme: this surface is a
+// title, a sentence and seven rows, and every value below is the Settings hub's
+// card recipe (`.pbst-card`) with a prefix of its own. It is CLONED rather than
+// imported because a shared class across two modules is a coupling neither of
+// them declares — and the values are pbim tokens, which is where the sharing
+// that matters actually lives (W6's kit-first rule is about COMPONENTS; this is
+// forty lines of layout).
+//
+// Every `var()` carries its real pbim literal as a fallback (W14/W19): this
+// block only paints inside a `.pbim` root today, and a fallback that is not the
+// true colour is a theme bug waiting for the first surface that mounts outside
+// one.
+.pbim.pbpl {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding: 26px;
+    background: var(--pbim-bg, #F5F6FA);
+
+    .pbpl-wrap {
+        max-width: 860px;
+        width: 100%;          // W39: `margin: 0 auto` alone cancels the stretch
+        margin: 0 auto;
+    }
+
+    .pbpl-h {
+        margin: 0 0 3px;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbpl-blurb {
+        margin: 0 0 16px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbpl-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .pbpl-card {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 14px 16px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-surface, #ffffff);
+        box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+    }
+    .pbpl-card__ic {
+        flex: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--pbim-r-sm, 10px);
+        display: grid;
+        place-items: center;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+    .pbpl-card__tx {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .pbpl-card__l {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbpl-card__s {
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbpl-go { flex: none; padding: 7px 15px; font-size: 12px; }
+
+    // --------------------------------------------------------- nothing here
+    // A persona with no planning tier gets a SENTENCE. A blank pane with no
+    // explanation reads as a broken build, which is the one thing an empty
+    // state must never do.
+    .pbpl-none {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 48px 20px;
+        text-align: center;
+    }
+    .pbpl-none__ic {
+        display: inline-flex;
+        width: 46px;
+        height: 46px;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+    .pbpl-none__t {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbpl-none__s {
+        max-width: 420px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+}
+
+// ---------------------------------------------------------------- embedded
+// The Employees and Contracts cockpits as LENSES (W17/W20).
+//
+// `.pbim-page` is `min-height: 100%` with `overflow: auto`, which is a real
+// scrollport only while something above it is bounding the height. Standalone
+// that is the web client's action host; inside `.pbhub-lens` — a definite-height
+// flex box — `min-height: 100%` lets the box GROW instead, so the overflow
+// never engages and the roster runs off the bottom of the workspace with
+// nothing to scroll it. Two selector classes so this outranks
+// `.pbim.pbim-page`'s own rule (the W99 shape, standalone edition).
+.pbim.pbim-page.ppl-people--embedded {
+    height: 100%;
+    min-height: 0;
+    padding: 18px 22px 40px;
+
+    // The header row loses its left half in embedded mode, so its controls
+    // belong at the trailing edge rather than sliding to where the title was.
+    .ppl-head { justify-content: flex-end; }
+}
