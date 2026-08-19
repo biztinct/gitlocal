@@ -98,6 +98,23 @@
 
     // A deep-linked scope is VISIBLE and REMOVABLE. A filter you cannot see is
     // a table that lies by omission.
+    // A feed nobody has run is the one number on this row that asks for
+    // something. It takes the kit's amber semantic, never a new hex (W1).
+    .itg-feeds.is-stale .n { color: var(--pbim-amber, #D97706); }
+
+    // The kit's KPI row is a HARD six columns (theme_people.scss:22), shared
+    // with the People cockpits. Integrations now has seven stats, and the
+    // seventh landed alone on a second row — so this board (and only this
+    // board) asks for as many columns as fit. Overriding here rather than in
+    // the kit: changing the shared rule would reflow every cockpit that uses
+    // it, to fix a count only this one has.
+    .ppl-kpis {
+        grid-template-columns: repeat(auto-fit, minmax(156px, 1fr));
+    }
+    @media (max-width: 1100px) {
+        .ppl-kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    }
+
     .itg-scope {
         display: flex;
         align-items: center;

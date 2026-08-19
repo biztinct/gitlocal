@@ -83,6 +83,11 @@ export class PbIntegrations extends Component {
             // pop a drawer over the table you were sent to read.
             connectorId: ctx.pb_connector ? Number(ctx.pb_connector) : 0,
             connectorName: ctx.pb_connector_name || "",
+            // A FEED scope, from the connector cockpit's "View data" button.
+            // Same shape and same rules as the connector one: it is a filter,
+            // it says so on screen, and it can be dropped.
+            dataType: ctx.pb_data_type || "",
+            dataTypeName: ctx.pb_data_type_name || "",
             ledger: null, ledgerLoading: false,
             lsearch: "", f: {},
             drawer: null, drawerLoading: false,
@@ -153,6 +158,27 @@ export class PbIntegrations extends Component {
     }
     countStatus(id) { return this.state.connectors.filter(c => this._matchStatus(c, id)).length; }
 
+    /**
+     * The card's quiet second line — ONE sentence, ONE msgid (W80).
+     *
+     * It was four numbers assembled from `<t>` fragments in the template, which
+     * a translator cannot reorder; the feed count made it five and forced the
+     * issue. Feeds come FIRST because that is the thing this cycle added and it
+     * is what an operator scans for.
+     */
+    cardCounts(c) {
+        return _t("%(feeds)s feeds · %(mappings)s mappings · %(staged)s staged "
+                  + "· %(synced)s synced",
+                  { feeds: c.feeds || 0, mappings: c.mappings,
+                    staged: c.staged, synced: c.synced });
+    }
+
+    /** "Feeds", or "Feeds · N stale" when any of them are overdue. */
+    get feedsKpiLabel() {
+        const stale = (this.state.kpis && this.state.kpis.feeds_stale) || 0;
+        return stale ? _t("Feeds · %s stale", stale) : _t("Feeds");
+    }
+
     // =============================================================== the views
     /** A CLICK handler. Switching to Data loads it the first time only. */
     async setView(view) {
@@ -176,14 +202,26 @@ export class PbIntegrations extends Component {
         if (!this.state.connectorId) { return; }
         this.state.connectorId = 0;
         this.state.connectorName = "";
+        this.state.dataType = "";
+        this.state.dataTypeName = "";
+        await this.loadLedger();
+    }
+
+    /** Drop the feed scope, keeping the connector one. */
+    async clearDataTypeScope() {
+        if (!this.state.dataType) { return; }
+        this.state.dataType = "";
+        this.state.dataTypeName = "";
         await this.loadLedger();
     }
 
     async loadLedger() {
         this.state.ledgerLoading = true;
         try {
-            const d = await this.orm.call("pb.integrations", "get_ledger",
-                                          [this.state.kind, this.state.connectorId || false]);
+            const d = await this.orm.call(
+                "pb.integrations", "get_ledger",
+                [this.state.kind, this.state.connectorId || false,
+                 this.state.dataType || false]);
             this.state.ledger = d;
             const f = {};
             for (const fac of (d.facets || [])) { f[fac.key] = ""; }
@@ -242,6 +280,16 @@ export class PbIntegrations extends Component {
      */
     get scopeLabel() {
         return _t("Showing only %s", this.state.connectorName || _t("this connector"));
+    }
+
+    /** The feed scope's sentence — one getter, one msgid (W80). */
+    get feedScopeLabel() {
+        return _t("Feed: %s", this.state.dataTypeName || this.state.dataType);
+    }
+
+    /** The feed scope only means anything on the store tab. */
+    get feedScopeActive() {
+        return !!(this.state.dataType && this.state.kind === "store");
     }
 
     get footLabel() {

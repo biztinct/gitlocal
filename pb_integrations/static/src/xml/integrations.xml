@@ -31,6 +31,7 @@
           <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('refresh',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.synced"/><span class="l">Synced records</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('link',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.mappings"/><span class="l">Field mappings</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('database',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.staged"/><span class="l">Staged records</span></div></div>
+          <div t-attf-class="pbim-stat itg-feeds {{ state.kpis.feeds_stale ? 'is-stale' : '' }}"><span t-attf-class="pbim-stat-ic {{ state.kpis.feeds_stale ? 'amber' : '' }}"><t t-out="ic('plug',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.feeds"/><span class="l" t-esc="feedsKpiLabel"/></div></div>
         </div>
 
         <!-- ==== the two views ====
@@ -86,7 +87,7 @@
                 <div class="nm" t-esc="c.name"/>
                 <div class="jb"><t t-esc="c.type_label"/> · <t t-esc="syncLabel(c)"/></div>
               </div>
-              <div class="ppl-period itg-counts"><t t-esc="c.mappings"/> mappings · <t t-esc="c.staged"/> staged · <t t-esc="c.synced"/> synced</div>
+              <div class="ppl-period itg-counts" t-esc="cardCounts(c)"/>
               <div class="ppl-meta">
                 <span t-attf-class="pbim-badge {{ c.status_cls }}"><span class="d"/><t t-esc="c.status_label"/></span>
               </div>
@@ -126,6 +127,15 @@
               <button class="itg-scope__x" t-on-click="clearConnectorScope"
                       title="Show every connector">
                 <t t-out="ic('x',12)"/> Show all
+              </button>
+            </div>
+
+            <div t-if="feedScopeActive" class="itg-scope">
+              <span class="itg-scope__ic" t-out="ic('database',13)"/>
+              <span t-esc="feedScopeLabel"/>
+              <button class="itg-scope__x" t-on-click="clearDataTypeScope"
+                      title="Show every data type">
+                <t t-out="ic('x',12)"/> Every type
               </button>
             </div>
 

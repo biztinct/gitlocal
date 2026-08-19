@@ -20,7 +20,7 @@ ledger is exactly as empty as the list would have been (W12).
 import json
 import logging
 
-from odoo import api, models
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -112,10 +112,13 @@ class PbIntegrations(models.AbstractModel):
             return {'kpis': {}, 'connectors': [], 'total': 0, 'shown': 0}
         C = self.env['hr.integration.connector']
         cons = self._safe(lambda: C.search([], order='name'), default=C.browse())
+        has_feeds = 'hr.integration.endpoint' in self.env
+        now = fields.Datetime.now()
 
         rows = []
         connected = errored = 0
         synced = mappings = staged = 0
+        feeds = feeds_stale = 0
         for c in cons:
             try:
                 status = c.connection_status or 'disconnected'
@@ -129,7 +132,11 @@ class PbIntegrations(models.AbstractModel):
                 synced += sr
                 mappings += mc
                 staged += dc
+                nfeeds, nstale = self._feed_summary(c, now) if has_feeds else (0, 0)
+                feeds += nfeeds
+                feeds_stale += nstale
                 rows.append({
+                    'feeds': nfeeds, 'feeds_stale': nstale,
                     'id': c.id, 'name': c.name or '—',
                     'type': c.connector_type or '', 'type_label': TYPE_LABEL.get(c.connector_type, c.connector_type or '—'),
                     'icon': TYPE_ICON.get(c.connector_type, 'plug'),
@@ -151,12 +158,42 @@ class PbIntegrations(models.AbstractModel):
             'kpis': {
                 'connectors': len(rows), 'connected': connected, 'errors': errored,
                 'synced': synced, 'mappings': mappings, 'staged': staged,
+                'feeds': feeds, 'feeds_stale': feeds_stale,
             },
             'types': [{'name': TYPE_LABEL.get(k, k), 'type': k, 'count': v}
                       for k, v in sorted(types.items(), key=lambda x: -x[1])],
             'connectors': rows,
             'total': len(rows), 'shown': len(rows),
         }
+
+    @api.model
+    def _feed_summary(self, c, now):
+        """How many feeds this connector has, and how many are overdue.
+
+        "Overdue" is measured against the connector's OWN `sync_interval`, in
+        minutes, because that is the promise the connector makes. Two rules make
+        the number honest rather than alarming:
+
+          * a feed that has NEVER run is stale whatever the interval says — the
+            promise has not been kept once;
+          * `sync_interval = 0` means "manual only" on this model, so a feed
+            that HAS run is never aged out by it. Ageing a manual feed would
+            paint half the board red for doing exactly what it was configured to
+            do, and a warning everybody learns to ignore is not a warning (W64's
+            instinct: an instrument or an ignored instrument).
+        """
+        eps = c.endpoint_ids
+        if not eps:
+            return 0, 0
+        interval = c.sync_interval or 0
+        stale = 0
+        for e in eps:
+            if not e.last_sync:
+                stale += 1
+                continue
+            if interval > 0 and (now - e.last_sync).total_seconds() > interval * 60:
+                stale += 1
+        return len(eps), stale
 
     # ================================================================= ledgers
     @api.model
@@ -179,11 +216,19 @@ class PbIntegrations(models.AbstractModel):
         return self.env['hr.integration.connector'].search([]).ids
 
     @api.model
-    def get_ledger(self, kind, connector_id=None):
+    def get_ledger(self, kind, connector_id=None, data_type=None):
         """One satellite table as a grid descriptor.
 
         `kind` is looked up in LEDGERS rather than used to index `self.env`: a
         forged kind must not be able to point this method at another table.
+
+        `data_type` is the feed scope the connector cockpit's "View data" button
+        arrives with. It is validated against the store's OWN selection, not
+        passed through — a value from the browser reaching a domain unchecked is
+        the same class of hole the `kind` whitelist exists to close — and it is
+        only meaningful for the store, which is the one satellite that carries
+        the column. On the other two it is ignored rather than refused: the tab
+        strip stays usable when you switch away from Data store.
         """
         spec = LEDGERS.get(kind)
         if not spec or spec['model'] not in self.env:
@@ -196,6 +241,11 @@ class PbIntegrations(models.AbstractModel):
             cid = int(connector_id)
             scope = [cid] if cid in scope else []
         dom = [('connector_id', 'in', scope)]
+        if kind == 'store' and data_type:
+            known = dict(
+                self.env['hr.api.data.store']._fields['data_type'].selection)
+            if data_type in known:
+                dom = dom + [('data_type', '=', data_type)]
         builder = getattr(self, '_ledger_%s' % kind)
         return builder(dom)
 
