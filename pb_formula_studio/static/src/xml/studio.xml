@@ -41,6 +41,11 @@
         <header class="pbfs-top">
           <div class="pbfs-top-row1">
             <div class="pbfs-cfg">
+              <!-- The return door, when a caller passed one (the Settings hub's
+                   cog path today). ABSENT when nobody did: a back chip with
+                   nowhere to go is not a back chip. IA Cycle 4's only change to
+                   this surface. -->
+              <HubBackChip t-if="back" back="back" tone="'light'"/>
               <button class="pbfs-cfg-name" data-coach="fs-config" t-on-click="openConfigSwitcher" title="Browse &amp; switch configuration">
                 <span class="nm" t-esc="state.config.name"/>
                 <span class="pbfs-cfg-switch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>

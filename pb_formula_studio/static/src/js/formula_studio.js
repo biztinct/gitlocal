@@ -10,6 +10,14 @@ import { MappingCanvas } from "./mapping/mapping_canvas";
 import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
+// IA Cycle 4 — the ONE Studio change this cycle makes. Arriving here from the
+// Settings hub's cog path used to be a one-way trip: the Studio renders no
+// control panel, so there is no Odoo breadcrumb, and nothing in it said where
+// the user had come from. `hubBack` reads the `pb_back` the caller wrote into
+// the action context and returns null when nobody sent one — so the chip is
+// ABSENT on every other route rather than inert (W5/W29), and nothing else in
+// this file or its templates changes.
+import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 
 const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals"];
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669" };
@@ -100,7 +108,7 @@ export class CfgCombo extends Component {
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { CfgCombo, GridStudio, MappingCanvas, FindReplace, CommandPalette, HoverCard };
+    static components = { CfgCombo, GridStudio, MappingCanvas, FindReplace, CommandPalette, HoverCard, HubBackChip };
     static props = ["*"];
 
     setup() {
@@ -108,6 +116,9 @@ export class PbFormulaStudio extends Component {
         this.notif = useService("notification");
         this.action = useService("action");
         this.dialog = useService("dialog");
+        // Read ONCE, from props, never written back — the arrival protocol's
+        // rule since Cycle 1. Null unless a caller passed `pb_back`.
+        this.back = hubBack(this.props);
         this.state = useState({
             loaded: false,
             empty: false,

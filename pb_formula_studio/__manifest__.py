@@ -2,12 +2,15 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.68.2',
+    'version': '19.0.1.69.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'biz_theme', 'pb_hr_payroll_formula', 'pb_hr_payroll_base'],
+    # pb_hub (IA Cycle 4): the back chip the Settings hub hands over through
+    # `pb_back`. Nothing else in the Studio uses the kit.
+    'depends': ['web', 'biz_theme', 'pb_hr_payroll_formula', 'pb_hr_payroll_base',
+                'pb_hub'],
     'data': [
         'views/pb_formula_studio_action.xml',
         'views/pb_shadow_run_action.xml',
