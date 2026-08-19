@@ -15,7 +15,8 @@ it to **W74**; Cycle 2's deploy afternoon adds W93-W94 and **Cycle 3** takes it 
 retirements) closes the programme at **W110**; **Cycle 6** (the closure cycle: money
 visibility, the VN filings' Odoo-19 field drift, pb_learn's reachability split, the
 Insights drills, the tenant module-list repair and the restriction-aware palette)
-takes it to **W119**.
+takes it to **W119**; **Cycle 7** (the abm module-delta catch-up, the `hr_timesheet`
+`session_info` 500 and the `pb_insights` sudo drop) takes it to **W125**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -1947,3 +1948,138 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   number scrolls past; (3) `EXIT=255` with a healthy site means the upgrade did
   not happen, not that it was harmless — check `latest_version` (W33.2) before
   concluding anything shipped.
+- **W120 `-u X` upgrades every INSTALLED module that DEPENDS on X, so an exclusion
+  list is only honoured while nothing you upgrade is a dependency of the thing you
+  excluded.** (IA Cycle 7, bringing `abm` up to `payobook`'s module set.) The
+  cycle's binding non-goal was "`biz_debrand` stays untouched — another session's
+  work", and the upgrade list was written accordingly: 37 modules, `biz_debrand`
+  deliberately absent. It was upgraded anyway, from 19.0.2.1.0 to the disk's
+  19.0.2.3.0, because `web_debranding` WAS on the list and `biz_debrand` depends
+  on it: Odoo marks the reverse-dependency closure `to upgrade` so a dependent is
+  never left running against a changed dependency.
+  Rules: (1) an exclusion is a property of the CLOSURE, not of the list — compute
+  `depends`-reverse of every excluded module and check the intersection before
+  running, because the exclusion silently does not hold otherwise; (2) the damage
+  radius of that mistake is the version gap: the module went to the version on
+  DISK, which on a shared addons tree is whatever the other session has deployed,
+  not what the reference database is running — so "parity with payobook" and
+  "parity with the tree" are two different targets and the cascade always picks
+  the second; (3) the tell is in the post-run version diff, which is why the
+  evidence for a module-delta install is a version comparison per module and not
+  a count.
+- **W121 A post-migrate that UNFREEZES a `noupdate` record runs AFTER that
+  upgrade's data load, so the record only starts tracking its file on the NEXT
+  upgrade — and a catch-up that crosses both the unfreeze and a later data change
+  needs TWO passes.** (IA Cycle 7, and the one thing the abm rehearsal caught that
+  a version count would not have.) `abm` sat at `pb_timeoff` 19.0.1.0.1 and was
+  upgraded straight to 19.0.1.2.0. That single upgrade contains both halves of the
+  W13.1 story: the P0 post-migrate at 19.0.1.0.3 (clear the stored `noupdate`
+  flag, move Leave 30 -> 32) and the Cycle-5 retirement in the data FILE (seq 909,
+  `active` False). Odoo loads the data file BEFORE post-migrate, so the loader saw
+  a still-frozen record and skipped it; the migration then cleared the flag and
+  wrote 32. Result: exit code 0, `latest_version` correct, and one rail item live
+  at sequence 32 on a database that was supposed to have the eight-item rail.
+  Rules: (1) after any catch-up upgrade that crosses an unfreeze migration, run
+  `-u <module>` a SECOND time — the data load is idempotent and the second pass is
+  the one that lands the file; (2) never accept a version number as proof that a
+  data file has been applied (W33.2 proves the code shipped, not the rows); (3)
+  the assertion that actually catches it is a per-XMLID table diff against the
+  reference database — `pb_sidebar_item` joined to `ir_model_data`, compared row
+  by row — which found exactly one disagreement out of 60.
+- **W122 A host-derived `dbfilter` rejects a CLONE by name, so every HttpCase in
+  the run fails and the failures name YOUR feature.** (IA Cycle 7.) The box serves
+  tenants with `dbfilter = ^%d$`, so a suite run against `abm_c7` logs
+  `Logged into database 'abm_c7', but dbfilter rejects it; logging session out`
+  once, at WARNING, and then answers 404 or 303 to every authenticated request the
+  tests make. The first run showed 7 failed / 4 errors, and the two that looked
+  most alarming were the new session-guard tests — which were, in that run, only
+  measuring the dbfilter.
+  Rules: (1) always pass `--db-filter='^<clone>$'` when running a suite on a clone
+  of a tenant-filtered server (it is the same class of setup-not-feature failure
+  as W103's signalling table and W115's staging path); (2) before believing ANY
+  failure on a database shape that has never run the suite before, run the same
+  suite from the untouched tree and diff the failure SETS — Cycle 7's combined run
+  ended 12 failed / 17 errors of 1474, and the baseline run of the same suite with
+  the pre-cycle code ended 12 failed / 17 errors of 1467 with a byte-identical
+  failure list, which is what turned 29 red lines into evidence of nothing.
+- **W123 `session_info`'s two company collections come from different places, and
+  only a monkeypatch can guard the crash — an `_inherit` is on the wrong side of
+  its own `super()`.** (IA Cycle 7, closing W100.) `web`'s `session_info` builds
+  `allowed_companies` from `res.users._get_company_ids()`, which is
+  `@tools.ormcache('self.id')` and is invalidated only by `res.users.write()`
+  (`_get_invalidation_fields`). `hr_timesheet`'s override then iterates the LIVE
+  `user.company_ids`. Link a company to a user from the COMPANY side —
+  `res.company.write({'user_ids': …})`, the Users tab of the company form, a data
+  file, SQL — and nothing clears that cache: `company_ids` gains an id
+  `allowed_companies` has not got, `hr_timesheet` subscripts it, and the user's
+  every backend page load answers 500 (`KeyError: <company id>`).
+  Measured, because the obvious other hypothesis is wrong: ARCHIVING a company
+  does NOT reproduce it. Reading the `company_ids` many2many applies
+  `active_test`, so the archived id disappears from both sides; the two production
+  `KeyError`s of 2026-08-19 named ACTIVE companies (1 and 5), which is this path's
+  fingerprint and not the archived one's.
+  Rules: (1) when two collections that "should" be the same disagree, find which
+  of them is CACHED before theorising about the data — the cache key here is the
+  user id and nothing about companies, so the entry cannot expire on a company
+  event; (2) a model-inheritance override cannot guard a crash that happens inside
+  its own `super()` call: our class is the OUTERMOST one, the KeyError is raised
+  below it, and being inner would require `hr_timesheet` to depend on us. The
+  crash SITE has to be replaced (`biz_deroute/models/ir_http_session_guard.py`
+  rebinds `hr_timesheet.IrHttp.session_info` to a copy whose only difference is a
+  `.get()` and a warning), with a source gate pinning upstream's shape so the day
+  Odoo fixes it the patch fails a test instead of quietly shadowing a fixed
+  upstream; (3) ship the CAUSE beside the symptom — a `res.company.write` override
+  that calls `env.registry.clear_cache()` when `user_ids` is in `vals` is the one
+  line core is missing, and it costs nothing on a write nobody makes in a loop.
+- **W124 A monkeypatch takes effect on a process RESTART, not on `-u`, and the
+  difference looks exactly like a broken patch.** (IA Cycle 7, ten minutes of
+  believing a validated fix had not worked, on production.) The guard was rsynced,
+  `-u biz_deroute` returned 0 on all four databases, `latest_version` moved, and
+  the deliberately-divergent probe still got a 500 with the same traceback. Python
+  had `odoo.addons.biz_deroute` in `sys.modules` from the running server's own
+  startup — from BEFORE `models/` existed — and Odoo's registry reload re-reads
+  data and rebuilds model classes, it does not re-import addon python. So the
+  patch, and the new `ResCompany` class with it, existed on disk and in every
+  short-lived `-u` process and in no request the site served.
+  Rules: (1) any import-time patch, and any module that GAINS a `models/` package,
+  is a RESTART deploy, not an upgrade deploy — put the restart in the same window
+  or the change is not live; (2) the check that distinguishes "patch broken" from
+  "patch not loaded" is a log line or an attribute the patch owns
+  (`IrHttp.session_info.__name__`), asserted in the process that serves requests,
+  not in the one that upgraded; (3) W68 still governs the restart: Cycle 7's ran
+  at 21:43 UTC and another session stopped the same service at 21:45 for its own
+  `-u` — two windows, ninety seconds apart, neither aware of the other, which is
+  the argument for checking `ps -eo pid,cmd | grep "[o]doo-bin"` immediately
+  before AND after, and for reporting contention rather than racing it.
+- **W125 Dropping a cockpit's `sudo()` is a question about MODELS, not about the
+  cockpit — and on a board whose money is raw SQL, the sudo was never hiding the
+  money.** (IA Cycle 7, executing the owner's "Insights' sudo can now be dropped".)
+  `pb_insights` reads its department leaderboard, statutory split and employer
+  totals with `cr.execute` carrying an explicit `company_id IN %s`. Record rules
+  have never applied to any of it, so removing `sudo()` cannot change one number
+  there — what the blanket `su = self.sudo()` was actually covering was the ORM
+  reads beside it: `hr.payslip.run` (no ACL for `group_payroll_analytics_user`),
+  `hr.employee` (read granted to `hr.group_hr_user` and `base.group_system` only —
+  none of the three gate groups), the hr_attendance ladder behind the pulse, and
+  one `hr.payslip.line` `read_group` in the untyped-category fallback.
+  So the sudo drop is four separate decisions, not one: `hr.payslip.run` gets a
+  read-only ACL for the analytics tier (the model carries NO record rule, so the
+  grant is exactly what sudo was giving) and the money reads as the caller; the
+  headcount, the department-name lookup and the pulse keep a one-line sudo each,
+  because dropping those does not narrow a section, it BLANKS it — `_safe()`
+  swallows the AccessError and the tile renders as "not deployed", which is W105's
+  symptom wearing a different hat; and the legacy line `read_group` keeps its sudo
+  because `group_payroll_analytics_user` holds `hr.payslip.line` read only through
+  `base.group_user`, whose one rule is employee self-service, so the caller-rights
+  read would show that persona THEIR OWN payslip in place of the company's split
+  (W111 exactly).
+  Rules: (1) enumerate the ACL and the RULES of every model a facade touches
+  before removing a sudo, and expect the answer to differ per model; (2) prove it
+  with a payload diff per gate persona — Cycle 7 captured hero/trend/departments/
+  statutory/snapshots/pulse for `base_manager`, `analytics_user` and `super_admin`
+  on production data before and after, and the two JSON files hashed identically —
+  a suite alone cannot say this, because the fixture has no ACL history; (3) every
+  surviving sudo carries the paragraph that justifies it AND a row in
+  `pb_insights/tests/test_sudo_drop.py::SUDO_SITES`, an AST gate rather than a text
+  search, so a new sudo cannot arrive without that conversation and a removed one
+  cannot vanish without noticing.
