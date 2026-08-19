@@ -1,36 +1,65 @@
 /** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
 /**
- * Rippling-style Payroll Report Dashboard
- * Tab 1: Employee Earnings Grid with Current vs. Previous comparison
- * Tab 2: Department Summary Donut + Table
+ * Payroll Report — the per-employee current-vs-previous payroll comparison.
+ *
+ * IA Cycle 4 RE-SKINNED this surface; it did not rebuild it. Every RPC, every
+ * getter, every tab and every column is the one that was here before. What
+ * changed is the three things that made it the last off-system cockpit in the
+ * product:
+ *
+ *   1. **Font Awesome is gone.** Eleven `<i class="fa fa-…"/>` glyphs became
+ *      Lucide SVG through the shared `ic()` registry (W2). The four names it
+ *      needed that the registry did not have were ADDED to the registry, not
+ *      to a private map here.
+ *   2. **The internal breadcrumb is gone.** The surface drew its own
+ *      home / Dashboard / Payroll Report trail on top of the web client's,
+ *      so a user saw two breadcrumbs saying different things, and the private
+ *      one's two links both went to the same action. The shell's crumb — or,
+ *      in a hub, the hub's own command bar — is the one that knows where the
+ *      user actually came from. `wf_breadcrumb.css` had no other consumer and
+ *      went with it (W76: a retirement and the thing it points at have one
+ *      lifetime).
+ *   3. **It is on the kit.** The root is a `.pbim` node, so the pbim custom
+ *      properties resolve (W14) and the surface takes the one indigo accent,
+ *      the flat fills and the tabular figures every other Payobook cockpit
+ *      has. And it takes an `embedded` prop, so the Insights hub can mount it
+ *      as a lens — one component, one facade, two mount points (W17).
+ *
+ * One behaviour fix came with the re-skin and is not cosmetic, so it is stated
+ * plainly rather than buried: the department donut asked
+ * `typeof Chart !== "undefined"` and drew nothing when the answer was no.
+ * Chart.js lives in Odoo's LAZY `web.chartjs_lib` bundle, which nothing on this
+ * page had ever loaded — so the canvas has been blank since the tab was
+ * written, silently, with the legend and the table beside it rendering
+ * perfectly (W40's shape: a `catch`-like guard that turns a missing dependency
+ * into a missing feature). The bundle is now awaited before the first paint.
  */
-
 import { Component, useState, onMounted, onWillStart, xml } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { rpc } from "@web/core/network/rpc";
+import { loadBundle } from "@web/core/assets";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
+import { ic } from "@pb_import_kit/js/import_icons";
 
 function fmt(val) {
-    if (!val && val !== 0) return '–';
-    return val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    if (!val && val !== 0) return "–";
+    return val.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
-class PayrollReport extends Component {
+export class PayrollReport extends Component {
     static template = xml`
-    <div class="prd-container">
-        <div class="wf-breadcrumb">
-            <span class="wf-bc-home" t-on-click="goHome"><i class="fa fa-home"/></span>
-            <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
-            <span class="wf-bc-link" t-on-click="goFlowDashboard">Dashboard</span>
-            <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
-            <span class="wf-bc-current">Payroll Report</span>
-        </div>
-        <!-- Toolbar -->
+    <div class="pbim prd" t-att-class="{ 'prd--embedded': props.embedded }">
+      <div class="prd-wrap">
+
+        <!-- ============================== toolbar ============================== -->
         <div class="prd-toolbar">
             <div class="prd-toolbar-left">
-                <div class="prd-title"><i class="fa fa-bar-chart"/> Payroll Report</div>
-                <select class="prd-select" t-on-change="onBatchChange">
+                <div class="prd-title" t-if="!props.embedded">
+                    <span class="prd-title-ic" t-out="ic('barChart', 19)"/>
+                    <span>Payroll Report</span>
+                </div>
+                <select class="prd-select" t-on-change="onBatchChange" aria-label="Pay run">
                     <option value="">Select Pay Run…</option>
                     <t t-foreach="state.batches" t-as="b" t-key="b.id">
                         <option t-att-value="b.id" t-att-selected="state.batchId === b.id">
@@ -39,29 +68,32 @@ class PayrollReport extends Component {
                     </t>
                 </select>
                 <div class="prd-search">
-                    <i class="fa fa-search"/>
+                    <span class="prd-search-ic" t-out="ic('search', 15)"/>
                     <input type="text" placeholder="Search employee..." t-model="state.searchQuery"/>
                 </div>
             </div>
             <div class="prd-toolbar-right">
                 <div class="prd-tab-bar">
-                    <button t-attf-class="prd-tab {{ state.activeTab === 'earnings' ? 'active' : '' }}"
+                    <button class="prd-tab" t-att-class="{ 'is-on': state.activeTab === 'earnings' }"
+                            t-att-aria-current="state.activeTab === 'earnings' ? 'true' : false"
                             t-on-click="() => this.setTab('earnings')">
-                        <i class="fa fa-money"/> Earnings
+                        <span class="prd-tab-ic" t-out="ic('banknote', 15)"/> Earnings
                     </button>
-                    <button t-attf-class="prd-tab {{ state.activeTab === 'deductions' ? 'active' : '' }}"
+                    <button class="prd-tab" t-att-class="{ 'is-on': state.activeTab === 'deductions' }"
+                            t-att-aria-current="state.activeTab === 'deductions' ? 'true' : false"
                             t-on-click="() => this.setTab('deductions')">
-                        <i class="fa fa-minus-circle"/> Deductions
+                        <span class="prd-tab-ic" t-out="ic('minusCircle', 15)"/> Deductions
                     </button>
-                    <button t-attf-class="prd-tab {{ state.activeTab === 'summary' ? 'active' : '' }}"
+                    <button class="prd-tab" t-att-class="{ 'is-on': state.activeTab === 'summary' }"
+                            t-att-aria-current="state.activeTab === 'summary' ? 'true' : false"
                             t-on-click="() => this.setTab('summary')">
-                        <i class="fa fa-pie-chart"/> Dept Summary
+                        <span class="prd-tab-ic" t-out="ic('pieChart', 15)"/> Dept Summary
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Summary KPI Cards -->
+        <!-- ============================ summary KPIs ============================ -->
         <div class="prd-kpis" t-if="state.summary.total_employees > 0">
             <div class="prd-kpi">
                 <div class="prd-kpi-num" t-esc="state.summary.total_employees"/>
@@ -85,7 +117,7 @@ class PayrollReport extends Component {
             </div>
         </div>
 
-        <!-- Batch context -->
+        <!-- =========================== batch context =========================== -->
         <div class="prd-batch-info" t-if="state.batch.name">
             <div class="prd-batch-current">
                 <strong t-esc="state.batch.name"/>
@@ -98,8 +130,9 @@ class PayrollReport extends Component {
             </div>
         </div>
 
-        <!-- TAB: Earnings -->
+        <!-- ============================== earnings ============================== -->
         <div class="prd-content" t-if="state.activeTab === 'earnings' and !state.loading">
+            <div class="prd-tablewrap" t-if="filteredEmployees.length">
             <table class="prd-table">
                 <thead>
                     <tr>
@@ -113,10 +146,11 @@ class PayrollReport extends Component {
                 </thead>
                 <tbody>
                     <t t-foreach="filteredEmployees" t-as="emp" t-key="emp.id">
-                        <tr class="prd-row" t-on-click="() => this.toggleDetail(emp.id)">
+                        <tr class="prd-row" t-att-class="{ 'is-open': state.expandedEmp === emp.id }"
+                            t-on-click="() => this.toggleDetail(emp.id)">
                             <td class="prd-col-emp">
                                 <div class="prd-emp-info">
-                                    <img class="prd-avatar" t-att-src="emp.avatar_url" loading="lazy"/>
+                                    <img class="prd-avatar" t-att-src="emp.avatar_url" loading="lazy" alt=""/>
                                     <div>
                                         <div class="prd-emp-name" t-esc="emp.name"/>
                                         <div class="prd-emp-meta" t-esc="emp.job_title"/>
@@ -127,8 +161,12 @@ class PayrollReport extends Component {
                             <td class="prd-col-num prd-val-current" t-esc="fmt(emp.gross)"/>
                             <td class="prd-col-num prd-val-prev" t-esc="fmt(emp.prev_gross)"/>
                             <td t-attf-class="prd-col-num {{ emp.diff_gross > 0 ? 'prd-var-up' : (emp.diff_gross &lt; 0 ? 'prd-var-down' : '') }}">
-                                <span t-if="emp.diff_gross > 0">▲ <t t-esc="fmt(emp.diff_gross)"/></span>
-                                <span t-if="emp.diff_gross &lt; 0">▼ <t t-esc="fmt(emp.diff_gross)"/></span>
+                                <span t-if="emp.diff_gross > 0" class="prd-var">
+                                    <span class="prd-var-ic" t-out="ic('trendingUp', 13)"/><t t-esc="fmt(emp.diff_gross)"/>
+                                </span>
+                                <span t-if="emp.diff_gross &lt; 0" class="prd-var">
+                                    <span class="prd-var-ic" t-out="ic('trendingDown', 13)"/><t t-esc="fmt(emp.diff_gross)"/>
+                                </span>
                                 <span t-if="emp.diff_gross === 0">–</span>
                             </td>
                             <td class="prd-col-events">
@@ -138,7 +176,6 @@ class PayrollReport extends Component {
                                 </t>
                             </td>
                         </tr>
-                        <!-- Expandable detail row -->
                         <tr t-if="state.expandedEmp === emp.id" class="prd-detail-row">
                             <td colspan="6">
                                 <div class="prd-detail-grid">
@@ -180,15 +217,17 @@ class PayrollReport extends Component {
                     </t>
                 </tbody>
             </table>
-            <div class="prd-empty" t-if="filteredEmployees.length === 0 and !state.loading">
-                <i class="fa fa-inbox fa-3x"/>
+            </div>
+            <div class="prd-empty" t-else="">
+                <span class="prd-empty-ic" t-out="ic('inbox', 30)"/>
                 <h3>No payroll data</h3>
                 <p>Select a pay run batch to view the report.</p>
             </div>
         </div>
 
-        <!-- TAB: Deductions -->
+        <!-- ============================= deductions ============================= -->
         <div class="prd-content" t-if="state.activeTab === 'deductions' and !state.loading">
+            <div class="prd-tablewrap">
             <table class="prd-table">
                 <thead>
                     <tr>
@@ -204,7 +243,7 @@ class PayrollReport extends Component {
                         <tr class="prd-row" t-on-click="() => this.toggleDetail(emp.id)">
                             <td class="prd-col-emp">
                                 <div class="prd-emp-info">
-                                    <img class="prd-avatar" t-att-src="emp.avatar_url" loading="lazy"/>
+                                    <img class="prd-avatar" t-att-src="emp.avatar_url" loading="lazy" alt=""/>
                                     <div>
                                         <div class="prd-emp-name" t-esc="emp.name"/>
                                         <div class="prd-emp-meta" t-esc="emp.department"/>
@@ -215,17 +254,22 @@ class PayrollReport extends Component {
                             <td class="prd-col-num prd-val-current" t-esc="fmt(emp.net)"/>
                             <td class="prd-col-num prd-val-prev" t-esc="fmt(emp.prev_net)"/>
                             <td t-attf-class="prd-col-num {{ emp.diff_net > 0 ? 'prd-var-up' : (emp.diff_net &lt; 0 ? 'prd-var-down' : '') }}">
-                                <span t-if="emp.diff_net > 0">▲ <t t-esc="fmt(emp.diff_net)"/></span>
-                                <span t-if="emp.diff_net &lt; 0">▼ <t t-esc="fmt(emp.diff_net)"/></span>
+                                <span t-if="emp.diff_net > 0" class="prd-var">
+                                    <span class="prd-var-ic" t-out="ic('trendingUp', 13)"/><t t-esc="fmt(emp.diff_net)"/>
+                                </span>
+                                <span t-if="emp.diff_net &lt; 0" class="prd-var">
+                                    <span class="prd-var-ic" t-out="ic('trendingDown', 13)"/><t t-esc="fmt(emp.diff_net)"/>
+                                </span>
                                 <span t-if="emp.diff_net === 0">–</span>
                             </td>
                         </tr>
                     </t>
                 </tbody>
             </table>
+            </div>
         </div>
 
-        <!-- TAB: Department Summary -->
+        <!-- ========================== department summary ========================== -->
         <div class="prd-content" t-if="state.activeTab === 'summary' and !state.loading">
             <div class="prd-summary-layout">
                 <div class="prd-chart-area">
@@ -241,6 +285,7 @@ class PayrollReport extends Component {
                     </t>
                 </div>
             </div>
+            <div class="prd-tablewrap">
             <table class="prd-table prd-dept-table">
                 <thead>
                     <tr>
@@ -270,14 +315,25 @@ class PayrollReport extends Component {
                     </t>
                 </tbody>
             </table>
+            </div>
         </div>
 
-        <!-- Loading -->
+        <!-- =============================== loading =============================== -->
         <div t-if="state.loading" class="prd-loading">
-            <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+            <div class="prd-spin"/>
             <span>Loading payroll data…</span>
         </div>
+
+      </div>
     </div>`;
+
+    static props = {
+        action: { type: Object, optional: true },
+        // W17: suppresses only the chrome the host already owns — here, the
+        // title chip. Never a facade call, never a column, never a tab.
+        embedded: { type: Boolean, optional: true },
+        "*": true,
+    };
 
     setup() {
         this.actionService = useService("action");
@@ -290,7 +346,7 @@ class PayrollReport extends Component {
 
         this.state = useState({
             loading: false,
-            activeTab: 'earnings',
+            activeTab: "earnings",
             batchId: initialBatchId,
             batches: [],
             batch: {},
@@ -298,7 +354,7 @@ class PayrollReport extends Component {
             employees: [],
             deptChart: [],
             summary: { total_employees: 0, total_gross: 0, total_net: 0, total_deductions: 0, changes: 0 },
-            searchQuery: '',
+            searchQuery: "",
             expandedEmp: false,
         });
 
@@ -312,43 +368,44 @@ class PayrollReport extends Component {
         });
     }
 
+    ic(n, s = 16) { return ic(n, s); }
     fmt(val) { return fmt(val); }
 
     get filteredEmployees() {
-        const q = (this.state.searchQuery || '').toLowerCase().trim();
+        const q = (this.state.searchQuery || "").toLowerCase().trim();
         if (!q) return this.state.employees;
         return this.state.employees.filter(e =>
             e.name.toLowerCase().includes(q) ||
-            (e.job_title || '').toLowerCase().includes(q) ||
-            (e.department || '').toLowerCase().includes(q)
+            (e.job_title || "").toLowerCase().includes(q) ||
+            (e.department || "").toLowerCase().includes(q)
         );
     }
 
     async _rpc(method, args = []) {
-        return rpc('/web/dataset/call_kw/hr.payroll.report.api/' + method, {
-            model: 'hr.payroll.report.api', method, args, kwargs: {},
+        return rpc("/web/dataset/call_kw/hr.payroll.report.api/" + method, {
+            model: "hr.payroll.report.api", method, args, kwargs: {},
         });
     }
 
     async loadBatches() {
         try {
-            this.state.batches = await this._rpc('get_all_batches');
+            this.state.batches = await this._rpc("get_all_batches");
             // Auto-select first if none selected
             if (!this.state.batchId && this.state.batches.length > 0) {
                 this.state.batchId = this.state.batches[0].id;
                 await this.loadReport(this.state.batchId);
             }
         } catch (e) {
-            console.error('Failed to load batches:', e);
+            console.error("Failed to load batches:", e);
         }
     }
 
     async loadReport(batchId) {
         this.state.loading = true;
         try {
-            const data = await this._rpc('get_batch_report', [batchId]);
+            const data = await this._rpc("get_batch_report", [batchId]);
             if (data.error) {
-                this.notification.add(data.error, { type: 'danger' });
+                this.notification.add(data.error, { type: "danger" });
                 this.state.loading = false;
                 return;
             }
@@ -360,12 +417,12 @@ class PayrollReport extends Component {
                 summary: data.summary,
             });
             // Render chart after data loads
-            if (this.state.activeTab === 'summary') {
+            if (this.state.activeTab === "summary") {
                 setTimeout(() => this._renderDonut(), 100);
             }
         } catch (e) {
-            console.error('Report load failed:', e);
-            this.notification.add(_t("Failed to load payroll report"), { type: 'danger' });
+            console.error("Report load failed:", e);
+            this.notification.add(_t("Failed to load payroll report"), { type: "danger" });
         }
         this.state.loading = false;
     }
@@ -380,7 +437,7 @@ class PayrollReport extends Component {
 
     setTab(tab) {
         this.state.activeTab = tab;
-        if (tab === 'summary') {
+        if (tab === "summary") {
             setTimeout(() => this._renderDonut(), 100);
         }
     }
@@ -389,46 +446,60 @@ class PayrollReport extends Component {
         this.state.expandedEmp = this.state.expandedEmp === empId ? false : empId;
     }
 
-    _renderDonut() {
-        const canvas = document.getElementById('prdDonutChart');
+    /**
+     * Chart.js is in a LAZY bundle, so it is awaited rather than assumed.
+     *
+     * The previous form was `if (typeof Chart !== "undefined")`, which is a
+     * guard that silently deletes the feature when the answer is no — and the
+     * answer was always no, because nothing on this page loads
+     * `web.chartjs_lib`. The legend and the department table beside the canvas
+     * kept rendering, so the tab looked like it worked.
+     */
+    async _renderDonut() {
+        const canvas = document.getElementById("prdDonutChart");
         if (!canvas || !this.state.deptChart.length) return;
-        // Destroy existing chart
+        let Chart = window.Chart;
+        if (!Chart || !Chart.version) {
+            try {
+                await loadBundle("web.chartjs_lib");
+                Chart = window.Chart;
+            } catch (e) {
+                // Reported, never swallowed into "the chart is just missing".
+                console.warn("payroll_report: could not load Chart.js", e);
+                return;
+            }
+        }
+        if (!Chart) { return; }
+        // The tab may have changed while the bundle was in flight.
+        if (this.state.activeTab !== "summary") { return; }
         if (this._chart) { this._chart.destroy(); }
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         const data = this.state.deptChart;
-        // Simple donut using Chart.js if available, else fallback
-        if (typeof Chart !== 'undefined') {
-            this._chart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: data.map(d => d.name),
-                    datasets: [{
-                        data: data.map(d => d.net),
-                        backgroundColor: data.map(d => d.color),
-                        borderWidth: 2,
-                        borderColor: '#fff',
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    cutout: '65%',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: (ctx) => `${ctx.label}: ${fmt(ctx.raw)}`,
-                            },
+        this._chart = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels: data.map(d => d.name),
+                datasets: [{
+                    data: data.map(d => d.net),
+                    backgroundColor: data.map(d => d.color),
+                    borderWidth: 2,
+                    borderColor: "#fff",
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: "65%",
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (c) => `${c.label}: ${fmt(c.raw)}`,
                         },
                     },
                 },
-            });
-        }
-    }
-
-    goHome() { this.actionService.doAction('pb_dashboard.action_pb_dashboard'); }
-    goFlowDashboard() {
-        this.actionService.doAction('pb_dashboard.action_pb_dashboard');
+            },
+        });
     }
 }
 

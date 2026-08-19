@@ -92,6 +92,15 @@ export const IC = {
     smile:      '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/>',
     meh:        '<circle cx="12" cy="12" r="10"/><path d="M8 15h8"/><path d="M9 9h.01M15 9h.01"/>',
     frown:      '<circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><path d="M9 9h.01M15 9h.01"/>',
+    // IA redesign C4 — the Payroll Report came off Font Awesome, and its four
+    // remaining glyphs (a bar chart, a pie chart, a minus-in-a-circle for the
+    // deductions tab and a downward trend for a negative variance) had no
+    // Lucide twin in this registry yet. Added HERE rather than in a
+    // pb_hr_workforce icon file: one registry, never a per-module map (W2).
+    barChart:   '<line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/>',
+    pieChart:   '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+    minusCircle:'<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+    trendingDown: '<path d="m22 17-8.5-8.5-5 5L2 7"/><path d="M16 17h6v-6"/>',
 };
 
 /**

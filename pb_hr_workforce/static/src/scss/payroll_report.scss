@@ -1,0 +1,311 @@
+// =====================================================================
+//  Payroll Report — on the kit (IA redesign Cycle 4)
+//
+//  Root is `.prd.pbim`, so the pbim custom properties resolve: outside a
+//  `.pbim` node they do not exist and the var() FALLBACK is what paints, which
+//  is how a surface ends up "themed" by accident (W14). Every colour below is
+//  a token with the correct pbim literal behind it, so the file is still right
+//  if it is ever mounted somewhere the block does not reach.
+//
+//  What this replaces: 514 lines of hand-picked hexes (#5C619D, #E8E9F3,
+//  #ECEDF5 …) that matched nothing else in the product, plus a half-finished
+//  `.o_dark` block. No other pbim cockpit ships dark overrides and the token
+//  set is light-only, so the partial dark theme went rather than being
+//  extended into a second design system nobody maintains.
+//
+//  ONE accent (the indigo primary). Flat fills, no gradients (W3). Figures are
+//  tabular. Icons are Lucide SVG through ic(), so there is no `i.fa` selector
+//  anywhere in here — see payroll_report.js's header.
+// =====================================================================
+
+.prd {
+    position: relative;
+    height: 100%;
+    overflow: auto;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-ink, #1B1733);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    // ---- local aliases, each carrying the real pbim literal (W14/W19) ----
+    --p:       var(--pbim-primary, #5A4BB0);
+    --p-deep:  var(--pbim-primary-dark, #241F52);
+    --soft:    var(--pbim-soft, #EDEAF8);
+    --line:    var(--pbim-line, #E2E8F0);
+    --line-2:  var(--pbim-line-2, #F1F5F9);
+    --muted:   var(--pbim-muted, #64748B);
+    --ink:     var(--pbim-ink, #1B1733);
+    --green:   var(--pbim-green, #2E7D4F);
+    --amber:   var(--pbim-amber, #D97706);
+    --rose:    var(--pbim-rose, #DC2668);
+    --surface: #fff;
+    --r:       var(--pbim-r, 12px);
+    --r-sm:    var(--pbim-r-sm, 8px);
+    --sh:      var(--pbim-sh, 0 1px 3px rgba(27, 23, 51, .06));
+
+    .prd-wrap { max-width: 1560px; margin: 0 auto; width: 100%; padding: 0 0 40px; }
+
+    // ============================================================ toolbar
+    .prd-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 14px 22px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        // Below the kit's drawer scrim (60) and far below a cockpit modal
+        // (1050): a sticky toolbar must never win an argument it was not
+        // meant to be in (W37).
+        z-index: 3;
+    }
+    .prd-toolbar-left,
+    .prd-toolbar-right { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+
+    .prd-title {
+        display: inline-flex; align-items: center; gap: 7px;
+        font-size: 17px; font-weight: 800; color: var(--ink); letter-spacing: -.01em;
+    }
+    .prd-title-ic { display: inline-flex; color: var(--p); }
+
+    .prd-select {
+        padding: 7px 11px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        font: inherit; font-size: 13px; font-weight: 600;
+        background: var(--surface); color: var(--ink);
+        min-width: 210px; cursor: pointer;
+    }
+    .prd-select:focus { outline: none; border-color: var(--p); }
+
+    .prd-search {
+        display: flex; align-items: center; gap: 7px;
+        padding: 6px 11px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        background: var(--line-2);
+    }
+    .prd-search:focus-within { border-color: var(--p); background: var(--surface); }
+    .prd-search-ic { display: inline-flex; color: var(--muted); flex: none; }
+    .prd-search input {
+        border: none; outline: none; background: transparent;
+        font: inherit; font-size: 13px; width: 150px; color: var(--ink);
+    }
+
+    // ------------------------------------------------------------- tabs
+    .prd-tab-bar {
+        display: flex;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        overflow: hidden;
+    }
+    .prd-tab {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 7px 14px;
+        border: none; border-right: 1px solid var(--line);
+        background: var(--surface);
+        font: inherit; font-size: 13px; font-weight: 600;
+        color: var(--muted); cursor: pointer;
+        transition: background .15s, color .15s;
+    }
+    .prd-tab:last-child { border-right: none; }
+    .prd-tab:hover { background: var(--soft); color: var(--p-deep); }
+    .prd-tab.is-on { background: var(--p); color: #fff; }
+    .prd-tab-ic { display: inline-flex; }
+
+    // =============================================================== KPIs
+    .prd-kpis { display: flex; gap: 12px; padding: 16px 22px 4px; overflow-x: auto; }
+    .prd-kpi {
+        flex: 1 1 0; min-width: 120px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--line);
+        border-radius: var(--r);
+        padding: 14px 18px;
+        text-align: center;
+        box-shadow: var(--sh);
+    }
+    .prd-kpi-gross   { border-top-color: var(--green); }
+    .prd-kpi-ded     { border-top-color: var(--rose); }
+    .prd-kpi-net     { border-top-color: var(--p); }
+    .prd-kpi-changes { border-top-color: var(--amber); }
+    .prd-kpi-num {
+        font-size: 22px; font-weight: 800; color: var(--ink);
+        font-variant-numeric: tabular-nums; line-height: 1.15;
+    }
+    .prd-kpi-label {
+        font-size: 10.5px; font-weight: 700; color: var(--muted);
+        text-transform: uppercase; letter-spacing: .06em; margin-top: 3px;
+    }
+
+    // ======================================================== batch context
+    .prd-batch-info {
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        margin: 14px 22px 0;
+        padding: 9px 14px;
+        background: var(--soft);
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        font-size: 13px;
+    }
+    .prd-batch-dates { color: var(--muted); font-size: 12px; margin-left: 8px; }
+    .prd-batch-prev  { color: var(--muted); font-size: 12px; }
+
+    // ============================================================== tables
+    .prd-content { padding: 0 22px; }
+    .prd-tablewrap {
+        margin-top: 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        box-shadow: var(--sh);
+        overflow-x: auto;
+    }
+    .prd-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .prd-table thead th {
+        background: var(--line-2);
+        padding: 10px 13px;
+        font-size: 11px; font-weight: 700; color: var(--muted);
+        text-transform: uppercase; letter-spacing: .05em;
+        border-bottom: 1px solid var(--line);
+        text-align: left; white-space: nowrap;
+    }
+    .prd-table td {
+        padding: 9px 13px; font-size: 13px; color: var(--ink);
+        vertical-align: middle; border-bottom: 1px solid var(--line-2);
+    }
+    .prd-table tbody tr:last-child td { border-bottom: none; }
+
+    .prd-col-num   { text-align: right; font-variant-numeric: tabular-nums; }
+    th.prd-col-num { text-align: right; }
+    .prd-col-emp    { min-width: 210px; }
+    .prd-col-events { min-width: 180px; }
+
+    .prd-row { cursor: pointer; transition: background .12s; }
+    .prd-row:hover { background: var(--soft); }
+    .prd-row.is-open { background: var(--soft); }
+
+    // ------------------------------------------------------ employee cell
+    .prd-emp-info { display: flex; align-items: center; gap: 9px; }
+    .prd-avatar {
+        width: 32px; height: 32px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0; background: var(--line-2);
+    }
+    .prd-emp-name { font-weight: 700; color: var(--ink); font-size: 13px; }
+    .prd-emp-meta { font-size: 11.5px; color: var(--muted); }
+
+    // ------------------------------------------------------------ values
+    // Kept from the original, and it is a real decision rather than a palette:
+    // on a payroll comparison an INCREASE is the thing that costs money, so up
+    // is rose and down is green.
+    .prd-val-current { font-weight: 700; color: var(--ink); }
+    .prd-val-prev    { color: var(--muted); }
+    .prd-var-up      { color: var(--rose); font-weight: 700; }
+    .prd-var-down    { color: var(--green); font-weight: 700; }
+    .prd-var         { display: inline-flex; align-items: center; gap: 4px; justify-content: flex-end; }
+    .prd-var-ic      { display: inline-flex; }
+
+    // ------------------------------------------------------------ events
+    .prd-event { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+    .prd-event-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+
+    // -------------------------------------------------------- detail row
+    .prd-detail-row td { background: var(--line-2); padding: 16px; }
+    .prd-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .prd-detail-section h4 {
+        margin: 0 0 8px; font-size: 12px; font-weight: 800;
+        color: var(--p); text-transform: uppercase; letter-spacing: .05em;
+    }
+    .prd-detail-table { width: 100%; font-size: 12.5px; border-collapse: collapse; }
+    .prd-detail-table th {
+        padding: 5px 8px; font-weight: 700; color: var(--muted);
+        border-bottom: 1px solid var(--line); text-align: left;
+    }
+    .prd-detail-table td { padding: 5px 8px; border-bottom: 1px solid var(--line); }
+    .prd-detail-table td + td { text-align: right; font-variant-numeric: tabular-nums; }
+
+    // =================================================== department summary
+    .prd-summary-layout {
+        display: flex; gap: 26px; align-items: center; flex-wrap: wrap;
+        padding: 22px;
+        margin-top: 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        box-shadow: var(--sh);
+    }
+    .prd-chart-area { width: 260px; flex: none; }
+    .prd-chart-area canvas { max-width: 100%; }
+    .prd-chart-legend { flex: 1 1 260px; min-width: 0; }
+    .prd-legend-item { display: flex; align-items: center; gap: 9px; padding: 5px 0; font-size: 13px; }
+    .prd-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .prd-legend-name { flex: 1; color: var(--ink); min-width: 0; }
+    .prd-legend-val { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+    .prd-dept-cell { display: flex; align-items: center; gap: 9px; }
+    .prd-dept-badge {
+        width: 28px; height: 28px; border-radius: 7px;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 10.5px; font-weight: 800; flex-shrink: 0;
+    }
+
+    // ======================================================== empty / busy
+    .prd-empty {
+        text-align: center; padding: 60px 20px; color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        margin-top: 14px;
+    }
+    .prd-empty-ic { display: inline-flex; color: var(--line); margin-bottom: 10px; }
+    .prd-empty h3 { color: var(--ink); margin: 0 0 4px; font-size: 15px; font-weight: 700; }
+    .prd-empty p { margin: 0; font-size: 13px; }
+
+    .prd-loading {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 80px 20px; gap: 12px; color: var(--muted); font-size: 13px;
+    }
+    .prd-spin {
+        width: 26px; height: 26px; border-radius: 50%;
+        border: 2.5px solid var(--line);
+        border-top-color: var(--p);
+        animation: prd-spin .8s linear infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .prd-spin { animation-duration: 3s; }
+    }
+
+    // =========================================================== responsive
+    @media (max-width: 900px) {
+        .prd-summary-layout { flex-direction: column; align-items: stretch; }
+        .prd-chart-area { width: 220px; align-self: center; }
+        .prd-detail-grid { grid-template-columns: 1fr; }
+        .prd-toolbar { padding: 12px 14px; }
+        .prd-kpis { padding: 14px 14px 4px; }
+        .prd-content { padding: 0 14px; }
+        .prd-batch-info { margin: 12px 14px 0; }
+        .prd-tab { padding: 6px 10px; font-size: 12px; }
+        .prd-search input { width: 110px; }
+    }
+}
+
+@keyframes prd-spin { to { transform: rotate(360deg); } }
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.prd` already owns its scrolling at `height: 100%`, so the lens
+   box's definite height is all it needs (W20). The title chip is suppressed in
+   the template — the hub's command bar says INSIGHTS · PAYROLL REPORT — so the
+   toolbar keeps only the controls, and the page loses the outer gutter the
+   standalone action needs. */
+.prd.prd--embedded {
+    .prd-toolbar { padding: 12px 18px; }
+    .prd-kpis { padding: 14px 18px 4px; }
+    .prd-content { padding: 0 18px; }
+    .prd-batch-info { margin: 12px 18px 0; }
+}
