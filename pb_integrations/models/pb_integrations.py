@@ -112,7 +112,14 @@ class PbIntegrations(models.AbstractModel):
             return {'kpis': {}, 'connectors': [], 'total': 0, 'shown': 0}
         C = self.env['hr.integration.connector']
         cons = self._safe(lambda: C.search([], order='name'), default=C.browse())
-        has_feeds = 'hr.integration.endpoint' in self.env
+        # NOT `'hr.integration.endpoint' in self.env`: the model class is
+        # registered from the python, which every database on this shared box
+        # loads, while the TABLE is created by that database's own upgrade.
+        # The registry probe is True in the gap between the two and the board
+        # then swallows an UndefinedTable per connector — and leaves the
+        # transaction aborted (found live on three tenants).
+        has_feeds = ('hr.integration.endpoint' in self.env
+                     and self.env['hr.integration.endpoint']._schema_ready())
         now = fields.Datetime.now()
 
         rows = []
