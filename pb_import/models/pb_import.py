@@ -16,11 +16,16 @@ SOURCE_LABEL = {
     'excel': 'Excel / CSV', 'connector': 'Connector',
     'api_data_store': 'API store', 'manual': 'Manual',
 }
-CONNECTOR_LABEL = {
-    'zoho': 'Zoho People', 'excel': 'Excel File', 'sap': 'SAP SuccessFactors',
-    'workday': 'Workday', 'oracle': 'Oracle HCM', 'demo': 'Demo / Stub',
-}
-
+# IA Cycle 3 — the one-door law. `pb_hr_payroll_formula.action_integration_
+# connector` used to be a launch tile here: a raw `list,form` on
+# hr.integration.connector, sitting beside two guided wizards and looking like
+# one of them. It is gone, along with the Connectors KPI and the Connectors
+# panel below. Connectors have exactly ONE home now (Settings · Integrations),
+# and Import reaches it through a back-chipped deep link — the same cockpit, and
+# for the first time the same way back.
+#
+# The action itself is untouched and still registered: this cycle replaces the
+# DOORS, not the models behind them.
 LAUNCH_CANDIDATES = [
     ('pb_hr_payroll_formula.action_payroll_import_batch_new',
      'New Import Batch', 'Upload a file and run map → validate → commit', 'upload', True),
@@ -28,8 +33,6 @@ LAUNCH_CANDIDATES = [
      'Multi-sheet Excel', 'Guided multi-tab workbook import', 'table', False),
     ('pb_import_advanced.action_pb_employee_wizard',
      'Import Employees', 'Create employees from file or Zoho', 'users', False),
-    ('pb_hr_payroll_formula.action_integration_connector',
-     'Connectors', 'Manage external HR / payroll systems', 'plug', False),
     ('pb_import_advanced.action_pb_formula_wizard',
      'Import Formula Config', 'Load rules from salary structure or file', 'function', False),
 ]
@@ -98,28 +101,17 @@ class PbImport(models.AbstractModel):
                           for s in ('draft', 'loaded', 'matched', 'validated', 'processing'))
 
         # ---------- connectors ----------
-        connectors = []
-        if 'hr.integration.connector' in self.env:
-            Conn = self.env['hr.integration.connector']
-            try:
-                recs = Conn.search_read(
-                    [], ['name', 'connector_type', 'active',
-                         'last_sync', 'connection_status', 'last_sync_status'],
-                    order='name', limit=24)
-                for r in recs:
-                    connectors.append({
-                        'id': r['id'],
-                        'name': r.get('name') or '—',
-                        'type': r.get('connector_type') or '',
-                        'type_label': CONNECTOR_LABEL.get(r.get('connector_type'),
-                                                          r.get('connector_type') or '—'),
-                        'active': bool(r.get('active')),
-                        'status': r.get('connection_status') or 'disconnected',
-                        'sync_status': r.get('last_sync_status') or '',
-                        'last_sync': str(r.get('last_sync') or '')[:16],
-                    })
-            except Exception as e:
-                _logger.debug("Connector list failed: %s", e)
+        # NOT a list any more — a COUNT, and only so the deep link can say how
+        # many are over there ("Manage connectors · 31"). Reading 24 connector
+        # rows to render a panel this cockpit no longer owns would be work done
+        # for a surface that is gone. `has_connectors` is separate from the
+        # number because a database with the model but no rows is a real state
+        # and "0" is a fact, not a missing key (W45).
+        connectors = 0
+        has_model = 'hr.integration.connector' in self.env
+        if has_model:
+            connectors = self._safe(
+                lambda: self.env['hr.integration.connector'].search_count([]))
 
         # ---------- launch buttons ----------
         launches = []
@@ -136,11 +128,11 @@ class PbImport(models.AbstractModel):
             'kpis': {
                 'total_batches': total_batches, 'done': done,
                 'in_progress': in_progress, 'errors': errors,
-                'connectors': len(connectors),
             },
             'pipeline': [{'key': s, 'label': STATE_LABEL[s],
                           'count': state_counts.get(s, 0)} for s in PIPELINE],
             'batches': batches,
             'connectors': connectors,
+            'has_connectors': has_model,
             'launches': launches,
         }

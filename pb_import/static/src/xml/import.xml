@@ -6,8 +6,7 @@
       <div t-if="!state.loaded" class="pbm-loading"><div class="pbm-spinner"/><span>Loading import data…</span></div>
 
       <div t-else="" class="pbm-wrap">
-        <!-- W17: the hub owns the title row; every tile and every launcher
-             below is untouched (the Import one-door work is Cycle 3). -->
+        <!-- W17: the hub owns the title row. -->
         <div class="pbm-head" t-if="!props.embedded">
           <div>
             <h1>Import Data</h1>
@@ -21,7 +20,6 @@
           <div class="pbm-kpi"><span class="pbm-kpi-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="tx"><span class="v green" t-esc="state.kpis.done"/><span class="l">Completed</span></div></div>
           <div class="pbm-kpi"><span class="pbm-kpi-ic blue"><t t-out="ic('refresh',21)"/></span><div class="tx"><span class="v indigo" t-esc="state.kpis.in_progress"/><span class="l">In progress</span></div></div>
           <div class="pbm-kpi"><span class="pbm-kpi-ic rose"><t t-out="ic('alert',21)"/></span><div class="tx"><span t-attf-class="v {{ state.kpis.errors ? 'rose' : '' }}" t-esc="state.kpis.errors"/><span class="l">With errors</span></div></div>
-          <div class="pbm-kpi"><span class="pbm-kpi-ic teal"><t t-out="ic('plug',21)"/></span><div class="tx"><span class="v cyan" t-esc="state.kpis.connectors"/><span class="l">Connectors</span></div></div>
         </div>
 
         <!-- hero CTA: guided import -->
@@ -67,6 +65,20 @@
           </div>
         </div>
 
+        <!-- ==== the one door to connectors ====
+             Deliberately a quiet LINK ROW, not a tile and not a panel. Import's
+             own tiles all start something here; this one leaves, and the
+             difference has to be legible before the click. It carries a back
+             chip, so it is a deep link rather than an exit (W5). -->
+        <div t-if="canManageConnectors" class="pbm-conndoor" data-coach="im-connectors">
+          <span class="ic"><t t-out="ic('plug',16)"/></span>
+          <span class="tx">Connectors live in Settings · Integrations</span>
+          <span class="n" t-esc="state.connectors"/>
+          <button class="go" t-on-click="manageConnectors">
+            Manage connectors <t t-out="pipeIcon()"/>
+          </button>
+        </div>
+
         <div class="pbm-cols">
           <!-- recent batches -->
           <div class="pbm-panel pbm-grow" data-coach="im-batches">
@@ -97,28 +109,6 @@
               </div>
             </div>
             <div t-else="" class="pbm-empty">No batches match this filter.</div>
-          </div>
-
-          <!-- connectors -->
-          <div class="pbm-panel">
-            <div class="pbm-panel-h"><h2>Connectors</h2></div>
-            <div t-if="state.connectors.length" class="pbm-conns">
-              <div t-foreach="state.connectors" t-as="c" t-key="c.id" class="pbm-conn" t-on-click="() => this.openConnector(c.id)">
-                <div class="pbm-conn-top">
-                  <span class="pbm-conn-ic"><i t-attf-class="fa fa-{{ connIcon(c.type) }}"/></span>
-                  <span class="pbm-conn-nm">
-                    <span class="nm" t-esc="c.name"/>
-                    <span class="ty" t-esc="c.type_label"/>
-                  </span>
-                  <span t-attf-class="pbm-conn-st {{ c.status }}"><span class="d"/><t t-esc="c.status"/></span>
-                </div>
-                <div class="pbm-conn-foot">
-                  <span t-if="c.last_sync">Last sync <t t-esc="c.last_sync"/></span>
-                  <span t-else="" class="muted">Never synced</span>
-                </div>
-              </div>
-            </div>
-            <div t-else="" class="pbm-empty">No connectors configured.</div>
           </div>
         </div>
       </div>

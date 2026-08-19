@@ -3,20 +3,29 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { openHub } from "@pb_hub/js/hub_nav";
 
 const STATE_CLS = {
     draft: "draft", loaded: "info", matched: "info", validated: "info",
     processing: "info", done: "done", error: "error", cancelled: "muted",
 };
-const CONN_ICON = {
-    zoho: "cloud", excel: "table", sap: "server", workday: "briefcase",
-    oracle: "database", demo: "beaker",
-};
 // launch-tile icon names (from the model) → Lucide keys in the kit
 const TILE_ICON = {
     upload: "upload", table: "table", users: "users", plug: "plug", function: "sigma",
 };
+
+/**
+ * Where "Manage connectors" comes back to.
+ *
+ * Standalone, Import is its own action, so the chip says "Import". Embedded as
+ * the Pay Run hub's Import lens, the surface the user is actually looking at is
+ * the HUB — so the host hands its own descriptor down through `connectorBack`.
+ * The alternative, `pb_import` naming `pb_pay_hub`, would be a Setup-area module
+ * knowing the name of a pay-run hub that was built two cycles after it.
+ */
+const DEFAULT_BACK = { label: _t("Import"), tag: "pb_import" };
 const IN_PROGRESS = ["loaded", "matched", "validated", "processing"];
 // pipeline step → which Recent-batches filter it activates
 const PIPE_FILTER = {
@@ -37,7 +46,8 @@ export class PbImport extends Component {
             kpis: {},
             pipeline: [],
             batches: [],
-            connectors: [],
+            connectors: 0,
+            hasConnectors: false,
             launches: [],
             filter: "all",
         });
@@ -48,13 +58,13 @@ export class PbImport extends Component {
         const d = await this.orm.call("pb.import", "get_import_data", []);
         Object.assign(this.state, {
             company: d.company, kpis: d.kpis, pipeline: d.pipeline,
-            batches: d.batches, connectors: d.connectors,
+            batches: d.batches, connectors: d.connectors || 0,
+            hasConnectors: !!d.has_connectors,
             launches: d.launches, loaded: true,
         });
     }
 
     stateCls(s) { return STATE_CLS[s] || "muted"; }
-    connIcon(t) { return CONN_ICON[t] || "plug"; }
     tileIcon(n) { return ic(TILE_ICON[n] || "upload", 18); }
     pipeIcon() { return ic("arrow", 14); }
     ic(n, s = 18) { return ic(n, s); }
@@ -93,16 +103,32 @@ export class PbImport extends Component {
             name: "Import Batch", params: { batch_id: id },
         });
     }
-    openConnector(id) {
-        if (!id) return;
-        this.action.doAction({
-            type: "ir.actions.client", tag: "pb_import_connector_cockpit",
-            name: "Connector", params: { connector_id: id },
-        });
-    }
     launch(xmlid) {
         if (!xmlid) return;
         this.action.doAction(xmlid, { clearBreadcrumbs: true });
+    }
+
+    // ---------------------- the one door to connectors ----------------------
+    /**
+     * Is the connectors home reachable from here at all?
+     *
+     * A row that opens nothing is worse than no row (W29), and `pb_integrations`
+     * is not a dependency of this module — it depends on `pb_import_advanced`,
+     * which this one also depends on, so naming it in the manifest would invert
+     * the graph. The actions registry is the honest probe: a module that is not
+     * installed did not ship its JS.
+     */
+    get canManageConnectors() {
+        return this.state.hasConnectors
+            && registry.category("actions").contains("pb_integrations");
+    }
+
+    /** A CLICK handler. The chip on the other side comes back here. */
+    manageConnectors() {
+        openHub(this.action, {
+            tag: "pb_integrations",
+            back: this.props.connectorBack || DEFAULT_BACK,
+        });
     }
 }
 

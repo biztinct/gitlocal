@@ -10,12 +10,16 @@ Houses the power-user Import surfaces as guided OWL experiences:
    reimplementing their logic.
 All share the pb_import_kit powder design system.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['pb_hr_payroll_formula', 'pb_hr_payroll_base', 'pb_import_kit', 'pb_theme'],
+    'depends': ['pb_hr_payroll_formula', 'pb_hr_payroll_base', 'pb_import_kit', 'pb_theme',
+                # C3: openHub() for the connector cockpit's back-chipped links into
+                # the Integrations data ledgers. `pb_integrations` depends on THIS
+                # module, so it is probed at runtime rather than depended on.
+                'pb_hub'],
     'data': [
         'views/connector_cockpit_action.xml',
         'views/wizard_actions.xml',
