@@ -9,7 +9,8 @@ new gotcha or make a binding convention decision, append a numbered W-rule here 
 P4 closed the ledger at **W54**; **P6 reopened it** (demo-world sync was a post-P4 closure item) and
 takes it to **W61**; **P5** (the Week Grid redesign, run after P6) takes it to **W68**; the
 **IA redesign programme** (`docs/handovers/ia/`) starts contributing at **W69** and Cycle 1 takes
-it to **W74**. 73 rules, not 74: there is no W32 — see the note below.
+it to **W74**; Cycle 2's deploy afternoon adds W93-W94 and **Cycle 3** takes it to **W100**.
+73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
 renumbered W69-W74. If a handover written that day cites a W-number in the 68-72 range, check the
@@ -1410,3 +1411,95 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   3 464 `._`-prefixed files appear beside the real ones; (3) prove the restore
   by DIFFING the checksums against the source before starting the server, not
   by starting the server and reading the log.
+- **W95 A gate copied from the RAIL is not a gate derived from the ACL, and only
+  the second one can be right.** (IA Cycle 3, found on the live run within a
+  minute of the Settings hub first rendering.) C1's palette rule was "every gate
+  mirrors the rail item that owns the same door", and Cycle 3's Settings hub
+  started out obeying it: Formula Engine gated at the pb_hr_payroll_base OFFICER
+  tier, because that is what `pb.sidebar.item` says. `hr.formula.config` grants
+  read to `pb_hr_payroll_formula.group_formula_user` / `_manager`, and on this
+  database NEITHER tier implies the other — there are three parallel group
+  families here (om_hr_payroll, pb_hr_payroll_base, pb_hr_payroll_formula) and
+  they meet nowhere. So the card rendered, the click produced an access dialog,
+  and that is W29's door-that-can-only-error reached through a brand-new
+  entrance. The rail has been shipping the same defect.
+  Rules: (1) derive an offer's gate from the `ir.model.access` of the model
+  BEHIND it, not from whatever menu used to open it — narrower is always safe,
+  because a gate can only hide a door, never manufacture a broken one;
+  (2) group resolution FAILS OPEN by design (an unresolvable xmlid means the
+  module is not installed), so a wrong or mistyped gate is invisible at runtime
+  in both directions and needs a SOURCE gate:
+  `pb_settings/tests/test_settings.py::TestSettingsGatesMatchTheAcls` reads the
+  descriptor back out of the JS and checks each gate group against
+  `ir_model_access`; (3) the consequence is allowed to change the product —
+  `res.config.settings` is `base.group_system` only, so "Payroll defaults" is an
+  ADMINISTRATOR card and the handover's table said manager. Say which, and why.
+- **W96 An OWL template expression is compiled against the COMPONENT and nothing
+  else, so a JavaScript global in a `t-att` becomes `ctx.<name>` and the surface
+  dies at mount.** (IA Cycle 3.) `t-att-selected="form.config_id === String(c.id)"`
+  is ordinary JavaScript and an ordinary-looking template; compiled, it is
+  `ctx.String(c.id)`, and the whole onboarding flow answered its own button with
+  "TypeError: ctx.String is not a function" — the action reverted to the previous
+  screen with no dialog and nothing in the server log, which reads exactly like
+  "the button does nothing". `node --check`, `xmllint` and the module's own
+  Python suite are all blind to it: an OWL template error surfaces only at
+  runtime (C18.71/W10). Put the expression in a METHOD. Gated by
+  `pb_integrations/tests/test_one_door.py::test_no_template_expression_calls_a_
+  javascript_global`, which reads `t-*` ATTRIBUTE VALUES only so the prose
+  explaining the rule may still say the word (W48's corollary).
+- **W97 A satellite table with no company of its own inherits its OWNER's record
+  rule — and one unreadable row takes the whole table with it.** (IA Cycle 3,
+  the second live finding.) `hr.integration.field.mapping`, `hr.api.data.store`
+  and `hr.api.transformation.rule` all reach their connector by many2one and
+  none carries a `company_id`; `hr.integration.connector` is multi-company
+  gated. An unscoped ledger read all 207 mappings, dereferenced
+  `connector_id.name` to render a column, hit the ONE row whose connector the
+  caller may not see, and the client showed "This table could not be loaded" —
+  199 perfectly readable rows lost to one refusal, and the message names neither
+  the row nor the reason.
+  Rules: (1) scope such a table through `owner.search([])`, which applies the
+  record rules — that is not a permission decision (the rule already made it),
+  it is refusing to ask a question whose answer would raise; (2) a deep link's
+  id INTERSECTS that scope, never replaces it, or the browser can widen what the
+  rules narrowed; (3) test it by walking the returned rows back to their owner
+  (`test_no_row_names_a_connector_the_caller_cannot_read`) rather than by
+  counting them — a correct count and a poisoned row look identical.
+  Corollary about validation personas: a single-company probe cannot see a
+  fixture that lives on another company, and the honest reading of an empty
+  ledger is "the scope works", not "the feature is broken".
+- **W98 `doAction("<tag>")` carries no action NAME, so anything that returns
+  through a BREADCRUMB comes back to a crumb labelled "Unnamed".** (IA Cycle 3.)
+  A bare tag makes the action service synthesise `{type: "ir.actions.client",
+  tag}`; the `ir.actions.client` RECORD — with its name — is never loaded. That
+  is invisible on a bespoke cockpit, because none of them render Odoo's control
+  panel. It becomes visible the moment such a surface opens a NATIVE act_window
+  without clearing the breadcrumbs, which is the only return path a back chip
+  cannot provide (Odoo's own views cannot host one). Rule: a client action that
+  will appear in a breadcrumb is opened by XMLID; the tag stays as the presence
+  probe, because the registry is what tells you the module shipped its JS.
+- **W99 A page-shaped cockpit is not a containing block, so the kit's drawer
+  scrolls away inside it.** `WfDrawer`'s scrim is `position: absolute; inset: 0`
+  and `.pbim-page` is `min-height: 100%; overflow: auto` with no `position` — so
+  on a standalone cockpit the scrim resolves against the initial containing
+  block, and an absolute child of a scrolling box scrolls WITH the content: the
+  drawer slides off the top as the table moves under it. C2 solved this for the
+  EMBEDDED case (`.pbl-ledger--hub`) and the shape is the same standalone: the
+  root stops scrolling and becomes a definite-height flex column, the scrolling
+  moves inside to `.pbim-wrap`, and that wrap needs `width: 100%` beside its
+  `max-width` or `margin: 0 auto` cancels its stretch (W39). Two selector
+  classes (`.pbim.itg-board`) so it outranks `.pbim.pbim-page`'s own overflow,
+  and no z-index anywhere, because the scrim carries the kit's 60 and the box
+  must not become a stacking context (W37).
+- **W100 Adding a SECOND company to a user breaks their webclient on this build,
+  and the traceback names a module nobody touched.** (IA Cycle 3, while trying
+  to give a probe persona sight of a fixture on another company.)
+  `hr_timesheet/models/ir_http.py:19` does
+  `result["user_companies"]["allowed_companies"][company.id].update(...)` for
+  every company on the user, while `allowed_companies` is built from the
+  session's narrower allowed set — so `/bizapp` answers 500 with `KeyError: 1`
+  for that user, and only for that user. It is a pre-existing multi-company
+  defect in a core-adjacent module and it is REPORTED, not patched (W68.3).
+  Practical consequence for anyone validating: keep probe personas
+  SINGLE-COMPANY and re-point them when you need to see another company's data;
+  and when a 500 appears mid-validation, check whether the PUBLIC site is still
+  200 before assuming your own deploy did it (it was, throughout).
