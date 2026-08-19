@@ -2,12 +2,16 @@
 {
     'name': 'Payobook Pay Runs Cockpit',
     'summary': 'Pay-run pipeline board + enhanced batch form (KPIs, approval pipeline)',
-    'version': '19.0.1.4.1',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_theme', 'pb_hr_workforce'],
+    # pb_import_kit is DECLARED rather than relied on transitively: both JS files
+    # here import its `ic()` registry, and an implicit dependency is one uninstall
+    # away from a bundle that cannot resolve a module path.
+    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_theme',
+                'pb_hr_workforce', 'pb_import_kit'],
     'data': [
         # Phase L: the approval tiers live on pb_* groups, but hr.payslip.run /
         # hr.payslip carry ACLs only for om_hr_payroll.group_hr_payroll_manager —

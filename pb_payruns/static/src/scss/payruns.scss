@@ -82,8 +82,59 @@
     .pbr-rej-row .nm { font-weight: 700; flex: 1; }
     .pbr-rej-row .pd, .pbr-rej-row .em { color: var(--muted); font-weight: 600; }
 
+    /* ================================================= IA Cycle 2 additions
+       The board is now the Pay Run hub's Runs lens as well as its own client
+       action. Everything below is either a FIX to something that was never
+       visible (the two emoji glyphs are now Lucide, so they need `display`) or
+       a hub-mode rule guarded on `.pbr--embedded`. */
+
+    /* the CTA and the rejected chevron are SVG now, not glyphs */
+    .pbr-new .ic { display: inline-flex; }
+    .pbr-new .ic svg, .pbr-rejected-h .chev svg { display: block; }
+
+    /* division chips — the filter the payload has always carried */
+    .pbr-divs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+    .pbr-divchip {
+        border: 1px solid var(--line); background: #fff; color: var(--muted);
+        border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700;
+        font-family: inherit; cursor: pointer;
+        transition: background .14s, color .14s, border-color .14s;
+    }
+    .pbr-divchip:hover { color: var(--ink); border-color: var(--i-border); }
+    .pbr-divchip.is-on { background: var(--i-soft); border-color: var(--i); color: var(--i); }
+
+    /* the run the wizard just created, handed over through arrival.focus */
+    .pbr-card.focus { border-color: var(--i); box-shadow: 0 0 0 3px var(--i-soft); }
+
+    .pbr-card-tags { display: flex; align-items: center; gap: 8px; margin-top: 9px; min-width: 0; }
+    .pbr-card-tags .pbr-card-jnl { margin-top: 0; }
+    .pbr-tag {
+        flex: none; background: var(--i-soft); color: var(--i); border-radius: 6px;
+        padding: 1px 7px; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .02em; white-space: nowrap;
+    }
+
+    /* in-card reject confirm (replaces window.confirm) */
+    .pbr-confirm { padding: 0 14px 13px; }
+    .pbr-confirm .q { font-size: 12px; color: var(--ink); line-height: 1.45; margin-bottom: 9px; }
+    .pbr-confirm .a { display: flex; gap: 6px; }
+    .pbr-confirm .a .pbr-btn { flex: 1; }
+    .pbr-confirm .a .pbr-btn.danger { border-color: #FDA4AF; background: var(--rose-soft); }
+
     @media (max-width: 1200px) {
         .pbr-board { grid-template-columns: repeat(2, 1fr); }
         .pbr-kpis { grid-template-columns: repeat(2, 1fr); }
     }
+}
+
+/* ---------------------------------------------------------------- hub mode
+   `.pbr` is already `height:100%; overflow:auto`, so it needs no scrollport
+   surgery (W20). What it does need is its page padding back: the hub's canvas
+   is tighter than a standalone action's, and `.pbr-wrap` is a
+   `max-width:1480px; margin:0 auto` readable column that is NOT a flex item
+   here — so W39's `width:100%` does not apply and the centring still works. */
+.pbr.pbr--embedded {
+    .pbr-wrap { padding: 20px 24px 44px; }
+    /* the hub's brand row already says "Pay Run", so the head is only the CTA */
+    .pbr-head { justify-content: flex-end; margin-bottom: 16px; }
 }
