@@ -1351,3 +1351,62 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   debranding logic); (3) scope a deploy's `-u` deliberately: touching a
   low-level third-party module re-validates and re-tests everything above it,
   which is a feature — just budget for it.
+- **W93 `--delete` belongs to the STAGING hop and NEVER to the hop into the
+  shared addons directory. (IA Cycle 2. Cost: the entire
+  `/odoo/odoo-server/addons` tree — 45 442 tracked Odoo files and 151 custom
+  modules — deleted in under a second, on the live box, mid-afternoon.)**
+  The deploy ritual is two rsyncs and only the FIRST one may prune:
+  `rsync -az --delete <my modules> host:/tmp/stage/` is scoped to a directory
+  this session owns, so `--delete` there means "the stage is exactly my
+  modules". The second hop is `sudo rsync -a --chown=odoo:odoo /tmp/stage/
+  /odoo/odoo-server/addons/` and its destination holds **every other module on
+  the server**, so `--delete` there means "delete Odoo". Adding it out of
+  symmetry — which is exactly how it happened, the flag was copied from the
+  line above — is a one-character-per-word difference between a deploy and an
+  outage.
+  Three things made the recovery possible, and each is worth ensuring BEFORE
+  the next deploy rather than after it:
+  1. **`/odoo/odoo-server` is a git checkout of odoo/odoo at 19.0.**
+     `sudo git -C /odoo/odoo-server checkout -- addons` restored all 45 442
+     tracked files in 10 seconds. (It needs
+     `git config --global --add safe.directory /odoo/odoo-server` first — root
+     operating on an odoo-owned repo trips git's dubious-ownership guard — and
+     a `chown -R odoo:odoo` afterwards, because root's checkout writes
+     root-owned files.) The CUSTOM modules are untracked there and git cannot
+     help with them: they come back from the repo.
+  2. **`ir_module_module` is the inventory.** The list of what MUST be on disk
+     is `SELECT name FROM ir_module_module WHERE state='installed'`; comparing
+     it against `ls` of the two addons paths is what turns "something is
+     missing" into a finite list (86 modules here, all of them present in the
+     repo).
+  3. **The running server survives the deletion.** Python has already imported
+     what it needs, so the site keeps serving while the files are gone — which
+     buys the whole recovery window, and is also why the FIRST instinct after
+     such a mistake must be *do not restart*, not *restart and see*.
+  Corollary about what the restore may NOT assume: this repository also
+  contains a February-2026 SNAPSHOT of ~87 community modules (`web`, `website`,
+  `hr`, `crm`, `spreadsheet`, …), which differ from the server's own checkout
+  in 2 421 files. Those are upstream changes since February, not local forks —
+  the server had never been rsynced from them, and pushing them "back" would
+  have silently downgraded half of Odoo. Restore community modules from the
+  server's OWN git; restore custom modules from the repo; and tell the two
+  apart by asking whether git tracks the path, never by whether the name exists
+  in both places.
+- **W94 `rsync --files-from` turns recursion OFF, and `-a` does not turn it back
+  on — so it copies the DIRECTORIES and none of the files, silently and with
+  exit code 0.** (IA Cycle 2, the second half of W93's afternoon, and the reason
+  the first restore attempt failed.) `rsync -az --files-from=list.txt --relative
+  . host:/tmp/restore/` reported success, and `ls /tmp/restore | wc -l` said
+  151 — the right number of module directories, every one of them EMPTY. The
+  count that looks like the answer is the count of the thing that was NOT
+  affected. The upgrade that followed then failed in a way that pointed
+  nowhere near the cause: `some depends are not loaded (om_hr_payroll,
+  pb_hr_payroll_base), skipped`, i.e. it read like a dependency-graph problem in
+  the module being installed.
+  Rules: (1) after any bulk transfer, count FILES (`find … -type f | wc -l`),
+  never directories; (2) for a many-module transfer prefer `tar -czf` + extract,
+  which has no such mode switch — but strip macOS AppleDouble resource forks
+  afterwards (`find … -name "._*" -delete`), because bsdtar packs xattrs and
+  3 464 `._`-prefixed files appear beside the real ones; (3) prove the restore
+  by DIFFING the checksums against the source before starting the server, not
+  by starting the server and reading the log.
