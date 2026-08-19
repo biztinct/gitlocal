@@ -2,11 +2,13 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_bank_ocr.PbBankOcr">
-    <div class="pbbk pbim">
+    <div class="pbbk pbim" t-att-class="{ 'pbbk--embedded': props.embedded }">
       <!-- ============================ QUEUE VIEW ============================ -->
       <div class="pbbk-queue" t-if="state.view === 'queue'">
         <div class="pbbk-hero">
-          <div class="pbbk-hero__l">
+          <!-- Chrome the Compliance hub's command bar already owns (W17). The
+               KPI strip beside it is DATA and renders in both modes. -->
+          <div class="pbbk-hero__l" t-if="!props.embedded">
             <h1 class="pbbk-hero__title">Bank Verification</h1>
             <p class="pbbk-hero__sub">AI-assisted bank-document validation with human approval.</p>
           </div>
