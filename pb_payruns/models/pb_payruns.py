@@ -98,6 +98,13 @@ class PbPayruns(models.AbstractModel):
                 'next_action': next_action,
                 'can_act': can_act,
                 'journal': self._journal_name(run),
+                # The division key the board's chips filter on. It has always
+                # been sent as the CHIP LIST ('divisions' below) with nothing on
+                # the cards to match it against, so the board could offer a
+                # filter it could not apply. The kanban filtered server-side on
+                # the same stored field, which is why only the board was poorer.
+                'division': run.pb_division or '',
+                'division_label': run.pb_division_label or '',
             })
 
         columns = [{'key': s, 'label': STAGE_LABEL[s], 'count': stage_counts.get(s, 0)}

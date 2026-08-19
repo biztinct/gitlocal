@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
 
+  <!-- Section comments use `=` rules, never a doubled hyphen (W22). -->
   <t t-name="pb_payruns.PbPayruns">
-    <div class="pbr">
+    <div class="pbr" t-att-class="{ 'pbr--embedded': props.embedded }">
       <div t-if="!state.loaded" class="pbr-loading"><div class="pbr-spinner"/><span>Loading pay runs…</span></div>
 
       <div t-else="" class="pbr-wrap">
-        <!-- header -->
+        <!-- ===================== header =====================
+             W17: in a hub the title row is the hub's. The "Run payroll" CTA is
+             NOT chrome — it is the board's one create door — so it survives,
+             and only its destination changes (newRun()). -->
         <div class="pbr-head">
-          <div>
+          <div t-if="!props.embedded">
             <h1>Pay Runs</h1>
             <p class="pbr-sub">Every batch from draft to paid — approve, report and export without leaving the board.</p>
           </div>
-          <button class="pbr-new" t-on-click="newRun"><span class="ic">⚡</span> Run payroll</button>
+          <button class="pbr-new" t-on-click="newRun">
+            <span class="ic" t-out="ic('zap', 15)"/> Run payroll
+          </button>
         </div>
 
         <!-- KPI strip -->
@@ -26,7 +32,19 @@
           <div class="pbr-kpi"><span class="v" t-esc="money(state.kpis.period_net)"/><span class="l">Net paid (done)</span></div>
         </div>
 
-        <!-- pipeline board -->
+        <!-- ===== division chips =====
+             Parity with the kanban, which has filtered on this since it was
+             built. The COLUMN COUNTS are not touched: a filter is a way of
+             looking at the board, never a change to what the board is (W82). -->
+        <div class="pbr-divs" t-if="state.divisions.length">
+          <button t-foreach="divisionChips" t-as="dv" t-key="dv.key"
+                  class="pbr-divchip"
+                  t-att-class="{ 'is-on': state.division === dv.key }"
+                  t-on-click="() => this.setDivision(dv.key)"
+                  t-esc="dv.label"/>
+        </div>
+
+        <!-- ===================== pipeline board ===================== -->
         <div class="pbr-board">
           <div t-foreach="state.columns" t-as="col" t-key="col.key" t-attf-class="pbr-col col-{{ col.key }}">
             <div class="pbr-col-h">
@@ -34,7 +52,7 @@
             </div>
             <div class="pbr-col-body">
               <div t-foreach="columnBatches(col.key)" t-as="b" t-key="b.id"
-                   t-attf-class="pbr-card {{ state.busy === b.id ? 'busy' : '' }}">
+                   t-attf-class="pbr-card {{ state.busy === b.id ? 'busy' : '' }} {{ state.focusId === b.id ? 'focus' : '' }}">
                 <div class="pbr-card-main" t-on-click="() => this.openBatch(b.id)">
                   <div class="pbr-card-top">
                     <span class="nm" t-esc="b.name"/>
@@ -43,20 +61,39 @@
                   <div class="pbr-card-period" t-esc="b.period"/>
                   <div class="pbr-card-stats">
                     <span class="st"><span class="k">Employees</span><span class="vv" t-esc="b.employees"/></span>
+                    <span class="st"><span class="k">Gross</span><span class="vv" t-esc="money(b.gross)"/></span>
                     <span class="st"><span class="k">Net</span><span class="vv" t-esc="money(b.net)"/></span>
                   </div>
-                  <div t-if="b.journal" class="pbr-card-jnl" t-esc="b.journal"/>
+                  <!-- t-if on the ROW, not only on its children: an empty flex
+                       box still costs its margin, so a card with neither a
+                       division nor a journal would carry 9px of nothing. -->
+                  <div class="pbr-card-tags" t-if="b.division_label or b.journal">
+                    <span t-if="b.division_label" class="pbr-tag" t-esc="b.division_label"/>
+                    <span t-if="b.journal" class="pbr-card-jnl" t-esc="b.journal"/>
+                  </div>
                 </div>
-                <div class="pbr-card-foot">
+
+                <!-- The reject confirm lives IN the card. A window.confirm is a
+                     native dialog on a surface that owns a design system, and it
+                     blocks the whole tab while it is up. -->
+                <div t-if="state.confirming === b.id" class="pbr-confirm">
+                  <div class="q">Reject “<t t-esc="b.name"/>”? Every payslip in this batch is cancelled.</div>
+                  <div class="a">
+                    <button class="pbr-btn ghost" t-on-click="cancelReject">Keep it</button>
+                    <button class="pbr-btn danger" t-on-click="() => this.confirmReject(b)">Reject run</button>
+                  </div>
+                </div>
+
+                <div t-else="" class="pbr-card-foot">
                   <!-- context-aware primary action -->
                   <t t-if="b.next_action and b.can_act">
                     <button class="pbr-btn primary" t-on-click="() => this.advance(b)" t-esc="nextLabel(b.next_action)"/>
-                    <button class="pbr-btn ghost danger" t-on-click="() => this.reject(b)">Reject</button>
+                    <button class="pbr-btn ghost danger" t-on-click="() => this.askReject(b)">Reject</button>
                   </t>
                   <t t-elif="b.next_action and !b.can_act">
                     <span class="pbr-await">Awaiting <t t-esc="b.stage_label"/></span>
                   </t>
-                  <!-- done: report / excel + Pay & Deliver (bank file + payslips) + journals / payments -->
+                  <!-- done: report / excel + Pay &amp; Deliver (bank file + payslips) + journals / payments -->
                   <t t-if="b.state === 'done'">
                     <button class="pbr-btn primary" t-on-click="() => this.payDeliver(b)">Pay &amp; Deliver</button>
                     <button class="pbr-btn ghost" t-on-click="() => this.report(b)">Report</button>
@@ -71,10 +108,10 @@
           </div>
         </div>
 
-        <!-- rejected drawer -->
+        <!-- ===================== rejected drawer ===================== -->
         <div t-if="state.rejectedCount" class="pbr-rejected">
           <button class="pbr-rejected-h" t-on-click="toggleRejected">
-            <span t-attf-class="chev {{ state.showRejected ? 'open' : '' }}">▸</span>
+            <span t-attf-class="chev {{ state.showRejected ? 'open' : '' }}" t-out="ic('chevron', 13)"/>
             Rejected pay runs <span class="ct" t-esc="state.rejectedCount"/>
           </button>
           <div t-if="state.showRejected" class="pbr-rejected-list">
