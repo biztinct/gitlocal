@@ -2,13 +2,16 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_contracts.PbContracts">
-    <div class="pbim con pbim-page ppl-people ppl-contracts">
+    <div class="pbim con pbim-page ppl-people ppl-contracts" t-att-class="{ 'ppl-people--embedded': props.embedded }">
       <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading contracts…</span></div>
 
       <div t-else="" class="pbim-wrap">
 
         <div class="ppl-head" data-coach="ct-head">
-          <div>
+          <!-- The identity block, and only the identity block (W17): inside
+               the People hub the command bar already says People > Contracts.
+               New contract and every number below are untouched. -->
+          <div class="ppl-head-id" t-if="!props.embedded">
             <h1 class="pbim-h1">Contracts</h1>
             <p class="pbim-sub">Active, expiring and historical contracts across your workforce.</p>
           </div>

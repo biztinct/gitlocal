@@ -2,14 +2,19 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_people.PbPeople">
-    <div class="pbim emp pbim-page ppl-people">
+    <div class="pbim emp pbim-page ppl-people" t-att-class="{ 'ppl-people--embedded': props.embedded }">
       <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading people…</span></div>
 
       <div t-else="" class="pbim-wrap">
 
         <!-- header -->
         <div class="ppl-head" data-coach="pe-head">
-          <div>
+          <!-- The identity block, and only the identity block: inside the
+               People hub the command bar already says People > Employees, so
+               this is the one element the host owns (W17). Select, Add employee
+               and every number below stay exactly as they are — an embedded
+               mode that removed a control would be a fork. -->
+          <div class="ppl-head-id" t-if="!props.embedded">
             <h1 class="pbim-h1">Employees</h1>
             <p class="pbim-sub">Your people, contract status and payroll readiness at a glance.</p>
           </div>
