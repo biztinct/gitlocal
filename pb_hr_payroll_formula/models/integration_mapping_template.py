@@ -10,6 +10,10 @@ only through the onboarding wizard's batch test against the tenant's real
 payload (D114.2/D114.4).
 """
 from odoo import _, api, fields, models
+# `models` exports no exceptions — `models.ValidationError` is an AttributeError
+# waiting for the guard below to fire, which is exactly when a user needs a
+# message instead of a traceback (IA Cycle 4 drive-by fix).
+from odoo.exceptions import ValidationError
 
 _VENDORS = [
     ('zoho', 'Zoho People'),
@@ -111,7 +115,7 @@ class HrIntegrationOnboardingWizard(models.TransientModel):
     def action_to_auth(self):
         self.ensure_one()
         if not self.connector_type:
-            raise models.ValidationError(_("Please choose an HR system to connect."))
+            raise ValidationError(_("Please choose an HR system to connect."))
         if not self.name:
             self.name = dict(self._fields['connector_type'].selection).get(self.connector_type, 'Connector')
         self.step = 'auth'
