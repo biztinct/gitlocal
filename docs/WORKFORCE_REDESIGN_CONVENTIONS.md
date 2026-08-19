@@ -16,7 +16,10 @@ retirements) closes the programme at **W110**; **Cycle 6** (the closure cycle: m
 visibility, the VN filings' Odoo-19 field drift, pb_learn's reachability split, the
 Insights drills, the tenant module-list repair and the restriction-aware palette)
 takes it to **W119**; **Cycle 7** (the abm module-delta catch-up, the `hr_timesheet`
-`session_info` 500 and the `pb_insights` sudo drop) takes it to **W126**.
+`session_info` 500 and the `pb_insights` sudo drop) takes it to **W126**; the
+**Integrations programme** (`docs/handovers/integrations/`) opens at **W127**, and
+its Cycle 1 — the endpoint model and the navigation streamlining — takes it to
+**W130**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -2120,3 +2123,81 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   deploy that touches HTTP plumbing, curl `/web/login` and one anonymous website
   URL as well — the surfaces that have no session are exactly the ones a logged-in
   validator never sees.
+- **W127 `node --check <file>` is a NO-OP on any file that starts with an ESM
+  `import` — so W74's cheap gate has been passing everything it was written to
+  catch.** (Integrations Cycle 1, found while running the gate the ledger
+  prescribes.) W74 rule 1 says to `node --check` every JS file before rsync,
+  because one unparseable file blanks `web.assets_backend` for every user with
+  a clean server log. On Node 24 the FILE form of that command detects ES
+  module syntax and then exits **0 regardless of what follows**: a file holding
+  `import {x} from "y";` and `let 1bad = 2;` on the next line checks clean,
+  while the SAME file without the import line is correctly reported as a
+  SyntaxError. Every OWL file in this codebase begins with an import, so the
+  gate has been green by construction for as long as it has been written down.
+  The working form reads the file on STDIN and names the dialect:
+  `node --input-type=module --check < path/to/file.js` — exit 1 and a real
+  traceback on the same input. Two corollaries: (1) a gate that cannot fail is
+  worse than no gate, because it gets quoted as evidence (W81's shape, one tool
+  down) — prove a new gate by feeding it a file you KNOW is broken before
+  trusting it on files you believe are fine; (2) the Python-side regex gate
+  (`test_no_python_style_implicit_string_concatenation`) is unaffected, and is
+  the only half of W74 that has ever really been running.
+- **W128 W68's foreign-run check cannot see a foreign FILE, and a restart is a
+  deploy of everything on disk.** (Integrations Cycle 1 — W126's incident, from
+  the session whose restart set it off.) W124 records that an import-time patch
+  goes live on a RESTART and not on `-u`; W126 diagnoses the import itself. The
+  operational half is that the restart need not belong to the code's author:
+  `biz_deroute/models/ir_http_session_guard.py` was written at 21:24 UTC with no
+  version bump, lay dormant while the running process kept serving its own older
+  import, and went live in an UNRELATED cycle's 21:46 restart. W68 rule 1's `ps`
+  scan for a foreign `-u` was run at 21:45 and was clean, because there was no
+  foreign RUN — only a foreign FILE.
+  Rules: (1) the pre-stop check is `ps` for a foreign run **and** a scan for
+  python newer than the running process:
+  `ps -eo pid,lstart,cmd | grep "[o]doo-bin"` for the start time, then
+  `find /odoo/odoo-server/addons -name '*.py' -newermt "<that time>"
+  -not -path '*__pycache__*'`. Anything it lists is code your restart will
+  publish, and the honest response is to wait or to tell the other session,
+  never to proceed and hope; (2) after your own restart, curl `/web/login` and
+  one anonymous URL on a SECOND database — W126's rule 3, and the second
+  database is what tells you in one request that a failure is process-level and
+  therefore not your `-u`; (3) diagnose and report, never patch (W68.3): the
+  author's own test had already caught this at 21:10 on their clone, and their
+  22:01 restart shipped the fix.
+- **W129 The credential a handover hands you may be years stale, and the
+  failure looks like a broken login.** (Integrations Cycle 1.) The
+  `ash@biztinct.com / admin1234` pair is quoted in three docs and in this
+  cycle's handover; it stopped working on **2026-08-12**, which
+  `docs/DEBRAND_AUDIT_2026-08-12.md` §4 records in one sentence nothing else
+  references. uid 2 is the ONLY `base.group_system` user on the apex database,
+  so a validation pass that needs an administrator has nowhere to go — and the
+  wrong move is to change somebody's password on a live box (IA Cycle 7's
+  handover forbids it in as many words, and a hash you did not read first
+  cannot be put back). The right move is a NEW, single-company, deliberately
+  temporary user, created through `odoo-bin shell`, used for the pass and
+  removed in the same session. Two details that each cost a run: `company_ids`
+  and `company_id` must be written in the SAME `write` — setting the company
+  first raises "Company X is not in the allowed companies for user Y" — and the
+  user must stay SINGLE-company, or W100/W123's `hr_timesheet` KeyError takes
+  their whole webclient down and the validation dies of a bug it introduced.
+  Corollary for handovers: a credential is an environment FACT and decays like
+  one. Verify it BEFORE the deploy window, not inside it.
+- **W130 Two sessions cannot share one Chrome profile, so the second one drives
+  its own browser — and Chrome 111+ has to be told about its own origin.**
+  (Integrations Cycle 1, W75's second rule met in practice.)
+  `chrome-devtools-mcp` refuses with "The browser is already running for
+  …/chrome-profile" the moment a second session reaches for it, and it exposes
+  no way to change `--user-data-dir` — so the second session launches its own
+  Chrome and drives it over `/json/list` + the CDP websocket, exactly as W75
+  prescribes. Two things the twenty lines must get right: launch with
+  `--remote-allow-origins=*` (or connect with `suppress_origin=True`), because
+  Chrome now rejects a CDP websocket whose `Origin` it was not told about, with
+  a **403 that reads like an authentication problem**; and `--headless=new`
+  plus the three backgrounding flags, because a headful automation window that
+  never comes to the front renders to completion and never paints (W75).
+  Corollary that saved this cycle's validation when `/web/login` was down
+  (W128): a browser does not have to log in through the FORM. Authenticate over
+  `/web/session/authenticate`, inject the returned `session_id` with
+  `Network.setCookie`, and the page is that user by every other measure — which
+  is also the cheapest way to switch personas mid-pass. The driver belongs in
+  the session scratchpad, not in the repo: it is a tool, not a deliverable.
