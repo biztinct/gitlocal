@@ -170,8 +170,21 @@ class TestEndpointCatalogue(TransactionCase):
                 self.env.ref('pb_hr_payroll_formula.group_formula_user').id,
             ])],
         })
+        self.Store.create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'employee_external_id': 'IGC1-ACL', 'raw_payload': {'a': 1}})
+
         as_user = ep.with_user(user)
         self.assertEqual(as_user.read(['code'])[0]['code'], 'acl_feed')
+        # The COUNTS are a compute that reads two other tables with the
+        # caller's own rights. A tier that may see a feed and not its store
+        # would not get a smaller number, it would get an AccessError out of a
+        # non-stored compute — i.e. the whole cockpit, for that tier only.
+        # `hr.api.data.store` and `hr.integration.field.mapping` both grant
+        # read to this same group; this is what pins the three ACLs together.
+        self.assertEqual(as_user.staged_count, 1)
+        self.assertEqual(as_user.synced_count, 1)
+        self.assertEqual(as_user.mapping_count, 0)
         with self.assertRaises(AccessError):
             as_user.write({'name': 'nope'})
         with self.assertRaises(AccessError):
