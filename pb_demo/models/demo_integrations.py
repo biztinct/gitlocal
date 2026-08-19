@@ -43,6 +43,25 @@ _SYSTEMS = [
     ('Direct Database', 'demo', 'basic', 'Protocol', 'VN'),
 ]
 
+# What each kind of system actually feeds a payroll, by the CATEGORY column of
+# `_SYSTEMS` above. A T&A system does not send you salaries and an accounting
+# package does not send you dependants; a demo world that gave every connector
+# the same five feeds would teach the wrong thing about the product.
+#
+# These are the data types the seeder writes STORE ROWS for. The endpoints are
+# then DERIVED from those rows by `action_sync_endpoint_catalog`, exactly as
+# they would be on a real connector that has pulled once — the demo does not
+# create endpoints behind the model's back.
+_CATEGORY_FEEDS = {
+    'HRIS': ['employee', 'dependent', 'leave'],
+    'Payroll': ['employee', 'salary'],
+    'ERP': ['employee', 'salary'],
+    'Time & Attendance': ['employee', 'attendance'],
+    'Accounting': ['salary'],
+    'File': ['employee', 'salary'],
+    'Protocol': ['employee'],
+}
+
 _SOURCE_FIELDS = [
     ('employee_external_id', 'Employee ID', 'direct'),
     ('full_name', 'Full Name', 'direct'),
@@ -67,6 +86,19 @@ class HrIntegrationFieldMapping(models.Model):
     is_demo = fields.Boolean(string='Demo Record', default=False, index=True)
 
 
+class HrIntegrationEndpoint(models.Model):
+    """The same `is_demo` marker the connector and the mapping carry.
+
+    Endpoints cascade with their connector, so the clean path does not NEED it
+    — but `_clean_integrations` deletes by this flag rather than by inference,
+    and a satellite that cannot be found by the same question as its owner is a
+    row somebody will one day fail to clean.
+    """
+    _inherit = 'hr.integration.endpoint'
+
+    is_demo = fields.Boolean(string='Demo Record', default=False, index=True)
+
+
 class PbDemoGenerator(models.TransientModel):
     _inherit = 'pb.demo.generator'
 
@@ -78,7 +110,7 @@ class PbDemoGenerator(models.TransientModel):
         company = self.get_group_company() or self.env.company
         # Deterministic, varied statuses (no Date.now in scripts; derive from index).
         base = datetime(2026, 6, 26, 8, 0, 0)
-        n = 0
+        n = feeds = 0
         for idx, (brand, ctype, auth, category, country) in enumerate(_SYSTEMS):
             # Most connected; a couple error/disconnected for realism.
             if idx % 11 == 5:
@@ -117,10 +149,68 @@ class PbDemoGenerator(models.TransientModel):
                 if 'transformation_type' in Mapping._fields:
                     mvals['transformation_type'] = transform
                 Mapping.create(mvals)
+            feeds += self._seed_endpoints(conn, category, idx, base)
             n += 1
-        _logger.info('pb_demo: %s demo integration connectors created.', n)
+        _logger.info('pb_demo: %s demo integration connectors created, '
+                     '%s feeds catalogued.', n, feeds)
         return n
 
+    def _seed_endpoints(self, conn, category, idx, base):
+        """Give a demo connector the feeds its category implies.
+
+        The rows come first and the ENDPOINTS ARE DERIVED FROM THEM: a demo that
+        wrote endpoint records directly would be demonstrating a screen rather
+        than the product, and the counts on each chip would be decoration. This
+        way `staged` and `pulled` on a demo feed are the same arithmetic as on a
+        real one, over rows that really exist.
+
+        Never destructive and idempotent by construction: it only runs from
+        `generate_integrations`, immediately after the connector was created, so
+        there is nothing of anybody else's here to preserve.
+        """
+        if 'hr.integration.endpoint' not in self.env:
+            return 0
+        Store = self.env['hr.api.data.store'].sudo()
+        types = _CATEGORY_FEEDS.get(category, ['employee'])
+        stamp = conn.last_sync or (base - timedelta(hours=idx * 3))
+
+        rows = []
+        for t_idx, data_type in enumerate(types):
+            # Deterministic and small: this is evidence that the feed exists,
+            # not a data set. 3-7 rows per feed, no randomness anywhere.
+            for r in range(3 + (idx + t_idx) % 5):
+                rows.append({
+                    'connector_id': conn.id,
+                    'data_type': data_type,
+                    'employee_external_id': '%s-%s-%04d' % (
+                        conn.connector_type.upper(), data_type[:3].upper(), r + 1),
+                    'raw_payload': {'external_id': r + 1, 'source': conn.name,
+                                    'kind': data_type},
+                    'extracted_data': {'external_id': r + 1, 'kind': data_type},
+                    'state': 'extracted',
+                    'pull_date': stamp,
+                    'pull_triggered_by': 'cron',
+                    'company_id': conn.company_id.id,
+                })
+        if rows:
+            Store.create(rows)
+
+        conn.sudo().action_sync_endpoint_catalog()
+        eps = conn.sudo().endpoint_ids
+        if eps:
+            eps.write({
+                'is_demo': True,
+                # The feed's clock mirrors the connector's, so "stale" on the
+                # board means what the connector's own sync interval says and
+                # not "the demo forgot to stamp this".
+                'last_sync': False if not conn.last_sync else stamp,
+                'last_sync_status': conn.last_sync_status or False,
+            })
+        return len(eps)
+
     def _clean_integrations(self):
+        if 'hr.integration.endpoint' in self.env:
+            self.env['hr.integration.endpoint'].sudo().with_context(
+                active_test=False).search([('is_demo', '=', True)]).unlink()
         self.env['hr.integration.field.mapping'].sudo().search([('is_demo', '=', True)]).unlink()
         self.env['hr.integration.connector'].sudo().search([('is_demo', '=', True)]).unlink()
