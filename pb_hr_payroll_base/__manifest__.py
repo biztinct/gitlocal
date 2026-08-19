@@ -4,7 +4,9 @@
     # 19.0.1.1.0 — Sudima Phase M: removed the CDN Chart.js entry from the
     # web.assets_backend list (asset-list change: needs a full service
     # RESTART, not an in-process upgrade — C18.53).
-    'version': '19.0.1.1.0',
+    # 19.0.1.2.0 — W105: hr.payslip.line record rules mirroring the payslip
+    # rules in security/payroll_base_security_enhanced.xml.
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Enhanced Multi-Country Payroll Base Framework with Professional Dashboard',
     'description': """
