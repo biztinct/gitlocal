@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
+  <!-- Section comments use `=` rules: a doubled hyphen inside an XML comment is
+       a parse error that takes the whole file down (W22), and the same trap
+       covers naming a CSS custom property, whose prefix is two hyphens (W72). -->
   <t t-name="pb_payrun_ledgers.Ledger">
-    <div class="pbim pbim-page ppl-people pbl-ledger">
+    <div class="pbim pbim-page ppl-people pbl-ledger"
+         t-att-class="{ 'pbl-ledger--hub': props.embedded }">
       <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
 
       <div t-else="" class="pbim-wrap">
-        <!-- header -->
-        <div class="ppl-head">
+        <!-- header: the hub owns the title, so embedded mode has none (W17) -->
+        <div class="ppl-head" t-if="!props.embedded">
           <div>
             <h1 class="pbim-h1" t-esc="state.data.title"/>
             <p class="pbim-sub" t-esc="state.data.subtitle"/>
           </div>
+        </div>
+
+        <!-- ==== two descriptors, one lens ====
+             Rendered only past one tab: a strip of one is a control that does
+             nothing, and the single-descriptor lens (Settle) still routes its
+             model through tabs[0]. -->
+        <div class="pbl-tabs" t-if="tabs.length > 1">
+          <button t-foreach="tabs" t-as="t" t-key="t.key"
+                  class="pbl-tab"
+                  t-att-class="{ 'is-on': state.tab === t.key }"
+                  t-att-aria-current="state.tab === t.key ? 'true' : false"
+                  t-on-click="() => this.setTab(t.key)">
+            <span class="pbl-tab__ic" t-out="ic(t.icon or 'sigma', 14)"/>
+            <span t-esc="t.label"/>
+          </button>
+          <span class="pbl-tabsub" t-esc="state.data.subtitle"/>
         </div>
 
         <!-- KPI band -->
@@ -102,11 +122,39 @@
         </div>
         <div t-else="" class="pbim-panel"><div class="pbim-empty" t-esc="state.data.empty or 'Nothing matches these filters.'"/></div>
 
+        <!-- The count is honest in both modes; the ESCAPE is standalone-only.
+             In a hub, "Open full list" leaves the hub for a native list — the
+             exact door this cycle exists to close. -->
         <div class="ppl-foot">
           Showing <t t-esc="rows.length"/> of <t t-esc="state.data.total"/>
-          <t t-if="state.data.list_action"> · <button class="ppl-link" data-coach="lg-openfull" t-on-click="openFullList">Open full list →</button></t>
+          <t t-if="state.data.list_action and !props.embedded"> · <button class="ppl-link" data-coach="lg-openfull" t-on-click="openFullList">Open full list →</button></t>
         </div>
       </div>
+
+      <!-- ==== the row's whole story, in place ====
+           The kit's drawer (W6): 320px, absolute scrim inside THIS surface, ESC
+           and the X both close. It belongs to the lens, not to the viewport —
+           it must never cover the hub's command bar or its lens rail. -->
+      <WfDrawer t-if="state.drawer" title="state.drawer.title"
+                subtitle="state.drawer.subtitle" onClose="() => this.closeDrawer()">
+        <div class="pbl-dr">
+          <div t-if="state.drawerLoading and !state.drawer.sections.length" class="pbl-dr__load">
+            <span t-out="ic('loader', 20)"/><span>Loading…</span>
+          </div>
+          <div t-foreach="state.drawer.sections" t-as="sec" t-key="sec.label" class="pbl-dr__sec">
+            <div class="pbl-dr__h" t-esc="sec.label"/>
+            <div t-foreach="sec.fields" t-as="f" t-key="f.label"
+                 class="pbl-dr__kv" t-att-class="{ 'is-wrap': f.wrap }">
+              <span class="k" t-esc="f.label"/>
+              <!-- ONE class attribute: a static `class` and a `t-attf-class`
+                   both compile to `class` and the last one written wins, so the
+                   tone would silently replace the `v` (W23). -->
+              <span t-attf-class="v {{ f.tone or '' }} {{ f.strong ? 'strong' : '' }}"
+                    t-esc="detailVal(f)"/>
+            </div>
+          </div>
+        </div>
+      </WfDrawer>
     </div>
   </t>
 
