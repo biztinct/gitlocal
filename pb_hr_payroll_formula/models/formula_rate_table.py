@@ -20,6 +20,10 @@ threshold constants the Problems-rail lint flags).
 import re
 
 from odoo import _, api, fields, models
+# Same defect as `integration_mapping_template.py`, found by the same grep:
+# `models` exports no exceptions in Odoo 19, so this constraint answered a bad
+# code with an AttributeError instead of the sentence it was written to say.
+from odoo.exceptions import ValidationError
 
 
 def _num(x):
@@ -105,7 +109,7 @@ class HrFormulaRateTable(models.Model):
     def _check_code(self):
         for t in self:
             if t.code and not re.match(r'^[A-Za-z][A-Za-z0-9]*$', t.code):
-                raise models.ValidationError(_(
+                raise ValidationError(_(
                     "Rate table code '%s' must be letters and digits only, "
                     "starting with a letter (no spaces or underscores).") % t.code)
 

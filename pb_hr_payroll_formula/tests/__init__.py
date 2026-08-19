@@ -23,3 +23,10 @@
 # formula engine, the most consequential module in this codebase, and the fact
 # that it currently has NO tests should be visible to whoever opens this
 # directory looking for them — not hidden by removing the directory too.
+#
+# IA Cycle 4 adds the first one. The paragraph above still holds for the engine
+# itself; what is imported below covers only the two Odoo-19 exception guards
+# this cycle fixed. Every name added here MUST be a file that exists — see the
+# blast radius described above.
+
+from . import test_odoo19_exceptions
