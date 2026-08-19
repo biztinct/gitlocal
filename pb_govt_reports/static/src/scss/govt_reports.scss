@@ -25,3 +25,15 @@
     .gov-tile-tx .jb { font-size: 12px; color: var(--pbim-muted); }
     .gov-gen { margin-left: auto; flex: none; }
 }
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. The identity block is suppressed in the template, so the head is
+   only the period picker and it goes to the right on its own rather than
+   sitting where a `space-between` used to put it against a title. `.gov` is a
+   `pbim-page`, whose `min-height: 100%; overflow: auto` resolves against the
+   definite-height lens box the hub hands it (W20) — no scrollport surgery. */
+.gov-board.gov-board--embedded {
+    padding: 20px 22px 36px;
+
+    .ppl-head { justify-content: flex-end; }
+}

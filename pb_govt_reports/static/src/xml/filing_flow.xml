@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Section comments use `=` rules and never name a CSS custom property: a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file down with it (W22/W72). Nothing sits between a branch
+       and its `t-else` (W23), and no expression calls a JavaScript global —
+       compiled, `String(x)` becomes `ctx.String(x)` and the surface dies at
+       mount (W96). -->
+  <t t-name="pb_govt_reports.PbFilingFlow">
+    <div class="pbim gov pplw-root gfw">
+      <div class="pplw-card gfw-card">
+
+        <!-- ============================= head ============================= -->
+        <div class="pplw-head">
+          <div>
+            <div class="pplw-eyebrow">Payobook · Compliance</div>
+            <h2>Generate a filing</h2>
+          </div>
+          <div class="gfw-head-right">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <button class="pplw-x" t-on-click="close" title="Close" aria-label="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================== the stepper =========================== -->
+        <div class="pplw-rail">
+          <t t-foreach="steps" t-as="st" t-key="st.id">
+            <div t-attf-class="pplw-step {{ st_index === stepIndex ? 'cur' : '' }} {{ st_index &lt; stepIndex ? 'done' : '' }}">
+              <span class="pplw-dot" t-esc="st_index + 1"/>
+              <span class="pplw-lab" t-esc="st.label"/>
+            </div>
+            <div t-if="!st_last" t-attf-class="pplw-bar {{ st_index &lt; stepIndex ? 'done' : '' }}"/>
+          </t>
+        </div>
+
+        <!-- ============================= the body ============================= -->
+        <div class="pplw-body">
+          <div t-if="!state.ready" class="pplw-busy"><div class="pbim-spin"/><span>Loading filings…</span></div>
+          <div t-elif="state.busy" class="pplw-busy"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+          <t t-else="">
+
+            <div t-if="state.error" class="gfw-err">
+              <t t-out="ic('alert',15)"/> <span t-esc="state.error"/>
+            </div>
+
+            <!-- ==================== step 1: choose the filing ==================== -->
+            <t t-if="state.step === 'filing'">
+              <p class="gfw-lead">
+                Pick what you are filing. The next step asks only for the
+                parameters that filing actually needs.
+              </p>
+
+              <div t-if="cat.multi_country" class="gfw-countries">
+                <span class="gfw-clabel">Country</span>
+                <button t-foreach="cat.countries" t-as="c" t-key="c.code"
+                        class="pbim-chip" t-att-class="{ 'active': c.code === cat.country_code }"
+                        t-on-click="() => this.selectCountry(c.code)">
+                  <t t-esc="c.label"/>
+                </button>
+              </div>
+
+              <div t-if="cat.filings.length" class="gfw-cards">
+                <button t-foreach="cat.filings" t-as="f" t-key="f.key"
+                        class="gfw-card-btn" t-on-click="() => this.pickFiling(f.key)">
+                  <span class="gfw-card-ic" t-out="ic(f.icon, 20)"/>
+                  <span class="gfw-card-tx">
+                    <span class="nm" t-esc="f.label"/>
+                    <span class="jb" t-esc="f.native"/>
+                    <span class="gp" t-esc="f.group"/>
+                  </span>
+                  <span class="gfw-card-ar" t-out="ic('arrow', 15)"/>
+                </button>
+              </div>
+              <div t-else="" class="pbim-empty">
+                Filings for <b t-esc="cat.country_label"/> are not available on
+                this database.
+              </div>
+            </t>
+
+            <!-- ========================= step 2: the scope ========================= -->
+            <t t-if="state.step === 'scope'">
+              <div class="gfw-chosen">
+                <span class="gfw-chosen-ic" t-out="ic('fileText', 18)"/>
+                <span class="gfw-chosen-tx">
+                  <span class="nm" t-esc="filing and filing.label"/>
+                  <span class="jb" t-esc="filing and filing.native"/>
+                </span>
+                <button class="pbim-btn ghost" t-on-click="backToFilings">Change</button>
+              </div>
+
+              <div class="pplw-sec gfw-sec">
+                <h4>Scope</h4>
+                <div class="pplw-grid2">
+                  <t t-foreach="commonFields" t-as="f" t-key="f.name">
+                    <t t-call="pb_govt_reports.FilingField"/>
+                  </t>
+                </div>
+              </div>
+
+              <div t-if="filingFields.length" class="pplw-sec gfw-sec">
+                <h4><t t-esc="filing and filing.label"/> parameters</h4>
+                <div class="pplw-grid2">
+                  <t t-foreach="filingFields" t-as="f" t-key="f.name">
+                    <t t-call="pb_govt_reports.FilingField"/>
+                  </t>
+                </div>
+              </div>
+
+              <div t-if="state.scope.hidden_count" class="pplw-note gfw-hidden">
+                <t t-esc="hiddenLabel"/>
+              </div>
+            </t>
+
+            <!-- ======================== step 3: the outcome ======================== -->
+            <t t-if="state.step === 'deliver'">
+              <div class="pplw-result">
+                <div class="pplw-result-ic" t-out="ic(artifacts.length ? 'checkCircle' : 'alert', 26)"/>
+                <h3 t-esc="filing and filing.label"/>
+                <p t-esc="outcomeLabel"/>
+              </div>
+
+              <div t-if="artifacts.length" class="gfw-files">
+                <button t-foreach="artifacts" t-as="a" t-key="a.id"
+                        class="gfw-file" t-on-click="() => this.download(a)">
+                  <span class="gfw-file-ic" t-out="ic('download', 17)"/>
+                  <span class="gfw-file-tx">
+                    <span class="nm" t-esc="a.name"/>
+                    <span class="jb" t-esc="sizeLabel(a)"/>
+                  </span>
+                </button>
+              </div>
+
+              <div t-if="resultMessage" class="pplw-note gfw-msg" t-esc="resultMessage"/>
+            </t>
+
+          </t>
+        </div>
+
+        <!-- ============================= the footer ============================= -->
+        <div class="pplw-foot">
+          <button class="pbim-btn ghost" t-on-click="close">Close</button>
+          <span class="pplw-sp"/>
+
+          <t t-if="state.step === 'scope'">
+            <button class="pbim-btn outline" t-on-click="backToFilings"
+                    t-att-disabled="state.busy">Back</button>
+            <button class="pbim-btn primary" t-on-click="generate"
+                    t-att-disabled="state.busy">
+              <t t-out="ic('download',15)"/> Generate
+            </button>
+          </t>
+
+          <t t-if="state.step === 'deliver'">
+            <button class="pbim-btn primary" t-on-click="reset"
+                    t-att-disabled="state.busy">
+              <t t-out="ic('plus',15)"/> Generate another
+            </button>
+          </t>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+  <!-- ==================================================== one scope field
+       Rendered from the SERVER's descriptor, so the label, the type and the
+       selection values are the wizard's own. `t-call` shares the scope, so `f`
+       is the loop variable of whichever section called it. -->
+  <t t-name="pb_govt_reports.FilingField">
+    <div class="gfw-field" t-att-class="{ 'is-wide': f.type === 'typeahead' }">
+      <label class="pplw-label">
+        <t t-esc="f.label"/><span t-if="f.required" class="gfw-req">*</span>
+      </label>
+
+      <select t-if="f.type === 'selection' or f.type === 'many2one'" class="pplw-in"
+              t-on-change="(ev) => this.onField(f.name, ev)">
+        <option value="">—</option>
+        <option t-foreach="f.options" t-as="o" t-key="o.id" t-att-value="o.id"
+                t-att-selected="isSelected(f.name, o.id)" t-esc="o.label"/>
+      </select>
+
+      <t t-elif="f.type === 'date'">
+        <input class="pplw-in" type="date" t-att-value="value(f.name)"
+               t-on-change="(ev) => this.onField(f.name, ev)"/>
+      </t>
+
+      <t t-elif="f.type === 'typeahead'">
+        <div class="gfw-chips">
+          <span t-foreach="chosenEmployees" t-as="e" t-key="e.id" class="gfw-chip">
+            <t t-esc="e.label"/>
+            <button class="gfw-chip-x" t-on-click="() => this.removeEmployee(e.id)"
+                    aria-label="Remove"><t t-out="ic('x',11)"/></button>
+          </span>
+        </div>
+        <input class="pplw-in" t-att-value="state.empQuery"
+               placeholder="Type two letters to search employees…"
+               t-on-input="onEmpSearch"/>
+        <div t-if="state.empHits.length" class="gfw-hits">
+          <button t-foreach="state.empHits" t-as="h" t-key="h.id" class="gfw-hit"
+                  t-on-click="() => this.addEmployee(h)" t-esc="h.label"/>
+        </div>
+        <div class="gfw-hint" t-esc="employeeHint"/>
+      </t>
+
+      <t t-else="">
+        <input class="pplw-in" t-att-value="value(f.name)"
+               t-on-change="(ev) => this.onField(f.name, ev)"/>
+      </t>
+    </div>
+  </t>
+
+</templates>

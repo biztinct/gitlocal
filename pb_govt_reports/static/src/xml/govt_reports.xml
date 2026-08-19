@@ -2,13 +2,17 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_govt_reports.PbGovtReports">
-    <div class="pbim gov pbim-page gov-board">
+    <div class="pbim gov pbim-page gov-board" t-att-class="{ 'gov-board--embedded': props.embedded }">
       <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading filings…</span></div>
 
       <div t-else="" class="pbim-wrap">
 
         <div class="ppl-head" data-coach="gr-head">
-          <div>
+          <!-- The identity block is chrome the Compliance hub's command bar
+               already renders (W17). The period picker beside it is a CONTROL
+               and stays in both modes. -->
+          <div t-if="!props.embedded">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
             <h1 class="pbim-h1">Government Reports</h1>
             <p class="pbim-sub">Statutory filings for <b><t t-esc="state.data.company"/></b> · <t t-esc="state.data.country_label"/></p>
           </div>
