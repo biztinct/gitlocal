@@ -9,10 +9,52 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-# Items that should appear LOCKED (upsell) for demo users.
-_LOCK_SECTION_KEYS = {'admin'}
-_LOCK_ACTION_TAGS = {'pb_import'}
-_LOCK_ITEM_NAMES = {'Import Data', 'Roles & Access', 'Companies', 'Menu & Sidebar'}
+# ---------------------------------------------------------------------------
+# THE DEMO LOCK, REMAPPED FOR THE CYCLE-5 RAIL CUTOVER.
+#
+# Before the cutover the rail had ten sections and the lock named four items and
+# one whole section: Import Data, and everything under ADMIN (Roles & Access,
+# Companies, Menu & Sidebar, Sidebar Sections, Audit, Tenants). All six of the
+# ADMIN items and Import Data are now RETIRED, and a `restricted` flag on a
+# retired item locks nothing, because `get_sidebar_data` never serves it.
+#
+# The rail is five sections and eight items, and everything those four names used
+# to protect lives behind ONE of them: the Settings hub. So the lock moves there.
+#
+# IT MOVES TO THE SECTION AND NOT TO THE ITEM, and that is a mechanism fact
+# rather than a preference. `pb.sidebar.item.restricted` only bites on an item
+# the user could not otherwise open: `get_sidebar_data._state()` returns
+# (visible, NOT locked) the moment `_has_access` is true, and `_has_access` is
+# true for anybody when the item carries no `groups_id`. The Settings rail item
+# is deliberately UNGATED (the hub hides the categories a persona cannot open,
+# which is a narrower and more honest answer than a rail gate), so marking it
+# restricted would have been a flag with no effect — silently, which is the worst
+# kind. `pb.sidebar.section.restricted` has no such condition: a locked section
+# renders with a padlock, refuses to expand, and answers a click with the upsell
+# dialog, for every non-administrator.
+#
+# WHAT THIS COSTS, STATED. On a database with pb_demo installed, a non-admin
+# reaches Formula Engine, Structures, Statutory and Integrations through the
+# command palette rather than through the rail. That is a tightening — before the
+# cutover a demo persona could open Formula Engine from the SETUP section — and
+# it is the direction the demo is for: configuration is what the full platform
+# is. To reverse it, empty `_LOCK_SECTION_KEYS`.
+#
+# The retired names below are KEPT rather than deleted. They cost nothing, and
+# the moment an administrator re-enables one of those records on a demo database
+# it is locked again, which is what the list was written to guarantee.
+_LOCK_SECTION_KEYS = {'system', 'admin'}
+_LOCK_ACTION_TAGS = {'pb_import', 'pb_settings_hub'}
+_LOCK_ITEM_NAMES = {'Import Data', 'Roles & Access', 'Companies',
+                    'Menu & Sidebar', 'Settings'}
+# Sections that render LOCKED (padlock + upsell) for every non-administrator on
+# a demo database. The technical_key, not the label: `sec_admin` was rekeyed
+# `admin` -> `system` by the cutover and both are listed so the hook is correct
+# on a database that has not taken the migration yet.
+_LOCK_SECTION_MESSAGE = (
+    "Configuration — roles, companies, salary structures, statutory tables, "
+    "integrations and the formula engine — is available in the full Payobook "
+    "platform. Please contact Payobook to arrange a personalised demonstration.")
 
 # (model, read, write, create, unlink) for the Demo User. Read-broad; create only
 # on payslip objects so "Run Payroll" works; never write/unlink master data.
@@ -150,6 +192,7 @@ def post_init_demo(env):
         return
     _grant_demo_access(env, demo)
     _grant_demo_read_rules(env, demo)
+    _lock_demo_sections(env)
     items = env['pb.sidebar.item'].search([])
     locked = shown = 0
     for it in items:
@@ -189,9 +232,49 @@ def _feature_demo_config(env):
         _logger.info('pb_demo: featured %s as the default studio config.', cfg.code)
 
 
+def _lock_demo_sections(env):
+    """Mark the configuration section LOCKED for every non-administrator.
+
+    Idempotent, and deliberately narrow: it writes only the two flags, only on
+    the sections named in `_LOCK_SECTION_KEYS`, and only when they are not
+    already set. Nothing else about the section is touched — the label, the
+    sequence and `show_label` belong to `pb_sidebar`'s own data file.
+
+    A locked section renders with a padlock, refuses to expand and answers a
+    click with the upsell dialog (`pb_sidebar.js::toggleSection`). Administrators
+    are unaffected: `get_sidebar_data` computes `sec_locked` as
+    `section.restricted and not is_admin`.
+    """
+    Section = env['pb.sidebar.section'].with_context(active_test=False)
+    sections = Section.search([('technical_key', 'in', list(_LOCK_SECTION_KEYS))])
+    changed = 0
+    for sec in sections:
+        vals = {}
+        if not sec.restricted:
+            vals['restricted'] = True
+        if not sec.restriction_reason:
+            vals['restriction_reason'] = _LOCK_SECTION_MESSAGE
+        if vals:
+            sec.write(vals)
+            changed += 1
+    if changed:
+        _logger.info('pb_demo: locked %s configuration section(s) for the demo '
+                     'persona (%s).', changed,
+                     ', '.join(sections.mapped('technical_key')))
+
+
 def _hide_salary_structures(env):
     """Payroll runs on Formula Configs, not Salary Structures — hide the confusing
-    menu (struct_id stays optional/unused so nothing breaks). Reversible."""
+    menu (struct_id stays optional/unused so nothing breaks). Reversible.
+
+    STILL SANE AFTER THE CYCLE-5 CUTOVER, and a no-op on a cut-over database:
+    the Salary Structures rail item is already retired with the rest of SETUP, so
+    the search finds it, writes the `active` it already has, and changes nothing.
+    It is kept rather than deleted because it is the guard for the day somebody
+    re-enables that record — which is exactly what the 900 band exists to make
+    possible. The cockpit itself is untouched and still reachable through the
+    Settings hub's Salary Structures category and through the palette.
+    """
     items = env['pb.sidebar.item'].search([
         '|', ('action_tag', '=', 'pb_structures'), ('name', '=', 'Salary Structures')])
     if items:
@@ -212,6 +295,14 @@ def _retire_analytics_menu(env):
     attendance, overtime, leave and payroll-fact data. This removes the old
     item on upgrade; the demo action itself is left installed so the demo
     world keeps its own view, just not a top-level Insights entry.
+
+    STILL SANE AFTER THE CYCLE-5 CUTOVER, and a no-op on any database that ever
+    took it: the item it deletes has been gone for a phase, and this is the only
+    hook in the file that UNLINKS rather than flags. It is kept because the thing
+    it removes was created imperatively by an older revision of this same hook,
+    so a database restored from before that phase still needs it. Nothing on the
+    new rail carries the ``pb_demo_analytics`` tag, so it cannot reach the
+    cutover's own records even by accident.
     """
     items = env['pb.sidebar.item'].search(
         [('action_tag', '=', 'pb_demo_analytics')])
