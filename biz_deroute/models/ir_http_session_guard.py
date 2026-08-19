@@ -52,6 +52,28 @@ not hit — the loop writes exactly the same keys with exactly the same values,
 and `uom_ids` is computed by the same unmodified `get_timesheet_uoms()`. The
 only observable difference for an AFFECTED user is a rendered page and one
 WARNING naming the divergent ids, instead of a 500 with no user in it.
+
+WHEN THE PATCH IS APPLIED, AND WHY NOT AT IMPORT TIME
+-----------------------------------------------------
+The first version of this file did
+`from odoo.addons.hr_timesheet.models.ir_http import IrHttp` at module level,
+and that took the LOGIN PAGE of every database on the server down (500 on
+`/web/login`, `ValueError: Expected singleton: res.users()` while rendering
+`website.layout` with an empty `env.user`). `biz_deroute` depends on `web`
+alone and is `auto_install`, so it is imported very early; importing an addon
+this module does not DEPEND on drags that addon's `ir.http` class — and the
+whole dependency chain behind it — into the class registry ahead of its place
+in the module graph, and the `ir.http` composed from that order no longer runs
+`website`'s dispatch hook that gives an anonymous request its public user.
+Isolated by running the same database on a private port with only this file
+reverted: 500 with the import, 200 without it, 200 with the rest of the module
+and the import removed.
+
+So the patch is applied from `_register_hook()`, which runs after the registry
+is built: by then `hr_timesheet` has been imported by the graph if it is
+installed, the import here is a `sys.modules` lookup that changes no ordering,
+and if it is NOT installed nothing is imported at all. Idempotent, because
+`_register_hook` runs on every registry load of every database.
 """
 import logging
 
@@ -59,10 +81,9 @@ from odoo import models
 
 _logger = logging.getLogger(__name__)
 
-try:
-    from odoo.addons.hr_timesheet.models.ir_http import IrHttp as _TimesheetIrHttp
-except ImportError:  # hr_timesheet is not on the addons path at all
-    _TimesheetIrHttp = None
+# Set by `_install_session_guard()` once the registry is up. Never imported at
+# module level — see the header.
+_TimesheetIrHttp = None
 
 
 def _guarded_session_info(self):
@@ -102,8 +123,28 @@ def _guarded_session_info(self):
     return result
 
 
-if _TimesheetIrHttp is not None:
-    _TimesheetIrHttp.session_info = _guarded_session_info
+def _install_session_guard():
+    """Bind the guard onto `hr_timesheet`'s class, once, after registry load.
+
+    Called from `_register_hook`. Returns True when the guard is (already)
+    bound, False when `hr_timesheet` is not part of this deployment at all —
+    the tests read that answer rather than re-deriving it.
+    """
+    global _TimesheetIrHttp
+    try:
+        from odoo.addons.hr_timesheet.models.ir_http import IrHttp
+    except ImportError:
+        # hr_timesheet is not installed on any database this process serves,
+        # so there is no crash site to guard. (Importing it here to find that
+        # out is exactly what the header forbids at module level; by
+        # `_register_hook` time the graph has already imported whatever is
+        # installed, so this raises instead of loading anything new.)
+        return False
+    _TimesheetIrHttp = IrHttp
+    if IrHttp.session_info is not _guarded_session_info:
+        IrHttp.session_info = _guarded_session_info
+        _logger.info("biz_deroute: hr_timesheet session_info guard installed (W100)")
+    return True
 
 
 class ResCompany(models.Model):
@@ -128,3 +169,11 @@ class ResCompany(models.Model):
         if 'user_ids' in vals:
             self.env.registry.clear_cache()
         return res
+
+    def _register_hook(self):
+        # The guard is bound HERE and not at import time. `res.company` is only
+        # the carrier: this module has to own some model for the hook to fire,
+        # and inheriting `ir.http` for the purpose would put this module's class
+        # into the very MRO whose ordering the header is about.
+        super()._register_hook()
+        _install_session_guard()
