@@ -327,5 +327,52 @@
             ]</field>
         </record>
 
+        <!-- ==========================================
+             PAYSLIP LINES MIRROR THE PAYSLIP (W105)
+             ==========================================
+             Owner policy: a user may read an hr.payslip.line record exactly when
+             they may read its parent hr.payslip.
+
+             Each rule here is the payslip rule of the SAME NAME with every leaf
+             re-rooted through slip_id, on the SAME groups, and never on a wider
+             perm set. The pairs are checked rule-by-rule by
+             pb_payruns/tests/test_payslip_line_access.py, which fails if a line
+             rule exists whose slip twin does not, or whose groups differ.
+
+             Two payslip rules above are deliberately NOT mirrored here:
+             * rule_payslip_employee_self_service (base.group_user) — its line
+               twin already exists as pb_me_portal.payslip_line_rule_ess_own,
+               with exactly this domain re-rooted through slip_id. Declaring a
+               second identical rule here would only give a future editor two
+               places to change and one to forget.
+             * rule_portal_employee_payslip_access (base.group_portal) — portal
+               users hold NO ir.model.access row on hr.payslip at all, so the
+               rule above admits nothing today. Giving lines a portal rule would
+               require adding a portal ACL, i.e. WIDENING money visibility to a
+               tier that currently has none. Mirroring means matching the slip,
+               and the slip is unreachable.
+        -->
+        <record id="rule_payslip_line_officer_access" model="ir.rule">
+            <field name="name">Payslip Lines: Officer Access</field>
+            <field name="model_id" ref="om_hr_payroll.model_hr_payslip_line"/>
+            <field name="groups" eval="[(4, ref('group_payroll_base_officer'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <record id="rule_payslip_line_integration_access" model="ir.rule">
+            <field name="name">Integration: Payslip Line Import/Export Access</field>
+            <field name="model_id" ref="om_hr_payroll.model_hr_payslip_line"/>
+            <field name="groups" eval="[(4, ref('group_payroll_integration_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
     </data>
 </odoo>

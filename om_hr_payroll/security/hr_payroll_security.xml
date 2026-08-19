@@ -52,5 +52,39 @@
             <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
         </record>
 
+        <!-- ==========================================
+             PAYSLIP LINES MIRROR THE PAYSLIP (W105)
+             ==========================================
+             Policy: a user may read an hr.payslip.line record exactly when they
+             may read its parent hr.payslip. Nothing more, nothing less.
+
+             Each rule below is the SLIP RULE ABOVE IT with every leaf re-rooted
+             through slip_id, and it carries the same groups. The pairing is by
+             xmlid on purpose (hr_payroll_rule_officer / hr_payslip_line_rule_officer)
+             so a future edit to one is visibly missing from the other, and
+             pb_payruns/tests/test_payslip_line_access.py fails when a pair drifts.
+
+             Why this was needed: hr.payslip.line had ACLs for these tiers but no
+             record rule admitting them, so a payroll MANAGER read only the lines
+             of their OWN payslip (the base.group_user self-service rule was the
+             only one that applied to them) and every money figure on the Payroll
+             Report came out zero. See W105 in docs/WORKFORCE_REDESIGN_CONVENTIONS.md.
+        -->
+        <record id="hr_payslip_line_rule_officer" model="ir.rule">
+            <field name="name">Officer and subordinates Payslip Lines</field>
+            <field name="model_id" ref="model_hr_payslip_line"/>
+            <field name="domain_force">['|','|', ('slip_id.employee_id.user_id', '=', user.id), ('slip_id.employee_id.department_id',
+                '=', False), ('slip_id.employee_id.department_id.manager_id.user_id', '=', user.id)]
+            </field>
+            <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
+        </record>
+
+        <record id="hr_payslip_line_rule_manager" model="ir.rule">
+            <field name="name">All Payslip Lines</field>
+            <field name="model_id" ref="model_hr_payslip_line"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        </record>
+
     </data>
 </odoo>

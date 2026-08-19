@@ -3,7 +3,9 @@
 {
     'name': 'HR Payroll',
     'category': 'Generic Modules/Human Resources',
-    'version': '19.0.1.0.1',
+    # 19.0.1.0.2 — W105: hr.payslip.line record rules mirroring the two
+    # hr.payslip rules in security/hr_payroll_security.xml.
+    'version': '19.0.1.0.2',
     'sequence': 1,
     'author': 'Odoo Mates, Odoo SA',
     'summary': 'Generic Payroll system',
