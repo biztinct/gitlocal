@@ -107,6 +107,11 @@ export const IC = {
     pieChart:   '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
     minusCircle:'<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
     trendingDown: '<path d="m22 17-8.5-8.5-5 5L2 7"/><path d="M16 17h6v-6"/>',
+    // Integrations C1 — the connector cockpit's header overflow. The native
+    // form escape stopped being a toolbar button and became one admin-only item
+    // behind a kebab, and a kebab needs the glyph everybody already reads as
+    // one. Added HERE rather than in a pb_import_advanced icon file (W2).
+    moreVertical: '<circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>',
 };
 
 /**

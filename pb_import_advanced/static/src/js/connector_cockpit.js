@@ -13,7 +13,7 @@
  * The server methods behind the old links are untouched and still registered:
  * the cycle replaces the doors, not the models.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -46,7 +46,25 @@ export class ConnectorCockpit extends Component {
         // Import no longer opens this cockpit at all.
         this.backTo = p.back_to || "pb_integrations.action_pb_integrations";
         this.backLabel = p.back_label || _t("Integrations");
-        this.state = useState({ loaded: false, busy: false, busyMsg: "", detail: null });
+        this.state = useState({
+            loaded: false, busy: false, busyMsg: "", detail: null,
+            // which endpoint is mid-pull (id), so one chip spins and the rest
+            // of the strip stays usable
+            syncing: 0,
+            // the header's overflow menu, and the credentials editor
+            kebab: false,
+            credOpen: false,
+            // key -> what the admin typed. Write-only: nothing ever puts a
+            // value INTO this object from the server (there is nothing to put
+            // — the payload carries booleans), so a rendered input can never
+            // display a secret.
+            cred: {},
+            credClear: {},
+            credSaving: false,
+        });
+        // A click anywhere else closes the overflow menu. An event handler, not
+        // a lifecycle hook — it only ever writes this component's own state.
+        useExternalListener(window, "click", () => { this.state.kebab = false; });
         onWillStart(async () => { await this.refresh(); });
     }
 
@@ -147,6 +165,169 @@ export class ConnectorCockpit extends Component {
             name: "Pull from Connector", params: { connector_id: this.connectorId },
         });
     }
+    // ===================================================================== feeds
+    get endpoints() { return this.d.endpoints || []; }
+
+    /** May this caller change anything here? Derived from the model's own ACL. */
+    get canWrite() { return !!this.d.can_write; }
+
+    /**
+     * The chip's second line — the data type, unless that IS the name.
+     *
+     * A feed derived from the data store is named after its data type, so the
+     * obvious two-line header printed "Employee Master Data" directly above
+     * "EMPLOYEE MASTER DATA". A label that repeats the line above it is not a
+     * label, and the reader learns to stop reading both.
+     */
+    subLabel(ep) {
+        const l = (ep.data_type_label || "").trim();
+        return l && l.toLowerCase() !== (ep.name || "").trim().toLowerCase() ? l : "";
+    }
+
+    /**
+     * "3 hours ago", from the ISO twin rather than from the display string.
+     *
+     * The server sends both (W46): the trimmed one is what a table column
+     * prints, the ISO one is the only one that can be parsed. Doing the
+     * arithmetic on the display string is how a chip ends up saying "NaN days".
+     */
+    since(iso) {
+        if (!iso) { return _t("Never synced"); }
+        const t = new Date(iso.endsWith("Z") ? iso : iso + "Z").getTime();
+        if (isNaN(t)) { return _t("Never synced"); }
+        const h = (Date.now() - t) / 3600000;
+        if (h < 1) { return _t("Synced <1h ago"); }
+        if (h < 24) { return _t("Synced %sh ago", Math.round(h)); }
+        return _t("Synced %sd ago", Math.round(h / 24));
+    }
+
+    /** The status dot's tone — pbim semantics only, never a new hex (W1). */
+    tone(ep) {
+        if (ep.status === "failed") { return "err"; }
+        if (ep.status === "partial") { return "warn"; }
+        if (ep.status === "success") { return "ok"; }
+        return "muted";
+    }
+
+    /**
+     * One sentence, one msgid (W80): a translator cannot reorder fragments, and
+     * this line is three numbers in a row, which is exactly where word order
+     * differs.
+     */
+    counts(ep) {
+        return _t("%(staged)s staged · %(synced)s pulled · %(mapped)s mapped", {
+            staged: ep.staged, synced: ep.synced, mapped: ep.mapping_count,
+        });
+    }
+
+    async syncEndpoint(ep) {
+        if (this.state.syncing) { return; }
+        this.state.syncing = ep.id;
+        try {
+            const res = await this.orm.call(
+                MODEL, "sync_endpoint", [this.connectorId, ep.id]);
+            if (res && res.endpoint) {
+                // Replace the row in place so the strip does not reflow while
+                // the user is looking at it.
+                const list = this.state.detail.endpoints || [];
+                const i = list.findIndex((e) => e.id === res.endpoint.id);
+                if (i >= 0) { list[i] = res.endpoint; }
+            }
+            // The side panel's staged total moves with the feed that changed it,
+            // or the two numbers on this screen disagree (found live).
+            if (res && typeof res.data_store_count === "number") {
+                this.state.detail.data_store_count = res.data_store_count;
+            }
+            if (res && res.error) { this.notif.add(res.error, { type: "warning" }); }
+            else { this.notif.add(_t("Feed synced."), { type: "success" }); }
+        } catch (e) {
+            console.warn("pb_import_advanced: endpoint sync failed", e);
+            this.notif.add(_t("That feed could not be synced."), { type: "danger" });
+        } finally {
+            this.state.syncing = 0;
+        }
+    }
+
+    /** Derive the feeds from the vendor catalogue and from what is in the store. */
+    detectFeeds() {
+        return this._run(
+            this.orm.call(MODEL, "sync_catalog", [this.connectorId]),
+            _t("Detecting feeds…"));
+    }
+
+    /** This feed's rows, in the Integrations Data view, scoped both ways. */
+    viewEndpointData(ep) {
+        if (!this.hasLedgers) { return; }
+        openHub(this.action, {
+            tag: "pb_integrations",
+            context: {
+                pb_ledger: "store",
+                pb_connector: this.connectorId,
+                pb_connector_name: this.d.name || "",
+                pb_data_type: ep.data_type,
+                pb_data_type_name: ep.data_type_label || "",
+            },
+            back: {
+                label: this.d.name || _t("Connector"),
+                tag: SELF_TAG,
+                context: {
+                    connector_id: this.connectorId,
+                    back_to: this.backTo,
+                    back_label: this.backLabel,
+                },
+            },
+        });
+    }
+
+    // =============================================================== credentials
+    get credentials() { return this.d.credentials || { fields: [], editable: false }; }
+    get canAdmin() { return !!this.credentials.editable; }
+
+    toggleCredentials() { this.state.credOpen = !this.state.credOpen; }
+
+    onCredInput(key, ev) { this.state.cred[key] = ev.target.value || ""; }
+    toggleClear(key) { this.state.credClear[key] = !this.state.credClear[key]; }
+
+    async saveCredentials() {
+        if (this.state.credSaving) { return; }
+        this.state.credSaving = true;
+        try {
+            const clear = Object.keys(this.state.credClear)
+                .filter((k) => this.state.credClear[k]);
+            const res = await this.orm.call(
+                MODEL, "save_credentials",
+                [this.connectorId, { ...this.state.cred }, clear]);
+            if (res && res.credentials) {
+                this.state.detail.credentials = res.credentials;
+                this.state.detail.api_endpoint = res.api_endpoint || "";
+            }
+            // Typed values are dropped the moment they are saved, and the
+            // editor CLOSES so the inputs unmount with them. Clearing the state
+            // alone would not be enough: an input's `value` attribute does not
+            // reset what the user typed into the live DOM node, so the secret
+            // would stay on the page until a navigation.
+            this.state.cred = {};
+            this.state.credClear = {};
+            this.state.credOpen = false;
+            this.notif.add(_t("Credentials saved."), { type: "success" });
+        } catch (e) {
+            console.warn("pb_import_advanced: save_credentials failed", e);
+            this.notif.add(
+                (e && e.data && e.data.message) || _t("Those could not be saved."),
+                { type: "danger" });
+        } finally {
+            this.state.credSaving = false;
+        }
+    }
+
+    // ==================================================================== kebab
+    /** A CLICK handler; `stopPropagation` so the window listener does not
+     *  immediately close what this just opened. */
+    toggleKebab(ev) {
+        ev.stopPropagation();
+        this.state.kebab = !this.state.kebab;
+    }
+
     openAdvancedForm() {
         this.action.doAction({
             type: "ir.actions.act_window", res_model: "hr.integration.connector",
