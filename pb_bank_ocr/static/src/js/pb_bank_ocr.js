@@ -3,12 +3,22 @@
  * Bank Verification cockpit — queues + a bespoke split verify screen (document
  * viewer left, extracted fields right). RPC facade: pb.bank.ocr. Reuses the
  * generic DocDrop for uploads. pbim-tokenized (.pbim.pbbk).
+ *
+ * IA CYCLE 5: the last Font Awesome in the product left this file's template.
+ * Nine glyphs — a spinner, two arrows, a refresh, a tick, three warnings and a
+ * pencil — became `ic()` calls against the shared Lucide registry (W2). Eight
+ * of the nine already had an equivalent there; `pencil` was added for the ninth.
+ * Two of them were `t-attf-class` expressions choosing a glyph by a condition,
+ * which is the shape that survives longest unnoticed: they are now the same
+ * condition choosing an ICON NAME, evaluated by this component's own `ic()`
+ * method rather than by a class string nothing validates.
  */
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { DocDrop } from "@biz_doc_ocr/js/doc_drop";
+import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.bank.ocr";
 
@@ -25,6 +35,9 @@ export class PbBankOcr extends Component {
     static template = "pb_bank_ocr.PbBankOcr";
     static components = { DocDrop };
     static props = { action: { type: Object, optional: true }, "*": true };
+
+    /** The shared Lucide helper. Never a glyph font, never an emoji (W2). */
+    ic(name, size = 14) { return ic(name, size); }
 
     setup() {
         this.orm = useService("orm");
