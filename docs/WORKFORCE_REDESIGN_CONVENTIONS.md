@@ -16,7 +16,7 @@ retirements) closes the programme at **W110**; **Cycle 6** (the closure cycle: m
 visibility, the VN filings' Odoo-19 field drift, pb_learn's reachability split, the
 Insights drills, the tenant module-list repair and the restriction-aware palette)
 takes it to **W119**; **Cycle 7** (the abm module-delta catch-up, the `hr_timesheet`
-`session_info` 500 and the `pb_insights` sudo drop) takes it to **W125**.
+`session_info` 500 and the `pb_insights` sudo drop) takes it to **W126**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -2083,3 +2083,40 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   `pb_insights/tests/test_sudo_drop.py::SUDO_SITES`, an AST gate rather than a text
   search, so a new sudo cannot arrive without that conversation and a removed one
   cannot vanish without noticing.
+- **W126 Importing an addon you do not DEPEND on, at module level, reorders the
+  class registry and can take a hook out of `ir.http` — the symptom was every
+  database's LOGIN PAGE, and nothing else.** (IA Cycle 7, the cycle's production
+  incident, 21:47-22:01 UTC, self-inflicted and self-found.) W123's guard has to
+  patch `hr_timesheet.IrHttp.session_info`, and the obvious way to reach the
+  class is `from odoo.addons.hr_timesheet.models.ir_http import IrHttp` at the
+  top of the file. The file lives in `biz_deroute`, which depends on `web` alone
+  and is `auto_install`, so it is imported very early — and that import drags
+  hr_timesheet's `ir.http` class, and the chain behind it, into the class
+  registry ahead of its place in the module graph. The `ir.http` composed from
+  that order no longer runs `website`'s dispatch hook, so an anonymous request
+  never receives its public user and `website.layout` renders against an empty
+  `env.user`: `ValueError: Expected singleton: res.users()`, 500, on `/web/login`
+  for **every database on the cluster at once**.
+  Everything about that is quiet in the wrong way. `/web/health` stayed 200,
+  `/` stayed 200, every already-authenticated `/bizapp` session stayed 200, the
+  cockpit under validation rendered its money perfectly, and the log line is a
+  `website/models/ir_ui_view.py` frame that names no custom module at all. It was
+  found by a curl, twenty minutes late, while checking something else.
+  How to isolate it in three runs, which is the durable part: start the SAME
+  database on a private port with `--addons-path=<shadow>,<real>` and vary only
+  the suspect module — (1) current tree: 500; (2) pre-cycle copy of the one
+  module: 200; (3) a variant carrying every change EXCEPT the import: 200. The
+  third run is what names the LINE rather than the commit, and none of the three
+  touches the running service.
+  Rules: (1) never import another addon's python at module level from a module
+  that does not declare it in `depends` — and adding the depend is usually the
+  wrong repair too, because it changes the install graph of every database;
+  (2) do the reaching-into from `_register_hook()`, which runs after the registry
+  is built: the import is then a `sys.modules` lookup that reorders nothing, and
+  on a database without that addon nothing is imported at all. Some model in
+  your module has to carry the hook — pick any model you already own, and NOT an
+  `ir.http` inherit, which would put you back in the MRO you just broke;
+  (3) `/web/health` is not a health check for this class of breakage. After any
+  deploy that touches HTTP plumbing, curl `/web/login` and one anonymous website
+  URL as well — the surfaces that have no session are exactly the ones a logged-in
+  validator never sees.
