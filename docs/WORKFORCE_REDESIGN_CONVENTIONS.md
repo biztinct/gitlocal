@@ -12,7 +12,10 @@ takes it to **W61**; **P5** (the Week Grid redesign, run after P6) takes it to *
 it to **W74**; Cycle 2's deploy afternoon adds W93-W94 and **Cycle 3** takes it to **W100**;
 **Cycle 4** (Insights + Compliance hubs, the filing flow) takes it to **W105**; **Cycle 5**
 (Home + People hubs and THE RAIL CUTOVER — five sections, eight items, thirty-nine
-retirements) closes the programme at **W110**.
+retirements) closes the programme at **W110**; **Cycle 6** (the closure cycle: money
+visibility, the VN filings' Odoo-19 field drift, pb_learn's reachability split, the
+Insights drills, the tenant module-list repair and the restriction-aware palette)
+takes it to **W119**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -1726,3 +1729,221 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   make a latent grouping bug visible without changing the grouping code at all,
   which is why a promotion is worth looking at with fresh eyes rather than only
   re-running the gates.
+- **W111 An ACL without a record rule is UNLIMITED; a record rule without an ACL
+  is INERT — and a user in two groups gets the UNION of whichever rules exist,
+  which is how a payroll manager ends up reading one payslip's lines.** (IA
+  Cycle 6, executing W105's owner ruling.) W105 recorded the symptom: ₫21.0B of
+  payslip lines in SQL, `0` on the ORM-reading Payroll Report, and a sudo'd
+  cockpit showing the money ten seconds earlier. This is the mechanism, because
+  the mechanism is what makes the repair reviewable.
+  Odoo ORs the record rules of every group the user holds and applies NO
+  restriction at all when the user is in no group that has a rule for that
+  model. `hr.payslip.line` had four ACLs and two rules, and the two rules were
+  for `base.group_user` (own lines) and the demo group. Every payroll tier is
+  ALSO `base.group_user` — so the ESS rule was the only one that applied to them
+  and it won by being the only one there. The tier was not denied; it was
+  quietly narrowed to itself. Had those tiers *not* been internal users, the
+  same table would have read UNLIMITED.
+  Rules: (1) a model whose ACL grants a tier read access with no rule admitting
+  that tier is a permission GAP, and it reads as either "everything" or "almost
+  nothing" depending only on what else the user happens to be in — never assume
+  which; (2) mirror a rule by MODULE, GROUPS and DOMAIN together: the four
+  mirrors this cycle live beside their twins (`om_hr_payroll`'s two,
+  `pb_hr_payroll_base`'s two) with xmlids that pair by name, and
+  `pb_payruns/tests/test_payslip_line_access.py` fails on a line rule that has
+  no declared twin, on a pair whose groups differ, and on a pair whose domain is
+  not the twin's re-rooted through `slip_id`; (3) the ACL is where breadth is
+  decided, so a mirror ACL is granted READ only even where the payslip ACL also
+  grants write — narrower than the twin is always safe, wider is a leak; (4) a
+  payslip rule that admits nothing because its tier holds no ACL (the portal
+  one) gets NO mirror, and the test asserts the tier still has no ACL, so the
+  day somebody grants one this conversation happens before money moves.
+  Adding records to a `noupdate="1"` data file is fine and needs no migration —
+  `noupdate` blocks UPDATES of existing rows, and a new xmlid is a create.
+- **W112 A broad `except` around a facade's button press turns a field-drift
+  AttributeError into a sentence about the FILING, so the drift survives every
+  release.** (IA Cycle 6, the five VN filings.) Odoo 19 deleted
+  `hr.employee.address_home_id` and `hr.employee.bank_account_id` and renamed
+  `gender` to `sex`. Four of the five VN government filings read one of those on
+  every employee row. Nothing crashed visibly: `pb.filing.flow.generate` catches
+  and re-raises as `UserError("This filing could not be generated: …")` at
+  `_logger.info` level, so the operator read it as "this filing is not ready"
+  and the traceback never reached a log anyone greps. C4 shipped 2 of 5 filings
+  and recorded the other three as a data problem.
+  Three rules came out of the repair: (1) when a country pack owns the master
+  data, resolve from the PACK, not from core — `vietnam_province /
+  vietnam_district / vietnam_ward` are already the three administrative levels a
+  BHXH form asks for, which no core Odoo field is, and `private_city` is free
+  text with nothing below it; (2) resolve a payment identifier the way the
+  module that PAYS resolves it — `bhxh630` now reads the same three
+  `vietnam_bank_*` columns and the same `pb.bank.registry.match()` that
+  `pb_pay_delivery` pays salaries from, because a filing that names a different
+  account from the transfer is a reconciliation problem nobody finds until the
+  money has moved; (3) `work_contact_id` is NOT a home-address substitute — it
+  is the office, and a confidently wrong address is worse than a blank one.
+  Corollary about degrading gracefully: the probes are ORM-registry reads
+  (`'vietnam_province' in emp._fields`), never `try/except`, and
+  `pb_hr_govt/tests/test_odoo19_employee_sources.py` asserts that on a database
+  WITH the pack the pack's branch is the one taken — a fallback chain whose
+  first leg is never exercised is indistinguishable from one whose first leg is
+  dead (W79).
+- **W113 Separating "which leaf IS this screen" from "which rail item REACHES
+  it" is one resolver, not two answers — and the surface nobody was looking at
+  had the worse bug.** (IA Cycle 6, implementing W108's hand-back.) W108
+  predicted the failure and forbade the obvious repair. The implementation added
+  the third fact: `learn.intent._capability` tested rail membership too, and it
+  tested it BEFORE the group ladder, so between Cycle 5 and Cycle 6 the Coach
+  answered `no_access` for **every screen to every reader except a super
+  admin** — a learning system telling a payroll manager they cannot see
+  Payslips. The Journey map merely looked wrong; the Coach was actively lying,
+  and no test saw either, because `test_bundle.py::test_07` asserts the leaf
+  RESOLVES and `env.ref` resolves an inactive record.
+  Shape of the repair: `learn.runtime._reach_index()` folds every LIVE rail
+  item's four match dimensions into three flat maps — the server-side twin of
+  `pb_sidebar.js::_buildIndex`, built from the same `get_sidebar_data()` payload
+  the visibility set already comes from — and `_station_reach()` is the ONE
+  place the three verdicts (visible / missing / reached-via) are decided, called
+  by both `bootstrap` and `_capability`. Identity is untouched: `_primary` and
+  `_matchers` still read the retired leaf through `env.ref`, and a gate asserts
+  no two screens share a primary pair, so the "just re-point sidebar_key at the
+  hubs" simplification breaks a test instead of grounding seven pay-run screens
+  on one item.
+  Two details worth carrying: the probe order is **tag first**, not
+  `_resolveActive`'s xmlid-first — four retired leaves (Full & Final, Proration,
+  Retro, Government Reports) declare an `action_xmlid` no live item claims, so
+  an xmlid-first probe answers None for exactly those four and looks like
+  "these really are unreachable". And the index uses `setdefault` where the
+  rail's uses assignment: last-writer-wins is a defect on the rail (W71) and
+  first-writer-wins is the safer half of it here, because a reader is sent to
+  the item that declared the surface rather than to whichever indexed last.
+- **W114 W101's comment stripper is not optional, and a SYNTACTIC pattern is
+  better than a stripped one.** (IA Cycle 6 — the fifth and sixth bite, in two
+  modules, in one afternoon, in gates written by someone who had just re-read
+  W101.) W48's corollary noticed it, W72 hit it in XML comments, W101 made the
+  stripper a required helper after six of eighteen first-run failures in Cycle
+  4. Cycle 6 still shipped two gates without one: `pb_hr_govt`'s field-drift
+  gate flagged the docstring that says "Odoo 19 renamed `hr.employee.gender` to
+  `sex`", and `pb_hub`'s palette gate asserted `is_admin` does not appear in a
+  file whose header explains why `is_admin` is computed server-side.
+  What Cycle 6 adds to W101 is the better of the two fixes, because a stripper
+  is a second thing to remember and a pattern is not: make the match
+  SYNTACTIC, so prose cannot satisfy it. The drift gate now matches
+  `(?<![\w.])[A-Za-z_]\w*\.<field>\b` — an attribute read off a BARE local
+  name — and `hr.employee.gender` can never match it, because `employee`
+  follows a dot. Reach for the stripper (W101) when the thing you are
+  forbidding has no syntax of its own, as `is_admin` does not; reach for a
+  syntactic pattern whenever it does. And note the shape of the near-miss both
+  times: skipping lines that START with a comment marker survives neither a
+  docstring nor a block comment.
+- **W115 A partial staging tree on the addons path breaks every test that WALKS
+  the addons directory — and the failure names your feature, not your setup.**
+  (IA Cycle 6.) Production discipline says test before the shared tree changes,
+  so the eight edited modules were rsynced to `/odoo/c6addons` and the clone run
+  with `--addons-path=/odoo/c6addons,/odoo/odoo-server/addons`, which shadows
+  correctly and keeps production files untouched. It also means
+  `get_module_path('pb_hub')` resolves inside the staging dir, and
+  `pb_hub/tests/test_static.py::test_every_palette_entry_points_at_a_registered_action`
+  walks `os.path.dirname(...)` of it looking for `registry.category("actions")`
+  registrations — finding eight modules instead of two hundred, and reporting
+  twenty-five palette entries as pointing at nothing.
+  Rules: (1) a shadowed addons path is the right tool for proving a DIFF and the
+  wrong one for proving a SUITE; run the suite again against the real tree
+  before claiming a green regression; (2) a test that walks the addons directory
+  should say so in its docstring, because that is the sentence that turns a
+  confusing failure into a five-second diagnosis; (3) the same run also disabled
+  every `ir.cron` on the clone for safety, which failed a gate asserting a cron
+  is active — `--max-cron-threads=0` is the control that actually stops crons
+  firing, so the FLAG can and should be left matching production.
+- **W116 `ir_module_module` is a PER-DATABASE snapshot, so a shared addons tree
+  that gains a module silently disables every dependent on every database whose
+  list is stale — and the only symptom is a cron.** (IA Cycle 6, workstream 5;
+  root cause of the `acme` / `payobook_template` errors C5 reported as
+  pre-existing.) The golden template was built on 2026-08-09. `pb_wf_kit` (P0)
+  and `pb_hub` (IA C1) were written after it, so no tenant database has an
+  `ir_module_module` row for either. Their code nevertheless sits in the shared
+  addons tree that every database loads, and modules those tenants DO have
+  installed — `pb_integrations`, `pb_structures`, `pb_govt_reports`,
+  `pb_hr_workforce` — later gained a `depends` on them. On the next restart the
+  module graph could not satisfy those depends and SKIPPED 27 modules.
+  Everything about that is quiet: `module_graph` logs `some depends are not
+  loaded (pb_hub, pb_wf_kit), skipped` at WARNING among hundreds of warnings,
+  `ir_module_module.state` still says `installed` for all 27, and the registry
+  loads in 0.9s and reports "Modules loaded." The only loud consequence is that
+  an `ir.cron` whose server action names a model from a skipped module raises
+  `KeyError: 'biz.doc.ocr.job'` every five minutes, forever.
+  Rules: (1) adding a `depends` to an existing module is a DEPLOY step on every
+  database, not just on the one you are working on — enumerate the DBs on the
+  cluster and refresh each one's module list; (2) "0 modules skipped" belongs in
+  the post-deploy check beside `latest_version` (W33.2), because a skipped
+  module is invisible in `state`; (3) a cron failure that names a MODEL is
+  almost never a data problem — ask whether the model is in the registry before
+  reading the cron's code; (4) the repair is `-u base` (which runs
+  `update_list()`) then `-i` the roots of the skip chain, and it must stop
+  there: upgrading `pb_sidebar` on a pre-cutover tenant would run the Cycle-5
+  rail migration and retire thirty-four items into hubs that database does not
+  have (W79/W107.2).
+- **W117 A one-shot instruction seeded on ARRIVAL starts at nonce 1, because 0
+  is what the receiver already holds.** (IA Cycle 6, extending W44's `pb_cmd` to
+  cross-cockpit deep links.) Insights' bonus-hours tile has an exact destination
+  — the Overtime desk's bonus VIEW — and W26's arrival protocol carries a lens
+  but not a verb, so `pb_mission` now also reads `pb_cmd` off the action context.
+  The trap is arithmetic: every lens tracks `this._cmdNonce`, initialised to 0,
+  and runs an instruction when the incoming nonce DIFFERS. Seeding the shell's
+  state with `{name: "bonus", nonce: 0}` therefore delivers a verb the lens is
+  guaranteed to ignore — a deep link that silently lands on the wrong view, with
+  no error anywhere. Seed at 1. Two rails that keep it safe: the verb is
+  accepted only for the lens being opened, and a lens that does not know the
+  verb ignoring it is still correct behaviour (W44.3), so widening the protocol
+  cannot make an unknown verb land on the wrong thing. And the gate that pinned
+  the old literal default was REVERSED AT THE SITE with the reasoning (W76.3),
+  not quietly deleted: it now pins the shape and the seeded value instead.
+- **W118 A cached asset bundle can hide a STALE MODULE ON DISK for weeks, and
+  the moment you purge the cache the missing file takes a whole cockpit with
+  it.** (IA Cycle 6, and the one production incident of the cycle.)
+  `/odoo/odoo-server/addons/pb_wf_kit` was at version **19.0.1.4.1** on disk
+  while `ir_module_module.latest_version` said **19.0.1.5.1** — a stale rsync
+  from an earlier session, exactly the "files never rsynced current" failure
+  the deploy notes already warn about. The difference between the two versions
+  was one line in the manifest: `wf_command_palette.js` in
+  `web.assets_backend`. Because prod mode serves the COMPILED bundle out of
+  `ir_attachment`, and the cached bundle had been built when the file was still
+  listed, Mission Control kept working perfectly. Purging the bundle after a
+  deploy — the standard ritual — rebuilt it from the stale manifest, and
+  `@pb_wf_kit/js/wf_command_palette` vanished. `@pb_mission/js/pb_mission`
+  declares it as a dependency, so the module was defined and never EXECUTED:
+  the Workforce action tag was simply not in the registry, `doAction` rejected,
+  and the drill that had worked ten minutes earlier did nothing at all. Zero
+  console errors, zero failed module loads, `odoo.loader.failed.size === 0`,
+  and the whole page rendering normally — because only one module of two
+  hundred was missing.
+  How to find it in one step: fetch the SERVED bundle and ask whether the
+  module is `odoo.define`d in it, then diff `odoo.loader.modules` against the
+  dependency list Odoo compiled into the `define(` call. A dep that is in the
+  list and not in `modules` is a file that is not in the bundle, which is a
+  MANIFEST fact, not a code fact.
+  Rules: (1) version-diff repo↔server for EVERY module in the reverse-dependency
+  closure before a deploy, not only the ones you edited — a checksum of the
+  eight modules you rsynced proves nothing about the ninth; (2) an asset purge
+  is a REBUILD, so treat it as a deploy of every module's manifest and re-check
+  the page afterwards; (3) when a click stops working with a clean console,
+  ask whether the component's module is in `odoo.loader.modules` before
+  suspecting the handler — W74's blank-backend cousin, one module wide instead
+  of one bundle wide.
+- **W119 `service odoo-server stop` followed immediately by an upgrade can race
+  the START, and the upgrade loses.** (IA Cycle 6, second production window.)
+  W83 already records that the stop can leave the process running. This is the
+  other half: a `stop; sleep 3; odoo-bin -u …` script had its `-u` answered with
+  `psycopg2.errors.SerializationFailure: could not serialize access due to
+  concurrent update` on `ir_module_module_dependency`, then `Failed to load
+  registry`, then `EXIT=255` — because the service had come back up and was
+  loading the same database at the same instant. The upgrade rolled back
+  cleanly and the site stayed healthy, so the only evidence was the exit code:
+  the log line the deploy prints is `UPG=255`, and everything after it in the
+  script (the asset purge, the restart, the health check) succeeded and looked
+  like a good deploy.
+  Rules: (1) after `stop`, POLL for zero `odoo-bin` processes rather than
+  sleeping a fixed three seconds; (2) an upgrade's exit code is part of the
+  deploy evidence — a script that prints `UPG=$?` must also FAIL on it, or the
+  number scrolls past; (3) `EXIT=255` with a healthy site means the upgrade did
+  not happen, not that it was harmless — check `latest_version` (W33.2) before
+  concluding anything shipped.

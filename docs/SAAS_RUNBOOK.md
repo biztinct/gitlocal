@@ -111,3 +111,73 @@ Same staged-rsync + detached `systemd-run` ritual as before, with two changes:
 - Rollback of the whole platform change: restore conf backup
   `/etc/odoo-server.conf.pre-saas`, rename DB+filestore back to `Payobook19v2`,
   remove the `pb-wildcard` nginx symlink, restart.
+
+## Tenant module-list drift (diagnosed + repaired 2026-08-19, IA Cycle 6)
+
+**Symptom.** `acme` and `payobook_template` logged two failing crons every five
+minutes from 2026-08-19 03:14 onward:
+
+```
+ERROR acme odoo.addons.base.models.ir_cron: Job 'Document OCR: retry pending jobs' (44) server action #782 failed
+    KeyError: 'biz.doc.ocr.job'
+ERROR acme odoo.addons.base.models.ir_cron: Job 'Payobook: build analytics facts' (46) server action #853 failed
+    KeyError: 'pb.fact.run'
+```
+
+**Root cause — NOT the C2 addons-tree incident**, despite the timestamps being
+neighbours. `ir_module_module` is a per-database snapshot written by
+`update_list()`. The golden template was built on 2026-08-09; `pb_wf_kit`
+(Workforce P0) and `pb_hub` (IA Cycle 1) were written after it, so **no tenant
+database has a row for either module at all** — `acme` knows 764 modules, the
+apex knows 838. Their code nevertheless lives in the shared addons tree that
+every database loads, and modules the tenants DO have installed
+(`pb_integrations`, `pb_structures`, `pb_govt_reports`, `pb_hr_workforce`)
+later gained a `depends` on them. On the first restart after that
+(2026-08-19 03:14) the module graph could not satisfy those depends and skipped
+**27 modules**:
+
+```
+WARNING payobook_template odoo.modules.module_graph: module pb_integrations: some depends are not loaded (pb_hub, pb_wf_kit), skipped
+…
+ERROR payobook_template odoo.modules.loading: Some modules are not loaded, some dependencies or manifest may be missing: [27 modules]
+```
+
+Everything about that is quiet: `ir_module_module.state` still reads
+`installed` for all 27, the registry loads in 0.9s and logs "Modules loaded."
+The only loud consequence is a cron whose server action names a model from a
+skipped module. See **W116** in `docs/WORKFORCE_REDESIGN_CONVENTIONS.md`.
+
+**Repair, per tenant DB** (`/tmp/tenant_repair.sh <db>`, run detached):
+
+```bash
+# 1. refresh the per-database module list (`-u base` runs update_list())
+sudo -u odoo python3 /odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf \
+  -d <db> --http-port=8198 --max-cron-threads=0 -u base --stop-after-init
+# 2. install ONLY the two roots of the skip chain; their own deps come with them
+sudo -u odoo python3 /odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf \
+  -d <db> --http-port=8198 --max-cron-threads=0 -i pb_hub,pb_wf_kit --stop-after-init
+```
+
+**What the repair deliberately does NOT do.** It does not upgrade `pb_sidebar`
+and it does not install the six hub modules. Tenant `pb_sidebar` is at
+19.0.1.7.1 — the PRE-rail-cutover rail. Upgrading it would run the Cycle-5
+migration and retire thirty-four rail items into hubs that are not installed on
+that database, i.e. a rail of buttons whose actions do not resolve (W79/W107.2).
+Tenant navigation is untouched by this repair; bringing tenants onto the Cycle-5
+rail is a separate, deliberate rollout.
+
+**Verify.** After the repair, per DB:
+
+```bash
+sudo grep -a "<db>.*some depends are not loaded" /var/log/odoo/odoo-server.log | tail
+sudo grep -a "<db>.*Some modules are not loaded" /var/log/odoo/odoo-server.log | tail
+sudo grep -a "ERROR <db> odoo.addons.base.models.ir_cron" /var/log/odoo/odoo-server.log | tail
+```
+
+All three must be silent for the observation window. Add "0 modules skipped" to
+the post-deploy checklist beside the `latest_version` assertion (W33.2) — a
+skipped module is invisible in `ir_module_module.state`.
+
+**Standing rule this creates.** Adding a `depends` to an existing module is a
+deploy step on EVERY database on the cluster, not only the one being worked on.
+Enumerate `pg_database` and refresh each module list.
