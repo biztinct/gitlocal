@@ -14,6 +14,16 @@
           <span class="pbms-brand__tx">Workforce</span>
         </span>
 
+        <!-- The way back, when somebody sent us here.
+             This workspace is its own shell, so pb_hub's HubShell — which is
+             what renders `pb_back` everywhere else — never runs for it. Before
+             IA Cycle 6 an Insights drill therefore landed on the Time Off lens
+             with the right filter and no way home, which is the dead end W5
+             forbids. The chip is IMPORTED from the kit, not re-drawn: two
+             return doors that look different are two doors. Absent, not inert,
+             when nobody passed one (W29). -->
+        <HubBackChip t-if="back" back="back"/>
+
         <!-- The shared context, mounted ONCE for the whole workspace (W4/W6).
              Which of the department / week / day / filter segments appear is
              the current lens's decision (`features`), and switching lens never
