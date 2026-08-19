@@ -42,13 +42,14 @@ What the hub adds that no single lens could:
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent (W1/W2/W3).
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': [
         'pb_hub',               # the shell kit + the global palette registry
+        'pb_settings',          # C3: the cog in the command bar opens this hub
         # the eight surfaces this hub mounts as lenses
         'pb_payrun_wizard',
         'pb_payruns',

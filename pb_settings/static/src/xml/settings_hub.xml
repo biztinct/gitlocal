@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ===================================================== the Settings hub
+       Section comments use `=` rules: a doubled hyphen inside an XML comment is
+       a parse error that takes the WHOLE template file down, every t-name in it
+       with it (W22), and the same trap covers naming a CSS custom property,
+       whose prefix is two hyphens (W72). -->
+  <t t-name="pb_settings.PbSettingsHub">
+    <div class="pbim pbst">
+
+      <!-- ======================= header ======================= -->
+      <header class="pbst-top">
+        <span class="pbst-brand">
+          <span class="pbst-brand__ic" t-out="ic('settings', 16)"/>
+          <span class="pbst-brand__tx">Settings</span>
+        </span>
+
+        <!-- The return door, when the caller passed one. It sits beside the
+             title because that is where a user looks for "where am I and how
+             do I get out". -->
+        <HubBackChip t-if="back" back="back" tone="'light'"/>
+
+        <span class="pbst-sp"/>
+
+        <button class="pbst-search" t-on-click="() => this.openPalette()"
+                aria-label="Search surfaces and actions">
+          <span class="pbst-search__ic" t-out="ic('search', 14)"/>
+          <span class="pbst-search__tx">Search surfaces, actions…</span>
+          <!-- A keyboard glyph is NOT translated — it is what is printed on
+               the key (W80). -->
+          <span class="pbst-search__kbd" t-esc="paletteHint"/>
+        </button>
+      </header>
+
+      <div class="pbst-body">
+
+        <!-- NOTHING may sit between these three branches, not even a comment:
+             `t-elif` / `t-else` bind to the immediately preceding sibling and a
+             comment silently breaks the chain into a runtime template error
+             (W23). The second branch is the honest empty state — a persona with
+             none of the configuration groups gets a SENTENCE, because a blank
+             pane with no explanation reads as a broken build. -->
+        <div t-if="!state.resolved" class="pbim-busy">
+          <div class="pbim-spin"/><span>Loading settings…</span>
+        </div>
+        <div t-elif="!categories.length" class="pbst-none">
+          <span class="pbst-none__ic" t-out="ic('lock', 22)"/>
+          <span class="pbst-none__t" t-esc="emptyTitle"/>
+          <span class="pbst-none__s" t-esc="emptyNote"/>
+        </div>
+        <div t-else="" class="pbst-split">
+
+          <!-- ==================== category nav ==================== -->
+          <nav class="pbst-nav" aria-label="Settings categories">
+            <button t-foreach="categories" t-as="c" t-key="c.key"
+                    class="pbst-nav__b"
+                    t-att-class="{ 'is-on': current and current.key === c.key }"
+                    t-att-aria-current="current and current.key === c.key ? 'page' : false"
+                    t-att-title="c.label"
+                    t-on-click="() => this.setCat(c.key)">
+              <span class="pbst-nav__ic" t-out="ic(c.icon, 15)"/>
+              <span class="pbst-nav__l" t-esc="c.label"/>
+            </button>
+          </nav>
+
+          <!-- ======================= the pane ======================= -->
+          <main class="pbst-main" t-if="current">
+            <h1 class="pbst-h" t-esc="current.label"/>
+            <p class="pbst-blurb" t-esc="current.blurb"/>
+
+            <div class="pbst-cards">
+              <div t-foreach="currentCards" t-as="k" t-key="k.id" class="pbst-card">
+                <span class="pbst-card__ic" t-out="ic(k.icon, 17)"/>
+                <span class="pbst-card__tx">
+                  <span class="pbst-card__l" t-esc="k.label"/>
+                  <span class="pbst-card__s" t-esc="k.sub"/>
+                </span>
+                <button class="pbim-btn primary pbst-go"
+                        t-att-title="k.label"
+                        t-on-click="() => this.openCard(k)">Open</button>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
