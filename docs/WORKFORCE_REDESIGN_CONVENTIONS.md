@@ -9,7 +9,8 @@ new gotcha or make a binding convention decision, append a numbered W-rule here 
 P4 closed the ledger at **W54**; **P6 reopened it** (demo-world sync was a post-P4 closure item) and
 takes it to **W61**; **P5** (the Week Grid redesign, run after P6) takes it to **W68**; the
 **IA redesign programme** (`docs/handovers/ia/`) starts contributing at **W69** and Cycle 1 takes
-it to **W74**; Cycle 2's deploy afternoon adds W93-W94 and **Cycle 3** takes it to **W100**.
+it to **W74**; Cycle 2's deploy afternoon adds W93-W94 and **Cycle 3** takes it to **W100**;
+**Cycle 4** (Insights + Compliance hubs, the filing flow) takes it to **W105**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -1503,3 +1504,101 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   SINGLE-COMPANY and re-point them when you need to see another company's data;
   and when a 500 appears mid-validation, check whether the PUBLIC site is still
   200 before assuming your own deploy did it (it was, throughout).
+- **W101 A source gate written the obvious way fails on the paragraph that
+  explains it — so every one of them needs a COMMENT STRIPPER, and W48's
+  corollary is not a warning, it is a required helper.** (IA Cycle 4. Six of
+  eighteen first-run failures, in three modules, all the same mistake.) The
+  gates were "no `fa fa-` class survives", "`typeof Chart` is gone", "the board
+  never says `clearBreadcrumbs: true`" and "the facade never names
+  `action_mail_report`" — and every one of those strings is exactly what the
+  file's own header has to say to explain why the thing was removed. A gate
+  that reads the whole file therefore fails on its own documentation, and the
+  tempting repair (delete the sentence) throws away the only thing that stops
+  the next reader putting the code back.
+  Rules: (1) a source gate reads `_code(src)` — the file with `//`, `/* … */`
+  and `#` comments removed — never the raw text. The three Cycle-4 test files
+  each carry that fourteen-line helper for exactly this reason; (2) a REGION
+  gate is delimited at BOTH ends. `test_the_ledger_is_read_only_this_cycle`
+  first split on the ledger header and ran to end of file, swallowing the
+  config wizards below it — which create policies and tax tables because that
+  is what they are for. Explicit start AND end markers, and a complementary
+  assertion that the region still contains what it is supposed to (W64's
+  shape); (3) a needle that stops at the first `)` is not a needle:
+  `getattr\(([^)]*)\)` reported `getattr(w.with_context(x=True), method)` as a
+  getattr on an expression. Gate the ARGUMENT that matters, which here is the
+  second one.
+- **W102 W97 again, in the module whose own docstring quotes it.** (IA Cycle 4,
+  found on the live run within a minute of the Statutory Data view first
+  rendering.) `vietnam.insurance.adjustment` and `vietnam.employee.dependent`
+  are scoped by their OWN `company_id` rule; `hr.employee` is scoped more
+  tightly on this database. So `search([])` returned rows the caller may read,
+  the ledger dereferenced `employee_id.name` to render a column, it hit the one
+  employee (id 28) the rules hide, and the client showed "This table could not
+  be loaded" — 45 readable rows lost to one refusal, message naming neither the
+  row nor the reason. The dependents table rendered perfectly at the same
+  moment, because its newest 400 rows happened not to include that employee: a
+  correct count and a poisoned row look identical, which is why W97 says to
+  walk the rows BACK to their owner rather than count them.
+  What Cycle 4 adds to the rule: (1) the scope is a SUBQUERY
+  (`('employee_id', 'in', Emp._search([]))`), not a list of ids — this tenant
+  has 4 500 employees and a domain is not a place to put them; (2) it keeps
+  ownerless rows explicitly (`'|', ('employee_id','=',False), …`), because a row
+  about no person is hidden by no rule; (3) a THIRD model reached from a drawer
+  field (the adjustment's `applied_payslip_id`) is guarded at the dereference
+  rather than by scoping the whole table — a drawer field degrading to blank is
+  proportionate where a grid vanishing is not.
+  General form, and the reason it recurred: the rule is about the models a row
+  DEREFERENCES, not about the model you searched. Reading your own docstring is
+  not the same as checking your own many2ones.
+- **W103 A cloned database needs its SIGNALLING table repaired, and both of the
+  obvious repairs report "0 tests" as a success line.** (IA Cycle 4, three test
+  rounds lost to it.) Running a suite on a `pg_dump | pg_restore` clone keeps
+  production out of the way entirely — no second stop-window for tests — but
+  the restore leaves `orm_signaling_registry`'s SEQUENCE behind its rows, so the
+  first registry load answers `duplicate key value violates unique constraint
+  "orm_signaling_registry_pkey"` and the run ends
+  `0 failed, 0 error(s) of 0 tests`. That is W81's trap exactly: a green line
+  over a run that never happened.
+  The obvious fix — `TRUNCATE orm_signaling_registry` — swaps one silent
+  failure for another: `Registry.signal_changes` then reads NULL and dies with
+  `unsupported operand type(s) for +=: 'NoneType' and 'int'`, printing the SAME
+  "0 tests" line. The table needs a ROW and a sequence AHEAD of it:
+  `setval(pg_get_serial_sequence('orm_signaling_registry','id'),
+  GREATEST(COALESCE(MAX(id),0),1))` then one `INSERT … DEFAULT VALUES`.
+  Rule that generalises past this table: after any clone, read the TEST COUNT,
+  never the pass/fail line. "0 of 0" and "181 of 181" are both green and only
+  one of them is evidence. Related: `--no-http` does NOT stop `odoo-bin`
+  binding the configured port on this build — a suite run beside a live server
+  needs `--http-port=<free>`, or it dies with "Port 8069 is in use" before a
+  single test runs.
+- **W104 A deleted file is still on the server, because the deploy's second hop
+  may never prune.** (IA Cycle 4, and it is W93's price.) `--delete` belongs to
+  the STAGING rsync and never to the hop into the shared addons directory, so a
+  file removed from the repo — `payroll_report.css` and `wf_breadcrumb.css`
+  here — stays on disk indefinitely. It is harmless as long as the MANIFEST no
+  longer lists it (the bundle is built from the manifest, not from the
+  directory), which is why the gate asserts the file out of
+  `web.assets_backend` rather than off the disk. But it is not tidy and it is
+  not nothing: a future author reading the addons directory sees a stylesheet
+  that no longer exists in git.
+  Rule: a deploy that DELETES a file removes it from the server BY NAME, in the
+  same step, and the test asserts the manifest rather than the filesystem —
+  because the test also runs on a machine where the file was never deployed.
+- **W105 A cockpit that reads with the CALLER's rights shows zeros where a
+  sudo'd one shows money, and neither of them is broken.** (IA Cycle 4,
+  discovered while photographing the re-skinned Payroll Report.) The report
+  renders 902 employees and `0` for gross, net, deductions and every variance,
+  on a run whose payslip lines hold ₫21.0B of GROSS in SQL. The cause is not the
+  report: `hr.payslip.line` carries exactly two non-global record rules on this
+  database — "employee self-service (own)" and pb_demo's "all payslip lines" —
+  and there is no OFFICER or MANAGER rule at all. So every payroll manager who
+  is not a demo user reads zero lines through the ORM, silently, while
+  `pb_insights` (which reads under `sudo()` behind its own `_require()` gate)
+  shows ₫18.63B on the same screen ten seconds earlier.
+  Rules: (1) when two surfaces over the same data disagree by everything, check
+  which of them is sudo'd before suspecting either one's arithmetic — this is
+  W62's "two surfaces, one threshold" with permissions in place of a tolerance;
+  (2) a model whose ACL grants read to a tier that NO record rule then admits is
+  a permission gap, not a permission decision, and it is invisible from the ACL
+  alone; (3) it is REPORTED, never patched mid-cycle: a record rule on payslip
+  lines is a money-visibility change and belongs to whoever owns that decision.
