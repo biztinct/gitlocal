@@ -15,7 +15,7 @@ This module also owns the backend web-client ENTRY POINT (it overrides
 answering 500 live here too: see `models/ir_http_session_guard.py`, which
 repairs the `hr_timesheet` multi-company `session_info` KeyError (W100).
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Hidden/Tools',
     'author': 'Biztinct',
     'license': 'LGPL-3',

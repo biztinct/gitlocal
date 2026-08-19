@@ -48,10 +48,32 @@ class TestSessionGuard(HttpCase):
             "biz_deroute/models/ir_http_session_guard.py and delete it if so.",
         )
         # ... and our patch must be the function actually bound to the class,
-        # otherwise the import-time patch silently did not take.
+        # otherwise `_register_hook` silently did not take.
         self.assertEqual(
             upstream.IrHttp.session_info.__name__, '_guarded_session_info',
             "the biz_deroute session guard is not bound to hr_timesheet.IrHttp",
+        )
+
+    def test_01b_the_guard_is_not_imported_at_module_level(self):
+        """`biz_deroute` must never import `hr_timesheet` while it is being
+        loaded. It depends on `web` alone and is auto_install, so it loads
+        early, and dragging another addon's `ir.http` into the class registry
+        ahead of its place in the graph cost every database on the server its
+        LOGIN PAGE (500, `Expected singleton: res.users()`, rendering
+        `website.layout` with an empty `env.user`). The import belongs in
+        `_install_session_guard()`, which `_register_hook` calls after the
+        registry is up.
+        """
+        import inspect
+
+        from ..models import ir_http_session_guard as guard
+        src = inspect.getsource(guard)
+        head = src.split('def _install_session_guard')[0]
+        # Syntactic (W114): an `import` STATEMENT naming hr_timesheet, which the
+        # header's prose cannot satisfy.
+        self.assertNotRegex(
+            head, r'(?m)^\s*(from|import)\s+odoo\.addons\.hr_timesheet',
+            "hr_timesheet is imported at biz_deroute module level again",
         )
 
     # ------------------------------------------------------------------ 2
