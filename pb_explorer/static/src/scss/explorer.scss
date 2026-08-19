@@ -582,3 +582,13 @@
         .pbex-card-head { gap: 10px; }
     }
 }
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.pbex` already declares `height: 100%; overflow: auto`, so the
+   scrollport is unchanged (W20); only the page padding tightens for a lens box
+   the rail has already inset. The head keeps its tools row and, with the
+   identity block suppressed, the sub line is what names the surface. */
+.pbex.pbex--embedded {
+    .pbex-wrap { padding: 18px 22px 36px; }
+    .pbex-head-main .sub { margin-top: 0; }
+}

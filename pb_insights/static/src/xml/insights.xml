@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_insights.PbInsights">
-    <div class="pbin pbim">
+    <div class="pbin pbim" t-att-class="{ 'pbin--embedded': props.embedded }">
 
       <!-- ============================ loading ============================ -->
       <div t-if="!state.loaded" class="pbin-loading">
@@ -19,8 +19,13 @@
         <!-- ============================= hero ============================ -->
         <div class="pbin-hero" data-coach="in-hero">
           <div class="pbin-hero-main">
-            <div class="eyebrow"><t t-out="ic('trending', 13)"/><span>Executive analytics</span></div>
-            <h1>Insights</h1>
+            <!-- The hub's command bar already says INSIGHTS · PULSE, so the
+                 eyebrow and the h1 are chrome the host owns (W17). Everything
+                 below them is DATA — the net headline, the delta, the run
+                 state — and none of it is suppressed: an embedded mode that
+                 removed a number would be a fork, not a mount. -->
+            <div class="eyebrow" t-if="!props.embedded"><t t-out="ic('trending', 13)"/><span>Executive analytics</span></div>
+            <h1 t-if="!props.embedded">Insights</h1>
             <p class="sub">
               <span t-esc="d.company"/>
               <b t-if="hero.run_name" t-esc="latestRunLabel"/>

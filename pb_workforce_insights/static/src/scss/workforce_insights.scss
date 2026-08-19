@@ -263,3 +263,12 @@
         .pbwi-canvas { height: 200px; &.sm { height: 150px; } }
     }
 }
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.pbwi` is `height: 100%; overflow: auto` already, so the lens
+   box's definite height is enough (W20); the padding tightens and the head's
+   sub line loses the gap the suppressed title used to open. */
+.pbwi.pbwi--embedded {
+    .pbwi-wrap { padding: 18px 22px 36px; }
+    .pbwi-head .sub { margin-top: 0; }
+}

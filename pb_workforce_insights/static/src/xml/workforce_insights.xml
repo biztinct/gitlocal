@@ -5,7 +5,7 @@
        expression compiler maps `lt`/`gt`/`and`/`or`/`in` to JS operators
        (C18.71). -->
   <t t-name="pb_workforce_insights.PbWorkforceInsights">
-    <div class="pbwi pbim">
+    <div class="pbwi pbim" t-att-class="{ 'pbwi--embedded': props.embedded }">
 
       <div t-if="!state.loaded" class="pbwi-loading">
         <div class="pbwi-spin"/><span>Reading the workforce…</span>
@@ -16,8 +16,11 @@
         <!-- ============================ header ========================== -->
         <div class="pbwi-head" data-coach="wa-head">
           <div>
-            <div class="eyebrow"><t t-out="ic('users', 13)"/><span>Workforce</span></div>
-            <h1>Workforce Insights</h1>
+            <!-- Chrome the hub owns (W17). The tools beside it — the month
+                 window chips and Refresh — are the surface's own controls and
+                 render in both modes. -->
+            <div class="eyebrow" t-if="!props.embedded"><t t-out="ic('users', 13)"/><span>Workforce</span></div>
+            <h1 t-if="!props.embedded">Workforce Insights</h1>
             <p class="sub">
               Attendance, overtime, leave and cost per head — on real payroll
               and attendance data, filterable, and every figure opens the people behind it.

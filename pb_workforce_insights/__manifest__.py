@@ -31,7 +31,7 @@ missing phase degrades to an honest "not installed" tile instead of a crash.
 """,
     # C2/C18.86: bump on EVERY asset change — the bundle URL hash is keyed on
     # module versions, so without this browsers keep serving the stale CSS/JS.
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
