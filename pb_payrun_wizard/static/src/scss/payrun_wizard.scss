@@ -1,4 +1,12 @@
 // Payobook Run Payroll wizard — Misty Blue, soft-muted
+/* W20: a lens box hands its guest a DEFINITE height, so a `min-height:100%`
+   page grows past it and its own overflow never scrolls. `.pw-root--embedded`
+   (added only when props.embedded) takes the height and owns the scroll; the
+   standalone rule below is byte-unchanged. */
+.pw-root.pw-root--embedded {
+    height: 100%; min-height: 0; overflow-y: auto; align-items: flex-start;
+}
+
 .pw-root {
     --pw-brand: #5A4BB0; --pw-soft: #EDEAF8; --pw-soft2: #DDD6F2; --pw-ink: #1B1733; --pw-muted: #6E6A85; --pw-border: #D5DEEE;
     padding: 28px; background: #F4F5FB; min-height: 100%; display: flex; justify-content: center;

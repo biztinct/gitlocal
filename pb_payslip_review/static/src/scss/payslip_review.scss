@@ -1,4 +1,10 @@
 // Payobook Payslip Review — split-view cockpit (Indigo, solid, soft buttons)
+/* W20: the embedded mount takes a definite height and owns its scrolling; the
+   standalone `min-height:100%` page rule below is unchanged. */
+.psr-root.psr-root--embedded {
+    height: 100%; min-height: 0; overflow-y: auto; padding: 20px 24px 44px;
+}
+
 .psr-root {
     --b: #4F46E5; --ink: #1B1733; --muted: #6E6A85; --border: #E7E5F2; --soft: #EEF0FF;
     padding: 22px 26px 50px; background: #F4F5FB; min-height: 100%;
