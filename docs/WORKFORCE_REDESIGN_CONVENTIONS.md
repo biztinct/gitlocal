@@ -1284,3 +1284,70 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   not patched (W68.3); until it is fixed, no Vietnamese backend surface can be
   visually validated on this box, and `.po` correctness has to be evidenced from
   the files and the database instead.
+  **CLOSED in P9** (2026-08-19). The last two sentences no longer hold: the
+  endpoint answers 200 for vi_VN, and P7's deferred Vietnamese visual check was
+  taken on the live Week Grid the same afternoon. See W90 for the fix and for
+  the part of the original diagnosis that turned out to be a trap.
+- **W90 A read-only wrapper around a PROCESS-WIDE cache is a warning, not an
+  obstacle — and the obvious repair (copy it and carry on) can still break the
+  thing it was protecting.** (P9, fixing W89.) `web_debranding` rewrote the web
+  translation catalogue in place; Odoo 19 now hands that catalogue back as
+  `ReadonlyDict` entries out of `code_translations` (`odoo/tools/translate.py`,
+  `CodeTranslations._load_web_translations`), so the assignment raised
+  `TypeError` and every non-English `/web/webclient/translations` answered 500.
+  Two things are worth keeping from the repair:
+  1. **the wrapper had a reason.** `code_translations` is a module-level
+     singleton shared by every database in the worker, so the in-place rewrite
+     that "worked" on Odoo 16 was writing one tenant's branding into every
+     other tenant's catalogue. On a DB-per-tenant SaaS box that is the more
+     expensive bug of the two. Rebuild into plain dicts; never patch the
+     cached objects, even where the runtime would now let you;
+  2. **half of that catalogue is not text, it is a KEY.** Each entry is
+     `{"id": msgid, "string": translation}` and the web client indexes on the
+     first (`localization_service.js`: `terms[addon][message.id] =
+     message.string`) — `id` is the literal `_t()` is called with in the JS
+     sources. Rewriting it, which is what the original loop did, silently
+     drops the translation of every term containing the word being replaced.
+     So the fix rewrites `string` only. General form: before "fixing" a loop
+     that mutates a mapping, ask which side of each pair is data and which is
+     an index — the crash tells you the code cannot run, never that it was
+     right.
+  Diagnostic worth reusing: **English is the one language that cannot reproduce
+  this class of bug**, because `en_US` carries no .po code translations at all,
+  so any loop over `messages` has an empty body. A catalogue/translation test
+  that only runs `en_US` is testing the empty case. Pin a real language
+  (`web` ships `vi.po` and `fr.po`, and `get_po_paths` resolves `vi_VN` down to
+  `vi.po`, so no language has to be INSTALLED for the test to have data).
+- **W91 A `t-set` body only misbehaves under FULL branding, which is why W87's
+  defect can sit in a module for months while every page you look at is fine.**
+  (P9, converting `pb_me_portal`'s eight call sites.) `website/models/ir_qweb.py`
+  :93-100 sets `inherit_branding=True` (branding on ir.ui.view TAG NODES — the
+  case that turns `<t t-set="icon">download</t>` into unmatchable Markup) only
+  in website EDIT mode; a restricted editor merely gets `inherit_branding_auto`,
+  which brands FIELDS, and an ordinary portal user gets neither. Measured live
+  on `/my/payslips`: zero `data-oe-model` attributes for both the seeded ESS
+  portal user and an internal manager. So the broken icons were real and were
+  invisible to the population that uses the page every day.
+  Consequences: (1) "I loaded the page and the icons were fine" is not evidence
+  — the source gate is the primary check and the render test must set
+  `inherit_branding=True` explicitly (`ir.qweb._render(view_id, {},
+  inherit_branding=True)`, both directions: the body form must NOT reach the
+  right branch, the t-value form MUST); (2) when a rule's blast radius is
+  narrower than the rule, write the radius down, or the next reader will
+  quietly decide the rule does not apply to them.
+- **W92 Upgrading a dependency runs its DEPENDENTS' suites, often for the first
+  time ever — so a "new" failure may be a first execution.** (P9.)
+  `-u web_debranding` pulled `biz_debrand`'s tests into the run, and
+  `TestBizDebrandHttp::test_database_manager_debranded` failed: it asserts
+  `/web/database/manager` carries no `odoo.com`, and biz_debrand has no
+  db-manager seam at all — `grep` finds the string only in the test. The test
+  has therefore been asserting an unimplemented feature since it was written,
+  and nothing surfaced it because nothing had ever upgraded the module
+  underneath it. Rules: (1) before calling a failure a regression, check
+  whether the log has EVER run that test before (`grep` the name across the
+  server log) — a first-ever execution is a discovery, not a break; (2) it is
+  still REPORTED, not patched in the same phase (W68.3, and here also because
+  the fix is a debranding seam and the phase's own constraint forbade adding
+  debranding logic); (3) scope a deploy's `-u` deliberately: touching a
+  low-level third-party module re-validates and re-tests everything above it,
+  which is a feature — just budget for it.

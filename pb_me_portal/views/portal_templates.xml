@@ -52,7 +52,24 @@
   </template>
 
   <!-- Inline Lucide icons for the portal (no Font Awesome, no emoji — C11).
-       Call with `icon` set to the name; `isz` optional. -->
+       Call with `icon` set to the name; `isz` optional.
+
+       W87: pass the name with t-value="'name'", NEVER as a t-set BODY. A body
+       is rendered QWeb, and on a `website=True` page the editor's
+       inherit_branding wraps rendered text in `data-oe-*` markup — so
+       `<t t-set="icon">download</t>` arrives here as Markup carrying branding
+       attributes, every `icon == '...'` comparison is False, and every call
+       site falls through to the else-branch. This module shipped that way from
+       the start and it was invisible precisely because the else-branch is a
+       plausible document glyph: the download / alert / calculator / verified
+       icons all rendered as the same file sheet, which reads as a design
+       choice rather than a defect. A t-value is a plain string and cannot be
+       branded.
+
+       The else-branch is a generic document sheet, which is also exactly what
+       the 'file' name asks for, so the document rows deliberately have no
+       branch of their own. (W23: nothing may sit between a t-elif and its
+       t-else, not even a comment, which is why this note lives up here.) -->
   <template id="ess_icon" name="ESS icon">
     <t t-set="isz" t-value="isz or 18"/>
     <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
@@ -93,7 +110,7 @@
 
         <t t-if="not cards">
           <div class="pbme-empty">
-            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon">file-text</t><t t-set="isz" t-value="26"/></t></div>
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="26"/></t></div>
             <h3>No payslips yet</h3>
             <p>Your payslips will appear here once payroll is run.</p>
           </div>
@@ -113,7 +130,7 @@
               </div>
               <div class="pbme-pay-act">
                 <a class="pbme-btn pbme-btn--ghost" t-att-href="c['url']">View</a>
-                <a class="pbme-btn pbme-btn--primary" t-att-href="c['pdf']"><t t-call="pb_me_portal.ess_icon"><t t-set="icon">download</t><t t-set="isz" t-value="15"/></t>PDF</a>
+                <a class="pbme-btn pbme-btn--primary" t-att-href="c['pdf']"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>PDF</a>
               </div>
             </div>
           </t>
@@ -159,7 +176,7 @@
               <div class="pbme-netcard-v" t-out="net" t-options='{"widget": "monetary", "display_currency": payslip.company_id.currency_id}'/>
               <div class="pbme-netcard-p"><t t-esc="period"/></div>
             </div>
-            <a class="pbme-btn pbme-btn--primary pbme-btn--block" t-att-href="pdf_url"><t t-call="pb_me_portal.ess_icon"><t t-set="icon">download</t><t t-set="isz" t-value="15"/></t>Download PDF</a>
+            <a class="pbme-btn pbme-btn--primary pbme-btn--block" t-att-href="pdf_url"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>Download PDF</a>
             <a class="pbme-btn pbme-btn--ghost pbme-btn--block" href="/my/payslips">Back to payslips</a>
           </div>
         </div>
@@ -306,7 +323,7 @@
     <t t-call="portal.portal_layout">
       <div class="pbme">
         <div class="pbme-empty">
-          <div class="pbme-empty-ic pbme-empty-ic--err"><t t-call="pb_me_portal.ess_icon"><t t-set="icon">alert</t><t t-set="isz" t-value="26"/></t></div>
+          <div class="pbme-empty-ic pbme-empty-ic--err"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="26"/></t></div>
           <h3>We couldn't process that</h3>
           <p><t t-esc="error"/></p>
           <a href="/my/profile" class="pbme-btn pbme-btn--primary">Back to profile</a>
@@ -351,7 +368,7 @@
               <div t-else="" class="pbme-doc-list">
                 <t t-foreach="documents" t-as="d">
                   <div class="pbme-doc-row">
-                    <div class="pbme-doc-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon">file</t></t></div>
+                    <div class="pbme-doc-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file'"/></t></div>
                     <div class="pbme-doc-main">
                       <div class="pbme-doc-name"><t t-esc="d['name']"/></div>
                       <div class="pbme-doc-meta">
@@ -360,9 +377,9 @@
                       </div>
                     </div>
                     <div class="pbme-doc-side">
-                      <span t-if="d['verified']" class="pbme-verified"><t t-call="pb_me_portal.ess_icon"><t t-set="icon">check-circle</t><t t-set="isz" t-value="14"/></t>Verified</span>
+                      <span t-if="d['verified']" class="pbme-verified"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="14"/></t>Verified</span>
                       <span t-else="" class="pbme-pending">Pending</span>
-                      <a t-if="d['download']" class="pbme-icon-btn" t-att-href="d['download']" title="Download"><t t-call="pb_me_portal.ess_icon"><t t-set="icon">download</t><t t-set="isz" t-value="16"/></t></a>
+                      <a t-if="d['download']" class="pbme-icon-btn" t-att-href="d['download']" title="Download"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="16"/></t></a>
                     </div>
                   </div>
                 </t>
@@ -410,7 +427,7 @@
 
         <t t-if="not rows">
           <div class="pbme-empty">
-            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon">calculator</t><t t-set="isz" t-value="26"/></t></div>
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'calculator'"/><t t-set="isz" t-value="26"/></t></div>
             <h3>No tax data yet</h3>
             <p>Your PIT summary appears once you have finalized payslips.</p>
           </div>
