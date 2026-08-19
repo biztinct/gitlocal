@@ -215,3 +215,25 @@
             .rec-pd, .rec-why { grid-column: 1 / -1; } }
     }
 }
+
+// ------------------------------------------------------------------ embedded
+// The Approvals cockpit as a LENS of the Home hub (W17). The hub's command bar
+// already carries the identity, so the hero's left half is suppressed in the
+// template and what is left is the "awaiting you" chip and Refresh — which
+// belong at the trailing edge once nothing sits beside them. The padding
+// tightens because the hub owns the outer frame; the standalone rendering above
+// is untouched, which is what makes the embedded mode a suppression rather than
+// a fork.
+.pba.pba--embedded {
+    .pba-wrap { padding: 18px 22px 40px; }
+    // With the title block gone the hero is no longer a hero: it is the two
+    // controls that were sitting beside it. So it stops being hero-shaped —
+    // trailing-aligned, centred, and shallow enough to read as a toolbar rather
+    // than as an empty banner.
+    .pba-hero {
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+    }
+}

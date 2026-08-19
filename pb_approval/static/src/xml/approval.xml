@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
     <t t-name="pb_approval.PbApproval">
-        <div class="pba pbim">
+        <div class="pba pbim" t-att-class="{ 'pba--embedded': props.embedded }">
 
             <!-- ============================ loading ============================ -->
             <div t-if="!state.loaded" class="pba-loading">
@@ -13,7 +13,14 @@
 
                 <!-- ============================= hero ============================= -->
                 <div class="pba-hero" data-coach="pa-hero">
-                    <div class="hero-l">
+                    <!-- The identity block, and only the identity block. In a
+                         hub the command bar already says Home > Approvals, so
+                         this is the one element the host owns (W17); the right
+                         half of the hero keeps its "awaiting you" count and its
+                         Refresh, because those are the cockpit's own controls
+                         and an embedded mode that removed a figure would be a
+                         fork rather than a suppression. -->
+                    <div class="hero-l" t-if="!props.embedded">
                         <div class="eyebrow"><span t-out="ic('stamp',15)"/> Payroll</div>
                         <h1>Approval Pipeline</h1>
                         <div class="sub">Officer review → HR review → Finance approval</div>
