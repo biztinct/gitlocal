@@ -74,7 +74,10 @@
     .pbm-pipe-lbl { font-size: 11.5px; font-weight: 700; color: #475569; }
     .pbm-pipe-arrow { color: var(--i-border); font-weight: 800; font-size: 16px; padding-bottom: 18px; }
 
-    .pbm-cols { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; align-items: start; }
+    /* One column since IA Cycle 3 took the Connectors panel out — kept as a
+       grid rather than collapsed to a plain div so a future second column
+       (the batch drawer) drops back in without moving the batches table. */
+    .pbm-cols { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
 
     /* batches table */
     .pbm-table { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
@@ -96,22 +99,16 @@
     .pbm-badge.error { background: var(--rose-soft); color: var(--rose); }
     .pbm-badge.muted { background: var(--slate-soft); color: var(--slate); }
 
-    /* connectors */
-    .pbm-conns { display: flex; flex-direction: column; gap: 10px; }
-    .pbm-conn { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
-    .pbm-conn:hover { border-color: var(--i); box-shadow: 0 4px 14px rgba(80,110,180,.10); }
-    .pbm-conn-top { display: flex; align-items: center; gap: 11px; }
-    .pbm-conn-ic { width: 34px; height: 34px; border-radius: 9px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--i-soft); color: var(--i600); font-size: 14px; }
-    .pbm-conn-nm { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-    .pbm-conn-nm .nm { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pbm-conn-nm .ty { font-size: 11px; color: var(--muted); font-weight: 600; }
-    .pbm-conn-st { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; text-transform: capitalize; padding: 3px 8px; border-radius: 999px; flex: none; background: var(--slate-soft); color: var(--slate); }
-    .pbm-conn-st .d { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-    .pbm-conn-st.connected { background: var(--green-soft); color: var(--green); }
-    .pbm-conn-st.error { background: var(--rose-soft); color: var(--rose); }
-    .pbm-conn-st.connecting { background: var(--amber-soft); color: var(--amber); }
-    .pbm-conn-foot { margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--line-soft); font-size: 11.5px; color: #475569; font-weight: 600; }
-    .pbm-conn-foot .muted { color: var(--muted); }
+    /* The one door to connectors (IA Cycle 3).
+       A LINK ROW, not a tile: every tile above starts something here, this one
+       leaves for Settings · Integrations, and the shape has to say so before
+       the click. Quieter than a tile, louder than a footnote. */
+    .pbm-conndoor { display: flex; align-items: center; gap: 11px; margin-bottom: 18px; padding: 11px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .pbm-conndoor .ic { flex: none; width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--i-soft); color: var(--i600); }
+    .pbm-conndoor .tx { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; color: #475569; }
+    .pbm-conndoor .n { flex: none; font-size: 12px; font-weight: 800; color: var(--i600); font-variant-numeric: tabular-nums; }
+    .pbm-conndoor .go { flex: none; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--i); background: #fff; color: var(--i600); border-radius: 10px; padding: 7px 13px; font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; transition: .14s; }
+    .pbm-conndoor .go:hover { background: var(--i-soft); }
 
     .pbm-empty { text-align: center; color: var(--muted); padding: 30px; font-size: 13.5px; }
     .pbm-empty b { color: var(--i600); }

@@ -8,7 +8,7 @@
 
       <div t-elif="d.error" class="pbim-wrap">
         <div class="pbim-panel"><div class="pbim-empty"><t t-esc="d.error"/></div>
-          <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Back to Import</button></div>
+          <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> <t t-esc="backLabel"/></button></div>
         </div>
       </div>
 
@@ -17,7 +17,7 @@
         <!-- top bar -->
         <div class="pbcc-top">
           <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> <t t-esc="backLabel"/></button>
-          <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
+          <button class="pbim-btn outline" t-on-click="openAdvancedForm" title="The native Odoo form for this connector"><t t-out="ic('settings',15)"/> Open record</button>
         </div>
 
         <!-- hero -->
@@ -63,7 +63,7 @@
           <div class="pbim-panel">
             <div class="pbim-panel-h">
               <h2 class="pbim-h2">Field mappings <span class="pbcc-count" t-esc="d.mapping_count"/></h2>
-              <button t-if="d.mapping_count" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openLink('action_view_mappings')">Open all</button>
+              <button t-if="d.mapping_count and hasLedgers" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openLedger('mapping')">Open all</button>
             </div>
             <div t-if="d.mappings.length" class="pbim-tablewrap pbcc-tw">
               <table class="pbim-table">
@@ -85,11 +85,12 @@
             <div class="pbim-panel pbcc-mini">
               <div class="pbcc-mini-h"><span class="ic"><t t-out="ic('database',18)"/></span>
                 <div><div class="n" t-esc="d.data_store_count"/><div class="l">Staged records</div></div></div>
-              <button t-if="d.data_store_count" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openLink('action_view_data_store')">View data store</button>
+              <button t-if="d.data_store_count and hasLedgers" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openLedger('store')">View data store</button>
             </div>
 
             <div class="pbim-panel">
-              <div class="pbim-panel-h"><h2 class="pbim-h2">Transformations <span class="pbcc-count" t-esc="d.rules.length"/></h2></div>
+              <div class="pbim-panel-h"><h2 class="pbim-h2">Transformations <span class="pbcc-count" t-esc="d.rules.length"/></h2>
+                <button t-if="d.rules.length and hasLedgers" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openLedger('rule')">Open all</button></div>
               <div t-if="d.rules.length" class="pbcc-rules">
                 <div t-foreach="d.rules" t-as="r" t-key="r.id" class="pbcc-rule">
                   <span class="nm" t-esc="r.name"/>
