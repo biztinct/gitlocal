@@ -27,14 +27,21 @@ tier. All assets are local — no CDN, no external chart library.
 """,
     # C2: bump on EVERY asset-file change — the compiled bundle URL hash is
     # keyed on module versions, so without this browsers keep the stale CSS.
-    'version': '19.0.3.1.0',
+    # 19.0.4.0.0 — IA Cycle 6: the five native-list drills. Three become hub
+    # deep links with an Insights back chip, two become an in-cockpit people
+    # ledger with a drawer. No target:"current" escape remains.
+    'version': '19.0.4.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     # pb_import_kit supplies the shared --pbim-* design tokens + primitives.
+    # pb_hub  — openHub / HubBackChip: every drill that leaves this cockpit now
+    #           lands on a hub lens WITH a return door instead of replacing the
+    #           board with a bare list (W5).
+    # pb_wf_kit — the shared drawer, imported and never forked (W6).
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_payruns',
-                'pb_import_kit'],
+                'pb_import_kit', 'pb_hub', 'pb_wf_kit'],
     'data': [
         'views/pb_insights_action.xml',
     ],

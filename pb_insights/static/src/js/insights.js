@@ -16,6 +16,8 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_insights/js/pbin_icons";
+import { openHub } from "@pb_hub/js/hub_nav";
+import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 
 const MODEL = "pb.insights";
 const DRAW_MS = 380;      // bar / spark draw-in (design spec: <= 400ms)
@@ -23,6 +25,7 @@ const COUNT_MS = 650;     // headline count-up
 
 export class PbInsights extends Component {
     static template = "pb_insights.PbInsights";
+    static components = { WfDrawer };
     static props = { action: { type: Object, optional: true }, "*": true };
 
     setup() {
@@ -41,7 +44,14 @@ export class PbInsights extends Component {
             heroNet: 0,
             drawn: false,
             statHover: "",       // hovered statutory leg — drives the centre readout
+
+            // ---- the in-cockpit people ledger (IA Cycle 6) ----
+            people: null, peopleLoading: false, psearch: "", pf: {},
+            pdrawer: null, pdrawerLoading: false,
         });
+        // No back chip of its own: this cockpit is mounted as the Insights
+        // hub's `pulse` lens, and the SHELL renders `pb_back`. A second chip
+        // inside the lens would be the hub's chrome, duplicated (W17).
         this._raf = null;
         this._timer = null;
         onWillStart(async () => { await this.load(); });
@@ -394,16 +404,20 @@ export class PbInsights extends Component {
         });
     }
 
-    /** The record itself stays one click away, from the hover readout. */
+    /**
+     * The record itself stays one click away, from the hover readout — but it
+     * opens where pay runs live, not as a bare form that replaces the board.
+     * The Pay Run hub's `runs` lens declares `wantsArrival`, so a run id in
+     * `pb_focus` lands the reader ON that run with the hub around it and an
+     * Insights chip to come back through.
+     */
     openRun(runId) {
         if (!runId) { return; }
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: _t("Pay Run"),
-            res_model: "hr.payslip.run",
-            res_id: runId,
-            views: [[false, "form"]],
-            target: "current",
+        openHub(this.action, {
+            xmlid: "pb_payhub.action_pb_pay_hub",
+            lens: "runs",
+            focus: String(runId),
+            back: this._backToInsights,
         });
     }
 
@@ -464,75 +478,171 @@ export class PbInsights extends Component {
     }
 
     // --- pulse: operational queues, not analytics ------------------------
-    _openEmployees(ids, title) {
-        if (!ids || !ids.length) { return; }
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: title,
-            res_model: "hr.employee",
-            domain: [["id", "in", ids]],
-            views: [[false, "list"], [false, "form"]],
-            target: "current",
+    //
+    // These four tiles are the only doors on this board that are not analytics
+    // questions, and until Cycle 6 every one of them left the cockpit through a
+    // bare native list opened with target:"current" — the surface replaced, no
+    // back chip, nothing to click (W5). Each is now decided by ONE rule:
+    //
+    //   a hub lens shows this population with equivalent filter semantics
+    //      → openHub deep link, with an Insights back chip
+    //   nothing shows this filtered subset
+    //      → an in-cockpit ledger with a drawer, right here
+    //
+    // Leave and bonus hours are EXACT matches (`pb_timeoff._QUEUE_STATES` is
+    // literally ['confirm','validate1']; the OT desk's bonus view queries
+    // state=approved AND bonus_hours>0 over the month). Month overtime is a
+    // superset — the desk shows submitted as well as approved, which is the
+    // queue an officer wants when they click a number that is about to grow.
+    // The two employee-id lists match nothing anywhere, so they stay here.
+
+    /** The return door every drill hands its destination. */
+    get _backToInsights() {
+        return {
+            label: _t("Insights"),
+            xmlid: "pb_insights_hub.action_pb_insights_hub",
+            lens: "pulse",
+        };
+    }
+
+    /** Open a Workforce lens. pb_mission reads its own key (`pb_shell_lens`). */
+    _openWorkforce(lens, cmd) {
+        openHub(this.action, {
+            tag: "pb_workforce",
+            lens,
+            lensKey: "pb_shell_lens",
+            back: { ...this._backToInsights, lensKey: "pb_lens" },
+            context: cmd ? { pb_cmd: cmd } : {},
         });
     }
 
     openAttendanceKind(kind) {
         const ids = this.pulse?.attendance?.kind_employees?.[kind] || [];
         if (!ids.length) { return; }
-        this._openEmployees(ids, _t("Attendance exceptions"));
+        this.openPeople("att_" + kind);
     }
 
     openLeave() {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: _t("Time Off"),
-            res_model: "hr.leave",
-            domain: [["state", "in", ["confirm", "validate1"]]],
-            views: [[false, "list"], [false, "form"]],
-            target: "current",
-        }).catch(() => {
-            this.notif.add(_t("Time Off is not available on this database."),
-                           { type: "warning" });
-        });
+        this._openWorkforce("timeoff");
     }
 
     openOvertime(nearCapOnly) {
-        const ids = this.pulse?.ot?.near_cap_ids || [];
-        if (nearCapOnly && ids.length) {
-            this._openEmployees(ids, _t("Near the overtime ceiling"));
+        if (nearCapOnly) {
+            if (!(this.pulse?.ot?.near_cap_ids || []).length) { return; }
+            this.openPeople("ot_near_cap");
             return;
         }
-        const ot = this.pulse?.ot;
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: _t("Overtime"),
-            res_model: "hr.overtime.request",
-            domain: [["state", "=", "approved"],
-                     ["date", ">=", ot?.date_from], ["date", "<=", ot?.date_to]],
-            views: [[false, "list"], [false, "form"]],
-            target: "current",
-        }).catch(() => {
-            this.notif.add(_t("Overtime is not available on this database."),
-                           { type: "warning" });
-        });
+        this._openWorkforce("overtime");
     }
 
     openBonusHours() {
-        const b = this.pulse?.bonus;
-        if (!b) { return; }
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: _t("Bonus hours"),
-            res_model: "hr.overtime.request",
-            domain: [["state", "=", "approved"], ["bonus_hours", ">", 0],
-                     ["date", ">=", b.date_from], ["date", "<=", b.date_to]],
-            views: [[false, "list"], [false, "form"]],
-            target: "current",
-        }).catch(() => {
-            this.notif.add(_t("Overtime is not available on this database."),
-                           { type: "warning" });
-        });
+        if (!this.pulse?.bonus) { return; }
+        // The desk's bonus VIEW, not its board: W44's pb_cmd channel, which
+        // pb_mission now also accepts on arrival so a foreign cockpit can ask
+        // for it. A lens that does not know the verb ignores it, which is
+        // correct behaviour and the reason the protocol is safe to extend.
+        this._openWorkforce("overtime", "bonus");
     }
+
+    // --- the in-cockpit people ledger ------------------------------------
+    /**
+     * The two drills nothing else in the product shows. Fourth use of the
+     * C3/C4 ledger+drawer pattern; a clone of its shape rather than an import
+     * of another cockpit's board, for the reason pb_statutory wrote down.
+     */
+    async openPeople(kind) {
+        this.state.people = { kind, title: "", rows: [], columns: [], facets: [] };
+        this.state.peopleLoading = true;
+        this.state.psearch = "";
+        this.state.pf = {};
+        try {
+            const d = await this.orm.call(MODEL, "get_people_ledger", [kind]);
+            if (!this.state.people) { return; }       // closed while in flight
+            this.state.people = d;
+        } catch (e) {
+            console.warn("pb_insights: get_people_ledger failed", e);
+            this.state.people = null;
+            this.notif.add(
+                (e && e.data && e.data.message) || _t("Could not load that list."),
+                { type: "danger" });
+        } finally {
+            this.state.peopleLoading = false;
+        }
+    }
+
+    closePeople() { this.state.people = null; this.state.pdrawer = null; }
+
+    onPeopleSearch(ev) { this.state.psearch = (ev.target.value || "").toLowerCase(); }
+    setPeopleFacet(key, val) { this.state.pf[key] = this.state.pf[key] === val ? "" : val; }
+    onPeopleFacetSelect(key, ev) { this.state.pf[key] = ev.target.value || ""; }
+
+    _matchPerson(r) {
+        for (const [k, v] of Object.entries(this.state.pf)) {
+            if (v && String((r._f || {})[k]) !== String(v)) { return false; }
+        }
+        const q = this.state.psearch;
+        if (q && !(r._s || "").toLowerCase().includes(q)) { return false; }
+        return true;
+    }
+
+    get peopleRows() {
+        return ((this.state.people && this.state.people.rows) || [])
+            .filter((r) => this._matchPerson(r));
+    }
+
+    peopleChipCount(key, val) {
+        return ((this.state.people && this.state.people.rows) || [])
+            .filter((r) => String((r._f || {})[key]) === String(val)).length;
+    }
+
+    get peopleDirty() {
+        return !!(this.state.psearch || Object.values(this.state.pf).some((v) => v));
+    }
+
+    clearPeopleFilters() {
+        const f = {};
+        for (const k of Object.keys(this.state.pf)) { f[k] = ""; }
+        this.state.pf = f;
+        this.state.psearch = "";
+    }
+
+    /** ONE getter, ONE sentence, ONE msgid — a translator cannot reorder
+     *  fragments assembled out of `t` nodes (W80). */
+    get peopleFoot() {
+        const d = this.state.people || {};
+        const shown = this.peopleRows.length;
+        if ((d.overflow || 0) > 0) {
+            return _t("Showing %(shown)s of %(total)s · the first %(loaded)s are "
+                      + "loaded, so narrow the search to reach the rest.",
+                      { shown, total: d.total || 0, loaded: d.shown || 0 });
+        }
+        return _t("Showing %(shown)s of %(total)s", { shown, total: d.total || 0 });
+    }
+
+    async openPerson(r) {
+        if (!r.id) { return; }
+        this.state.pdrawer = { title: r.cells[0] || "—", subtitle: "", facts: [] };
+        this.state.pdrawerLoading = true;
+        try {
+            const d = await this.orm.call(MODEL, "get_people_detail",
+                                          [this.state.people.kind, r.id]);
+            if (!this.state.pdrawer) { return; }
+            this.state.pdrawer = {
+                title: d.title || r.cells[0] || "—",
+                subtitle: d.subtitle || "",
+                avatar_url: d.avatar_url || "",
+                facts: d.facts || [],
+            };
+        } catch (e) {
+            console.warn("pb_insights: get_people_detail failed", e);
+            this.notif.add(_t("Could not load this person's detail."),
+                           { type: "danger" });
+        } finally {
+            this.state.pdrawerLoading = false;
+        }
+    }
+
+    closePersonDrawer() { this.state.pdrawer = null; }
 
     /** The bare "open the Explorer" route, for the band under the board. */
     openExplorer() {

@@ -420,6 +420,113 @@
 
         <p class="pbin-foot" t-esc="footLabel"/>
       </div>
+
+      <!-- ==== the two drills nothing else in the product shows ====
+           An attendance-exception cohort and the near-ceiling overtime list are
+           filtered subsets no hub lens carries, so they open INWARDS: a ledger
+           over the board, a drawer over the ledger, and the cockpit still
+           underneath both. Fourth use of the C3/C4 pattern. -->
+      <div t-if="state.people" class="pbin-people" t-on-click.self="closePeople">
+        <!-- No data-coach here on purpose: `pb_learn`'s anchor registry is
+               GENERATED, and an `in-*` anchor it does not declare fails its
+               stray-anchor gate. This ledger is a surface the Coach does not
+               teach yet; when it does, the anchor is added through the
+               generator, not by typing one here. -->
+          <div class="pbin-people__panel pbim-panel">
+          <header class="pbin-people__head">
+            <div>
+              <h3 t-esc="state.people.title"/>
+              <p t-esc="state.people.subtitle"/>
+            </div>
+            <button class="pbin-people__x" t-on-click="closePeople"
+                    aria-label="Close">
+              <t t-out="ic('close', 16)"/>
+            </button>
+          </header>
+
+          <div t-if="state.peopleLoading" class="pbin-loading">
+            <div class="pbin-spin"/><span>Loading…</span>
+          </div>
+
+          <t t-else="">
+            <div class="pbin-people__filters">
+              <div class="pbim-chips">
+                <t t-foreach="state.people.facets or []" t-as="fac" t-key="fac.key">
+                  <t t-if="fac.chips.length > 1">
+                    <t t-if="fac.kind === 'chips'">
+                      <button t-foreach="fac.chips" t-as="c" t-key="c.id"
+                              t-attf-class="pbim-fchip {{ state.pf[fac.key] === c.id ? 'on' : '' }}"
+                              t-on-click="() => this.setPeopleFacet(fac.key, c.id)">
+                        <t t-esc="c.label"/> <span class="c" t-esc="peopleChipCount(fac.key, c.id)"/>
+                      </button>
+                    </t>
+                    <t t-else="">
+                      <select class="pbin-people__sel"
+                              t-on-change="(ev) => this.onPeopleFacetSelect(fac.key, ev)">
+                        <option value="">All</option>
+                        <option t-foreach="fac.chips" t-as="c" t-key="c.id"
+                                t-att-value="c.id"
+                                t-att-selected="state.pf[fac.key] === c.id" t-esc="c.label"/>
+                      </select>
+                    </t>
+                  </t>
+                </t>
+                <button t-if="peopleDirty" class="pbim-fchip"
+                        t-on-click="clearPeopleFilters">
+                  <t t-out="ic('close', 13)"/> Clear
+                </button>
+              </div>
+              <div class="pbin-people__search">
+                <span class="ic"><t t-out="ic('search', 15)"/></span>
+                <input t-att-placeholder="state.people.search_ph"
+                       t-on-input="onPeopleSearch"/>
+              </div>
+            </div>
+
+            <div t-if="peopleRows.length" class="pbim-tablewrap pbin-people__tw">
+              <table class="pbim-table">
+                <thead>
+                  <tr>
+                    <th t-foreach="state.people.columns" t-as="col" t-key="col_index"
+                        t-attf-class="{{ col.wide ? 'pbin-th-wide' : '' }}"
+                        t-esc="col.label"/>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="peopleRows" t-as="r" t-key="r.id" class="click"
+                      t-on-click="() => this.openPerson(r)">
+                    <td t-foreach="r.cells" t-as="cell" t-key="cell_index" t-esc="cell"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div t-else="" class="pbim-empty" t-esc="state.people.empty"/>
+
+            <!-- Honest in both directions: what is on screen, and what exists
+                 behind the id cap the pulse applies (W45). -->
+            <div class="pbin-people__foot" t-esc="peopleFoot"/>
+          </t>
+        </div>
+      </div>
+
+      <!-- The kit's drawer (W6): imported, never forked. -->
+      <WfDrawer t-if="state.pdrawer" title="state.pdrawer.title"
+                subtitle="state.pdrawer.subtitle"
+                onClose="() => this.closePersonDrawer()">
+        <div class="pbin-dr">
+          <div t-if="state.pdrawerLoading and !state.pdrawer.facts.length"
+               class="pbin-dr__load">
+            <div class="pbin-spin"/><span>Loading…</span>
+          </div>
+          <img t-if="state.pdrawer.avatar_url" class="pbin-dr__av"
+               t-att-src="state.pdrawer.avatar_url" alt=""/>
+          <div t-foreach="state.pdrawer.facts" t-as="f" t-key="f.label"
+               class="pbin-dr__kv">
+            <span class="k" t-esc="f.label"/>
+            <span class="v" t-esc="f.value"/>
+          </div>
+        </div>
+      </WfDrawer>
     </div>
   </t>
 
