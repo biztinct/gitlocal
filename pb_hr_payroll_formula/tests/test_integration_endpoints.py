@@ -271,12 +271,17 @@ class TestEndpointCatalogue(TransactionCase):
             self.assertTrue(other.exists())
             self.assertEqual(other.endpoint_count, 0)
             # …and the vendor-template apply path does not reach for feeds.
+            # A VENDOR connector, because `hr.integration.mapping.template`
+            # carries the five-vendor `_VENDORS` selection and not the
+            # connector's own seven — `demo` is not a value it accepts.
+            vendor = self.Connector.create({
+                'name': 'IG-C1 no schema zoho', 'connector_type': 'zoho'})
             self.env['hr.integration.mapping.template'].create({
-                'connector_type': 'demo', 'source_path': 'IGC1.NoSchema',
+                'connector_type': 'zoho', 'source_path': 'IGC1.NoSchema',
                 'target_code': 'IGC1NS', 'endpoint_code': 'whatever',
             })
-            conn.action_apply_mapping_template()
-            m = conn.field_mapping_ids.filtered(
+            vendor.action_apply_mapping_template()
+            m = vendor.field_mapping_ids.filtered(
                 lambda x: x.source_field == 'IGC1.NoSchema')
             self.assertTrue(m)
             self.assertFalse(m.endpoint_id)
