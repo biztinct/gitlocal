@@ -3,9 +3,11 @@
 
   <t t-name="pb_payrun_results.PbPayrunResults">
     <div class="pbr-root">
-      <!-- header -->
+      <!-- header: W17 - the hub owns the title; the run picker and the XLSX
+           export are the toolbar and stay (`.pbr-head-actions` is margin-left:auto,
+           so it holds its place with nothing beside it). -->
       <div class="pbr-head">
-        <div class="pbr-title">
+        <div class="pbr-title" t-if="!props.embedded">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
           <div>
             <b>Pay Run Results</b>

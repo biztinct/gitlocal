@@ -2,14 +2,21 @@
 <templates xml:space="preserve">
 
 <t t-name="pb_payrun_wizard.PayrunWizard">
-    <div class="pw-root">
+    <div class="pw-root" t-att-class="{ 'pw-root--embedded': props.embedded }">
         <div class="pw-card">
-            <!-- Header -->
-            <div class="pw-head">
+            <!-- Header. W17: in a hub the brand chip already says "Pay Run" and
+                 the lens rail already says RUN, and the close button would leave
+                 the hub entirely - so the whole row goes, and the stepper below
+                 carries the orientation. -->
+            <div class="pw-head" t-if="!props.embedded">
                 <div>
                     <div class="pw-eyebrow">Payobook · Pay run</div>
                     <h2>Run Payroll</h2>
                 </div>
+                <!-- the glyph stays a glyph: this row is standalone-only chrome
+                     and the cycle's rule is that standalone renders unchanged.
+                     Its replacement belongs to the phase that retires the
+                     wizard's private icon map, not to an embedding phase. -->
                 <button class="pw-x" t-on-click="cancel">✕</button>
             </div>
 
@@ -111,7 +118,7 @@
             <!-- Footer -->
             <div class="pw-foot" t-if="!state.loading">
                 <button class="pw-btn ghost" t-if="state.step > 1" t-on-click="() => this.goto(state.step-1)">← Back</button>
-                <button class="pw-btn ghost" t-if="state.step === 1" t-on-click="cancel">Cancel</button>
+                <button class="pw-btn ghost" t-if="state.step === 1 and !props.embedded" t-on-click="cancel">Cancel</button>
                 <div class="pw-spacer"></div>
                 <button class="pw-btn primary" data-coach="pw-compute" t-if="state.step === 1" t-on-click="toCompute">Compute payslips <t t-out="ic('arrow',14)"/></button>
                 <button class="pw-btn primary" t-if="state.step === 2" t-on-click="() => this.goto(3)">Review exceptions <t t-out="ic('arrow',14)"/></button>

@@ -6,7 +6,9 @@
       <div t-if="!state.loaded" class="pbm-loading"><div class="pbm-spinner"/><span>Loading import data…</span></div>
 
       <div t-else="" class="pbm-wrap">
-        <div class="pbm-head">
+        <!-- W17: the hub owns the title row; every tile and every launcher
+             below is untouched (the Import one-door work is Cycle 3). -->
+        <div class="pbm-head" t-if="!props.embedded">
           <div>
             <h1>Import Data</h1>
             <p class="pbm-sub">Bring payroll data in from files and connected HR systems — map, validate, then commit.</p>

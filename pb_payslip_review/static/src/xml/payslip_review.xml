@@ -2,11 +2,14 @@
 <templates xml:space="preserve">
 
 <t t-name="pb_payslip_review.PayslipReview">
-    <div class="psr-root">
+    <div class="psr-root" t-att-class="{ 'psr-root--embedded': props.embedded }">
         <t t-if="state.loaded and state.run">
             <!-- Header -->
             <div class="psr-head">
-                <div>
+                <!-- W17: `embedded` suppresses ONLY the chrome the hub already
+                     owns. The run SELECTOR beside this is not chrome - it is the
+                     surface's one scope control - so it stays. -->
+                <div t-if="!props.embedded">
                     <h1>Payslip review</h1>
                     <div class="psr-sub" t-esc="state.run.period"/>
                 </div>

@@ -170,13 +170,21 @@ export class PayrunWizard extends Component {
 
     // "Open Payroll" — leaves the run in DRAFT and opens it so the user can
     // review the payslips and submit for HR review themselves (no auto-approve).
+    //
+    // In a hub the destination changes and nothing else does. A terminal CTA
+    // that dumps the user on a native form is the escape the Pay Run hub exists
+    // to close: the host hands in `onOpenRun` and the hub switches to its Runs
+    // lens with this run focused, which is the same intent expressed inside the
+    // workspace. Standalone `onOpenRun` is absent and the act_window is
+    // unchanged.
     openRun() {
-        if (this.state.summary?.run_id) {
-            this.action.doAction({
-                type: "ir.actions.act_window", res_model: "hr.payslip.run",
-                res_id: this.state.summary.run_id, views: [[false, "form"]], target: "current",
-            });
-        }
+        const runId = this.state.summary?.run_id;
+        if (!runId) { return; }
+        if (this.props.onOpenRun) { return this.props.onOpenRun(runId); }
+        this.action.doAction({
+            type: "ir.actions.act_window", res_model: "hr.payslip.run",
+            res_id: runId, views: [[false, "form"]], target: "current",
+        });
     }
     cancel() { this.action.doAction("pb_dashboard.action_pb_dashboard", { clearBreadcrumbs: true }); }
 }

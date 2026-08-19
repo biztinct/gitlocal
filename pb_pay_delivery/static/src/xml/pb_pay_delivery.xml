@@ -12,7 +12,7 @@
       <!-- ============================ run picker ======================== -->
       <div t-elif="state.picking" class="pbpd-picker">
         <div class="pbpd-picker-head">
-          <h1>Pay &amp; Deliver</h1>
+          <h1 t-if="!props.embedded">Pay &amp; Deliver</h1>
           <p>Choose a pay run to send its money files and payslips.</p>
         </div>
         <div t-if="!state.runs.length" class="pbpd-empty">
@@ -40,7 +40,9 @@
         <div class="pbpd-hero">
           <button class="pbpd-back" t-on-click="back" t-out="ic('back',18)"/>
           <div class="pbpd-hero-main">
-            <div class="eyebrow">Pay &amp; Deliver</div>
+            <!-- the h1 is the RUN, i.e. data; only the eyebrow repeats what the
+                 hub's brand and lens rail already say (W17). -->
+            <div class="eyebrow" t-if="!props.embedded">Pay &amp; Deliver</div>
             <h1 t-esc="state.data.run.name"/>
             <div class="sub">
               <span t-esc="state.data.run.period"/>
