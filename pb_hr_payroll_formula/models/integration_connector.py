@@ -293,8 +293,9 @@ class HrIntegrationConnector(models.Model):
 
     @api.depends('endpoint_ids')
     def _compute_endpoint_count(self):
+        ready = self.env['hr.integration.endpoint']._schema_ready()
         for record in self:
-            record.endpoint_count = len(record.endpoint_ids)
+            record.endpoint_count = len(record.endpoint_ids) if ready else 0
 
     # ==========================================
     # ENDPOINT CATALOGUE
@@ -310,8 +311,9 @@ class HrIntegrationConnector(models.Model):
         anything.
         """
         records = super().create(vals_list)
-        for record in records:
-            record.action_sync_endpoint_catalog()
+        if self.env['hr.integration.endpoint']._schema_ready():
+            for record in records:
+                record.action_sync_endpoint_catalog()
         return records
 
     @api.model
@@ -350,6 +352,8 @@ class HrIntegrationConnector(models.Model):
         self.ensure_one()
         Endpoint = self.env['hr.integration.endpoint']
         Template = self.env['hr.integration.endpoint.template']
+        if not Endpoint._schema_ready():
+            return {'created': 0, 'skipped': 0}
 
         # `active_test=False`: a DEACTIVATED endpoint still owns its code, and
         # re-creating it because it is filtered out of the o2m would be the
@@ -423,6 +427,8 @@ class HrIntegrationConnector(models.Model):
         """
         self.ensure_one()
         Endpoint = self.env['hr.integration.endpoint']
+        if not Endpoint._schema_ready():
+            return Endpoint
         ep = Endpoint.search(
             [('connector_id', '=', self.id), ('data_type', '=', data_type)],
             order='sequence, id', limit=1)
@@ -482,12 +488,13 @@ class HrIntegrationConnector(models.Model):
         # `endpoint_code` is a vendor's name for an API, and the connector may
         # not have catalogued it (or may have renamed the row). An unresolved
         # code leaves `endpoint_id` empty rather than inventing a feed.
+        Endpoint = self.env['hr.integration.endpoint']
         endpoints_by_code = {
             e.code: e.id
-            for e in self.env['hr.integration.endpoint'].with_context(
-                active_test=False).search([('connector_id', '=', self.id)])
+            for e in Endpoint.with_context(active_test=False).search(
+                [('connector_id', '=', self.id)])
             if e.code
-        }
+        } if Endpoint._schema_ready() else {}
 
         def _norm(s):
             return ''.join(ch for ch in (s or '').upper() if ch.isalnum())

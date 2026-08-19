@@ -17,6 +17,8 @@ Six properties, each of which fails silently if it is wrong:
   * the pull path's stamps run inside branches with their own try/except, so a
     missing stamp is a feed that silently never reports (test 6).
 """
+from unittest.mock import patch
+
 from odoo.exceptions import AccessError
 from odoo.tests import TransactionCase, tagged
 
@@ -234,6 +236,63 @@ class TestEndpointCatalogue(TransactionCase):
         self.assertFalse(
             loose.endpoint_id,
             "a template row that names no feed must not be given one")
+
+    # ------------------------------------------------- the un-upgraded database
+    def test_07_a_database_without_the_table_degrades_instead_of_erroring(self):
+        """The addons tree is SHARED; a schema is created per database.
+
+        Between the rsync of this model and the `-u` of database N, database N
+        loads code describing a table it has not got — and
+        `'hr.integration.endpoint' in self.env` is True the whole time, because
+        the model class comes from the python and not from the schema. Found
+        live on three tenant databases: the board's per-connector try/except
+        swallowed the `UndefinedTable`, printed zero connectors, and left the
+        request's transaction ABORTED so everything after it failed too.
+
+        `_schema_ready` is mocked rather than the table dropped: dropping it
+        would be a schema change inside a test, and what is under test is the
+        BEHAVIOUR of every caller when the answer is False.
+        """
+        conn = self.Connector.create({
+            'name': 'IG-C1 no schema', 'connector_type': 'demo'})
+        self.Store.create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'employee_external_id': 'IGC1-NS', 'raw_payload': {'a': 1}})
+
+        with patch.object(type(self.Endpoint), '_schema_ready',
+                          lambda self: False):
+            self.assertEqual(
+                conn.action_sync_endpoint_catalog(), {'created': 0, 'skipped': 0})
+            self.assertFalse(conn._stamp_endpoint('employee', 'success'))
+            # A connector can still be CREATED — the catalogue is skipped, not
+            # the record.
+            other = self.Connector.create({
+                'name': 'IG-C1 no schema 2', 'connector_type': 'demo'})
+            self.assertTrue(other.exists())
+            self.assertEqual(other.endpoint_count, 0)
+            # …and the vendor-template apply path does not reach for feeds.
+            self.env['hr.integration.mapping.template'].create({
+                'connector_type': 'demo', 'source_path': 'IGC1.NoSchema',
+                'target_code': 'IGC1NS', 'endpoint_code': 'whatever',
+            })
+            conn.action_apply_mapping_template()
+            m = conn.field_mapping_ids.filtered(
+                lambda x: x.source_field == 'IGC1.NoSchema')
+            self.assertTrue(m)
+            self.assertFalse(m.endpoint_id)
+            if 'pb.integrations' in self.env:
+                board = self.env['pb.integrations'].get_board()
+                row = next(r for r in board['connectors'] if r['id'] == conn.id)
+                self.assertEqual(row['feeds'], 0)
+                self.assertEqual(board['kpis']['feeds'], 0)
+            if 'pb.import.connector.cockpit' in self.env:
+                d = self.env['pb.import.connector.cockpit'].get_connector_detail(
+                    conn.id)
+                self.assertEqual(d['endpoints'], [])
+                self.assertIsNone(d['error'])
+
+        # …and with the schema really present, the same calls do their job.
+        self.assertEqual(conn.action_sync_endpoint_catalog()['created'], 1)
 
     # --------------------------------------------------------------- test 6
     def test_06_a_pull_stamps_the_feed_it_pulled(self):

@@ -29,7 +29,8 @@ Two rules the whole file is built to:
 """
 import logging
 
-from odoo import fields, models
+from odoo import api, fields, models
+from odoo.tools.sql import table_exists
 
 from .api_data_store import DATA_TYPES
 
@@ -123,6 +124,42 @@ class HrIntegrationEndpoint(models.Model):
         'unique(connector_id, code)',
         'This connector already has a feed with that code.',
     )
+
+    # ------------------------------------------------------------- deployed?
+    @api.model
+    def _schema_ready(self):
+        """Does THIS database actually have the feeds table?
+
+        The addons tree is SHARED by every database on this box, but a schema is
+        created by an UPGRADE, per database. So between the rsync of a module
+        that adds a model and the `-u` of database N, database N loads code
+        describing a table it has not got — and `'hr.integration.endpoint' in
+        self.env` is True the whole time, because the model class is registered
+        from the python, not from the schema. That probe therefore answers the
+        wrong question, and the right one is asked of PostgreSQL.
+
+        Measured on this box before it was guarded: the Integrations board's
+        per-connector `try/except` swallowed the `UndefinedTable`, printed a
+        board with zero connectors, and left the request's transaction ABORTED
+        so that everything after it failed too — a whole cockpit gone, quietly,
+        on three tenant databases (W116's family: a shared tree makes any schema
+        change a deploy step on every database).
+
+        A silent fallback would make a database that never got its upgrade
+        indistinguishable from one that has no feeds (W79), so this says so in
+        the log, once per registry, naming the database.
+        """
+        if table_exists(self.env.cr, self._table):
+            return True
+        if not self.env.registry.__dict__.get('_pb_feeds_schema_warned'):
+            self.env.registry.__dict__['_pb_feeds_schema_warned'] = True
+            _logger.warning(
+                "Database %s loads the connector-feeds code but has no %s "
+                "table: this database has not been upgraded since the model "
+                "was added. Feeds are hidden until `-u pb_hr_payroll_formula` "
+                "runs here. Every other Integrations surface is unaffected.",
+                self.env.cr.dbname, self._table)
+        return False
 
     # ------------------------------------------------------------------ counts
     def _compute_counts(self):

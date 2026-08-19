@@ -170,7 +170,12 @@ class PbConnectorCockpit(models.AbstractModel):
         }
 
     def _endpoints(self, c):
-        if 'hr.integration.endpoint' not in self.env:
+        # The TABLE, not the registry — see `_schema_ready`'s docstring. On a
+        # database that has not been upgraded since the model was added, this
+        # cockpit answered 500 rather than rendering without a feeds strip.
+        Endpoint = self.env.get('hr.integration.endpoint') \
+            if 'hr.integration.endpoint' in self.env else None
+        if Endpoint is None or not Endpoint._schema_ready():
             return []
         return [self._endpoint_row(e) for e in c.endpoint_ids]
 
