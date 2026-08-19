@@ -341,6 +341,86 @@ class TestHubKitStaticGates(TransactionCase):
         self.assertFalse(dupes, 'duplicate palette entry ids: %s' % dupes)
         self.assertGreater(len(ids), 20, 'the seed list looks truncated')
 
+    def test_the_missions_are_the_palettes_first_rows(self):
+        """IA Cycle 5's ⌘K promotion, asserted across every module that owns a
+        mission row.
+
+        The rail is eight items; the palette's first eight rows are the same
+        eight, in the same order, at sequences 110-180. Everything else — the
+        thirty-six surface deep links seeded here and every hub's per-lens rows —
+        sits at 1000 or above. That ordering is the ONLY thing `sequence`
+        controls, and it is what a user sees when they open the palette and type
+        nothing, so it is worth pinning: a new entry that lands in the mission
+        block would silently push a mission off the first screen, and nothing
+        else in the product would notice.
+
+        Read out of the SOURCES rather than out of the registry, because the
+        registry only exists in a browser. Modules that are not installed here
+        are skipped rather than asserted about.
+        """
+        addons = os.path.dirname(get_module_path('pb_hub'))
+        expected = [
+            ('pb_home_hub', 'home_hub_palette.js', '"homehub"', 110),
+            ('pb_payhub', 'pay_hub_palette.js', '"payhub"', 120),
+            ('pb_people_hub', 'people_hub_palette.js', '"peoplehub"', 130),
+            ('pb_people_hub', None, None, None),          # placeholder, skipped
+            ('pb_insights_hub', 'insights_hub_palette.js', '"inshub"', 150),
+            ('pb_compliance_hub', 'compliance_hub_palette.js', '"cmphub"', 160),
+            ('pb_settings', 'settings_palette.js', '"settings"', 180),
+        ]
+        seen = {}
+        for module, fname, key, seq in expected:
+            if fname is None:
+                continue
+            path = os.path.join(addons, module, 'static', 'src', 'js', fname)
+            if not os.path.exists(path):
+                continue
+            with open(path, encoding='utf-8') as fh:
+                src = fh.read()
+            m = re.search(r'palette\.add\(%s,(.*?)\{ sequence: (\d+) \}\);'
+                          % re.escape(key), src, re.S)
+            self.assertTrue(m, '%s: no mission row for %s' % (fname, key))
+            self.assertEqual(int(m.group(2)), seq,
+                             '%s: mission row sequence' % fname)
+            seen[seq] = module
+
+        # Mission Control and Learn are missions with no hub module of their
+        # own, so their rows carry an explicit `seq` in the seed file.
+        entries = self._src('hub_palette_entries.js')
+        for label, seq in (('workforce', 140), ('learn', 170)):
+            m = re.search(r'id: "%s".*?seq: (\d+)' % label, entries, re.S)
+            self.assertTrue(m, 'the %s mission row lost its seq override' % label)
+            self.assertEqual(int(m.group(1)), seq)
+            seen[seq] = 'pb_hub'
+
+        self.assertEqual(len(seen), len(set(seen)),
+                         'two mission rows share a sequence: %s' % seen)
+        # and nothing seeded here may land in the mission band by accident
+        self.assertIn('DEEP_LINK_BASE = 2000', entries)
+
+    def test_no_palette_row_still_calls_itself_a_preview(self):
+        """The hubs shipped as "(preview)" rows while the rail cutover was still
+        ahead of them. It has happened, and a product that calls its own
+        navigation a preview is telling the truth about the wrong thing.
+
+        Reads the ENTRY LABELS only, so the paragraphs above — and this one —
+        may still say the word (W48's corollary / W101)."""
+        addons = os.path.dirname(get_module_path('pb_hub'))
+        offenders = []
+        for root, dirs, files in os.walk(addons):
+            dirs[:] = [d for d in dirs
+                       if d not in ('__pycache__', '.git', 'node_modules')]
+            for f in files:
+                if not f.endswith('palette.js') and f != 'hub_palette_entries.js':
+                    continue
+                with open(os.path.join(root, f), encoding='utf-8') as fh:
+                    src = fh.read()
+                for m in re.finditer(r'label: _t\("([^"]*)"\)', src):
+                    if 'preview' in m.group(1).lower():
+                        offenders.append('%s: %s' % (f, m.group(1)))
+        self.assertFalse(offenders, 'palette rows still labelled preview: %s'
+                                    % offenders)
+
     def test_the_yield_selectors_match_real_roots(self):
         """The global ⌘K yields to any surface that owns its own. A selector that
         no longer matches its owner's markup would give the global palette back

@@ -21,10 +21,13 @@
  * listed beside it because `groups` is ANY-of and an Officer who does not
  * happen to hold the om_ group must still find the hub.
  *
- * **The sequence.** 1000+, so the preview sits AFTER every shipping surface in
- * the palette's list rather than in the middle of the Pay Run block it will
- * eventually replace. A preview that outranks the thing it previews is a
- * navigation change, and this cycle is not making one.
+ * **The sequence.** IA CYCLE 5 PROMOTED THIS ROW. It shipped at 1000+ — after
+ * every surface in the palette — because until the rail cutover it was a
+ * PREVIEW of an IA that did not exist yet, and a preview that outranks the
+ * thing it previews is a navigation change. The cutover made it the rail, so
+ * the row loses "(preview)" and takes mission sequence 120: second in the
+ * palette, second on the rail. The eight LENS rows stay in the 1000 block,
+ * where they are deep links like every other per-surface row.
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
@@ -32,6 +35,9 @@ import { _t } from "@web/core/l10n/translation";
 const palette = registry.category("pb_hub_palette");
 
 const HUB_TAG = "pb_pay_hub";
+// By XMLID, never by tag: a bare tag leaves any breadcrumb this hub opens
+// reading "Unnamed" (W98). `requires` keeps the registry presence probe.
+const HUB_XMLID = "pb_payhub.action_pb_pay_hub";
 const SUB = _t("Pay Run Hub");
 
 const OFFICER = "pb_hr_payroll_base.group_payroll_base_officer";
@@ -46,10 +52,14 @@ const GATE = [PAYROLL_USER, OFFICER, MANAGER, SUPER];
  * `pb_shell_lens` because it forwards `pb_lens` to the Time hub embedded inside
  * it; a plain pb_hub shell reads `pb_lens`, which is `openHub`'s default.
  */
-const ENTRIES = [
-    { id: "payhub", label: _t("Pay Run Hub (preview)"), sublabel: _t("Pay Run"),
-      icon: "zap", action: { tag: HUB_TAG } },
+/** The mission row. Second in the palette, as Pay Run is second on the rail. */
+palette.add("payhub", {
+    id: "payhub", label: _t("Pay Run"), sublabel: _t("Payroll operations"),
+    icon: "zap", groups: GATE, requires: HUB_TAG,
+    action: { xmlid: HUB_XMLID },
+}, { sequence: 120 });
 
+const ENTRIES = [
     { id: "payhub_run", label: _t("Run Payroll"), sublabel: SUB, icon: "zap",
       action: { tag: HUB_TAG, lens: "run" } },
     { id: "payhub_runs", label: _t("Pay Runs"), sublabel: SUB, icon: "calendar",

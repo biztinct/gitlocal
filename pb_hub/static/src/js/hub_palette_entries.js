@@ -28,6 +28,29 @@
  *     the two xmlid entries carry a `requires` tag from the same module, except
  *     `base.action_res_users`, which is in `base`.
  *
+ * ---------------------------------------------------------------------------
+ * IA CYCLE 5 — THE PROMOTION.
+ *
+ * Until the rail cutover these were the palette: thirty-six surfaces at
+ * sequences 10-360, with the four hubs added below them as "(preview)" rows in
+ * a 900-1200 block. The rail is now six missions plus Learn and Settings, so
+ * the palette says the same thing the rail does: the eight MISSION rows sit at
+ * 110-180, and everything in this file moves DOWN into a 2000 block, where it
+ * stays as a deep link.
+ *
+ * Nothing is removed. A deep link to Payslips, to the Explorer or to Bank
+ * Verification is still exactly the right thing to type when you know which
+ * screen you want, and every one of those client actions still exists (the
+ * cutover retired rail ENTRIES, never surfaces). What changes is which rows a
+ * user sees when they open the palette and type nothing.
+ *
+ * Two of the rows here are missions rather than deep links, because their
+ * modules own the rail item and there is no hub module to declare them: Mission
+ * Control (140) and Learn (170). They carry an explicit `seq` for that reason,
+ * and the loop below honours it — a per-entry override rather than a second
+ * list, so the reading order of this file stays the order it has always had.
+ * ---------------------------------------------------------------------------
+ *
  * Mission Control's eight lenses are sub-entries, and they are the one place a
  * `lensKey` appears: `pb_mission` reads its lens from `pb_shell_lens`, because
  * it forwards `pb_lens` unchanged to the Time hub embedded inside it. Sending
@@ -38,6 +61,7 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
+import { GROUP_DEFAULT } from "@pb_hub/js/hub_palette";
 
 const palette = registry.category("pb_hub_palette");
 
@@ -51,7 +75,11 @@ const palette = registry.category("pb_hub_palette");
 // the Map would key on it separately, and the palette would grow a SECOND
 // "Admin" heading under the first. There is one of each, and this is where it
 // lives.
-export const G_SURFACES = _t("Surfaces");
+// Re-exported from the COMPONENT rather than minted here: the palette's grouped
+// render falls back to its own `GROUP_DEFAULT` for any row that names no group,
+// and two `_t("Surfaces")` calls are two different objects in the Map that
+// render two identical headings (see the note beside GROUP_DEFAULT).
+export { GROUP_DEFAULT as G_SURFACES } from "@pb_hub/js/hub_palette";
 export const G_ADMIN = _t("Admin");
 
 const OFFICER = "pb_hr_payroll_base.group_payroll_base_officer";
@@ -109,8 +137,10 @@ const ENTRIES = [
 
     // ----------------------------------------------------------- workforce
     // The hub itself, then its eight lenses. `pb_shell_lens` — see the header.
-    { id: "workforce", label: _t("Mission Control"), sublabel: _t("Workforce"),
-      icon: "compass", action: { tag: "pb_workforce" } },
+    // A MISSION, not a deep link: this is OPERATE > Workforce on the rail, and
+    // its item lives in pb_mission rather than in a hub module of its own.
+    { id: "workforce", label: _t("Workforce"), sublabel: _t("Mission Control"),
+      icon: "compass", seq: 140, action: { tag: "pb_workforce" } },
     { id: "wf_today", label: _t("Today"), sublabel: _t("Mission Control"), icon: "activity",
       action: { tag: "pb_workforce", lens: "today", lensKey: "pb_shell_lens" } },
     { id: "wf_schedule", label: _t("Schedule"), sublabel: _t("Mission Control"),
@@ -161,8 +191,10 @@ const ENTRIES = [
       groups: [INTEGRATION, MANAGER, SUPER] },
 
     // --------------------------------------------------------------- learn
+    // A MISSION too: GROW > Learn, whose rail item is generated data owned by
+    // pb_learn.
     { id: "learn", label: _t("Learn"), sublabel: _t("Guides"), icon: "bookOpen",
-      action: { tag: "learn_journey" } },
+      seq: 170, action: { tag: "learn_journey" } },
 
     // --------------------------------------------------------------- admin
     { id: "audit", label: _t("Audit Trail"), sublabel: _t("Admin"), icon: "scrollText",
@@ -174,7 +206,18 @@ const ENTRIES = [
       groups: [SYSTEM] },
 ];
 
+/**
+ * 2000+ unless the entry names its own sequence.
+ *
+ * The mission rows are 110-180 and they are declared by the modules that own
+ * the rail item; everything seeded here is a DEEP LINK and belongs after them,
+ * in the reading order this file has always had. `seq` is the override for the
+ * two entries above that are missions with no hub module of their own.
+ */
+export const DEEP_LINK_BASE = 2000;
+
 ENTRIES.forEach((entry, i) => {
-    palette.add(entry.id, { group: G_SURFACES, ...entry },
-                { sequence: (i + 1) * 10 });
+    const { seq, ...row } = entry;
+    palette.add(entry.id, { group: GROUP_DEFAULT, ...row },
+                { sequence: seq || DEEP_LINK_BASE + (i + 1) * 10 });
 });

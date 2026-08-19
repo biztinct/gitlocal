@@ -14,10 +14,11 @@
  * an empty hub, or a hub nobody can find. The per-lens rows carry their OWN
  * lens's gate, so a persona is never offered a lens the rail would then hide.
  *
- * **The sequence.** 1100+, so the preview sits after the shipping surfaces AND
- * after the Pay Run hub's own 1000-block preview, in the order the missions are
- * being built. A preview that outranks the thing it previews is a navigation
- * change, and this cycle is not making one.
+ * **The sequence.** IA CYCLE 5 PROMOTED THIS ROW. It shipped at 1100+ as a
+ * PREVIEW, below every shipping surface, because the rail cutover had not
+ * happened yet. It has now: the row loses "(preview)" and takes mission
+ * sequence 150, which is where Insights sits on the rail. The four LENS rows
+ * stay in the 1100 block as deep links.
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
@@ -26,15 +27,22 @@ import { ANALYTICS_GATE, PAYSLIP_RUN_GATE } from "@pb_insights_hub/js/insights_h
 const palette = registry.category("pb_hub_palette");
 
 const HUB_TAG = "pb_insights_hub";
+// By XMLID, never by tag — a bare tag leaves a breadcrumb reading "Unnamed"
+// (W98); `requires` keeps the registry presence probe.
+const HUB_XMLID = "pb_insights_hub.action_pb_insights_hub";
 const SUB = _t("Insights Hub");
 
 /** Anyone who can open at least one lens can find the hub. */
 const HUB_GATE = [...new Set([...ANALYTICS_GATE, ...PAYSLIP_RUN_GATE])];
 
-const ENTRIES = [
-    { id: "inshub", label: _t("Insights Hub (preview)"), sublabel: _t("Insights"),
-      icon: "activity", groups: HUB_GATE, action: { tag: HUB_TAG } },
+/** The mission row — fifth in the palette, fifth on the rail. */
+palette.add("inshub", {
+    id: "inshub", label: _t("Insights"), sublabel: _t("Analytics"),
+    icon: "trendingUp", groups: HUB_GATE, requires: HUB_TAG,
+    action: { xmlid: HUB_XMLID },
+}, { sequence: 150 });
 
+const ENTRIES = [
     { id: "inshub_pulse", label: _t("Insights Pulse"), sublabel: SUB,
       icon: "activity", groups: ANALYTICS_GATE,
       action: { tag: HUB_TAG, lens: "pulse" } },

@@ -21,9 +21,11 @@
  * the drift is silent in both directions — a palette row that opens the empty
  * state, or a persona who can use Settings and cannot find it.
  *
- * The SEQUENCE is 900 — after every shipping surface and before Cycle 2's
- * preview block at 1000+. Settings is where you go on purpose, not something to
- * hit on the way to Payslips.
+ * The SEQUENCE is 180. It was 900 — after every shipping surface and before
+ * Cycle 2's preview block — because until the rail cutover Settings had no rail
+ * item and was a place you went on purpose rather than a destination the
+ * product advertised. Cycle 5 gave it the last item on the rail, so the palette
+ * says the same: eighth of the eight mission rows, exactly where the cog sits.
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
@@ -47,4 +49,4 @@ palette.add("settings", {
     action: { xmlid: "pb_settings.action_pb_settings_hub" },
     requires: "pb_settings_hub",
     groups: GATE,
-}, { sequence: 900 });
+}, { sequence: 180 });

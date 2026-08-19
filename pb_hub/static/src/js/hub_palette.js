@@ -32,7 +32,19 @@ const RECENTS_MAX = 4;
 // the grouped render keys a Map by this value — a fresh object per row would
 // render one heading per row.
 const GROUP_RECENT = _t("Recent");
-const GROUP_DEFAULT = _t("Surfaces");
+/**
+ * The heading an entry gets when it names none, EXPORTED so that it is the only
+ * "Surfaces" in the product.
+ *
+ * `hub_palette_entries.js` re-exports it as `G_SURFACES`, which is what the seed
+ * rows carry. Before Cycle 5 the two were separate `_t("Surfaces")` calls, and
+ * `_t()` returns a NEW String subclass every time: the grouped render keys a Map
+ * by this value, so a row that named the shared constant and a row that fell
+ * through to this default landed in two buckets and the palette drew the word
+ * SURFACES twice. Invisible while every hub row sorted to the bottom; visible
+ * the moment Cycle 5's promotion interleaved them with the seed rows.
+ */
+export const GROUP_DEFAULT = _t("Surfaces");
 
 export class HubPalette extends Component {
     static template = "pb_hub.HubPalette";
