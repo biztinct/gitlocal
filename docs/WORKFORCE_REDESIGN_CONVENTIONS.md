@@ -10,7 +10,9 @@ P4 closed the ledger at **W54**; **P6 reopened it** (demo-world sync was a post-
 takes it to **W61**; **P5** (the Week Grid redesign, run after P6) takes it to **W68**; the
 **IA redesign programme** (`docs/handovers/ia/`) starts contributing at **W69** and Cycle 1 takes
 it to **W74**; Cycle 2's deploy afternoon adds W93-W94 and **Cycle 3** takes it to **W100**;
-**Cycle 4** (Insights + Compliance hubs, the filing flow) takes it to **W105**.
+**Cycle 4** (Insights + Compliance hubs, the filing flow) takes it to **W105**; **Cycle 5**
+(Home + People hubs and THE RAIL CUTOVER — five sections, eight items, thirty-nine
+retirements) closes the programme at **W110**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -1602,3 +1604,125 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   a permission gap, not a permission decision, and it is invisible from the ACL
   alone; (3) it is REPORTED, never patched mid-cycle: a record rule on payslip
   lines is a money-visibility change and belongs to whoever owns that decision.
+- **W106 `pb.sidebar.item.restricted` is INERT on an UNGATED item, so a demo lock
+  cannot follow a door that became ungated.** (IA Cycle 5, remapping pb_demo's
+  lock onto the cut-over rail.) `get_sidebar_data._state()` returns
+  `(visible, NOT locked)` the moment `_has_access(item)` is true, and
+  `_has_access` is true for everybody when the item carries no `groups_id` — the
+  upsell branch is reachable only for an item the user could not otherwise open.
+  pb_demo's lock has always worked because every item it named WAS gated (the
+  ADMIN block at `base.group_system`, Import Data at the payroll tiers). The
+  Cycle-5 rail is eight UNGATED hub items on purpose: each hub gates its own
+  lenses from the ACL of the model behind them (W95), which is narrower and more
+  honest than a rail gate. So `restricted = True` on the Settings item would have
+  been a flag with no effect, written by a hook that logs a success line and
+  proved by a test that reads the flag back and finds it set.
+  `pb.sidebar.section.restricted` has no such condition — `get_sidebar_data`
+  computes `sec_locked = section.restricted and not is_admin` and nothing else —
+  so the lock moved up a level and the whole SYSTEM block renders with a padlock.
+  General form: when a flag's effect is conditional on ANOTHER field, moving the
+  flag to a record where that field is empty is a silent no-op. Read the
+  CONSUMER, not the flag; and a lock is proven by opening the surface as the
+  locked persona, never by asserting the boolean.
+- **W107 A rail cutover is spread over as many modules as the rail is, and half
+  their data files are frozen — so the retirement list belongs to the module that
+  owns the RAIL, and a hand-applied migration needs a gate that reads the others
+  back.** (IA Cycle 5: thirty-four items retired across eight modules.)
+  `pb_sidebar`'s own file is `noupdate="0"`, so `-u pb_sidebar` applies its
+  twenty-eight declaratively once the pre-migrate has cleared any stored flag
+  (W27). The other six cannot be reached that way: five live in
+  `<odoo noupdate="1">` files that are frozen ON PURPOSE, and one belongs to a
+  module that may simply not be in this upgrade's `-u` list — and upgrading
+  `pb_sidebar` alone must still produce the right rail, because `pb_learn`'s
+  section sits on the sequence the System section now takes and two sections on
+  one number order themselves by install accident (W70, one level up).
+  So the post-migrate hand-applies those six plus three moves, and W27's warning
+  about hand-applied values drifting from the XML is answered by a gate that
+  walks each table back to the file that DECLARES the record and fails on any
+  disagreement. Two corollaries: (1) idempotency is a property of the GUARD, not
+  of the run — every retirement writes only while the record is still on a
+  pre-cutover sequence, which is also what stops a later migration overruling an
+  administrator who deliberately re-enabled one; (2) put the hub's rail ITEM in
+  the hub's own module, never in `pb_sidebar` — a rail entry on a database whose
+  hub module is not installed is a button whose action does not resolve (W79),
+  and the convention already existed (`pb_mission`, `pb_audit`, `pb_tenants`);
+  (3) **a migration script's own logger is silent by default.** Odoo loads it
+  through `importlib` with the FILE STEM as the module name, so
+  `logging.getLogger(__name__)` — the idiom every migration in this codebase
+  uses — yields a logger called `post-migrate`, OUTSIDE the `odoo.` namespace
+  that `--log-level=info` configures. Its INFO lines never reach the log. That
+  is how Cycle 5 spent an hour unable to tell "the migration ran and wrote
+  nothing" from "the migration never ran", with the retirements demonstrably
+  applied on the database in front of it. Name the logger
+  (`logging.getLogger('odoo.addons.<module>.migrations')`), and prove the
+  script's IDEMPOTENCY by executing `migrate()` twice from a shell rather than
+  by re-running `-u` — an upgrade only runs a migration on a version CHANGE, so
+  the second `-u` proves nothing at all.
+- **W108 Retiring a rail item does not only change the rail: anything that asks
+  "is this in your menu" through `get_sidebar_data` gets a different answer.**
+  (IA Cycle 5, found by reading `pb_learn` rather than by a failing test.)
+  `learn.runtime._visible_sidebar_item_ids()` calls `get_sidebar_data()`
+  deliberately — so the Coach and the sidebar can never disagree about what a
+  reader can reach — and `bootstrap()` marks a station `visible: False` when its
+  leaf is not in that set. Nineteen of pb_learn's stations name a leaf this
+  cutover retired, so every one of them now reads "not in your menu", and
+  `learn.intent._capability` answers `no_access` for their screens: a learning
+  system telling a payroll manager they cannot see Payslips, on a database where
+  they can. NOTHING FAILED. `test_bundle.py::test_07` only checks that the leaf
+  still RESOLVES, which it does, because retirement is not deletion — the exact
+  property W18 exists to preserve is what makes this invisible.
+  Rules: (1) before retiring a rail record, grep for `get_sidebar_data` and for
+  the xmlid across the WHOLE repo, not just the module that declares it;
+  (2) a test that asserts a leaf EXISTS is not a test that the leaf is
+  REACHABLE, and the two diverge exactly when a retirement happens, which is the
+  only time it matters; (3) the repair is NOT to re-point the map at the hub
+  leaves, and that is worth writing down because it is the obvious move and it
+  is wrong: `learn.screen._primary()` reads its action matchers off the SAME
+  leaf, so seven pay-run stations pointing at one Pay Run hub item would make
+  the Coach ground every one of those screens on whichever resolved first —
+  trading a wrong label for a confidently wrong answer. Separating "which leaf
+  identifies this screen" from "which rail item reaches it" is a pb_learn design
+  change, so this is a REPORTED hand-back rather than a cascade into a module
+  the phase was not asked to touch (W76.2).
+- **W109 A heuristic that decides whether your own CHROME renders has exactly
+  one wrong answer, and it hides the chrome rather than showing it — so nobody
+  reports it.** (IA Cycle 5, found by walking the highlight matrix rather than
+  by anything failing.) `pb_sidebar.js::_resolveVisibility` showed the rail when
+  the current app was a payroll app OR when the action's tag / xmlid / res_model
+  "looked Payobook" — `startsWith("pb_")`, `includes("hr_payslip")`, and so on.
+  Every client action in the product satisfies that except one: the Payroll
+  Report's tag is `payroll_report_dashboard`. Opening that cockpit from a
+  bookmark therefore rendered it with NO SIDEBAR AT ALL, which reads as a
+  deliberately full-bleed screen rather than as a defect, and it had been doing
+  so since the cockpit was written. The cutover surfaced it because the Insights
+  item now CLAIMS that tag and the highlight could not land: there was no rail
+  on screen to light.
+  The repair is not a longer name list. `_isClaimed(action)` asks the three
+  match indexes `_resolveActive` already resolves the highlight from, so
+  "should the rail be here" and "which item is active" can no longer disagree —
+  a surface a rail entry says it owns is a surface the rail belongs on.
+  Rules: (1) prefer a question with an INDEX behind it to a question with a
+  naming convention behind it, especially for chrome — a wrong answer that
+  removes navigation is invisible to the person who most needs it; (2) when two
+  pieces of logic answer neighbouring questions about the same object
+  (is it mine / which of mine is it), give them one source; (3) a matrix walk is
+  worth doing even where every individual case looks obvious — this one case was
+  1 of 14 and nothing else would have found it.
+- **W110 The DEFAULT value of a shared lazy string is a second object, so the
+  rows that name nothing and the rows that name the constant land in different
+  buckets.** (IA Cycle 5's ⌘K promotion.) Cycle 3 already knew `_t()` returns a
+  new `String` subclass per call and exported `G_SURFACES` so that every module
+  adding a palette row would key the render Map on ONE value. What nobody
+  noticed is that `<HubPalette/>` also minted its own `_t("Surfaces")` as the
+  fallback for a row with no `group` — and every hub's palette rows omitted
+  `group`. Two objects, two Map keys, the word SURFACES drawn twice. It was
+  invisible for three cycles because the hub rows all sorted to the BOTTOM of
+  the list; Cycle 5 promoted them to the top, interleaved them with the seed
+  rows, and the duplicate heading appeared in the middle of the palette.
+  Rules: (1) a shared identity constant has to include the DEFAULT — export the
+  fallback and re-export it as the shared name, rather than writing the same
+  literal in two files; (2) when a bug's symptom is "a heading appears twice",
+  suspect object identity before suspecting the data; (3) an ordering change can
+  make a latent grouping bug visible without changing the grouping code at all,
+  which is why a promotion is worth looking at with fresh eyes rather than only
+  re-running the gates.
