@@ -142,3 +142,12 @@
 }
 
 @keyframes pbyw-spin { to { transform: rotate(360deg); } }
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.pbyw` is `height: 100%; overflow: auto` already, so the lens
+   box's definite height is enough (W20); with the identity block suppressed
+   the hero is only its KPI row. */
+.pbyw.pbyw--embedded {
+    .pbyw-hero { padding: 16px 22px 4px; justify-content: flex-start; }
+    .pbyw-cols { padding: 16px 22px; }
+}

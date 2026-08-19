@@ -182,3 +182,13 @@
 
     .pbbk-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--pbbk-primary); }
 }
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.pbbk` already declares `height: 100%; overflow: auto`, so the
+   lens box's definite height is all it needs (W20). With the identity block
+   suppressed the hero is only its KPI strip, which then has no reason to be
+   pushed to the far right of an empty row. */
+.pbbk.pbbk--embedded {
+    .pbbk-hero { padding: 16px 22px 4px; justify-content: flex-start; }
+    .pbbk-cols { padding: 16px 22px; }
+}

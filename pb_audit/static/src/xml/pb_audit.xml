@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_audit.PbAudit">
-    <div class="pbau pbim">
+    <div class="pbau pbim" t-att-class="{ 'pbau--embedded': props.embedded }">
 
       <!-- ============================ LOADING ============================ -->
       <div class="pbau-boot" t-if="!state.loaded">
@@ -14,7 +14,10 @@
         <!-- ============================ HERO / KPIs ============================ -->
         <div class="pbau-hero">
           <div class="pbau-hero__head">
-            <div class="pbau-hero__title">
+            <!-- Chrome the Compliance hub's command bar already owns (W17).
+                 The two event counters beside it are DATA and render in both
+                 modes, as does everything below. -->
+            <div class="pbau-hero__title" t-if="!props.embedded">
               <span class="pbau-hero__ico" t-out="ic('scrollText', 22)"/>
               <div>
                 <h1>Audit &amp; Compliance</h1>

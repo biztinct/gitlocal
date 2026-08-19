@@ -2,11 +2,13 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_young_worker.PbYoungWorker">
-    <div class="pbyw pbim">
+    <div class="pbyw pbim" t-att-class="{ 'pbyw--embedded': props.embedded }">
 
       <!-- ================================ HERO ================================ -->
       <div class="pbyw-hero">
-        <div class="pbyw-hero__l">
+        <!-- Chrome the Compliance hub's command bar already owns (W17). The
+             four KPI tiles beside it are DATA and render in both modes. -->
+        <div class="pbyw-hero__l" t-if="!props.embedded">
           <div class="pbyw-hero__badge"><t t-out="ic('shield', 22)"/></div>
           <div>
             <h1 class="pbyw-hero__title">Young Worker Guard</h1>
