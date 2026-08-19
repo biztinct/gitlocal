@@ -70,6 +70,12 @@ export class PbPayHub extends Component {
             brand: { label: _t("Pay Run"), icon: "zap" },
             defaultLens: "runs",
             tracker: this.tracker,
+            // The cog (Cycle 3). It carries a back door BACK to this hub, so a
+            // configuration errand is a round trip rather than a page you have
+            // to find your way home from (W5). It deliberately does NOT name a
+            // lens: the chip returns you to the hub, and the hub returns you to
+            // the lens it remembers — which is the one you left.
+            cog: () => this.openSettings(),
             lenses: [
                 {
                     key: "run", icon: "zap", label: _t("Run"),
@@ -87,8 +93,19 @@ export class PbPayHub extends Component {
                   Component: PayslipReview },
                 { key: "results", icon: "table", label: _t("Results"),
                   Component: PbPayrunResults },
-                { key: "import", icon: "download", label: _t("Import"),
-                  Component: PbImport },
+                {
+                    key: "import", icon: "download", label: _t("Import"),
+                    Component: PbImport,
+                    // C3: Import's "Manage connectors" deep link comes back to
+                    // the HUB, on the lens the user was reading — not to the
+                    // standalone Import action, which is a surface they never
+                    // opened. The descriptor comes from here because pb_import
+                    // must not know the name of a hub built two cycles later.
+                    props: {
+                        connectorBack: { label: _t("Pay Run"), tag: "pb_pay_hub",
+                                         lens: "import" },
+                    },
+                },
                 { key: "deliver", icon: "send", label: _t("Deliver"),
                   Component: PbPayDelivery },
                 {
@@ -190,6 +207,17 @@ export class PbPayHub extends Component {
 
     /** The wizard's terminal CTA: stay in the hub, land on the new run. */
     openRunInHub(runId) { this.setLens("runs", runId); }
+
+    /** The cog. A CLICK handler — the shell calls it, nothing else does. */
+    openSettings() {
+        openHub(this.actionService, {
+            // By XMLID: a bare tag reaches the shell with no action NAME, and
+            // the breadcrumb Settings' own native cards return through then
+            // reads "Unnamed".
+            xmlid: "pb_settings.action_pb_settings_hub",
+            back: { label: _t("Pay Run"), tag: "pb_pay_hub" },
+        });
+    }
 }
 
 registry.category("actions").add("pb_pay_hub", PbPayHub);

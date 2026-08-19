@@ -1,0 +1,283 @@
+// =====================================================================
+//  The Settings hub — Option A's cog panel, full screen.
+//
+//  Geometry lifted from the mockup's cog overlay (`d-cognav` 205px column, a
+//  white card list on the #F5F6FA field, 34px soft-indigo icon squares, a solid
+//  indigo Open button): the mockup IS the spec, so nothing here is invented.
+//  What changes is only the frame — the mockup draws it as an 82% modal because
+//  it is demonstrating a cog inside a hub; the real thing is a full-screen
+//  client action, because a settings surface that cannot be deep-linked or
+//  bookmarked is a surface people ask you to find for them.
+//
+//  Strictly --pbim-* tokens (W1), flat fills (W3), and every var() carries the
+//  correct pbim hex as its fallback — a fallback is a real colour, not a
+//  comment, and it is what paints anywhere the tokens do not reach (W14/W19).
+//  There is no `--pbim-pill`: the literal 999px is written out (W19).
+//
+//  Z-DISCIPLINE (W37): nothing in this file declares a z-index at all. The hub
+//  hosts no lens and opens no modal of its own, so it has nothing to stack —
+//  and a stacking context here would trap the Command-K overlay's own.
+// =====================================================================
+
+.pbim.pbst {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+
+    // ======================================================= header
+    // White, not the hub's dark bar: this is not a workspace with lenses, it is
+    // a page. The dark #241F52 belongs to a hub's command bar and using it here
+    // would promise a rail underneath that does not exist.
+    .pbst-top {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 20px;
+        background: var(--pbim-surface, #ffffff);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbst-sp { flex: 1 1 auto; }
+
+    .pbst-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        flex: none;
+        font-weight: 800;
+        font-size: 14.5px;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbst-brand__ic {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+
+    .pbst-search {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 30px;
+        padding: 0 12px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background .12s, border-color .12s, color .12s;
+
+        svg { display: block; }
+        &:hover {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary, #5A4BB0);
+            color: var(--pbim-primary-strong, #5A4BB0);
+        }
+    }
+    .pbst-search__ic { display: inline-flex; flex: none; }
+    .pbst-search__kbd {
+        flex: none;
+        padding: 1px 6px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 5px;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: .03em;
+    }
+
+    // ======================================================== body
+    .pbst-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .pbst-split {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        align-items: stretch;
+    }
+
+    // -------------------------------------------------- category nav
+    .pbst-nav {
+        flex: 0 0 226px;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 14px 12px;
+        overflow-y: auto;
+        background: var(--pbim-surface, #ffffff);
+        border-right: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbst-nav__b {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 9px 11px;
+        border: 0;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: transparent;
+        color: var(--pbim-text, #1B1733);
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+        transition: background .12s, color .12s;
+
+        svg { display: block; }
+        &:hover { background: var(--pbim-line-2, #F1F5F9); }
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .pbst-nav__ic { display: inline-flex; flex: none; }
+    .pbst-nav__l { min-width: 0; }
+
+    // ------------------------------------------------------ the pane
+    // It owns its own scrolling, so the nav column stays put while a long
+    // category scrolls. `width: 100%` beside the max-width, because a centred
+    // `margin: 0 auto` cancels a flex item's stretch and the column would size
+    // to its CAP instead of to its host (W39).
+    .pbst-main {
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 24px 26px 34px;
+    }
+    // A readable column CAPPED but LEFT-ALIGNED against the nav. `margin: 0
+    // auto` would centre it in whatever the pane happens to be, so on a 1920
+    // screen the heading floats a third of the way across with the nav column
+    // stranded on the left — the mockup's cards span their pane, and so do
+    // these.
+    .pbst-h {
+        max-width: 860px;
+        width: 100%;
+        margin: 0 0 3px;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbst-blurb {
+        max-width: 860px;
+        width: 100%;
+        margin: 0 0 16px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbst-cards {
+        max-width: 860px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pbst-card {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 14px 16px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-surface, #ffffff);
+        box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+    }
+    .pbst-card__ic {
+        flex: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--pbim-r-sm, 10px);
+        display: grid;
+        place-items: center;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+    .pbst-card__tx {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .pbst-card__l {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbst-card__s {
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbst-go { flex: none; padding: 7px 15px; font-size: 12px; }
+
+    // ------------------------------------------------------- nothing here
+    .pbst-none {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 48px 20px;
+        text-align: center;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbst-none__ic {
+        display: inline-flex;
+        width: 46px;
+        height: 46px;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--pbim-r, 14px);
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        svg { display: block; }
+    }
+    .pbst-none__t {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbst-none__s { max-width: 460px; font-size: 12.5px; line-height: 1.55; }
+
+    // --------------------------------------------------- narrow screens
+    // Below the small-laptop breakpoint the nav becomes a strip of icons and
+    // the tooltip carries the name — the same trade the hub rail makes.
+    @media (max-width: 1099px) {
+        .pbst-nav { flex-basis: 60px; align-items: center; padding: 14px 6px; }
+        .pbst-nav__b { justify-content: center; padding: 9px 6px; }
+        .pbst-nav__l { display: none; }
+        .pbst-search__tx { display: none; }
+    }
+}
