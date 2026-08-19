@@ -50,6 +50,7 @@ would refuse (W29).
     ],
     'data': [
         'views/pb_compliance_hub_action.xml',
+        'data/pb_sidebar.xml',
     ],
     'assets': {
         'web.assets_backend': [

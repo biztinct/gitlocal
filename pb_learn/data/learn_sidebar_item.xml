@@ -7,9 +7,9 @@
 <odoo>
 
     <record id="sec_learn" model="pb.sidebar.section">
-        <field name="name">Learning</field>
+        <field name="name">Grow</field>
         <field name="technical_key">learn</field>
-        <field name="sequence">50</field>
+        <field name="sequence">40</field>
         <field name="show_label" eval="True"/>
     </record>
 
@@ -17,7 +17,7 @@
         <field name="name">Learn</field>
         <field name="section_id" ref="sec_learn"/>
         <field name="sequence">10</field>
-        <field name="icon">compass</field>
+        <field name="icon">book-open</field>
         <field name="action_xmlid">pb_learn.action_learn_journey</field>
         <field name="action_tag">learn_journey</field>
         <field name="match_action_tags">learn_journey</field>

@@ -28,6 +28,11 @@ msgid "Finance approval"
 msgstr "Tài chính phê duyệt"
 
 #. module: pb_learn
+#: model:pb.sidebar.section,name:pb_learn.sec_learn
+msgid "Grow"
+msgstr "Phát triển"
+
+#. module: pb_learn
 #: model:learn.tenant.override,value:pb_learn.slot_hrtiername
 msgid "HR review"
 msgstr "HR soát xét"
@@ -36,11 +41,6 @@ msgstr "HR soát xét"
 #: model:pb.sidebar.item,name:pb_learn.item_learn_journey
 msgid "Learn"
 msgstr "Học cùng Payobook"
-
-#. module: pb_learn
-#: model:pb.sidebar.section,name:pb_learn.sec_learn
-msgid "Learning"
-msgstr "Học tập"
 
 #. module: pb_learn
 #: model:learn.tenant.override,value:pb_learn.slot_importcutoff

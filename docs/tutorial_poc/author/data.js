@@ -5460,10 +5460,32 @@ const SCENARIOS = [
    `sec_payrun` after Retro, which was honest while the map taught the Pay Run
    desk and became wrong the moment it also taught Overview, People, Insights
    and Compliance: a learner looking for the People lessons would have gone
-   hunting inside Pay Run. Learning is now its own destination —
-   `technical_key: learn`, sequence 50, so it sits after Compliance (45) and
-   before Planning (55), which is where a section that is about the whole
-   product rather than one desk belongs.
+   hunting inside Pay Run. Learning is now its own destination — its own
+   section, which is where a section that is about the whole product rather
+   than one desk belongs.
+
+   IA REDESIGN CYCLE 5 RENAMED AND RENUMBERED THAT SECTION. The rail is now five
+   sections and eight items — Overview / OPERATE / UNDERSTAND / GROW / System —
+   and this is GROW: the only section on the rail that is about the person
+   using the product rather than about the payroll. Sequence 40, between
+   UNDERSTAND (30) and System (50); the neighbours it used to be numbered
+   against (Compliance 45, Planning 55) are retired sections now.
+
+   THE NAME IS "Grow" AND NOT "Learning", and that is the same A2 ruling one
+   step further on: gettext allows ONE msgstr per msgid, "Learn" already means
+   "Học cùng Payobook" as the leaf's name, and "Learning" already means "Học
+   tập" as the topbar suffix. A third word for the same idea would have been a
+   third fight over the same two Vietnamese strings. "Grow" is a different
+   claim — what the section is FOR rather than what is in it — so it takes its
+   own msgid, "Phát triển".
+
+   THE ICON IS `book-open` AND NOT `compass`. Cycle 5 put Workforce (Mission
+   Control) on the same five-section rail, four rows above this one, and it has
+   drawn a compass since P3b — two identical glyphs on an eight-item rail is a
+   rail that reads as a mistake. `book-open` was ADDED to pb_sidebar's fixed
+   icon set in the same cycle; the set is closed and an unknown name draws a
+   plain circle with no error anywhere, which is why the two edits belong
+   together.
 
    `groups` is deliberately empty and there is no field for it: every gated leaf
    in this sidebar hides itself from users who cannot use it, which is right for
@@ -5489,14 +5511,14 @@ const SIDEBAR = {
   section: {
     xmlid: "sec_learn",
     technicalKey: "learn",
-    sequence: 50,
+    sequence: 40,
     showLabel: true,
-    name: B("Learning", "Học tập"),
+    name: B("Grow", "Phát triển"),
   },
   leaf: {
     xmlid: "item_learn_journey",
     sequence: 10,
-    icon: "compass",
+    icon: "book-open",
     actionXmlid: "pb_learn.action_learn_journey",
     actionTag: "learn_journey",
     name: B("Learn", "Học cùng Payobook"),

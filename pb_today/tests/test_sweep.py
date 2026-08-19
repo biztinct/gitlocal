@@ -66,14 +66,33 @@ class TestWorkforceRailSweep(TransactionCase):
             'a retired item lost its action — retirement must stay reversible '
             'and the cockpit URL-reachable:\n%s' % '\n'.join(bad))
 
-    def test_payroll_report_is_reachable_from_the_pay_run_section(self):
-        """The relocated item, swept from the other side: present, live, and
-        pointing at the surviving dashboard action."""
-        items = self._items('pb_sidebar.sec_payrun')
-        report = items.filtered(lambda i: i.name == 'Payroll Report')
-        self.assertTrue(report, 'Payroll Report must be live under Pay Run: %s'
-                        % ', '.join(items.mapped('name')))
-        self.assertTrue(self.env.ref(report.action_xmlid, raise_if_not_found=False))
+    def test_payroll_report_is_still_reachable(self):
+        """The relocated item, swept from the other side: present, and pointing
+        at the surviving dashboard action.
+
+        UPDATED BY THE IA REDESIGN'S CYCLE-5 CUTOVER. This used to assert the
+        item was LIVE under PAY RUN, which was P1b's relocation and was right
+        for four phases. Cycle 4 made the Payroll Report the Insights hub's
+        fourth lens and Cycle 5 retired its rail entry with the other
+        thirty-three, so "live under Pay Run" is now a state the product
+        deliberately left — while the claim this test is really about, that the
+        cockpit did not become unreachable, holds exactly as before: the record
+        survives (retirement is not deletion, W18), its action resolves, and the
+        Insights hub claims its tag so a bookmark still lights a rail item.
+        """
+        report = self.env['pb.sidebar.item'].with_context(active_test=False).search(
+            [('action_xmlid', '=', 'pb_hr_workforce.action_payroll_report_dashboard')])
+        self.assertTrue(report, 'the Payroll Report rail record must still exist')
+        self.assertTrue(self.env.ref(report[0].action_xmlid,
+                                     raise_if_not_found=False))
+        claimants = [
+            i for i in self.env['pb.sidebar.item'].search([])
+            if 'payroll_report_dashboard'
+            in {t.strip() for t in (i.match_action_tags or '').split(',')}]
+        self.assertEqual(
+            len(claimants), 1,
+            'exactly one LIVE rail item must light up for the Payroll Report, '
+            'or opening it leaves the rail with nothing selected')
 
     def test_the_today_action_resolves_and_is_a_client_action(self):
         act = self.env.ref('pb_today.action_pb_today', raise_if_not_found=False)

@@ -109,16 +109,24 @@ class TestP1bSidebar(TransactionCase):
                              for i in items.sorted('sequence') if i.sequence in dupes)))
 
     # ============================================================ relocation
-    def test_payroll_report_moved_to_the_pay_run_section_with_its_gate(self):
+    def test_payroll_report_kept_its_gate_through_every_relocation(self):
         """Salary aggregates by department are a PAYROLL surface that happened
-        to live under Workforce. P0's gate travels with it (W8)."""
+        to live under Workforce. P0's gate travels with it (W8).
+
+        THE ITEM HAS MOVED TWICE SINCE, AND THE GATE IS THE PART THAT MATTERS.
+        P1b moved it from WORKFORCE into the PAY RUN section at sequence 45;
+        the IA redesign's Cycle-5 cutover retired it into the 900 band, because
+        the cockpit is now the Insights hub's fourth lens. Pinning "active, in
+        PAY RUN, at 45" would be pinning a state the product deliberately left —
+        and it would be doing it in a file whose own header explains why an
+        exact-rail assertion belongs to the phase that created the rail. What
+        P1b actually owns is the gate: this record exposes salary aggregates,
+        and no relocation may quietly drop the group that keeps them from every
+        Workforce persona.
+        """
         rec = self._item('pb_sidebar.item_wf_payroll_report')
         if not rec:
             self.skipTest('pb_sidebar is not installed')
-        self.assertTrue(rec.active)
-        self.assertEqual(rec.section_id, self._section('pb_sidebar.sec_payrun'),
-                         'Payroll Report must sit under Pay Run now')
-        self.assertEqual(rec.sequence, 45)
         payroll_user = self.env.ref('om_hr_payroll.group_hr_payroll_user')
         # CONTAINS, not EQUALS (P6). A rail gate is a floor, not an inventory:
         # `pb_demo._pb_demo_rewire` legitimately joins "Payobook Demo User" onto

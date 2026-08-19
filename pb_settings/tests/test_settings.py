@@ -212,22 +212,38 @@ class TestSettingsAction(TransactionCase):
         # inside Odoo's own views).
         self.assertEqual(act.name, 'Settings')
 
-    def test_it_has_no_menu_and_no_rail_item(self):
-        # The cog and Command-K are the only doors until the rail cutover in
-        # Cycle 5. A menu or a sidebar item here would BE the cutover.
+    def test_it_has_no_menu_and_exactly_one_rail_item(self):
+        """CYCLE 5 REVERSED THE RAIL HALF OF THIS TEST.
+
+        Cycle 3 asserted there must be "no rail record for this hub at all
+        yet" — the cog and the palette were the only doors, and a rail item
+        would have BEEN the cutover two cycles early. The cutover has happened:
+        Settings is the whole SYSTEM section, and the four SETUP items and six
+        ADMIN items it replaced are retired. The reversal is written at the site
+        rather than silently deleted, because a gate whose history is invisible
+        is one the next reader will "fix" back (W76.3).
+
+        The MENU half is unchanged and still matters: the rail, the cog and the
+        palette are three doors to one place, and an `ir.ui.menu` would be a
+        fourth that nothing else in the product uses.
+        """
         act = self.env.ref('pb_settings.action_pb_settings_hub')
         menus = self.env['ir.ui.menu'].sudo().with_context(
             active_test=False).search([('action', '!=', False)])
         hits = [m.complete_name for m in menus
                 if m.action._name == 'ir.actions.client' and m.action.id == act.id]
-        self.assertFalse(hits, "the Settings hub must not be on a menu yet: %s" % hits)
+        self.assertFalse(hits, "the Settings hub must not be on a menu: %s" % hits)
         if 'pb.sidebar.item' in self.env:
-            self.assertFalse(
-                self.env['pb.sidebar.item'].sudo().with_context(
-                    active_test=False).search_count(
-                    [('action_tag', '=', 'pb_settings_hub')]),
-                "a retired item still occupies its sequence (W18) — there must "
-                "be no rail record for this hub at all yet")
+            items = self.env['pb.sidebar.item'].sudo().with_context(
+                active_test=False).search([('action_tag', '=', 'pb_settings_hub')])
+            self.assertEqual(len(items), 1, "exactly one rail item opens Settings")
+            self.assertTrue(items.active)
+            self.assertEqual(items.section_id.technical_key, 'system')
+            self.assertEqual(items.sequence, 10)
+            self.assertFalse(items.groups_id,
+                             "the Settings rail item is UNGATED on purpose — "
+                             "the hub hides the categories a persona cannot "
+                             "open, which is the narrower answer (W95)")
 
     def test_the_payroll_defaults_card_opens_the_unreachable_settings_form(self):
         # The whole point of that card: `res.config.settings` had no rail item

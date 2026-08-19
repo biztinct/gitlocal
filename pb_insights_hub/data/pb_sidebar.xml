@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13) — see pb_home_hub/data/pb_sidebar.xml. -->
+<odoo noupdate="0">
+
+    <!-- UNDERSTAND › Insights — four analytics doors in one.
+
+         Insights · Explorer · Workforce Analytics · Payroll Report. The fourth
+         used to sit in the PAY RUN section, because it is a payroll surface that
+         had been relocated there from Workforce; it is an analytics surface, and
+         this is where it belongs.
+
+         No `match_models`. The retired `item_analytics` claimed
+         `hr.analytics.dashboard` and `payroll.analytics` — the first is the
+         legacy native form the Dashboard's two Analytics buttons used to open
+         and no longer do, the second nothing in the product opens. A match
+         dimension is a claim on a surface somebody can actually reach (W71).
+
+         UNGATED, like every hub item — the shell gates each lens from its own
+         facade or ACL (W95), and the four lenses here do not share one answer:
+         three read the analytics tier and the Payroll Report reads
+         `hr.payslip.run`. -->
+    <record id="item_insights" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_insights"/>
+        <field name="name">Insights</field>
+        <field name="icon">trending-up</field>
+        <field name="sequence">10</field>
+        <field name="action_xmlid">pb_insights_hub.action_pb_insights_hub</field>
+        <field name="action_tag">pb_insights_hub</field>
+        <field name="match_action_tags">pb_insights_hub,pb_insights,pb_explorer_cockpit,pb_workforce_insights,payroll_report_dashboard</field>
+    </record>
+
+</odoo>

@@ -56,6 +56,7 @@ registry, flat fills (W1/W2/W3).
     ],
     'data': [
         'views/pb_settings_action.xml',
+        'data/pb_sidebar.xml',
     ],
     'assets': {
         'web.assets_backend': [

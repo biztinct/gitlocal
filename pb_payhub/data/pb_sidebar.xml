@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13) — see pb_home_hub/data/pb_sidebar.xml. -->
+<odoo noupdate="0">
+
+    <!-- OPERATE › Pay Run — ten rail items in one.
+
+         Run Payroll · Pay Runs · Payslips · Results Grid · Import Data ·
+         Pay & Deliver · Full & Final · Proration Audit · Retro Adjustments, plus
+         the wizard-shaped Import flow that never had a rail entry at all. All of
+         them survive as retired records pointing at live actions, so this item
+         claims every one of their tags, the Pay Runs kanban's xmlid, and the
+         three models the pay run is about.
+
+         `hr.payslip.run` is claimed HERE and nowhere else now. It was the first
+         of Cycle 1's two pinned double-claims — Approvals (OVERVIEW) and Pay
+         Runs (PAY RUN) both claimed it, and the flat last-writer-wins index gave
+         it to Pay Runs by ordering accident. It is a deliberate decision now,
+         and it is the same one: a user opening a payslip run is in the pay run.
+
+         `pb_import_wizard` is on the list although no rail item ever claimed it:
+         the four-step import flow is a full-page client action reached from
+         inside the Import cockpit, and before this cutover it left the rail with
+         nothing selected.
+
+         UNGATED, like every hub item — the shell gates each lens from the ACL of
+         the model behind it (W95). -->
+    <record id="item_pay_run" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="name">Pay Run</field>
+        <field name="icon">zap</field>
+        <field name="sequence">10</field>
+        <field name="action_xmlid">pb_payhub.action_pb_pay_hub</field>
+        <field name="action_tag">pb_pay_hub</field>
+        <field name="match_action_tags">pb_pay_hub,pb_payrun_wizard,pb_payslip_review,pb_payrun_results,pb_import,pb_import_wizard,pb_pay_delivery,pb_fullfinal,pb_proration,pb_retro</field>
+        <field name="match_action_xmlids">pb_payruns.action_pb_payruns_kanban</field>
+        <field name="match_models">hr.payslip.run,hr.payslip,hr.payroll.import.batch</field>
+    </record>
+
+</odoo>

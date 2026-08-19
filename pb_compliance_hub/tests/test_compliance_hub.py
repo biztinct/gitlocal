@@ -207,10 +207,18 @@ class TestComplianceHubStatic(TransactionCase):
         self.assertFalse(
             self.env['ir.ui.menu'].search(
                 [('action', '=', 'ir.actions.client,%s' % act.id)]))
+        # CYCLE 5 REVERSED THE RAIL HALF (see pb_insights_hub's twin for the
+        # reasoning): the hub is UNDERSTAND > Compliance now, and the four items
+        # it absorbed — including Audit, which changed domain rather than just
+        # address — are retired. The MENU half above is unchanged.
         Item = self.env.get('pb.sidebar.item')
         if Item is not None:
-            self.assertFalse(Item.with_context(active_test=False).search(
-                [('action_tag', '=', 'pb_compliance_hub')]))
+            items = Item.with_context(active_test=False).search(
+                [('action_tag', '=', 'pb_compliance_hub')])
+            self.assertEqual(len(items), 1)
+            self.assertTrue(items.active)
+            self.assertEqual(items.section_id.technical_key, 'understand')
+            self.assertEqual(items.sequence, 20)
 
     def test_the_hub_ships_no_model(self):
         self.assertFalse(os.path.isdir(os.path.join(HERE, 'models')))
