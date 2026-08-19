@@ -454,15 +454,67 @@ class TestHubKitStaticGates(TransactionCase):
                           '%s no longer owns ⌘K' % module)
 
     # ================================================== binding non-goals
+    # The Cycle-1 non-goal, and its Cycle-6 amendment.
+    #
+    # This gate used to forbid the STRING "pb_hub" anywhere in pb_mission. That
+    # was the right shape while the kit was unproven: Cycle 1's binding non-goal
+    # was that Mission Control keeps working exactly as it is, and the kit gets
+    # proved on its own demo surface first.
+    #
+    # Cycle 6 broke it on purpose, and the reversal is written here rather than
+    # quietly applied (W76.3). Mission Control is its own shell, so pb_hub's
+    # HubShell — which renders the `pb_back` chip everywhere else — never runs
+    # for it, and an Insights drill into the Time Off lens therefore landed with
+    # the right filter and no way home (W5). The fix was one shared COMPONENT,
+    # imported and not re-drawn (W6), because two return doors that look
+    # different are two doors.
+    #
+    # So the gate now forbids what the non-goal was actually about: Mission
+    # Control being REBUILT on the kit's shell. Importing a leaf component from
+    # `hub_nav` is allowed; mounting `HubShell`, or importing the kit's palette
+    # or lens machinery, is not — that would be the refactor, and it would also
+    # break the ⌘K yield rule, which depends on `.pbms` being its own root
+    # (W73).
+    _KIT_SHELL_IMPORTS = (
+        '@pb_hub/js/hub_shell',
+        '@pb_hub/js/hub_palette',
+        '@pb_hub/js/hub_palette_service',
+        '@pb_hub/js/hub_palette_entries',
+    )
+
     def test_mission_control_was_not_refactored_onto_this_kit(self):
-        """A binding non-goal of Cycle 1. Mission Control keeps working exactly
-        as it is; the kit is proved on its own demo surface first."""
+        """Cycle 1's non-goal, amended by Cycle 6 — see the block above.
+
+        The match is SYNTACTIC, and it is syntactic because the lexical version
+        failed on the paragraph above this method, which names `HubShell` in
+        order to explain why importing it is the forbidden thing. That is
+        W101/W114 for the third time in one cycle, in a gate written while
+        writing W114 — so this one takes its own advice: an XML MOUNT is
+        `<HubShell`, and a JS import is the module path. Prose can satisfy
+        neither.
+        """
+        offenders = []
         for path in _walk('pb_mission', ('.js', '.xml', '.py')):
             with open(path, encoding='utf-8') as fh:
                 body = fh.read()
-            self.assertNotIn('pb_hub', body,
-                             '%s references pb_hub — Cycle 1 does not touch '
-                             'Mission Control' % path)
+            for banned in self._KIT_SHELL_IMPORTS:
+                if re.search(r'''["']%s["']''' % re.escape(banned), body):
+                    offenders.append('%s imports %s' % (path, banned))
+            if re.search(r'<HubShell[\s/>]', body):
+                offenders.append('%s mounts <HubShell/>' % path)
+        self.assertFalse(
+            offenders,
+            'Mission Control is being rebuilt on the hub kit — it is its own '
+            'shell on purpose (W37/W73):\n%s' % '\n'.join(offenders))
+
+    def test_mission_control_still_shares_the_back_chip(self):
+        """The other half of the amendment: the ONE thing it may take from the
+        kit, it must keep taking. A pb_mission that grew its own chip would
+        pass the gate above and still be the duplication it forbids."""
+        js = _read('pb_mission', 'static', 'src', 'js', 'pb_mission.js')
+        self.assertIn('@pb_hub/js/hub_nav', js,
+                      'Mission Control has stopped importing the shared back '
+                      'chip — check it has not grown a private one')
 
     # ================================================== XML hygiene
     def test_every_template_file_parses(self):
