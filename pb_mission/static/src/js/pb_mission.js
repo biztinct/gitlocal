@@ -35,6 +35,7 @@ import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
+import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { WfCommandPalette } from "@pb_wf_kit/js/wf_command_palette";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 import { WfPersonWeek } from "@pb_wf_kit/js/wf_person_week";
@@ -190,7 +191,7 @@ export class PbMission extends Component {
     static components = {
         WfContextBar, WfDock, WfDrawer, WfPersonWeek,
         PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbTrips, PbTeamCockpit,
-        PbCloseLens,
+        PbCloseLens, HubBackChip,
     };
     static props = { action: { type: Object, optional: true }, "*": true };
 
@@ -245,10 +246,20 @@ export class PbMission extends Component {
             // last nonce it ran, so the shell never has to clear this — and
             // never has to be written to by a child, which is what a "consumed"
             // callback from a mount hook would be (W21.1).
-            cmd: { name: "", nonce: 0 },
+            // An arriving pb_cmd seeds it at nonce 1 — the lens tracks the last
+            // nonce it ran and 0 is its initial value, so a seeded 1 is a real
+            // instruction while a bare mount stays inert.
+            cmd: arrival.cmd
+                ? { name: arrival.cmd, nonce: 1 }
+                : { name: "", nonce: 0 },
         });
 
         // Which employee `state.personName` currently describes.
+        // The return door a caller wrote onto the context (openHub). Read ONCE
+        // from props and never written back — the arrival protocol's rule since
+        // Cycle 1. `null` when nobody sent us, so the chip is ABSENT rather than
+        // inert (W5/W29).
+        this.back = hubBack(this.props);
         this._nameFor = false;
         // The overlay's remove() while the palette is up; null when it is not.
         this._closePalette = null;
@@ -349,6 +360,16 @@ export class PbMission extends Component {
             // the shell's OWN reading of pb_focus: it decides whether the person
             // surface opens on arrival, exactly as the hub decides for its own
             focus: ctx.pb_focus || "",
+            // IA Cycle 6: pb_cmd on ARRIVAL. W44's channel already carries one
+            // instruction to one lens by nonce; until now only this shell's own
+            // palette could put a verb on it, so a foreign cockpit could deep
+            // link to the Overtime lens but not to its BONUS view — the surface
+            // Insights' bonus-hours tile is actually about. The verb is accepted
+            // only for the lens being opened, and a lens that does not know it
+            // ignores it, which is correct behaviour (W44.3) and the reason the
+            // protocol is safe to widen: an unknown verb lands on nothing rather
+            // than on the wrong thing.
+            cmd: (lens && typeof ctx.pb_cmd === "string") ? ctx.pb_cmd : "",
             timeArrival: Object.keys(fwd).length ? { context: fwd } : {},
         };
     }

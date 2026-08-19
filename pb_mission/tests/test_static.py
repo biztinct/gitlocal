@@ -608,13 +608,76 @@ class TestMissionStaticGates(TransactionCase):
                                  'only the Time hub implements the W26 arrival')
                 self.assertIn('pb_lens', arrival)
 
+    def test_the_workspace_renders_the_shared_back_chip(self):
+        """IA Cycle 6. This workspace is its own shell, so pb_hub's HubShell —
+        which renders `pb_back` everywhere else — never runs for it. An Insights
+        drill into the Time Off lens therefore landed with the right filter and
+        NO WAY HOME, which is the dead end W5 forbids, and it was invisible
+        because the deep link itself worked perfectly.
+
+        Three things have to hold together, so all three are pinned: the chip is
+        IMPORTED from the kit (never re-drawn — two return doors that look
+        different are two doors), it is read ONCE from props by `hubBack` (a
+        mount hook reads, it never writes back), and it is rendered under a
+        `t-if` so it is ABSENT rather than inert when nobody sent us (W29).
+        """
+        js = self._js()
+        self.assertIn('from "@pb_hub/js/hub_nav"', js,
+                      'the back chip is no longer imported from the kit')
+        self.assertIn('this.back = hubBack(this.props);', js)
+        self.assertIn('HubBackChip', js)
+        xml = _read('pb_mission', 'static', 'src', 'xml', 'pb_mission.xml')
+        self.assertIn('<HubBackChip t-if="back" back="back"/>', xml,
+                      'the chip must be guarded by t-if — a chip with no '
+                      'destination is a door that cannot open (W29)')
+        manifest = _read('pb_mission', '__manifest__.py')
+        self.assertIn("'pb_hub'", manifest,
+                      'importing @pb_hub/js/hub_nav without declaring the '
+                      'dependency is one uninstall from an unresolvable bundle')
+
+    def test_the_dark_back_chip_has_one_copy_and_two_hosts(self):
+        """The chip's dark styles are scoped to a selector list naming both dark
+        Payobook command bars. If pb_mission's root drops out of it the chip
+        renders UNSTYLED — a plain button on a dark bar, no error anywhere
+        (W14's shape)."""
+        scss = _read('pb_hub', 'static', 'src', 'scss', 'hub_shell.scss')
+        self.assertIn('.pbim.pbhub, .pbim.pbms {', scss,
+                      'the dark back chip no longer covers Mission Control')
+        own = _read('pb_mission', 'static', 'src', 'scss', 'pb_mission.scss')
+        self.assertNotIn('.pbhub-back {', own,
+                         'pb_mission has grown its own copy of the chip styles')
+
     def test_the_pb_cmd_protocol_is_consumed_by_nonce_not_by_a_callback(self):
         """§3.6 / W21.1. A "consumed" callback would be a CHILD writing HOST
         state from a mount hook — the bug that cost P1a 591 junk records and
         then bit a second time on a keyed child. The nonce means the host never
         has to be told, and the lens can re-read the prop as often as OWL likes.
+
+        IA Cycle 6 changed what this gate may demand of the SHELL, and the
+        reversal is written here rather than quietly applied (W76.3). It used to
+        require the literal `cmd: { name: "", nonce: 0 }`, because the only
+        source of an instruction was this shell's own palette and the state
+        therefore always started empty. `pb_cmd` is now also accepted on
+        ARRIVAL, so a foreign cockpit can deep link to a lens's sub-view — and a
+        seeded arrival starts at nonce 1, because 0 is the lens's own initial
+        `_cmdNonce` and would be read as "nothing to run".
+
+        What the gate still has to pin is the SHAPE, which is what makes the
+        protocol safe: a `{name, nonce}` pair on the shell, an empty name and
+        nonce 0 when nothing arrived, and no consumed-callback anywhere. The
+        LENS side below is unchanged and still demands the literal default,
+        because a lens genuinely never seeds itself.
         """
-        self.assertIn('cmd: { name: "", nonce: 0 }', self._js())
+        js = self._js()
+        self.assertIn('{ name: "", nonce: 0 }', js,
+                      'the shell no longer has an empty default for pb_cmd')
+        self.assertRegex(js, re.compile(
+            r'cmd:\s*arrival\.cmd\s*\?\s*\{\s*name:\s*arrival\.cmd,\s*nonce:\s*1\s*\}',
+            re.S),
+            'an arriving pb_cmd must seed the nonce at 1 — at 0 the lens reads '
+            'it as "nothing to run" and the deep link silently does nothing')
+        self.assertNotIn('onCmdConsumed', js,
+                         'a consumed callback is a child writing host state (W21.1)')
         self.assertRegex(self._js(), re.compile(
             r'runPaletteAction\(id\).*?nonce: this\.state\.cmd\.nonce \+ 1', re.S))
         for module, fname in (('pb_schedule', 'pb_schedule.js'),

@@ -71,7 +71,10 @@ the retired rail items move to the 900 band (W18).
 pbim tokens only (the command bar is the deep-indigo `--pbim-primary-dark`, not
 a new navy), Lucide icons through the shared `ic()` registry, flat fills.
 """,
-    'version': '19.0.1.5.0',
+    # 19.0.1.6.0 — IA Cycle 6: the workspace accepts `pb_cmd` on ARRIVAL, so a
+    # foreign cockpit can deep link to a lens's own sub-view (Insights' bonus
+    # tile → the Overtime desk's bonus review) instead of only to the lens.
+    'version': '19.0.1.6.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -88,6 +91,12 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
         'pb_team',              # Approvals lens
         'pb_close',             # P4: pb.close / pb.wf.lock behind the Close lens
         'pb_sidebar',           # the single rail entry that replaces seven
+        # IA Cycle 6: the shared back chip. A cockpit that deep-links INTO this
+        # workspace writes `pb_back` on the context (openHub), and until now
+        # only pb_hub's own HubShell rendered it — so an Insights drill landed
+        # on the Time Off lens with no way home. The chip is imported, never
+        # re-implemented: two return doors that look different are two doors.
+        'pb_hub',
     ],
     'data': [
         'views/mission_action.xml',
