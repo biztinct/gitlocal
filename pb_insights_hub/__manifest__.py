@@ -51,6 +51,7 @@ one accent (W1/W2/W3).
     ],
     'data': [
         'views/pb_insights_hub_action.xml',
+        'data/pb_sidebar.xml',
     ],
     'assets': {
         'web.assets_backend': [

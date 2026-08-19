@@ -74,12 +74,30 @@ class TestTimeHubSidebar(TransactionCase):
         Attendance Control is the interesting one: its data file was
         noupdate="1", so this assertion is what proves the W13.1 migration
         actually ran rather than the file merely claiming a new value.
+
+        UPDATED: TIMECARDS IS NOT MISSING, IT IS GONE. P1a retired
+        `pb_sidebar.item_wf_timecards` into the 900 band; Workforce P7 then
+        DELETED the Timecards cockpit itself — JS, CSS and client action — and
+        dropped the rail record with it
+        (`pb_hr_workforce/migrations/19.0.4.14.0/post-migrate.py`), because a
+        retired item pointing at an action that no longer resolves is not the
+        reversible decision the 900 band exists for; it is a button an admin can
+        re-enable into nothing (W76). So the expected count is TWO, and the
+        third name moves to a list that asserts its ABSENCE — the same fact,
+        stated the way it is now true. Found by the IA redesign's Cycle-5 run,
+        the first time this suite had executed on a database that had taken P7's
+        migration (W92: a first execution is a discovery, not a break).
         """
         expected = {
-            'pb_sidebar.item_wf_timecards': 'Timecards',
             'pb_hr_workforce.item_wf_weekentry': 'Weekly Entry',
             'pb_attendance_flow.item_attendance_control': 'Attendance Control',
         }
+        # Asserted ABSENT rather than quietly dropped, so a record REAPPEARING
+        # is as loud as one vanishing.
+        for xmlid in ('pb_sidebar.item_wf_timecards',):
+            self.assertFalse(
+                self.env.ref(xmlid, raise_if_not_found=False),
+                '%s came back — P7 deleted it with its cockpit' % xmlid)
         checked = 0
         for xmlid, label in expected.items():
             rec = self._item(xmlid)
@@ -91,7 +109,8 @@ class TestTimeHubSidebar(TransactionCase):
                 '%s (%s) must be retired from the rail; it is still active — if '
                 'the repo says otherwise, the declaring data file is probably '
                 'still frozen in ir_model_data.noupdate (W13.1)' % (label, xmlid))
-        self.assertEqual(checked, 3, 'all three retired items must be present to check')
+        self.assertEqual(checked, 2, 'both surviving retired items must be '
+                                     'present to check')
 
     def test_attendance_control_record_is_no_longer_frozen(self):
         """The stored noupdate flag itself is cleared, so P1b can just edit the
@@ -142,8 +161,9 @@ class TestTimeHubSidebar(TransactionCase):
         live_ids = set(Item.search([('section_id', '=', sec.id)]).ids)
 
         checked = 0
-        for xmlid in ('pb_sidebar.item_wf_timecards',
-                      'pb_hr_workforce.item_wf_weekentry',
+        # `pb_sidebar.item_wf_timecards` is deliberately absent — P7 deleted it
+        # with the cockpit it pointed at (see the twin test above).
+        for xmlid in ('pb_hr_workforce.item_wf_weekentry',
                       'pb_attendance_flow.item_attendance_control'):
             rec = self.env.ref(xmlid, raise_if_not_found=False)
             if not rec:
@@ -153,4 +173,4 @@ class TestTimeHubSidebar(TransactionCase):
                 rec.id, live_ids,
                 '%s was absorbed into the Time hub in P1a and must stay off the '
                 'rail' % xmlid)
-        self.assertEqual(checked, 3, 'all three absorbed items must be present')
+        self.assertEqual(checked, 2, 'both surviving absorbed items must be present')

@@ -186,9 +186,19 @@ class TestPayHubStatic(TransactionCase):
             self.assertNotIn(verb, calls,
                              "pb.pay.hub must not call %s()" % verb)
 
-    def test_the_hub_action_is_hidden(self):
-        """No menu, no rail item: the rail cutover is Cycle 5 and this cycle
-        makes no navigation change beyond one palette entry."""
+    def test_the_hub_has_no_menu_and_exactly_one_rail_item(self):
+        """CYCLE 5 REVERSED HALF OF THIS TEST, AND THAT IS THE POINT OF IT.
+
+        Cycle 2 asserted "no menu, no rail item", because the rail cutover was
+        two cycles away and a rail record here would have BEEN the cutover. It
+        has happened: this hub is OPERATE > Pay Run, the first item of the
+        second section, and the ten pay-run items it absorbed are retired.
+
+        A gate whose history is invisible is one the next reader will "fix"
+        back (W76.3), so the reversal is written at the site rather than
+        silently deleted. What has NOT changed is the menu half: the rail is the
+        door, and an `ir.ui.menu` would be a second one.
+        """
         act = self.env.ref('pb_payhub.action_pb_pay_hub')
         self.assertEqual(act.tag, 'pb_pay_hub')
         self.assertFalse(
@@ -196,10 +206,12 @@ class TestPayHubStatic(TransactionCase):
             "pb_payhub must ship no menu")
         Item = self.env.get('pb.sidebar.item')
         if Item is not None:
-            self.assertFalse(
-                Item.with_context(active_test=False).search(
-                    [('action_tag', '=', 'pb_pay_hub')]),
-                "pb_payhub must ship no pb.sidebar.item")
+            items = Item.with_context(active_test=False).search(
+                [('action_tag', '=', 'pb_pay_hub')])
+            self.assertEqual(len(items), 1, "exactly one rail item opens the hub")
+            self.assertTrue(items.active)
+            self.assertEqual(items.section_id.technical_key, 'operate')
+            self.assertEqual(items.sequence, 10)
 
     # --------------------------------------------------------------- the shell
     def test_the_lens_order_matches_the_mockup(self):
@@ -233,11 +245,24 @@ class TestPayHubStatic(TransactionCase):
             self.assertIn('lens: "%s"' % lens, pal,
                           "lens %r has no palette entry" % lens)
 
-    def test_the_palette_entries_are_gated_and_sequenced_last(self):
+    def test_the_palette_entries_are_gated_and_sequenced(self):
+        """IA CYCLE 5 PROMOTED THE HUB ROW OUT OF THE PREVIEW BLOCK.
+
+        Cycle 2 asserted `sequence: 1000` with the words "a preview must not
+        outrank the surfaces it previews", and that was right while the hub was
+        reachable only through the palette. The rail cutover made this hub the
+        second item on the rail, so its palette row is the second MISSION row at
+        120 and the eight lens rows keep the 1000 block as deep links. Pinning
+        1000 for the hub row would now be pinning a state the product
+        deliberately left; what is still asserted is that the lens block did not
+        move up with it, and that everything is gated.
+        """
         pal = _read('static', 'src', 'js', 'pay_hub_palette.js')
-        self.assertIn('groups: GATE', pal, "the preview is not offered ungated")
+        self.assertIn('groups: GATE', pal, "the hub row is not offered ungated")
+        self.assertIn('sequence: 120', pal,
+                      "the mission row sits second, as Pay Run does on the rail")
         self.assertIn('sequence: 1000', pal,
-                      "a preview must not outrank the surfaces it previews")
+                      "the per-lens rows stay in the deep-link block")
         # the gate names groups that really exist on this database
         for xmlid in re.findall(r'"((?:om_hr_payroll|pb_hr_payroll_base)\.[\w]+)"', pal):
             self.assertTrue(self.env.ref(xmlid, raise_if_not_found=False),

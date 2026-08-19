@@ -73,26 +73,48 @@ class TestP3aSidebar(TransactionCase):
         return sec
 
     # ==================================================== the one live item
-    def test_the_workforce_section_is_exactly_one_item(self):
-        """The whole point of the phase, read back off the rail."""
-        sec = self._section()
-        live = self.env['pb.sidebar.item'].search([('section_id', '=', sec.id)])
-        self.assertEqual(
-            len(live), 1,
-            'expected ONE live Workforce item, found %s: %s' % (
-                len(live), ', '.join('%s(%s)' % (i.name, i.sequence)
-                                     for i in live.sorted('sequence'))))
-        item = live
-        # P3b: "WORKFORCE > Workforce" read as a stutter on a section header
-        # that already says the word. Asserted in the DATABASE, not in the XML,
-        # for the reason W13.1/W27 exist: the file and the record can disagree
-        # and `-u` will say EXIT 0 either way.
-        self.assertEqual(item.name, 'Mission Control')
-        self.assertEqual(item.sequence, 10)
+    def test_the_seven_workforce_cockpits_are_still_one_rail_item(self):
+        """The whole point of the phase, read back off the rail.
+
+        THE IA REDESIGN'S CYCLE-5 CUTOVER MOVED THAT ITEM, AND THIS TEST HAD TO
+        MOVE WITH IT. P3a's claim was "the WORKFORCE section is exactly one
+        item", which was the right way to say it while WORKFORCE was a section;
+        the rail is now five sections and eight items, the WORKFORCE section is
+        retired, and Mission Control is the third item of OPERATE beside Pay Run
+        and People. Asserting the old shape would be pinning a state the product
+        deliberately left — so what is asserted is the claim that never changed:
+        seven cockpits, ONE live rail item, and the section it now lives in has
+        no OTHER Workforce entry hiding in it.
+
+        The label went back to "Workforce" in the same cutover. P3b renamed it to
+        "Mission Control" because "WORKFORCE > Workforce" read as a stutter on a
+        section header that said the word; the header says OPERATE now, and the
+        IA dossier's own rail draws this entry as Workforce.
+
+        Asserted in the DATABASE, not in the XML, for the reason W13.1/W27 exist:
+        the file and the record can disagree and `-u` will say EXIT 0 either way.
+        """
+        item = self._item('pb_mission.item_workforce')
+        if not item:
+            self.skipTest('pb_mission is not installed')
+        self.assertTrue(item.active, 'the shell must be ON the rail')
+        self.assertEqual(item.name, 'Workforce')
+        self.assertEqual(item.sequence, 30)
         self.assertEqual(item.icon, 'compass')
         self.assertEqual(item.action_xmlid, 'pb_mission.action_pb_workforce')
         self.assertEqual(item.action_tag, 'pb_workforce')
-        self.assertEqual(item, self._item('pb_mission.item_workforce'))
+
+        # The retired WORKFORCE section holds nothing live any more, and the
+        # section the shell moved INTO holds no second Workforce door.
+        sec = self._section()
+        self.assertFalse(
+            self.env['pb.sidebar.item'].search([('section_id', '=', sec.id)]),
+            'the retired WORKFORCE section still has a live item in it')
+        siblings = self.env['pb.sidebar.item'].search(
+            [('section_id', '=', item.section_id.id)])
+        self.assertEqual(
+            len([i for i in siblings if i.action_tag == 'pb_workforce']), 1,
+            'more than one live item opens the Workforce shell')
 
     def test_the_shell_action_exists_and_is_a_client_action(self):
         act = self.env.ref('pb_mission.action_pb_workforce', raise_if_not_found=False)

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
+    <!-- IA REDESIGN CYCLE 5 — this item is RETIRED by the rail cutover (see the
+         record below). This file is `<odoo noupdate="1">`, so the `active` and
+         `sequence` values below are what a FRESH install records and a plain
+         `-u` cannot reach an existing database (W13.1: `ir_model_data.noupdate`
+         is a stored per-record column Odoo never refreshes). Existing databases
+         are moved by `pb_sidebar/migrations/19.0.3.0.0/post-migrate.py`, which
+         owns the whole retirement list because the rail's shape belongs to
+         pb_sidebar rather than to any one cockpit. -->
     <!-- ADMIN › Audit (gated to the Payroll Manager tier) -->
     <record id="item_audit_console" model="pb.sidebar.item">
         <field name="section_id" ref="pb_sidebar.sec_admin"/>
         <field name="name">Audit</field>
+        <field name="active" eval="False"/>
         <field name="icon">scroll-text</field>
-        <field name="sequence">30</field>
+        <field name="sequence">974</field>
         <field name="action_xmlid">pb_audit.action_pb_audit</field>
         <field name="action_tag">pb_audit</field>
         <field name="match_action_tags">pb_audit</field>

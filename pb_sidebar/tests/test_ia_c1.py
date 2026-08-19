@@ -44,37 +44,51 @@ class TestIaCycle1Sidebar(TransactionCase):
             '`active` with eval="False"; if the record disagrees, suspect a '
             'frozen ir_model_data.noupdate (W13.1) — the pre-migrate clears it.')
 
-    def test_a1_setup_no_longer_serves_the_mapping_item(self):
+    def test_a1_the_rail_no_longer_serves_the_mapping_item(self):
         """The payload the rail actually renders, not the record behind it.
 
         `get_sidebar_data()` filters on `active = True`, so this is the
         end-to-end proof: even an admin (who bypasses every group gate) must not
-        see the item in SETUP.
+        see the item anywhere.
+
+        CYCLE 5 WIDENED THIS FROM "not in SETUP" TO "not on the rail". The
+        original assertion also demanded that a SETUP section still exist, which
+        was the right way to phrase it while SETUP was four live items; the rail
+        cutover retired the whole section into the Settings hub, so a test that
+        insisted on finding it would now fail for the opposite of the reason it
+        was written. The claim that mattered — the retired item is not served —
+        is stronger stated over the whole payload.
         """
-        data = self.env['pb.sidebar.item'].get_sidebar_data()
-        setup = [s for s in data if s['key'] == 'setup']
-        self.assertTrue(setup, 'the SETUP section must still be on the rail')
         labels = []
-        for section in setup:
+        for section in self.env['pb.sidebar.item'].get_sidebar_data():
             for item in section['items']:
                 labels.append(item['name'])
                 labels.extend(c['name'] for c in item['children'])
         self.assertNotIn('Employee/Contract Mapping', labels,
-                         'SETUP still serves the retired item: %s' % labels)
+                         'the rail still serves the retired item: %s' % labels)
 
     # ============================================================ A2
-    def test_a2_admin_sequences_are_unique(self):
-        """The specific collision, named, so a failure says which pair broke."""
-        menu_cfg = self._item('pb_sidebar.item_menu_cfg')
-        section_cfg = self._item('pb_sidebar.item_section_cfg')
-        self.assertEqual(menu_cfg.sequence, 50)
-        self.assertEqual(section_cfg.sequence, 55)
+    def test_a2_the_admin_collision_pair_is_still_separated(self):
+        """The specific collision, named, so a failure says which pair broke.
 
-        audit = self._item('pb_audit.item_audit_console')
-        if audit:
-            self.assertEqual(audit.sequence, 30,
-                             'pb_audit keeps 30 — pb_sidebar is the one that moved')
-            self.assertNotEqual(menu_cfg.sequence, audit.sequence)
+        CYCLE 5 RENUMBERED ALL THREE. A1's fix put `item_menu_cfg` on 50 and
+        `item_section_cfg` on 55 to get them off `pb_audit.item_audit_console`'s
+        30; the rail cutover then retired every one of them into the 900 band,
+        where they are 972, 973 and 974. Pinning the old numbers would now be
+        pinning a state the product deliberately left, so what is asserted is the
+        PROPERTY A2 was about — those three records do not share a sequence, and
+        they never will again — with the exact values owned by Cycle 5's own
+        table (`test_ia_c5.RETIRED_ITEMS`).
+        """
+        items = [self._item(x) for x in ('pb_sidebar.item_menu_cfg',
+                                         'pb_sidebar.item_section_cfg',
+                                         'pb_audit.item_audit_console')]
+        present = [i for i in items if i]
+        self.assertTrue(len(present) >= 2, 'the A2 pair no longer exists')
+        seqs = [i.sequence for i in present]
+        self.assertEqual(len(set(seqs)), len(seqs),
+                         'the A2 collision is back: %s'
+                         % {i.name: i.sequence for i in present})
 
     def test_a2_no_section_has_two_items_on_one_sequence(self):
         """W8/W18 over the WHOLE table, retired items included.
@@ -120,43 +134,57 @@ class TestIaCycle1Sidebar(TransactionCase):
             'hr.integration.connector must be claimed by exactly one live rail '
             'item; claimed by: %s' % ', '.join('%s/%s' % (
                 i.section_id.technical_key, i.name) for i in claimers))
-        self.assertEqual(claimers[0], self._item('pb_sidebar.item_integrations'))
+        # CYCLE 5: `item_integrations` retired with the rest of SETUP and the
+        # claim moved to the Settings hub, which is the one door to connectors
+        # now. The RULE is unchanged — exactly one live claimant — and it is the
+        # rule that A3 was about.
+        settings = self._item('pb_settings.item_settings')
+        expected = settings or self._item('pb_sidebar.item_integrations')
+        self.assertEqual(claimers[0], expected)
 
-    def test_a3_import_keeps_its_own_model(self):
-        """Fixing a steal must not create a hole: Import Data still lights up for
-        the batches it actually owns."""
-        item = self._item('pb_sidebar.item_import')
-        models = {m.strip() for m in (item.match_models or '').split(',')}
-        self.assertEqual(models, {'hr.payroll.import.batch'})
-        tags = {t.strip() for t in (item.match_action_tags or '').split(',')}
-        self.assertIn('pb_import', tags)
+    def test_a3_the_import_claim_survived_the_cutover(self):
+        """Fixing a steal must not create a hole: something still lights up for
+        the import batches Import Data used to own.
 
-    def test_a3_the_only_double_claims_left_are_the_two_known_benign_ones(self):
+        CYCLE 5 moved the claim rather than keeping it. `item_import` is retired
+        (its cockpit is the Pay Run hub's Import lens), and a retired item is not
+        in `_buildIndex` at all — so the assertion follows the claim to the live
+        item that inherited it.
+        """
+        claimers = [i for i in self.env['pb.sidebar.item'].search([])
+                    if 'hr.payroll.import.batch'
+                    in {m.strip() for m in (i.match_models or '').split(',')}]
+        self.assertEqual(len(claimers), 1,
+                         'hr.payroll.import.batch is claimed by %s live items'
+                         % len(claimers))
+        tags = {t.strip() for t in (claimers[0].match_action_tags or '').split(',')}
+        self.assertIn('pb_import', tags,
+                      'the item that claims the batches must also claim the '
+                      'cockpit tag, or a bookmark lights nothing')
+
+    def test_a3_there_are_no_double_claims_left_at_all(self):
         """The general form of A3 — and the two more instances it found.
 
-        Written as an equality rather than an emptiness check (W59's shape: assert
-        the WORLD, not the delta), because there are two other doubly-claimed
-        models on this rail and neither is A3:
+        Written as an equality rather than an emptiness check (W59's shape:
+        assert the WORLD, not the delta). Cycle 1 pinned two doubly-claimed
+        models it could not fix without changing the rail:
 
           `hr.payslip.run`  Approvals (OVERVIEW, seq 20) and Pay Runs (PAY RUN)
           `hr.contract`     Employees (PEOPLE, seq 10) and Contracts (seq 20)
 
         `_buildIndex` walks sections in sequence order and items in sequence
-        order, so the LAST writer wins: Pay Runs and Contracts respectively —
-        which is the item a user would expect in both cases. They are benign
-        TODAY and fragile FOREVER, since the winner is a side effect of the
-        ordering rather than a decision. Fixing them is a rail-content change,
-        and rail content is Cycle 5's cutover (binding non-goal), so this cycle
-        records them instead of touching them.
+        order, so the LAST writer won: Pay Runs and Contracts respectively —
+        which is the item a user would expect in both cases. They were benign
+        TODAY and fragile FOREVER, since the winner was a side effect of the
+        ordering rather than a decision.
 
-        An equality assertion is what makes that record useful: a NEW duplicate
-        fails, and so does the silent disappearance of one of these two — which
-        would mean somebody changed the rail without noticing this note.
+        CYCLE 5 IS THE RAIL CHANGE, and it resolved both by making the claim a
+        decision: `hr.payslip.run` belongs to the Pay Run hub and `hr.contract`
+        to the People hub, each claimed once, with the four old items retired.
+        The expected set is therefore EMPTY — and it stays an equality so that a
+        new duplicate fails just as loudly as a resurrected old one.
         """
-        known = {
-            'hr.payslip.run': {'Approvals', 'Pay Runs'},
-            'hr.contract': {'Employees', 'Contracts'},
-        }
+        known = {}
         claims = {}
         for item in self.env['pb.sidebar.item'].search([]):
             for model in (item.match_models or '').split(','):

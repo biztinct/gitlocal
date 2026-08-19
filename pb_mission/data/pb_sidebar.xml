@@ -41,11 +41,27 @@
          a surface that would answer with an AccessError. That is a visibility
          hint, not a security boundary: every facade still enforces its own gate
          server-side (W12). -->
+    <!-- IA REDESIGN CYCLE 5 — THE RAIL CUTOVER moved this record and renamed it.
+         The WORKFORCE section is retired (it held this item and nothing else
+         live), and Mission Control becomes the third item of OPERATE, beside Pay
+         Run and People: the three missions you spend a working day inside.
+
+         "Mission Control" -> "Workforce" reverses P3b's rename, and the reason
+         P3b gave for it has gone with the section. That rename existed because
+         the section header said WORKFORCE and "WORKFORCE > Workforce" read as a
+         stutter; the header now says OPERATE, the IA dossier's own rail draws
+         this entry as "Workforce", and the action has been called Workforce
+         throughout. W28 (a label is unique across the WHOLE `pb.sidebar.item`
+         table, not just its section) holds: no other item carries either label,
+         and the retired `sec_workforce` SECTION is inactive, so nothing on the
+         rail says the word twice. The shell's own lens rail still labels its
+         approvals lens plainly "Approvals" — W38: judge an in-surface label by
+         what else is visible in that surface. -->
     <record id="item_workforce" model="pb.sidebar.item">
-        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
-        <field name="name">Mission Control</field>
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="name">Workforce</field>
         <field name="icon">compass</field>
-        <field name="sequence">10</field>
+        <field name="sequence">30</field>
         <field name="action_xmlid">pb_mission.action_pb_workforce</field>
         <field name="action_tag">pb_workforce</field>
         <!-- The absorbed cockpits keep their client actions (W18), so a

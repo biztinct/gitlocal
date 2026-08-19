@@ -50,6 +50,14 @@ const ICONS = {
     activity:'<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
     umbrella:'<path d="M22 12a10.06 10.06 0 0 0-20 0Z"/><path d="M12 12v8a2 2 0 0 0 4 0"/><path d="M12 2v1"/>',
     inbox:'<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+    // ---- IA redesign Cycle 5 (the rail cutover) ----
+    // GROW > Learn. The Journey's leaf used `compass` while Workforce's Mission
+    // Control used it too; on a five-section rail the two sat four rows apart
+    // drawn identically. This set is CLOSED — a name that is not in it renders a
+    // plain circle with no error anywhere — so a new icon on a rail item is
+    // always two edits, and `test_every_rail_icon_exists_in_the_fixed_set` is
+    // what catches the second one being forgotten.
+    "book-open":'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     // ---- Phase J (Audit & Compliance) ----
     "scroll-text":'<path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/>',
 };
@@ -140,9 +148,35 @@ export class PbSidebar extends Component {
             if (a && (isPb(a.tag) || isPb(a.xml_id) || isPb(a.res_model))) {
                 visible = true;
             }
+            // ...and any surface the RAIL ITSELF CLAIMS, whatever it is called.
+            //
+            // The name test above is a heuristic, and there is exactly one
+            // client action in the product it gets wrong: the Payroll Report's
+            // tag is `payroll_report_dashboard`, which starts with neither
+            // `pb_` nor anything else the list recognises — so opening that
+            // cockpit by bookmark hid the whole sidebar, and the IA cutover's
+            // highlight matrix could not light the Insights item because there
+            // was no rail on screen to light. Asking the match indexes instead
+            // is the same question without the guesswork: if a rail entry says
+            // it owns this surface, the rail belongs on it.
+            if (!visible && a && this._isClaimed(a)) {
+                visible = true;
+            }
         }
         if (this.state.visible !== visible) this.state.visible = visible;
         document.body.classList.toggle("has-pb-sidebar", visible);
+    }
+
+    /**
+     * Does any rail item claim this action? Reads the same three flat indexes
+     * `_resolveActive` resolves the highlight from, so visibility and
+     * highlighting can never disagree about whether a surface belongs to the
+     * rail. Safe before `_load()` — the indexes start as empty objects.
+     */
+    _isClaimed(action) {
+        return (action.xml_id && this._xmlidIndex[action.xml_id] !== undefined)
+            || (action.tag && this._tagIndex[action.tag] !== undefined)
+            || (action.res_model && this._modelIndex[action.res_model] !== undefined);
     }
 
     iconSvg(name) {

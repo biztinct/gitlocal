@@ -217,12 +217,21 @@ class TestInsightsHubStatic(TransactionCase):
             self.env['ir.ui.menu'].search(
                 [('action', '=', 'ir.actions.client,%s' % act.id)]),
             "pb_insights_hub must ship no menu")
+        # CYCLE 5 REVERSED THE RAIL HALF OF THIS TEST. Cycle 4 asserted "no
+        # pb.sidebar.item", because the cutover was a cycle away and a rail
+        # record here would have BEEN the cutover; the hub is now UNDERSTAND >
+        # Insights, and the four analytics items it absorbed are retired. The
+        # reversal is written at the site rather than silently deleted, because
+        # a gate whose history is invisible is one the next reader will "fix"
+        # back (W76.3). The MENU half above is unchanged.
         Item = self.env.get('pb.sidebar.item')
         if Item is not None:
-            self.assertFalse(
-                Item.with_context(active_test=False).search(
-                    [('action_tag', '=', 'pb_insights_hub')]),
-                "pb_insights_hub must ship no pb.sidebar.item")
+            items = Item.with_context(active_test=False).search(
+                [('action_tag', '=', 'pb_insights_hub')])
+            self.assertEqual(len(items), 1)
+            self.assertTrue(items.active)
+            self.assertEqual(items.section_id.technical_key, 'understand')
+            self.assertEqual(items.sequence, 10)
 
     def test_the_hub_ships_no_model_and_no_python_at_all(self):
         """The shell owns no data. A hub that grew a model would be a second
@@ -254,8 +263,13 @@ class TestInsightsHubStatic(TransactionCase):
         self.assertNotIn('pb_hr_payroll_base.group', pal,
                          "the palette must not restate a gate group literal")
 
-    def test_the_palette_entries_are_sequenced_after_the_pay_hubs(self):
+    def test_the_palette_entries_are_sequenced(self):
+        """IA CYCLE 5 PROMOTED THE HUB ROW. It was a preview at 1100+, below
+        every shipping surface; it is now the fifth MISSION row at 150, which is
+        where Insights sits on the rail. The four lens rows keep the 1100 block
+        as deep links, which is what the second assertion is for."""
         pal = _hub('static', 'src', 'js', 'insights_hub_palette.js')
+        self.assertIn('sequence: 150', pal)
         self.assertIn('sequence: 1100', pal)
 
     def test_every_asset_on_disk_is_in_the_bundle_and_vice_versa(self):

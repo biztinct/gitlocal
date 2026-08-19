@@ -14,10 +14,14 @@ Payobook payroll suite. Native Odoo top menu sections are hidden; the systray
 - Role-aware via standard Odoo security groups (groups_id)
 - Lucide SVG icons, Indigo solid theme (pairs with pb_theme)
 ''',
-    # 19.0.2.2.0 — IA redesign Cycle 1: the three audit fixes. The bump is what
-    # makes migrations/19.0.2.2.0/pre-migrate.py run at all (Odoo only runs
-    # migration scripts on a version CHANGE).
-    'version': '19.0.2.2.0',
+    # 19.0.3.0.0 — IA redesign Cycle 5: THE RAIL CUTOVER. Five sections, eight
+    # items, and thirty-four retirements into the 900 band. The bump is what
+    # makes migrations/19.0.3.0.0/{pre,post}-migrate.py run at all (Odoo only
+    # runs migration scripts on a version CHANGE), and the major digit is what
+    # says this is not an increment: the rail a user opens tomorrow is not the
+    # rail they closed today.
+    # 19.0.2.2.0 — IA redesign Cycle 1: the three audit fixes.
+    'version': '19.0.3.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
