@@ -86,43 +86,155 @@ class PbGovtReportBase(models.AbstractModel):
                 return val
         return default
 
-    # Location / code lookups
-    def _location_codes(self, partner):
-        """Return (province_code, district_code, commune_code) using partner or lookup."""
-        if not partner:
-            return ("000", "000", "000")
-        province = getattr(partner, "state_id", False)
-        district = getattr(partner, "district_id", False)
-        commune = getattr(partner, "city_id", False) or getattr(partner, "commune_id", False)
+    # ------------------------------------------------------------------
+    # The Odoo-19 employee master
+    # ------------------------------------------------------------------
+    # Odoo 19 deleted BOTH fields these filings used to read:
+    #   hr.employee.address_home_id  — the home-address res.partner
+    #   hr.employee.bank_account_id  — the scalar payroll bank account
+    # An attribute read on either raises AttributeError, and the filing flow's
+    # generate() turns that into "This filing could not be generated: …", which
+    # is why four of the five VN filings had been silently unusable.
+    #
+    # Everything they need now comes from one of two places, in this order:
+    #
+    #  1. the VIETNAM EMPLOYEE MASTER (pb_hr_payroll_vietnam) —
+    #     vietnam_province / vietnam_district / vietnam_ward,
+    #     vietnam_permanent_address, vietnam_bank_*. These are the fields a
+    #     Vietnamese payroll team actually maintains; the three address ones are
+    #     already the exact administrative levels a BHXH form asks for (tỉnh /
+    #     quận-huyện / phường-xã), which no core Odoo field is; and
+    #     pb_pay_delivery pays salaries out of the same bank columns
+    #     (bank_export_wizard.py:98-103), so a filing and a payment can no
+    #     longer name two different accounts for one person.
+    #  2. core Odoo 19 PRIVATE address / bank fields (private_street,
+    #     private_city, private_state_id, private_zip, primary_bank_account_id)
+    #     — for a database that does not carry the VN pack.
+    #
+    # work_contact_id is deliberately absent from that list. It is the OFFICE
+    # partner. Putting the office on a "Địa chỉ liên hệ" line would file a
+    # confidently WRONG address instead of a blank one, which is worse.
+    #
+    # The probes are ORM-registry reads, never try/except: "the VN pack is not
+    # installed" is a known, testable state, and
+    # pb_hr_govt/tests/test_odoo19_employee_sources.py asserts that on a
+    # database WITH the pack the VN branch is the one taken — otherwise a dead
+    # source is indistinguishable from an absent one (W79).
 
-        province_code = province.code if province and province.code else "000"
-        district_code = district.code if district and hasattr(district, "code") and district.code else "000"
-        commune_code = commune.code if commune and hasattr(commune, "code") and commune.code else "000"
+    def _emp_field(self, emp, name):
+        """Read `name` off the employee, or False when the field is not in the
+        registry on this database."""
+        if not emp or name not in emp._fields:
+            return False
+        return emp[name]
 
-        # Try lookup table if codes missing
-        Lookup = self.env["pb.govt.code.lookup"]
-        if province_code == "000" and province and province.name:
-            rec = Lookup.search([("lookup_type", "=", "province"), ("name", "ilike", province.name)], limit=1)
-            province_code = rec.code if rec else "000"
-        if district_code == "000" and district and district.name:
-            rec = Lookup.search([("lookup_type", "=", "district"), ("name", "ilike", district.name)], limit=1)
-            district_code = rec.code if rec else "000"
-        if commune_code == "000" and commune and commune.name:
-            rec = Lookup.search([("lookup_type", "=", "commune"), ("name", "ilike", commune.name)], limit=1)
-            commune_code = rec.code if rec else "000"
-        return (province_code, district_code, commune_code)
+    def _is_female(self, emp):
+        """Odoo 19 renamed hr.employee.gender to `sex` (same selection values,
+        same 'Gender' label). Every VN form has a "Nữ (X)" column."""
+        return (self._emp_field(emp, "sex") or "") == "female"
 
-    def _hospital_code(self, partner):
-        """Attempt to fetch hospital code; fallback to lookup_type=hospital."""
-        if not partner:
+    def _home_address(self, emp):
+        """The employee's HOME address on one line ("Địa chỉ liên hệ").
+
+        Permanent address first: BHXH asks where somebody is registered, not
+        where they are currently staying, and the temporary one is the fallback
+        only because a blank cell fails the submission.
+        """
+        for name in ("vietnam_permanent_address", "vietnam_temporary_address"):
+            value = (self._emp_field(emp, name) or "").strip()
+            if value:
+                return " ".join(value.split())
+        parts = [
+            (self._emp_field(emp, "private_street") or "").strip(),
+            (self._emp_field(emp, "private_street2") or "").strip(),
+            (self._emp_field(emp, "private_city") or "").strip(),
+        ]
+        state = self._emp_field(emp, "private_state_id")
+        if state:
+            parts.append(state.name or "")
+        parts.append((self._emp_field(emp, "private_zip") or "").strip())
+        country = self._emp_field(emp, "private_country_id")
+        if country:
+            parts.append(country.name or "")
+        return ", ".join(p for p in parts if p)
+
+    def _code_for(self, lookup_type, value):
+        """A VN administrative code from a NAME, via pb.govt.code.lookup.
+
+        A value that is already all digits IS the code — the VN master fields
+        are free text and a payroll team that has typed the code should not
+        have it thrown away by a name search that cannot match it.
+        """
+        text = (value or "").strip()
+        if not text:
             return "000"
-        hospital_name = getattr(partner, "hospital_name", False) or ""
-        Lookup = self.env["pb.govt.code.lookup"]
-        if hospital_name:
-            rec = Lookup.search([("lookup_type", "=", "hospital"), ("name", "ilike", hospital_name)], limit=1)
-            if rec:
-                return rec.code
-        return "000"
+        if text.isdigit():
+            return text
+        rec = self.env["pb.govt.code.lookup"].search(
+            [("lookup_type", "=", lookup_type), ("name", "ilike", text)], limit=1)
+        return (rec.code or "000") if rec else "000"
+
+    def _location_codes(self, emp):
+        """(province_code, district_code, commune_code) for one EMPLOYEE.
+
+        Re-signatured from (partner) to (employee): Odoo 19 left no home
+        partner to pass, and the three levels no longer live on one record.
+        """
+        province = (self._emp_field(emp, "vietnam_province") or "").strip()
+        district = (self._emp_field(emp, "vietnam_district") or "").strip()
+        commune = (self._emp_field(emp, "vietnam_ward") or "").strip()
+
+        if not province:
+            state = self._emp_field(emp, "private_state_id")
+            if state:
+                # A res.country.state code is an ISO-ish code ("VN-HN"), not a
+                # BHXH one, so it is only usable when it is numeric; otherwise
+                # the NAME is what the lookup table can match.
+                code = (state.code or "").strip()
+                province = code if code.isdigit() else (state.name or "")
+        if not district:
+            # private_city is free text and, in a VN address, is the
+            # district/city line. There is no core field below it, so a
+            # database without the VN pack files no commune code — a blank the
+            # form allows, rather than a guess it does not.
+            district = (self._emp_field(emp, "private_city") or "").strip()
+
+        return (self._code_for("province", province),
+                self._code_for("district", district),
+                self._code_for("commune", commune))
+
+    def _bank_details(self, emp):
+        """(account_number, account_holder, bank_code) as Pay & Deliver sees it.
+
+        Resolution is pb_pay_delivery's, deliberately: the same three
+        vietnam_bank_* columns, and the same pb.bank.registry.match() to turn a
+        typed bank name into a code. A filing that named a different account
+        from the one payroll actually pays into would be a reconciliation
+        problem nobody would find until the money moved.
+        """
+        number = (self._emp_field(emp, "vietnam_bank_account_number") or "").strip()
+        holder = (self._emp_field(emp, "vietnam_bank_account_name") or "").strip()
+        raw_bank = (self._emp_field(emp, "vietnam_bank_name") or "").strip()
+
+        code = ""
+        if raw_bank and "pb.bank.registry" in self.env.registry.models:
+            matched = self.env["pb.bank.registry"].match(raw_bank)
+            if matched:
+                code = (matched.swift_prefix or matched.short_name or "").strip()
+        code = code or raw_bank
+
+        if not number:
+            # No VN pack, or nothing filled in there: Odoo 19's computed scalar
+            # replacement for the deleted bank_account_id. It honours
+            # salary_distribution ordering, so it is the account that would be
+            # paid first.
+            account = self._emp_field(emp, "primary_bank_account_id")
+            if account:
+                number = (account.acc_number or "").strip()
+                holder = holder or (account.acc_holder_name or "").strip()
+                code = code or (account.bank_bic or "").strip()
+
+        return number, holder, code
 
     def _copy_template(self, workbook, template_filename, sheet_names):
         """

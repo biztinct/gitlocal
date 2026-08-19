@@ -63,18 +63,25 @@ class Bhxhdstk01ReportXlsx(ReportXlsxAbstract):
             sheet.write(idx, 1, emp.name or "")
             sheet.write(idx, 2, emp.identification_id or "")
             sheet.write(idx, 3, _fmt(emp.birthday))
-            sheet.write(idx, 4, "X" if emp.gender == "female" else "")
+            sheet.write(idx, 4, base._is_female(emp) and "X" or "")
             sheet.write(idx, 5, emp.country_id.name or "")
             sheet.write(idx, 6, getattr(emp, "ethnicity_id", False) and emp.ethnicity_id.name or "")
             sheet.write(idx, 7, emp.identification_id or "")
-            sheet.write(idx, 8, getattr(emp.address_home_id, "street", "") or "")
-            province_code, district_code, commune_code = base._location_codes(emp.address_home_id)
+            sheet.write(idx, 8, base._home_address(emp))
+            province_code, district_code, commune_code = base._location_codes(emp)
             sheet.write(idx, 9, province_code)
             sheet.write(idx, 10, district_code)
             sheet.write(idx, 11, commune_code)
             sheet.write_number(idx, 12, emp.contract_id.wage if emp.contract_id else 0.0)
             sheet.write(idx, 13, contribution_label)
-            sheet.write(idx, 14, wizard.bhxhdstk_hospital_code or base._hospital_code(emp.address_home_id))
+            # Registered-hospital code. The pre-19 code read
+            # `partner.hospital_name` off the home partner — a field that has
+            # never existed on res.partner in this codebase, so its getattr was
+            # always False and this cell has always come from the wizard or
+            # from "000". Odoo 19 removed the partner too; the wizard field is
+            # now the only real source, and saying so beats a helper that can
+            # only ever return one value (W29).
+            sheet.write(idx, 14, wizard.bhxhdstk_hospital_code or "000")
             sheet.write(idx, 15, change_content)  # TODO replace with actual change content
 
         # Household headers bold
