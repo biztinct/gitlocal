@@ -38,7 +38,10 @@ keeps working exactly as it is), and no real hub content is built here.
 pbim tokens only, `.pbhub-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills (W1/W2/W3).
 """,
-    'version': '19.0.1.1.0',
+    # 19.0.1.2.0 — IA Cycle 6: restriction parity between the ⌘K palette and
+    # the rail. A door the sidebar padlocks is padlocked here too, and answers
+    # the same upsell instead of navigating.
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

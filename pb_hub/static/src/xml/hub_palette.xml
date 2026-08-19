@@ -38,6 +38,13 @@
               <span class="pbhub-pal-row__l" t-esc="row.row.label"/>
               <span class="pbhub-pal-row__s" t-if="row.row.sublabel"
                     t-esc="row.row.sublabel"/>
+              <!-- Restriction parity with the rail: a door the sidebar shows
+                   with a padlock is shown with a padlock here too, and pressing
+                   it opens the same upsell instead of navigating. On every
+                   database where nothing is restricted `restricted` is "" and
+                   this element is simply absent. -->
+              <span class="pbhub-pal-row__lock" t-if="row.row.restricted"
+                    t-out="ic('lock', 13)"/>
             </button>
           </div>
 
