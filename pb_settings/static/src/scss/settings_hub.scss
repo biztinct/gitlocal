@@ -158,6 +158,16 @@
     }
     .pbst-nav__ic { display: inline-flex; flex: none; }
     .pbst-nav__l { min-width: 0; }
+    // A category that opens its one door directly says so with a chevron. Muted
+    // by default so the rail still reads as a list, and it takes the active
+    // colour with the rest of the row.
+    .pbst-nav__go {
+        display: inline-flex;
+        flex: none;
+        margin-left: auto;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbst-nav__b.is-on .pbst-nav__go { color: var(--pbim-primary, #5A4BB0); }
 
     // ------------------------------------------------------ the pane
     // It owns its own scrolling, so the nav column stays put while a long
@@ -278,6 +288,7 @@
         .pbst-nav { flex-basis: 60px; align-items: center; padding: 14px 6px; }
         .pbst-nav__b { justify-content: center; padding: 9px 6px; }
         .pbst-nav__l { display: none; }
+        .pbst-nav__go { display: none; }
         .pbst-search__tx { display: none; }
     }
 }
