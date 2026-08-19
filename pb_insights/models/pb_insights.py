@@ -32,7 +32,7 @@ import time
 from datetime import date, timedelta
 
 from odoo import _, api, models
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -847,6 +847,177 @@ class PbInsights(models.AbstractModel):
                               raise_if_not_found=False)
         return {'available': bool(action),
                 'xmlid': 'pb_explorer.action_pb_explorer' if action else ''}
+
+    # ------------------------------------------------------ people ledgers
+    #
+    # IA Cycle 6. Two of the pulse tiles drill into a POPULATION nothing else in
+    # the product shows: the employees behind this week's attendance exceptions,
+    # by kind, and the employees at 90% of their monthly overtime ceiling. Every
+    # other drill on this board had a destination — the Explorer for the
+    # analytics questions, a hub lens for the operational queues — but these two
+    # are filtered subsets that no lens carries, so they used to escape into a
+    # bare `hr.employee` list with `target: "current"`: the cockpit replaced,
+    # nothing to click, and no way back (W5).
+    #
+    # They become an in-cockpit ledger with a drawer instead — the fourth use of
+    # the C3/C4 pattern, and a clone of it rather than an import, for the same
+    # reason pb_statutory gave: a Setup-area cockpit's dependencies are not
+    # worth acquiring for two hundred lines of grid.
+    #
+    # READ-ONLY, like everything else on this facade, and the same shape the
+    # other three ledgers ship: `columns` / `rows[].cells` / `_f` (facet values)
+    # / `_s` (search haystack), with facets built FROM the loaded rows so a chip
+    # can never match nothing.
+
+    _LEDGER_KINDS = {
+        'att_missing_punch': ('missing_punch', 'Missing punch'),
+        'att_missing_checkout': ('missing_checkout', 'Missing check-out'),
+        'att_late': ('late', 'Late arrival'),
+        'att_early_leave': ('early_leave', 'Early leave'),
+        'ot_near_cap': (None, 'Near the overtime ceiling'),
+    }
+
+    def _facets(self, rows, spec):
+        """Facets built from the LOADED rows, so a chip always matches rows."""
+        out = []
+        for key, label in spec:
+            vals = sorted({(r['_f'].get(key) or '') for r in rows} - {''})
+            out.append({'key': key, 'label': label,
+                        'kind': 'chips' if len(vals) <= 8 else 'select',
+                        'chips': [{'id': v, 'label': v} for v in vals]})
+        return out
+
+    @api.model
+    def get_people_ledger(self, kind):
+        """The employees behind one pulse tile. Read-only."""
+        self._require()
+        su = self.sudo()
+        if kind not in self._LEDGER_KINDS:
+            raise UserError(_("Unknown ledger: %s", kind))
+        if kind == 'ot_near_cap':
+            return su._ledger_near_cap()
+        return su._ledger_attendance(kind)
+
+    def _ledger_attendance(self, kind):
+        exc_kind, title = self._LEDGER_KINDS[kind]
+        pulse = self._safe(self._pulse_attendance, None) or {}
+        ids = (pulse.get('kind_employees') or {}).get(exc_kind) or []
+        overflow = (pulse.get('kind_overflow') or {}).get(exc_kind) or 0
+        employees = self.env['hr.employee'].browse(ids).exists()
+        rows = []
+        for emp in employees:
+            dept = emp.department_id.name or ''
+            job = emp.job_id.name or ''
+            rows.append({
+                'id': emp.id,
+                'cells': [emp.name or '', emp.barcode or emp.identification_id or '',
+                          dept or '—', job or '—'],
+                '_f': {'department': dept, 'job': job},
+                '_s': ' '.join(x for x in [emp.name or '', emp.barcode or '',
+                                           dept, job] if x),
+            })
+        return {
+            'kind': kind,
+            'title': title,
+            'subtitle': _("Employees with this exception between %(a)s and %(b)s.",
+                          a=pulse.get('date_from') or '', b=pulse.get('date_to') or ''),
+            'search_ph': _("Search name, code or department…"),
+            'empty': _("No employee carries this exception in the current week."),
+            'columns': [{'label': _("Employee"), 'wide': True},
+                        {'label': _("Code")}, {'label': _("Department")},
+                        {'label': _("Position")}],
+            'facets': self._facets(rows, [('department', _("Department")),
+                                          ('job', _("Position"))]),
+            'rows': rows, 'total': len(rows) + overflow, 'shown': len(rows),
+            # W45: the true total travels beside the capped list, never instead
+            # of it — a shrinking backlog on a growing problem is the failure
+            # mode a silent cap produces.
+            'overflow': overflow,
+        }
+
+    def _ledger_near_cap(self):
+        pulse = self._safe(self._pulse_ot, None) or {}
+        ids = pulse.get('near_cap_ids') or []
+        cap = pulse.get('cap') or 0.0
+        employees = self.env['hr.employee'].browse(ids).exists()
+        hours = {}
+        if employees and 'hr.overtime.request' in self.env:
+            dom = [('date', '>=', pulse.get('date_from')),
+                   ('date', '<=', pulse.get('date_to')),
+                   ('state', '=', 'approved'),
+                   ('employee_id', 'in', employees.ids)]
+            for g in self.env['hr.overtime.request'].read_group(
+                    dom, ['approved_hours:sum'], ['employee_id']):
+                emp = g.get('employee_id')
+                if emp:
+                    hours[emp[0] if isinstance(emp, (list, tuple)) else emp] = \
+                        round(g.get('approved_hours') or 0.0, 2)
+        rows = []
+        for emp in employees:
+            used = hours.get(emp.id, 0.0)
+            pct = round(used / cap * 100.0) if cap else 0
+            dept = emp.department_id.name or ''
+            band = _("Over the cap") if cap and used >= cap else _("Near the cap")
+            rows.append({
+                'id': emp.id,
+                'cells': [emp.name or '', dept or '—',
+                          '%s h' % used, '%s%%' % pct],
+                'badge': {'label': band,
+                          'tone': 'warn' if (cap and used >= cap) else 'muted'},
+                '_f': {'department': dept, 'band': band},
+                '_s': ' '.join(x for x in [emp.name or '', dept] if x),
+            })
+        rows.sort(key=lambda r: -hours.get(r['id'], 0.0))
+        return {
+            'kind': 'ot_near_cap',
+            'title': _("Near the overtime ceiling"),
+            'subtitle': _("Approved overtime %(a)s to %(b)s against a monthly "
+                          "ceiling of %(cap)s hours.",
+                          a=pulse.get('date_from') or '',
+                          b=pulse.get('date_to') or '', cap=cap or 0),
+            'search_ph': _("Search name or department…"),
+            'empty': _("Nobody is near the monthly overtime ceiling."),
+            'columns': [{'label': _("Employee"), 'wide': True},
+                        {'label': _("Department")}, {'label': _("Approved")},
+                        {'label': _("Of ceiling")}],
+            'facets': self._facets(rows, [('department', _("Department")),
+                                          ('band', _("Band"))]),
+            'rows': rows, 'total': len(rows), 'shown': len(rows), 'overflow': 0,
+        }
+
+    @api.model
+    def get_people_detail(self, kind, employee_id):
+        """One employee's drawer. Read-only, and the access check is the REAL
+        one: the ledger runs sudo (this whole facade does, behind `_require`),
+        so the drawer asks the ORM whether this reader may read this employee
+        rather than assuming the tile already answered it."""
+        self._require()
+        if kind not in self._LEDGER_KINDS:
+            raise UserError(_("Unknown ledger: %s", kind))
+        emp = self.env['hr.employee'].browse(int(employee_id or 0)).exists()
+        if not emp:
+            raise UserError(_("That employee no longer exists."))
+        emp.check_access('read')
+        su = emp.sudo()
+        facts = [
+            {'label': _("Employee code"),
+             'value': su.barcode or su.identification_id or '—'},
+            {'label': _("Department"), 'value': su.department_id.name or '—'},
+            {'label': _("Position"), 'value': su.job_id.name or '—'},
+            {'label': _("Manager"), 'value': su.parent_id.name or '—'},
+            {'label': _("Company"), 'value': su.company_id.name or '—'},
+        ]
+        if kind == 'ot_near_cap':
+            pulse = self.sudo()._safe(self._pulse_ot, None) or {}
+            facts.append({'label': _("Monthly ceiling"),
+                          'value': '%s h' % (pulse.get('cap') or 0)})
+        return {
+            'id': su.id,
+            'title': su.name or '',
+            'subtitle': su.job_id.name or su.department_id.name or '',
+            'avatar_url': '/web/image/hr.employee/%s/avatar_128' % su.id,
+            'facts': facts,
+        }
 
     # ----------------------------------------------------- back-compat RPC
     @api.model

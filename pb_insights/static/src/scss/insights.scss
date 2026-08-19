@@ -509,3 +509,103 @@
     .pbin-wrap { padding: 18px 22px 40px; }
     .pbin-hero-main .sub { margin-top: 0; }
 }
+
+/* --------------------------------------------------- the people ledger
+   IA Cycle 6. Two pulse drills — the attendance-exception cohort and the
+   near-ceiling overtime list — are filtered subsets no hub lens carries, so
+   they open INWARDS instead of replacing the cockpit with a native list (W5).
+
+   The overlay is `position: absolute` inside `.pbin`, which is the surface's
+   own scrollport, so it covers the board and nothing else — it deliberately
+   does NOT try to be a modal. A `position: fixed` layer here would have to win
+   a z-index argument with the hub shell's chrome, and W37 exists to stop
+   surfaces having that argument. No z-index above 20 anywhere in this block.
+
+   The grid itself is the kit's `pbim-table` / `pbim-chips` / `pbim-fchip`,
+   imported by class rather than restyled (W6); only the panel geometry and the
+   two bits of chrome the kit has no opinion about live here. */
+.pbin {
+    position: relative;
+
+    .pbin-people {
+        position: absolute;
+        inset: 0;
+        /* The kit's own drawer scrim value (pb_wf_kit `.wfdr-scrim`), copied
+           deliberately: the ledger and the drawer that opens over it are two
+           layers of the same interaction and two different greys would read as
+           a rendering bug. Not a token — the kit does not export one. */
+        background: rgba(16, 12, 40, .28);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 28px 18px;
+        z-index: 20;
+        overflow: auto;
+    }
+    .pbin-people__panel {
+        width: 100%;
+        max-width: 900px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        /* W39: a centred max-width wrap inside a flex parent sizes to its CAP
+           unless it is also told to fill. `width: 100%` clamps on wide screens
+           and the flex centring still works. */
+        min-width: 0;
+    }
+    .pbin-people__head {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+        p { margin: 3px 0 0; font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    }
+    .pbin-people__x {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #fff);
+        border-radius: 10px; padding: 6px; line-height: 0; cursor: pointer;
+        color: var(--pbim-muted, #64748B);
+        &:hover { background: var(--pbim-bg, #F5F6FA); color: var(--pbim-ink, #1B1733); }
+    }
+    .pbin-people__filters {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .pbin-people__search {
+        position: relative; min-width: 0; flex: 0 1 260px;
+        .ic {
+            position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+            line-height: 0; color: var(--pbim-muted, #64748B); pointer-events: none;
+        }
+        input {
+            width: 100%; padding: 7px 10px 7px 30px; font-size: 13px;
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            border-radius: 10px; background: var(--pbim-surface, #fff);
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .pbin-people__sel {
+        padding: 6px 10px; font-size: 12.5px; border-radius: 10px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #fff); color: var(--pbim-ink, #1B1733);
+    }
+    .pbin-people__tw { max-height: 52vh; }
+    .pbin-th-wide { width: 38%; }
+    .pbin-people__foot {
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+    }
+
+    /* the drawer body — the drawer itself is pb_wf_kit's, never forked (W6) */
+    .pbin-dr {
+        display: flex; flex-direction: column; gap: 2px;
+        &__load { display: flex; align-items: center; gap: 8px; padding: 10px 0;
+                  font-size: 13px; color: var(--pbim-muted, #64748B); }
+        &__av { width: 56px; height: 56px; border-radius: 14px; object-fit: cover;
+                margin-bottom: 10px; }
+        &__kv {
+            display: flex; justify-content: space-between; gap: 12px;
+            padding: 8px 0; border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+            font-size: 13px;
+            .k { color: var(--pbim-muted, #64748B); }
+            .v { font-weight: 700; text-align: right; color: var(--pbim-ink, #1B1733); }
+        }
+    }
+}

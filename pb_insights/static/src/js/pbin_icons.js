@@ -11,6 +11,12 @@ export const IC = {
     calendar:   '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
     calendarOff:'<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4M3 10h18"/><path d="m9 16 6-6M15 16l-6-6"/>',
     clock:      '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    // IA Cycle 6 — the in-cockpit people ledger's chrome. Lucide `x` and
+    // `search`, added to this module's existing registry rather than to a new
+    // file (W2): pb_insights predates the shared IC registry and its template
+    // resolves every glyph through `ic()` here.
+    close:      '<path d="M18 6 6 18M6 6l12 12"/>',
+    search:     '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
     database:   '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
     file:       '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h6"/><path d="M8 13h8M8 17h5"/>',
     gauge:      '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
