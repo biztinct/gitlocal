@@ -14,10 +14,26 @@
 
       <div t-else="" class="pbim-wrap pbcc-wrap">
 
-        <!-- top bar -->
+        <!-- ==== top bar ====
+             The native Odoo form is no longer a toolbar button. It is one item
+             in an overflow menu, gated on the same system group that may edit
+             credentials: an escape into raw Odoo chrome is an ADMINISTRATOR's
+             tool, and putting it beside "Test connection" told every operator
+             it was a normal thing to do. -->
         <div class="pbcc-top">
           <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> <t t-esc="backLabel"/></button>
-          <button class="pbim-btn outline" t-on-click="openAdvancedForm" title="The native Odoo form for this connector"><t t-out="ic('settings',15)"/> Open record</button>
+          <div t-if="canAdmin" class="pbcc-kebab">
+            <button class="pbim-btn ghost pbcc-kebab__b" t-on-click="toggleKebab"
+                    aria-label="More actions" title="More actions">
+              <t t-out="ic('moreVertical',16)"/>
+            </button>
+            <div t-if="state.kebab" class="pbcc-kebab__m"
+                 t-on-click="(ev) => ev.stopPropagation()">
+              <button class="pbcc-kebab__i" t-on-click="openAdvancedForm">
+                <t t-out="ic('settings',14)"/> Open native record
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- hero -->
@@ -45,10 +61,112 @@
             </button>
           </div>
           <div class="right">
-            <button t-if="d.status === 'connected' and d.type !== 'excel'" class="pbim-btn outline" t-on-click="openSync">
+            <button t-if="canWrite and d.status === 'connected' and d.type !== 'excel'" class="pbim-btn outline" t-on-click="openSync">
               <t t-out="ic('refresh',15)"/> Guided pull…</button>
-            <button class="pbim-btn outline" t-on-click="() => this.openLink('action_launch_payroll_import')">
+            <button t-if="canWrite" class="pbim-btn outline" t-on-click="() => this.openLink('action_launch_payroll_import')">
               <t t-out="ic('upload',15)"/> Start payroll import</button>
+          </div>
+        </div>
+
+        <!-- ==== the feeds ====
+             One connector, many APIs. Each chip is a feed: what kind of record
+             it produces, when it last ran, how it went, what it has in the
+             store, and the two things you can do with it. There is deliberately
+             NO "Map fields" button — the Mapping Studio arrives next cycle, and
+             a door that opens onto nothing is worse than no door (W29). -->
+        <div class="pbim-panel pbcc-feeds">
+          <div class="pbim-panel-h">
+            <h2 class="pbim-h2">Feeds <span class="pbcc-count" t-esc="endpoints.length"/></h2>
+            <button t-if="canWrite" class="pbim-btn ghost pbim-btn-sm" t-on-click="detectFeeds"
+                    title="Read the vendor catalogue and the records already in the store">
+              <t t-out="ic('search',14)"/> Detect feeds
+            </button>
+          </div>
+
+          <div t-if="endpoints.length" class="pbcc-feedgrid">
+            <div t-foreach="endpoints" t-as="ep" t-key="ep.id" class="pbcc-feed">
+              <div class="pbcc-feed__h">
+                <span class="pbcc-feed__ic" t-out="ic(ep.icon, 17)"/>
+                <span class="pbcc-feed__nm">
+                  <span class="n" t-esc="ep.name"/>
+                  <span t-if="subLabel(ep)" class="c" t-esc="subLabel(ep)"/>
+                </span>
+                <span t-attf-class="pbcc-feed__dot {{ tone(ep) }}"/>
+              </div>
+              <div class="pbcc-feed__sync">
+                <t t-esc="since(ep.last_sync_iso)"/>
+                <span t-if="ep.is_legacy_abm" class="pbcc-feed__abm">ABM</span>
+              </div>
+              <div class="pbcc-feed__counts" t-esc="counts(ep)"/>
+              <div t-if="ep.last_error" class="pbcc-feed__err" t-esc="ep.last_error"/>
+              <div class="pbcc-feed__acts">
+                <button t-if="canWrite" class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="state.syncing ? 'disabled' : false"
+                        t-on-click="() => this.syncEndpoint(ep)">
+                  <t t-if="state.syncing === ep.id"><span class="pbim-spin pbcc-feed__spin"/> Syncing…</t>
+                  <t t-else=""><t t-out="ic('refresh',14)"/> Sync</t>
+                </button>
+                <button t-if="hasLedgers" class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.viewEndpointData(ep)">
+                  <t t-out="ic('database',14)"/> View data
+                </button>
+              </div>
+            </div>
+          </div>
+          <div t-elif="canWrite" class="pbim-empty">
+            No feeds catalogued yet. “Detect feeds” reads this vendor's catalogue
+            and the records already in the data store.
+          </div>
+          <div t-else="" class="pbim-empty">No feeds catalogued yet.</div>
+        </div>
+
+        <!-- ==== credentials ====
+             Administrators only, and WRITE-ONLY: the payload behind this panel
+             carries a Set / Not set boolean per field and never a value, so a
+             secret cannot be read back out of the product once it is in. -->
+        <div t-if="canAdmin" class="pbim-panel pbcc-cred">
+          <div class="pbim-panel-h">
+            <h2 class="pbim-h2"><t t-out="ic('lock',15)"/> Credentials
+              <span class="pbcc-count" t-esc="credentials.auth_label"/></h2>
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="toggleCredentials">
+              <t t-esc="state.credOpen ? 'Close' : 'Edit'"/>
+            </button>
+          </div>
+
+          <div t-if="!state.credOpen" class="pbcc-credsum">
+            <span t-foreach="credentials.fields" t-as="f" t-key="f.key"
+                  t-attf-class="pbcc-credchip {{ f.is_set ? 'is-set' : '' }}">
+              <t t-out="ic(f.is_set ? 'check' : 'x', 12)"/>
+              <t t-esc="f.label"/>
+            </span>
+          </div>
+
+          <div t-else="" class="pbcc-credform">
+            <div t-foreach="credentials.fields" t-as="f" t-key="f.key" class="pbcc-credrow">
+              <label class="pbcc-credrow__l">
+                <span class="n" t-esc="f.label"/>
+                <span t-attf-class="pbcc-credstate {{ f.is_set ? 'is-set' : '' }}"
+                      t-esc="f.is_set ? 'Set' : 'Not set'"/>
+              </label>
+              <input class="pbcc-credrow__i" t-att-type="f.secret ? 'password' : 'text'"
+                     autocomplete="off" placeholder="unchanged"
+                     t-att-value="state.cred[f.key] or ''"
+                     t-on-input="(ev) => this.onCredInput(f.key, ev)"/>
+              <button t-if="f.is_set" class="pbcc-credclear"
+                      t-att-class="{ 'is-on': state.credClear[f.key] }"
+                      t-on-click="() => this.toggleClear(f.key)"
+                      title="Clear this value on save">
+                <t t-out="ic('x',13)"/> Clear
+              </button>
+            </div>
+            <div class="pbcc-credfoot">
+              <span class="pbcc-credhint">Blank means unchanged. Values are never shown again once saved.</span>
+              <button class="pbim-btn primary pbim-btn-sm"
+                      t-att-disabled="state.credSaving ? 'disabled' : false"
+                      t-on-click="saveCredentials">
+                <t t-out="ic('check',14)"/> Save credentials
+              </button>
+            </div>
           </div>
         </div>
 

@@ -109,11 +109,51 @@ class TestOneDoor(TransactionCase):
             self.assertNotIn(
                 needle, tpl,
                 "the connector cockpit must not open the raw %s list" % needle)
-        self.assertEqual(
-            tpl.count("this.openLedger("), 3,
-            "three link buttons, three in-cockpit ledgers")
-        self.assertIn('Open record', tpl,
-                      "the native-form escape is relabelled, not hidden")
+        # Each of the three satellite tables is still reachable IN the cockpit.
+        # Asserted by KIND rather than by a count: Integrations Cycle 1 added a
+        # fourth door (per-feed "View data", which deep-links the store ledger
+        # scoped to one data type), and a `count == 3` would have failed on a
+        # cycle that added a door rather than removed one.
+        for kind in ('mapping', 'store', 'rule'):
+            self.assertIn(
+                "this.openLedger('%s')" % kind, tpl,
+                "the %s ledger is no longer reachable from the connector "
+                "cockpit" % kind)
+
+    def test_the_native_form_escape_moved_into_the_admin_overflow(self):
+        """Integrations Cycle 1 REVERSED the assertion that used to live above.
+
+        This test asserted the literal `'Open record'` — a toolbar button, the
+        second thing on the page, offered to every operator. It was Cycle 3's
+        way of recording "the native-form escape is relabelled, not hidden",
+        and that was right while the cockpit had nothing else to show for the
+        connector. It is now wrong for the same reason: dropping into Odoo's
+        raw form is an ADMINISTRATOR's tool, and a cockpit that offers it beside
+        "Test connection" teaches every operator that it is a normal step.
+
+        Reversed AT THE SITE with the reasoning rather than quietly deleted
+        (W76.3), and it still asserts the door EXISTS — a gate that only forbade
+        would be satisfied by removing the escape altogether, which would leave
+        an admin with no way to reach a field the cockpit does not render (W5).
+        """
+        tpl = _read(get_module_path('pb_import_advanced')
+                    + '/static/src/xml/connector_cockpit.xml')
+        js = _read(get_module_path('pb_import_advanced')
+                   + '/static/src/js/connector_cockpit.js')
+        self.assertNotIn(
+            'Open record', tpl,
+            "the native form is no longer a toolbar button")
+        self.assertIn('pbcc-kebab', tpl, "the overflow menu is gone")
+        self.assertIn('Open native record', tpl,
+                      "the escape must still exist, one click deeper")
+        # …and it is gated on the SAME system-group flag that gates the
+        # credentials panel, so "may edit this connector's secrets" and "may
+        # open its raw record" cannot drift apart into two answers.
+        self.assertIn('t-if="canAdmin" class="pbcc-kebab"', tpl)
+        self.assertIn('openAdvancedForm', js)
+        self.assertIn(
+            'credentials.editable', js,
+            "canAdmin must be derived from the payload's editable flag")
 
     def test_the_integrations_board_has_no_raw_list_tiles_left(self):
         for path in _client_sources('pb_integrations'):
