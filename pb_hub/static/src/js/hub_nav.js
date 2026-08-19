@@ -10,8 +10,9 @@
  *   `pb_focus`  what a pinned selection MEANS on arrival — `"queue"` says it is
  *               a FILTER, not a drawer to pop over the thing the user came to
  *               read (W26, kept verbatim so hosts write one vocabulary)
- *   `pb_back`   `{ label, tag|xmlid, lens }` — the return door, rendered by
- *               <HubShell/> as a <HubBackChip/> in the command bar
+ *   `pb_back`   `{ label, tag|xmlid, lens, context }` — the return door, rendered
+ *               by <HubShell/> as a <HubBackChip/> in the command bar, and by any
+ *               plain cockpit that asks `hubBack(this.props)` for one
  *
  * `pb_mission` reads its lens from `pb_shell_lens` instead, because it forwards
  * `pb_lens` unchanged to the Time hub inside it. That is not a second protocol
@@ -39,7 +40,11 @@ export const HUB_LENS_KEY = "pb_lens";
  * @param {string} [opts.lens]     lens key to raise on arrival
  * @param {string} [opts.lensKey]  context key for `lens` (default `pb_lens`)
  * @param {string} [opts.focus]    `"queue"` etc. — see W26
- * @param {object} [opts.back]     `{ label, tag|xmlid, lens }`, the return door
+ * @param {object} [opts.back]     `{ label, tag|xmlid, lens, context }`, the
+ *                                 return door. Its own `context` is what a
+ *                                 non-hub cockpit needs to be re-opened ON the
+ *                                 record you left it on (a connector id, say) —
+ *                                 without it the chip lands on an empty shell.
  * @param {object} [opts.context]  extra context, merged last
  * @param {boolean} [opts.clearBreadcrumbs=true]
  * @returns {Promise} whatever doAction returns
@@ -68,9 +73,32 @@ export function openHub(actionService, opts = {}) {
             // carried so a back door into a hub that reads another key (e.g.
             // pb_mission's `pb_shell_lens`) still lands on the right lens
             lensKey: back.lensKey || HUB_LENS_KEY,
+            // Plain object or nothing. `_t()` returns a String SUBCLASS, so a
+            // lazy translation dropped in here would not survive the JSON round
+            // trip a context takes — keep ids and technical keys only.
+            context: (back.context && typeof back.context === "object")
+                ? { ...back.context } : {},
         };
     }
     return actionService.doAction(target, { additionalContext, clearBreadcrumbs });
+}
+
+/**
+ * The return door a client action was opened with, or `null`.
+ *
+ * <HubShell/> reads this for itself; every OTHER cockpit — one that owns its own
+ * header instead of a hub's command bar — asks for it here and renders the same
+ * <HubBackChip/> with `tone="light"`. That is the whole of the one-door law on a
+ * non-hub surface: the door that sent you says how to get back, and the surface
+ * does not have to know who that was.
+ *
+ * Returns null for a `pb_back` with no destination, because a back door with
+ * nowhere to go is not a back door — the chip must be ABSENT, never inert.
+ */
+export function hubBack(props) {
+    const b = (props && props.action && props.action.context
+               && props.action.context.pb_back) || null;
+    return (b && (b.tag || b.xmlid)) ? b : null;
 }
 
 /**
@@ -80,17 +108,29 @@ export function openHub(actionService, opts = {}) {
  * with carries `pb_back`; it is exported separately so a lens that owns its own
  * header can render one too. It navigates itself — a back chip that needs its
  * host to wire a callback is a back chip somebody will forget to wire.
+ *
+ * TWO TONES, because the chip has two backgrounds to sit on. `dark` (the
+ * default) is the hub's #241F52 command bar and its styles live inside the
+ * `.pbim.pbhub` block. `light` is a white cockpit header — Integrations,
+ * Structures, Statutory, Tenants — and it is a SEPARATE root-scoped block,
+ * because a cockpit that is not a hub never matches `.pbhub` and would
+ * otherwise render white-on-white: styled by accident is how a control
+ * disappears without anyone seeing an error (W14's shape).
  */
 export class HubBackChip extends Component {
     static template = "pb_hub.HubBackChip";
     static props = {
-        // { label, tag|xmlid, lens } — exactly what openHub() wrote
+        // { label, tag|xmlid, lens, context } — exactly what openHub() wrote
         back: { type: Object },
+        // "dark" (a hub command bar) | "light" (a white cockpit header)
+        tone: { type: String, optional: true },
     };
 
     setup() {
         this.actionService = useService("action");
     }
+
+    get lite() { return this.props.tone === "light"; }
 
     ic(n, s = 12) { return ic(n, s); }
 
@@ -104,6 +144,7 @@ export class HubBackChip extends Component {
         const b = this.props.back;
         openHub(this.actionService, {
             tag: b.tag, xmlid: b.xmlid, lens: b.lens, lensKey: b.lensKey,
+            context: b.context || {},
         });
     }
 }

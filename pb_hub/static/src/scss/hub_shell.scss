@@ -459,3 +459,58 @@
         .pbhub-dock { display: none; }
     }
 }
+
+// =====================================================================
+//  The back chip on a LIGHT surface (Cycle 3).
+//
+//  Everything above is scoped inside `.pbim.pbhub`, because a hub owns its own
+//  command bar. Cycle 3's one-door law puts the same chip in cockpits that are
+//  NOT hubs — Integrations, Structures, Statutory, Tenants, the Settings hub
+//  itself — where nothing matches `.pbhub` and the whole block above therefore
+//  does not apply. Left to inherit, the chip would render white-on-white: a
+//  control that is present, clickable and invisible, which is worse than one
+//  that is missing (W40's failure shape, arrived at through CSS).
+//
+//  So this block is ROOT-SCOPED and COMPLETE — it restates the geometry rather
+//  than extending it, because the base it would extend is unreachable from
+//  here. Sizes stay identical to the dark chip on purpose: one chip, two
+//  backgrounds, not two chips.
+// =====================================================================
+.pbhub-back--lite {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 220px;
+    height: 30px;
+    padding: 0 12px 0 9px;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: var(--pbim-r-sm, 10px);
+    background: var(--pbim-surface, #ffffff);
+    color: var(--pbim-primary-strong, #5A4BB0);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .12s, border-color .12s;
+
+    svg { display: block; }
+    &:hover {
+        background: var(--pbim-soft, #EDEAF8);
+        border-color: var(--pbim-primary, #5A4BB0);
+    }
+    .pbhub-back__ic { display: inline-flex; flex: none; }
+    .pbhub-back__tx {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+// Every light-surface chip so far sits above a cockpit title, inside the kit's
+// shared `.ppl-head` primitive. The air belongs HERE rather than in each of the
+// four cockpits, so a fifth one gets it by adding the component and nothing
+// else. Scoped to that primitive, so the chip stays vertically centred in a
+// flex header that is not one (the Settings hub's own bar).
+.ppl-head .pbhub-back--lite { margin-bottom: 9px; }

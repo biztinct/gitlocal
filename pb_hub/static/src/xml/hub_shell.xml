@@ -112,8 +112,12 @@
   </t>
 
   <!-- ====================================================== back chip -->
+  <!-- ONE class attribute: `t-attf-class` interpolating the condition is the
+       documented-safe way to combine a base class with a computed one; a static
+       `class` beside it would silently lose one of them (W23). -->
   <t t-name="pb_hub.HubBackChip">
-    <button class="pbhub-back" t-on-click="() => this.goBack()"
+    <button t-attf-class="pbhub-back {{ lite ? 'pbhub-back--lite' : '' }}"
+            t-on-click="() => this.goBack()"
             t-att-title="title">
       <span class="pbhub-back__ic" t-out="ic('back', 12)"/>
       <span class="pbhub-back__tx" t-esc="label"/>

@@ -38,7 +38,7 @@ keeps working exactly as it is), and no real hub content is built here.
 pbim tokens only, `.pbhub-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills (W1/W2/W3).
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

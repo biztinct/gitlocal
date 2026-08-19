@@ -45,8 +45,14 @@ const palette = registry.category("pb_hub_palette");
 // palette groups its rows into a Map keyed by this value, and `_t()` returns a
 // new String subclass on every call — a fresh one per entry would give every
 // row its own "Surfaces" heading.
-const G_SURFACES = _t("Surfaces");
-const G_ADMIN = _t("Admin");
+//
+// EXPORTED (Cycle 3) for exactly that reason: a later module adding an Admin
+// row cannot write `_t("Admin")` of its own — it would be a different object,
+// the Map would key on it separately, and the palette would grow a SECOND
+// "Admin" heading under the first. There is one of each, and this is where it
+// lives.
+export const G_SURFACES = _t("Surfaces");
+export const G_ADMIN = _t("Admin");
 
 const OFFICER = "pb_hr_payroll_base.group_payroll_base_officer";
 const MANAGER = "pb_hr_payroll_base.group_payroll_base_manager";
