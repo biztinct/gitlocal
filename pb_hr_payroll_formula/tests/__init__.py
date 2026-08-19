@@ -30,3 +30,4 @@
 # blast radius described above.
 
 from . import test_odoo19_exceptions
+from . import test_integration_endpoints
