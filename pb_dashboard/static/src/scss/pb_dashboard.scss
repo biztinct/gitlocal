@@ -175,3 +175,19 @@
     .pbd-link { margin-top: 16px; background: none; border: none; color: var(--pbd-brand); font-weight: 700; font-size: 13px; cursor: pointer; padding: 0;
         &:hover { text-decoration: underline; } }
 }
+
+// ------------------------------------------------------------------ embedded
+// The Dashboard as the PULSE lens of the Home hub (W17).
+//
+// Two things change and nothing else. The padding tightens, because the hub
+// owns the outer frame. And the root becomes its own SCROLLPORT: standalone it
+// is `min-height: 100%` inside the web client's scrolling action host, but
+// `.pbhub-lens` is a definite-height flex box, so a child that only flows grows
+// past the bottom of the workspace with nothing to scroll it (W20 — the failure
+// has no error and simply looks like a page that ends early).
+.pbd-root.pbd-root--embedded {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding: 18px 22px 40px;
+}

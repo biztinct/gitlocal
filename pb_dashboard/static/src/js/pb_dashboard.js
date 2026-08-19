@@ -231,6 +231,46 @@ export class PbDashboard extends Component {
         });
     }
 
+    /**
+     * The two Analytics doors — the hero button and "Open analytics →".
+     *
+     * Both used to open `pb_hr_payroll_analytics.action_open_hr_analytics_
+     * dashboard`, a NATIVE form on `hr.analytics.dashboard`: the last legacy
+     * escape left on the home screen, and the one place in the product where a
+     * click on the word "analytics" landed on a record form instead of on the
+     * analytics. Cycle 4 built the Insights hub over the four real analytics
+     * cockpits, so that is where the word points now, with a back chip that
+     * says Home.
+     *
+     * By XMLID rather than by tag (W98). The `pb_back` payload is written out
+     * BY HAND instead of through `@pb_hub/js/hub_nav`'s `openHub`, and that is
+     * rule 2 of this file's header being kept rather than an oversight: the
+     * dashboard is the first screen of every tenant and declares no cockpit
+     * dependency, so importing the hub kit would pull `pb_hub` (and through it
+     * `pb_wf_kit`) into the manifest of the leanest module in the product. The
+     * shape below is `hub_nav.js`'s `pb_back` contract verbatim — every key it
+     * writes, in the same types — and `pb_home_hub/tests` pins the two against
+     * each other so a protocol change cannot leave this copy behind.
+     *
+     * `doAction` is a promise, so a database without the Insights hub gets the
+     * same notification every other door here gets rather than an unhandled
+     * rejection.
+     */
+    openInsights() {
+        const back = {
+            label: "Home", tag: "", xmlid: "pb_home_hub.action_pb_home_hub",
+            lens: "", lensKey: "pb_lens", context: {},
+        };
+        Promise.resolve(this.action.doAction(
+            "pb_insights_hub.action_pb_insights_hub",
+            { additionalContext: { pb_back: back }, clearBreadcrumbs: true },
+        )).catch(() => {
+            this.notification.add("That screen is not installed on this database.", {
+                type: "warning",
+            });
+        });
+    }
+
     /** Start a walkthrough, if there is an engine on this database to start it.
      *
      *  `env.services[...]` rather than `useService`, which THROWS on a missing
