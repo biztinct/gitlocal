@@ -622,9 +622,9 @@
     "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen."
   },
   "foreign": {
-    "im-connectors": "pb_import \u2014 the \"Manage connectors\" deep link the IA redesign's Cycle 3 left behind when it closed Import's five duplicate connector doors. pb_learn neither laid it nor teaches it; the im-* family in that template is otherwise pb_learn's, which is exactly why it has to be named rather than wildcarded.",
-    "ig-data": "pb_integrations \u2014 the in-cockpit Data section (field mappings, data store, transformation rules) that replaced three raw list views in Cycle 3. Same shape as im-connectors: a new sibling in a family pb_learn owns, laid by somebody else.",
-    "st-data": "pb_statutory \u2014 the in-cockpit Data section that replaced four legacy VN list tiles in Cycle 4. Same shape again.",
+    "im-connectors": "pb_import — the \"Manage connectors\" deep link the IA redesign's Cycle 3 left behind when it closed Import's five duplicate connector doors. pb_learn neither laid it nor teaches it; the im-* family in that template is otherwise pb_learn's, which is exactly why it has to be named rather than wildcarded.",
+    "ig-data": "pb_integrations — the in-cockpit Data section (field mappings, data store, transformation rules) that replaced three raw list views in Cycle 3. Same shape as im-connectors: a new sibling in a family pb_learn owns, laid by somebody else.",
+    "st-data": "pb_statutory — the in-cockpit Data section that replaced four legacy VN list tiles in Cycle 4. Same shape again.",
     "payai-pill": "pb_payroll_ai_insights — the PayAI launcher. Named by scenario sc_welcome's last step.",
     "find-panel": "pb_formula_studio command layer",
     "palette": "pb_formula_studio command layer",

@@ -8,7 +8,11 @@
     # no version bump is invisible to it, and a stale rsync then reverts it
     # silently). NO SCHEMA CHANGE in this module — `next_best` and `streak` are
     # computed, never stored, so there is nothing to migrate here.
-    'version': '19.0.12.1.0',
+    # 19.0.13.0.0 — IA Cycle 6 / W108: rail REACHABILITY split away from
+    # screen IDENTITY. The nineteen stations name the hub that reaches them
+    # instead of saying "not in your menu", and _capability stops refusing
+    # every screen to everybody but a super admin.
+    'version': '19.0.13.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

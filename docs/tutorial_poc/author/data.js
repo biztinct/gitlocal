@@ -99,6 +99,11 @@ const I18N = {
     startHere: "Start here",
     notVisible: "Not in your menu",
     notVisibleBody: "This screen is not in your menu yet, so you cannot open it. You can still read what it does. You can also read what to ask for if you need it.",
+    // A screen you CAN open, that simply does not have a menu line of its own
+    // any more. Naming the door is the whole point: "not in your menu" was
+    // wrong for these, and wrong in the direction that makes a reader stop.
+    reachVia: "Open it from",
+    reachViaBody: "This screen no longer has its own menu line. Open the one named above, and you will find this screen inside it.",
     outlineNote: "This is a short guide, not a full lesson. It covers what the screen is, why it matters, when to use it, and the mistakes it saves you from.",
     whatIs: "What it is",
     whyMatters: "Why it matters",
@@ -368,6 +373,8 @@ const I18N = {
     startHere: "Bắt đầu từ đây",
     notVisible: "Không có trong menu của bạn",
     notVisibleBody: "Màn hình này chưa có trong menu của bạn nên bạn chưa mở được. Bạn vẫn đọc được rằng nó dùng để làm gì. Bạn cũng đọc được rằng mình cần xin quyền gì nếu cần tới nó.",
+    reachVia: "Mở từ",
+    reachViaBody: "Màn hình này không còn dòng menu riêng nữa. Bạn hãy mở dòng menu ghi ở trên, rồi tìm màn hình này ở bên trong.",
     outlineNote: "Đây là bài giới thiệu ngắn, chưa phải bài học đầy đủ. Nó nói màn hình này là gì, vì sao quan trọng, khi nào dùng, và giúp bạn tránh được những lỗi nào.",
     whatIs: "Đây là gì",
     whyMatters: "Vì sao quan trọng",

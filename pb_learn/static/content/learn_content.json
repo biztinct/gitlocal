@@ -493,6 +493,14 @@
       "en": "I have read this — continue",
       "vi": "Tôi đã đọc — tiếp tục"
     },
+    "reachVia": {
+      "en": "Open it from",
+      "vi": "Mở từ"
+    },
+    "reachViaBody": {
+      "en": "This screen no longer has its own menu line. Open the one named above, and you will find this screen inside it.",
+      "vi": "Màn hình này không còn dòng menu riêng nữa. Bạn hãy mở dòng menu ghi ở trên, rồi tìm màn hình này ở bên trong."
+    },
     "recoveryUsed": {
       "en": "you needed a way back on this run",
       "vi": "bạn đã cần một lối quay lại trong lượt này"
@@ -14067,5 +14075,5 @@
       }
     }
   ],
-  "version": "4de7711e42f3"
+  "version": "ef4e598b9576"
 }

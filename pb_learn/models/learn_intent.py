@@ -820,6 +820,15 @@ class LearnIntent(models.AbstractModel):
         VISIBILITY WINS over the group, deliberately: the honest answer to
         "can I approve this run" from someone who cannot even open Pay Runs is
         "you cannot see that screen", not a lecture about a gate.
+
+        REACHABILITY, not rail membership, is what "visible" means here — and
+        the difference is not academic. Between IA Cycle 5 and Cycle 6 this
+        test read the rail's ACTIVE items directly, so once thirty-four leaves
+        were retired into eight hubs it answered `no_access` for EVERY screen
+        to EVERY reader except a super admin: a learning system telling a
+        payroll manager they cannot see Payslips on a database where they can.
+        `learn.runtime._station_reach` is the one place the three verdicts are
+        decided, so this answer and the Journey map's cannot come apart again.
         """
         user = self.env.user
         if user.has_group('pb_hr_payroll_base.group_payroll_super_admin'):
@@ -827,9 +836,9 @@ class LearnIntent(models.AbstractModel):
         if screen_key:
             screen = self.env['learn.content'].screen(screen_key)
             if screen and screen.get('sidebar_key'):
-                item = self.env.ref(screen['sidebar_key'], raise_if_not_found=False)
-                visible = self.env['learn.runtime']._visible_sidebar_item_ids()
-                if not item or item.id not in visible:
+                reachable, _missing, _reach = self.env['learn.runtime']._station_reach(
+                    screen['sidebar_key'])
+                if not reachable:
                     return 'no_access'
         if user.has_group('pb_hr_payroll_base.group_payroll_base_manager') \
                 or user.has_group('pb_hr_payroll_base.group_payroll_final_approver'):
