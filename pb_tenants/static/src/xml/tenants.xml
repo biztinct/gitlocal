@@ -9,6 +9,7 @@
     <div t-elif="state.view === 'fleet'" class="pbim-wrap tnx-fleet">
       <div class="tnx-head">
         <div>
+          <HubBackChip t-if="back" back="back" tone="'light'"/>
           <div class="pbim-eyebrow"><t t-out="ic('building',13)"/> Platform · Admin</div>
           <h1 class="pbim-h1">Tenant Mission Control</h1>
           <div class="pbim-sub">One platform, many databases — create, watch and manage every client on <b t-esc="state.data.base_domain"/>.</div>

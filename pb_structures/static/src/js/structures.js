@@ -3,6 +3,7 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 
 const STATE_CLS = { active: "ok", draft: "info", deprecated: "warn", archived: "muted" };
 const STATUS_CHIPS = [
@@ -16,11 +17,17 @@ const DATE_CHIPS = [
 
 export class PbStructures extends Component {
     static template = "pb_structures.PbStructures";
+    static components = { HubBackChip };
     static props = ["*"];
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        // The return door a caller passed (Settings, a hub, another cockpit).
+        // Read ONCE, from props, never written back — the arrival protocol's
+        // rule since Cycle 1. Null when nobody sent us, and the chip is then
+        // ABSENT rather than inert (W5/W29).
+        this.back = hubBack(this.props);
         this.state = useState({
             loaded: false, kpis: {}, countries: [], structures: [], total: 0,
             search: "", status: "all", country: "", schedule: "", dateFilter: "all", from: "", to: "",

@@ -2,11 +2,13 @@
 {
     'name': 'Payobook Tenant Mission Control',
     'summary': 'Create and manage Payobook SaaS tenants: provisioning, backups, custom domains, health.',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
-    'depends': ['web', 'pb_import_kit', 'pb_sidebar'],
+    'depends': ['web', 'pb_import_kit', 'pb_sidebar',
+                # C3: the back chip the Settings hub hands over
+                'pb_hub'],
     'data': [
         'security/ir.model.access.csv',
         'views/pb_tenants_action.xml',
