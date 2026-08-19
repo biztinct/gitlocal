@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
+  <!-- Section comments use `=` rules and never spell a CSS custom property: a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file down with it (W22/W72). Nothing sits between a branch
+       and its `t-else` (W23). -->
   <t t-name="pb_statutory.PbStatutory">
     <div class="pbim sta pbim-page ppl-people sta-board">
       <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading statutory…</span></div>
@@ -14,6 +18,11 @@
             <p class="pbim-sub">Contribution rates, ceilings, tax brackets and actuals.</p>
           </div>
           <div class="ppl-head-actions">
+            <!-- The one legacy launch that is a WIZARD rather than a table. It
+                 keeps its modal and says so with a plain label. -->
+            <button t-if="state.analyticsAction" class="pbim-btn ghost" t-on-click="openAnalytics">
+              <t t-out="ic('layers',15)"/> Contribution analysis
+            </button>
             <button class="pbim-btn outline" t-on-click="newTax"><t t-out="ic('plus',15)"/> Tax table</button>
             <button class="pbim-btn primary" data-coach="st-new" t-on-click="newPolicy"><t t-out="ic('plus',16)"/> Insurance policy</button>
           </div>
@@ -25,7 +34,7 @@
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('briefcase',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.comp_leg)"/><span class="l">Employer leg</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.policies"/><span class="l">Policies</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('table',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.tax_tables"/><span class="l">Tax tables</span></div></div>
-          <div class="pbim-stat"><span class="pbim-stat-ic pink"><t t-out="ic('users',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.dependents"/><span class="l">Dependents</span></div></div>
+          <div class="pbim-stat pink"><span class="pbim-stat-ic pink"><t t-out="ic('users',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.dependents"/><span class="l">Dependents</span></div></div>
         </div>
 
         <div class="sta-cols">
@@ -68,51 +77,176 @@
           </div>
         </div>
 
-        <div class="pbim-panel">
-          <div class="pbim-panel-h">
-            <div class="pbim-seg">
-              <button t-attf-class="pbim-segbtn {{ state.view === 'policies' ? 'on' : '' }}" t-on-click="() => this.setView('policies')">Insurance policies <t t-esc="state.policies.length"/></button>
-              <button t-attf-class="pbim-segbtn {{ state.view === 'tax' ? 'on' : '' }}" t-on-click="() => this.setView('tax')">Tax tables <t t-esc="state.tax_tables.length"/></button>
+        <!-- ==== the three views ====
+             Insurance policies and Tax tables are the ROSTERS (cards, and a
+             card opens the bespoke detail cockpit). Data is the four VN tables
+             that used to be launch tiles — a grid, and a row opens a drawer.
+             Two ways of looking at the same records, and neither of them
+             leaves this cockpit. -->
+        <div class="sta-views">
+          <button class="pbim-segbtn" t-att-class="{ 'on': state.view === 'policies' }"
+                  t-on-click="() => this.setView('policies')">
+            <t t-out="ic('checkCircle',15)"/> Insurance policies <t t-esc="state.policies.length"/>
+          </button>
+          <button class="pbim-segbtn" t-att-class="{ 'on': state.view === 'tax' }"
+                  t-on-click="() => this.setView('tax')">
+            <t t-out="ic('sigma',15)"/> Tax tables <t t-esc="state.tax_tables.length"/>
+          </button>
+          <button t-if="hasLedgers" class="pbim-segbtn" t-att-class="{ 'on': state.view === 'data' }"
+                  t-on-click="() => this.setView('data')">
+            <t t-out="ic('database',15)"/> Data
+          </button>
+        </div>
+
+        <t t-if="state.view === 'policies'">
+          <div class="pbim-panel">
+            <div class="pbim-panel-h">
+              <h2 class="pbim-h2">Insurance policies</h2>
+              <div class="pbim-chips" data-coach="st-filters">
+                <button t-attf-class="pbim-fchip {{ state.showActive ? 'on' : '' }}" t-on-click="toggleActive">Active only</button>
+              </div>
             </div>
-            <div class="pbim-chips" data-coach="st-filters">
-              <button t-attf-class="pbim-fchip {{ state.showActive ? 'on' : '' }}" t-on-click="toggleActive">Active only</button>
-              <t t-if="state.view === 'tax'">
+            <div class="ppl-roster" data-coach="st-roster">
+              <div t-foreach="filteredPolicies" t-as="p" t-key="p.id" class="ppl-card" t-on-click="() => this.openPolicy(p.id)">
+                <div class="ppl-av"><t t-out="ic('checkCircle',20)"/></div>
+                <div class="ppl-id"><div class="nm" t-esc="p.name"/><div class="jb"><t t-esc="p.code"/> · effective <t t-esc="p.effective or '—'"/></div></div>
+                <div class="ppl-period sta-totals">EE <t t-esc="p.total_employee"/>% · ER <t t-esc="p.total_employer"/>%</div>
+                <div class="ppl-meta"><span t-attf-class="pbim-badge {{ p.active ? 'ok' : 'muted' }}"><t t-esc="p.active ? 'Active' : 'Archived'"/></span></div>
+              </div>
+              <div t-if="!filteredPolicies.length" class="pbim-empty">No insurance policies.</div>
+            </div>
+          </div>
+        </t>
+
+        <t t-if="state.view === 'tax'">
+          <div class="pbim-panel">
+            <div class="pbim-panel-h">
+              <h2 class="pbim-h2">Tax tables</h2>
+              <div class="pbim-chips">
+                <button t-attf-class="pbim-fchip {{ state.showActive ? 'on' : '' }}" t-on-click="toggleActive">Active only</button>
                 <button t-foreach="years" t-as="y" t-key="y" t-attf-class="pbim-fchip {{ state.year === y ? 'on' : '' }}" t-on-click="() => this.setYear(y)">
                   <t t-out="ic('calendar',12)"/> <t t-esc="y"/>
                 </button>
-              </t>
+              </div>
+            </div>
+            <div class="ppl-roster">
+              <div t-foreach="filteredTax" t-as="t" t-key="t.id" class="ppl-card" t-on-click="() => this.openTax(t.id)">
+                <div class="ppl-av"><t t-out="ic('sigma',20)"/></div>
+                <div class="ppl-id"><div class="nm" t-esc="t.name"/><div class="jb"><t t-esc="t.code"/> · <t t-esc="t.slabs"/> brackets</div></div>
+                <div class="ppl-period sta-totals">Personal <t t-esc="moneyFull(t.personal)"/></div>
+                <div class="ppl-meta"><span class="pbim-badge info"><t t-esc="t.year"/></span> <span t-attf-class="pbim-badge {{ t.active ? 'ok' : 'muted' }}"><t t-esc="t.active ? 'Active' : 'Archived'"/></span></div>
+              </div>
+              <div t-if="!filteredTax.length" class="pbim-empty">No tax tables.</div>
             </div>
           </div>
+        </t>
 
-          <div t-if="state.view === 'policies'" class="ppl-roster" data-coach="st-roster">
-            <div t-foreach="filteredPolicies" t-as="p" t-key="p.id" class="ppl-card" t-on-click="() => this.openPolicy(p.id)">
-              <div class="ppl-av"><t t-out="ic('checkCircle',20)"/></div>
-              <div class="ppl-id"><div class="nm" t-esc="p.name"/><div class="jb"><t t-esc="p.code"/> · effective <t t-esc="p.effective or '—'"/></div></div>
-              <div class="ppl-period sta-totals">EE <t t-esc="p.total_employee"/>% · ER <t t-esc="p.total_employer"/>%</div>
-              <div class="ppl-meta"><span t-attf-class="pbim-badge {{ p.active ? 'ok' : 'muted' }}"><t t-esc="p.active ? 'Active' : 'Archived'"/></span></div>
+        <!-- The Data view is an explicit `t-if`, not a `t-else`: `t-else` binds
+             to the IMMEDIATELY preceding sibling, and a comment describing the
+             branch would break the pairing into a runtime template error (W23).
+             Data = the four tables that used to be raw list views; a row click
+             opens the drawer and nothing in it navigates. -->
+        <t t-if="state.view === 'data'">
+          <div class="pbim-panel sta-ledger" data-coach="st-data">
+
+            <div class="sta-tabs">
+              <button t-foreach="ledgerTabs" t-as="t" t-key="t.id"
+                      class="sta-tab" t-att-class="{ 'is-on': state.kind === t.id }"
+                      t-att-aria-current="state.kind === t.id ? 'true' : false"
+                      t-on-click="() => this.setKind(t.id)">
+                <span class="sta-tab__ic" t-out="ic(t.icon, 14)"/>
+                <span t-esc="t.label"/>
+              </button>
+              <span class="sta-tabsub" t-if="state.ledger" t-esc="state.ledger.subtitle"/>
             </div>
-            <div t-if="!filteredPolicies.length" class="pbim-empty">No insurance policies.</div>
-          </div>
 
-          <div t-else="" class="ppl-roster">
-            <div t-foreach="filteredTax" t-as="t" t-key="t.id" class="ppl-card" t-on-click="() => this.openTax(t.id)">
-              <div class="ppl-av"><t t-out="ic('sigma',20)"/></div>
-              <div class="ppl-id"><div class="nm" t-esc="t.name"/><div class="jb"><t t-esc="t.code"/> · <t t-esc="t.slabs"/> brackets</div></div>
-              <div class="ppl-period sta-totals">Personal <t t-esc="moneyFull(t.personal)"/></div>
-              <div class="ppl-meta"><span class="pbim-badge info"><t t-esc="t.year"/></span> <span t-attf-class="pbim-badge {{ t.active ? 'ok' : 'muted' }}"><t t-esc="t.active ? 'Active' : 'Archived'"/></span></div>
-            </div>
-            <div t-if="!filteredTax.length" class="pbim-empty">No tax tables.</div>
-          </div>
-        </div>
+            <div t-if="state.ledgerLoading" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
 
-        <div t-if="state.launches.length" class="sta-launches">
-          <button t-foreach="state.launches" t-as="l" t-key="l.xmlid" class="ppl-card sta-launch" t-on-click="() => this.launch(l.xmlid)">
-            <span class="ppl-av"><t t-out="tileIcon(l.icon)"/></span>
-            <span class="ppl-id"><span class="nm" t-esc="l.label"/><span class="jb" t-esc="l.desc"/></span>
-            <span class="sta-ar"><t t-out="ic('arrow',15)"/></span>
-          </button>
-        </div>
+            <t t-elif="state.ledger">
+              <div class="sta-lfilters">
+                <div class="pbim-chips sta-facets">
+                  <t t-foreach="state.ledger.facets or []" t-as="fac" t-key="fac.key">
+                    <t t-if="fac.chips.length > 1">
+                      <t t-if="fac.kind === 'chips'">
+                        <button t-foreach="fac.chips" t-as="c" t-key="c.id"
+                                t-attf-class="pbim-fchip {{ state.f[fac.key] === c.id ? 'on' : '' }}"
+                                t-on-click="() => this.setFacet(fac.key, c.id)">
+                          <t t-esc="c.label"/> <span class="c" t-esc="chipCount(fac.key, c.id)"/>
+                        </button>
+                      </t>
+                      <t t-else="">
+                        <select class="sta-select" t-on-change="(ev) => this.onFacetSelect(fac.key, ev)">
+                          <option value="">All</option>
+                          <option t-foreach="fac.chips" t-as="c" t-key="c.id" t-att-value="c.id"
+                                  t-att-selected="state.f[fac.key] === c.id" t-esc="c.label"/>
+                        </select>
+                      </t>
+                    </t>
+                  </t>
+                  <button t-if="ledgerDirty" class="pbim-fchip sta-clear" t-on-click="clearLedgerFilters">
+                    <t t-out="ic('x',13)"/> Clear
+                  </button>
+                </div>
+                <div class="ppl-search">
+                  <span class="ic"><t t-out="ic('search',15)"/></span>
+                  <input t-att-placeholder="state.ledger.search_ph" t-on-input="onLedgerSearch"/>
+                </div>
+              </div>
+
+              <div t-if="ledgerRows.length" class="pbim-tablewrap sta-tw">
+                <table class="pbim-table">
+                  <thead>
+                    <tr>
+                      <th t-foreach="state.ledger.columns" t-as="col" t-key="col_index"
+                          t-attf-class="{{ col.wide ? 'sta-th-wide' : '' }}" t-esc="col.label"/>
+                      <th class="sta-th-badge">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="ledgerRows" t-as="r" t-key="r.id" class="click"
+                        t-on-click="() => this.openRow(r)">
+                      <td t-foreach="r.cells" t-as="cell" t-key="cell_index" t-esc="cell"/>
+                      <td class="sta-td-badge">
+                        <span t-attf-class="pbim-badge {{ r.badge.tone }}"><span class="d"/><t t-esc="r.badge.label"/></span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div t-else="" class="pbim-empty" t-esc="state.ledger.empty"/>
+
+              <!-- Honest in both directions: what is on screen, and what exists
+                   behind the row cap. A paged table can lie two ways (W45). -->
+              <div class="sta-foot" t-esc="footLabel"/>
+            </t>
+
+            <div t-else="" class="pbim-empty">This table could not be loaded.</div>
+          </div>
+        </t>
       </div>
+
+      <!-- ==== the row's whole story, in place ====
+           The kit's drawer (W6): 320px, absolute scrim inside THIS surface,
+           ESC and the X both close. -->
+      <WfDrawer t-if="state.drawer" title="state.drawer.title"
+                subtitle="state.drawer.subtitle" onClose="() => this.closeDrawer()">
+        <div class="sta-dr">
+          <div t-if="state.drawerLoading and !state.drawer.sections.length" class="sta-dr__load">
+            <span t-out="ic('loader', 20)"/><span>Loading…</span>
+          </div>
+          <div t-foreach="state.drawer.sections" t-as="sec" t-key="sec.label" class="sta-dr__sec">
+            <div class="sta-dr__h" t-esc="sec.label"/>
+            <div t-foreach="sec.fields" t-as="f" t-key="f.label"
+                 class="sta-dr__kv" t-att-class="{ 'is-wrap': f.wrap }">
+              <span class="k" t-esc="f.label"/>
+              <!-- ONE class attribute: a static `class` and a `t-attf-class`
+                   both compile to `class` and the last one written wins, so the
+                   tone would silently replace the `v` (W23). -->
+              <span t-attf-class="v {{ f.tone or '' }}" t-esc="f.value"/>
+            </div>
+          </div>
+        </div>
+      </WfDrawer>
     </div>
   </t>
 
