@@ -503,3 +503,32 @@ class TestInsights(TransactionCase):
         self.assertTrue(web, "vi_VN web translations are empty — missing the "
                              "'#. odoo-javascript' extracted-comment marker?")
         self.assertIn('Insights is restricted to payroll analytics managers.', py)
+
+    # ------------------------------------------------- §6.12 the sudo drop
+    def test_12_the_sudo_drop_moved_no_money(self):
+        """IA Cycle 7 — parity, per gate persona.
+
+        The board no longer collects under a blanket `sudo()`. That is only a
+        cleanup if the numbers do not move, and the risk is asymmetric: a tier
+        whose rules narrow it reads LESS and nothing raises, because `_safe`
+        turns an AccessError into an empty section (W105's exact shape, one
+        cycle later). So every money section is compared to the same section
+        collected as superuser, for each of the three gate personas.
+        """
+        for persona in (self.u_manager, self.u_analytics, self.u_payroll):
+            mine = self.Insights.with_user(persona).with_context(
+                allowed_company_ids=[self.company_a.id]).get_insights()
+            sudoed = self.Insights.with_user(persona).sudo().with_context(
+                allowed_company_ids=[self.company_a.id]).get_insights()
+            for key in ('hero', 'trend', 'departments', 'statutory'):
+                self.assertEqual(
+                    mine[key], sudoed[key],
+                    "%s: the %r section differs from its sudo'd twin — the "
+                    "sudo drop narrowed money for this persona"
+                    % (persona.login, key))
+            # …and the comparison is not two empty dicts agreeing with each other
+            self.assertTrue(mine['hero']['net'],
+                            "%s reads no money at all" % persona.login)
+            self.assertTrue(mine['departments']['rows'],
+                            "%s reads an empty department leaderboard"
+                            % persona.login)

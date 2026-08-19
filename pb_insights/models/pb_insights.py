@@ -12,12 +12,21 @@ Doctrine
 * **Read-only** (safety rail 1): this module performs ZERO writes. There is no
   ``create``/``write``/``unlink``/``action_*`` anywhere in it — grep-assertable,
   and asserted by ``test_06``.
-* **Gate first, then sudo the reads** (C18.65 / C18.73): the gate group set is
-  broader than the union of the underlying models' ACLs (C18.75 — the pb_*
-  payroll ladder holds no ``hr.payslip`` ACL at all), so the board is collected
-  under ``sudo()`` BEHIND ``_require()``. Company scoping survives sudo because
-  ``env.companies`` is unchanged, and every SQL statement carries an explicit
-  ``company_id IN %s`` (C18.11/18).
+* **Gate first, then read with the CALLER's rights** (C18.65 / C18.73, revised
+  by IA Cycle 7). The board used to be collected under a blanket ``sudo()``
+  behind ``_require()``, because C18.75 was true: the pb_* payroll ladder held
+  no ``hr.payslip`` ACL and ``hr.payslip.line`` had no officer or manager
+  RECORD RULE at all, so an honest ORM read returned zero money (W105).
+  Cycle 6 mirrored those rules (W111) and this cycle dropped the blanket sudo:
+  money now reads as whoever is looking. Three sudos survive and each is about
+  PEOPLE rather than money — the ``_hero`` headcount, the ``_departments``
+  label lookup and the ``_pulse`` row, whose models (``hr.employee``, the
+  hr_attendance ladder) grant no ACL to this board's gate groups — plus the
+  ``_statutory_legacy`` fallback, whose reason is written at its own site. Each
+  one carries the paragraph that justifies it; a sudo without one is a bug.
+  Company scoping is unaffected either way: ``env.companies`` is unchanged and
+  every SQL statement carries an explicit ``company_id IN %s`` (C18.11/18),
+  which is also why record rules never scoped those figures to begin with.
 * **Soft-deps never crash** (safety rail 3): each pulse tile is model- and
   field-existence checked and returns ``None`` when its phase is not deployed.
 * **Performance is a feature** (safety rail 2): hero + trend read the STORED,
@@ -245,7 +254,26 @@ class PbInsights(models.AbstractModel):
         ``months`` bounds the cost story window (3 / 6 / 12).
         """
         self._require()               # real-user gate…
-        su = self.sudo()              # …then collect the board sudo (C18.65/73)
+        # …and then the board is collected with the CALLER'S OWN RIGHTS.
+        #
+        # Until Cycle 6 this line was `su = self.sudo()`: the whole board was
+        # read as superuser because `hr.payslip.line` carried no officer or
+        # manager record rule at all (W105) — every ORM money read came back
+        # empty for a real payroll manager, so the cockpit could not honestly
+        # be un-sudo'd. W111's mirrors changed that: `hr.payslip.line` now has
+        # a rule for every group the payslip has one for, and this board's
+        # money is either that ORM read, a `hr.payslip.run` read the gate
+        # groups hold an ACL for, or raw SQL carrying its own
+        # `company_id IN %s` predicate (which record rules could never have
+        # scoped in the first place).
+        #
+        # Three sudos survive, each NARROWED to its own line and each about
+        # PEOPLE rather than money, because the gate groups hold no ACL for
+        # those models and granting one is a policy decision this cycle does
+        # not own: the headcount count in `_hero`, the department NAME lookup
+        # in `_departments`, and the workforce `_pulse` row. `_statutory_legacy`
+        # keeps one too, for the reason written at its own site.
+        su = self.sudo()              # people/workforce reads only — see above
         try:
             months = max(1, min(24, int(months or 6)))
         except (TypeError, ValueError):
@@ -256,28 +284,38 @@ class PbInsights(models.AbstractModel):
 
         def timed(key, fn, default=None):
             t = time.monotonic()
-            out = su._safe(fn, default)
+            out = self._safe(fn, default)
             timings[key] = round((time.monotonic() - t) * 1000, 1)
             return out
 
-        window = su._window_start(months)
+        window = self._window_start(months)
         # ONE company-scoped run read serves hero, sparkline, trend and the
         # department basis — newest first (test 2: the query count does not grow
         # with the number of runs in the window).
-        runs = timed('runs', lambda: su._runs(), default=su.env['hr.payslip.run'])
+        runs = timed('runs', lambda: self._runs(),
+                     default=self.env['hr.payslip.run'])
         in_window = runs.filtered(
             lambda r: r.date_end and r.date_end >= window)
         # the hero run is the newest company-scoped run — it stands even when
         # the window itself is empty (a quiet quarter still gets a headline)
         latest = runs[:1]
 
-        hero = timed('hero', lambda: su._hero(runs), default={})
-        trend = timed('trend', lambda: su._trend(in_window, months), default={})
-        departments = timed('departments', lambda: su._departments(runs), default={})
-        statutory = timed('statutory', lambda: su._statutory(latest), default={})
+        hero = timed('hero', lambda: self._hero(runs), default={})
+        trend = timed('trend', lambda: self._trend(in_window, months), default={})
+        departments = timed('departments', lambda: self._departments(runs),
+                            default={})
+        statutory = timed('statutory', lambda: self._statutory(latest), default={})
+        # PULSE KEEPS SUDO. Its tiles read `hr.overtime.request`,
+        # `pb.ot.ceiling`, `hr.shift.planning`, `hr.attendance` and
+        # `hr.leave` — models whose read ACL belongs to the hr_attendance and
+        # hr_holidays ladders, which NONE of this board's three gate groups
+        # imply. Dropping it here would not narrow the row, it would blank it
+        # (`_safe` swallows the AccessError and the tile renders as "not
+        # deployed"), and granting a payroll tier read on another module's
+        # workforce models is a policy decision, not a refactor.
         pulse = timed('pulse', lambda: su._pulse(), default={})
-        snapshots = timed('snapshots', lambda: su._snapshots(), default=[])
-        explorer = timed('explorer', lambda: su._explorer(),
+        snapshots = timed('snapshots', lambda: self._snapshots(), default=[])
+        explorer = timed('explorer', lambda: self._explorer(),
                          default={'available': False, 'xmlid': ''})
 
         company = self.env.company
@@ -288,7 +326,7 @@ class PbInsights(models.AbstractModel):
             'companies': self.env.companies.mapped('name'),
             'months': months,
             'today': date.today().isoformat(),
-            'can_bonus': su._can_bonus(),
+            'can_bonus': self._can_bonus(),
             'hero': hero,
             'trend': trend,
             'departments': departments,
@@ -318,7 +356,13 @@ class PbInsights(models.AbstractModel):
         spark = [{'label': (r.name or '')[:22], 'date': str(r.date_end or ''),
                   'net': r.pb_total_net or 0.0}
                  for r in reversed(runs[:_SPARK_RUNS])]
-        headcount = self.env['hr.employee'].search_count(
+        # SUDO, narrowly: `hr.employee` grants read to `hr.group_hr_user`,
+        # `base.group_system` and the demo group — and to none of this board's
+        # three gate groups (C7). A payroll analytics manager who is not also
+        # an HR user would read a headcount of ZERO, which is W105's symptom in
+        # a different column. The count is already company-scoped by its own
+        # domain, so sudo changes the RIGHTS and not the number.
+        headcount = self.env['hr.employee'].sudo().search_count(
             [('company_id', 'in', list(self._co_ids())), ('active', '=', True)])
 
         out = {
@@ -428,8 +472,14 @@ class PbInsights(models.AbstractModel):
             dept_ids = [r[0] for r in raw if r[0]]
             if dept_ids:
                 # department names are translated (jsonb) — read them through
-                # the ORM rather than picking a language out of SQL
-                for d in self.env['hr.department'].browse(dept_ids).exists():
+                # the ORM rather than picking a language out of SQL.
+                # SUDO, narrowly: this is a LABEL read for money the caller has
+                # already been shown by the company-scoped SQL above. Reading a
+                # department the multi-company rule hides would raise inside a
+                # `_safe`-wrapped section and blank the whole leaderboard for
+                # one row's sake (W102), so the label is fetched as superuser
+                # and the money keeps its own scope.
+                for d in self.env['hr.department'].sudo().browse(dept_ids).exists():
                     names[d.id] = d.name
             rows = [{
                 'id': did or 0,
@@ -537,7 +587,19 @@ class PbInsights(models.AbstractModel):
         Same scope as the primary SQL (review M-1): selected companies only,
         cancelled slips excluded."""
         out['basis'] = 'code'
-        groups = self.env['hr.payslip.line'].read_group(
+        # SUDO, narrowly, and the ONE money read on this board that still has
+        # it. This fallback is the only ORM read of `hr.payslip.line` left;
+        # every other money figure is raw SQL with its own `company_id IN %s`.
+        # `group_payroll_analytics_user` — a gate group of this board — holds
+        # its `hr.payslip.line` read ACL through `base.group_user`, whose only
+        # record rule is employee self-service (own lines). Reading this as the
+        # caller would therefore show that persona THEIR OWN payslip instead of
+        # the company's statutory split (W111: the tier is not denied, it is
+        # quietly narrowed to itself). Fixing that needs a RULE admitting the
+        # analytics tier to other people's lines, which is a money-visibility
+        # decision the owner has not made — so the read stays sudo'd and the
+        # question is on the record instead (IA Cycle 7 report).
+        groups = self.env['hr.payslip.line'].sudo().read_group(
             [('slip_id.payslip_run_id', '=', run.id),
              ('slip_id.company_id', 'in', list(self._co_ids())),
              ('slip_id.state', '!=', 'cancel'),
@@ -891,6 +953,16 @@ class PbInsights(models.AbstractModel):
     def get_people_ledger(self, kind):
         """The employees behind one pulse tile. Read-only."""
         self._require()
+        # SUDO KEPT (IA Cycle 7, deliberate). These ledgers carry NO money:
+        # they list the employees behind an attendance-exception or
+        # overtime-ceiling tile, and they read exactly the models the pulse
+        # reads — `hr.employee` plus the hr_attendance ladder — for which none
+        # of the three gate groups holds an ACL. Dropping sudo here would empty
+        # the ledger rather than narrow it, and would additionally re-open
+        # W102's poisoned-row failure (one unreadable employee raising inside a
+        # `browse()` loop takes the whole grid with it). The per-employee
+        # access decision is not skipped: `get_people_detail` still asks the
+        # ORM (`emp.check_access('read')`) before opening a drawer.
         su = self.sudo()
         if kind not in self._LEDGER_KINDS:
             raise UserError(_("Unknown ledger: %s", kind))

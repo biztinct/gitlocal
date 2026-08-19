@@ -30,7 +30,11 @@ tier. All assets are local — no CDN, no external chart library.
     # 19.0.4.0.0 — IA Cycle 6: the five native-list drills. Three become hub
     # deep links with an Insights back chip, two become an in-cockpit people
     # ledger with a drawer. No target:"current" escape remains.
-    'version': '19.0.4.0.0',
+    # 19.0.4.1.0 — IA Cycle 7: the board's blanket sudo is gone. Money reads
+    # with the caller's rights behind W105/W111's rules; the three sudos left
+    # are people/workforce reads, narrowed to their own line and explained
+    # there.
+    'version': '19.0.4.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
