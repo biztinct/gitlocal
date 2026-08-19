@@ -83,8 +83,7 @@ export class PbHubDemo extends Component {
                     { type: "info" }),
             },
             dock: HubDemoDock,
-            cog: () => this.notif.add(
-                _t("The cog is wired in Cycle 3."), { type: "info" }),
+            cog: () => this.openSettings(),
             lenses: [
                 {
                     key: "overview", icon: "activity", label: _t("Overview"),
@@ -136,6 +135,31 @@ export class PbHubDemo extends Component {
             tag: "pb_hub_demo",
             lens: "records",
             back: { label: _t("Overview"), tag: "pb_hub_demo", lens: "overview" },
+        });
+    }
+
+    /**
+     * The cog, wired in Cycle 3 — to a tag, by name, never by import.
+     *
+     * `pb_settings` DEPENDS ON this module, so importing its hub here would be a
+     * cycle the module graph refuses. The registry is the honest test instead: a
+     * module that is not installed did not ship its JS, so its tag is simply not
+     * there (the same probe the palette service uses). A cog that opened nothing
+     * would be W29's door that can only produce an error, so on a database
+     * without pb_settings it SAYS so rather than doing nothing at all.
+     */
+    openSettings() {
+        if (!registry.category("actions").contains("pb_settings_hub")) {
+            this.notif.add(_t("The Settings hub is not installed on this database."),
+                           { type: "warning" });
+            return;
+        }
+        openHub(this.actionService, {
+            // The registry probe above is on the TAG (that is what a module
+            // ships); the door is the XMLID, because only the record carries a
+            // name for the breadcrumb.
+            xmlid: "pb_settings.action_pb_settings_hub",
+            back: { label: _t("Hub Demo"), tag: "pb_hub_demo" },
         });
     }
 }
