@@ -5,7 +5,7 @@
        expression compiler maps `lt`/`gt`/`and`/`or`/`in` to JS operators, so a
        t-as="lt" compiles to `const key = <.id` (C18.71). -->
   <t t-name="pb_explorer.PbExplorer">
-    <div class="pbex pbim">
+    <div class="pbex pbim" t-att-class="{ 'pbex--embedded': props.embedded }">
 
       <!-- ============================ loading ============================ -->
       <div t-if="!state.loaded" class="pbex-loading">
@@ -18,8 +18,11 @@
         <!-- ============================ header =========================== -->
         <div class="pbex-head" data-coach="ex-head">
           <div class="pbex-head-main">
-            <div class="eyebrow"><t t-out="ic('compass', 13)"/><span>Analytics</span></div>
-            <h1>Explorer</h1>
+            <!-- Chrome the hub already owns (W17). The head's TOOLS — Refresh
+                 and Export CSV — are functional and stay in both modes; only
+                 the identity block goes. -->
+            <div class="eyebrow" t-if="!props.embedded"><t t-out="ic('compass', 13)"/><span>Analytics</span></div>
+            <h1 t-if="!props.embedded">Explorer</h1>
             <p class="sub">
               Ask anything of your payroll — pick a measure, break it down,
               spread it over time, then click any bar to see the people behind it.

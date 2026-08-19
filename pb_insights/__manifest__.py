@@ -27,7 +27,7 @@ tier. All assets are local — no CDN, no external chart library.
 """,
     # C2: bump on EVERY asset-file change — the compiled bundle URL hash is
     # keyed on module versions, so without this browsers keep the stale CSS.
-    'version': '19.0.3.0.1',
+    'version': '19.0.3.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

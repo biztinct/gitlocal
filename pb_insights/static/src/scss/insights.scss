@@ -498,3 +498,14 @@
         .gcard, .snap, .pbin-chips .chip { transition: none; }
     }
 }
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.pbin` is already `height: 100%; overflow: auto`, so it needs
+   no scrollport surgery (W20) — the hub's canvas hands it a definite height and
+   it keeps owning its own scrolling. What it needs is its page padding tuned
+   for a lens box that is already inset by the rail, and the hero's top gap
+   closed now that the eyebrow and the title are gone. */
+.pbin.pbin--embedded {
+    .pbin-wrap { padding: 18px 22px 40px; }
+    .pbin-hero-main .sub { margin-top: 0; }
+}
