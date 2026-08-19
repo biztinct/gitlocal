@@ -7,10 +7,15 @@ Rebrands the backend URL prefix: the web client lives at /bizapp, every
 legacy backend URL is 301-redirected, and the client-side router generates
 /bizapp URLs natively (address bar, history, bookmarks, deep links).
 
-Companion of biz_debrand (cosmetic debranding). Scope is the address bar
+Companion of biz_debrand (cosmetic debranding). URL scope is the address bar
 only — asset/RPC/websocket endpoints (/web/*, /websocket) are untouched.
+
+This module also owns the backend web-client ENTRY POINT (it overrides
+`Home.web_client`), so the defensive guards that keep that entry point from
+answering 500 live here too: see `models/ir_http_session_guard.py`, which
+repairs the `hr_timesheet` multi-company `session_info` KeyError (W100).
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Hidden/Tools',
     'author': 'Biztinct',
     'license': 'LGPL-3',
