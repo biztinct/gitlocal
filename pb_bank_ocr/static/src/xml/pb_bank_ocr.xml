@@ -24,7 +24,7 @@
             <div class="pbbk-upload">
               <div class="pbbk-upload__hd">New bank-change request</div>
               <DocDrop onFile.bind="onUpload" label="'Drop a bank confirmation letter / statement / passbook'"/>
-              <div class="pbbk-busy" t-if="state.busy"><i class="fa fa-circle-o-notch fa-spin"/> Working…</div>
+              <div class="pbbk-busy" t-if="state.busy"><span class="pbbk-spin" t-out="ic('loader', 14)"/> Working…</div>
             </div>
 
             <t t-call="pb_bank_ocr.Lane"><t t-set="title" t-value="'My requests'"/><t t-set="cards" t-value="state.data.queues.mine"/></t>
@@ -52,7 +52,7 @@
       <!-- ============================ DETAIL VIEW ============================ -->
       <div class="pbbk-detail" t-if="state.view === 'detail' and state.req">
         <div class="pbbk-detail__bar">
-          <button class="pbbk-btn pbbk-btn--ghost" t-on-click="back"><i class="fa fa-arrow-left"/> Back</button>
+          <button class="pbbk-btn pbbk-btn--ghost" t-on-click="back"><t t-out="ic('back', 14)"/> Back</button>
           <div class="pbbk-detail__title">
             <span t-esc="state.req.name"/> · <span t-esc="state.req.employee"/>
           </div>
@@ -77,7 +77,7 @@
               <span>Extracted fields</span>
               <span class="pbbk-provider__model" t-if="state.req.ocr_provider">via <t t-esc="state.req.ocr_provider"/></span>
               <button class="pbbk-btn pbbk-btn--ghost pbbk-btn--sm" t-on-click="runOcr"
-                      t-att-disabled="state.scanning"><i class="fa fa-refresh"/> Re-scan</button>
+                      t-att-disabled="state.scanning"><t t-out="ic('refresh', 14)"/> Re-scan</button>
             </div>
 
             <div class="pbbk-fields">
@@ -105,7 +105,7 @@
                 <div t-attf-class="pbbk-diff__row {{ d.changed ? 'pbbk-diff__row--chg' : '' }}">
                   <span class="pbbk-diff__lbl" t-esc="d.label"/>
                   <span class="pbbk-diff__cur" t-esc="d.current || '—'"/>
-                  <i class="fa fa-arrow-right pbbk-diff__arr"/>
+                  <span class="pbbk-diff__arr" t-out="ic('arrow', 14)"/>
                   <span class="pbbk-diff__new" t-esc="d.extracted || '—'"/>
                 </div>
               </t>
@@ -125,14 +125,14 @@
                 </div>
               </div>
               <div t-attf-class="pbbk-format pbbk-format--{{ state.req.validation.format_ok ? 'ok' : 'bad' }}">
-                <i t-attf-class="fa fa-{{ state.req.validation.format_ok ? 'check-circle' : 'exclamation-triangle' }}"/>
+                <span t-out="ic(state.req.validation.format_ok ? 'checkCircle' : 'alert', 15)"/>
                 <span t-esc="state.req.validation.format_msg"/>
               </div>
             </div>
 
             <!-- duplicate banner -->
             <div class="pbbk-dupe" t-if="state.req.duplicates.length">
-              <div class="pbbk-dupe__hd"><i class="fa fa-exclamation-triangle"/> This account matches other employees</div>
+              <div class="pbbk-dupe__hd"><t t-out="ic('alert', 15)"/> This account matches other employees</div>
               <t t-foreach="state.req.duplicates" t-as="dup" t-key="dup.id">
                 <div class="pbbk-dupe__row"><t t-esc="dup.name"/> · <t t-esc="dup.account"/></div>
               </t>
@@ -159,7 +159,7 @@
               <div class="pbbk-history__empty" t-if="!state.history.length">No prior changes.</div>
               <t t-foreach="state.history" t-as="h" t-key="h_index">
                 <div class="pbbk-history__row">
-                  <i t-attf-class="fa fa-{{ h.source === 'ocr_request' ? 'qrcode' : 'pencil' }}"/>
+                  <span t-out="ic(h.source === 'ocr_request' ? 'scan' : 'pencil', 14)"/>
                   <span class="pbbk-history__acct"><t t-esc="h.old_account || '—'"/> → <t t-esc="h.new_account || '—'"/></span>
                   <span class="pbbk-history__meta"><t t-esc="h.by"/> · <t t-esc="h.at"/></span>
                 </div>
@@ -182,7 +182,7 @@
         </div>
       </div>
 
-      <div class="pbbk-loading" t-if="!state.loaded"><i class="fa fa-circle-o-notch fa-spin fa-2x"/></div>
+      <div class="pbbk-loading" t-if="!state.loaded"><span class="pbbk-spin" t-out="ic('loader', 28)"/></div>
     </div>
   </t>
 
@@ -200,7 +200,7 @@
               </div>
               <div class="pbbk-rcard__sub"><t t-esc="c.bank || '—'"/> · <t t-esc="c.account"/></div>
             </div>
-            <i class="fa fa-exclamation-triangle pbbk-rcard__dupe" t-if="c.has_dupes"/>
+            <span class="pbbk-rcard__dupe" t-if="c.has_dupes" t-out="ic('alert', 15)"/>
           </div>
         </t>
       </div>

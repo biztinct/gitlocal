@@ -41,7 +41,19 @@
     // ---- upload ----
     .pbbk-upload { background: #fff; border: 1px solid var(--pbbk-line); border-radius: 14px; padding: 16px; }
     .pbbk-upload__hd { font-weight: 700; margin-bottom: 10px; }
-    .pbbk-busy { margin-top: 8px; color: var(--pbbk-muted); }
+    .pbbk-busy { margin-top: 8px; color: var(--pbbk-muted); display: flex; align-items: center; gap: 8px; }
+
+    // The spinner, now that the glyph font is gone (IA Cycle 5). Font Awesome's
+    // `fa-spin` was doing this for us and it was the only thing keeping a
+    // stylesheet dependency on a font this product does not otherwise use.
+    // `display: inline-flex` matters: an inline span wrapping an SVG rotates
+    // about the wrong origin and the icon wobbles instead of spinning.
+    .pbbk-spin {
+        display: inline-flex;
+        animation: pbbkSpin 1s linear infinite;
+        svg { display: block; }
+    }
+    @keyframes pbbkSpin { to { transform: rotate(360deg); } }
 
     // ---- lanes / cards ----
     .pbbk-lane { background: #fff; border: 1px solid var(--pbbk-line); border-radius: 14px; padding: 14px 16px; }
