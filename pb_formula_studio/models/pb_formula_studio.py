@@ -4026,7 +4026,18 @@ class PbFormulaStudio(models.AbstractModel):
         try:
             fields_ = FM.get_available_source_fields(
                 conn.id, ep.data_type if ep else None) or []
-        except Exception:
+        except Exception as e:
+            # The `except` stays — a board that renders with an empty FROM
+            # column beats a 500 — but it no longer stays SILENT. Cycle 6 shipped
+            # an AttributeError inside discovery and this branch turned it into
+            # nothing at all: no error, no log line, a column of zero fields,
+            # and the honesty banner underneath still counting fifteen mappings
+            # as unresolvable. It took a live browser pass to find, because a
+            # swallowed exception has no other symptom (W40's shape, W152).
+            _logger.warning(
+                "Source-field discovery failed for connector %s (feed %s): "
+                "%s: %s — the FROM column will render empty.",
+                conn.id, (ep.code if ep else 'all'), type(e).__name__, e)
             fields_ = []
         ep_group = (ep.name or ep.code) if ep else ''
         # Integrations Cycle 6 — every card says where it came from. `prov` is
