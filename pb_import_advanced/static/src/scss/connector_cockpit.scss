@@ -101,6 +101,10 @@
         letter-spacing: .04em; color: var(--pbim-cyan); background: var(--pbim-cyan-soft);
         border-radius: 999px; padding: 1px 7px; }
     .pbcc-feed__counts { font-size: 11.5px; font-weight: 600; color: var(--pbim-text); }
+    /* C6 — the expected-field count. Indigo, because it is a statement about
+       what the feed CAN deliver rather than about what it has; the counts
+       beside it are history and stay in the ink colour. */
+    .pbcc-feed__flds { color: var(--pbim-primary-hover); }
     .pbcc-feed__err { font-size: 11.5px; font-weight: 600; color: var(--pbim-rose);
         background: var(--pbim-rose-soft); border-radius: 8px; padding: 6px 9px;
         overflow: hidden; text-overflow: ellipsis; }

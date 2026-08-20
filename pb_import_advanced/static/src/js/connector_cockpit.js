@@ -51,6 +51,11 @@ export class ConnectorCockpit extends Component {
             // which endpoint is mid-pull (id), so one chip spins and the rest
             // of the strip stays usable
             syncing: 0,
+            // ditto for the C6 vendor field-list fetch, which is a different
+            // call with a different failure mode and must not borrow `syncing`
+            // — one spinner for two verbs is a strip that lies about which one
+            // is running
+            fetching: 0,
             // the header's overflow menu, and the credentials editor
             kebab: false,
             credOpen: false,
@@ -245,6 +250,51 @@ export class ConnectorCockpit extends Component {
             this.notif.add(_t("That feed could not be synced."), { type: "danger" });
         } finally {
             this.state.syncing = 0;
+        }
+    }
+
+    /**
+     * "31 expected fields" — what this feed is KNOWN to deliver.
+     *
+     * Empty string, not "0 fields", when nothing is catalogued: a strip that
+     * prints a zero next to every feed teaches the reader to stop reading it,
+     * and on a database whose upgrade has not arrived the zero would be a lie
+     * about the vendor rather than a fact (W79).
+     */
+    fieldsLabel(ep) {
+        const n = ep.field_count || 0;
+        return n ? _t("%s expected fields", n) : "";
+    }
+
+    /**
+     * Ask the vendor for this feed's field list — Integrations Cycle 6.
+     *
+     * The button is offered only where the connector class really implements
+     * metadata; the server refuses the three stubs by name and answers with a
+     * sentence, which is surfaced verbatim rather than swallowed.
+     */
+    async fetchFields(ep) {
+        if (this.state.fetching) { return; }
+        this.state.fetching = ep.id;
+        try {
+            const res = await this.orm.call(
+                MODEL, "fetch_endpoint_fields", [this.connectorId, ep.id]);
+            if (res && res.endpoint) {
+                const list = this.state.detail.endpoints || [];
+                const i = list.findIndex((e) => e.id === res.endpoint.id);
+                if (i >= 0) { list[i] = res.endpoint; }
+            }
+            if (res && res.ok) {
+                this.notif.add(res.msg || _t("Field list updated."), { type: "success" });
+            } else {
+                this.notif.add((res && res.error) || _t("No field list was returned."),
+                               { type: "warning" });
+            }
+        } catch (e) {
+            console.warn("pb_import_advanced: field fetch failed", e);
+            this.notif.add(_t("That field list could not be fetched."), { type: "danger" });
+        } finally {
+            this.state.fetching = 0;
         }
     }
 

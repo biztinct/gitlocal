@@ -101,7 +101,15 @@
                 <t t-esc="since(ep.last_sync_iso)"/>
                 <span t-if="ep.is_legacy_abm" class="pbcc-feed__abm">ABM</span>
               </div>
-              <div class="pbcc-feed__counts" t-esc="counts(ep)"/>
+              <div class="pbcc-feed__counts">
+                <t t-esc="counts(ep)"/>
+                <!-- Integrations C6 — what this feed is KNOWN to deliver.
+                     Absent rather than "0 fields" when nothing is catalogued:
+                     a zero beside every feed is a number people stop reading,
+                     and on a database whose upgrade has not arrived it would
+                     be a claim about the vendor rather than about us (W79). -->
+                <t t-if="fieldsLabel(ep)"> · <span class="pbcc-feed__flds" t-esc="fieldsLabel(ep)"/></t>
+              </div>
               <div t-if="ep.last_error" class="pbcc-feed__err" t-esc="ep.last_error"/>
               <div class="pbcc-feed__acts">
                 <button t-if="canWrite" class="pbim-btn outline pbim-btn-sm"
@@ -113,6 +121,24 @@
                 <button t-if="hasLedgers" class="pbim-btn ghost pbim-btn-sm"
                         t-on-click="() => this.viewEndpointData(ep)">
                   <t t-out="ic('database',14)"/> View data
+                </button>
+                <!-- Integrations Cycle 6 — ask the vendor what this feed
+                     delivers. Rendered ONLY where the connector class really
+                     implements metadata: three of the seven have a
+                     `get_available_fields` that logs "not implemented" and
+                     returns a hard-coded example list, and a button that
+                     published those as the vendor's schema would be this
+                     cycle's own bug wearing a new coat. `field_fetch.reason`
+                     is the tooltip when the class can be asked but the
+                     credentials are not there yet — greyed WITH a sentence,
+                     never greyed in silence (W40). -->
+                <button t-if="canWrite and d.field_fetch and d.field_fetch.mode"
+                        class="pbim-btn ghost pbim-btn-sm"
+                        t-att-disabled="(state.fetching or !d.field_fetch.ready) ? 'disabled' : false"
+                        t-att-title="d.field_fetch.ready ? 'Read the field list for this feed from the source system' : d.field_fetch.reason"
+                        t-on-click="() => this.fetchFields(ep)">
+                  <t t-if="state.fetching === ep.id"><span class="pbim-spin pbcc-feed__spin"/> Fetching…</t>
+                  <t t-else=""><t t-out="ic('download',14)"/> Fetch field list</t>
                 </button>
                 <!-- Integrations Cycle 2: the door Cycle 1 deliberately left
                      out, now that there is something behind it. -->
