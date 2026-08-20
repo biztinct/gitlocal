@@ -672,4 +672,373 @@ produces a number rather than an error.
 
 ---
 
-*(sections below appended as each work package lands)*
+## Evidence 5 — WP-4: the Chrome walkthrough on abm
+
+Environment: the shared `chrome-devtools-mcp` profile was **free**, so W130's
+own-Chrome-over-CDP fallback was not needed. Host: **`abm.payobook.com`** over
+the wildcard DNS (verified 200 before the pass), backend prefix `/bizapp`.
+Persona: the temp validator **uid 8**, authenticated over
+`/web/session/authenticate` (W130's corollary), removed at the end (Evidence 6).
+Viewport 1600×1000.
+
+Screenshots are in **`.ig-c4-shots/`** in the repo working directory,
+deliberately **untracked** — evidence, not a deliverable; delete after review.
+
+### 5a — Settings → Integrations ✅ `01`, `02`
+
+The Settings hub renders on abm with the eight-item rail. The **Integrations
+category shows a TWO-card section page** — "Integrations" and "Mapping Studio" —
+identical to payobook. Cycle 1's single-card auto-open self-retired here exactly
+as designed the moment Cycle 2's second card arrived; nothing tenant-specific was
+needed.
+
+### 5b — the board: two connectors, and the contrast is the point ✅ `03`
+
+Back chip "Settings" present. KPI row:
+
+```
+2 Connectors · 0 Connected · 1 Errors · 0 Synced records ·
+41 Field mappings · 0 Staged records · 7 Feeds · 7 stale
+```
+
+**The Feeds tile is present**, which is W139's positive case (`feeds_known:
+true`) — proof from the client side that the schema arrived and abm is no longer
+riding the degrade rail. Both connector cards render:
+
+```
+Zoho People         · Zoho People · Never synced ·  0 mappings · 0 feeds · 0 staged · 0 synced · [Error]
+Zoho People (ABM)   · Zoho People · Never synced · 41 mappings · 7 feeds · 0 staged · 0 synced · [Disconnected]
+```
+
+The owner's own connector sits beside the seeded one, unchanged and honestly
+described. Same vendor, same screen, two different states — which is what makes
+the seeded one legible.
+
+### 5c — the connector cockpit: 7 feeds, 3 ABM badges ✅ `04`
+
+Header `Zoho People (ABM)` · type chip `Zoho People` · endpoint chip
+`https://people.zoho.com/people/api` · status **Disconnected**. Kebab (⋮) present
+top-right, "Open record" absent from the toolbar (Cycle 1's demotion, intact on
+abm).
+
+`Feeds 7`, and **exactly three carry the ABM badge** — asserted in the DOM
+(`abmBadgeCount: 3`), not by eye:
+
+```
+Employees            EMPLOYEE MASTER DATA   ABM   Never synced · 0 staged · 0 pulled · 27 mapped
+Attendance summary   ATTENDANCE             ABM   Never synced · 0 staged · 0 pulled ·  4 mapped
+Overtime requests    CUSTOM / OTHER         ABM   Never synced · 0 staged · 0 pulled ·  7 mapped
+Salary form          SALARY / COMPENSATION        Never synced · 0 staged · 0 pulled ·  2 mapped
+Leave records        LEAVE / TIME-OFF             Never synced · 0 staged · 0 pulled ·  1 mapped
+Attendance by date   ATTENDANCE                   Never synced · 0 staged · 0 pulled ·  0 mapped
+Timesheets           CUSTOM / OTHER               Never synced · 0 staged · 0 pulled ·  0 mapped
+```
+
+Every feed offers `Sync · View data · Map fields`. All read "Never synced",
+which is the truth on a connector that has never had credentials.
+
+### 5d — the credentials panel: everything "Not set" ✅ `05`
+
+```
+🔒 Credentials  OAuth 2.0                                        [Edit]
+   ✕ Client ID   ✕ Client Secret   ✕ Refresh Token
+   ✕ Authorization URL   ✕ Token URL   ✕ OAuth Scope
+```
+
+Six keys, six not-set markers, no value and no masked prefix anywhere in the
+payload — which is Cycle 1's `is_set`-booleans-only contract holding on a real
+tenant. Beside it: `Field mappings 41`, `Transformations 8`, `0 STAGED RECORDS`.
+
+### 5e — the Mapping Studio: the wires are wires ✅ `06`, `07`, `12`
+
+"Map fields" on **Employees** lands on
+
+```
+FROM · Zoho People (ABM) · 206 fields · never synced · [Employees] ══ 6 mapped / 3 suggested ══▶
+TO · AB Mauri Payroll Vietnam · 40 input columns · VN · draft
+```
+
+back chip "Zoho People (ABM)". On **All feeds** the headline is the one that
+matters: **`15 mapped`** — every seeded wire, on one board (`12`).
+
+Two numbers need explaining, and both are honest:
+
+* **the left column shows 206 `hr.employee` fields, not Zoho paths.** That is
+  `get_available_source_fields`' documented fallback: *"Falls back to
+  hr.employee's own fields (ir.model.fields) when nothing is stored yet."*
+  This connector has no stored payload and never will until somebody enters
+  credentials, so there is no vendor schema to show. The fallback is a
+  deliberate design decision from Cycle 1, not a defect this cycle introduced.
+* **the real Zoho sources appear anyway, under an "UNASSIGNED" group** — which
+  is `api_mapping_data`'s W79 guard: a wire whose source path is not in the
+  current field list is *kept and labelled*, never dropped. So the board shows
+  `Dependants with a PIT number / DEPCOUNT`, `Join date / Dateofjoining`,
+  `Employee ID / EmployeeID` … with solid wires drawn into `Employee Code`,
+  `Employee Name`, `Date of Joining`, `Employee Status` (`07`). The orange
+  dashed lines beside them are live 85 % name-match *suggestions* against the
+  fallback fields — visibly different from the accepted wires, which is right.
+
+`27 mapped` in the cockpit vs `6 mapped` in the studio for the same feed is the
+same distinction Cycle 3 documented: the cockpit counts mapping ROWS on the
+feed, the studio counts WIRES, and a wire needs a target.
+
+### 5f — the ÷3600 transform popover, on a connector with no data ✅ `08`, `09`, `10`
+
+Switching the feed to **Attendance summary** gives
+`3 mapped / 5 suggested` and three source cards —
+`Worked hours incl. paid leave / WORKEDHRS`,
+`Expected working hours (seconds) / expectedWorkingHours`,
+`Total worked hours (seconds) / totalWorkedHours` — carrying pills
+`=`, `÷3600`, `÷3600`.
+
+Opening a `÷3600` pill:
+
+```
+Transform on the wire
+  Operation      [Divide by]
+  Factor / value [3600]
+  ÷3600  →  0
+  [Cancel] [Save]
+```
+
+**The empty-sample path does not crash.** The preview strip renders
+`÷3600 → 0` because `_sample_payload()` finds no stored row and no stub, so the
+value is empty and the shared op ladder returns 0 — a number, not a traceback,
+and not a spinner that never resolves. That is the case the handover singled
+out, and it is also Cycle 3's `preview_transform` exception-hygiene fix
+(`aa993d87`) doing its job on a database that has never pulled anything.
+
+### 5g — everything is editable: a scratch wire drawn and deleted ✅ `11`
+
+Armed `Badge ID / barcode` (an unmapped left card) — the board answered
+*"Click a target component to connect"* — then clicked `Night shift hour /
+NIGHTSHIFTHOUR` (an unmapped input).
+
+| | story bar | transform pills | DB rows on connector 3 | wired |
+|---|---|---|---|---|
+| before | 3 mapped | 3 | 41 | 15 |
+| after draw | **4 mapped** | **4** | **42** (`id 43 barcode → 197, active, create_uid 8`) | 16 |
+| after delete | **3 mapped** | **3** | **41** | **15** |
+
+The wire persisted server-side under the validator's own uid, and the ⋮-less
+`Remove mapping` control took it away cleanly. The seeded state is **byte-for-byte
+where it started**: 41 mappings, 15 wired.
+
+### 5h — console and network hygiene ✅
+
+Three surfaces, each freshly navigated:
+
+| surface | XHR/fetch | ≥400 | console errors | console warnings |
+|---|---|---|---|---|
+| Integrations board | 13 | **0** | **0** | 1 |
+| Connector cockpit | 14 | **0** | **0** | 0 |
+| Mapping Studio | 15 | **0** | **0** | 0 |
+
+Every request 200 (two 304s on a cached static JSON), including
+`pb.integrations/get_board`,
+`pb.import.connector.cockpit/get_connector_detail`,
+`pb.formula.studio/mapping_pickers` and `api_mapping_data`.
+
+The single warning is `biz_debrand`'s manifest icon size — pre-existing, outside
+this cycle's modules, and the same one Cycle 3 recorded on payobook.
+
+**One non-defect worth recording**: navigating to
+`/bizapp/pb_integrations/pb_import_connector_cockpit` *directly* renders
+"Could not load this connector." That is correct — the cockpit takes its
+`connector_id` from the arrival params (`connector_cockpit.js:41-48`), and a bare
+URL carries none. Reached through the board (the only door the UI offers) it
+loads every time. Recorded so nobody reports it as an abm regression.
+
+---
+
+## Evidence 6 — the temp user, created and removed
+
+```
+mint    IGC4-UID=8 login=ig-c4-validator@abm.local companies=[1] is_system=True
+teardown IGC4-TARGET=[8]
+         IGC4-AI-CONVERSATIONS=1
+         IGC4-UNLINKED=ok
+         IGC4-PARTNER-UNLINKED=ok
+         IGC4-REMAINING=0
+```
+
+Absence, read back from the database afterwards:
+
+```sql
+SELECT id, login, active FROM res_users WHERE login LIKE 'ig-c4%';   -- 0 rows
+SELECT count(*) FROM res_partner WHERE name ILIKE '%IG-C4%';         -- 0
+```
+
+abm's user list is back to what it was: `__system__`, `ash@biztinct.com`,
+`public`, `portaltemplate` and three archived probes from earlier cycles.
+
+**The teardown did not work the first time, and the failure mode is a new rule
+(W144).** `unlink()` raised a foreign-key violation from
+`payroll_ai_conversation` — the "Stuck?" PayAI widget had opened a conversation
+for the validator during the browser pass, so the validation created its own
+blocker. Worse, the `except` branch's `write({'active': False})` ran on the
+**same poisoned cursor** and silently committed nothing: the script printed a
+tidy fallback message while the user stayed active, which a `SELECT` caught and
+the log did not. The fix was to remove that one conversation row (scoped to this
+uid — this cycle's own residue), then unlink, with a `rollback()` before any
+fallback.
+
+---
+
+## Evidence 7 — tests
+
+**No module code changed in this cycle.** The only repo addition is
+`tools/abm_seed_integrations.py`, an ops script that is not part of any addon,
+is not imported by any module, and ships in no manifest — so no test suite
+covers it and none needed amending. `git diff --stat` over the cycle's code
+commit is one file, +349 lines, under `tools/`.
+
+The handover's condition ("full scoped test-suite run still green on the REPO
+side **if any repo code changed**") therefore does not fire. Cycle 3's scoped run
+— `0 failed, 0 error(s) of 109 tests` across `pb_formula_studio`,
+`pb_hr_payroll_formula`, `pb_import_advanced`, `pb_integrations`, `pb_settings`
+— remains the standing verdict for exactly the code abm now runs, and abm is at
+those same versions (Evidence 2's version table).
+
+Deliberately **not** run: a suite against `abm` itself. It would have needed
+`--db-filter='^abm$'` (W122) and a baseline diff to mean anything, and W131's
+rule 2 makes a test process on the production box a risk taken only for a
+question that needs answering. The question here — "does this code work?" — was
+already answered on payobook by the same commits, and the question that is
+actually about abm — "did the data land?" — is answered by the per-XMLID
+comparison in Evidence 2, which is stronger than a green suite.
+
+The script was syntax-checked (`ast.parse`) and self-reviewed for the two things
+that would matter: **no credential literal appears anywhere in it**, and its only
+`sudo()` is a single READ of the config (configs are record-rule-gated; the
+Mapping Studio reads them the same way). Every WRITE goes through the plain
+`env` of the validating user.
+
+---
+
+## Evidence 8 — ledger
+
+Five new rules, **W141–W145**, appended to
+`docs/WORKFORCE_REDESIGN_CONVENTIONS.md` in the same commit as this report.
+Summarised in the report-back below.
+
+---
+
+## Self-review against the handover
+
+| the handover asked | done? |
+|---|---|
+| WP-1 read-only inspection FIRST, before any write | yes — the whole of Evidence 1 ran with the service up and nothing written |
+| the secrets comparison as a REPORT ITEM, no action | yes — and closed with hash evidence rather than prefixes; `om_hr_payroll` untouched (`git diff` over the cycle shows one file, under `tools/`) |
+| bind to the config's inputs; do not create/modify configs | yes — config 7 read only, passed to `action_apply_mapping_template` **by id**; the connector was never written onto the config |
+| connector disconnected, NO credentials anywhere | yes — all seven credential columns NULL, verified by `SELECT` and by the UI's six "not set" markers |
+| no Zoho HTTP traffic | yes — nothing in this cycle calls out; "Test connection" was never pressed |
+| no demo data on abm | yes — `pb_demo` still uninstalled; the `is_demo` columns do not exist on this database, so the seeding could not have flagged anything even by accident |
+| idempotent seeding | yes — second run `created=0 bound=0 unchanged=15`, counts identical |
+| never invent a mapping | yes — 15 wires each citing a legacy line; 25 inputs left unmapped with a recorded reason; four plausible Zoho fields deliberately unwired |
+| the script lives in the repo | yes — `tools/abm_seed_integrations.py` |
+| W136 window shape, ending in `service start` inside the unit | yes — and it did start the service, at 06:40:19, from inside the unit |
+| W120 closure computed BEFORE the run | yes — 66 modules, 7 predicted to move, 7 moved, 0 dragged |
+| W121 second pass + per-XMLID verification | yes — both passes EXIT=0; 99 rows compared row-by-row against payobook, zero differences |
+| W128 pre-stop foreign-FILE check | yes — it fired, and the two hits were identified by checksum rather than assumed |
+| W129 temp user, removed after | yes — and the removal itself is a new rule |
+| payobook + acme bracketed | yes — 200/200 before and after, zero ERROR lines from 06:38 onward |
+| never stage `.claude/settings.json`, `thaco/`, `ABM/`; never push | yes — every commit staged by explicit path; `git log origin/19.1..HEAD` unpushed |
+
+Two things I checked twice, because they are the ones that would be expensive to
+get wrong:
+
+1. **The night-shift triple.** 210/270/390 → weekday/weekend/holiday is asserted
+   from two independent sources (the legacy staging field labels and the legacy
+   payslip code map's `OTNW`/`OTNO`/`OTNH`), not from the percentages.
+2. **`active` vs `suggested`.** Every wire I set to `active` has a source path
+   that legacy production code reads by name from a live payload. Nothing was
+   promoted on a name-similarity guess — the 31 template rows that arrived on
+   similarity are all still `suggested` with no target, exactly as D114.2
+   requires.
+
+---
+
+## Deviations from the handover
+
+1. **A NEW connector was created rather than seeding onto the one already on
+   abm.** WP-1 found `hr_integration_connector` id 1, "Zoho People", authored by
+   the owner on 2026-08-19 with real credentials and
+   `connection_status='error'`. The handover — written before that record was
+   known — says to create "Zoho People (ABM)", disconnected, no credentials.
+   I followed it literally and left connector 1 untouched (its `write_date` is
+   still 2026-08-19 01:22:16). Reasoning: seeding onto a live record holding
+   real secrets, on a production cluster, on the strength of my own inference
+   about what the owner meant it for, is a decision with an owner — and the
+   literal path is fully reversible, whereas the other is not. The consequence
+   is two Zoho connectors on the board, which is legible rather than confusing
+   (see 5b), and the merge is one decision away. **Owner-decision item below.**
+2. **The seeding ran through `odoo-bin shell` with the service UP, not over
+   JSON-RPC.** The handover preferred JSON-RPC on the belief that shell needs
+   the service stopped. Probed rather than assumed: it does not, for a
+   data-only script. Choosing it avoided a second production window. (W141.)
+3. **`EMPLOYEENAME` is wired to `Full_Name_Vietnamese` with no fallback.** The
+   legacy names an employee `full_name_vn or first_name` (`hr_zoho.py:348`).
+   Reproducing the `or` faithfully needs a `python` transform, and the studio's
+   transform popover deliberately offers eight ops with python absent — so I
+   would have shipped, onto the flagship wire of the very screen this cycle
+   validates, a transform the owner cannot edit there. The primary source is
+   wired; the fallback is recorded in the mapping's `notes` and raised as an
+   owner decision.
+4. **No test-suite run.** No module code changed; reasoning in Evidence 7.
+5. **The `zoho.%` comparison was extended beyond the two databases named.** The
+   ruling says abm and payobook; I also checked `acme` and
+   `payobook_template`, because "no rows on this cluster" is a much stronger
+   statement than "no rows on these two" and costs one more query.
+
+---
+
+## Owner decisions
+
+1. **The two Zoho connectors on abm — merge, or keep?** Connector 1 is yours
+   (credentials, status *error*); connector 3 is the seeded catalogue (41
+   mappings, 7 feeds, 8 rules, no credentials). Two ways to join them, both
+   cheap: paste the credentials into "Zoho People (ABM)" through its
+   Credentials panel and archive connector 1; or tell me to move the 41
+   mappings + 7 feeds + 8 rules onto connector 1 (a single scripted `write`).
+   I did not choose, because one of them archives a record you made.
+2. **Backlog — scrub the hardcoded Zoho credentials.** Remove the hardcoded
+   block and the `UserError` echo in `om_hr_payroll/models/hr_zoho_staging.py`
+   (:208-210) **after** you have tested the new credential screens, and revoke
+   the old client (`1000.4ZLJ…`) in the Zoho console. It is a different, older
+   OAuth client from the one you are re-homing, so revoking it cannot break the
+   new configuration. Recorded per the handover's instruction; nothing was done
+   this cycle.
+3. **`BASESALARY` — should it come from Zoho's `P_Salary` form?** The legacy ABM
+   application never called that endpoint; base salary came from the
+   spreadsheet. Zoho does expose `Salary` on `forms/P_Salary/records`, and the
+   feed is catalogued and ready. Wiring it is a payroll decision, not a code
+   one. The same question applies to `Other_Allowance`.
+4. **`EMPLOYEENAME`'s fallback** — should an employee with an empty
+   `Full_Name_Vietnamese` fall back to `FirstName`, as the legacy did? If yes it
+   needs a python transform (not editable in the studio popover) and I should
+   ship it deliberately.
+5. **`No_of_Dependents` vs `DEPCOUNT`.** I wired the computed rule, because the
+   legacy counts dependants having a PIT number out of the employee form's
+   tabular section rather than trusting the flat field. If Zoho's flat
+   `No_of_Dependents` is authoritative in your tenant, that is a one-line
+   change and a better one.
+6. **Housekeeping**: the four Integrations handover documents
+   (`CYCLE1_ENDPOINTS_AND_NAV.md`, `CYCLE2_MAPPING_STUDIO.md`,
+   `CYCLE3_ZOHO_CATALOG.md`, `CYCLE4_ABM_SEEDING.md`) and `PROGRAM_STATE.md` are
+   **untracked** in git, while every cycle *report* is committed. The
+   methodology wants the handovers versioned too. Not mine to commit
+   unilaterally — flagging it.
+7. **Nothing has been pushed**, this cycle or any of the three before it.
+
+---
+
+## New W-rules
+
+| rule | one line |
+|---|---|
+| **W141** | The shell-vs-service rule is about SCHEMA, not about writes — a data-only ORM script runs fine through `odoo-bin shell` beside the live service, and choosing it over JSON-RPC saves a production window. Probe read-only first. |
+| **W142** | A seeding script that `sudo()`s proves nothing about who can use the feature. Run it as the temp validation persona; the AccessError is the finding. `base.group_system` does not grant an `ir.model.access` row. |
+| **W143** | W128's scan has a THIRD case: the file newer than the running process is often your own programme's, rsynced by the previous cycle after the last restart. Settle it with a checksum against the repo, not a guess in either direction. |
+| **W144** | A temp validation user can be FK-blocked at teardown by rows the VALIDATION itself created — and a failed `unlink()` poisons the cursor, so the `except` branch's archive fallback commits nothing while printing success. |
+| **W145** | Two namespaces, one feature apart: a transformation RULE's `filter_expression` evaluates with `rec`, a field MAPPING's python transform with `record`. Applying Cycle 3's lesson to the neighbour breaks it. |

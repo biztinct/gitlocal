@@ -20,7 +20,9 @@ takes it to **W119**; **Cycle 7** (the abm module-delta catch-up, the `hr_timesh
 **Integrations programme** (`docs/handovers/integrations/`) opens at **W127**, and
 its Cycle 1 — the endpoint model and the navigation streamlining — takes it to
 **W130**; **Cycle 2** — the Mapping Studio — takes it to **W136**; **Cycle 3** — the Zoho
-People catalogue, the legacy ABM inventory as shipped data — takes it to **W140**.
+People catalogue, the legacy ABM inventory as shipped data — takes it to **W140**;
+**Cycle 4** — the abm tenant's catch-up upgrade and the seeding of its real Zoho
+integration — CLOSES the programme at **W145**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -2368,3 +2370,90 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   not a bug fix a cycle picks up in passing; (3) a bug report that says
   "search finds it, the list does not" is describing a cap and should be read
   that way from the first sentence.
+- **W141 The shell-versus-service rule is about SCHEMA, not about writes — so a
+  data-only ORM script runs beside the live service, and choosing it over
+  JSON-RPC saves a production window.** (Integrations Cycle 4, seeding the abm
+  tenant.) The handover said to prefer JSON-RPC "because shell needs the service
+  stopped", which is what the ledger's shell-versus-registry-lock notes are
+  usually read to mean. On this box it is not true for the job in hand:
+  `odoo-bin shell -d abm --no-http` opened alongside the serving process,
+  answered a read-only probe, and then ran the whole seeding — because the
+  script writes only `hr_integration_*` and `hr_api_transformation_rule` rows,
+  which nothing else on the box touches, and Odoo's own registry signalling
+  handles cross-process cache invalidation. The cases the rule was written for
+  are SCHEMA changes and `ir_ui_view` lock contention, neither of which a data
+  seeding does.
+  Rules: (1) classify the script before choosing the transport — schema or
+  view writes take a window, row writes to a model nobody else touches do not;
+  (2) settle it with a read-only PROBE in the target shell rather than with a
+  belief, because the probe costs ten seconds and the alternative costs a live
+  cluster a second outage; (3) the saving is the point, not the convenience —
+  on a box serving two production databases, a window you did not need to open
+  is the cheapest reliability there is.
+- **W142 A seeding script that `sudo()`s proves nothing about who can USE the
+  feature — run it as the temporary validation persona, and treat the
+  AccessError as the finding.** (Integrations Cycle 4.) The abm seeding ran as
+  the W129 temp user rather than as the superuser, and failed on its first
+  attempt: `You are not allowed to create 'HR System Integration Connector'`,
+  because `ir.model.access.csv:11` puts connector `create` behind
+  `pb_hr_payroll_formula.group_formula_admin` and the user held only *Formula
+  Manager*. Holding `base.group_system` did not help — model access is granted
+  by ACL ROWS, and being an administrator is not one.
+  Three rules: (1) the seeding path and the human path should be the same path,
+  so a seed that needs `sudo()` is telling you the feature needs a group nobody
+  has; (2) `base.group_system` is not a skeleton key for `ir.model.access` — if
+  a screen works for uid 1 and fails for an admin persona, that gap is the bug
+  report; (3) record the group list the pass actually needed, because it is the
+  cheapest existing answer to "what do I give this person?".
+- **W143 W128's scan has a THIRD case, and it is the common one: the file newer
+  than the running process is your OWN programme's, rsynced by the previous
+  cycle after the last restart.** (Integrations Cycle 4.) The pre-stop check
+  listed `pb_hr_payroll_formula/models/api_transformation_rule.py` and one test
+  file as newer than the serving process — which W128 says to treat as code your
+  restart will publish. It was: Cycle 3's own `nocopy` fix (efbb64b5), rsynced
+  at 06:14 after the 06:09 restart, so the live process was still importing the
+  pre-fix version and every `rule_type='python'` rule on every database was
+  still quietly returning its default.
+  Rules: (1) settle authorship with a CHECKSUM against the repo plus
+  `git log -- <file>`, never with a guess in either direction — "foreign, so
+  wait" is as wrong as "probably mine, so proceed"; (2) when it is yours, say so
+  in the report WITH the hash, because "the restart published the previous
+  cycle's tested fix" is a deploy event that belongs in the record; (3) the case
+  is load-bearing more often than it looks — here the published fix was the
+  precondition for the two python rules the same cycle was seeding.
+- **W144 A temporary validation user can be foreign-key-blocked at teardown by
+  rows the VALIDATION ITSELF created — and the failed `unlink()` poisons the
+  cursor, so the `except` branch's archive fallback commits nothing while
+  printing success.** (Integrations Cycle 4, the last five minutes of the
+  cycle.) Removing uid 8 raised
+  `violates foreign key constraint "payroll_ai_conversation_user_id_fkey"`,
+  because the "Stuck?" PayAI widget had opened a conversation for that user
+  during the browser pass. The script's own handler then ran
+  `write({'active': False})` on the same aborted transaction and committed
+  nothing: the log read `unlink failed … archiving instead`, and a `SELECT`
+  three minutes later showed the user still `active = t`.
+  Rules: (1) teardown clears the residue the VALIDATION made before it tries the
+  `unlink` — the browser pass leaves conversations, device logs and messages
+  behind, all scoped to the uid you are deleting and all safe to remove;
+  (2) `env.cr.rollback()` before ANY fallback write in an `except`, because a
+  poisoned cursor turns a fallback into a no-op that reports success — the same
+  W112 shape, a broad `except` making a failure look like a handled case;
+  (3) prove the absence with a `SELECT` rather than with the script's own
+  output, and put the `SELECT` in the report (W129's "removed in the same
+  session" is a claim, and this is what makes it evidence).
+- **W145 Two namespaces, one feature apart: a transformation RULE's
+  `filter_expression` evaluates with `rec`, a field MAPPING's python transform
+  with `record`.** (Integrations Cycle 4, reading the code Cycle 3 wrote the
+  first half of.) Cycle 3 shipped the hard-won rule that
+  `hr.api.transformation.rule._execute_single` binds the record dict to **`rec`**,
+  and that writing `record.get(...)` there produces a silent zero. The adjacent
+  model, `hr.integration.field.mapping._apply_transform_ops`, does the opposite:
+  `safe_eval(expr, {'value': value, 'record': record})` — `record` is correct and
+  `rec` is the `NameError`. Same module, same feature, same cycle's data files,
+  opposite vocabulary.
+  Rules: (1) a lesson about an eval namespace is scoped to the ONE function that
+  builds it — carrying it to the neighbour is how a correct rule becomes a bug;
+  (2) both namespaces are documented in their own field help, so the check is a
+  ten-second read of the model rather than a memory; (3) when a feature has two
+  expression surfaces, the report names both together, because the second one is
+  discovered by the person who trusted the first.
