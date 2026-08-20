@@ -16,6 +16,11 @@
 import { describe, expect, test } from "@odoo/hoot";
 import { animationFrame } from "@odoo/hoot-mock";
 import { mountWithCleanup } from "@web/../tests/web_test_helpers";
+// `mountWithCleanup` starts the real service stack, and on a database with mail
+// installed that stack reaches for `discuss.channel` before our component ever
+// renders — "did you forget to use defineModels()?". A test-bundle-only import
+// (W147); nothing in the addon itself knows mail exists.
+import { defineMailModels } from "@mail/../tests/mail_test_helpers";
 import { MappingCanvas } from "@pb_formula_studio/js/mapping/mapping_canvas";
 import {
     aggregateDocks,
@@ -27,6 +32,7 @@ import {
 } from "@pb_formula_studio/js/mapping/mapping_geometry";
 
 describe.current.tags("desktop");
+defineMailModels();
 
 // ---------------------------------------------------------------- fixtures
 function items(n, prefix) {
@@ -54,6 +60,24 @@ function props(over = {}) {
 }
 
 // ============================================================ T1 — the bug
+test("scroll does not bubble — which is why the old binding could never fire", () => {
+    // The pre-fix code bound `t-on-scroll` to `.mc-col`, the PARENT of the
+    // scroller. This is that arrangement, reduced to two divs. It is kept as a
+    // permanent test because the failure was invisible: no error, no warning,
+    // just wires drawn to last frame's coordinates.
+    const parent = document.createElement("div");
+    const child = document.createElement("div");
+    parent.appendChild(child);
+    document.body.appendChild(parent);
+    let onParent = 0, onChild = 0;
+    parent.addEventListener("scroll", () => { onParent++; });
+    child.addEventListener("scroll", () => { onChild++; });
+    child.dispatchEvent(new Event("scroll"));      // how the browser fires it: no bubbling
+    expect(onChild).toBe(1);
+    expect(onParent).toBe(0);                      // …the whole life of `onColScroll`
+    parent.remove();
+});
+
 test("a scroll on .mc-col-body triggers exactly one coalesced recompute", async () => {
     const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
     await animationFrame();
