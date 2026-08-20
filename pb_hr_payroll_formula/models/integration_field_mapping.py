@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.sql import table_exists
 import logging
 
 from .integration_endpoint import SOURCE_DATA_TYPES
@@ -512,7 +513,13 @@ Example: value * 1.1 if value > 1000 else value
                 if isinstance(source, dict):
                     self._flatten_source(source, '', live)
         for item in live.values():
+            # ONE item shape across all three layers. `expected_missing` is
+            # meaningless for a field that just arrived — it is False and it is
+            # PRESENT, so no consumer has to remember which key each layer
+            # happens to carry. Caught by test 4, which read it directly and
+            # got a KeyError.
             item['provenance'] = 'live'
+            item['expected_missing'] = False
 
         # Has this feed ever run? Asked of the STORE and not of `live`, which
         # would be circular: a feed that synced and returned an empty payload
@@ -581,8 +588,17 @@ Example: value * 1.1 if value > 1000 else value
                     'feed': f.endpoint_id.name or f.endpoint_id.code or '',
                     'expected_missing': False,
                 }
+        # `table_exists`, not `Rule._schema_ready()`: that helper is declared on
+        # `hr.api.transformation.rule.TEMPLATE` (api_transformation_rule.py:566,
+        # inside the class that starts at :485) and NOT on the rule itself. The
+        # rule model has no such method, so the call raised AttributeError —
+        # inside `api_mapping_data`'s `try/except Exception: fields_ = []`,
+        # which turned it into an empty FROM column and a board that still said
+        # "15 mappings point at a field this source is not known to deliver".
+        # Found on the live abm board, which is the only place it could be
+        # found: a swallowed exception has no other symptom. See W152.
         Rule = self.env['hr.api.transformation.rule']
-        if Rule._schema_ready():
+        if table_exists(self.env.cr, Rule._table):
             rdom = [('connector_id', '=', connector.id)]
             if data_type:
                 rdom = rdom + [('source_data_type', '=', data_type)]
