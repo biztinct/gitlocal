@@ -53,6 +53,29 @@ CONNECTOR_TYPES = [
 
 HTTP_METHODS = [('get', 'GET'), ('post', 'POST')]
 
+# The per-FIELD type vocabulary, declared once (Integrations Cycle 6).
+#
+# It is `hr.integration.field.mapping.source_data_type`'s own selection, moved
+# here so that the catalogue row describing a field and the mapping consuming it
+# cannot drift into two vocabularies. `source_data_type` decides whether
+# `preview_transform` parses a sample as a float, so a catalogue that could
+# invent a type name the mapping has never heard of would produce a preview that
+# disagrees with the sync — silently, and only for that one field.
+#
+# Deliberately NOT the same list as `DATA_TYPES` above: that one says which FEED
+# a row came from (employee / attendance / leave …), this one says what a single
+# value IS. They were confused once already, in the first draft of this cycle.
+SOURCE_DATA_TYPES = [
+    ('string', 'Text'),
+    ('number', 'Number'),
+    ('integer', 'Integer'),
+    ('float', 'Decimal'),
+    ('date', 'Date'),
+    ('datetime', 'Date/Time'),
+    ('boolean', 'Yes/No'),
+    ('currency', 'Currency'),
+]
+
 SYNC_STATUSES = [
     ('success', 'Success'),
     ('partial', 'Partial Success'),
