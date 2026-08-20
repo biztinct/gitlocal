@@ -4,6 +4,8 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 import logging
 
+from .integration_endpoint import SOURCE_DATA_TYPES
+
 _logger = logging.getLogger(__name__)
 
 
@@ -60,16 +62,13 @@ class HrIntegrationFieldMapping(models.Model):
         help="Human-readable name from source system"
     )
 
-    source_data_type = fields.Selection([
-        ('string', 'Text'),
-        ('number', 'Number'),
-        ('integer', 'Integer'),
-        ('float', 'Decimal'),
-        ('date', 'Date'),
-        ('datetime', 'Date/Time'),
-        ('boolean', 'Yes/No'),
-        ('currency', 'Currency')
-    ], string='Source Data Type', default='number')
+    # The list itself now lives in `integration_endpoint.SOURCE_DATA_TYPES` and
+    # is shared with the endpoint-field catalogue (Cycle 6). It is character-for
+    # -character what was written here before, so nothing in the database moves;
+    # what changes is that a catalogue row and the mapping that consumes it can
+    # no longer be given two different type vocabularies.
+    source_data_type = fields.Selection(
+        SOURCE_DATA_TYPES, string='Source Data Type', default='number')
 
     source_sample_value = fields.Char(
         string='Sample Value',
@@ -443,27 +442,57 @@ Example: value * 1.1 if value > 1000 else value
     # ==========================================
     @api.model
     def get_available_source_fields(self, connector_id, data_type=None):
-        """Flatten the connector's most recent stored payloads into dot-path
-        source fields with a sample value + inferred type. Falls back to
-        hr.employee's own fields (ir.model.fields) when nothing is stored yet.
+        """What this connector can offer as a source field, and where it is
+        KNOWN from.
 
-        Returns [{'path', 'sample', 'type', 'label'}] sorted by path.
+        Returns `[{'path', 'sample', 'type', 'label', 'provenance', …}]` sorted
+        by path. Signature and the four original keys are unchanged; everything
+        added is additive, so an older caller keeps working (the autocomplete
+        widget reads `path` and `label` only).
 
-        `data_type` (Integrations Cycle 2) narrows the payloads to ONE feed —
-        `hr.integration.endpoint.data_type` and `hr.api.data.store.data_type`
-        are the same vocabulary, which is why the endpoint model imports the
-        store's list rather than retyping it. Two rules the narrowing keeps:
+        Three layers, in this order, merged on the dot-path:
+
+          1. **`live`** — flattened from `hr.api.data.store` payloads. What this
+             connector has actually received. Unchanged from Cycle 2, including
+             the `data_type` narrowing.
+          2. **`catalog`** — `hr.integration.endpoint.field` rows: what the feed
+             is EXPECTED to deliver, seeded from the vendor catalogue and/or
+             fetched from the vendor's own metadata API. Plus this connector's
+             transformation-rule outputs, which are fields this platform itself
+             adds to the payload — a mapping can name `OTHRS150` before a single
+             overtime record has been pulled, because the rule that computes it
+             already exists.
+          3. **`odoo`** — `hr.employee`'s own columns, and ONLY when the two
+             above are both empty. It is marked `provenance='odoo'` so no
+             surface can present Odoo's schema as the vendor's, which is the
+             defect this cycle exists to close: on abm the Zoho People connector
+             has zero store rows, and the Mapping Studio was listing
+             `activity_exception_decoration` under "FROM — ZOHO PEOPLE (ABM)".
+
+        Merge rules, all of them about not overclaiming:
+
+          * **live wins.** A path in both layers is `live` and keeps the LIVE
+            sample — a real value beats an illustration, always.
+          * a catalogue row keeps `provenance='catalog'` and its own
+            `sample_value`, which the studio prints as an example, never as a
+            received value. Nothing in this method can produce
+            `provenance='live'` for a path no payload contained.
+          * **`expected_missing`** marks a catalogue field the feed did not
+            deliver — but only once that feed HAS synced at least once. Before
+            a first sync, "missing" is not a fact about the vendor, it is a fact
+            about us, and flagging it would make a brand-new connector look
+            broken.
+
+        Two rules the `data_type` narrowing keeps, from Cycle 2:
 
           * an UNKNOWN data type is ignored rather than obeyed. A value that
             reaches a domain straight from the browser is the hole
             `pb.integrations.get_ledger`'s whitelist exists to close, and the
             honest failure of a typo'd feed key is "all the fields", not "no
             fields, and no reason given";
-          * the `hr.employee` fallback stays keyed on "nothing was stored",
-            NOT on "nothing was stored FOR THIS FEED". A leave feed with no
-            rows would otherwise offer the employee schema as if it were the
-            leave API's shape, which is the wrong answer stated confidently.
-            An empty feed returns an empty list and the studio says so.
+          * the `hr.employee` fallback stays keyed on "nothing is known at all",
+            never on "nothing for THIS feed". A leave feed with no rows and no
+            catalogue returns an empty list and the studio says so.
         """
         connector = self.env['hr.integration.connector'].browse(int(connector_id or 0))
         if not connector.exists():
@@ -474,20 +503,108 @@ Example: value * 1.1 if value > 1000 else value
         scoped = bool(data_type) and data_type in known
         if scoped:
             domain = domain + [('data_type', '=', data_type)]
+
+        # ---- layer 1: what actually arrived
         stores = Store.search(domain, order='pull_date desc, id desc', limit=20)
-        found = {}
+        live = {}
         for store in stores:
             for source in (store.raw_payload, store.extracted_data, store.computed_data):
                 if isinstance(source, dict):
-                    self._flatten_source(source, '', found)
-        if found:
-            return sorted(found.values(), key=lambda f: f['path'])
-        if scoped:
-            # This feed is empty. Say so with an empty list; the employee-schema
-            # fallback below would be a lie about this API's shape.
-            return [] if Store.search_count([('connector_id', '=', connector.id)]) else \
-                self._odoo_source_fields()
-        return self._odoo_source_fields()      # secondary source
+                    self._flatten_source(source, '', live)
+        for item in live.values():
+            item['provenance'] = 'live'
+
+        # Has this feed ever run? Asked of the STORE and not of `live`, which
+        # would be circular: a feed that synced and returned an empty payload
+        # has still synced, and its catalogue rows are then genuinely missing.
+        synced = bool(stores) or bool(Store.search_count(domain))
+
+        # ---- layer 2: what it is expected to deliver
+        catalog = self._catalog_source_fields(connector, data_type if scoped else None)
+        merged = {}
+        for path, item in catalog.items():
+            if path in live:
+                continue                       # live wins, and keeps its sample
+            item['expected_missing'] = bool(synced)
+            merged[path] = item
+        merged.update(live)
+        if merged:
+            return sorted(merged.values(), key=lambda f: f['path'])
+
+        # ---- layer 3: Odoo's own schema, labelled as exactly that
+        if scoped and Store.search_count([('connector_id', '=', connector.id)]):
+            # Other feeds on this connector have data; this one has neither rows
+            # nor a catalogue. An empty list is the honest answer — the employee
+            # schema would be a confident lie about this API's shape.
+            return []
+        return self._odoo_source_fields()
+
+    @api.model
+    def _catalog_source_fields(self, connector, data_type=None):
+        """The `catalog` layer: `{path: item}` for one connector.
+
+        Two sources, both of them claims this platform can stand behind before a
+        first sync:
+
+          * `hr.integration.endpoint.field` — the vendor's shape;
+          * `hr.api.transformation.rule.output_key` — the fields WE add to the
+            payload. They land in `computed_data`, so after a sync they arrive
+            through the live layer; before one, they exist only as the rules
+            that will produce them. Cycle 4 seeded fifteen abm mappings and six
+            of them name a rule output (`OTHRS150`, `WORKEDHRS`, `DEPCOUNT`),
+            so leaving them out would have left the board still reporting real
+            mappings as pointing at nothing.
+
+        Both are guarded by `_schema_ready()`: the addons tree is shared by every
+        database on the box, so a tenant between an rsync and its own `-u` runs
+        this code against a table it has not got (W116's family).
+        """
+        out = {}
+        Endpoint = self.env['hr.integration.endpoint']
+        Field = self.env['hr.integration.endpoint.field']
+        if Endpoint._schema_ready() and Field._schema_ready():
+            dom = [('endpoint_id.connector_id', '=', connector.id)]
+            if data_type:
+                dom = dom + [('data_type', '=', data_type)]
+            for f in Field.search(dom):
+                if not f.path or f.path in out:
+                    continue
+                out[f.path] = {
+                    'path': f.path,
+                    'sample': f.sample_value or None,
+                    'type': f.source_data_type or 'string',
+                    'label': f.label or f.path,
+                    'provenance': 'catalog',
+                    'catalog_kind': 'feed',
+                    'required': bool(f.is_required),
+                    'notes': f.notes or '',
+                    'feed': f.endpoint_id.name or f.endpoint_id.code or '',
+                    'expected_missing': False,
+                }
+        Rule = self.env['hr.api.transformation.rule']
+        if Rule._schema_ready():
+            rdom = [('connector_id', '=', connector.id)]
+            if data_type:
+                rdom = rdom + [('source_data_type', '=', data_type)]
+            for r in Rule.search(rdom):
+                key = r.output_key
+                if not key or key in out:
+                    continue
+                out[key] = {
+                    'path': key,
+                    'sample': None,
+                    'type': 'number',
+                    'label': r.name or key,
+                    'provenance': 'catalog',
+                    'catalog_kind': 'computed',
+                    'required': False,
+                    'notes': _("Computed here, from this feed's records, by the "
+                               "“%s” transformation rule.") % (
+                                   r.name or key),
+                    'feed': '',
+                    'expected_missing': False,
+                }
+        return out
 
     @api.model
     def _flatten_source(self, obj, prefix, out, depth=0):
@@ -527,14 +644,25 @@ Example: value * 1.1 if value > 1000 else value
 
     @api.model
     def _odoo_source_fields(self):
-        """Fallback: offer hr.employee's own fields as source paths."""
+        """Last resort: `hr.employee`'s own columns, MARKED as Odoo's.
+
+        This is the layer that produced the owner's complaint, and it is kept
+        for the one case it is right for — an operator building a mapping
+        against a source we know nothing about at all. What changed is that it
+        can no longer pass itself off as a vendor's schema: every item carries
+        `provenance='odoo'`, and the Mapping Studio prints "Odoo field" on the
+        card and says so in the column's sub-line. A layer that is honest about
+        being a fallback is useful; one that is not is a screen telling a
+        confident lie (W79).
+        """
         Emp = self.env['hr.employee']
         out = []
         for name, field in Emp._fields.items():
             if field.type in ('binary', 'one2many', 'many2many'):
                 continue
             out.append({'path': name, 'sample': None,
-                        'type': field.type, 'label': field.string or name})
+                        'type': field.type, 'label': field.string or name,
+                        'provenance': 'odoo', 'expected_missing': False})
         return sorted(out, key=lambda f: f['path'])[:200]
 
     # ==========================================
