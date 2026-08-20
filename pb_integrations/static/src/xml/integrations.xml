@@ -87,7 +87,17 @@
                 <div class="nm" t-esc="c.name"/>
                 <div class="jb"><t t-esc="c.type_label"/> · <t t-esc="syncLabel(c)"/></div>
               </div>
-              <div class="ppl-period itg-counts" t-esc="cardCounts(c)"/>
+              <div class="ppl-period itg-counts">
+                <!-- the count IS the door (W5): it opens the Mapping Studio on
+                     this connector, so the board is where you go to change the
+                     number it prints -->
+                <button t-if="hasMapping" class="itg-maplink"
+                        t-att-title="'Map this connector\'s fields onto a payroll scheme'"
+                        t-on-click.stop="() => this.openMappingStudio(c)"
+                        t-esc="mappingsLabel(c)"/>
+                <span t-else="" t-esc="mappingsLabel(c)"/>
+                <span class="itg-counts__rest"> · <t t-esc="cardCounts(c)"/></span>
+              </div>
               <div class="ppl-meta">
                 <span t-attf-class="pbim-badge {{ c.status_cls }}"><span class="d"/><t t-esc="c.status_label"/></span>
               </div>

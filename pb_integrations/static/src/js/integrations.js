@@ -166,11 +166,46 @@ export class PbIntegrations extends Component {
      * issue. Feeds come FIRST because that is the thing this cycle added and it
      * is what an operator scans for.
      */
+    /**
+     * The card's counts — minus the mappings, which are a DOOR now.
+     *
+     * Cycle 2 made "N mappings" clickable: it opens the Mapping Studio on this
+     * connector, so the number on the board is also the way to change it. It
+     * therefore had to leave the sentence, because a translator cannot reorder
+     * a fragment out of a `t-esc` and back into a button (W80). Two complete
+     * phrases, two msgids — never one sentence broken into pieces.
+     */
     cardCounts(c) {
-        return _t("%(feeds)s feeds · %(mappings)s mappings · %(staged)s staged "
-                  + "· %(synced)s synced",
-                  { feeds: c.feeds || 0, mappings: c.mappings,
-                    staged: c.staged, synced: c.synced });
+        return _t("%(feeds)s feeds · %(staged)s staged · %(synced)s synced",
+                  { feeds: c.feeds || 0, staged: c.staged, synced: c.synced });
+    }
+
+    /** The clickable half. Its own msgid, and a whole phrase. */
+    mappingsLabel(c) { return _t("%s mappings", c.mappings); }
+
+    /**
+     * Is the Mapping Studio on this database? `pb_formula_studio` is not a
+     * dependency of this module, so the registry is the probe and a link that
+     * would open nothing is simply not rendered (W29).
+     */
+    get hasMapping() {
+        return registry.category("actions").contains("pb_mapping_studio");
+    }
+
+    /** The count is a door: the studio, scoped to this connector. */
+    openMappingStudio(c) {
+        if (this._opening || !this.hasMapping) { return; }
+        this._opening = true;
+        try {
+            openHub(this.action, {
+                tag: "pb_mapping_studio",
+                context: { pb_connector: c.id, pb_mode: "api" },
+                back: { label: _t("Integrations"), tag: "pb_integrations" },
+            });
+        } catch (e) {
+            this._opening = false;
+            console.warn("pb_integrations: could not open the Mapping Studio", e);
+        }
     }
 
     /** "Feeds", or "Feeds · N stale" when any of them are overdue. */

@@ -317,39 +317,71 @@ class PbIntegrations(models.AbstractModel):
         M = self.env['hr.integration.field.mapping']
         total = M.search_count(dom)
         recs = M.search(dom, order='connector_id, sequence, source_field', limit=LIMIT)
+        # Integrations Cycle 2 — the feed a mapping belongs to, as a column and
+        # a facet, so the studio's per-feed counts and this table are answering
+        # the same question. Behind Cycle 1's schema probe, not behind
+        # `'hr.integration.endpoint' in self.env`: the addons tree is shared and
+        # the COLUMN arrives with a database's own upgrade, so on a tenant that
+        # has not had one this read would raise UndefinedColumn and leave the
+        # whole request's transaction aborted.
+        has_feeds = ('hr.integration.endpoint' in self.env
+                     and self.env['hr.integration.endpoint']._schema_ready())
         rows = []
         for r in recs:
             state = r.active_state or 'active'
             tone = {'active': 'ok', 'suggested': 'warn', 'ignored': 'muted'}.get(state, 'muted')
             if r.has_transform_error:
                 tone = 'err'
+            # "Unassigned" and not "—": a mapping drawn before feeds existed is
+            # a real, working mapping with no feed named, which is a different
+            # thing from a missing value (W79).
+            feed = (r.endpoint_id.name or r.endpoint_id.code or 'Unassigned') \
+                if has_feeds else ''
+            cells = [
+                r.source_field_label or r.source_field or '—',
+                r.target_rule_id.name or r.target_rule_code or '—',
+                _sel(M, 'transformation_type', r.transformation_type),
+                r.connector_id.name or '—',
+            ]
+            facets = {'connector': r.connector_id.name or '', 'state': state}
+            if has_feeds:
+                cells.append(feed)
+                facets['feed'] = feed
             rows.append({
                 'id': r.id,
-                'cells': [
-                    r.source_field_label or r.source_field or '—',
-                    r.target_rule_id.name or r.target_rule_code or '—',
-                    _sel(M, 'transformation_type', r.transformation_type),
-                    r.connector_id.name or '—',
-                ],
+                'cells': cells,
                 'badge': {'label': _sel(M, 'active_state', state), 'tone': tone},
-                '_f': {'connector': r.connector_id.name or '',
-                       'state': state},
+                '_f': facets,
                 '_s': ' '.join(x for x in [r.source_field or '', r.source_field_label or '',
                                            r.target_rule_code or '',
-                                           r.connector_id.name or ''] if x),
+                                           r.connector_id.name or '', feed] if x),
             })
+        columns = [{'label': 'Source field', 'wide': True},
+                   {'label': 'Target rule'},
+                   {'label': 'Transform'},
+                   {'label': 'Connector'}]
+        facet_spec = [('connector', 'Connector'), ('state', 'State')]
+        if has_feeds:
+            columns.append({'label': 'Feed'})
+            facet_spec.append(('feed', 'Feed'))
         return {
             'title': 'Field mappings',
             'subtitle': 'Which source field feeds which formula input, and how it is transformed.',
-            'search_ph': 'Search source field, target code, connector…',
+            'search_ph': 'Search source field, target code, connector, feed…',
             'empty': 'No field mappings match these filters.',
-            'columns': [{'label': 'Source field', 'wide': True},
-                        {'label': 'Target rule'},
-                        {'label': 'Transform'},
-                        {'label': 'Connector'}],
-            'facets': self._facets(rows, [('connector', 'Connector'), ('state', 'State')]),
+            'columns': columns,
+            'facets': self._facets(rows, facet_spec),
             'rows': rows, 'total': total, 'shown': len(rows),
         }
+
+    @api.model
+    def _detail_feed_name(self, r):
+        """The feed a mapping names, or '' when this database has no feeds."""
+        if 'hr.integration.endpoint' not in self.env:
+            return ''
+        if not self.env['hr.integration.endpoint']._schema_ready():
+            return ''
+        return r.endpoint_id.name or r.endpoint_id.code or ''
 
     @api.model
     def _detail_mapping(self, r):
@@ -361,6 +393,10 @@ class PbIntegrations(models.AbstractModel):
                 self._section('Source', [
                     {'label': 'Field path', 'value': r.source_field or ''},
                     {'label': 'Label', 'value': r.source_field_label or ''},
+                    # The feed, when this database has feeds at all. `_section`
+                    # drops an empty entry, so an un-upgraded tenant simply does
+                    # not show the row rather than showing a blank one.
+                    {'label': 'Feed', 'value': self._detail_feed_name(r)},
                     {'label': 'Data type', 'value': _sel(M, 'source_data_type', r.source_data_type)},
                     {'label': 'Sample value', 'value': r.source_sample_value or ''},
                 ]),
