@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.50.0',
+    'version': '19.0.1.51.0',
     'category': 'Human Resources/Payroll',
     'summary': 'State-of-the-art Excel-like formula-based salary calculation engine',
     'description': """
@@ -60,6 +60,12 @@ License: LGPL-3
         'data/formula_functions_data.xml',
         'data/payroll_accounting_data.xml',
         'data/legislation_pack_data.xml',
+        # Integrations Cycle 3 — the vendor catalogues. Endpoints load BEFORE
+        # the mapping templates that quote their codes in `endpoint_code`: the
+        # resolution happens at apply time and not at load time, so the order is
+        # not load-bearing, but reading the file list top-down should tell the
+        # same story the apply does.
+        'data/integration_endpoints.xml',
         'data/mapping_templates.xml',
         'data/formula_snippet_data.xml',
 
