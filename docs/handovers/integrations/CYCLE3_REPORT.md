@@ -10,6 +10,12 @@
 | 1 | `5479e66c` | feat(pb_hr_payroll_formula): the Zoho People feed catalog — the ABM inventory becomes data |
 | 2 | `c9a5f773` | feat(pb_hr_payroll_formula): transformation-rule templates + instantiation |
 | 3 | `b7436139` | feat(pb_hr_payroll_formula): the legacy field map joins the vendor templates |
+| 4 | `35231cc2` | docs(integrations): Cycle 3 report — the namespace findings and the code audit |
+| 5 | `752a551c` | fix(pb_integrations): a zero nobody counted is not a zero |
+| 6 | `aa993d87` | fix(pb_hr_payroll_formula): a preview that fails says so somewhere |
+| 7 | `efbb64b5` | fix(pb_hr_payroll_formula): every python transformation rule has been returning its default |
+| 8 | `5b27fdb0` | docs(integrations): Cycle 3 report — deploy, the two bugs, suites green, WP-5 |
+| 9 | *(this commit)* | docs: Cycle 3's ledger — W137-W140 — and the live validation |
 
 Nothing pushed. `.claude/settings.json`, `thaco/` and `ABM/` never staged.
 `pb_hr_payroll_formula` **19.0.1.50.0 → 19.0.1.51.0**.
@@ -114,14 +120,14 @@ in no shipped filter.
 
 ## The final target-code list (substring-audited)
 
-33 codes, `test_05` auditing the shipped XML (not the table — a row that failed
+**32 codes**, `test_05` auditing the shipped XML (not the table — a row that failed
 to load must not be able to make the audit pass by being absent). **No code is a
 substring of any other; all are UPPERCASE alphanumeric.**
 
 | | codes |
 |---|---|
 | pre-existing (15) | `EMPID` `FULLNAME` `EMAIL` `DEPT` `JOBTITLE` `JOINDATE` `BASIC` `ALLOWFIX` `DEPS` `WDAYS` `OTHOURS` `LEAVEDAYS` `BANKACC` `TAXID` `BONUS` |
-| new this cycle (18) | `SURNAME` `NAMEEN` `NAMEVN` `EMPSTATUS` `EMPKIND` `WORKSITE` `GENDERCODE` `BIRTHDATE` `MOBILENO` `PANCODE` `PITCODE` `UANCODE` `AADHAARNO` `BANKTITLE` `VNDACCOUNT` `INSBOOKNO` `ZOHOREF` + (`GIVENNAME` dropped — see deviations) |
+| new this cycle (17) | `SURNAME` `NAMEEN` `NAMEVN` `EMPSTATUS` `EMPKIND` `WORKSITE` `GENDERCODE` `BIRTHDATE` `MOBILENO` `PANCODE` `PITCODE` `UANCODE` `AADHAARNO` `BANKTITLE` `VNDACCOUNT` `INSBOOKNO` `ZOHOREF` |
 
 **The handover's own two suggestions fail the law.** It warned that `FULLNAMEVN`
 is illegal beside `FULLNAME` and offered `VNFULLNAME` as the fix — but
@@ -345,4 +351,217 @@ their connector. Noted rather than fixed: adding a field to another module's
 model is outside this cycle's scope, and the cascade already makes the clean
 correct.
 
-*(live browser validation appended below)*
+## Chrome-MCP live validation (handover test 9)
+
+Environment: the shared `chrome-devtools-mcp` profile was **free** this session,
+so W130's own-Chrome-over-CDP fallback was not needed. Persona: W129 applied —
+a temporary single-company system user (`ig-c3-validator@payobook.local`, uid
+**2095**, company 5 only, `base.group_system` + formula manager/admin +
+integration-user + payroll-manager), minted through `odoo-bin shell` with
+`company_ids` and `company_id` in the same `write`, authenticated over
+`/web/session/authenticate` (W130's corollary), and **removed at the end of the
+pass** — `IGC3-REMOVING=[2095]` … `IGC3-REMAINING=0`.
+
+Backend prefix `/bizapp` throughout.
+
+### 9a — the board: the demo connector's new numbers ✅
+
+`Zoho People · 39 mappings · 10 feeds · 14 staged · 3117 synced`, beside its
+neighbour `Zoho Payroll · 4 mappings · 2 feeds · …` — the same connector type,
+untouched by the cycle, which is what makes the change legible. The KPI row
+reads `26 Connectors · 22 Connected · 2 Errors · 78112 Synced records · 185
+Field mappings · 265 Staged records · 60 Feeds · 50 stale`. The **Feeds tile is
+present**, which is the count-honesty fix's positive case (`feeds_known: true`).
+Screenshot: `01-board-zoho-10-feeds.png`.
+
+### 9b — the connector cockpit: the 7-feed catalogue with the ABM badge ✅
+
+`Feeds 10`, and the three legacy feeds carry the **ABM** badge — exactly three,
+asserted in the DOM rather than by eye:
+
+```
+Employees / EMPLOYEE MASTER DATA        ABM   7 staged · 7 pulled · 26 mapped
+Attendance summary / ATTENDANCE         ABM   0 staged · 0 pulled ·  1 mapped
+Overtime requests / CUSTOM / OTHER      ABM   0 staged · 0 pulled ·  1 mapped
+Salary form / SALARY / COMPENSATION           0 staged · 0 pulled ·  2 mapped
+Leave records / LEAVE / TIME-OFF              4 staged · 4 pulled ·  1 mapped
+Attendance by date / ATTENDANCE               0 staged · 0 pulled ·  0 mapped
+Timesheets / CUSTOM / OTHER                   0 staged · 0 pulled ·  0 mapped
+Dependents / Family · Employee Master Data · Leave / Time-Off   (the demo's own three)
+```
+
+Every feed offers `Sync · View data · Map fields`. The seven catalogue rows read
+"Never synced" and the three demo-derived ones "Synced 56d ago" — the two
+origins are visibly different, which is right. Screenshot:
+`02-cockpit-10-feeds-abm-badges.png`.
+
+### 9c — the Mapping Studio: the FROM picker lists the feeds ✅
+
+"Map fields" on **Employees** lands on
+`FROM · Zoho People · 3 fields · never synced · [Employees] ══ 0 mapped ══▶ TO ·
+Payobook Retail — End-Month Payroll · 10 input columns · VN · active`, back chip
+"Zoho People". The feed picker lists all ten with their data type and their
+mapping count:
+
+```
+All feeds            Every field this connector has ever delivered
+Employees            Employee Master Data · 26 mapped · never synced
+Attendance summary   Attendance · 1 mapped · never synced
+Overtime requests    Custom / Other · 1 mapped · never synced
+Salary form          Salary / Compensation · 2 mapped · never synced
+Leave records        Leave / Time-Off · 1 mapped · never synced
+…
+```
+
+Screenshot: `03-studio-feed-picker-26-mapped.png`.
+
+**What is NOT on screen, and why it is correct.** The board reads "0 mapped" and
+the left column has three fields, not twenty-six. Both are honest:
+
+* the left column is built by `get_available_source_fields`, which reads the
+  connector's **stored payloads** — and the demo's Zoho rows carry
+  `external_id`, `kind`, `source`, because pb_demo generated them long before
+  this catalogue existed. The vendor template's source paths (`EmployeeID`,
+  `FirstName`…) have never arrived in a payload here, because nothing on this
+  box has credentials to call Zoho (a binding non-goal);
+* "0 mapped" counts WIRES, and a wire needs a target. All 31 template rows
+  landed `suggested` with `target_rule_id` empty, because this config's input
+  codes (`BASIC`, `DEPS`, `OTWD`…) do not match the Zoho target codes. That is
+  D114.2 working as designed: a template guess is never load-bearing until the
+  batch test confirms it against a real payload.
+
+So the catalogue is visible everywhere it is a statement about the VENDOR (the
+feed list, the per-feed mapping counts, the picker) and absent everywhere it
+would be a statement about this tenant's DATA. Cycle 4, which binds the abm
+tenant's real config and its real payloads, is where the wires become wires.
+
+### 9d — console and network hygiene ✅
+
+**All 55 XHR/fetch requests returned 200**, zero ≥400, across the board, the
+connector cockpit and the studio — including `pb.integrations/get_board`,
+`pb.import.connector.cockpit/get_connector_detail`,
+`pb.formula.studio/mapping_pickers` and `api_mapping_data`.
+
+Console: one error and one warning, **neither from this cycle**.
+`Load history error: RPC_ERROR` comes from
+`pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:623`
+(the "Stuck?" chat widget fetching its history); the warning is
+`biz_debrand`'s manifest icon size. Both pre-existing, both outside this
+cycle's modules.
+
+## The palette-gating extra — reproduced, diagnosed, NOT a gating defect
+
+Reported: Integrations and Mapping Studio "don't match/resolve" in ⌘K for
+personas holding the gate groups. Reproduced immediately — the palette opened
+with **12 rows and neither entry among them**. Then instrumented, and every
+layer checked out:
+
+```
+uid 2095
+  hasGroup pb_hr_payroll_base.group_payroll_integration_user   true
+  hasGroup pb_hr_payroll_base.group_payroll_base_manager       true
+  hasGroup pb_hr_payroll_base.group_payroll_super_admin        false
+  actions registry contains pb_integrations       true
+  actions registry contains pb_mapping_studio     true
+  pb_hub_palette has "integrations" / "mapping_studio"    true / true
+
+re-running resolveEntries' own logic over all 65 entries:
+  shown 60,  dropped by isPresent 0,
+  dropped by groups 5  (cmphub_filings, filing_flow, peoplehub_plan,
+                        pay_delivery, audit)  ← neither of ours
+```
+
+The resolver says 60 rows; the panel renders 12. The cause is
+`pb_hub/static/src/js/hub_palette.js`:
+
+```js
+export const MAX_ROWS = 12;
+…
+for (const e of this.props.entries) { … out.push(e); if (out.length >= MAX_ROWS) break; }
+```
+
+IA Cycle 5 deliberately moved every deep link into a **2000+ sequence block**
+below the eight mission rows, so on an empty query the palette shows the
+missions and stops. Typing finds both instantly:
+
+```
+"integr"  → Integrations · Setup
+"mapping" → Mapping Studio · Setup
+"setup"   → Formula Engine · Setup, Salary Structures · Setup, Statutory · Setup,
+            Integrations · Setup, Mapping Studio · Setup
+```
+
+which is exactly what `hub_palette_entries.js` says it designed: *"What changes
+is which rows a user sees when they open the palette and type nothing."* It also
+explains the original report's own evidence — "search finds both entries for a
+formula-manager persona" — which was describing a cap, not a gate.
+
+**Not fixed, deliberately.** Raising `MAX_ROWS` or re-sequencing the Setup block
+changes what every persona sees on every ⌘K; that is an IA design decision with
+an owner, not something an Integrations cycle picks up in passing. Documented as
+**W140** so the next person spends a minute on it instead of an hour. If the
+owner wants these five Setup rows above the fold, the cheapest honest change is
+a per-entry `seq` on them (the mechanism already exists — Mission Control and
+Learn use it), not a bigger cap.
+
+## New W-rules
+
+| rule | what it cost |
+|---|---|
+| **W137** | Odoo 19 removed `safe_eval`'s `nocopy`, and the caller that still passes it fails INSIDE a `try` that substitutes a default — so the feature computes zero rather than erroring. Grep the tree the moment you meet one instance; assert a NUMBER, not a shape. |
+| **W138** | A test written while a catalogue was EMPTY measures the DATA. Fixture assertions name their own row; the shipped data gets its own test. Amend in the commit that ships the data. |
+| **W139** | A number the server could not COMPUTE must not be rendered as 0. Ship the condition beside the numbers; drop the phrase rather than zeroing it; read the flag as `!== false`. |
+| **W140** | "It is missing from ⌘K" is almost always the row CAP, not the gate. Diagnose by running the resolver, not by reading the gate. |
+
+The ledger header now records Cycle 3 closing at **W140**.
+
+## Deviations from the handover
+
+1. **`GIVENNAME` was not shipped** (the handover's `FirstName → GIVENNAME` row).
+   `action_apply_mapping_template` de-dupes template rows by `source_path`
+   (`integration_connector.py:503`) and `mt_zoho_name` has claimed `FirstName`
+   since F114 for the FULLNAME concat. A second row naming it would ship, load,
+   freeze under `noupdate` and silently never apply — dead data in the one kind
+   of file where dead data is permanent. `LastName → SURNAME` has no such claim
+   and shipped. Net: 17 new rows, not 18; 32 codes, not 33.
+2. **`VNFULLNAME` / `ENFULLNAME` replaced by `NAMEVN` / `NAMEEN`.** The
+   handover flagged `FULLNAMEVN` as illegal beside `FULLNAME` and offered
+   `VNFULLNAME` as the fix — but `'FULLNAME' in 'VNFULLNAME'` is `True`, so the
+   suggested fix breaks the same law. Audited in code rather than by eye.
+3. **`filter_expression` uses `rec`, not `record`.** The handover's table wrote
+   `record.get(...)`; the engine's namespace is `rec` and its `except Exception:
+   pass` would have turned every row into a silent zero. See the namespace
+   section at the top.
+4. **Three DarwinHR mapping rows were left with no `endpoint_code`**
+   (`overtime_hours`, `working_days`, `dependents_count`). Neither documented
+   Darwinbox path produces them, and inventing a feed is the one thing the
+   design refuses to do. The handover asked me to judge per row and report the
+   table; this is the judgement.
+5. **Darwin mapping rows were stamped too**, which the handover only asked for
+   on the Zoho side. Ten rows, both feeds evidenced at
+   `darwin_connector.py:48-49`, and it is what makes the Mapping Studio's
+   per-feed grouping work for the second vendor as well.
+6. **Two fixes outside the handover's scope, both found by its own tests**: the
+   `safe_eval`/`nocopy` breakage (W137) and Cycle 1's three data-dependent tests
+   (W138). Neither was optional — this cycle's rules do not work without the
+   first, and the suite is not green without the second.
+7. **The palette-gating extra was diagnosed and not fixed** — see above. It is
+   an IA design decision, and the report says so rather than quietly changing
+   what every user sees on ⌘K.
+
+## What Cycle 4 inherits
+
+* The abm tenant has **not** been touched (binding non-goal). Its
+  `mapping_templates.xml` rows are frozen there like everywhere else, and the
+  same migration will stamp them the moment `abm` is upgraded — the script is
+  by-XML-ID and only-if-empty, so it is safe to run there unattended.
+* The demo Zoho People connector (id 161 on `payobook`) is prepopulated and
+  `is_demo`-stamped; its 8 transformation rules cascade with the connector but
+  carry no `is_demo` field of their own, because `pb_demo` never added one to
+  `hr.api.transformation.rule`. If Cycle 4 wants flag-parity there, that is a
+  one-line `_inherit` in `pb_demo`.
+* The 31 template wires on that connector are all `suggested` with no target.
+  Binding a config whose input codes match (or running the batch test against a
+  real payload) is what promotes them — that is Cycle 4's job, and it is now a
+  configuration question rather than a data-entry one.
+
