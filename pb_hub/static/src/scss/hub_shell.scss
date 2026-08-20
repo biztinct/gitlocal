@@ -455,29 +455,64 @@
 // start looking different, and the failure would be silent: an unmatched
 // selector renders an unstyled button, not an error (W14's shape, which is
 // exactly what this chip's own header comment warns about for the light tone).
+//
+// ---------------------------------------------------------------------------
+// Integrations Cycle 6 — `:not(.pbhub-back--lite)`, and why it is load-bearing.
+//
+// `.pbms` is not one class. pb_mission's workspace is `<div class="pbim pbms">`
+// (pb_mission/static/src/xml/pb_mission.xml:8) and so is the MAPPING STUDIO
+// (pb_formula_studio/static/src/xml/mapping_studio.xml:5) — two components, two
+// modules, two different backgrounds, one class name. The studio is a LIGHT surface
+// (`background: var(--pbim-bg)`), it mounts this chip with `tone="'light'"`,
+// and it therefore matched BOTH blocks. Specificity settled it the wrong way:
+// `.pbim.pbms .pbhub-back` is (0,3,0) and `.pbhub-back--lite` is (0,1,0), so
+// the DARK tone won and the studio's way home rendered `color: #fff` on a
+// `#F5F6FA` bar — a measured **1.08:1**, which is not "hard to see", it is
+// invisible. It is the owner's complaint, and it is the exact failure shape
+// this block's own header comment warns about, arrived at from the other side:
+// there, an unmatched selector left the chip unstyled; here, an over-matched
+// one styled it for the wrong background.
+//
+// The guard is the honest fix rather than a specificity war: a host that has
+// explicitly declared its surface LIGHT must never be handed the dark tone, and
+// stating that as `:not()` means a third `.pbms` cannot re-open the bug. See
+// W151.
 .pbim.pbhub, .pbim.pbms {
-    .pbhub-back {
+    .pbhub-back:not(.pbhub-back--lite) {
         flex: none;
         display: inline-flex;
         align-items: center;
         gap: 6px;
         max-width: 200px;
-        height: 28px;
-        padding: 0 10px 0 8px;
-        border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+        height: 30px;
+        padding: 0 12px 0 9px;
+        // 22% white measured 2.01:1 against a #241F52 command bar — under
+        // WCAG 1.4.11's 3:1 for a control boundary, which is the line between
+        // "a button" and "some text that happens to be clickable". 42% is
+        // 3.82:1. The fill stays quiet on purpose: the BORDER is what has to
+        // carry the boundary, and a fill loud enough to do it alone would make
+        // the way back compete with the page's own primary action.
+        border: 1px solid color-mix(in srgb, #fff 42%, transparent);
         border-radius: var(--pbim-r-sm, 10px);
-        background: color-mix(in srgb, #fff 9%, transparent);
+        background: color-mix(in srgb, #fff 16%, transparent);
         color: #fff;
         font: inherit;
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 700;
         cursor: pointer;
         transition: background .12s, border-color .12s;
 
         svg { display: block; }
         &:hover {
-            background: color-mix(in srgb, #fff 17%, transparent);
-            border-color: color-mix(in srgb, #fff 34%, transparent);
+            background: color-mix(in srgb, #fff 28%, transparent);
+            border-color: color-mix(in srgb, #fff 62%, transparent);
+        }
+        &:active { background: color-mix(in srgb, #fff 36%, transparent); }
+        // A focus ring the keyboard can find. `:focus-visible`, not `:focus`,
+        // so a mouse click does not leave a ring behind it.
+        &:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
         }
     }
     .pbhub-back__ic { display: inline-flex; flex: none; }
@@ -489,28 +524,55 @@
     }
 }
 
+// ------------------------------------------------- the back chip, LIGHT tone
+//
+// Cycle 6 made this read as a CONTROL rather than as a caption. What shipped
+// before was `--pbim-surface` on a `--pbim-bg` bar (1.08:1) inside a
+// `--pbim-line` border (1.14:1): a white rectangle on a near-white bar, with a
+// hairline nobody can see. The text passed AA at 6.84:1 and it did not help,
+// because a legible word is not a discoverable button — the owner's sentence
+// was "not visible intuitively because of the colour and shades".
+//
+// Now: the soft indigo wash, a FULL-strength indigo border, and indigo-hover
+// ink. Measured, not eyeballed:
+//
+//     text    --pbim-primary-hover on --pbim-soft   7.39:1  (AA needs 4.5)
+//     border  --pbim-primary on the --pbim-bg bar   6.34:1  (needs 3.0)
+//     border  --pbim-primary on white               6.84:1  (needs 3.0)
+//     hover   #fff on --pbim-primary                6.84:1  (needs 4.5)
+//
+// It is deliberately NOT a solid primary button at rest: it would then outrank
+// every real action on the page it sits above. Filled on hover, so it announces
+// itself when reached for and stays second in the hierarchy when it is not.
+// Every colour is a `--pbim-*` token (W1) and the shape is flat (W3).
 .pbhub-back--lite {
     flex: none;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    max-width: 220px;
-    height: 30px;
-    padding: 0 12px 0 9px;
-    border: 1px solid var(--pbim-line, #E2E8F0);
+    gap: 7px;
+    max-width: 240px;
+    height: 32px;                       // 32px: a real hit area, not a caption
+    padding: 0 14px 0 11px;
+    border: 1px solid var(--pbim-primary, #5A4BB0);
     border-radius: var(--pbim-r-sm, 10px);
-    background: var(--pbim-surface, #ffffff);
-    color: var(--pbim-primary-strong, #5A4BB0);
+    background: var(--pbim-soft, #EDEAF8);
+    color: var(--pbim-primary-hover, #4A3D96);
     font: inherit;
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
-    transition: background .12s, border-color .12s;
+    transition: background .12s, border-color .12s, color .12s;
 
     svg { display: block; }
     &:hover {
-        background: var(--pbim-soft, #EDEAF8);
-        border-color: var(--pbim-primary, #5A4BB0);
+        background: var(--pbim-primary, #5A4BB0);
+        border-color: var(--pbim-primary-hover, #4A3D96);
+        color: var(--pbim-surface, #ffffff);
+    }
+    &:active { background: var(--pbim-primary-hover, #4A3D96); }
+    &:focus-visible {
+        outline: 2px solid var(--pbim-primary, #5A4BB0);
+        outline-offset: 2px;
     }
     .pbhub-back__ic { display: inline-flex; flex: none; }
     .pbhub-back__tx {
