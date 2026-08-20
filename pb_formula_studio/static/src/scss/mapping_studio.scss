@@ -22,6 +22,22 @@
     --ink:      var(--pbim-text);
     --muted:    var(--pbim-muted);
     --line:     var(--pbim-line);
+    /* C5 — `--i-deep` was READ by the canvas (the draw hint, now the dock chips
+       too) and never bound anywhere: it fell through to its literal fallback,
+       which is how two surfaces drift into two indigos. Bound, plus the amber /
+       rose / slate families the wire states use, so the studio and the Formula
+       Studio overlay cannot disagree about what a suggestion looks like. */
+    --i-deep:       var(--pbim-primary-dark);
+    --i-amber:      var(--pbim-amber);
+    --i-amber-line: var(--pbim-amber-soft);
+    --i-amber-ink:  var(--pbim-amber);
+    --i-amber-wash: var(--pbim-amber-soft);
+    --i-rose:       var(--pbim-rose);
+    --i-rose-ink:   var(--pbim-rose);
+    --i-rose-wash:  var(--pbim-rose-soft);
+    --i-slate:      var(--pbim-slate);
+    --i-wash:       var(--pbim-line-2);
+    --i-wash2:      var(--pbim-line-2);
 }
 
 .pbms-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
@@ -88,26 +104,41 @@
 .pbms-sub .n { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pbms-sub svg { vertical-align: -.15em; }
 
-/* the animated wire between the two ends */
+/* ---- WP-5: the rail between the two ends ----
+   Same vocabulary as the wires on the board: a solid stroke ending in a filled
+   triangle, calm at rest. The dash only flows while something is actually
+   loading — an animation that runs when nothing is happening is a screen that
+   never settles, and this one ran forever. */
 .pbms-link {
     flex: none; width: 240px;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 2px; position: relative;
+    gap: 3px; position: relative;
 }
-.pbms-link__svg { width: 240px; height: 24px; }
+.pbms-link__svg { width: 240px; height: 20px; }
 .pbms-link__p {
-    fill: none; stroke: var(--pbim-primary); stroke-width: 2.4;
-    stroke-dasharray: 9 7; opacity: .85;
-    animation: pbms-flow 1.1s linear infinite;
+    fill: none; stroke: var(--pbim-primary); stroke-width: 2.4; stroke-linecap: round;
 }
-.pbms-link__h { fill: none; stroke: var(--pbim-primary); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.pbms-link__h { fill: var(--pbim-primary); }
+.pbms-link.is-live .pbms-link__p { stroke-dasharray: 9 7; animation: pbms-flow 1.1s linear infinite; }
 @keyframes pbms-flow { to { stroke-dashoffset: -32; } }
 @media (prefers-reduced-motion: reduce) {
-    .pbms-link__p { animation: none; }
+    .pbms-link.is-live .pbms-link__p { animation: none; }
 }
-.pbms-link__n { font-size: 12px; color: var(--pbim-muted); }
-.pbms-link__n b { color: var(--pbim-text); font-weight: 900; }
-.pbms-link__s { font-size: 11px; font-weight: 800; color: var(--pbim-amber); }
+
+/* the counts are CONTROLS: one flashes every wire, one filters to the
+   suggestions. A number nobody can act on is a label pretending to be a stat. */
+.pbms-link__c { display: flex; align-items: center; gap: 8px; }
+.pbms-count {
+    border: 1px solid transparent; background: none; border-radius: 999px;
+    padding: 2px 9px; font-family: inherit; font-size: 12px; color: var(--pbim-muted);
+    cursor: pointer; transition: background .13s, border-color .13s, color .13s;
+}
+.pbms-count b { color: var(--pbim-text); font-weight: 900; }
+.pbms-count:hover:not(:disabled) { background: var(--pbim-soft); border-color: var(--pbim-primary-light); color: var(--pbim-primary-hover); }
+.pbms-count:disabled { cursor: default; opacity: .75; }
+.pbms-count.sug { font-size: 11px; font-weight: 800; color: var(--pbim-amber); }
+.pbms-count.sug b { color: var(--pbim-amber); }
+.pbms-count.sug:hover { background: var(--pbim-amber-soft); border-color: var(--pbim-amber); }
 
 /* ------------------------------------------------------- rich dropdowns */
 .pbms-menu-scrim { position: fixed; inset: 0; z-index: 40; }

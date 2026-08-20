@@ -103,6 +103,10 @@ export class MappingStudio extends Component {
             fellBack: [],
             // template panel
             tmplOpen: false, tmplBusy: false, tmplList: [], tmplResult: null,
+            // C5 — one-shot orders for the board. The TOKEN is the point: a
+            // second click on "15 mapped" has to flash the wires a second time,
+            // and a boolean cannot say "again".
+            cmd: { token: 0, kind: "" },
         });
 
         // A click anywhere else closes an open dropdown. An event handler, not
@@ -282,6 +286,16 @@ export class MappingStudio extends Component {
 
     get mappedCount() { return this.wires.filter((w) => w.state === "accepted").length; }
     get suggestedCount() { return this.wires.filter((w) => w.state === "suggested").length; }
+
+    /** "15 mapped" → flash every wire on the board for a second. */
+    flashWires() {
+        if (!this.mappedCount) { return; }
+        this.state.cmd = { token: this.state.cmd.token + 1, kind: "pulse" };
+    }
+    /** "2 suggested" → filter both columns down to what the suggestions touch. */
+    focusSuggested() {
+        this.state.cmd = { token: this.state.cmd.token + 1, kind: "suggested" };
+    }
 
     get modes() { return MODES; }
     get mode() { return MODES.find((m) => m.id === this.state.mode) || MODES[0]; }
