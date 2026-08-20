@@ -141,9 +141,26 @@ export function itemMatches(item, query) {
  * pushing each hub below the last one it collides with is the cheapest fix that
  * keeps a hub near its own wire (the cap keeps it from wandering off the line).
  *
+ * The three numbers describe the PILL, so they moved when it did (Integrations
+ * Cycle 7, which took the `‹ ›` navigation zones out of the hub):
+ *
+ *   minGap  30  the pill is 28px tall — 22px of content, 2px padding either
+ *               side, 1px border either side. The old 26 was already 2px under
+ *               its own height, so two hubs at the minimum gap overlapped very
+ *               slightly; the new value clears it with 2px to spare.
+ *   xWindow 92  two hubs only contend for space if they are horizontally
+ *               within a pill-width of each other. The widest pill left is a
+ *               suggestion — confidence text, ✓, ✕, padding — at ~88px, down
+ *               from ~180px with the arrows. A window sized for the OLD pill
+ *               spreads hubs that no longer touch, and a hub pushed off its own
+ *               wire is exactly the defect this function exists to prevent.
+ *   cap     34  unchanged: how far a hub may travel from its curve before
+ *               being on the wrong line is a property of the wires, not of the
+ *               pill.
+ *
  * @param {Array} geom  entries carrying {hx, hy}
  */
-export function spreadHubs(geom, minGap = 26, xWindow = 130, cap = 34) {
+export function spreadHubs(geom, minGap = 30, xWindow = 92, cap = 34) {
     const placed = [];
     for (const g of [...geom].sort((a, b) => a.hy - b.hy)) {
         let y = g.hy;

@@ -22,7 +22,13 @@
                     t-on-mouseenter="() => this.enterWire(g.id)"
                     t-on-mouseleave="() => this.leaveWire()"
                     t-on-click="(ev) => this.selectWire(g, ev)"
-                    t-on-dblclick="(ev) => this.wireDblClick(g, ev)"/>
+                    t-on-dblclick="(ev) => this.centreBoth(g, ev)">
+                <!-- SVG's own tooltip element: a `title` ATTRIBUTE on an SVG
+                     child is not a tooltip, it is an unknown attribute, and
+                     the gesture would be undiscoverable on the wire itself
+                     (which is where a reader tries it first). -->
+                <title>Double-click to bring both ends into view</title>
+              </path>
               <path class="mc-wire" t-att-d="g.d"/>
               <polygon class="mc-head" t-att-points="g.head"/>
               <!-- the travelling highlight: a normalised dash walking the same
@@ -163,19 +169,26 @@
           </div>
         </div>
 
-        <!-- ===== the wire hub: ◀ source │ transform │ target ▶ =====
-             One object per wire, replacing the three overlapping badge
-             variants. The two outer zones are the owner's ask: a control ON the
-             wire that takes you to whichever end you pressed. -->
+        <!-- ===== the wire hub: what this wire MEANS =====
+             Cycle 5 built this as three zones — `‹ │ transform │ ›` — and the
+             two outer ones were navigation: press an arrow, that column scrolls
+             to that end. C7 removes them. Two presses to see one connection,
+             with the first end usually gone off screen by the time the second
+             arrived, is not how a reader asks "where does this go?" — a
+             DOUBLE-CLICK on the wire or on this pill now centres both columns
+             at once and rings both cards.
+             What is left is meaning only: the transform glyph on an accepted
+             wire, a confidence and its two verbs on a suggestion. The pill is
+             ~90px narrower for it, which is why `spreadHubs` was re-tuned. -->
         <div class="mc-hubs">
           <t t-foreach="ui.geom" t-as="g" t-key="'h' + g.id">
             <div t-if="hubVisible(g)"
                  t-attf-class="mc-hub {{ g.state }} {{ g.err ? 'err' : '' }} {{ wireTone(g) }} {{ ui.selWire === g.id ? 'on' : '' }}"
                  t-attf-style="left:{{ g.hx }}px;top:{{ g.hy }}px"
+                 title="Double-click to bring both ends into view"
                  t-on-mouseenter="() => this.enterWire(g.id)"
-                 t-on-mouseleave="() => this.leaveWire()">
-              <button class="mc-hub__z src" title="Go to the source field"
-                      t-on-click="() => this.jumpTo('left', g)" t-out="ic('chevronLeft', 13)"/>
+                 t-on-mouseleave="() => this.leaveWire()"
+                 t-on-dblclick="(ev) => this.centreBoth(g, ev)">
 
               <div class="mc-hub__c">
                 <!-- a suggestion: how sure, and the two verbs -->
@@ -203,11 +216,28 @@
                   <span t-else="" class="mc-hub__dot"/>
                 </t>
               </div>
-
-              <button class="mc-hub__z tgt" title="Go to the target column"
-                      t-on-click="() => this.jumpTo('right', g)" t-out="ic('chevron', 13)"/>
             </div>
           </t>
+        </div>
+
+        <!-- ===== the hint, and the one honest refusal =====
+             Discoverability is what the arrows were really for, so it has to be
+             replaced rather than dropped: hovering any wire says what the
+             gesture is, once, in the corner — not fifty tooltips at rest. -->
+        <div t-if="ui.hoverWire and !ui.reveal" class="mc-gesture">
+          <span t-out="ic('maximize', 13)"/>
+          <b>Double-click</b> to bring both ends into view
+        </div>
+
+        <!-- An end behind a filter cannot be scrolled to. Cycle 5's vocabulary,
+             on the wire rather than on the column: say which end, and offer the
+             clear — never clear a search the reader typed without asking, and
+             never let a double-click look like it did nothing (W40). -->
+        <div t-if="ui.reveal" class="mc-reveal">
+          <span class="mc-reveal__ic" t-out="ic('eyeOff', 14)"/>
+          <span class="mc-reveal__t" t-esc="revealText"/>
+          <button class="mc-reveal__go" t-on-click="revealBoth">Clear the filter and show me</button>
+          <button class="mc-reveal__x" title="Dismiss" t-on-click="dismissReveal" t-out="ic('x', 13)"/>
         </div>
 
         <!-- ===== dock chips: the wires whose end is out of view =====

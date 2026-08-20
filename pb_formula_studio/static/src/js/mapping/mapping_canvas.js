@@ -66,7 +66,15 @@ export class MappingCanvas extends Component {
             hoverWire: null,
             hoverItem: null,      // {side, id} — the card the pointer is on
             selWire: null,        // the wire whose hub stays open
-            flash: null,          // {side, id} — the arrival ring after a jump
+            // C7 — the arrival ring, per COLUMN rather than one at a time. The
+            // whole point of the new gesture is that both ends answer at once;
+            // a single `{side, id}` could only ever light one of them.
+            flash: { left: null, right: null },
+            // C7 — "one end of this wire is behind a filter". An affordance,
+            // not a silent filter-clear: the user asked to SEE the wire, and
+            // throwing away the search they typed to do it is a second, larger
+            // surprise. `{id, sides:[…]}` or null.
+            reveal: null,
             focusSide: "left",
             focusId: null,
             geom: [],             // [{...wire, d, head, hx, hy, dockL, dockR}]
@@ -130,6 +138,7 @@ export class MappingCanvas extends Component {
                 this.resetQuery("left");
                 this.resetQuery("right");
                 this.ui.selWire = null;
+                this.ui.reveal = null;
             }
             this._runCommand(next.command);
         });
@@ -346,7 +355,18 @@ export class MappingCanvas extends Component {
         if (ev.key === "Escape") { ev.stopPropagation(); this.clearSearch(side); }
     }
     setFilter(side, v) { this.ui.f[side] = this.ui.f[side] === v ? "all" : v; }
-    clearFilters(side) { this.clearSearch(side); this.ui.f[side] = "all"; }
+    clearFilters(side) {
+        this.clearSearch(side); this.ui.f[side] = "all";
+        // A reveal bar is a claim about a filter. Drop the half of the claim
+        // this clear just made false, and the whole bar when nothing is left
+        // for it to say — a warning that outlives its cause is the thing that
+        // teaches readers to stop reading warnings (W153).
+        const r = this.ui.reveal;
+        if (r) {
+            const sides = r.sides.filter((s) => s !== side);
+            this.ui.reveal = sides.length ? { ...r, sides } : null;
+        }
+    }
     hasFilter(side) { return this.ui.f[side] !== "all" || !!this.ui.qa[side]; }
 
     /** Which left ids carry a suggestion — computed once per wires array. */
@@ -521,12 +541,103 @@ export class MappingCanvas extends Component {
         if (ev) { ev.stopPropagation(); }
         this.ui.selWire = this.ui.selWire === g.id ? null : g.id;
     }
-    /** Double-click on the wire ITSELF: whichever end you clicked nearer. */
-    wireDblClick(g, ev) {
-        const rb = this.rootRef.el.getBoundingClientRect();
-        const x = ev.clientX - rb.left;
-        this.jumpTo(Math.abs(x - g.sx) <= Math.abs(x - g.tx) ? "left" : "right", g);
+
+    /**
+     * ===================== C7 — one gesture brings BOTH ends home ===========
+     *
+     * Cycle 5 put a `‹` and a `›` on every hub: press one, that column scrolls
+     * to that end. Two controls, two presses, and after the first one the other
+     * end had usually left the screen — so the reader never actually saw the
+     * connection, only its two halves in sequence.
+     *
+     * Double-clicking the wire (or its hub) scrolls BOTH columns at once and
+     * flashes BOTH cards, which is the only way a two-hundred-row board can
+     * answer "where does this go?" in one frame. The arrows are gone; the pill
+     * is smaller for it, and it now carries only meaning (the transform glyph,
+     * or a confidence and its two verbs) rather than navigation.
+     *
+     * `←`/`→` still walk to a single end from the keyboard — that gesture was
+     * never the problem, and losing it would cost the one-ended case nothing
+     * was wrong with.
+     */
+    centreBoth(g, ev) {
+        if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+        if (!g) { return; }
+        this.ui.selWire = g.id;
+        // Read the CURRENT geometry rather than the object the template closed
+        // over: between the render and the double-click a filter may have moved
+        // an end behind it, and acting on a stale `hiddenL` would scroll to a
+        // card that is no longer in the list.
+        const cur = this.ui.geom.find((x) => x.id === g.id) || g;
+        const hidden = [];
+        if (cur.hiddenL) { hidden.push("left"); }
+        if (cur.hiddenR) { hidden.push("right"); }
+        // An end behind a filter cannot be scrolled to, and clearing the
+        // filter without being asked would throw away a search the user typed.
+        // Say so, offer the clear — and still centre the end that IS reachable,
+        // so the gesture is never a no-op (W40: never grey out in silence).
+        this.ui.reveal = hidden.length ? { id: g.id, sides: hidden } : null;
+        this._centre(cur, { left: !cur.hiddenL, right: !cur.hiddenR });
     }
+
+    /** The reveal bar's verb: drop the filters that hide an end, then centre. */
+    revealBoth() {
+        const r = this.ui.reveal;
+        if (!r) { return; }
+        for (const side of r.sides) { this.clearFilters(side); }
+        this.ui.reveal = null;
+        // One frame for the just-cleared columns to render their rows, then a
+        // second recompute so `ui.geom` knows the ends are anchorable again.
+        requestAnimationFrame(() => {
+            this._recompute();
+            const g = this.ui.geom.find((x) => x.id === r.id);
+            if (g) { this._centre(g, { left: true, right: true }); }
+        });
+    }
+    dismissReveal() { this.ui.reveal = null; }
+
+    /**
+     * Scroll each requested column so its end of this wire sits in the middle,
+     * and ring both cards.
+     *
+     * Deliberately NOT `scrollIntoView` — see `jumpTo`. `Math.max(0, …)` and
+     * the browser's own clamp at the bottom are what make an end near a list
+     * boundary scroll AS CLOSE AS IT CAN rather than refusing: the card is then
+     * not centred, but it is on screen, and it still flashes.
+     */
+    _centre(g, want) {
+        const flash = { left: null, right: null };
+        const go = () => {
+            for (const side of ["left", "right"]) {
+                if (!want[side]) { continue; }
+                const body = side === "left" ? this.lbodyRef.el : this.rbodyRef.el;
+                const id = side === "left" ? g.leftId : g.rightId;
+                const el = this._itemEl(body, id);
+                if (!body || !el) { continue; }
+                const top = el.offsetTop - (body.clientHeight - el.offsetHeight) / 2;
+                body.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+                flash[side] = id;
+            }
+            this.ui.flash = flash;
+            if (this._flashTimer) { clearTimeout(this._flashTimer); }
+            this._flashTimer = setTimeout(
+                () => { this.ui.flash = { left: null, right: null }; }, 950);
+        };
+        requestAnimationFrame(go);
+    }
+
+    /** What the reveal bar says. One sentence, one msgid (W80). */
+    get revealText() {
+        const r = this.ui.reveal;
+        if (!r) { return ""; }
+        if (r.sides.length === 2) {
+            return "Both ends of this wire are hidden by the column filters.";
+        }
+        return r.sides[0] === "left"
+            ? "The source end of this wire is hidden by this column's filter."
+            : "The target end of this wire is hidden by this column's filter.";
+    }
+
     _itemEl(body, id) {
         if (!body) { return null; }
         const key = String(id);        // `dataset.id` is always a string (W146)
@@ -545,27 +656,19 @@ export class MappingCanvas extends Component {
      * displace nothing else on the screen.
      */
     jumpTo(side, g) {
-        const id = side === "left" ? g.leftId : g.rightId;
         this.ui.selWire = g.id;
-        // an end hidden by this column's own filter is unreachable until the
-        // filter goes — clearing it is what the user meant by asking to go there
+        // A DOCK CHIP's target is a wire the reader cannot see an end of, and
+        // the chip's own label already says "hidden by filter" — so pressing it
+        // IS the request to clear. That is a different sentence from the wire
+        // gesture, which asks to see a connection and gets the reveal bar
+        // instead (C7).
         if (side === "left" ? g.hiddenL : g.hiddenR) { this.clearFilters(side); }
-        const go = () => {
-            const body = side === "left" ? this.lbodyRef.el : this.rbodyRef.el;
-            const el = this._itemEl(body, id);
-            if (!body || !el) { return; }
-            const top = el.offsetTop - (body.clientHeight - el.offsetHeight) / 2;
-            body.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
-            this.ui.flash = { side, id };
-            if (this._flashTimer) { clearTimeout(this._flashTimer); }
-            this._flashTimer = setTimeout(() => { this.ui.flash = null; }, 950);
-        };
         // one frame, so a just-cleared filter has rendered its rows first
-        requestAnimationFrame(go);
+        this._centre(g, { left: side === "left", right: side === "right" });
     }
     isFlashing(side, id) {
         const f = this.ui.flash;
-        return !!(f && f.side === side && f.id === id);
+        return !!(f && f[side] != null && String(f[side]) === String(id));
     }
 
     // ---- dock chips (WP-1.4) -------------------------------------------
@@ -793,11 +896,22 @@ export class MappingCanvas extends Component {
                 this.jumpTo(ev.key === "ArrowLeft" ? "left" : "right", g);
                 return;
             }
-            if (g && ev.key === "Enter" && g.transform) {
+            // C7 — Enter is the keyboard twin of the double-click, so the
+            // gesture is not mouse-only. The transform editor moves to `t`,
+            // which it has to: with the `‹ ›` zones gone, Enter is the only key
+            // that can mean "show me this wire" and a gesture reachable by
+            // exactly one input device is not reachable.
+            if (g && ev.key === "Enter") {
+                this.centreBoth(g, ev); return;
+            }
+            if (g && (ev.key === "t" || ev.key === "T") && g.transform) {
                 ev.preventDefault(); ev.stopPropagation();
                 this.openTransform(g); return;
             }
-            if (ev.key === "Escape") { this.ui.selWire = null; ev.stopPropagation(); return; }
+            if (ev.key === "Escape") {
+                this.ui.selWire = null; this.ui.reveal = null;
+                ev.stopPropagation(); return;
+            }
         }
         if (ev.key === "w" || ev.key === "W") {
             const list = this.ui.geom;

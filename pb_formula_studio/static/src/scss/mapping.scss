@@ -216,36 +216,32 @@
 
 /* ==================================================== WP-2 — the wire hub
  *
- *      ◀ │ ÷3600 │ ▶       left = go to the source, centre = the transform,
- *                          right = go to the target.
+ *      │ ÷3600 │            the transform, or a confidence and its two verbs.
  *
- * The owner asked for "a mechanism on the arrow, on double-clicking which takes
- * to source or destination depending where you click". This is that mechanism,
- * and single click does it too — a gesture nobody can see is not a control.
- * One hub per wire replaces the three mutually-exclusive badges that used to
- * share a coordinate, and `spreadHubs()` keeps neighbours from stacking. */
+ * Cycle 5 shipped this as `‹ │ ÷3600 │ ›`, the two outer zones being
+ * navigation: press an arrow, that column scrolls to that end. Cycle 7 removes
+ * them. Reaching one end at a time means the FIRST end has usually scrolled
+ * away by the time the second arrives, so the reader never sees the connection
+ * — only its halves, in sequence. A DOUBLE-CLICK on the wire or on this pill
+ * now moves both columns at once and rings both cards, and the pill keeps only
+ * what carries meaning.
+ *
+ * It is ~90px narrower for it, which is why `spreadHubs()`'s x-window came down
+ * with it: a window sized for the old pill spreads hubs that no longer touch,
+ * and a hub pushed off its own wire is the defect the spread exists to prevent. */
 .mapping-canvas .mc-hubs { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .mapping-canvas .mc-hub {
     position: absolute; transform: translate(-50%, -50%);
     display: flex; align-items: center; gap: 2px; padding: 2px;
     background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 999px;
     box-shadow: 0 3px 12px rgba(15, 12, 40, .16);
-    pointer-events: auto; user-select: none;
+    pointer-events: auto; user-select: none; cursor: pointer;
     transition: box-shadow .13s, border-color .13s;
 }
-.mapping-canvas .mc-hub__z {
-    width: 22px; height: 22px; flex: none; border: 0; border-radius: 50%; padding: 0;
-    display: grid; place-items: center; cursor: pointer;
-    background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96);
-    transition: background .12s, color .12s;
-}
-.mapping-canvas .mc-hub__z:hover { background: var(--i, #5A4BB0); color: #fff; }
-.mapping-canvas .mc-hub__c { display: flex; align-items: center; gap: 3px; padding: 0 5px; }
+.mapping-canvas .mc-hub__c { display: flex; align-items: center; gap: 3px; padding: 0 4px; }
 .mapping-canvas .mc-hub__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--i, #5A4BB0); }
 .mapping-canvas .mc-hub.on { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8), 0 6px 18px rgba(15, 12, 40, .18); }
 .mapping-canvas .mc-hub.suggested { border-color: var(--mc-amber-line); box-shadow: 0 3px 12px rgba(217, 119, 6, .22); }
-.mapping-canvas .mc-hub.suggested .mc-hub__z { background: var(--mc-amber-wash); color: var(--mc-amber-ink); }
-.mapping-canvas .mc-hub.suggested .mc-hub__z:hover { background: var(--mc-amber); color: #fff; }
 .mapping-canvas .mc-hub.err { border-color: var(--mc-rose); }
 /* a hub belongs to its wire: when the wire dims, so does the pill, or a control
    floats in the gutter with no visible line under it */
@@ -263,7 +259,55 @@
 .mapping-canvas .mc-hub__c .mc-b-del { background: #fff; border: 1px solid var(--line, #E8E9F3); color: var(--mc-slate); }
 .mapping-canvas .mc-hub__c .mc-b-del:hover { background: var(--mc-rose-wash); color: var(--mc-rose-ink); border-color: var(--mc-rose); }
 .mapping-canvas .mc-hub svg { width: 12px; height: 12px; }
-.mapping-canvas .mc-hub__z svg { width: 13px; height: 13px; }
+
+/* ---- C7: the gesture's discoverability, and its one honest refusal ----
+ *
+ * The arrows were visible controls; a double-click is not, so the hint has to
+ * be. It appears once, in the board's own corner, while a wire is under the
+ * pointer — not as fifty resting tooltips, which is the clutter Cycle 5's hub
+ * was itself called in to remove. */
+.mapping-canvas .mc-gesture {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    z-index: 5; pointer-events: none;
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 12px; border-radius: 999px;
+    background: var(--i-deep, #241F52); color: #fff;
+    font-size: 11.5px; font-weight: 600; white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(15, 12, 40, .22);
+    animation: mc-gesture-in .16s ease;
+    b { font-weight: 800; }
+    svg { display: block; }
+}
+@keyframes mc-gesture-in { from { opacity: 0; transform: translate(-50%, 5px); } }
+
+/* The refusal. Cycle 5's "hidden by filter" vocabulary, moved from the column
+   onto the wire: a double-click asking to see a connection whose end is behind
+   a search must say so and offer the clear, never silently throw away what the
+   reader typed and never look like it did nothing (W40). */
+.mapping-canvas .mc-reveal {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    z-index: 6; max-width: calc(100% - 24px);
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 8px 7px 13px; border-radius: 999px;
+    background: #fff; border: 1px solid var(--mc-amber-line);
+    box-shadow: 0 6px 20px rgba(217, 119, 6, .2);
+    font-size: 11.5px; font-weight: 600; color: var(--mc-slate);
+    animation: mc-gesture-in .16s ease;
+    svg { display: block; }
+}
+.mapping-canvas .mc-reveal__ic { color: var(--mc-amber-ink); flex: none; }
+.mapping-canvas .mc-reveal__t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mapping-canvas .mc-reveal__go {
+    flex: none; border: 0; border-radius: 999px; padding: 4px 12px; cursor: pointer;
+    background: var(--i, #5A4BB0); color: #fff; font: inherit; font-weight: 700;
+    &:hover { background: var(--i600, #4A3D96); }
+}
+.mapping-canvas .mc-reveal__x {
+    flex: none; width: 22px; height: 22px; border: 0; border-radius: 50%; padding: 0;
+    display: grid; place-items: center; cursor: pointer;
+    background: transparent; color: var(--muted, #6B7280);
+    &:hover { background: var(--mc-wash); }
+}
 
 /* ---- W62 transform chip (the hub's centre zone on an accepted API wire) ---- */
 .mapping-canvas .mc-tf-chip { width: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; border: 1px solid var(--i-border, #CBC2EE); background: #fff; color: var(--i600, #4A3D96); font-size: 11.5px; font-weight: 800; font-family: ui-monospace, "SF Mono", Menlo, monospace; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1; }
@@ -317,6 +361,13 @@
     .mapping-canvas .mc-w, .mapping-canvas .mc-hub, .mapping-canvas .mc-dock { transition: none; }
     .mapping-canvas .mc-item.flash { animation: none; }
     .mapping-canvas.is-pulse .mc-w .mc-wire { animation: none; }
+    /* C7 — the hint and the reveal bar still APPEAR; only their slide does not.
+       Suppressing the elements would remove the only thing that makes the new
+       gesture discoverable, which is a different decision from suppressing
+       motion. The smooth scroll obeys the same preference: `scrollTo` with
+       `behavior: "smooth"` is honoured as `auto` by every engine that
+       implements this query, so the ends still arrive — instantly. */
+    .mapping-canvas .mc-gesture, .mapping-canvas .mc-reveal { animation: none; }
 }
 
 /* ---- W62 transform popover (scrim pattern, C11) ---- */
