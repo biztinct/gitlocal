@@ -42,27 +42,35 @@
 
 .pbms-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
 
-/* ================== the coach launcher, off the TO column ==================
- *  Reported by the owner alongside the header: the floating "Stuck?" button
- *  covers the right-hand cards. It IS ours — `pb_learn`'s `.lrn-coachhost`,
- *  `position: fixed; right: 0; bottom: 0` — and measured on the owner's
- *  viewport it lands at x 1794-1896 while the TO column runs 1580-1920. It is
- *  not overlapping by a little; it is inside that column.
+/* ============== the floating launchers, off the TO column ==================
+ *  Reported by the owner alongside the header: the floating buttons cover the
+ *  right-hand cards. Both are OURS, and both position themselves against the
+ *  VIEWPORT, so nothing inside this cockpit can push them off it. Measured on
+ *  the owner's 1900px viewport, with the TO column running x 1580-1920:
  *
- *  Moved rather than hidden, and moved only HERE. The launcher is global and
- *  belongs bottom-right on every other screen; this is the one board whose
- *  right edge is a dense, scrolling, clickable list all the way down. The
- *  middle of this board is the wire canvas, which is empty by construction —
- *  so the FAB goes there, clear of both columns.
+ *      .lrn-fab            (pb_learn "Stuck?")   x 1794-1896
+ *      .payai-floating-pill (PayAI)              x 1838-1896
  *
- *  `:has()` because `.lrn-coachhost` is a sibling of the cockpit, not a
- *  descendant, so no ancestor selector can reach it. An engine without `:has()`
- *  simply drops the rule and the launcher stays where it was — a degrade, not
- *  a break. pb_learn is not touched, and its own bottom-right default is
- *  unchanged everywhere else. */
-.o_web_client:has(.pbim.pbms .pbms-wrap) .lrn-coachhost {
-    right: 356px;                  /* 1920 - 356 = 1564, clear of the TO column */
-    bottom: 14px;
+ *  Neither is overlapping by a little; both are inside that column.
+ *
+ *  Moved rather than hidden, and moved only HERE. They are global launchers and
+ *  belong bottom-right on every other screen; this is the one board whose right
+ *  edge is a dense, scrolling, clickable list all the way down. The middle of
+ *  this board is the wire canvas, which is empty by construction — so they go
+ *  there, clear of both columns, keeping their own vertical rhythm.
+ *
+ *  `:has()` because both hosts are SIBLINGS of the cockpit, not descendants, so
+ *  no ancestor selector can reach them. An engine without `:has()` drops the
+ *  rule and the launchers stay where they were — a degrade, not a break. Note
+ *  the specificity has to clear `body.pb-coach-absent .lrn-fab` (0,2,1), which
+ *  is what actually sets the FAB's offsets; `:has()` takes the specificity of
+ *  its most specific argument, so this is (0,4,0) and wins.
+ *
+ *  pb_learn and pb_payroll_ai are not touched; their defaults are unchanged on
+ *  every other screen. */
+.o_web_client:has(.pbim.pbms .pbms-wrap) {
+    .lrn-fab             { right: 380px; }   /* right edge 1540, clear of 1580 */
+    .payai-floating-pill { right: 380px; }
 }
 
 /* ======================================================== the top bar ======
