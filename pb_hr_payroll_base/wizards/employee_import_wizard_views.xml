@@ -50,7 +50,7 @@
                     <notebook>
                         <page string="Field Mapping" name="mapping">
                             <div class="alert alert-info">
-                                <strong>Field Mapping:</strong> Configure how external data maps to Odoo employee fields.
+                                <strong>Field Mapping:</strong> Configure how external data maps to Payobook employee fields.
                             </div>
                             
                             <group>

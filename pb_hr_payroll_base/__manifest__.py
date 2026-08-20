@@ -6,7 +6,7 @@
     # RESTART, not an in-process upgrade — C18.53).
     # 19.0.1.2.0 — W105: hr.payslip.line record rules mirroring the payslip
     # rules in security/payroll_base_security_enhanced.xml.
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Enhanced Multi-Country Payroll Base Framework with Professional Dashboard',
     'description': """

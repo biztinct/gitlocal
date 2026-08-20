@@ -24,7 +24,7 @@
           session / crash) and non-blocking loading UX
         - Searchable grid apps menu
     ''',
-    'version': '19.0.1.2.1',
+    'version': '19.0.1.3.0',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Biztinct',

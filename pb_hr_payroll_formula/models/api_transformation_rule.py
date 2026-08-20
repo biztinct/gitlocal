@@ -108,7 +108,8 @@ class HrApiTransformationRule(models.Model):
     filter_expression = fields.Char(
         string='Filter Expression',
         help="Optional Python expression to filter records before aggregating. "
-             "Available: `rec` (the extracted_data dict), `env` (Odoo env). "
+             "Available: `rec` (the extracted_data dict), `env` (the server "
+             "environment). "
              "Examples:\n"
              "  rec.get('status') == 'Active'\n"
              "  rec.get('relationship') == 'Child'\n"
@@ -146,7 +147,7 @@ class HrApiTransformationRule(models.Model):
              "  `employee_data` — the employee's own extracted_data dict\n"
              "  `all_records` — dict of {data_type: [records]} for all types\n"
              "  `period_start`, `period_end` — batch period dates\n"
-             "  `env` — Odoo environment\n"
+             "  `env` — the server environment\n"
              "  `employee` — hr.employee record (if matched)\n\n"
              "Must set `result = <value>` as the output.\n\n"
              "Example:\n"

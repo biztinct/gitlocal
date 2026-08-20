@@ -416,9 +416,13 @@ export class MappingCanvas extends Component {
      *   computed  Payobook itself produces it, from a transformation rule;
      *   not sent  a catalogue field the feed HAS run and did not carry — real
      *             drift, and the only one of the four that is a warning;
-     *   Odoo field  the last-resort layer, saying so out loud. This is the
+     *   Payobook field  the last-resort layer, saying so out loud. This is the
      *             chip whose absence was the whole defect: 206 `hr.employee`
-     *             columns printed under "FROM — ZOHO PEOPLE (ABM)".
+     *             columns printed under "FROM — ZOHO PEOPLE (ABM)". The chip
+     *             names THIS product, not the platform underneath it (C7 WP-1):
+     *             the reader is being told the field is one of ours rather than
+     *             one of the vendor's, and the engine's name is not part of
+     *             that sentence.
      *
      * Adapters that predate this send no `prov` at all, and `undefined` falls
      * through to `null` — every other board renders exactly as it did.
@@ -440,9 +444,9 @@ export class MappingCanvas extends Component {
                           : "Expected from the vendor's catalogue. The first sync will confirm it." };
         }
         if (it.prov === "odoo") {
-            return { label: "Odoo field", tone: "odoo",
-                     hint: "This is one of Odoo's own employee fields, not a field "
-                           + "this source has told us about." };
+            return { label: "Payobook field", tone: "odoo",
+                     hint: "This is one of Payobook's own employee fields, not a "
+                           + "field this source has told us about." };
         }
         if (it.prov === "mapping") {
             return { label: "mapped elsewhere", tone: "odoo",

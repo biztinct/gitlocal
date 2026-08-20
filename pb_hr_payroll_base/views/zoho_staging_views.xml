@@ -234,7 +234,7 @@
             </p>
             <p>
                 Use the import wizard to bring employee data from Zoho into the staging area,
-                then process it to create employees and contracts in Odoo.
+                then process it to create employees and contracts in Payobook.
             </p>
         </field>
     </record>

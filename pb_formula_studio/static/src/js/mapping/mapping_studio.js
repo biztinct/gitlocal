@@ -207,7 +207,7 @@ export class MappingStudio extends Component {
      *   31 expected fields · Zoho People catalogue · not yet synced
      *   40 fields · synced 3d ago
      *   28 fields · 3 not sent last sync
-     *   206 Odoo employee fields · this source has not told us its own
+     *   206 Payobook employee fields · this source has not told us its own
      */
     get fromSub() {
         const d = this.state.data;
@@ -224,7 +224,7 @@ export class MappingStudio extends Component {
                         : _t("%s fields", n);
         }
         if (s.odoo && !s.live && !s.catalog) {
-            return _t("%s Odoo employee fields · this source has not told us its own",
+            return _t("%s Payobook employee fields · this source has not told us its own",
                       s.odoo);
         }
         if (!s.live && s.catalog) {

@@ -109,7 +109,7 @@ msgstr ""
 "Available variables:\n"
 "- value: The source value\n"
 "- record: The full source record (dict)\n"
-"- env: Odoo environment\n"
+"- env: the server environment\n"
 "\n"
 "Example: value * 1.1 if value > 1000 else value\n"
 "        "
@@ -5430,8 +5430,8 @@ msgstr "Tùy chọn default journal to use when creating payslips from this conf
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__salary_rule_id
-msgid "Optional link to standard Odoo salary rule"
-msgstr "Tùy chọn link to standard Odoo Quy tắc lương"
+msgid "Optional link to a standard salary rule"
+msgstr "Liên kết tùy chọn tới một quy tắc lương chuẩn"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_import_wizard_form
