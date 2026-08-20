@@ -31,7 +31,7 @@ Read with the caller's own rights throughout; the ledgers `check_access` each
 row they open. pbim tokens, `.itg-*` / `.itgw-*` class names, Lucide icons
 through the shared `ic()` registry.
 """,
-    'version': '19.0.1.4.1',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

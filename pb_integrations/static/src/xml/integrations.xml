@@ -31,7 +31,11 @@
           <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('refresh',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.synced"/><span class="l">Synced records</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('link',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.mappings"/><span class="l">Field mappings</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('database',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.staged"/><span class="l">Staged records</span></div></div>
-          <div t-attf-class="pbim-stat itg-feeds {{ state.kpis.feeds_stale ? 'is-stale' : '' }}"><span t-attf-class="pbim-stat-ic {{ state.kpis.feeds_stale ? 'amber' : '' }}"><t t-out="ic('plug',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.feeds"/><span class="l" t-esc="feedsKpiLabel"/></div></div>
+          <!-- Count honesty (Cycle 3): the tile is ABSENT rather than zero on a
+               database whose upgrade has not run here, because a "Feeds 0" that
+               means "nobody could look" is the same picture as an empty
+               catalogue (W79). -->
+          <div t-if="feedsKnown" t-attf-class="pbim-stat itg-feeds {{ state.kpis.feeds_stale ? 'is-stale' : '' }}"><span t-attf-class="pbim-stat-ic {{ state.kpis.feeds_stale ? 'amber' : '' }}"><t t-out="ic('plug',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.feeds"/><span class="l" t-esc="feedsKpiLabel"/></div></div>
         </div>
 
         <!-- ==== the two views ====
