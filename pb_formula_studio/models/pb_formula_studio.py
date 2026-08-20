@@ -4079,6 +4079,41 @@ class PbFormulaStudio(models.AbstractModel):
             'can_edit': self._can_edit(),
         }
 
+    # `_infer_source_type`'s vocabulary is not the mapping's. The store infers
+    # `string/integer/float/boolean/date/datetime/list`; the field carries
+    # `string/number/integer/float/date/datetime/boolean/currency`. `list` and
+    # anything unrecognised fall through to no opinion rather than to a wrong
+    # one — `source_data_type` decides whether `preview_transform` parses the
+    # sample as a float, so a guess here is a preview that disagrees with sync.
+    _SRC_TYPE = {'string': 'string', 'integer': 'integer', 'float': 'float',
+                 'boolean': 'boolean', 'date': 'date', 'datetime': 'datetime'}
+
+    def _discovered_sample(self, conn, path, endpoint=None):
+        """What the board is already showing for `path`, as writable vals.
+
+        Returns `{}` when the field is not in the discovered set (a template
+        line naming a path this connector has never delivered, say) — an absent
+        sample is the honest answer, and `preview_transform` already has a
+        first-class "no sample stored" branch for it.
+        """
+        FM = self.env['hr.integration.field.mapping']
+        try:
+            fields_ = FM.get_available_source_fields(
+                conn.id, endpoint.data_type if endpoint else None) or []
+        except Exception:
+            return {}
+        found = next((f for f in fields_ if f.get('path') == path), None)
+        if not found:
+            return {}
+        vals = {}
+        text = self._sample_text(found.get('sample'))
+        if text:
+            vals['source_sample_value'] = text
+        t = self._SRC_TYPE.get(found.get('type'))
+        if t:
+            vals['source_data_type'] = t
+        return vals
+
     @api.model
     def api_mapping_create(self, config_id, connector_id, source_field,
                            target_rule_id, endpoint_id=None):
@@ -4101,12 +4136,21 @@ class PbFormulaStudio(models.AbstractModel):
                 'target_rule_id': rule.id,
                 'source_field_label': (src or '').replace('_', ' ').title()}
         ep_wanted = self._as_id(endpoint_id)
+        ep = None
         if ep_wanted:
             eps = self._api_endpoints(conn)
             ep = (eps.filtered(lambda e: e.id == ep_wanted)[:1]
                   if eps is not None else None)
             if ep:
                 vals['endpoint_id'] = ep.id
+        # The board ALREADY knows what this field looks like — every left card
+        # prints its sample. Dropping it on create left the new wire with an
+        # empty `source_sample_value`, so the very next thing a user does —
+        # open the transform popover — answered "No sample value stored" about
+        # a field whose sample is on screen two inches to the left. Found on
+        # the live pass. One lookup per create, which is a user action and the
+        # same call the board makes on every read.
+        vals.update(self._discovered_sample(conn, src, ep))
         # one source→one input per connector: drop existing on either side
         FM.search(['&', ('connector_id', '=', conn.id),
                    '|', ('source_field', '=', src), ('target_rule_id', '=', rule.id)]).unlink()
