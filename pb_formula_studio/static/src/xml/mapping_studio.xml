@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_formula_studio.MappingStudio">
+    <div class="pbim pbms">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading the mapping board…</span></div>
+
+      <div t-else="" class="pbms-wrap">
+
+        <!-- ==== top bar: the way back, and what this screen is ==== -->
+        <div class="pbms-top">
+          <HubBackChip t-if="back" back="back" tone="'light'"/>
+          <div class="pbms-brand">
+            <span class="pbms-brand__ic" t-out="ic('gitMerge', 18)"/>
+            <span class="pbms-brand__t">Mapping Studio</span>
+          </div>
+        </div>
+
+        <!-- ==== THE SENTENCE ====
+             FROM <source> ══ N mapped ══▶ TO <target>. It is a header, not a
+             toolbar: it is on screen in every state, it names both ends, and
+             both ends are one click from being changed. -->
+        <div class="pbms-story">
+
+          <div t-attf-class="pbms-end from {{ fromSlot.kind === 'static' ? 'is-static' : '' }}">
+            <div class="pbms-end__kicker">FROM</div>
+            <button t-if="fromSlot.kind !== 'static'" class="pbms-pick"
+                    t-on-click="(ev) => this.togglePicker(fromSlot.kind, ev)">
+              <span class="pbms-pick__ic" t-out="ic(fromSlot.icon, 20)"/>
+              <span class="pbms-pick__txt">
+                <span class="n" t-esc="fromSlot.title"/>
+                <span class="s" t-esc="fromSlot.sub"/>
+              </span>
+              <span class="pbms-pick__chev" t-out="ic('chevron', 15)"/>
+            </button>
+            <div t-else="" class="pbms-pick is-static">
+              <span class="pbms-pick__ic" t-out="ic(fromSlot.icon, 20)"/>
+              <span class="pbms-pick__txt">
+                <span class="n" t-esc="fromSlot.title"/>
+                <span class="s" t-esc="fromSlot.sub"/>
+              </span>
+            </div>
+
+            <!-- the feed picker rides under the connector, same column: one
+                 connector, many APIs, and which one you are on is never a guess -->
+            <button t-if="state.mode === 'api'" class="pbms-sub"
+                    t-on-click="(ev) => this.togglePicker('endpoint', ev)">
+              <span t-out="ic('database', 13)"/>
+              <span class="n" t-esc="endpointName"/>
+              <span class="pbms-pick__chev" t-out="ic('chevron', 12)"/>
+            </button>
+          </div>
+
+          <!-- the wire between them: direction is the point -->
+          <div class="pbms-link">
+            <svg class="pbms-link__svg" viewBox="0 0 240 24" preserveAspectRatio="none">
+              <path class="pbms-link__p" d="M2 12 H 210"/>
+              <path class="pbms-link__h" d="M206 6 L 218 12 L 206 18"/>
+            </svg>
+            <span class="pbms-link__n"><b t-esc="mappedCount"/> mapped</span>
+            <span t-if="suggestedCount" class="pbms-link__s"><t t-esc="suggestedCount"/> suggested</span>
+          </div>
+
+          <div t-attf-class="pbms-end to {{ toSlot.kind === 'static' ? 'is-static' : '' }}">
+            <div class="pbms-end__kicker">TO</div>
+            <button t-if="toSlot.kind !== 'static'" class="pbms-pick accent"
+                    t-on-click="(ev) => this.togglePicker(toSlot.kind, ev)">
+              <span class="pbms-pick__ic" t-out="ic(toSlot.icon, 20)"/>
+              <span class="pbms-pick__txt">
+                <span class="n" t-esc="toSlot.title"/>
+                <span class="s" t-esc="toSlot.sub"/>
+              </span>
+              <span class="pbms-pick__chev" t-out="ic('chevron', 15)"/>
+            </button>
+            <div t-else="" class="pbms-pick accent is-static">
+              <span class="pbms-pick__ic" t-out="ic(toSlot.icon, 20)"/>
+              <span class="pbms-pick__txt">
+                <span class="n" t-esc="toSlot.title"/>
+                <span class="s" t-esc="toSlot.sub"/>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==== the rich dropdown ==== -->
+        <t t-if="state.picker">
+          <div class="pbms-menu-scrim" t-on-click="closePicker"/>
+          <div t-attf-class="pbms-menu {{ state.picker === 'config' ? 'right' : 'left' }}"
+               t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-menu__h" t-esc="pickerTitle"/>
+            <div class="pbms-menu__q">
+              <span t-out="ic('search', 14)"/>
+              <input type="search" placeholder="Search…"
+                     t-att-value="state.pquery" t-on-input="onPickerQuery"/>
+            </div>
+            <div class="pbms-menu__l">
+              <button t-foreach="pickerOptions" t-as="o" t-key="o.id"
+                      t-attf-class="pbms-opt {{ o.on ? 'on' : '' }}"
+                      t-on-click="() => this.pick(o.id)">
+                <span t-attf-class="pbms-opt__dot {{ o.tone }}"/>
+                <span class="pbms-opt__t">
+                  <span class="n" t-esc="o.label"/>
+                  <span t-if="o.sub" class="s" t-esc="o.sub"/>
+                </span>
+                <span t-if="o.on" class="pbms-opt__ok" t-out="ic('check', 14)"/>
+              </button>
+              <div t-if="!pickerOptions.length" class="pbms-menu__e">Nothing matches that.</div>
+            </div>
+          </div>
+        </t>
+
+        <!-- ==== modes, in plain language ==== -->
+        <div class="pbms-modes">
+          <button t-foreach="modes" t-as="m" t-key="m.id"
+                  t-attf-class="pbms-mode {{ state.mode === m.id ? 'on' : '' }}"
+                  t-att-title="m.hint"
+                  t-on-click="() => this.setMode(m.id)">
+            <span t-out="ic(m.icon, 14)"/>
+            <span t-esc="m.label"/>
+          </button>
+
+          <div class="pbms-modes__sp"/>
+
+          <!-- the scheme is one click away even in the modes where it is not
+               half of the sentence -->
+          <button t-if="schemeChipVisible" class="pbms-schemechip"
+                  t-on-click="(ev) => this.togglePicker('config', ev)">
+            <span t-out="ic('calculator', 13)"/>
+            <span class="n" t-esc="configName"/>
+            <span class="pbms-pick__chev" t-out="ic('chevron', 12)"/>
+          </button>
+
+          <button t-if="canEdit and suggestedCount" class="pbim-btn primary pbim-btn-sm"
+                  t-att-disabled="state.busy ? 'disabled' : false" t-on-click="acceptAll">
+            Accept all ≥90%
+          </button>
+          <button t-if="canEdit" class="pbim-btn outline pbim-btn-sm"
+                  t-att-disabled="state.busy ? 'disabled' : false" t-on-click="suggest">
+            <t t-out="ic('zap', 14)"/> Suggest mappings
+          </button>
+          <button t-if="canEdit and templatable" class="pbim-btn ghost pbim-btn-sm"
+                  t-on-click="openTemplates">
+            <t t-out="ic('layers', 14)"/> Apply template…
+          </button>
+        </div>
+
+        <!-- ==== the board ==== -->
+        <div class="pbms-board">
+          <div t-if="state.busy and !state.data" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
+
+          <div t-elif="state.data and !state.data.ok" class="pbms-empty">
+            <span class="pbms-empty__ic" t-out="ic('gitMerge', 44)"/>
+            <b>Nothing to map yet</b>
+            <span t-esc="emptyReason"/>
+          </div>
+
+          <t t-else="">
+            <!-- first run: the three steps, and the two buttons that do them -->
+            <div t-if="firstRun" class="pbms-first">
+              <div class="pbms-first__steps">
+                <span class="pbms-step"><b>1</b> Pick your source</span>
+                <span class="pbms-step"><b>2</b> Pick your scheme</span>
+                <span class="pbms-step"><b>3</b> Draw a wire, or let us suggest them</span>
+              </div>
+              <div t-if="canEdit" class="pbms-first__acts">
+                <button class="pbim-btn primary" t-att-disabled="state.busy ? 'disabled' : false"
+                        t-on-click="suggest">
+                  <t t-out="ic('zap', 15)"/> Suggest mappings
+                </button>
+                <button t-if="templatable" class="pbim-btn outline" t-on-click="openTemplates">
+                  <t t-out="ic('layers', 15)"/> Apply a vendor template
+                </button>
+              </div>
+            </div>
+
+            <div class="pbms-canvas">
+              <MappingCanvas leftItems="leftItems" rightItems="rightItems"
+                             wires="wires"
+                             leftTitle="'FROM — ' + fromSlot.title"
+                             rightTitle="'TO — ' + toSlot.title"
+                             canEdit="canEdit" busy="state.busy"
+                             onAccept="(w) => this.accept(w)"
+                             onReject="(w) => this.reject(w)"
+                             onDelete="(w) => this.remove(w)"
+                             onDraw="(l, r) => this.draw(l, r)"
+                             onSuggest="() => this.suggest()"
+                             onTransformPreview="(ref, d) => this.transformPreview(ref, d)"
+                             onTransformSave="(ref, v) => this.transformSave(ref, v)"/>
+            </div>
+          </t>
+        </div>
+
+        <!-- ==== template panel (api + cycle) ==== -->
+        <t t-if="state.tmplOpen">
+          <div class="pbms-menu-scrim" t-on-click="closeTemplates"/>
+          <div class="pbms-tmpl" t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-tmpl__h">
+              <b>Apply a saved template</b>
+              <button class="pbms-x" t-on-click="closeTemplates"><t t-out="ic('x', 16)"/></button>
+            </div>
+            <p class="pbms-tmpl__hint">
+              Templates match by CODE, so one applies across schemes. Nothing you
+              have already wired is ever overwritten — those lines come back as
+              “skipped”.
+            </p>
+            <div t-if="state.tmplBusy and !state.tmplList.length" class="pbms-menu__e">Loading…</div>
+            <div t-elif="!state.tmplList.length" class="pbms-menu__e">
+              No saved templates for this board yet.
+            </div>
+            <div t-else="" class="pbms-tmpl__l">
+              <div t-foreach="state.tmplList" t-as="t" t-key="t.id" class="pbms-tmpl__r">
+                <span class="pbms-tmpl__n">
+                  <b t-esc="t.name"/>
+                  <small><t t-esc="t.line_count"/> wires<t t-if="t.shared"> · shared</t><t t-if="t.connector_type"> · <t t-esc="t.connector_type"/></t></small>
+                </span>
+                <button class="pbim-btn primary pbim-btn-sm"
+                        t-att-disabled="state.tmplBusy ? 'disabled' : false"
+                        t-on-click="() => this.applyTemplate(t.id)">Apply</button>
+              </div>
+            </div>
+            <div t-if="state.tmplResult" class="pbms-tmpl__res">
+              <b t-esc="state.tmplResult.applied.length"/> applied ·
+              <b t-esc="state.tmplResult.skipped_existing.length"/> skipped (already wired) ·
+              <b t-esc="state.tmplResult.unmatched_sources.length + state.tmplResult.unmatched_targets.length"/> unmatched
+            </div>
+          </div>
+        </t>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

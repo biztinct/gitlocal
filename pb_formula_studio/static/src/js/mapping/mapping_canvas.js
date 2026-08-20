@@ -93,6 +93,26 @@ export class MappingCanvas extends Component {
         return el ? { w: el.clientWidth, h: el.clientHeight } : { w: 0, h: 0 };
     }
 
+    // ---- optional left-column grouping (Integrations Cycle 2) ---------
+    /**
+     * The group header to draw ABOVE left item `i`, or "".
+     *
+     * Opt-in and additive: an item with no `group` renders exactly as it did
+     * before, so the Formula Studio overlay is byte-identical on every adapter
+     * that does not send one. The Mapping Studio sends the feed's name, because
+     * a board that mixes one connector's feeds with the mappings drawn before
+     * feeds existed has to say which is which — a list where "Unassigned" looks
+     * like "Employees" is a list that has lost the distinction it was built to
+     * make.
+     */
+    leftGroupHead(i) {
+        const items = this.props.leftItems || [];
+        const g = (items[i] || {}).group || "";
+        if (!g) { return ""; }
+        const prev = i > 0 ? (items[i - 1].group || "") : "";
+        return g === prev ? "" : g;
+    }
+
     // ---- wire lookups -------------------------------------------------
     wiresForLeft(id) { return this.props.wires.filter(w => w.leftId === id); }
     wiresForRight(id) { return this.props.wires.filter(w => w.rightId === id); }
