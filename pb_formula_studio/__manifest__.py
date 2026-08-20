@@ -2,15 +2,19 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.70.4',
+    'version': '19.0.1.71.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     # pb_hub (IA Cycle 4): the back chip the Settings hub hands over through
     # `pb_back`. Nothing else in the Studio uses the kit.
+    # pb_import_kit: the Mapping Studio has imported `@pb_import_kit/js/import_icons`
+    # since Cycle 2 and the mapping canvas does now too — a HARD runtime edge
+    # that was never declared, so a database without the kit would have loaded a
+    # backend bundle with a dead import. Declared (Integrations C5).
     'depends': ['web', 'biz_theme', 'pb_hr_payroll_formula', 'pb_hr_payroll_base',
-                'pb_hub'],
+                'pb_hub', 'pb_import_kit'],
     'data': [
         'views/pb_formula_studio_action.xml',
         'views/pb_mapping_studio_action.xml',
@@ -53,6 +57,7 @@
             'pb_formula_studio/static/src/js/grid/grid_studio.js',
             'pb_formula_studio/static/src/js/palette/command_palette.js',
             'pb_formula_studio/static/src/js/hover_card.js',
+            'pb_formula_studio/static/src/js/mapping/mapping_geometry.js',
             'pb_formula_studio/static/src/js/mapping/mapping_canvas.js',
             'pb_formula_studio/static/src/js/mapping/mapping_studio.js',
             'pb_formula_studio/static/src/js/formula_studio.js',
@@ -64,6 +69,10 @@
             'pb_formula_studio/static/src/xml/mapping_studio.xml',
             'pb_formula_studio/static/src/xml/studio.xml',
             'pb_formula_studio/static/src/xml/shadow_run.xml',
+        ],
+        # Loaded only by /web/tests — never part of the backend bundle.
+        'web.assets_unit_tests': [
+            'pb_formula_studio/static/tests/**/*',
         ],
     },
     'installable': True,

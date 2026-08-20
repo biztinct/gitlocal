@@ -2,108 +2,235 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_formula_studio.MappingCanvas">
-    <div class="mapping-canvas" t-ref="root" tabindex="0" t-on-keydown="onKeydown">
+    <div t-attf-class="mapping-canvas {{ focusSet.on ? 'is-focus' : '' }} {{ props.busy ? 'is-busy' : '' }} {{ ui.pulse ? 'is-pulse' : '' }}"
+         t-ref="root" tabindex="0" t-on-keydown="onKeydown">
 
-      <!-- wire layer (SVG bezier paths, pixel coords relative to root) -->
-      <svg class="mc-wires" preserveAspectRatio="none">
-        <t t-foreach="ui.geom" t-as="g" t-key="g.id">
-          <path t-att-d="g.path"
-                t-attf-class="mc-wire {{ g.state }} {{ ui.hoverWire === g.id ? 'hot' : '' }}"/>
-        </t>
-      </svg>
+      <!-- THE BOARD. Everything that can be scrolled out of view lives inside
+           this element, and this element CLIPS: a wire may end on a column's
+           edge, it may never paint over the story bar or the mode strip. The
+           transform popover and the draw hint are deliberate siblings, outside
+           the clip, because they are allowed to overhang. -->
+      <div class="mc-board">
 
-      <div class="mc-cols">
-        <!-- LEFT column (source) -->
-        <div class="mc-col left" t-on-scroll="onColScroll">
-          <div class="mc-col-head">
-            <span class="mc-col-title" t-esc="props.leftTitle or 'Source'"/>
-            <span class="mc-col-count" t-esc="props.leftItems.length"/>
-          </div>
-          <div class="mc-col-body">
-            <t t-foreach="props.leftItems" t-as="it" t-key="it.id">
-              <!-- opt-in group header: drawn only for items that carry a
-                   `group`, so every existing adapter renders unchanged -->
-              <div t-if="leftGroupHead(it_index)" class="mc-group" t-esc="leftGroupHead(it_index)"/>
-              <div data-side="left" t-att-data-id="it.id"
-                   t-attf-class="mc-item {{ isArmed('left', it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }}"
-                   t-on-click="() => this.clickLeft(it.id)">
-                <div class="mc-item-main">
-                  <div class="mc-item-label" t-esc="it.label"/>
-                  <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
-                  <!-- what the data actually looks like; absent when the feed
-                       has no stored payload to sample -->
-                  <div t-if="it.sample" class="mc-item-sample" t-esc="it.sample"/>
-                </div>
-                <span class="mc-plug right"/>
+        <!-- wire layer (SVG bezier paths, pixel coords relative to the board) -->
+        <svg class="mc-wires" preserveAspectRatio="none">
+          <t t-foreach="ui.geom" t-as="g" t-key="g.id">
+            <g t-attf-class="mc-w {{ g.state }} {{ g.err ? 'error' : '' }} {{ wireTone(g) }} {{ ui.selWire === g.id ? 'sel' : '' }}">
+              <!-- a fat transparent stroke under the visible one: a 2px line is
+                   not a trackpad target, and the layer itself takes no events -->
+              <path class="mc-hit" t-att-d="g.d"
+                    t-on-mouseenter="() => this.enterWire(g.id)"
+                    t-on-mouseleave="() => this.leaveWire()"
+                    t-on-click="(ev) => this.selectWire(g, ev)"
+                    t-on-dblclick="(ev) => this.wireDblClick(g, ev)"/>
+              <path class="mc-wire" t-att-d="g.d"/>
+              <polygon class="mc-head" t-att-points="g.head"/>
+              <!-- the travelling highlight: a normalised dash walking the same
+                   path, desynchronised per wire so N of them never march in
+                   lockstep. CSS, not SMIL — SMIL restarts on every re-render. -->
+              <path t-if="flowing" class="mc-flow" t-att-d="g.d" pathLength="100"
+                    t-attf-style="animation-duration:{{ flowDur(g_index) }}"/>
+              <circle t-if="g.dockL" class="mc-park" t-att-cx="g.sx" t-att-cy="g.y1" r="3.4"/>
+              <circle t-if="g.dockR" class="mc-park" t-att-cx="g.tx" t-att-cy="g.y2" r="3.4"/>
+            </g>
+          </t>
+        </svg>
+
+        <div class="mc-cols">
+          <!-- LEFT column (source) -->
+          <div class="mc-col left"
+               t-on-mouseenter="() => { ui.hoverCol = 'left'; }"
+               t-on-mouseleave="() => { ui.hoverCol = ''; }">
+            <div class="mc-col-head">
+              <div class="mc-col-head__t">
+                <span class="mc-col-title" t-esc="props.leftTitle or 'Source'"/>
+                <span class="mc-col-count" t-esc="countLabel('left')"/>
               </div>
-            </t>
+              <!-- WP-4: the search belongs in the header, which is the one part
+                   of a column that does not scroll away from you -->
+              <div class="mc-col-q">
+                <span class="mc-col-q__ic" t-out="ic('search', 13)"/>
+                <input type="search" t-ref="lq" t-att-placeholder="searchPlaceholder('left')"
+                       t-att-value="ui.q.left"
+                       t-on-input="(ev) => this.onSearch('left', ev)"
+                       t-on-keydown="(ev) => this.onSearchKey('left', ev)"/>
+                <button t-if="ui.q.left" class="mc-col-q__x" title="Clear the search"
+                        t-on-click="() => this.clearSearch('left')" t-out="ic('x', 12)"/>
+              </div>
+              <div class="mc-col-f">
+                <button t-foreach="filterChips('left')" t-as="c" t-key="c.v"
+                        t-attf-class="mc-chip {{ ui.f.left === c.v ? 'on' : '' }} {{ c.v === 'suggested' ? 'sug' : '' }}"
+                        t-on-click="() => this.setFilter('left', c.v)" t-esc="c.l"/>
+              </div>
+              <!-- filtering must never lie about a wire -->
+              <div t-if="hiddenWires('left')" class="mc-col-hid">
+                <t t-esc="hiddenWires('left')"/> wire<t t-if="hiddenWires('left') > 1">s</t> hidden by this filter
+                <button t-on-click="() => this.clearFilters('left')">clear</button>
+              </div>
+            </div>
+            <!-- the SCROLLER is this element, and `scroll` does not bubble: the
+                 handler has to sit exactly here or wire geometry silently goes
+                 stale the moment the column moves (Integrations C5, W146). -->
+            <div class="mc-col-body" t-ref="lbody" t-on-scroll="onColScroll">
+              <t t-set="lview" t-value="leftView"/>
+              <t t-foreach="lview" t-as="it" t-key="it.id">
+                <!-- opt-in group header: drawn only for items that carry a
+                     `group`, so every existing adapter renders unchanged -->
+                <div t-if="leftGroupHead(lview, it_index)" class="mc-group" t-esc="leftGroupHead(lview, it_index)"/>
+                <div data-side="left" t-att-data-id="it.id"
+                     t-attf-class="mc-item {{ isArmed(it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('left', it.id) }} {{ isFlashing('left', it.id) ? 'flash' : '' }}"
+                     t-on-click="() => this.clickLeft(it.id)"
+                     t-on-mouseenter="() => this.enterItem('left', it.id)"
+                     t-on-mouseleave="() => this.leaveItem()">
+                  <div class="mc-item-main">
+                    <div class="mc-item-label" t-esc="it.label"/>
+                    <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                    <!-- what the data actually looks like; absent when the feed
+                         has no stored payload to sample -->
+                    <div t-if="it.sample" class="mc-item-sample" t-esc="it.sample"/>
+                  </div>
+                  <span class="mc-plug right"/>
+                </div>
+              </t>
+              <div t-if="!lview.length" class="mc-col-empty">
+                Nothing matches that.
+                <button t-on-click="() => this.clearFilters('left')">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT column (target) -->
+          <div class="mc-col right"
+               t-on-mouseenter="() => { ui.hoverCol = 'right'; }"
+               t-on-mouseleave="() => { ui.hoverCol = ''; }">
+            <div class="mc-col-head">
+              <div class="mc-col-head__t">
+                <span class="mc-col-title" t-esc="props.rightTitle or 'Target'"/>
+                <span class="mc-col-count" t-esc="countLabel('right')"/>
+              </div>
+              <div class="mc-col-q">
+                <span class="mc-col-q__ic" t-out="ic('search', 13)"/>
+                <input type="search" t-ref="rq" t-att-placeholder="searchPlaceholder('right')"
+                       t-att-value="ui.q.right"
+                       t-on-input="(ev) => this.onSearch('right', ev)"
+                       t-on-keydown="(ev) => this.onSearchKey('right', ev)"/>
+                <button t-if="ui.q.right" class="mc-col-q__x" title="Clear the search"
+                        t-on-click="() => this.clearSearch('right')" t-out="ic('x', 12)"/>
+              </div>
+              <div class="mc-col-f">
+                <button t-foreach="filterChips('right')" t-as="c" t-key="c.v"
+                        t-attf-class="mc-chip {{ ui.f.right === c.v ? 'on' : '' }} {{ c.v === 'suggested' ? 'sug' : '' }}"
+                        t-on-click="() => this.setFilter('right', c.v)" t-esc="c.l"/>
+              </div>
+              <div t-if="hiddenWires('right')" class="mc-col-hid">
+                <t t-esc="hiddenWires('right')"/> wire<t t-if="hiddenWires('right') > 1">s</t> hidden by this filter
+                <button t-on-click="() => this.clearFilters('right')">clear</button>
+              </div>
+            </div>
+            <div class="mc-col-body" t-ref="rbody" t-on-scroll="onColScroll">
+              <t t-set="rview" t-value="rightView"/>
+              <t t-foreach="rview" t-as="it" t-key="it.id">
+                <div data-side="right" t-att-data-id="it.id"
+                     t-attf-class="mc-item {{ ui.armedLeft != null and props.canEdit ? 'drophint' : '' }} {{ rightHasAccepted(it.id) ? 'accepted' : (isRightWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='right' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('right', it.id) }} {{ isFlashing('right', it.id) ? 'flash' : '' }}"
+                     t-on-click="() => this.clickRight(it.id)"
+                     t-on-mouseenter="() => this.enterItem('right', it.id)"
+                     t-on-mouseleave="() => this.leaveItem()">
+                  <span class="mc-plug left"/>
+                  <div class="mc-item-main">
+                    <div class="mc-item-label" t-esc="it.label"/>
+                    <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                  </div>
+                  <button t-if="props.onRemoveRight and !isRightWired(it.id)" class="mc-item-x" title="Remove field"
+                          t-on-click="(ev) => this.removeRight(it.id, ev)" t-out="ic('x', 12)"/>
+                </div>
+              </t>
+              <div t-if="!rview.length" class="mc-col-empty">
+                Nothing matches that.
+                <button t-on-click="() => this.clearFilters('right')">Clear</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- RIGHT column (target) -->
-        <div class="mc-col right" t-on-scroll="onColScroll">
-          <div class="mc-col-head">
-            <span class="mc-col-title" t-esc="props.rightTitle or 'Target'"/>
-            <span class="mc-col-count" t-esc="props.rightItems.length"/>
-          </div>
-          <div class="mc-col-body">
-            <t t-foreach="props.rightItems" t-as="it" t-key="it.id">
-              <div data-side="right" t-att-data-id="it.id"
-                   t-attf-class="mc-item {{ ui.armedLeft != null and props.canEdit ? 'drophint' : '' }} {{ rightHasAccepted(it.id) ? 'accepted' : (isRightWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='right' and ui.focusId===it.id ? 'focus' : '' }}"
-                   t-on-click="() => this.clickRight(it.id)">
-                <span class="mc-plug left"/>
-                <div class="mc-item-main">
-                  <div class="mc-item-label" t-esc="it.label"/>
-                  <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
-                </div>
-                <button t-if="props.onRemoveRight and !isRightWired(it.id)" class="mc-item-x" title="Remove field"
-                        t-on-click="(ev) => this.removeRight(it.id, ev)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-                </button>
-              </div>
-            </t>
-          </div>
-        </div>
-      </div>
+        <!-- ===== the wire hub: ◀ source │ transform │ target ▶ =====
+             One object per wire, replacing the three overlapping badge
+             variants. The two outer zones are the owner's ask: a control ON the
+             wire that takes you to whichever end you pressed. -->
+        <div class="mc-hubs">
+          <t t-foreach="ui.geom" t-as="g" t-key="'h' + g.id">
+            <div t-if="hubVisible(g)"
+                 t-attf-class="mc-hub {{ g.state }} {{ g.err ? 'err' : '' }} {{ ui.selWire === g.id ? 'on' : '' }}"
+                 t-attf-style="left:{{ g.hx }}px;top:{{ g.hy }}px"
+                 t-on-mouseenter="() => this.enterWire(g.id)"
+                 t-on-mouseleave="() => this.leaveWire()">
+              <button class="mc-hub__z src" title="Go to the source field"
+                      t-on-click="() => this.jumpTo('left', g)" t-out="ic('chevronLeft', 13)"/>
 
-      <!-- wire action badges (accept/reject on suggested, delete on accepted) -->
-      <div class="mc-badges">
-        <t t-foreach="ui.geom" t-as="g" t-key="'b'+g.id">
-          <div t-if="g.state==='suggested'" class="mc-badge sug"
-               t-attf-style="left:{{g.mx}}px;top:{{g.my}}px"
-               t-on-mouseenter="() => { ui.hoverWire = g.id; }" t-on-mouseleave="() => { ui.hoverWire = null; }">
-            <span class="mc-conf" t-att-title="g.reason" t-esc="confidencePct(g)+'%'"/>
-            <button t-if="props.canEdit" class="mc-b-ok" title="Accept" t-on-click="() => this.accept(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></button>
-            <button t-if="props.canEdit" class="mc-b-x" title="Reject" t-on-click="() => this.reject(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-          </div>
-          <!-- W62 — accepted API wire: transform badge (visible to everyone) + delete (managers) -->
-          <div t-elif="g.state==='accepted' and g.transform"
-               t-attf-class="mc-badge tf {{ g.transform.error ? 'err' : '' }}"
-               t-attf-style="left:{{g.mx}}px;top:{{g.my}}px"
-               t-on-mouseenter="() => { ui.hoverWire = g.id; }" t-on-mouseleave="() => { ui.hoverWire = null; }">
-            <button class="mc-tf-chip"
-                    t-att-title="g.transform.error ? (g.transform.error_msg or 'Transform failed — using default') : (g.transform.python ? 'Python transform (edit in backend)' : 'Edit transform')"
-                    t-on-click="() => this.openTransform(g)">
-              <t t-esc="transformGlyph(g.transform)"/>
+              <div class="mc-hub__c">
+                <!-- a suggestion: how sure, and the two verbs -->
+                <t t-if="g.state === 'suggested'">
+                  <span class="mc-conf" t-att-title="g.reason" t-esc="confidencePct(g) + '%'"/>
+                  <button t-if="props.canEdit" class="mc-b-ok" title="Accept"
+                          t-on-click="() => this.accept(g)" t-out="ic('check', 12)"/>
+                  <button t-if="props.canEdit" class="mc-b-x" title="Reject"
+                          t-on-click="() => this.reject(g)" t-out="ic('x', 12)"/>
+                </t>
+                <!-- W62 — an accepted API wire: the transform, editable in place -->
+                <t t-elif="g.transform">
+                  <button class="mc-tf-chip"
+                          t-att-title="g.transform.error ? (g.transform.error_msg or 'Transform failed — using default') : (g.transform.python ? 'Python transform (edit in backend)' : 'Edit transform')"
+                          t-on-click="() => this.openTransform(g)">
+                    <t t-esc="transformGlyph(g.transform)"/>
+                  </button>
+                  <button t-if="props.canEdit" class="mc-b-del" title="Remove mapping"
+                          t-on-click="() => this.del(g)" t-out="ic('trash', 12)"/>
+                </t>
+                <!-- an accepted cycle wire: no transform to show -->
+                <t t-else="">
+                  <button t-if="props.canEdit" class="mc-b-del" title="Remove mapping"
+                          t-on-click="() => this.del(g)" t-out="ic('trash', 12)"/>
+                  <span t-else="" class="mc-hub__dot"/>
+                </t>
+              </div>
+
+              <button class="mc-hub__z tgt" title="Go to the target column"
+                      t-on-click="() => this.jumpTo('right', g)" t-out="ic('chevron', 13)"/>
+            </div>
+          </t>
+        </div>
+
+        <!-- ===== dock chips: the wires whose end is out of view =====
+             One chip per column edge, counted. A parked wire is still a wire;
+             what it must never be is a line to nowhere or a silent omission. -->
+        <div class="mc-docks">
+          <t t-foreach="ui.docks" t-as="d" t-key="d.key">
+            <button t-attf-class="mc-dock {{ d.side }} {{ d.dir &lt; 0 ? 'up' : 'down' }} {{ d.amber ? 'sug' : '' }} {{ d.filtered === d.count ? 'filt' : '' }}"
+                    t-attf-style="left:{{ d.x }}px;top:{{ d.y }}px"
+                    title="Click to visit these one by one"
+                    t-on-click="() => this.clickDock(d)">
+              <span class="mc-dock__ic" t-out="ic(d.dir &lt; 0 ? 'arrowUp' : 'arrowDown', 12)"/>
+              <span class="mc-dock__t" t-esc="dockLabel(d)"/>
             </button>
-            <button t-if="props.canEdit" class="mc-b-del" title="Remove mapping" t-on-click="() => this.del(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-          </div>
-          <!-- accepted cycle wire (no transform): delete only, managers -->
-          <div t-elif="g.state==='accepted' and props.canEdit" class="mc-badge acc"
-               t-attf-style="left:{{g.mx}}px;top:{{g.my}}px"
-               t-on-mouseenter="() => { ui.hoverWire = g.id; }" t-on-mouseleave="() => { ui.hoverWire = null; }">
-            <button class="mc-b-del" title="Remove mapping" t-on-click="() => this.del(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-          </div>
-        </t>
+          </t>
+        </div>
+
+        <!-- a connection whose field is not on this board at all: counted and
+             said out loud, never dropped on the floor -->
+        <div t-if="ui.gone" class="mc-gone">
+          <t t-esc="ui.gone"/> mapping<t t-if="ui.gone > 1">s</t> point at a field this source no longer delivers.
+        </div>
       </div>
 
-      <!-- W62 — transform editor popover (scrim pattern, C11) -->
+      <!-- W62 — transform editor popover (scrim pattern, C11).
+           OUTSIDE `.mc-board`, so the board's clip can never cut it in half. -->
       <t t-if="ui.tfOpen">
         <div class="mc-tf-scrim" t-on-click="closeTransform"/>
-        <div class="mc-tf-pop" t-attf-style="left:{{tfAnchor.x}}px;top:{{tfAnchor.y}}px" t-on-click="(ev) => ev.stopPropagation()">
+        <div t-attf-class="mc-tf-pop {{ tfAnchor.flip ? 'flip' : '' }}"
+             t-attf-style="left:{{ tfAnchor.x }}px;top:{{ tfAnchor.y }}px"
+             t-on-click="(ev) => ev.stopPropagation()">
           <div class="mc-tf-head">
             <span class="mc-tf-title">Transform on the wire</span>
-            <button class="mc-tf-x" t-on-click="closeTransform"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="mc-tf-x" t-on-click="closeTransform" t-out="ic('x', 15)"/>
           </div>
 
           <!-- python: read-only on the canvas (D-I2) -->
@@ -149,7 +276,7 @@
               <t t-elif="ui.tfPreview.error"><span class="mc-tf-err" t-esc="ui.tfPreview.error"/></t>
               <t t-else="">
                 <span class="mc-tf-dim" t-esc="ui.tfPreview.sample"/>
-                <svg class="mc-tf-arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                <span class="mc-tf-arr" t-out="ic('arrow', 15)"/>
                 <b t-esc="ui.tfPreview.result"/>
               </t>
             </div>
@@ -166,7 +293,7 @@
 
       <!-- draw-mode hint -->
       <div t-if="ui.armedLeft != null and props.canEdit" class="mc-drawhint">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span t-out="ic('arrow', 15)"/>
         Click a target component to connect · <b>Esc</b> to cancel
       </div>
     </div>
