@@ -419,18 +419,39 @@ Example: value * 1.1 if value > 1000 else value
     # SOURCE FIELD DISCOVERY (T4.3)
     # ==========================================
     @api.model
-    def get_available_source_fields(self, connector_id):
+    def get_available_source_fields(self, connector_id, data_type=None):
         """Flatten the connector's most recent stored payloads into dot-path
         source fields with a sample value + inferred type. Falls back to
         hr.employee's own fields (ir.model.fields) when nothing is stored yet.
 
-        Returns [{'path', 'sample', 'type', 'label'}] sorted by path."""
+        Returns [{'path', 'sample', 'type', 'label'}] sorted by path.
+
+        `data_type` (Integrations Cycle 2) narrows the payloads to ONE feed —
+        `hr.integration.endpoint.data_type` and `hr.api.data.store.data_type`
+        are the same vocabulary, which is why the endpoint model imports the
+        store's list rather than retyping it. Two rules the narrowing keeps:
+
+          * an UNKNOWN data type is ignored rather than obeyed. A value that
+            reaches a domain straight from the browser is the hole
+            `pb.integrations.get_ledger`'s whitelist exists to close, and the
+            honest failure of a typo'd feed key is "all the fields", not "no
+            fields, and no reason given";
+          * the `hr.employee` fallback stays keyed on "nothing was stored",
+            NOT on "nothing was stored FOR THIS FEED". A leave feed with no
+            rows would otherwise offer the employee schema as if it were the
+            leave API's shape, which is the wrong answer stated confidently.
+            An empty feed returns an empty list and the studio says so.
+        """
         connector = self.env['hr.integration.connector'].browse(int(connector_id or 0))
         if not connector.exists():
             return []
         Store = self.env['hr.api.data.store']
-        stores = Store.search([('connector_id', '=', connector.id)],
-                              order='pull_date desc, id desc', limit=20)
+        domain = [('connector_id', '=', connector.id)]
+        known = dict(Store._fields['data_type'].selection)
+        scoped = bool(data_type) and data_type in known
+        if scoped:
+            domain = domain + [('data_type', '=', data_type)]
+        stores = Store.search(domain, order='pull_date desc, id desc', limit=20)
         found = {}
         for store in stores:
             for source in (store.raw_payload, store.extracted_data, store.computed_data):
@@ -438,6 +459,11 @@ Example: value * 1.1 if value > 1000 else value
                     self._flatten_source(source, '', found)
         if found:
             return sorted(found.values(), key=lambda f: f['path'])
+        if scoped:
+            # This feed is empty. Say so with an empty list; the employee-schema
+            # fallback below would be a lie about this API's shape.
+            return [] if Store.search_count([('connector_id', '=', connector.id)]) else \
+                self._odoo_source_fields()
         return self._odoo_source_fields()      # secondary source
 
     @api.model
