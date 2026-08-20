@@ -159,7 +159,7 @@
         <div class="mc-hubs">
           <t t-foreach="ui.geom" t-as="g" t-key="'h' + g.id">
             <div t-if="hubVisible(g)"
-                 t-attf-class="mc-hub {{ g.state }} {{ g.err ? 'err' : '' }} {{ ui.selWire === g.id ? 'on' : '' }}"
+                 t-attf-class="mc-hub {{ g.state }} {{ g.err ? 'err' : '' }} {{ wireTone(g) }} {{ ui.selWire === g.id ? 'on' : '' }}"
                  t-attf-style="left:{{ g.hx }}px;top:{{ g.hy }}px"
                  t-on-mouseenter="() => this.enterWire(g.id)"
                  t-on-mouseleave="() => this.leaveWire()">

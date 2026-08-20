@@ -224,6 +224,10 @@
 .mapping-canvas .mc-hub.suggested .mc-hub__z { background: var(--mc-amber-wash); color: var(--mc-amber-ink); }
 .mapping-canvas .mc-hub.suggested .mc-hub__z:hover { background: var(--mc-amber); color: #fff; }
 .mapping-canvas .mc-hub.err { border-color: var(--mc-rose); }
+/* a hub belongs to its wire: when the wire dims, so does the pill, or a control
+   floats in the gutter with no visible line under it */
+.mapping-canvas.is-focus .mc-hub.dim { opacity: .3; }
+.mapping-canvas.is-focus .mc-hub.dim:hover { opacity: 1; }
 /* the board is reloading: do not let a click act on geometry about to change */
 .mapping-canvas.is-busy .mc-hub, .mapping-canvas.is-busy .mc-dock { pointer-events: none; opacity: .5; }
 

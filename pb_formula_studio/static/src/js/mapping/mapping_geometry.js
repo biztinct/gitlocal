@@ -96,19 +96,22 @@ export function aggregateDocks(geom) {
         const key = `${side}${dir}`;
         let d = by.get(key);
         if (!d) {
-            d = { key, side, dir, count: 0, amber: false, filtered: 0, ids: [] };
+            d = { key, side, dir, count: 0, sug: 0, filtered: 0, ids: [] };
             by.set(key, d);
         }
         d.count++;
         d.ids.push(g.id);
-        if (g.state === "suggested") { d.amber = true; }
+        if (g.state === "suggested") { d.sug++; }
         if ((side === "left" ? g.hiddenL : g.hiddenR)) { d.filtered++; }
     };
     for (const g of geom) {
         push("left", g.dockL, g);
         push("right", g.dockR, g);
     }
-    return [...by.values()];
+    // `amber` is ALL of them, not ANY of them. A chip over 51 parked wires of
+    // which one is a suggestion used to read "51 suggested below", which is a
+    // lie told in the same breath as the honest count beside it.
+    return [...by.values()].map((d) => ({ ...d, amber: d.sug === d.count }));
 }
 
 /**
