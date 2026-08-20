@@ -19,7 +19,8 @@ takes it to **W119**; **Cycle 7** (the abm module-delta catch-up, the `hr_timesh
 `session_info` 500 and the `pb_insights` sudo drop) takes it to **W126**; the
 **Integrations programme** (`docs/handovers/integrations/`) opens at **W127**, and
 its Cycle 1 — the endpoint model and the navigation streamlining — takes it to
-**W130**; **Cycle 2** — the Mapping Studio — takes it to **W136**.
+**W130**; **Cycle 2** — the Mapping Studio — takes it to **W136**; **Cycle 3** — the Zoho
+People catalogue, the legacy ABM inventory as shipped data — takes it to **W140**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -2289,3 +2290,81 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   the `-u` list — `pb_import_kit` sat at 19.0.1.4.0 in the database against
   19.0.1.5.0 on disk for exactly that reason, until W118's version diff caught
   it.
+- **W137 Odoo 19 removed `safe_eval`'s `nocopy`, and the caller that still
+  passes it fails INSIDE a `try` that substitutes a default — so the feature
+  does not break, it computes zero.** (Integrations Cycle 3, found by shipping
+  the first data that asserted an ANSWER.) The signature is now
+  `safe_eval(expr, /, context=None, *, mode="eval", filename=None)`, and its
+  docstring makes the old opt-in the only behaviour: "This dict will be mutated
+  with any variables created during evaluation". So
+  `hr.api.transformation.rule._execute_python`'s
+  `safe_eval(code, local_vars, mode='exec', nocopy=True)` raised `TypeError`
+  **before the expression ran**, on every `rule_type='python'` rule, from the
+  day of the port. Nothing surfaced it, because `_execute_for_records` wraps
+  each rule in `except Exception` and writes `default_value` instead: one
+  WARNING per employee per rule, in a log nobody reads during a pull, and a
+  payroll that used the 0.
+  Three rules: (1) a `try/except` that substitutes a DEFAULT is a silencer, and
+  the port audit has to walk every one of them — a signature change inside a
+  silencer produces no symptom at all, which is worse than a traceback and is
+  the reason this survived four cycles of the module being edited; (2) the
+  thing that found it was a test that asserted a NUMBER (`DEPCOUNT == 2`,
+  `WORKEDHRS == 10.5`) rather than "no exception" — an assertion of shape would
+  have passed, because 0.0 is a perfectly well-shaped float; (3) grep the whole
+  tree for the removed kwarg the moment you meet one instance. There was
+  exactly one here, and one is the number that makes people skip the grep.
+- **W138 A test written while a catalogue was EMPTY is measuring the DATA, and
+  the cycle that fills the catalogue breaks it.** (Integrations Cycle 3, on
+  Cycle 1's own tests.) `test_01` created one endpoint template, created a
+  connector, and asserted `len(conn.endpoint_ids) == 1` — correct, readable,
+  and secretly a statement about how many rows the vendor catalogue shipped.
+  Seven Zoho feeds later it reads `8 != 1`, and the honest fix is not a bigger
+  number: it is `filtered(lambda e: e.code == the_one_i_made)`, because the
+  mechanism under test was always "my template became my feed".
+  The dangerous member of the family is the one that still PASSES:
+  `assertEqual(mapping.endpoint_id, conn.endpoint_ids)` compared a single
+  record against a one-record set and read as an identity — with eight feeds it
+  fails, but a variant comparing `in` rather than `==` would have gone on
+  passing for any of the eight. Rule: a fixture assertion names its own row;
+  the shipped data gets its OWN test, where changing it is the subject rather
+  than a surprise. Corollary: amend those tests in the commit that ships the
+  data, with the reasoning in the message — a test amended in a later "fix the
+  build" commit is a test nobody can tell was weakened.
+- **W139 A number the server could not COMPUTE must not be rendered as 0.**
+  (Integrations Cycle 3; W79's family, on the screen W116 created.) The
+  Integrations board printed "N feeds" per card and a "Feeds" KPI tile. Both
+  came from `get_board`, which only counts when
+  `hr.integration.endpoint._schema_ready()` — and on a database whose upgrade
+  has not reached it (the normal state of a tenant between the rsync and its
+  own `-u`, W116) every feed number in the payload is 0 because nothing could
+  look. The screen said "0 feeds", which is exactly what an empty catalogue
+  says. Cycle 1 met that state live on three tenants and answered it with a
+  log WARNING; the screen went on lying.
+  Rule: when a payload computes a section conditionally, it ships the CONDITION
+  beside the numbers (`feeds_known`), and the client DROPS the phrase rather
+  than zeroing it — a missing number invites the question, a wrong number
+  answers it. Two corollaries: read the flag as `!== false`, so a stale asset
+  bundle talking to an older payload still shows counts it has (hiding a real
+  number because of a cache is a worse trade than the bug being fixed); and the
+  shortened sentence is its own complete msgid, never the long one with a
+  fragment removed (W80).
+- **W140 "It is missing from ⌘K" is almost always the row CAP, not the gate.**
+  (Integrations Cycle 3, a defect report that dissolved under instrumentation.)
+  Integrations and Mapping Studio were reported absent from the palette for
+  personas holding their gate groups. Every layer checked out: both groups
+  answered `true` for the persona, both client-action tags were in the actions
+  registry, both entries were in `pb_hub_palette`, and re-running
+  `resolveEntries`' own logic returned **60 of 65 rows shown**, with neither
+  among the five it dropped. The palette rendered **12**, because
+  `hub_palette.js` caps the empty-query list at `MAX_ROWS = 12` and IA Cycle 5
+  deliberately moved every deep link into a 2000+ sequence block below the
+  eight mission rows. Typing surfaces them instantly ("integr" → "Integrations
+  · Setup"; "setup" → all five Setup rows), which is the documented design.
+  Rules: (1) diagnose a palette absence by running the RESOLVER, not by reading
+  the gate — `registry.category("pb_hub_palette").getAll()` plus
+  `user.hasGroup` in the page console answers in one call which layer dropped
+  the row; (2) the cap and the sequence block are an IA decision about what
+  everybody sees on open, so changing either is a design change with an owner,
+  not a bug fix a cycle picks up in passing; (3) a bug report that says
+  "search finds it, the list does not" is describing a cap and should be read
+  that way from the first sentence.
