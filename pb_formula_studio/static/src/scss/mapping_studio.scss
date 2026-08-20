@@ -42,40 +42,89 @@
 
 .pbms-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
 
-/* ---------------------------------------------------------------- top bar */
-.pbms-top {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 22px 0;
+/* ================== the coach launcher, off the TO column ==================
+ *  Reported by the owner alongside the header: the floating "Stuck?" button
+ *  covers the right-hand cards. It IS ours — `pb_learn`'s `.lrn-coachhost`,
+ *  `position: fixed; right: 0; bottom: 0` — and measured on the owner's
+ *  viewport it lands at x 1794-1896 while the TO column runs 1580-1920. It is
+ *  not overlapping by a little; it is inside that column.
+ *
+ *  Moved rather than hidden, and moved only HERE. The launcher is global and
+ *  belongs bottom-right on every other screen; this is the one board whose
+ *  right edge is a dense, scrolling, clickable list all the way down. The
+ *  middle of this board is the wire canvas, which is empty by construction —
+ *  so the FAB goes there, clear of both columns.
+ *
+ *  `:has()` because `.lrn-coachhost` is a sibling of the cockpit, not a
+ *  descendant, so no ancestor selector can reach it. An engine without `:has()`
+ *  simply drops the rule and the launcher stays where it was — a degrade, not
+ *  a break. pb_learn is not touched, and its own bottom-right default is
+ *  unchanged everywhere else. */
+.o_web_client:has(.pbim.pbms .pbms-wrap) .lrn-coachhost {
+    right: 356px;                  /* 1920 - 356 = 1564, clear of the TO column */
+    bottom: 14px;
 }
-/* ---- the wordmark (Cycle 6) ----
-   It was `--pbim-muted` at 12px/800/uppercase, which measures **4.41:1** on the
-   `--pbim-bg` bar it sits on — under AA's 4.5:1, and at that size and weight
-   there is no large-text exemption to fall back on. The owner could not find
-   it, and the number agrees with him.
 
-   It stays a LABEL and not a control. There is exactly one way out of this
-   screen and the back chip to its left already is it; a second thing in the
-   same bar that looked clickable would make the reader choose between two
-   doors, one of which does nothing. So: no cursor change, no hover state, no
-   focus ring, `user-select: none` — it reads as a nameplate.
+/* ======================================================== the top bar ======
+ *  Scoped `.pbim.pbms .pbms-wrap …` (Cycle 6), and the scope is the point.
+ *
+ *  `.pbms` is not one class. pb_mission's Mission Control workspace is also
+ *  `<div class="pbim pbms">` (pb_mission/static/src/xml/pb_mission.xml:8), it
+ *  ships 65 `.pbms-*` rules, and FOUR of its class names are also ours:
+ *  `pbms-top`, `pbms-brand`, `pbms-brand__ic`, `pbms-canvas`. Every one of its
+ *  rules is written `.pbim.pbms .pbms-top` — specificity (0,3,0) — while ours
+ *  were bare `.pbms-top` at (0,1,0). pb_mission therefore won every property it
+ *  declared, and we won only the ones it happened not to: this header's dark
+ *  background, its 14px gap and its 13.5px font came from Mission Control's
+ *  command bar, and its colours came from here. Which module owned which
+ *  property was decided by accident, and nothing anywhere would have errored.
+ *
+ *  `.pbms-wrap` is the disambiguator. It exists only in this component;
+ *  pb_mission's `.pbms-top` is a direct child of its root, so
+ *  `.pbim.pbms .pbms-wrap .pbms-top` (0,4,0) can never match there while
+ *  outranking everything it ships. The bar is now explicitly the dark one it
+ *  already rendered as — same pixels, by intent rather than by luck. See W151.
+ */
+.pbim.pbms .pbms-wrap {
 
-   What it gains is contrast and structure. `--pbim-primary-dark` on the bar is
-   **13.96:1**, the icon at `--pbim-primary` is 6.34:1, and a hairline pill
-   holds the two together so the eye lands on an object rather than on two loose
-   marks. It does not compete with the page title, which lives a row below in
-   the story bar at 14.5px in `--pbim-text` — this is smaller, quieter in
-   weight-per-area, and pushed to the far edge. */
-.pbms-brand {
-    display: flex; align-items: center; gap: 7px; margin-left: auto;
-    padding: 4px 11px 4px 9px;
-    border: 1px solid var(--pbim-line);
-    border-radius: 999px;
-    background: var(--pbim-surface);
-    color: var(--pbim-primary-dark);
-    user-select: none;
+    .pbms-top {
+        flex: 0 0 auto;
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 22px;
+        background: var(--pbim-primary-dark);
+        color: var(--pbim-surface);
+    }
+
+    /* ---- the wordmark (Cycle 6) ----
+       It was `--pbim-muted` on this bar, measured in the live browser at
+       **3.17:1** — under AA's 4.5:1, with no large-text exemption at 12px. The
+       owner could not find it and the number agrees with him.
+
+       It stays a LABEL and not a control. There is exactly one way out of this
+       screen and the back chip to its left already is it; a second thing in the
+       same bar that looked clickable would make the reader choose between two
+       doors, one of which does nothing. So: no cursor change, no hover state,
+       no focus ring, `user-select: none` — it reads as a nameplate.
+
+       What it gains is contrast and structure: `--pbim-primary-dark` inside a
+       `--pbim-surface` pill measures **15.08:1**, and the pill itself is
+       15.08:1 against the bar, so the eye lands on an object rather than on two
+       loose marks. It does not compete with the page title, which lives a row
+       below in the story bar at 14.5px — this is smaller and pushed to the far
+       edge. */
+    .pbms-brand {
+        display: flex; align-items: center; gap: 7px; margin-left: auto;
+        flex: none;
+        padding: 4px 11px 4px 9px;
+        border: 1px solid var(--pbim-line);
+        border-radius: 999px;
+        background: var(--pbim-surface);
+        color: var(--pbim-primary-dark);
+        user-select: none;
+    }
+    .pbms-brand__ic { display: inline-flex; color: var(--pbim-primary); width: auto; height: auto; border-radius: 0; background: none; }
+    .pbms-brand__t { font-size: 12px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; }
 }
-.pbms-brand__ic { display: inline-flex; color: var(--pbim-primary); }
-.pbms-brand__t { font-size: 12px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; }
 
 /* -------------------------------------------------------- THE SENTENCE ---
    One row, read left to right: FROM <what> ══ N mapped ══▶ TO <what>. */
