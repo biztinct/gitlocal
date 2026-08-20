@@ -47,25 +47,37 @@ class TestEndpointCatalogue(TransactionCase):
     # --------------------------------------------------------------- test 1
     def test_01_a_new_connector_instantiates_the_vendor_catalogue(self):
         """A template row for a vendor becomes a feed on every new connector of
-        that vendor — and a second sync creates nothing and touches nothing."""
+        that vendor — and a second sync creates nothing and touches nothing.
+
+        AMENDED BY CYCLE 3, which shipped the real Zoho catalogue. This test was
+        written when `hr.integration.endpoint.template` was empty, so it could
+        say "one template in, one feed out" and count the whole o2m. Seven
+        shipped feeds later that count is 8, and the assertion was measuring the
+        DATA rather than the mechanism. It now names its own row — which is what
+        it was always about — and the shipped catalogue is pinned by
+        `test_zoho_catalog.py::test_01`, where a change to it is the point
+        rather than a surprise.
+        """
         self._template()
         conn = self.Connector.create({
             'name': 'IG-C1 Zoho probe', 'connector_type': 'zoho'})
 
-        ep = conn.endpoint_ids
+        ep = conn.endpoint_ids.filtered(lambda e: e.code == 'zoho_employees')
         self.assertEqual(len(ep), 1)
-        self.assertEqual(ep.code, 'zoho_employees')
         self.assertEqual(ep.data_type, 'employee')
         self.assertEqual(ep.path, '/forms/employee/getRecords')
 
         # An operator renames the feed. The catalogue must never take that back.
+        before = len(conn.endpoint_ids)
         ep.write({'name': 'Employees (nightly)', 'path': '/custom/path'})
         res = conn.action_sync_endpoint_catalog()
         self.assertEqual(res['created'], 0,
                          "the catalogue sync is create-only: %s" % res)
-        self.assertEqual(res['skipped'], 1)
-        self.assertEqual(conn.endpoint_ids.name, 'Employees (nightly)')
-        self.assertEqual(conn.endpoint_ids.path, '/custom/path')
+        self.assertEqual(res['skipped'], before,
+                         "every existing feed is skipped, not just this one")
+        self.assertEqual(ep.name, 'Employees (nightly)')
+        self.assertEqual(ep.path, '/custom/path')
+        self.assertEqual(len(conn.endpoint_ids), before)
 
     def test_01b_a_deactivated_feed_still_owns_its_code(self):
         """Re-creating a feed somebody switched OFF would be the rudest possible
@@ -74,13 +86,18 @@ class TestEndpointCatalogue(TransactionCase):
         self._template()
         conn = self.Connector.create({
             'name': 'IG-C1 Zoho off', 'connector_type': 'zoho'})
+        # Cycle 3: switch off the WHOLE catalogue, not "the one feed" — the
+        # property under test is that a deactivated code is still taken, and
+        # proving it for eight rows is strictly stronger than for one.
+        total = len(conn.endpoint_ids)
         conn.endpoint_ids.active = False
         self.assertFalse(conn.endpoint_ids)
         res = conn.action_sync_endpoint_catalog()
         self.assertEqual(res['created'], 0)
+        self.assertEqual(res['skipped'], total)
         self.assertEqual(
             self.Endpoint.with_context(active_test=False).search_count(
-                [('connector_id', '=', conn.id)]), 1)
+                [('connector_id', '=', conn.id)]), total)
 
     # --------------------------------------------------------------- test 2
     def test_02_feeds_are_derived_from_the_store_and_count_what_the_board_counts(self):
@@ -215,8 +232,12 @@ class TestEndpointCatalogue(TransactionCase):
         self._template(code='zoho_employees', data_type='employee')
         conn = self.Connector.create({
             'name': 'IG-C1 tmpl apply', 'connector_type': 'zoho'})
-        ep = conn.endpoint_ids
-        self.assertTrue(ep)
+        # Cycle 3: `conn.endpoint_ids` is the whole shipped catalogue now, so
+        # the assertion has to name the feed this test created. Comparing a
+        # mapping's endpoint_id against an eight-record set would have passed
+        # for any of the eight.
+        ep = conn.endpoint_ids.filtered(lambda e: e.code == 'zoho_employees')
+        self.assertEqual(len(ep), 1)
 
         self.env['hr.integration.mapping.template'].create({
             'connector_type': 'zoho', 'source_path': 'IGC1.Basic',
