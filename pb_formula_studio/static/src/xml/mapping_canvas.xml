@@ -83,11 +83,22 @@
                      t-on-mouseenter="() => this.enterItem('left', it.id)"
                      t-on-mouseleave="() => this.leaveItem()">
                   <div class="mc-item-main">
-                    <div class="mc-item-label" t-esc="it.label"/>
+                    <div class="mc-item-label">
+                      <span t-esc="it.label"/>
+                      <!-- Integrations C6 — where this card came from. Nothing
+                           at all for a field the connector has actually
+                           delivered: the common case stays quiet, and a chip
+                           means "read me". -->
+                      <span t-if="provChip(it)" t-attf-class="mc-prov {{ provChip(it).tone }}"
+                            t-att-title="provChip(it).hint" t-esc="provChip(it).label"/>
+                    </div>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
-                    <!-- what the data actually looks like; absent when the feed
-                         has no stored payload to sample -->
-                    <div t-if="it.sample" class="mc-item-sample" t-esc="it.sample"/>
+                    <!-- what the data looks like. A live sample is a value that
+                         arrived; a catalogue sample is an example, and the `e.g.`
+                         is the whole difference between the two. -->
+                    <div t-if="it.sample" t-attf-class="mc-item-sample {{ it.prov === 'catalog' ? 'eg' : '' }}">
+                      <span t-if="it.prov === 'catalog'" class="mc-item-sample__k">e.g.</span><t t-esc="it.sample"/>
+                    </div>
                   </div>
                   <span class="mc-plug right"/>
                 </div>
@@ -214,10 +225,17 @@
           </t>
         </div>
 
-        <!-- a connection whose field is not on this board at all: counted and
-             said out loud, never dropped on the floor -->
+        <!-- A connection whose field is not on this board at all: counted and
+             said out loud, never dropped on the floor.
+             C6 — it used to fire for every mapping naming a path the CONNECTOR
+             had not yet delivered, which on a never-synced connector was all of
+             them, correct ones included. Now that a field the feed is expected
+             to deliver has a card of its own, this can only fire for a path in
+             neither the payloads nor the catalogue — which is the case it was
+             written for. The wording follows: "no longer delivers" claimed a
+             history nobody had checked. -->
         <div t-if="ui.gone" class="mc-gone">
-          <t t-esc="ui.gone"/> mapping<t t-if="ui.gone > 1">s</t> point at a field this source no longer delivers.
+          <t t-esc="ui.gone"/> mapping<t t-if="ui.gone > 1">s</t> point at a field this source is not known to deliver.
         </div>
       </div>
 

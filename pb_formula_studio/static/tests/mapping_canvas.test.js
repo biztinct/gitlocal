@@ -237,3 +237,44 @@ test("search tolerates items with no sublabel, sample or meta", () => {
     expect(itemMatches({ label: "Net" }, "gross")).toBe(false);
     expect(itemMatches({}, "x")).toBe(false);
 });
+
+// ============================================ Cycle 6 — provenance on a card
+//
+// `provChip` decides what a source card admits about itself. Every branch here
+// fails SILENTLY if it is wrong: a missing chip is a card that looks like it
+// came from the vendor, which is the exact defect this cycle closed — 206
+// `hr.employee` columns printed under "FROM — ZOHO PEOPLE (ABM)".
+test("a delivered field wears no chip, and an Odoo fallback field says so", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    expect(canvas.provChip({ prov: "live" })).toBe(null);
+    expect(canvas.provChip({ prov: "odoo" }).label).toBe("Odoo field");
+    expect(canvas.provChip({ prov: "odoo" }).tone).toBe("odoo");
+});
+
+test("expected, computed and drift are three different sentences", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    const expected = canvas.provChip({ prov: "catalog", provKind: "feed" });
+    expect(expected.label).toBe("expected");
+    expect(expected.tone).toBe("exp");
+
+    const computed = canvas.provChip({ prov: "catalog", provKind: "computed" });
+    expect(computed.label).toBe("computed");
+    expect(computed.tone).toBe("calc");
+
+    // Drift outranks both: a catalogue field the feed HAS run and did not send
+    // is the one case that is a warning, and it must not be softened into
+    // "expected" merely because the row came from the catalogue.
+    const drift = canvas.provChip({ prov: "catalog", provKind: "feed", drift: true });
+    expect(drift.label).toBe("not sent");
+    expect(drift.tone).toBe("warn");
+});
+
+test("an adapter that sends no provenance renders exactly as it did before", async () => {
+    // Four of the five boards (import, employee, scheme, cycle) never carried
+    // `prov`. `undefined` must fall through to no chip rather than to a chip
+    // reading "undefined" — the failure would be on every card of four boards.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    expect(canvas.provChip({ label: "Basic" })).toBe(null);
+    expect(canvas.provChip(null)).toBe(null);
+    expect(canvas.provChip(undefined)).toBe(null);
+});

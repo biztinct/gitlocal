@@ -189,15 +189,76 @@ export class MappingStudio extends Component {
         return this.state.batches.find((b) => b.id === this.state.batchId) || null;
     }
 
-    /** "200 fields · synced 3d ago", or the honest half of it. */
+    /** The FROM column's provenance summary, or null on a non-API board. */
+    get srcSummary() {
+        const d = this.state.data;
+        return (d && d.ok && d.source_summary) || null;
+    }
+
+    /**
+     * What the FROM half of the header is entitled to say about its own list.
+     *
+     * Cycle 5 printed `206 fields · never synced`. Both halves were true and
+     * the sentence was a lie: those 206 were `hr.employee`'s columns, and the
+     * heading above them said ZOHO PEOPLE (ABM). The rule now is that the count
+     * and its ORIGIN have to agree, so the origin comes from the server beside
+     * the list it describes rather than being guessed at from a number here.
+     *
+     *   31 expected fields · Zoho People catalogue · not yet synced
+     *   40 fields · synced 3d ago
+     *   28 fields · 3 not sent last sync
+     *   206 Odoo employee fields · this source has not told us its own
+     */
     get fromSub() {
         const d = this.state.data;
         const n = (d && d.ok && d.left) ? d.left.length : 0;
-        const fields_ = _t("%s fields", n);
-        if (this.state.mode !== "api") { return fields_; }
+        if (this.state.mode !== "api") { return _t("%s fields", n); }
+        const s = this.srcSummary;
+        if (!s) {
+            // An older server, or a board built before C6. Say the count and
+            // nothing about where it came from — an unqualified number is a
+            // smaller claim than a wrong qualification.
+            const ep = this.endpoint;
+            const when = ep ? this.since(ep.last_sync) : "";
+            return when ? _t("%(fields)s · %(when)s", { fields: _t("%s fields", n), when })
+                        : _t("%s fields", n);
+        }
+        if (s.odoo && !s.live && !s.catalog) {
+            return _t("%s Odoo employee fields · this source has not told us its own",
+                      s.odoo);
+        }
+        if (!s.live && s.catalog) {
+            return _t("%(n)s expected fields · %(vendor)s catalogue · not yet synced",
+                      { n: s.catalog, vendor: s.vendor });
+        }
         const ep = this.endpoint;
         const when = ep ? this.since(ep.last_sync) : "";
-        return when ? _t("%(fields)s · %(when)s", { fields: fields_, when }) : fields_;
+        const bits = [_t("%s fields", n)];
+        if (when) { bits.push(when); }
+        if (s.drift) { bits.push(_t("%s not sent last sync", s.drift)); }
+        return bits.join(" · ");
+    }
+
+    /**
+     * The first-run hint: this board has never seen a byte from this system.
+     *
+     * Shown only when there is something to map and nothing has arrived — the
+     * exact moment a new connector is at its most mappable and looks its most
+     * empty. It is a sentence, not a warning: nothing is wrong.
+     */
+    get firstRunHint() {
+        if (this.state.mode !== "api") { return null; }
+        const s = this.srcSummary;
+        if (!s || s.ever_synced || !s.catalog || s.live) { return null; }
+        return _t(
+            "These are the fields %(vendor)s is expected to deliver. Map them now — the first sync will confirm them.",
+            { vendor: s.vendor });
+    }
+
+    /** The honest half of the hint: can this connector even be asked? */
+    get firstRunNote() {
+        const s = this.srcSummary;
+        return (s && !s.fetch_ready && s.fetch_reason) ? s.fetch_reason : "";
     }
 
     /** "250 input columns · VN · active". */
