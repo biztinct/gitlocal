@@ -244,11 +244,19 @@ test("search tolerates items with no sublabel, sample or meta", () => {
 // fails SILENTLY if it is wrong: a missing chip is a card that looks like it
 // came from the vendor, which is the exact defect this cycle closed — 206
 // `hr.employee` columns printed under "FROM — ZOHO PEOPLE (ABM)".
-test("a delivered field wears no chip, and an Odoo fallback field says so", async () => {
+// C7 WP-1: the fallback chip names THIS PRODUCT. `prov`/`tone` keep the value
+// `odoo` because they are the server's vocabulary and a CSS class — neither is
+// a string an end user reads — but the label and the hint are, and they say
+// Payobook. The assertion on the label doubles as the regression guard: it is
+// the one place a future edit could put the platform's name back on screen.
+test("a delivered field wears no chip, and a fallback field says whose it is", async () => {
     const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
     expect(canvas.provChip({ prov: "live" })).toBe(null);
-    expect(canvas.provChip({ prov: "odoo" }).label).toBe("Odoo field");
+    expect(canvas.provChip({ prov: "odoo" }).label).toBe("Payobook field");
     expect(canvas.provChip({ prov: "odoo" }).tone).toBe("odoo");
+    const hint = canvas.provChip({ prov: "odoo" }).hint;
+    expect(hint.includes("Payobook")).toBe(true);
+    expect(/\bOdoo\b/.test(hint)).toBe(false);
 });
 
 test("expected, computed and drift are three different sentences", async () => {

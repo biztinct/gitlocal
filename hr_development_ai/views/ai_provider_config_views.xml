@@ -48,10 +48,10 @@
                                 <field name="timeout"/>
                             </group>
                         </page>
-                        <page string="Odoo Native AI">
+                        <page string="Native AI">
                             <group>
                                 <div>
-                                    <p>Odoo Native AI uses built-in Odoo 19 AI features and rule-based approaches.</p>
+                                    <p>Native AI uses the platform's built-in AI features and rule-based approaches.</p>
                                     <p>No external configuration required.</p>
                                 </div>
                             </group>
@@ -101,7 +101,7 @@
                 Configure AI Provider
             </p>
             <p>
-                Select and configure the AI provider (Llama, OpenAI, or Odoo Native) for talent intelligence features.
+                Select and configure the AI provider (Llama, OpenAI, or Native) for talent intelligence features.
             </p>
         </field>
     </record>

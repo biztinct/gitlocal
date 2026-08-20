@@ -161,7 +161,7 @@ export const CATEGORIES = [
             { id: "payroll_defaults",
               xmlid: "om_hr_payroll.action_hr_payroll_configuration",
               icon: "settings", label: _t("Payroll settings"),
-              sub: _t("Odoo's own payroll configuration form — use the crumb to come back.") },
+              sub: _t("The native payroll configuration form — use the crumb to come back.") },
         ],
     },
     {

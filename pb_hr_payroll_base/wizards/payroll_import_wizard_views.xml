@@ -47,7 +47,7 @@
                     <notebook>
                         <page string="Field Mapping" name="mapping">
                             <div class="alert alert-info">
-                                <strong>Field Mapping:</strong> Map your spreadsheet columns to Odoo fields.
+                                <strong>Field Mapping:</strong> Map your spreadsheet columns to Payobook fields.
                             </div>
                             
                             <group>

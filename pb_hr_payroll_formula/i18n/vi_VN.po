@@ -109,7 +109,7 @@ msgstr ""
 "Sẵn có biến:\n"
 "- giá trị: nguồn giá trị\n"
 "- bản ghi: đầy đủ nguồn bản ghi (dict)\n"
-"- môi trường: môi trường Odoo\n"
+"- env: môi trường máy chủ\n"
 "\n"
 "Ví dụ: giá trị * 1.1 nếu giá trị > 1000 ngược lại giá trị\n"
 " "
@@ -5535,8 +5535,8 @@ msgstr ""
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__salary_rule_id
-msgid "Optional link to standard Odoo salary rule"
-msgstr "Tùy chọn liên kết để chuẩn Odoo Quy tắc lương"
+msgid "Optional link to a standard salary rule"
+msgstr "Liên kết tùy chọn tới một quy tắc lương chuẩn"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_import_wizard_form

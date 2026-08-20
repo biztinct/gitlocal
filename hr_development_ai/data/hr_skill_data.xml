@@ -65,9 +65,9 @@
 
     <!-- Tools -->
     <record id="skill_odoo" model="hr.skill">
-        <field name="name">Odoo ERP</field>
+        <field name="name">ERP Platform</field>
         <field name="category_id" ref="skill_category_tools"/>
-        <field name="description">Odoo platform expertise</field>
+        <field name="description">ERP platform expertise</field>
     </record>
 
     <record id="skill_git" model="hr.skill">

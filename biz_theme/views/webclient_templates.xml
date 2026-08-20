@@ -18,7 +18,7 @@
              company's `favicon` (biz_debrand seeds every company with the brand
              icon) and the title at the debrand brand name. Both degrade safely:
              missing favicon → the stock static file; missing brand param →
-             "Odoo". Scoped to webclient_bootstrap, so the website/portal front
+             the product name. Scoped to webclient_bootstrap, so the website/portal front
              end (which sets its own favicon) is untouched. -->
         <xpath expr="//t[@t-call='web.layout']" position="inside">
             <t t-set="icp" t-value="request.env['ir.config_parameter'].sudo()"/>
@@ -32,10 +32,12 @@
             <!-- Tab title: an explicit `biz_theme.app_name` knob wins; otherwise
                  honour the debrand suite's own keys if installed; otherwise fall
                  back to the current company name (already per-company branded);
-                 finally "Odoo". Configure at Settings → Technical → System
+                 finally the product name — never the platform's (C7 WP-1: the
+                 tab title is a string an end user reads). Configure at
+                 Settings → Technical → System
                  Parameters (key `biz_theme.app_name`). -->
             <t t-set="title"
-               t-value="icp.get_param('biz_theme.app_name') or icp.get_param('biz_debrand.brand_name') or icp.get_param('web_debranding.new_title') or request.env.company.name or 'Odoo'"/>
+               t-value="icp.get_param('biz_theme.app_name') or icp.get_param('biz_debrand.brand_name') or icp.get_param('web_debranding.new_title') or request.env.company.name or 'Payobook'"/>
         </xpath>
     </template>
 

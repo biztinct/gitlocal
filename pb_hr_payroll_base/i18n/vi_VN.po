@@ -265,18 +265,20 @@ msgstr "<strong>Tiền tệ:</strong>"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
 msgid ""
-"<strong>Field Mapping:</strong> Configure how external data maps to Odoo "
+"<strong>Field Mapping:</strong> Configure how external data maps to Payobook "
 "employee fields."
 msgstr ""
-"<strong>Trường Ánh xạ:</strong> Cấu hình cách bên ngoài dữ liệu ánh xạ để Odoo "
-"nhân viên trường."
+"<strong>Trường Ánh xạ:</strong> Cấu hình cách dữ liệu bên ngoài ánh xạ tới "
+"các trường nhân viên của Payobook."
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
 msgid ""
-"<strong>Field Mapping:</strong> Map your spreadsheet columns to Odoo fields."
+"<strong>Field Mapping:</strong> Map your spreadsheet columns to Payobook "
+"fields."
 msgstr ""
-"<strong>Trường Ánh xạ:</strong> Ánh xạ của bạn bảng tính cột để Odoo trường."
+"<strong>Trường Ánh xạ:</strong> Ánh xạ các cột bảng tính của bạn tới các "
+"trường Payobook."
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -3383,8 +3385,8 @@ msgstr "Số của thông báo với giao lỗi"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__odoo_field
-msgid "Odoo Field"
-msgstr "Odoo Trường"
+msgid "Payobook Field"
+msgstr "Trường Payobook"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
@@ -4752,10 +4754,10 @@ msgstr "Đã cập nhật Số lượng"
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_zoho_staging_data_enhanced
 msgid ""
 "Use the import wizard to bring employee data from Zoho into the staging area,\n"
-"                then process it to create employees and contracts in Odoo."
+"                then process it to create employees and contracts in Payobook."
 msgstr ""
-"Sử dụng nhập thuật sĩ để bring nhân viên dữ liệu từ Zoho vào trung gian area,\n"
-" sau đó xử lý it để tạo nhân viên và hợp đồng trong Odoo."
+"Sử dụng trình hướng dẫn nhập để đưa dữ liệu nhân viên từ Zoho vào khu vực tổ chức,\n"
+" sau đó xử lý để tạo nhân viên và hợp đồng trong Payobook."
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide

@@ -136,7 +136,7 @@
             <field name="transformation_type">python</field>
             <field name="transformation_code">value.lower() if value else ''</field>
             <field name="verify" eval="True"/><field name="sequence">210</field>
-            <field name="note">Legacy lower-cased it to hit an Odoo selection (staging :395) — verify the target's own values</field>
+            <field name="note">Legacy lower-cased it to hit a Payobook selection (staging :395) — verify the target's own values</field>
         </record>
         <record id="mt_zoho_birthdate" model="hr.integration.mapping.template">
             <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>

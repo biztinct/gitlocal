@@ -592,8 +592,8 @@ class PbAuditConsole(models.AbstractModel):
             })
         cards.sort(key=lambda c: c['sessions'], reverse=True)
         return {'cards': cards, 'note': _(
-            "Odoo records sessions started at login only — it does not log "
-            "logouts, so no session-duration data is shown.")}
+            "Sessions are recorded at login only — logouts are not logged, so "
+            "no session-duration data is shown.")}
 
     # ====================================================================== kpis
     @api.model
