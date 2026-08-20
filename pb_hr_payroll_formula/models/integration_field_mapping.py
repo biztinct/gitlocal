@@ -390,9 +390,32 @@ Example: value * 1.1 if value > 1000 else value
         try:
             result = self._clamp_result(self._apply_transform_ops(draft, value, {}))
         except ValidationError as e:
+            # EXPECTED, and the message was written for a human: divide-by-zero
+            # is the one the canvas produces daily. Not logged — a user typing a
+            # 0 into a divisor is not an incident.
             return {'ok': False, 'error': (e.args and e.args[0]) or str(e)}
         except Exception as e:
-            return {'ok': False, 'error': str(e) or type(e).__name__}
+            # W40 — this catch narrows nothing, so it must HIDE nothing either.
+            # It used to return `str(e)` and say nothing anywhere else: a
+            # preview that failed for a reason nobody anticipated left no trace
+            # at all, and the one place it could have been diagnosed (the
+            # server log) was silent while the user read a bare exception
+            # string. Two changes, both about honesty rather than about
+            # behaviour:
+            #   * it reports, with the row and the draft that produced it, so
+            #     the next unexpected failure is one grep away;
+            #   * the USER gets a sentence rather than a repr. `str(e)` on an
+            #     unanticipated exception is as likely to be '' or a stack-shaped
+            #     internal as it is to be readable, and the canvas prints it
+            #     verbatim beside a field name.
+            _logger.warning(
+                "Transform preview failed for mapping %s (%s) with draft %s: "
+                "%s: %s", self.id, self.source_field, draft,
+                type(e).__name__, e)
+            return {'ok': False,
+                    'error': _("This transform could not be previewed. The "
+                               "details are in the server log."),
+                    'exception': type(e).__name__}
         return {'ok': True,
                 'sample': self._jsonable(raw),
                 'result': self._jsonable(result)}
