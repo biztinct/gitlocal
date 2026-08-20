@@ -2538,3 +2538,59 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   reload serves the old bundle and the suite is simply absent, which reads as
   "my tests did not compile"; (3) run them and look, because a test file that is
   never loaded is indistinguishable from one that passes.
+- **W151 A root class name is a GLOBAL name. Two components that pick the same
+  one do not clash loudly — the more specific selector silently wins, property
+  by property.** (Integrations Cycle 6.) `.pbms` is pb_mission's Mission Control
+  workspace (`pb_mission/static/src/xml/pb_mission.xml:8`) *and* the Mapping
+  Studio (`pb_formula_studio/static/src/xml/mapping_studio.xml:5`) — a dark
+  shell and a light cockpit, in different modules, under one name. pb_mission
+  ships 65 `.pbms-*` rules; four of its class names are also the studio's
+  (`pbms-top`, `pbms-brand`, `pbms-brand__ic`, `pbms-canvas`). Every pb_mission
+  rule is written `.pbim.pbms .pbms-top` — (0,3,0) — while the studio's were
+  bare `.pbms-top` at (0,1,0), so Mission Control won every property it happened
+  to declare and the studio won the rest. The studio's header background, gap
+  and font size came from another module's command bar; nothing errored, and no
+  screenshot of either screen looked wrong on its own.
+  The same accident hit the SHARED back chip: the studio asked for
+  `tone="'light'"`, got `.pbhub-back--lite` (0,1,0), and lost to
+  `.pbim.pbms .pbhub-back` (0,3,0) — so the way home rendered in the dark tone
+  on a bar it did not belong to, measured at a 1.30:1 fill and a 2.01:1 border.
+  Rules: (1) before adding a root class, grep the tree for it — `class="pbim X"`
+  is a namespace claim; (2) a variant that names its own surface must be
+  EXCLUDED from the other surface's block (`:not(.pbhub-back--lite)`), not
+  merely out-specified, because a `:not()` cannot be re-broken by a third host;
+  (3) when two modules must share a name, disambiguate on a wrapper only one of
+  them has (`.pbim.pbms .pbms-wrap .pbms-top`) rather than escalating
+  specificity, which just moves the race; (4) measure contrast against the
+  backdrop the element ACTUALLY sits on, read out of the live CSSOM — this
+  cycle's first contrast table assumed the studio's bar was `--pbim-bg` and was
+  wrong about every number on it.
+- **W152 A `try/except` that renders an empty region instead of a 500 must still
+  LOG. Otherwise a raised exception and a genuinely empty result are the same
+  screen.** (Integrations Cycle 6.) `_catalog_source_fields` called
+  `Rule._schema_ready()`; that helper is declared on
+  `hr.api.transformation.rule.template`, not on `hr.api.transformation.rule`, so
+  it raised `AttributeError` inside `api_mapping_data`'s
+  `except Exception: fields_ = []`. The board rendered with an empty FROM column
+  and a banner counting fifteen mappings as unresolvable — no error, no log
+  line, no test failure, and it took a live browser pass on abm to find.
+  Rules: (1) keep the `except` (a degraded region beats a dead page) but log the
+  exception TYPE, the message and the identifiers of what was being built;
+  (2) say in the log what the user will see ("the FROM column will render
+  empty"), so the log line and the screenshot can be matched by whoever greps;
+  (3) `X._schema_ready()` is not inheritable by wishing — check which class in
+  the file declares it, or use `table_exists(cr, Model._table)` directly.
+- **W153 A per-connector fact must not be asserted about a per-feed thing.**
+  (Integrations Cycle 6.) `expected_missing` — "the vendor stopped sending this"
+  — was gated on "has this CONNECTOR ever synced". On payobook the demo Zoho
+  connector has synced one feed of six, so all 58 catalogued fields, including
+  every field of the five feeds that have never run, were flagged as drift: 58
+  amber chips on a board that had nothing to warn about. Drift is a claim about
+  a feed that RAN, and it may only be made about that feed
+  (`_read_group` the store by `data_type` and test membership).
+  Rules: (1) when a flag means "we expected X and did not get it", the gate is
+  the narrowest scope that could have produced X; (2) assert the negative case
+  in the test — "the feed that never ran reports no drift" — because the
+  positive case passes either way; (3) a warning that fires on a screen with
+  nothing wrong trains the reader to stop reading warnings, which costs more
+  than the missing warning would have.
