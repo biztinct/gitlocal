@@ -105,6 +105,31 @@ test("the right column's scroller is bound too", async () => {
     expect(canvas._recomputes).toBe(before + 1);
 });
 
+test("a numeric item id is not a different id from its data-id string", async () => {
+    // Found on the owner's own abm board. `dataset.id` is ALWAYS a string, and
+    // the API adapter's right items are integers (`183`) while its left items
+    // are strings (`f:account_number`). The old code interpolated the id into a
+    // CSS attribute selector, which stringifies for free; a Map does not, and
+    // `has(183)` against the key `"183"` misses in silence — on screen it read
+    // as "this wire's target was filtered away", which was a lie.
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: props({
+            rightItems: [{ id: 183, label: "Employee Code", sublabel: "EMPLOYEECODE" },
+                         { id: 210, label: "Employee Name", sublabel: "EMPLOYEENAME" }],
+            wires: [{ id: "w1", leftId: "L0", rightId: 183, state: "accepted" }],
+        }),
+    });
+    await animationFrame();
+    const { R } = canvas._indexes();
+    expect(R.has("183")).toBe(true);
+    expect(canvas.ui.gone).toBe(0);
+    expect(canvas.hiddenWires("right")).toBe(0);
+    // and the jump has to find the same card by the same rule
+    const body = document.querySelector(".mc-col.right .mc-col-body");
+    expect(canvas._itemEl(body, 183)).not.toBe(null);
+    expect(canvas._itemEl(body, "183")).not.toBe(null);
+});
+
 // =================================================== T5 — the wire geometry
 test("control points share the endpoint Y, so a wire leaves and arrives flat", () => {
     const g = wireGeometry(100, 50, 400, 300);
@@ -164,12 +189,31 @@ test("docks aggregate per column edge, never one chip per wire", () => {
     expect(docks.length).toBe(3);
     const up = docks.find((d) => d.side === "left" && d.dir === -1);
     expect(up.count).toBe(3);
-    expect(up.amber).toBe(true);        // one of the three is a suggestion
+    expect(up.sug).toBe(1);
+    // ALL of them, not ANY of them — a mixed pile is not "suggested"
+    expect(up.amber).toBe(false);
     expect(up.ids).toEqual(["a", "b", "c"]);
     const down = docks.find((d) => d.side === "left" && d.dir === 1);
     expect(down.count).toBe(1);
     expect(down.amber).toBe(false);
     expect(docks.find((d) => d.side === "right" && d.dir === 1).count).toBe(1);
+});
+
+test("a dock chip never names a kind the pile is not entirely made of", () => {
+    // found on the live 200x40 stress board: 51 wires parked below, one of them
+    // a suggestion, and the chip read "51 suggested below"
+    const mixed = aggregateDocks([
+        { id: "a", dockL: 1, dockR: 0, state: "accepted" },
+        { id: "b", dockL: 1, dockR: 0, state: "accepted" },
+        { id: "c", dockL: 1, dockR: 0, state: "suggested" },
+    ])[0];
+    expect(mixed.amber).toBe(false);
+    const allSug = aggregateDocks([
+        { id: "a", dockL: 1, dockR: 0, state: "suggested" },
+        { id: "b", dockL: 1, dockR: 0, state: "suggested" },
+    ])[0];
+    expect(allSug.amber).toBe(true);
+    expect(allSug.sug).toBe(2);
 });
 
 test("a wire with both ends in view produces no chip at all", () => {

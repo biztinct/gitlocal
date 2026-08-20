@@ -170,6 +170,14 @@ export class MappingCanvas extends Component {
         const bandBot = br.bottom - rb.top - BAND;
         let edge = null;
         let firstVisibleId = null;
+        // NOTE the keys are STRINGS. `dataset.id` always is, and the adapters
+        // disagree about the type of an item id — the API board's left ids are
+        // strings (`f:account_number`) and its right ids are integers (`183`).
+        // The old code hid this by interpolating into a CSS attribute selector,
+        // which stringifies; a Map does not, and `map.has(183)` against a key
+        // of `"183"` is a silent miss that reads on screen as "this wire's
+        // target has been filtered away". Everything below goes through
+        // `String()` (Integrations C5, W146).
         for (const el of body.children) {
             const id = el.dataset && el.dataset.id;
             if (!id || el.dataset.side !== side) { continue; }   // group headers
@@ -192,11 +200,11 @@ export class MappingCanvas extends Component {
     _indexes() {
         if (this._idxSrcL !== this.props.leftItems) {
             this._idxSrcL = this.props.leftItems;
-            this._idxL = new Map(this.props.leftItems.map((i, n) => [i.id, n]));
+            this._idxL = new Map(this.props.leftItems.map((i, n) => [String(i.id), n]));
         }
         if (this._idxSrcR !== this.props.rightItems) {
             this._idxSrcR = this.props.rightItems;
-            this._idxR = new Map(this.props.rightItems.map((i, n) => [i.id, n]));
+            this._idxR = new Map(this.props.rightItems.map((i, n) => [String(i.id), n]));
         }
         return { L: this._idxL, R: this._idxR };
     }
@@ -233,31 +241,32 @@ export class MappingCanvas extends Component {
         let gone = 0;
         const sx = L.edge + 4, tx = R.edge - 4;
         for (const w of this.props.wires) {
-            const hasL = L.map.has(w.leftId), hasR = R.map.has(w.rightId);
+            const lk = String(w.leftId), rk = String(w.rightId);
+            const hasL = L.map.has(lk), hasR = R.map.has(rk);
             // genuinely absent from the LIST (not merely filtered out): the one
             // case where there is no card to point at. Counted, then surfaced —
             // never swallowed the way `continue` used to swallow it.
-            if ((!hasL && !iL.has(w.leftId)) || (!hasR && !iR.has(w.rightId))) {
+            if ((!hasL && !iL.has(lk)) || (!hasR && !iR.has(rk))) {
                 gone++;
                 continue;
             }
             let y1, dockL, rawL;
             if (hasL) {
-                rawL = L.map.get(w.leftId);
+                rawL = L.map.get(lk);
                 const c = clampY(rawL, L.bandTop, L.bandBot);
                 y1 = c.y; dockL = c.docked;
             } else {
-                dockL = this._hiddenDir(iL, w.leftId, L.firstVisibleId);
+                dockL = this._hiddenDir(iL, lk, L.firstVisibleId);
                 y1 = dockL < 0 ? L.bandTop : L.bandBot;
                 rawL = dockL < 0 ? -1e6 : 1e6;
             }
             let y2, dockR, rawR;
             if (hasR) {
-                rawR = R.map.get(w.rightId);
+                rawR = R.map.get(rk);
                 const c = clampY(rawR, R.bandTop, R.bandBot);
                 y2 = c.y; dockR = c.docked;
             } else {
-                dockR = this._hiddenDir(iR, w.rightId, R.firstVisibleId);
+                dockR = this._hiddenDir(iR, rk, R.firstVisibleId);
                 y2 = dockR < 0 ? R.bandTop : R.bandBot;
                 rawR = dockR < 0 ? -1e6 : 1e6;
             }
@@ -468,8 +477,9 @@ export class MappingCanvas extends Component {
     }
     _itemEl(body, id) {
         if (!body) { return null; }
+        const key = String(id);        // `dataset.id` is always a string (W146)
         for (const el of body.children) {
-            if (el.dataset && el.dataset.id === id) { return el; }
+            if (el.dataset && el.dataset.id === key) { return el; }
         }
         return null;
     }
@@ -507,10 +517,19 @@ export class MappingCanvas extends Component {
     }
 
     // ---- dock chips (WP-1.4) -------------------------------------------
+    /**
+     * What a dock chip says.
+     *
+     * The composition has to be ALL of one kind before the chip may name that
+     * kind; a mixed pile is "N wires", because "51 suggested" over 50 accepted
+     * mappings and one suggestion is a sentence the board cannot support.
+     */
     dockLabel(d) {
-        const what = d.filtered === d.count ? "hidden by filter"
-            : (d.amber ? "suggested" : "mapped");
-        return `${d.count} ${what} ${d.dir < 0 ? "above" : "below"}`;
+        const where = d.dir < 0 ? "above" : "below";
+        if (d.filtered === d.count) { return `${d.count} hidden by filter ${where}`; }
+        if (d.sug === d.count) { return `${d.count} suggested ${where}`; }
+        if (d.sug === 0) { return `${d.count} mapped ${where}`; }
+        return `${d.count} wires ${where}`;
     }
     clickDock(d) {
         if (!d.ids.length) { return; }
