@@ -1880,7 +1880,6 @@
                            onReject="(w) => this.mapReject(w)"
                            onDelete="(w) => this.mapDelete(w)"
                            onDraw="(l, r) => this.mapDraw(l, r)"
-                           onSuggest="() => this.mapSuggest()"
                            onTransformPreview="(ref, d) => this.mapTransformPreview(ref, d)"
                            onTransformSave="(ref, v) => this.mapTransformSave(ref, v)"
                            onRemoveRight="state.mapMode === 'employee' ? ((id) => this.removeRightField(id)) : undefined"/>

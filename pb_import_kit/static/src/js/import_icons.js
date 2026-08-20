@@ -115,6 +115,13 @@ export const IC = {
     // behind a kebab, and a kebab needs the glyph everybody already reads as
     // one. Added HERE rather than in a pb_import_advanced icon file (W2).
     moreVertical: '<circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>',
+    // Integrations C5 — the mapping wire's hub reads ◀ transform ▶, and its
+    // dock chips read "▲ 3 above". Four directional glyphs the registry did not
+    // have; added HERE so the canvas never hand-rolls a path (W2).
+    chevronLeft:  '<path d="m15 18-6-6 6-6"/>',
+    arrowUp:      '<path d="M12 19V5M5 12l7-7 7 7"/>',
+    arrowDown:    '<path d="M12 5v14M19 12l-7 7-7-7"/>',
+    trash:        '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
 };
 
 /**
