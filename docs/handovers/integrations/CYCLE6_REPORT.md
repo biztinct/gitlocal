@@ -428,9 +428,11 @@ W131 was re-earned: two `--test-tags` processes kept running past
 6. **The contrast table was recomputed and corrected mid-cycle.** The first
    pass assumed the studio's bar was `--pbim-bg`; it is `#241F52`. See the
    correction note above.
-7. **Commits are 9, not 7.** Two of them are fixes the live pass forced, which
-   this program's incident history says should land as their own commits rather
-   than be folded back into the feature.
+7. **Commits are 12, not 7.** Five of them are fixes the live pass forced —
+   the swallowed AttributeError, the migration, the header scoping, per-feed
+   drift, and the launcher offset that did not move anything the first time.
+   This program's incident history says those land as their own commits rather
+   than being folded back into the feature they correct.
 8. **`Fetch field list` reads `Fetch fields` on the button.** The full label
    clipped inside the feed card at four-across; the tooltip carries the meaning.
 9. **The abm Zoho fetch button was not pressed.** Firing it would make an
@@ -541,7 +543,8 @@ real user from another work stream and was not touched.
 | 8 | `509957ee` | fix: two defects the live abm board found, and the reason it could |
 | 9 | `ba8c7039` | fix(pb_formula_studio): the studio's own header, and the coach off the TO column |
 | 10 | `0f1d082f` | fix: drift is a claim about a feed that ran, not about a connector |
-| 11 | *(this file)* | docs(integrations): Cycle 6's ledger — W151-W153 — and the report |
+| 11 | `a982046c` | docs(integrations): Cycle 6's ledger — W151-W153 — and the report |
+| 12 | `6d397ec8` | fix(pb_formula_studio): move the launchers themselves, not their host |
 
 Explicit staging throughout. Nothing pushed. `.claude/settings.json`, `thaco/`
 and `ABM/` never staged.
@@ -566,3 +569,18 @@ network.
 On payobook, one deliberate write: the DarwinHR connector's "Employee Master
 Data" feed gained 24 catalogue rows from that test. It is a demo connector, the
 rows are create-only, and they are the correct content for that feed.
+
+
+## Postscript — one more thing the browser caught
+
+`ba8c7039` offset `.lrn-coachhost`. That element is a zero-size,
+`pointer-events: none` wrapper; both launchers inside it are `position: fixed`
+in their own right, so the host's offsets were never load-bearing. The computed
+style changed and **nothing moved** — still x 1794-1896, still inside the TO
+column. `6d397ec8` targets the two buttons instead, and the rects were asserted
+rather than the CSS: `.lrn-fab` 1438-1540, `.payai-floating-pill` 1482-1540,
+both clear of the column at 1580, and both back at bottom-right on Mission
+Control in the same session.
+
+A fixed child does not inherit its fixed parent's offsets, and "the rule
+applied" is not the same claim as "the thing moved".
