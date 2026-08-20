@@ -425,7 +425,23 @@ class HrApiTransformationRule(models.Model):
             'result': self.default_value,
         }
 
-        safe_eval(self.python_code, local_vars, mode='exec', nocopy=True)
+        # Odoo 19 REMOVED `nocopy`. The signature is now
+        # `safe_eval(expr, /, context=None, *, mode="eval", filename=None)`, and
+        # its docstring makes the old opt-in the only behaviour: "This dict will
+        # be mutated with any variables created during evaluation". Passing
+        # `nocopy=True` is therefore a TypeError — raised before the expression
+        # runs, on EVERY python rule, since the port.
+        #
+        # It never surfaced, and that is the interesting half. `_execute_for_records`
+        # wraps each rule in `except Exception` and writes `default_value`
+        # instead (:243), so a python rule did not fail loudly — it quietly
+        # returned 0 and the payroll used the 0. The only trace was one WARNING
+        # per employee per rule in a log nobody reads during a pull.
+        #
+        # Found by Integrations Cycle 3, which ships the first python rules this
+        # codebase has had: DEPCOUNT and WORKEDHRS both answered 0.0 against
+        # payloads whose right answers were 2 and 10.5.
+        safe_eval(self.python_code, local_vars, mode='exec')
 
         return local_vars.get('result', self.default_value)
 
