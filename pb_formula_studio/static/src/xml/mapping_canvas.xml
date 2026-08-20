@@ -21,12 +21,18 @@
           </div>
           <div class="mc-col-body">
             <t t-foreach="props.leftItems" t-as="it" t-key="it.id">
+              <!-- opt-in group header: drawn only for items that carry a
+                   `group`, so every existing adapter renders unchanged -->
+              <div t-if="leftGroupHead(it_index)" class="mc-group" t-esc="leftGroupHead(it_index)"/>
               <div data-side="left" t-att-data-id="it.id"
                    t-attf-class="mc-item {{ isArmed('left', it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }}"
                    t-on-click="() => this.clickLeft(it.id)">
                 <div class="mc-item-main">
                   <div class="mc-item-label" t-esc="it.label"/>
                   <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                  <!-- what the data actually looks like; absent when the feed
+                       has no stored payload to sample -->
+                  <div t-if="it.sample" class="mc-item-sample" t-esc="it.sample"/>
                 </div>
                 <span class="mc-plug right"/>
               </div>

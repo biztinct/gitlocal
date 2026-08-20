@@ -68,6 +68,12 @@
 .mapping-canvas .mc-col.right .mc-item-sub { flex-direction: row-reverse; }
 .mapping-canvas .mc-col-tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5px; font-weight: 800; background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); padding: 1px 5px; border-radius: 5px; }
 
+/* Integrations Cycle 2 — the two opt-in lines. Both render only for items that
+   carry the key, so every pre-existing adapter is pixel-identical. */
+.mapping-canvas .mc-item-sample { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; color: var(--i600, #4A3D96); background: var(--i-soft, #EDEAF8); border-radius: 5px; padding: 1px 6px; margin-top: 4px; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mapping-canvas .mc-group { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted, #6B7280); padding: 8px 4px 1px; }
+.mapping-canvas .mc-group:first-child { padding-top: 2px; }
+
 .mapping-canvas .mc-plug { width: 9px; height: 9px; border-radius: 50%; background: #CBD5E1; border: 2px solid #fff; box-shadow: 0 0 0 1px #CBD5E1; flex: none; }
 .mapping-canvas .mc-item.wired .mc-plug { background: #D97706; box-shadow: 0 0 0 1px #D97706; }
 .mapping-canvas .mc-item.accepted .mc-plug { background: var(--i, #5A4BB0); box-shadow: 0 0 0 1px var(--i, #5A4BB0); }

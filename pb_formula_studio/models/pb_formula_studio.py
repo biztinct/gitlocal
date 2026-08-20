@@ -3772,6 +3772,133 @@ class PbFormulaStudio(models.AbstractModel):
     def _norm(s):
         return re.sub(r'[^a-z0-9]', '', (s or '').lower())
 
+    @api.model
+    def _dt_label(self, data_type):
+        """The human label of a data type, from the store's OWN selection — the
+        one list `hr.integration.endpoint` imports rather than retyping."""
+        if not data_type:
+            return ''
+        sel = dict(self.env['hr.api.data.store']._fields['data_type'].selection)
+        return sel.get(data_type, data_type)
+
+    @staticmethod
+    def _sample_text(value):
+        """A sample value as one short, printable line.
+
+        "What the data actually looks like" is the whole point of the second
+        line under a source field, so a dict or a 400-character blob has to
+        become something a 340px column can show. Trimmed rather than dropped:
+        an elided value still tells the reader the shape of what arrives.
+        """
+        if value is None or value is False or value == '':
+            return ''
+        if isinstance(value, (dict, list)):
+            try:
+                value = json.dumps(value, ensure_ascii=False, default=str)
+            except Exception:
+                value = str(value)
+        text = str(value).strip().replace('\n', ' ')
+        return text if len(text) <= 48 else text[:45] + '…'
+
+    @api.model
+    def mapping_pickers(self, arrival=None):
+        """Everything the Mapping Studio's FROM/TO pickers offer, in one call.
+
+        Read with the CALLER's own rights — `search([])` applies the record
+        rules, which is the same scope `pb.integrations._readable_connectors`
+        settles on, and for the same reason: the honest answer to "which
+        connectors are there" is "the ones you may read". A caller with no
+        read ACL at all gets the ORM's own AccessError; this method does not
+        catch it into a plausible-looking empty list.
+
+        It also RESOLVES the arrival context, and reports what it could not
+        honour. A deep link that silently lands on a different scheme is the
+        worst bug class this codebase has (W76.3, W117): the reader believes
+        the header. So an unresolvable `config_id` falls back AND says so in
+        `defaults.fell_back`, which the studio renders as a visible notice.
+        """
+        arrival = dict(arrival or {})
+        Conn = self.env['hr.integration.connector']
+        Config = self.env['hr.formula.config']
+
+        cons = Conn.search([], order='name')
+        # ONE search and ONE batched compute for every feed on the board. Read
+        # per connector, `_compute_counts` would run its three `_read_group`s
+        # once per row — twenty-five connectors is seventy-five queries for a
+        # dropdown (W53's shape: the payload a picker needs is one query, not
+        # one query per option).
+        by_conn_eps = defaultdict(list)
+        all_eps = self._api_endpoints(cons) if cons else None
+        for e in (all_eps or []):
+            by_conn_eps[e.connector_id.id].append({
+                'id': e.id, 'name': e.name or e.code or '',
+                'code': e.code or '', 'data_type': e.data_type or '',
+                'data_type_label': self._dt_label(e.data_type),
+                'mapping_count': e.mapping_count,
+                'staged': e.staged_count, 'synced': e.synced_count,
+                'last_sync': fields.Datetime.to_string(e.last_sync) if e.last_sync else '',
+                'status': e.last_sync_status or '',
+            })
+        connectors = [{
+            'id': c.id, 'name': c.name or '—',
+            'type': c.connector_type or '',
+            'status': c.connection_status or 'disconnected',
+            'mapping_count': len(c.field_mapping_ids),
+            'last_sync': fields.Datetime.to_string(c.last_sync) if c.last_sync else '',
+            'endpoints': by_conn_eps.get(c.id, []),
+        } for c in cons]
+
+        configs = []
+        for cfg in Config.search([], order='sequence, id desc'):
+            rules = cfg.rule_ids
+            configs.append({
+                'id': cfg.id, 'name': cfg.name or '—', 'code': cfg.code or '',
+                'country': cfg.country_code or '', 'state': cfg.state or '',
+                'active': bool(cfg.active),
+                'column_count': len(rules),
+                'input_count': len(rules.filtered(lambda r: r.column_type == 'input')),
+            })
+
+        Batch = self.env['hr.payroll.import.batch']
+        batches = [{'id': b.id, 'name': b.name or '—'}
+                   for b in Batch.search([], order='id desc', limit=60)]
+
+        # ---- arrival resolution ------------------------------------------
+        fell_back = []
+        by_conn = {c['id']: c for c in connectors}
+        cid = int(arrival.get('connector_id') or 0)
+        if cid and cid not in by_conn:
+            fell_back.append('connector')
+            cid = 0
+        cfg_id = int(arrival.get('config_id') or 0)
+        if cfg_id and cfg_id not in {c['id'] for c in configs}:
+            fell_back.append('config')
+            cfg_id = 0
+        if not cfg_id:
+            cfg = self._pick_config(None)
+            cfg_id = cfg.id if cfg else 0
+        if not cid:
+            conn = self._api_active_connector(Config.browse(cfg_id))
+            cid = conn.id if conn else 0
+        if cid and cid not in by_conn:
+            # `_api_active_connector` counts mappings and browses the winner by
+            # id, so it can name a connector the record rules hide from this
+            # caller. The picker must never open on an option it does not list.
+            cid = connectors[0]['id'] if connectors else 0
+        eid = int(arrival.get('endpoint_id') or 0)
+        ep_ids = {e['id'] for e in (by_conn.get(cid, {}).get('endpoints') or [])}
+        if eid and eid not in ep_ids:
+            fell_back.append('endpoint')
+            eid = 0
+
+        return {
+            'ok': True,
+            'connectors': connectors, 'configs': configs, 'batches': batches,
+            'defaults': {'connector_id': cid, 'endpoint_id': eid,
+                         'config_id': cfg_id, 'fell_back': fell_back},
+            'can_edit': self._can_edit(),
+        }
+
     def _api_active_connector(self, config, connector_id=None):
         Conn = self.env['hr.integration.connector']
         if connector_id:
@@ -3793,8 +3920,40 @@ class PbFormulaStudio(models.AbstractModel):
                 return r.integration_connector_id
         return Conn.search([], limit=1)
 
+    def _api_endpoints(self, connectors):
+        """These connectors' feeds, or `None` on a database that has no feeds
+        TABLE yet.
+
+        Cycle 1's degrade rail, reused verbatim: the addons tree is SHARED by
+        every database on the box and the schema is created by each database's
+        own upgrade, so `'hr.integration.endpoint' in self.env` is True in the
+        gap between the two and a query would raise `UndefinedTable` — which,
+        caught, still leaves the whole request's transaction aborted. `None`
+        (not an empty recordset) so a caller can tell "this database has no
+        feeds table" from "this connector has no feeds" (W79).
+        """
+        if 'hr.integration.endpoint' not in self.env:
+            return None
+        EP = self.env['hr.integration.endpoint']
+        if not EP._schema_ready():
+            return None
+        return EP.search([('connector_id', 'in', connectors.ids)])
+
     @api.model
-    def api_mapping_data(self, config_id=None, connector_id=None):
+    def api_mapping_data(self, config_id=None, connector_id=None, endpoint_id=None):
+        """The API board, optionally narrowed to ONE feed.
+
+        Integrations Cycle 2 gave the connector's feeds an axis of their own.
+        Passing `endpoint_id` narrows the LEFT column to the fields that feed
+        actually delivers and the wires to the mappings that name it — with one
+        deliberate exception: a mapping drawn before feeds existed carries no
+        `endpoint_id`, and dropping it here would make an operator's existing
+        work disappear the first time they picked a feed. Those legacy wires
+        are kept, and their source paths are added to the left column under an
+        "Unassigned" group, so the board says where they came from instead of
+        silently losing them (W79: absent must not be indistinguishable from
+        broken).
+        """
         config = self._pick_config(config_id)
         if not config:
             return {'ok': False, 'reason': 'no_config'}
@@ -3804,12 +3963,29 @@ class PbFormulaStudio(models.AbstractModel):
         if not conn:
             return {'ok': False, 'reason': 'no_connector', 'contexts': contexts}
         FM = self.env['hr.integration.field.mapping']
+        eps = self._api_endpoints(conn)
+        ep = None
+        if endpoint_id and eps is not None:
+            cand = eps.filtered(lambda e: e.id == int(endpoint_id))
+            ep = cand[:1] or None
+        endpoints = [{'id': e.id, 'name': e.name or e.code or '', 'code': e.code or '',
+                      'data_type': e.data_type or '',
+                      'data_type_label': self._dt_label(e.data_type),
+                      'mapping_count': e.mapping_count, 'staged': e.staged_count,
+                      'synced': e.synced_count,
+                      'last_sync': fields.Datetime.to_string(e.last_sync) if e.last_sync else '',
+                      'status': e.last_sync_status or ''}
+                     for e in (eps or [])]
         try:
-            fields_ = FM.get_available_source_fields(conn.id) or []
+            fields_ = FM.get_available_source_fields(
+                conn.id, ep.data_type if ep else None) or []
         except Exception:
             fields_ = []
+        ep_group = (ep.name or ep.code) if ep else ''
         left = [{'id': 'f:' + f['path'], 'label': f.get('label') or f['path'],
                  'sublabel': f['path'],
+                 'sample': self._sample_text(f.get('sample')),
+                 'group': ep_group,
                  'meta': {'type': f.get('type') or '', 'sample': f.get('sample')}}
                 for f in fields_]
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
@@ -3820,12 +3996,27 @@ class PbFormulaStudio(models.AbstractModel):
         # accepted wires = persisted field mappings on this connector → these inputs
         wires = []
         mapped_paths, mapped_rules = set(), set()
-        for m in FM.search([('connector_id', '=', conn.id),
-                            ('target_rule_id', 'in', input_rules.ids)]):
+        dom = [('connector_id', '=', conn.id),
+               ('target_rule_id', 'in', input_rules.ids)]
+        if ep:
+            # this feed's own mappings, PLUS the ones that predate feeds
+            dom = dom + ['|', ('endpoint_id', '=', ep.id), ('endpoint_id', '=', False)]
+        present = {i['id'] for i in left}
+        for m in FM.search(dom):
+            lid = 'f:' + (m.source_field or '')
             wires.append({'id': 'm%s' % m.id, 'kind': 'mapping', 'ref': m.id,
-                          'leftId': 'f:' + (m.source_field or ''), 'rightId': m.target_rule_id.id,
+                          'leftId': lid, 'rightId': m.target_rule_id.id,
                           'state': 'accepted',
                           'transform': self._transform_payload(m)})   # W62 (D-I2)
+            if ep and lid not in present:
+                # a legacy (or foreign-feed) wire whose source is not in this
+                # feed's field list — shown, and labelled for what it is
+                left.append({'id': lid, 'label': (m.source_field_label
+                                                  or m.source_field or lid),
+                             'sublabel': m.source_field or '',
+                             'sample': self._sample_text(m.source_sample_value),
+                             'group': _("Unassigned"), 'meta': {'type': ''}})
+                present.add(lid)
             mapped_paths.add(m.source_field or '')
             mapped_rules.add(m.target_rule_id.id)
         # suggested wires = best name match between an unmapped source field and an
@@ -3866,11 +4057,20 @@ class PbFormulaStudio(models.AbstractModel):
             'subtitle': _("Map %s fields onto this scheme's input components") % conn.name,
             'supports_suggest': False,
             'contexts': contexts, 'context_id': conn.id,
+            'endpoints': endpoints, 'endpoint_id': ep.id if ep else False,
             'can_edit': self._can_edit(),
         }
 
     @api.model
-    def api_mapping_create(self, config_id, connector_id, source_field, target_rule_id):
+    def api_mapping_create(self, config_id, connector_id, source_field,
+                           target_rule_id, endpoint_id=None):
+        """Draw an API wire, stamped with the feed it was drawn on.
+
+        `endpoint_id` is validated against THIS connector's feeds rather than
+        trusted: an id from the browser that named another connector's feed
+        would file the mapping under a feed that cannot produce it, and every
+        count on both screens would then be wrong in a way nothing errors on.
+        """
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
         src = source_field[2:] if (source_field or '').startswith('f:') else source_field
@@ -3879,12 +4079,19 @@ class PbFormulaStudio(models.AbstractModel):
         conn = self.env['hr.integration.connector'].browse(int(connector_id))
         if not (rule.exists() and conn.exists()):
             return {'ok': False}
+        vals = {'connector_id': conn.id, 'source_field': src,
+                'target_rule_id': rule.id,
+                'source_field_label': (src or '').replace('_', ' ').title()}
+        if endpoint_id:
+            eps = self._api_endpoints(conn)
+            ep = (eps or self.env['hr.integration.endpoint'].browse()) \
+                .filtered(lambda e: e.id == int(endpoint_id))[:1] if eps is not None else None
+            if ep:
+                vals['endpoint_id'] = ep.id
         # one source→one input per connector: drop existing on either side
         FM.search(['&', ('connector_id', '=', conn.id),
                    '|', ('source_field', '=', src), ('target_rule_id', '=', rule.id)]).unlink()
-        FM.create({'connector_id': conn.id, 'source_field': src,
-                   'target_rule_id': rule.id,
-                   'source_field_label': (src or '').replace('_', ' ').title()})
+        FM.create(vals)
         return {'ok': True}
 
     @api.model
