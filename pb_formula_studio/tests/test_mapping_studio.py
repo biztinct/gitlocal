@@ -256,6 +256,42 @@ class TestMappingStudio(TransactionCase):
         # written around in pb_integrations.
         self.assertEqual(self.Studio._sample_text(0), '0')
 
+    def test_03c_a_wire_remembers_the_sample_the_board_showed(self):
+        """Found on the live pass, and the reason the preview was empty.
+
+        Every left card prints its sample; `api_mapping_create` dropped it, so
+        the transform popover — the very next click — answered "No sample value
+        stored" about a field whose sample was on screen beside it.
+        """
+        conn = self._connector('IG-C2 create sample')
+        cfg = self._config('IG-C2 create sample scheme', ['hours'])
+        ep = self._endpoint(conn, 'c2_cs', 'employee')
+        self._store(conn, 'employee', {'seconds_worked': 7200, 'name': 'A'})
+        rule = cfg.rule_ids[0]
+
+        self.Studio.api_mapping_create(cfg.id, conn.id, 'f:seconds_worked',
+                                       rule.id, ep.id)
+        m = self.FM.search([('connector_id', '=', conn.id),
+                            ('target_rule_id', '=', rule.id)])
+        self.assertEqual(m.source_sample_value, '7200')
+        self.assertEqual(m.source_data_type, 'integer')
+
+        # …and the preview the user opens next actually previews something
+        prev = self.Studio.api_transform_preview(
+            m.id, {'transformation_type': 'divide', 'transformation_value': 3600})
+        self.assertTrue(prev.get('ok'), prev)
+        self.assertFalse(prev.get('no_sample'),
+                         "the popover must not say 'no sample stored' about a "
+                         "field the board is printing a sample for")
+        self.assertEqual(float(prev['result']), 2.0)
+
+        # a path the connector has never delivered stays honestly blank
+        self.Studio.api_mapping_create(cfg.id, conn.id, 'f:not_a_field',
+                                       rule.id, ep.id)
+        m2 = self.FM.search([('connector_id', '=', conn.id),
+                             ('source_field', '=', 'not_a_field')])
+        self.assertFalse(m2.source_sample_value)
+
     # --------------------------------------------------------------- test 4
     def test_04_two_configs_on_one_connector_never_share_wires(self):
         conn = self._connector('IG-C2 two configs')
