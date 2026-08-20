@@ -27,6 +27,7 @@ import {
     clampY,
     hubPoint,
     itemMatches,
+    spreadHubs,
     wireGeometry,
     HEAD,
 } from "@pb_formula_studio/js/mapping/mapping_geometry";
@@ -285,4 +286,206 @@ test("an adapter that sends no provenance renders exactly as it did before", asy
     expect(canvas.provChip({ label: "Basic" })).toBe(null);
     expect(canvas.provChip(null)).toBe(null);
     expect(canvas.provChip(undefined)).toBe(null);
+});
+
+// ==================================== Cycle 7 — one gesture, both ends home
+//
+// Cycle 5's answer to "take me to the other end of this wire" was a `‹` and a
+// `›` on every hub, and its report records both as working (T4). They did —
+// one end at a time, which on a 200-row column means the FIRST end has scrolled
+// away by the time the second arrives. The reader never saw the connection.
+// These tests replace that record deliberately: the arrows are gone, and what
+// stands in their place is asserted here rather than described in prose.
+//
+// `_recompute` is stubbed and `ui.geom` written directly wherever the MARKUP is
+// the thing under test. The board only builds geometry from real rects, and a
+// DOM assertion that passes because nothing rendered is a gate that cannot fail
+// (W127) — forcing the state is what makes "the arrow zones are absent" a claim
+// about the template instead of about the fixture's height.
+function forceGeom(canvas, over = {}) {
+    canvas._recompute = () => {};
+    canvas.ui.geom = [{
+        id: "w1", leftId: "L0", rightId: "R0", state: "accepted",
+        d: "M 0 0 C 10 0 20 40 30 40", head: "30,40 19,34 19,46",
+        hx: 120, hy: 90, sx: 0, tx: 240, y1: 0, y2: 40,
+        dockL: 0, dockR: 0, hiddenL: false, hiddenR: false,
+        transform: { type: "multiply", value: 2 },
+        ...over,
+    }];
+}
+
+test("the hub carries meaning only — the ‹ › navigation zones are gone", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas);
+    canvas.ui.selWire = "w1";              // hubVisible() without a pointer
+    await animationFrame();
+
+    // the precondition, asserted rather than assumed
+    expect(document.querySelectorAll(".mc-hub").length).toBe(1);
+    // …and the removal
+    expect(document.querySelectorAll(".mc-hub__z").length).toBe(0);
+    // what the pill still has to be able to say
+    expect(document.querySelectorAll(".mc-hub .mc-tf-chip").length).toBe(1);
+    expect(document.querySelector(".mc-hub").getAttribute("title"))
+        .toBe("Double-click to bring both ends into view");
+});
+
+test("a suggestion keeps its confidence and both verbs after the zones went", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas, { state: "suggested", confidence: 0.92, transform: null });
+    canvas.ui.selWire = "w1";
+    await animationFrame();
+    expect(document.querySelectorAll(".mc-hub__z").length).toBe(0);
+    expect(document.querySelector(".mc-hub .mc-conf").textContent).toBe("92%");
+    expect(document.querySelectorAll(".mc-hub .mc-b-ok").length).toBe(1);
+    expect(document.querySelectorAll(".mc-hub .mc-b-x").length).toBe(1);
+});
+
+test("double-click centres BOTH ends and rings both cards", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas);
+    // start from a scroll position where neither end is where it will end up
+    const lbody = document.querySelector(".mc-col.left .mc-col-body");
+    const rbody = document.querySelector(".mc-col.right .mc-col-body");
+    lbody.scrollTop = 400;
+    rbody.scrollTop = 300;
+
+    canvas.centreBoth(canvas.ui.geom[0]);
+    await animationFrame();
+
+    expect(canvas.ui.selWire).toBe("w1");
+    expect(canvas.ui.reveal).toBe(null);
+    // BOTH, which is the entire point — Cycle 5 could only ever light one
+    expect(canvas.ui.flash.left).toBe("L0");
+    expect(canvas.ui.flash.right).toBe("R0");
+    expect(canvas.isFlashing("left", "L0")).toBe(true);
+    expect(canvas.isFlashing("right", "R0")).toBe(true);
+    expect(canvas.isFlashing("left", "L1")).toBe(false);
+});
+
+test("an end at the very top of its list scrolls as close as it can, and still rings", async () => {
+    // `offsetTop - (clientHeight - offsetHeight)/2` is NEGATIVE for the first
+    // card in a list. `Math.max(0, …)` is what turns "cannot be centred" into
+    // "scrolled as far as it goes" rather than into a refusal — the honest edge
+    // case, and the one a reader hits on every board's first wire.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas);
+    const lbody = document.querySelector(".mc-col.left .mc-col-body");
+    // the ASKED-FOR offset, not the resulting scrollTop: `behavior: "smooth"`
+    // means the property has not moved yet when the next frame runs, and
+    // asserting on it would be asserting on the engine's animation clock.
+    const asked = [];
+    lbody.scrollTo = (opt) => asked.push(opt.top);
+
+    canvas.centreBoth(canvas.ui.geom[0]);
+    await animationFrame();
+    expect(canvas.ui.flash.left).toBe("L0");
+    expect(asked.length).toBe(1);
+    expect(asked[0]).toBe(0);          // clamped, not negative, not refused
+});
+
+test("an end hidden by a filter is SAID, not silently un-filtered", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas, { hiddenL: true });
+    canvas.ui.q.left = "nothing-matches-this";
+    canvas.ui.qa.left = "nothing-matches-this";
+
+    canvas.centreBoth(canvas.ui.geom[0]);
+    await animationFrame();
+
+    // the refusal is visible…
+    expect(canvas.ui.reveal.id).toBe("w1");
+    expect(canvas.ui.reveal.sides).toEqual(["left"]);
+    expect(canvas.revealText)
+        .toBe("The source end of this wire is hidden by this column's filter.");
+    // …the reader's search is still there…
+    expect(canvas.ui.qa.left).toBe("nothing-matches-this");
+    // …and the end that IS reachable was still centred, so the gesture never
+    // looks like it did nothing (W40)
+    expect(canvas.ui.flash.right).toBe("R0");
+    expect(canvas.ui.flash.left).toBe(null);
+});
+
+test("both ends behind filters is one sentence, not two", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas, { hiddenL: true, hiddenR: true });
+    canvas.centreBoth(canvas.ui.geom[0]);
+    expect(canvas.ui.reveal.sides).toEqual(["left", "right"]);
+    expect(canvas.revealText)
+        .toBe("Both ends of this wire are hidden by the column filters.");
+});
+
+test("the reveal verb clears only the filters that were hiding an end", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas, { hiddenL: true });
+    canvas.ui.qa.left = "zzz"; canvas.ui.q.left = "zzz"; canvas.ui.f.left = "mapped";
+    canvas.ui.qa.right = "R1"; canvas.ui.q.right = "R1";
+
+    canvas.centreBoth(canvas.ui.geom[0]);
+    canvas.revealBoth();
+    await animationFrame();
+    await animationFrame();
+
+    expect(canvas.ui.qa.left).toBe("");
+    expect(canvas.ui.f.left).toBe("all");
+    expect(canvas.ui.reveal).toBe(null);
+    // the OTHER column's search was never the problem and is left alone
+    expect(canvas.ui.qa.right).toBe("R1");
+});
+
+test("clearing a column's filter by hand retires the half of the bar it disproved", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas, { hiddenL: true, hiddenR: true });
+    canvas.centreBoth(canvas.ui.geom[0]);
+    expect(canvas.ui.reveal.sides.length).toBe(2);
+    canvas.clearFilters("left");
+    expect(canvas.ui.reveal.sides).toEqual(["right"]);
+    canvas.clearFilters("right");
+    expect(canvas.ui.reveal).toBe(null);
+});
+
+test("Enter on a selected wire is the keyboard twin of the double-click", async () => {
+    // A gesture reachable by exactly one input device is not reachable. `‹ ›`
+    // had `←`/`→`; the double-click has Enter, and the transform editor moves
+    // to `t` to make room for it.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas);
+    canvas.ui.selWire = "w1";
+
+    canvas.onKeydown({ key: "Enter", preventDefault() {}, stopPropagation() {},
+                       target: { tagName: "DIV" } });
+    await animationFrame();
+    expect(canvas.ui.flash.left).toBe("L0");
+    expect(canvas.ui.flash.right).toBe("R0");
+    expect(canvas.ui.tfOpen).toBe(null);
+
+    canvas.onKeydown({ key: "t", preventDefault() {}, stopPropagation() {},
+                       target: { tagName: "DIV" } });
+    expect(canvas.ui.tfOpen).toBe("w1");
+});
+
+test("the single-ended jump survives, because nothing was ever wrong with it", async () => {
+    // Dock chips and `←`/`→` still visit ONE end. The gesture that changed is
+    // the wire's, not theirs.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    forceGeom(canvas);
+    canvas.jumpTo("right", canvas.ui.geom[0]);
+    await animationFrame();
+    expect(canvas.ui.flash.right).toBe("R0");
+    expect(canvas.ui.flash.left).toBe(null);
+});
+
+test("the collision window shrank with the pill it describes", () => {
+    // Two hubs 100px apart horizontally do not contend for space now the `‹ ›`
+    // zones are gone — the widest pill left is ~88px. Spreading them would push
+    // one off its own wire, which is the defect spreadHubs exists to prevent.
+    const far = [{ id: "a", hx: 0, hy: 100 }, { id: "b", hx: 100, hy: 104 }];
+    spreadHubs(far);
+    expect(far[1].hy).toBe(104);
+
+    // …and two that genuinely overlap are still pushed apart, by at least the
+    // pill's own height.
+    const near = [{ id: "a", hx: 0, hy: 100 }, { id: "b", hx: 30, hy: 104 }];
+    spreadHubs(near);
+    expect(near[1].hy - near[0].hy >= 28).toBe(true);
 });
