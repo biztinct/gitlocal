@@ -461,6 +461,51 @@ class HrIntegrationConnector(models.Model):
         return ep
 
     # ==========================================
+    # TRANSFORMATION-RULE CATALOGUE (Cycle 3)
+    # ==========================================
+    def action_sync_transformation_rules(self):
+        """Instantiate this vendor's transformation-rule templates.
+
+        The third catalogue, and the same contract as the other two: CREATE-ONLY,
+        matched on `output_key`. An operator who has retuned a rule — changed the
+        filter, changed the default, switched it off — keeps their version
+        through every later apply, because a rule that silently reverts to the
+        vendor's arithmetic is a payslip that silently changes.
+
+        `active_test=False` for the same reason the feed catalogue uses it: a
+        DEACTIVATED rule still owns its output key, and re-creating it because
+        the search filtered it out would be the rudest possible reading of
+        create-only.
+
+        Returns `{'created': n, 'skipped': n}`.
+        """
+        self.ensure_one()
+        Rule = self.env['hr.api.transformation.rule']
+        Template = self.env['hr.api.transformation.rule.template']
+        if not Template._schema_ready():
+            return {'created': 0, 'skipped': 0}
+
+        existing = Rule.with_context(active_test=False).search(
+            [('connector_id', '=', self.id)])
+        keys = {r.output_key for r in existing if r.output_key}
+
+        vals_list = []
+        skipped = 0
+        for t in Template.with_context(active_test=False).search(
+                [('connector_type', '=', self.connector_type)]):
+            if not t.output_key or t.output_key in keys:
+                skipped += 1
+                continue
+            vals = t._rule_vals(self)
+            vals['active'] = t.active
+            vals_list.append(vals)
+            keys.add(t.output_key)
+
+        if vals_list:
+            Rule.create(vals_list)
+        return {'created': len(vals_list), 'skipped': skipped}
+
+    # ==========================================
     # CONNECTION ACTIONS
     # ==========================================
     def action_apply_mapping_template(self, config_id=None):
@@ -538,7 +583,16 @@ class HrIntegrationConnector(models.Model):
                 applied += 1
             else:
                 suggested += 1
-        return {'applied': applied, 'suggested': suggested, 'total': applied + suggested}
+        # The vendor's AGGREGATIONS are the sibling step (Cycle 3): a field map
+        # that says "OTHRS150 → Overtime 150%" is a wire to a key nothing
+        # computes until the rule that computes it exists. Applying a template
+        # is the moment both halves of the vendor's answer arrive, and the step
+        # is create-only, so a second apply adds nothing.
+        rules = self.action_sync_transformation_rules()
+        return {'applied': applied, 'suggested': suggested,
+                'total': applied + suggested,
+                'rules_created': rules['created'],
+                'rules_skipped': rules['skipped']}
 
     def _sample_payload(self):
         """A representative source record for mapping tests: the newest stored
