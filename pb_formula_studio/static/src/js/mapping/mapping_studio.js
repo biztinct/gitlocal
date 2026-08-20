@@ -385,9 +385,7 @@ export class MappingStudio extends Component {
                     this.endpoints.filter((e) => hit(e.name) || hit(e.code))
                         .map((e) => ({
                             id: e.id, label: e.name, on: e.id === this.state.endpointId,
-                            sub: _t("%(type)s · %(maps)s mapped · %(when)s", {
-                                type: e.data_type_label || e.data_type,
-                                maps: e.mapping_count, when: this.since(e.last_sync) }),
+                            sub: this.feedSub(e),
                             tone: e.status === "failed" ? "err"
                                 : (e.status === "success" ? "ok" : "muted"),
                         })));
@@ -410,6 +408,27 @@ export class MappingStudio extends Component {
             default:
                 return [];
         }
+    }
+
+    /**
+     * A feed option's second line — WITHOUT repeating the line above it.
+     *
+     * A feed derived from the data store is named after its data type, so the
+     * obvious "type · N mapped · when" printed "Dependents / Family" directly
+     * under "Dependents / Family". The connector cockpit hit this in Cycle 1
+     * and settled it there (`subLabel`): a label that repeats the line above
+     * it is not a label, and the reader learns to stop reading both. Same rule,
+     * because two surfaces that disagree about it is worse than either.
+     * One msgid per shape, never a sentence assembled from fragments (W80).
+     */
+    feedSub(e) {
+        const type = (e.data_type_label || e.data_type || "").trim();
+        const same = type.toLowerCase() === (e.name || "").trim().toLowerCase();
+        return same
+            ? _t("%(maps)s mapped · %(when)s",
+                 { maps: e.mapping_count, when: this.since(e.last_sync) })
+            : _t("%(type)s · %(maps)s mapped · %(when)s",
+                 { type, maps: e.mapping_count, when: this.since(e.last_sync) });
     }
 
     get pickerTitle() {
