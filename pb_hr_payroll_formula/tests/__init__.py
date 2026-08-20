@@ -32,3 +32,4 @@
 from . import test_odoo19_exceptions
 from . import test_integration_endpoints
 from . import test_zoho_catalog
+from . import test_transform_preview
