@@ -152,7 +152,25 @@
 .mapping-canvas .mc-col.right .mc-item { flex-direction: row-reverse; text-align: right; }
 .mapping-canvas .mc-item:hover { border-color: var(--i-border, #CBC2EE); box-shadow: 0 3px 10px rgba(90, 75, 176, .12); }
 .mapping-canvas .mc-item-main { flex: 1; min-width: 0; }
-.mapping-canvas .mc-item-label { font-size: 13px; font-weight: 700; color: var(--ink, #1E1B2E); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mapping-canvas .mc-item-label { font-size: 13px; font-weight: 700; color: var(--ink, #1E1B2E); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: baseline; gap: 6px; }
+.mapping-canvas .mc-item-label > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---- Integrations Cycle 6: where this card came from ----
+   Rendered only when `provChip()` returns something, which it does not for a
+   field the connector has actually delivered. Four tones, all of them bound to
+   the canvas' own `--i*` variables (which the studio binds to `--pbim-*`), so
+   there is not one new hex here and the Formula-Studio overlay cannot drift
+   into a second vocabulary. Uppercase and small on purpose: a provenance is a
+   footnote on a field name, never a second label competing with it. */
+.mapping-canvas .mc-prov {
+    flex: none; font-size: 9px; font-weight: 800; letter-spacing: .05em;
+    text-transform: uppercase; padding: 1px 6px; border-radius: 999px;
+    border: 1px solid transparent; line-height: 1.5; cursor: help;
+}
+.mapping-canvas .mc-prov.exp   { background: var(--i-soft, #EDEAF8);  color: var(--i600, #4A3D96);  border-color: var(--i-border, #CBC2EE); }
+.mapping-canvas .mc-prov.calc  { background: var(--i-wash, #F1F5F9);  color: var(--i-deep, #241F52); border-color: var(--i-border, #CBC2EE); }
+.mapping-canvas .mc-prov.warn  { background: var(--i-amber-wash, #FEF3C7); color: var(--i-amber-ink, #D97706); border-color: var(--i-amber-line, #FEF3C7); }
+.mapping-canvas .mc-prov.odoo  { background: var(--i-wash, #F1F5F9);  color: var(--i-slate, #64748B); border-color: var(--i-wash2, #F1F5F9); }
 .mapping-canvas .mc-item-sub { font-size: 11px; color: var(--muted, #6B7280); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
 .mapping-canvas .mc-col.right .mc-item-sub { flex-direction: row-reverse; }
 .mapping-canvas .mc-col-tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5px; font-weight: 800; background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); padding: 1px 5px; border-radius: 5px; }
@@ -160,6 +178,11 @@
 /* Integrations Cycle 2 — the two opt-in lines. Both render only for items that
    carry the key, so every pre-existing adapter is pixel-identical. */
 .mapping-canvas .mc-item-sample { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; color: var(--i600, #4A3D96); background: var(--i-soft, #EDEAF8); border-radius: 5px; padding: 1px 6px; margin-top: 4px; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* C6 — a CATALOGUE sample is an illustration, not a value that arrived. It is
+   drawn in the neutral wash rather than the indigo one, and it carries the
+   `e.g.` that makes the difference readable rather than merely encoded. */
+.mapping-canvas .mc-item-sample.eg { color: var(--i-slate, #64748B); background: var(--i-wash, #F1F5F9); }
+.mapping-canvas .mc-item-sample__k { font-family: inherit; font-style: italic; opacity: .8; margin-right: 4px; }
 .mapping-canvas .mc-group { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted, #6B7280); padding: 8px 4px 1px; }
 .mapping-canvas .mc-group:first-child { padding-top: 2px; }
 

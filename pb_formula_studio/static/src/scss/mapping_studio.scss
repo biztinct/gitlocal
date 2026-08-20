@@ -47,7 +47,33 @@
     display: flex; align-items: center; gap: 12px;
     padding: 12px 22px 0;
 }
-.pbms-brand { display: flex; align-items: center; gap: 8px; margin-left: auto; color: var(--pbim-muted); }
+/* ---- the wordmark (Cycle 6) ----
+   It was `--pbim-muted` at 12px/800/uppercase, which measures **4.41:1** on the
+   `--pbim-bg` bar it sits on — under AA's 4.5:1, and at that size and weight
+   there is no large-text exemption to fall back on. The owner could not find
+   it, and the number agrees with him.
+
+   It stays a LABEL and not a control. There is exactly one way out of this
+   screen and the back chip to its left already is it; a second thing in the
+   same bar that looked clickable would make the reader choose between two
+   doors, one of which does nothing. So: no cursor change, no hover state, no
+   focus ring, `user-select: none` — it reads as a nameplate.
+
+   What it gains is contrast and structure. `--pbim-primary-dark` on the bar is
+   **13.96:1**, the icon at `--pbim-primary` is 6.34:1, and a hairline pill
+   holds the two together so the eye lands on an object rather than on two loose
+   marks. It does not compete with the page title, which lives a row below in
+   the story bar at 14.5px in `--pbim-text` — this is smaller, quieter in
+   weight-per-area, and pushed to the far edge. */
+.pbms-brand {
+    display: flex; align-items: center; gap: 7px; margin-left: auto;
+    padding: 4px 11px 4px 9px;
+    border: 1px solid var(--pbim-line);
+    border-radius: 999px;
+    background: var(--pbim-surface);
+    color: var(--pbim-primary-dark);
+    user-select: none;
+}
 .pbms-brand__ic { display: inline-flex; color: var(--pbim-primary); }
 .pbms-brand__t { font-size: 12px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; }
 
@@ -91,6 +117,26 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .pbms-pick__chev { display: inline-flex; flex: none; color: var(--pbim-muted); transform: rotate(90deg); }
+
+/* ---- Cycle 6: the never-synced connector's sentence ----
+   Indigo, not amber. Nothing is wrong here — a brand-new integration showing
+   the fields it is expected to deliver is the feature, and dressing it as a
+   warning would teach the reader to dismiss it. The `.s` second line is the
+   honest note about why the list cannot simply be fetched from the vendor
+   right now, and is absent when it can. */
+.pbms-expect {
+    display: flex; align-items: flex-start; gap: 9px;
+    margin: 0 22px 10px;
+    padding: 9px 13px;
+    background: var(--pbim-soft);
+    border: 1px solid var(--pbim-primary-light);
+    border-radius: var(--pbim-r-sm);
+    color: var(--pbim-primary-dark);
+    font-size: 12.5px; line-height: 1.45;
+}
+.pbms-expect__ic { display: inline-flex; flex: none; margin-top: 1px; color: var(--pbim-primary); }
+.pbms-expect__tx { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pbms-expect__tx .s { color: var(--pbim-primary-hover); font-size: 11.5px; }
 
 .pbms-sub {
     display: inline-flex; align-items: center; gap: 6px;

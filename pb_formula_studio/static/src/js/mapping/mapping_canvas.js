@@ -403,6 +403,54 @@ export class MappingCanvas extends Component {
         const n = side === "left" ? this.props.leftItems.length : this.props.rightItems.length;
         return side === "left" ? `Search ${n} fields…` : `Search ${n} columns…`;
     }
+
+    /**
+     * Where this card came from — Integrations Cycle 6.
+     *
+     * `null` for a field the connector has actually delivered, and that
+     * silence is deliberate: the common case must not be decorated, or the
+     * chips stop meaning "read me". Four things can need saying:
+     *
+     *   expected  the vendor's catalogue says this feed delivers it, and it
+     *             has not been seen yet because nothing has synced;
+     *   computed  Payobook itself produces it, from a transformation rule;
+     *   not sent  a catalogue field the feed HAS run and did not carry — real
+     *             drift, and the only one of the four that is a warning;
+     *   Odoo field  the last-resort layer, saying so out loud. This is the
+     *             chip whose absence was the whole defect: 206 `hr.employee`
+     *             columns printed under "FROM — ZOHO PEOPLE (ABM)".
+     *
+     * Adapters that predate this send no `prov` at all, and `undefined` falls
+     * through to `null` — every other board renders exactly as it did.
+     */
+    provChip(it) {
+        if (!it || !it.prov) { return null; }
+        if (it.drift) {
+            return { label: "not sent", tone: "warn",
+                     hint: "This feed has synced, and did not carry this field. "
+                           + "It may have been renamed or switched off at the source." };
+        }
+        if (it.prov === "catalog") {
+            return it.provKind === "computed"
+                ? { label: "computed", tone: "calc",
+                    hint: it.note || "Payobook computes this from the records this feed returns." }
+                : { label: "expected", tone: "exp",
+                    hint: it.note
+                          ? `Expected from the vendor's catalogue. ${it.note}`
+                          : "Expected from the vendor's catalogue. The first sync will confirm it." };
+        }
+        if (it.prov === "odoo") {
+            return { label: "Odoo field", tone: "odoo",
+                     hint: "This is one of Odoo's own employee fields, not a field "
+                           + "this source has told us about." };
+        }
+        if (it.prov === "mapping") {
+            return { label: "mapped elsewhere", tone: "odoo",
+                     hint: "Shown because a mapping names it. It arrives on another "
+                           + "feed, or on none this board knows about." };
+        }
+        return null;
+    }
     filterChips(side) {
         const chips = [{ v: "all", l: "All" }, { v: "mapped", l: "Mapped" },
                        { v: "unmapped", l: "Unmapped" }];

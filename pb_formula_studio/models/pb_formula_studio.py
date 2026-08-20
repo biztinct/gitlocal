@@ -4029,10 +4029,18 @@ class PbFormulaStudio(models.AbstractModel):
         except Exception:
             fields_ = []
         ep_group = (ep.name or ep.code) if ep else ''
+        # Integrations Cycle 6 — every card says where it came from. `prov` is
+        # promoted to a top-level key rather than buried in `meta` because the
+        # canvas renders a chip from it on every row, and `meta` is the bag of
+        # things only the transform popover reads.
         left = [{'id': 'f:' + f['path'], 'label': f.get('label') or f['path'],
                  'sublabel': f['path'],
                  'sample': self._sample_text(f.get('sample')),
                  'group': ep_group,
+                 'prov': f.get('provenance') or 'live',
+                 'provKind': f.get('catalog_kind') or '',
+                 'drift': bool(f.get('expected_missing')),
+                 'note': f.get('notes') or '',
                  'meta': {'type': f.get('type') or '', 'sample': f.get('sample')}}
                 for f in fields_]
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
@@ -4062,7 +4070,9 @@ class PbFormulaStudio(models.AbstractModel):
                                                   or m.source_field or lid),
                              'sublabel': m.source_field or '',
                              'sample': self._sample_text(m.source_sample_value),
-                             'group': _("Unassigned"), 'meta': {'type': ''}})
+                             'group': _("Unassigned"),
+                             'prov': 'mapping', 'provKind': '', 'drift': False,
+                             'note': '', 'meta': {'type': ''}})
                 present.add(lid)
             mapped_paths.add(m.source_field or '')
             mapped_rules.add(m.target_rule_id.id)
@@ -4105,7 +4115,50 @@ class PbFormulaStudio(models.AbstractModel):
             'supports_suggest': False,
             'contexts': contexts, 'context_id': conn.id,
             'endpoints': endpoints, 'endpoint_id': ep.id if ep else False,
+            'source_summary': self._source_summary(conn, ep, fields_),
             'can_edit': self._can_edit(),
+        }
+
+    def _source_summary(self, conn, ep, fields_):
+        """What the FROM column's sub-line is entitled to say.
+
+        Cycle 5's sub-line read `206 fields · never synced`, and both halves
+        were true while the sentence as a whole was a lie: the 206 were Odoo's,
+        and the reader had every reason to think they were Zoho's. The rule now
+        is that the count and its ORIGIN have to agree, so the origin is
+        computed here — beside the list it describes — rather than inferred in
+        the browser from a number.
+
+        `fetch` is a capability, not a credential: it is three booleans and a
+        sentence, and no value of `api_key`, `password` or either token can
+        reach this payload (`_has_credentials` sudo-reads them and returns a
+        bool).
+        """
+        counts = {}
+        for f in fields_:
+            counts[f.get('provenance') or 'live'] = \
+                counts.get(f.get('provenance') or 'live', 0) + 1
+        drift = len([f for f in fields_ if f.get('expected_missing')])
+        try:
+            cap = conn.field_fetch_capability()
+        except Exception:                 # pragma: no cover — older server
+            cap = {'mode': None, 'ready': False, 'reason': ''}
+        return {
+            'total': len(fields_),
+            'live': counts.get('live', 0),
+            'catalog': counts.get('catalog', 0),
+            'odoo': counts.get('odoo', 0),
+            'drift': drift,
+            'vendor': conn.name or '',
+            'feed': (ep.name or ep.code) if ep else '',
+            'last_sync': (fields.Datetime.to_string(ep.last_sync)
+                          if (ep and ep.last_sync) else ''),
+            'ever_synced': bool(
+                self.env['hr.api.data.store'].search_count(
+                    [('connector_id', '=', conn.id)])),
+            'fetch_mode': cap.get('mode') or '',
+            'fetch_ready': bool(cap.get('ready')),
+            'fetch_reason': cap.get('reason') or '',
         }
 
     # `_infer_source_type`'s vocabulary is not the mapping's. The store infers

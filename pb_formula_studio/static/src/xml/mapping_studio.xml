@@ -159,6 +159,21 @@
           </button>
         </div>
 
+        <!-- ==== Integrations Cycle 6 — the never-synced connector ====
+             The moment a new integration is at its most mappable and looks its
+             most empty. It is a SENTENCE, not a warning: nothing is wrong, and
+             the whole point of the field catalogue is that this board is
+             already usable. `firstRunNote` carries the honest second half —
+             why the field list cannot simply be fetched from the vendor right
+             now — and is empty when it can. -->
+        <div t-if="firstRunHint" class="pbms-expect">
+          <span class="pbms-expect__ic" t-out="ic('database', 15)"/>
+          <div class="pbms-expect__tx">
+            <span t-esc="firstRunHint"/>
+            <span t-if="firstRunNote" class="s" t-esc="firstRunNote"/>
+          </div>
+        </div>
+
         <!-- ==== the board ==== -->
         <div class="pbms-board">
           <div t-if="state.busy and !state.data" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
