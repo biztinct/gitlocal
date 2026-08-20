@@ -67,6 +67,7 @@ License: LGPL-3
         # same story the apply does.
         'data/integration_endpoints.xml',
         'data/mapping_templates.xml',
+        'data/transformation_rule_templates.xml',
         'data/formula_snippet_data.xml',
 
         # Views

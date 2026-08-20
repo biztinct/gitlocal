@@ -7,8 +7,44 @@ from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools.safe_eval import safe_eval
+from odoo.tools.sql import table_exists
+
+from .api_data_store import DATA_TYPES
+from .integration_endpoint import CONNECTOR_TYPES
 
 _logger = logging.getLogger(__name__)
+
+# Declared once and shared with `hr.api.transformation.rule.template` below.
+# A template that could express a rule type the engine cannot execute — or that
+# lost one the engine grew — is a vendor catalogue that ships rules nobody can
+# run, and nothing would error until a pull tried it (the same argument C1 made
+# for `DATA_TYPES`, which `source_data_type` now also borrows rather than
+# retyping: the two lists were already identical, character for character).
+RULE_TYPES = [
+    ('count', 'Count Records'),
+    ('sum', 'Sum Field Across Records'),
+    ('avg', 'Average Field Across Records'),
+    ('min', 'Minimum Field Across Records'),
+    ('max', 'Maximum Field Across Records'),
+    ('date_diff', 'Date Difference Calculation'),
+    ('date_check', 'Date Condition Check'),
+    ('python', 'Python Expression (Advanced)'),
+]
+
+DATE_COMPARE_TO = [
+    ('period_start', 'Period Start Date'),
+    ('period_end', 'Period End Date'),
+    ('today', 'Today'),
+    ('fixed', 'Fixed Date'),
+]
+
+DATE_UNITS = [('days', 'Days'), ('months', 'Months'), ('years', 'Years')]
+
+DATE_CHECK_OPERATORS = [
+    ('before', 'Is Before'),
+    ('after', 'Is After'),
+    ('within', 'Is Within N months'),
+]
 
 
 class HrApiTransformationRule(models.Model):
@@ -49,30 +85,14 @@ class HrApiTransformationRule(models.Model):
     # ==========================================
     # RULE TYPE
     # ==========================================
-    rule_type = fields.Selection([
-        ('count', 'Count Records'),
-        ('sum', 'Sum Field Across Records'),
-        ('avg', 'Average Field Across Records'),
-        ('min', 'Minimum Field Across Records'),
-        ('max', 'Maximum Field Across Records'),
-        ('date_diff', 'Date Difference Calculation'),
-        ('date_check', 'Date Condition Check'),
-        ('python', 'Python Expression (Advanced)'),
-    ], string='Rule Type', required=True, default='count')
+    rule_type = fields.Selection(
+        RULE_TYPES, string='Rule Type', required=True, default='count')
 
     # ==========================================
     # SOURCE: Which stored records to operate on
     # ==========================================
-    source_data_type = fields.Selection([
-        ('employee', 'Employee Master Data'),
-        ('salary', 'Salary / Compensation'),
-        ('attendance', 'Attendance'),
-        ('leave', 'Leave / Time-Off'),
-        ('dependent', 'Dependents / Family'),
-        ('benefit', 'Benefits'),
-        ('tax', 'Tax Information'),
-        ('custom', 'Custom / Other'),
-    ], string='Source Data Type', required=True,
+    source_data_type = fields.Selection(
+        DATA_TYPES, string='Source Data Type', required=True,
         help="Which data_type records to operate on. "
              "e.g., 'dependent' to count dependent records.",
     )
@@ -102,25 +122,15 @@ class HrApiTransformationRule(models.Model):
         string='Date Source Field',
         help="Key in extracted_data containing the date, e.g., 'date_of_joining'",
     )
-    date_compare_to = fields.Selection([
-        ('period_start', 'Period Start Date'),
-        ('period_end', 'Period End Date'),
-        ('today', 'Today'),
-        ('fixed', 'Fixed Date'),
-    ], string='Compare To', default='period_end')
+    date_compare_to = fields.Selection(
+        DATE_COMPARE_TO, string='Compare To', default='period_end')
     date_fixed_value = fields.Date(string='Fixed Date')
-    date_unit = fields.Selection([
-        ('days', 'Days'),
-        ('months', 'Months'),
-        ('years', 'Years'),
-    ], string='Result Unit', default='months',
+    date_unit = fields.Selection(
+        DATE_UNITS, string='Result Unit', default='months',
         help="For date_diff: return difference in days, months, or years.",
     )
-    date_check_operator = fields.Selection([
-        ('before', 'Is Before'),
-        ('after', 'Is After'),
-        ('within', 'Is Within N months'),
-    ], string='Check Operator')
+    date_check_operator = fields.Selection(
+        DATE_CHECK_OPERATORS, string='Check Operator')
     date_check_value = fields.Integer(
         string='Check Value (months)',
         help="For 'within' operator: number of months to check.",
@@ -454,3 +464,127 @@ class HrApiTransformationRule(models.Model):
                 continue
 
         raise ValueError(f"Cannot parse date: {date_value}")
+
+
+class HrApiTransformationRuleTemplate(models.Model):
+    """The vendor catalogue a connector's transformation rules come from.
+
+    Integrations Cycle 3. `hr.integration.endpoint.template` did this for feeds
+    and `hr.integration.mapping.template` does it for field maps; the third leg
+    of the legacy ABM inventory is its AGGREGATIONS — six overtime bands, a
+    dependent count and a worked-hours conversion, all of which lived as inline
+    arithmetic in `om_hr_payroll/models/hr_zoho_staging.py` and none of which
+    survived being read by anybody but its author.
+
+    Shaped exactly like the endpoint template: a row belongs to a VENDOR, not to
+    a connector, and instantiation is CREATE-ONLY by `output_key` so an operator
+    who has retuned a rule keeps their version through every later apply.
+
+    The python rows are data-shipped and are the reason this model carries
+    `python_code` at all. They are not editable from any cockpit — the same rule
+    the mapping canvas obeys for `python` transforms (W12): a python expression
+    arrives through a reviewed data file or it does not arrive.
+    """
+
+    _name = 'hr.api.transformation.rule.template'
+    _description = 'API Transformation Rule Template'
+    _order = 'connector_type, sequence, id'
+
+    # The connector's own seven types, borrowed from the endpoint template so a
+    # rule can be written for any vendor a connector can BE — including `demo`,
+    # which is the one every test and every trial database has.
+    connector_type = fields.Selection(CONNECTOR_TYPES, required=True, index=True)
+
+    name = fields.Char(required=True, help="Human name, e.g. 'Overtime 150%'.")
+    output_key = fields.Char(
+        required=True,
+        help="Key written to computed_data, and therefore the source path a "
+             "field mapping reads. Unique per vendor — instantiation matches "
+             "on it.")
+    description = fields.Text()
+
+    rule_type = fields.Selection(RULE_TYPES, required=True, default='count')
+    source_data_type = fields.Selection(DATA_TYPES, required=True)
+
+    aggregate_field = fields.Char()
+    filter_expression = fields.Char(
+        help="Python expression evaluated per record. The namespace is `rec` "
+             "(the extracted_data dict), `env`, `datetime` and `date` — see "
+             "`_execute_single`. NOT `record`.")
+
+    date_source_field = fields.Char()
+    date_compare_to = fields.Selection(DATE_COMPARE_TO, default='period_end')
+    date_fixed_value = fields.Date()
+    date_unit = fields.Selection(DATE_UNITS, default='months')
+    date_check_operator = fields.Selection(DATE_CHECK_OPERATORS)
+    date_check_value = fields.Integer()
+
+    python_code = fields.Text()
+
+    default_value = fields.Float(default=0.0)
+    sequence = fields.Integer(default=10)
+    active = fields.Boolean(default=True)
+    is_legacy_abm = fields.Boolean(
+        help="Used by the legacy ABM application.")
+
+    _type_key_uniq = models.Constraint(
+        'unique(connector_type, output_key)',
+        'That vendor already has a transformation-rule template with this '
+        'output key.',
+    )
+
+    # The fields an instantiated rule copies verbatim. Named rather than
+    # derived from `_fields`, because the two models are deliberately NOT the
+    # same shape: the template has `connector_type` and `is_legacy_abm`, which
+    # the rule has no column for, and the rule has `connector_id`, which is the
+    # thing instantiation supplies.
+    _COPIED = (
+        'name', 'output_key', 'description', 'rule_type', 'source_data_type',
+        'aggregate_field', 'filter_expression', 'date_source_field',
+        'date_compare_to', 'date_fixed_value', 'date_unit',
+        'date_check_operator', 'date_check_value', 'python_code',
+        'default_value', 'sequence',
+    )
+
+    @api.model
+    def _schema_ready(self):
+        """Does THIS database actually have the rule-template table?
+
+        C1's degrade rail, applied to the third catalogue. The addons tree is
+        SHARED by every database on this box and a schema is created by an
+        UPGRADE, per database — so between the rsync of this model and the `-u`
+        of database N, database N loads code describing a table it has not got,
+        while `'hr.api.transformation.rule.template' in self.env` answers True
+        the whole time (the model class comes from the python, not the schema).
+
+        Unguarded, the first `search` raises `UndefinedTable` and leaves the
+        request's transaction ABORTED, so everything after it fails too. This
+        one is reached from `action_apply_mapping_template`, which the
+        onboarding wizard and the connector form both call.
+        """
+        if table_exists(self.env.cr, self._table):
+            return True
+        if not self.env.registry.__dict__.get('_pb_ruletmpl_schema_warned'):
+            self.env.registry.__dict__['_pb_ruletmpl_schema_warned'] = True
+            _logger.warning(
+                "Database %s loads the transformation-rule catalogue but has "
+                "no %s table: this database has not been upgraded since the "
+                "model was added. Vendor rules are skipped until "
+                "`-u pb_hr_payroll_formula` runs here; mapping templates and "
+                "every other apply step are unaffected.",
+                self.env.cr.dbname, self._table)
+        return False
+
+    def _rule_vals(self, connector):
+        """This template as `hr.api.transformation.rule` values.
+
+        Every copied field has the same type on both models — that is what
+        `_COPIED` is asserting — so the values come across untouched, unset
+        included (an unset Char reads False on both sides, and writing False is
+        how the ORM spells "empty" for both).
+        """
+        self.ensure_one()
+        vals = {'connector_id': connector.id}
+        for name in self._COPIED:
+            vals[name] = self[name]
+        return vals
