@@ -211,6 +211,18 @@ class TestEndpointFieldCatalogue(TransactionCase):
         self.assertTrue(att)
         self.assertFalse([f for f in att if f.get('expected_missing')])
 
+        # Per-feed UNSCOPED too, which is the case the live pass caught. On the
+        # whole-connector board, a feed that has never run must not be reported
+        # as having dropped its fields just because a DIFFERENT feed synced.
+        every = {f['path']: f for f in
+                 self.Mapping.get_available_source_fields(conn.id)}
+        self.assertTrue(every['Mobile']['expected_missing'],
+                        "the employee feed ran without it — that is drift")
+        self.assertFalse(every['paidLeaveHours']['expected_missing'],
+                         "the attendance feed has never run; nothing is missing")
+        self.assertFalse(every['OT_Type']['expected_missing'],
+                         "nor has the overtime feed")
+
     # --------------------------------------------------------------- test 5
     #
     # The fifteen source_fields Cycle 4 seeded on abm, read out of that database

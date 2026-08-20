@@ -138,7 +138,7 @@
                         t-att-title="d.field_fetch.ready ? 'Read the field list for this feed from the source system' : d.field_fetch.reason"
                         t-on-click="() => this.fetchFields(ep)">
                   <t t-if="state.fetching === ep.id"><span class="pbim-spin pbcc-feed__spin"/> Fetching…</t>
-                  <t t-else=""><t t-out="ic('download',14)"/> Fetch field list</t>
+                  <t t-else=""><t t-out="ic('download',14)"/> Fetch fields</t>
                 </button>
                 <!-- Integrations Cycle 2: the door Cycle 1 deliberately left
                      out, now that there is something behind it. -->

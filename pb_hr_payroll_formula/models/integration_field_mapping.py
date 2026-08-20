@@ -521,10 +521,24 @@ Example: value * 1.1 if value > 1000 else value
             item['provenance'] = 'live'
             item['expected_missing'] = False
 
-        # Has this feed ever run? Asked of the STORE and not of `live`, which
-        # would be circular: a feed that synced and returned an empty payload
-        # has still synced, and its catalogue rows are then genuinely missing.
-        synced = bool(stores) or bool(Store.search_count(domain))
+        # Which FEEDS have ever run — asked of the store, per data type, and not
+        # of `live`, which would be circular: a feed that synced and returned an
+        # empty payload has still synced, and its catalogue rows are then
+        # genuinely missing.
+        #
+        # Per-TYPE and not per-connector, which is a correction this cycle's own
+        # live pass forced. On payobook the demo Zoho connector has synced ONE
+        # feed; a connector-wide flag marked all 58 catalogue fields — including
+        # every field of the five feeds that have never run — as "not sent", so
+        # a board that should have been quiet was 58 amber chips. Drift is a
+        # claim about a feed that ran, and it may only be made about that feed.
+        if scoped:
+            synced_types = {data_type} if (stores or Store.search_count(domain)) else set()
+        else:
+            synced_types = {
+                dt for dt, in Store._read_group(
+                    [('connector_id', '=', connector.id)], ['data_type']) if dt
+            }
 
         # ---- layer 2: what it is expected to deliver
         catalog = self._catalog_source_fields(connector, data_type if scoped else None)
@@ -532,7 +546,8 @@ Example: value * 1.1 if value > 1000 else value
         for path, item in catalog.items():
             if path in live:
                 continue                       # live wins, and keeps its sample
-            item['expected_missing'] = bool(synced)
+            item['expected_missing'] = bool(
+                item.get('feed_type') and item['feed_type'] in synced_types)
             merged[path] = item
         merged.update(live)
         if merged:
@@ -586,6 +601,7 @@ Example: value * 1.1 if value > 1000 else value
                     'required': bool(f.is_required),
                     'notes': f.notes or '',
                     'feed': f.endpoint_id.name or f.endpoint_id.code or '',
+                    'feed_type': f.data_type or '',
                     'expected_missing': False,
                 }
         # `table_exists`, not `Rule._schema_ready()`: that helper is declared on
@@ -618,6 +634,7 @@ Example: value * 1.1 if value > 1000 else value
                                "“%s” transformation rule.") % (
                                    r.name or key),
                     'feed': '',
+                    'feed_type': r.source_data_type or '',
                     'expected_missing': False,
                 }
         return out
