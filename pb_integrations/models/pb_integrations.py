@@ -171,6 +171,15 @@ class PbIntegrations(models.AbstractModel):
                       for k, v in sorted(types.items(), key=lambda x: -x[1])],
             'connectors': rows,
             'total': len(rows), 'shown': len(rows),
+            # Did anybody actually COUNT the feeds? `has_feeds` above is False
+            # on a database whose upgrade has not run here yet, and every feed
+            # number in this payload is then 0 — not because there are none, but
+            # because nothing could look. The board used to print that 0 as a
+            # fact ("0 feeds", KPI "Feeds 0"), which is W79's failure exactly:
+            # a database that never got its upgrade rendered identically to one
+            # with an empty catalogue. The client hides the phrase rather than
+            # printing a number it was never given.
+            'feeds_known': has_feeds,
         }
 
     @api.model

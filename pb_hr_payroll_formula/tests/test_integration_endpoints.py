@@ -290,6 +290,13 @@ class TestEndpointCatalogue(TransactionCase):
                 row = next(r for r in board['connectors'] if r['id'] == conn.id)
                 self.assertEqual(row['feeds'], 0)
                 self.assertEqual(board['kpis']['feeds'], 0)
+                # …and the payload SAYS the zero is an absence of an answer
+                # rather than an answer (Cycle 3). Without this flag the board
+                # printed "0 feeds" and a "Feeds 0" KPI tile, which is what an
+                # empty catalogue looks like too — W79's failure, on the exact
+                # screen `_schema_ready` logs its warning for. The client drops
+                # both rather than zeroing them.
+                self.assertFalse(board['feeds_known'])
             if 'pb.import.connector.cockpit' in self.env:
                 d = self.env['pb.import.connector.cockpit'].get_connector_detail(
                     conn.id)
@@ -298,6 +305,11 @@ class TestEndpointCatalogue(TransactionCase):
 
         # …and with the schema really present, the same calls do their job.
         self.assertEqual(conn.action_sync_endpoint_catalog()['created'], 1)
+        if 'pb.integrations' in self.env:
+            self.assertTrue(
+                self.env['pb.integrations'].get_board()['feeds_known'],
+                "a database that CAN count feeds must say so, or the board "
+                "hides a column it has the numbers for")
 
     # --------------------------------------------------------------- test 6
     def test_06_a_pull_stamps_the_feed_it_pulled(self):

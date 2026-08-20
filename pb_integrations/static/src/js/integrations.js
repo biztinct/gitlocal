@@ -108,6 +108,9 @@ export class PbIntegrations extends Component {
         Object.assign(this.state, {
             kpis: d.kpis, connectors: d.connectors, types: d.types,
             total: d.total, loaded: true,
+            // `!== false` at every read site (see `feedsKnown`), so an older
+            // server that never sends the key still shows its feed counts.
+            feeds_known: d.feeds_known,
         });
     }
 
@@ -159,25 +162,45 @@ export class PbIntegrations extends Component {
     countStatus(id) { return this.state.connectors.filter(c => this._matchStatus(c, id)).length; }
 
     /**
-     * The card's quiet second line — ONE sentence, ONE msgid (W80).
+     * The card's counts — minus the mappings, which are a DOOR now.
      *
      * It was four numbers assembled from `<t>` fragments in the template, which
      * a translator cannot reorder; the feed count made it five and forced the
-     * issue. Feeds come FIRST because that is the thing this cycle added and it
-     * is what an operator scans for.
-     */
-    /**
-     * The card's counts — minus the mappings, which are a DOOR now.
+     * issue. Cycle 2 then made "N mappings" clickable — it opens the Mapping
+     * Studio on this connector, so the number on the board is also the way to
+     * change it — and it therefore had to leave the sentence, because a
+     * translator cannot reorder a fragment out of a `t-esc` and back into a
+     * button (W80). Two complete phrases, two msgids; never one sentence broken
+     * into pieces.
      *
-     * Cycle 2 made "N mappings" clickable: it opens the Mapping Studio on this
-     * connector, so the number on the board is also the way to change it. It
-     * therefore had to leave the sentence, because a translator cannot reorder
-     * a fragment out of a `t-esc` and back into a button (W80). Two complete
-     * phrases, two msgids — never one sentence broken into pieces.
+     * COUNT HONESTY (Cycle 3). `feeds_known` is false on a database whose
+     * upgrade has not reached it, and every feed number in the payload is then
+     * 0 because nothing could look — not because there are none. Printing that
+     * as "0 feeds" makes an un-upgraded database indistinguishable from an
+     * empty one (W79), which is the exact confusion `_schema_ready` logs a
+     * warning about. So the phrase is DROPPED rather than zeroed: a whole
+     * second msgid, not a fragment, for the same reason as above.
      */
     cardCounts(c) {
+        if (!this.feedsKnown) {
+            return _t("%(staged)s staged · %(synced)s synced",
+                      { staged: c.staged, synced: c.synced });
+        }
         return _t("%(feeds)s feeds · %(staged)s staged · %(synced)s synced",
                   { feeds: c.feeds || 0, staged: c.staged, synced: c.synced });
+    }
+
+    /**
+     * Could the server count feeds at all?
+     *
+     * Defaults to TRUE when the key is absent, which is the honest default for
+     * exactly one reason: every database that has this code also has the key,
+     * so a missing key means a stale cached bundle rather than a missing table
+     * — and hiding a real count because of a cache is a worse answer than
+     * showing it.
+     */
+    get feedsKnown() {
+        return this.state.feeds_known !== false;
     }
 
     /** The clickable half. Its own msgid, and a whole phrase. */
