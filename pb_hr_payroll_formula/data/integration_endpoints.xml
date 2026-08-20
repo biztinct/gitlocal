@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Integrations Cycle 3 — the vendor feed catalogue.
+         =============================================================
+         Cycle 1 shipped `hr.integration.endpoint.template` empty, on the
+         promise that this file would fill it from the legacy ABM application's
+         real inventory. Every row below is a URL the legacy code, or the modern
+         connector class, actually calls — the `description` names the file and
+         line that proves it, because a catalogue nobody can audit is a
+         catalogue somebody will edit from memory.
+
+         `is_legacy_abm` marks the three feeds the ABM application ran in
+         production. The other four are Zoho People APIs this platform's own
+         connector knows how to call; they are catalogued so an operator can see
+         the whole surface, not just the part one predecessor used.
+
+         W13.1 — this file is `noupdate="1"`, so these rows are FROZEN in each
+         database the moment they first load, and a later correction to a path
+         or a code will NOT arrive on `-u`. Every path here was proof-read
+         against its evidence line before the first deploy. The one field that
+         is expected to change per database is anything an operator edits on the
+         instantiated `hr.integration.endpoint`, which is a different record and
+         is never overwritten (`action_sync_endpoint_catalog` is create-only).
+
+         Codes are underscore-free on purpose: an endpoint code is quoted by
+         `hr.integration.mapping.template.endpoint_code` and read beside the
+         formula-converter's target codes, and one vocabulary with two spelling
+         conventions is a vocabulary people get wrong. -->
+    <data noupdate="1">
+
+        <!-- ================= Zoho People =================
+             Auth is CONNECTOR-level and deliberately not a row here:
+             accounts.zoho.com/oauth/v2/token (refresh grant), scope
+             ZOHOPEOPLE.forms.READ,attendance.READ,leave.READ, callback
+             /zoho/callback — integrations/zoho_connector.py:530-533. -->
+
+        <record id="ep_zoho_employees" model="hr.integration.endpoint.template">
+            <field name="connector_type">zoho</field>
+            <field name="code">zohoemployees</field>
+            <field name="name">Employees</field>
+            <field name="data_type">employee</field>
+            <field name="http_method">get</field>
+            <field name="path">forms/P_Employee/records</field>
+            <field name="params_note">sIndex, limit=200 (paginated)</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">10</field>
+            <field name="description">The employee master form. This platform reads the P_Employee
+form with sIndex/limit=200 pagination (integrations/zoho_connector.py:284).
+
+The legacy ABM application read the SAME data from the older
+`forms/employee/getRecords` variant with dateFormat=yyyy-MM-dd and no
+pagination at all — one call, first 200 records
+(om_hr_payroll/models/hr_zoho_staging.py:309). Its dependent count came from
+this record's `tabularSections` → "Dependent and Dependent Health Insurance"
+(:367-373), which is why the DEPCOUNT transformation rule reads employee rows
+and not dependent rows.</field>
+        </record>
+
+        <record id="ep_zoho_att_summary" model="hr.integration.endpoint.template">
+            <field name="connector_type">zoho</field>
+            <field name="code">zohoattsummary</field>
+            <field name="name">Attendance summary</field>
+            <field name="data_type">attendance</field>
+            <field name="http_method">get</field>
+            <field name="path">attendance/getSummaryReport</field>
+            <field name="params_note">startDate, endDate (dd-MM-yyyy), dateFormat</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">20</field>
+            <field name="description">Per-employee attendance totals for a date window
+(om_hr_payroll/models/hr_zoho_staging.py:456). The join key is `emailId`, NOT
+the employee id — the legacy code matched its staging rows on email (:465).
+
+Two payload shapes in one response, and the difference costs an hour if it is
+not written down: `expectedWorkingHours` and `totalWorkedHours` arrive in
+SECONDS, while `paidLeaveHours` arrives as an "H:MM" string. The WORKEDHRS
+transformation rule reproduces the legacy arithmetic
+(paidLeaveSeconds + totalWorkedHours) / 3600.</field>
+        </record>
+
+        <record id="ep_zoho_overtime" model="hr.integration.endpoint.template">
+            <field name="connector_type">zoho</field>
+            <field name="code">zohoovertime</field>
+            <field name="name">Overtime requests</field>
+            <field name="data_type">custom</field>
+            <field name="http_method">get</field>
+            <field name="path">forms/overtime_request/getRecords</field>
+            <field name="params_note">searchColumn=EMPLOYEEMAILALIAS, fromDate/toDate (dd-MM-yyyy), limit=200</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">30</field>
+            <field name="description">Approved overtime, banded by OT_Type (150% / 200% / 210% /
+270% / 300% / 390%) with the payable hours in `Actual_Pay_Hour`
+(om_hr_payroll/models/hr_zoho_staging.py:472-485).
+
+DO NOT reproduce the legacy call pattern: it issued ONE request per employee,
+inside the loop over the attendance summary (:471), which is an N+1 against a
+rate-limited API. The feed is date-scoped, so a single windowed pull answers
+for everybody — and that is also why the OTHRS* rules carry no date filter of
+their own (the legacy re-filtered each record against the same window it had
+just asked for, :497-557).</field>
+        </record>
+
+        <record id="ep_zoho_salary" model="hr.integration.endpoint.template">
+            <field name="connector_type">zoho</field>
+            <field name="code">zohosalary</field>
+            <field name="name">Salary form</field>
+            <field name="data_type">salary</field>
+            <field name="http_method">get</field>
+            <field name="path">forms/P_Salary/records</field>
+            <field name="params_note">searchField=Employee_ID.Zoho_ID, searchOperator=Is, searchText</field>
+            <field name="sequence">40</field>
+            <field name="description">The P_Salary form, looked up by the employee's Zoho id
+(integrations/zoho_connector.py:411). Not used by the legacy ABM application,
+which took pay from the payroll spreadsheet rather than from Zoho.</field>
+        </record>
+
+        <record id="ep_zoho_leave" model="hr.integration.endpoint.template">
+            <field name="connector_type">zoho</field>
+            <field name="code">zoholeave</field>
+            <field name="name">Leave records</field>
+            <field name="data_type">leave</field>
+            <field name="http_method">get</field>
+            <field name="path">api/v2/leavetracker/leaves/records</field>
+            <field name="params_note">from, to (dd/MM/yyyy)</field>
+            <field name="sequence">50</field>
+            <field name="description">The leave tracker's own v2 API, for the whole company in a
+date window (om_hr_payroll/models/hr_zoho.py:218 — dormant there, never
+reached production). This platform's connector calls the older per-employee
+`leave/getLeaveDetails` instead (integrations/zoho_connector.py:495); the v2
+records API is the one to prefer, because it does not need a request per
+person.</field>
+        </record>
+
+        <record id="ep_zoho_att_daily" model="hr.integration.endpoint.template">
+            <field name="connector_type">zoho</field>
+            <field name="code">zohoattdaily</field>
+            <field name="name">Attendance by date</field>
+            <field name="data_type">attendance</field>
+            <field name="http_method">get</field>
+            <field name="path">attendance/getAttendanceByDate</field>
+            <field name="params_note">empId, sdate, edate</field>
+            <field name="sequence">60</field>
+            <field name="description">Day-by-day punches for one employee
+(integrations/zoho_connector.py:454). The summary report above is the feed a
+payroll run wants; this one is for looking at a single person's days when a
+number is disputed.</field>
+        </record>
+
+        <record id="ep_zoho_timesheet" model="hr.integration.endpoint.template">
+            <field name="connector_type">zoho</field>
+            <field name="code">zohotimesheet</field>
+            <field name="name">Timesheets</field>
+            <field name="data_type">custom</field>
+            <field name="http_method">get</field>
+            <field name="path">timetracker/gettimesheet</field>
+            <field name="params_note">dateFormat, startDate, endDate</field>
+            <field name="sequence">70</field>
+            <field name="description">The time tracker. Catalogued because the legacy code names it
+(om_hr_payroll/models/hr_zoho.py:182) — but it names it in a COMMENTED-OUT
+line, immediately replaced by the attendance summary report. Nothing has ever
+called it here, so treat the parameters as unverified.</field>
+        </record>
+
+        <!-- ================= DarwinHR / Darwinbox =================
+             Parity rows: the modern connector class knows exactly two paths,
+             and a connector whose catalogue is empty looks broken next to a
+             Zoho one that is full. -->
+
+        <record id="ep_darwin_employees" model="hr.integration.endpoint.template">
+            <field name="connector_type">darwin</field>
+            <field name="code">darwinemployees</field>
+            <field name="name">Employee directory</field>
+            <field name="data_type">employee</field>
+            <field name="http_method">post</field>
+            <field name="path">masterapi/employeedirectory</field>
+            <field name="params_note">POST body: page, page_size=200, api_key, datasetKey</field>
+            <field name="sequence">10</field>
+            <field name="description">Employee master data
+(integrations/darwin_connector.py:48). POST, not GET: Darwinbox carries its
+credentials and its paging in the JSON body, so the "parameters" above are
+body keys rather than a query string.
+
+Darwinbox can also PUSH: an inbound webhook is served at /api/darwin/webhook,
+which is a route rather than a feed and therefore has no row of its own.</field>
+        </record>
+
+        <record id="ep_darwin_compensation" model="hr.integration.endpoint.template">
+            <field name="connector_type">darwin</field>
+            <field name="code">darwincompensation</field>
+            <field name="name">Compensation</field>
+            <field name="data_type">salary</field>
+            <field name="http_method">post</field>
+            <field name="path">masterapi/compensation</field>
+            <field name="params_note">POST body: employee_ids, date range, api_key, datasetKey</field>
+            <field name="sequence">20</field>
+            <field name="description">Salary and compensation for a set of employees over a date
+range (integrations/darwin_connector.py:49).</field>
+        </record>
+
+    </data>
+</odoo>
