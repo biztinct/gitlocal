@@ -19,7 +19,7 @@ takes it to **W119**; **Cycle 7** (the abm module-delta catch-up, the `hr_timesh
 `session_info` 500 and the `pb_insights` sudo drop) takes it to **W126**; the
 **Integrations programme** (`docs/handovers/integrations/`) opens at **W127**, and
 its Cycle 1 — the endpoint model and the navigation streamlining — takes it to
-**W130**.
+**W130**; **Cycle 2** — the Mapping Studio — takes it to **W136**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -2201,3 +2201,91 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   `Network.setCookie`, and the page is that user by every other measure — which
   is also the cheapest way to switch personas mid-pass. The driver belongs in
   the session scratchpad, not in the repo: it is a tool, not a deliverable.
+- **W131 A `--test-enable` run BINDS `http_port` for HttpCase, keeps serving
+  after the tests have passed, and `--stop-after-init` does not end it — so
+  with the real service stopped, nginx routes PRODUCTION traffic into the test
+  process.** (Integrations Cycle 2, found live on the apex box.) The scoped run
+  logged `0 failed, 0 error(s) of 85 tests` at 03:42:17 and one second later
+  was answering `/websocket` and `/web/dataset/call_kw` for **`payobook` AND
+  `abm`** from the same pid, with `psycopg2.pool.PoolError: This connection
+  does not belong to the pool` tracebacks beside them. It had to be ended by
+  PID; the `--stop-after-init` it was launched with never fired, because the
+  test HTTP daemon keeps the process alive.
+  Rules: (1) a test run gets its **own `--http-port`** (or `--no-http` when no
+  HttpCase is in scope), so it can never take 8069 no matter how it ends;
+  (2) the upgrade window and the test window are two different windows — never
+  leave the real service stopped across a test run, because a test process
+  serving production is worse than a minute of honest 502; (3) the sentinel
+  file is written by the WRAPPER after odoo-bin returns, so "no sentinel yet"
+  and "the tests finished twenty minutes ago" are compatible states. The
+  verdict lives in `odoo.tests.result`, in the log — read that, not the
+  sentinel.
+- **W132 `odoo-bin`'s own logger does not write to stdout when the conf sets
+  `logfile`, so a detached unit that captures stdout captures docutils and
+  nothing else.** (Integrations Cycle 2.) The deploy sentinel's `/tmp/i2test.log`
+  held twenty-eight lines, every one of them an RST warning from parsing module
+  descriptions (`(ERROR/3) Unexpected indentation`) — while every
+  module-loading line, every test result and the whole upgrade went to
+  `/var/log/odoo/odoo-server.log`, because `/etc/odoo-server.conf` names it.
+  Twenty minutes were spent reading a file that could not contain the answer.
+  Rules: (1) the detached unit passes its **own `--logfile`**, or the verdict is
+  read from the configured log with a timestamp window and the run's pid;
+  (2) `grep -c CRITICAL <captured stdout>` returning 0 is not evidence of
+  anything — W81's shape again, an instrument pointed at the wrong place;
+  (3) `grep -a`: the shared server log has binary in it and plain `grep`
+  answers "binary file matches" and prints nothing.
+- **W133 `systemd-run` with `Type=oneshot` BLOCKS the caller until the unit
+  finishes; `--no-block` is what makes the detached deploy actually detached.**
+  (Integrations Cycle 2 — the cause of this cycle's first stall.) The ritual's
+  whole point is that the upgrade outlives the operator's shell. Launched
+  without `--no-block`, the `ssh … systemd-run …` call sat in the foreground
+  for the entire run and was killed by a watchdog — which is precisely the
+  failure the detached unit exists to prevent, arrived at through the tool that
+  was supposed to prevent it. Corollary, same cycle: a `sleep`-polling loop
+  INSIDE an ssh command has the same problem for the same reason. Poll from a
+  loop that can be backgrounded, or from the unit itself.
+- **W134 A handover that asks for a shared component "untouched" AND for its
+  payload to gain a field is asking for two things that cannot both be true —
+  and the resolution is an OPT-IN key, whose effect is visible in EVERY host of
+  that adapter.** (Integrations Cycle 2.) The spec said reuse `MappingCanvas`
+  untouched and said `api_mapping_data`'s left items gain a `sample`. A sample
+  nothing renders is not a feature, so the canvas grew two opt-in lines — a
+  `sample` and a `group` header, each rendered only for items that carry the
+  key, so every adapter that does not send one is pixel-identical.
+  The half that is easy to miss: the OTHER host of the same adapter renders it
+  too. The Formula Studio overlay mounts the same canvas on the same
+  `api_mapping_data` payload, so its API tab now shows sample lines as well —
+  a change nobody asked for and nobody would have found in a diff of the
+  studio. Rule: when you add a key to a SHARED adapter's payload, enumerate
+  every host that mounts it and say so in the report. "Additive to the
+  component" is not "invisible in the other host".
+- **W135 Narrowing a discovery function must not inherit the UNFILTERED
+  fallback.** (Integrations Cycle 2.) `get_available_source_fields` fell back to
+  the `hr.employee` schema when a connector had stored nothing — right, and the
+  only useful answer for a brand-new connector. Given a `data_type` the naive
+  narrowing keeps that fallback, so an empty *leave* feed answers with the
+  employee schema and the studio prints it under a header that says "Leave" —
+  another API's shape, stated confidently, with no way for the reader to tell.
+  The fallback has to be re-keyed to the question it was written for: empty
+  FEED on a connector that has rows → an empty list and an empty board; empty
+  CONNECTOR → the schema, as before. Corollary: a `data_type` arriving from the
+  browser is validated against the store's own selection and IGNORED when
+  unknown, never passed into the domain — the hole `get_ledger`'s `kind`
+  whitelist exists to close.
+- **W136 The deploy unit owns the WHOLE window — it stops the service, upgrades,
+  and starts it again — so that a stall on the operator's side can never leave
+  the site down.** (Integrations Cycle 2, adopted after two stalls.) The ritual
+  used to be: stop from one command, launch the unit from another, start from a
+  third. Three commands means two gaps, and in either gap the operator is the
+  only thing that will bring the site back — which is a single point of failure
+  made of a person. Put `service odoo-server stop`, the poll for zero
+  `odoo-bin`, the `-u … --stop-after-init`, `echo EXIT=$?` and
+  `service odoo-server start` in ONE script, run it with
+  `systemd-run --no-block` (W133), and poll for the sentinel from outside. The
+  worst case is then a failed upgrade with the service back up on the old
+  registry, which is a bad deploy — not an outage. Corollary: an
+  asset-purge-only change needs no window at all, and a module whose only
+  change is a JS asset plus a version bump is the one everybody leaves out of
+  the `-u` list — `pb_import_kit` sat at 19.0.1.4.0 in the database against
+  19.0.1.5.0 on disk for exactly that reason, until W118's version diff caught
+  it.
