@@ -122,6 +122,18 @@ class TestMappingStudio(TransactionCase):
         self.assertEqual(d['defaults']['endpoint_id'], ep.id)
         self.assertEqual(d['defaults']['fell_back'], [])
 
+    def test_01d_a_junk_arrival_context_is_answered_not_raised(self):
+        """A context key is written by whoever built the link and read back out
+        of the browser, so it is not guaranteed to be a number. `int()` on a
+        stale or hand-built value is a 500 on the screen whose entire job is to
+        be the friendly front door."""
+        for junk in ('', None, 'zoho', [], {'a': 1}, '12abc'):
+            d = self.Studio.mapping_pickers({'config_id': junk,
+                                             'connector_id': junk,
+                                             'endpoint_id': junk})
+            self.assertTrue(d['ok'])
+            self.assertIsInstance(d['defaults']['config_id'], int)
+
     def test_01c_a_feed_from_another_connector_is_refused_not_shown(self):
         a = self._connector('IG-C2 A')
         b = self._connector('IG-C2 B')

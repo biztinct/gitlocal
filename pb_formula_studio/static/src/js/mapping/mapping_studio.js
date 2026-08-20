@@ -507,6 +507,18 @@ export class MappingStudio extends Component {
     }
 
     /**
+     * Which boards can be suggested at all.
+     *
+     * `api` and `import` compute name matches live on every read; `cycle` has
+     * a wizard that persists proposals. `scheme` (departments → schemes) and
+     * `employee` (components → employee fields) have no matching notion —
+     * offering the button there would be a control whose only honest answer is
+     * "nothing", and a button everybody learns to ignore is worse than no
+     * button (W64).
+     */
+    get canSuggest() { return ["api", "import", "cycle"].includes(this.state.mode); }
+
+    /**
      * "Suggest mappings".
      *
      * Two different engines behind one button, which is correct rather than

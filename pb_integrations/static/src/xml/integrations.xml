@@ -92,7 +92,7 @@
                      this connector, so the board is where you go to change the
                      number it prints -->
                 <button t-if="hasMapping" class="itg-maplink"
-                        t-att-title="'Map this connector\'s fields onto a payroll scheme'"
+                        title="Map this connector's fields onto a payroll scheme"
                         t-on-click.stop="() => this.openMappingStudio(c)"
                         t-esc="mappingsLabel(c)"/>
                 <span t-else="" t-esc="mappingsLabel(c)"/>
