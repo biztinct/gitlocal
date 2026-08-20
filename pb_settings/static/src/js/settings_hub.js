@@ -144,6 +144,13 @@ export const CATEGORIES = [
             { id: "integrations", tag: "pb_integrations", icon: "database",
               label: _t("Integrations"),
               sub: _t("The only home for connectors — Import deep-links into it.") },
+            // Integrations Cycle 2. The category's SECOND card, which is also
+            // what retires Cycle 1's single-card auto-open here: `soleCard`
+            // stays exactly as written and the section page comes back on its
+            // own, with nothing to remember to undo.
+            { id: "mapping", tag: "pb_mapping_studio", icon: "gitMerge",
+              label: _t("Mapping Studio"),
+              sub: _t("Wire any source — API feeds, spreadsheets — onto your payroll schemes.") },
         ],
     },
     {

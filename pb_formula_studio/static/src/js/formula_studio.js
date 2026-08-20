@@ -17,7 +17,11 @@ import { HoverCard } from "./hover_card";
 // the action context and returns null when nobody sent one — so the chip is
 // ABSENT on every other route rather than inert (W5/W29), and nothing else in
 // this file or its templates changes.
-import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+// `openHub` joins them in Integrations Cycle 2: the mapping overlay grows one
+// quiet link OUT to the full-screen Mapping Studio, and a link that hands over
+// a board has to hand over a return door with it (W5).
+import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
+import { _t } from "@web/core/l10n/translation";
 
 const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals"];
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669" };
@@ -4261,6 +4265,36 @@ export class PbFormulaStudio extends Component {
         this.state.mapEmpMenuFilter = "";
         this.state.mapEmpMenuAll = {};
     }
+    /**
+     * "Open in Mapping Studio" — the overlay graduates to the full surface.
+     *
+     * The overlay stays exactly as it is (every scheme-centric flow reaches
+     * mapping from inside a configuration, and taking that away would be a
+     * regression dressed as a redesign). This is a one-way link that carries
+     * what the overlay already knows — the configuration, the mode, and the
+     * connector the API tab is on — so the studio opens on the same board
+     * rather than on its own defaults. The registry probe is the same W29
+     * rule everything else uses: no dead buttons.
+     */
+    get hasMappingStudio() {
+        return registry.category("actions").contains("pb_mapping_studio");
+    }
+    openMappingStudio() {
+        const ctx = {
+            pb_config: this.state.config && this.state.config.id,
+            pb_mode: this.state.mapMode || "api",
+        };
+        if (this.state.mapMode === "api" && this.state.mapContextId) {
+            ctx.pb_connector = this.state.mapContextId;
+        }
+        openHub(this.action, {
+            tag: "pb_mapping_studio",
+            context: ctx,
+            back: { label: _t("Formula Studio"),
+                    xmlid: "pb_formula_studio.action_pb_formula_studio" },
+        });
+    }
+
     openMapping(mode) {
         this.state.mapMode = mode || this.state.mapMode || "cycle";
         this.state.mapOpen = true;
