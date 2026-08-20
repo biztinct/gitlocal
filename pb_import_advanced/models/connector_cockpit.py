@@ -139,6 +139,9 @@ class PbConnectorCockpit(models.AbstractModel):
             'endpoints': self._endpoints(c),
             'credentials': self._credentials(c),
             'can_write': c.has_access('write'),
+            # Cycle 6 — can this vendor be ASKED for its field list, and if not
+            # why not. Three booleans and a sentence; never a credential.
+            'field_fetch': c.field_fetch_capability(),
             'next_actions': self._connector_actions(c),
             'error': None,
         }
@@ -167,7 +170,19 @@ class PbConnectorCockpit(models.AbstractModel):
             'staged': e.staged_count,
             'mapping_count': e.mapping_count,
             'is_legacy_abm': bool(e.is_legacy_abm),
+            # Integrations Cycle 6 — how many fields this feed is KNOWN to
+            # deliver. Zero on a database that has not been upgraded for the
+            # catalogue, which is the same "hidden, not wrong" answer the feeds
+            # strip itself gives there.
+            'field_count': self._endpoint_field_count(e),
         }
+
+    def _endpoint_field_count(self, e):
+        Field = self.env.get('hr.integration.endpoint.field') \
+            if 'hr.integration.endpoint.field' in self.env else None
+        if Field is None or not Field._schema_ready():
+            return 0
+        return Field.search_count([('endpoint_id', '=', e.id)])
 
     def _endpoints(self, c):
         # The TABLE, not the registry — see `_schema_ready`'s docstring. On a
@@ -306,6 +321,42 @@ class PbConnectorCockpit(models.AbstractModel):
         detail['error'] = err
         detail['catalog'] = res
         return detail
+
+    @api.model
+    def fetch_endpoint_fields(self, connector_id, endpoint_id):
+        """Ask the vendor what this feed delivers, and catalogue the answer.
+
+        Integrations Cycle 6, WP-3. Three things this method is careful about:
+
+          * the endpoint is resolved THROUGH the connector, never browsed by id
+            alone — the same rail `sync_endpoint` has, for the same reason: an
+            id from the browser must not be able to write a catalogue row onto
+            a connector the caller was not looking at;
+          * a connector class that cannot really be asked says so. Three of the
+            seven (`sap`, `workday`, `oracle`) have a `get_available_fields`
+            that logs "not implemented" and returns a hard-coded example list;
+            `HrIntegrationConnector.FIELD_FETCH_SUPPORT` refuses those by name
+            rather than publishing four invented fields as SAP's schema;
+          * NOTHING in the return value comes from a credential. The connector's
+            `field_fetch_capability` reads them as booleans, under `sudo`, and
+            returns a sentence.
+        """
+        c = self.env['hr.integration.connector'].browse(int(connector_id or 0))
+        if not c.exists():
+            return {'error': 'Connector not found'}
+        ep = c.endpoint_ids.filtered(lambda e: e.id == int(endpoint_id or 0))
+        if not ep:
+            return {'error': 'That feed is not on this connector.'}
+        if not c.has_access('write'):
+            return {'error': 'You cannot change this connector.'}
+        res = c.action_fetch_endpoint_fields(ep.id)
+        ep.invalidate_recordset()
+        return {'endpoint': self._endpoint_row(ep),
+                'ok': bool(res.get('ok')),
+                'created': res.get('created', 0),
+                'updated': res.get('updated', 0),
+                'msg': res.get('msg') or '',
+                'error': None if res.get('ok') else (res.get('msg') or '')}
 
     # ============================================================ credentials
     @api.model
