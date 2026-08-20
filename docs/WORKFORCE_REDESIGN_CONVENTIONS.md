@@ -2457,3 +2457,84 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   ten-second read of the model rather than a memory; (3) when a feature has two
   expression surfaces, the report names both together, because the second one is
   discovered by the person who trusted the first.
+- **W146 `scroll` does not bubble, and OWL binds `t-on-scroll` as a plain
+  listener on that exact element — so a handler one level above the scroller
+  never runs, and nothing anywhere says so.** (Integrations Cycle 5, the whole
+  first commit.) `mapping_canvas.xml` had `t-on-scroll="onColScroll"` on
+  `.mc-col`; the element with `overflow-y:auto` is its child `.mc-col-body`.
+  OWL's `createElementHandler` attaches a native, non-delegated listener (only
+  the `.synthetic` suffix delegates), and `scroll` is one of the events that
+  does not bubble — so `onColScroll` had never fired in production. The symptom
+  was not "scrolling is broken": it was dashed wires running diagonally across
+  the whole viewport and off the screen, which reads as a rendering or clipping
+  bug and is not one. They were drawn to where the cards USED to be.
+  Three rules: (1) a scroll handler goes on the element that actually scrolls —
+  find the `overflow` rule before you write the `t-on`, and if you must catch it
+  from an ancestor use `capture: true`, never plain bubbling; (2) any listener
+  whose failure mode is *stale output* rather than *no output* needs a test that
+  counts invocations, because the screen will keep drawing something plausible
+  forever — ours dispatches three `scroll` events in one frame and asserts
+  exactly one coalesced recompute; (3) `ResizeObserver` on a container does not
+  cover its scrollers: observe the scrollers too, or a filtered list that
+  changes height moves the cards without moving the lines.
+- **W147 `dataset.id` is ALWAYS a string, so replacing an attribute-selector
+  lookup with a `Map` silently loses every id that is not one.** (Integrations
+  Cycle 5, found on the owner's own board, not in a test.) The old geometry did
+  `root.querySelector('.mc-item[data-id="' + w.rightId + '"]')`, and string
+  interpolation stringified the id for free. The `Map` built from
+  `el.dataset.id` is keyed by `"183"`; `map.has(183)` is `false`. The mapping
+  adapters disagree about the type on purpose — LEFT ids are paths
+  (`f:account_number`), RIGHT ids are database integers — so the miss hit every
+  wire on one side only, and surfaced as the UI confidently reporting
+  "2 wires hidden by this filter" with no filter set.
+  Rules: (1) when a refactor moves a DOM lookup from a selector to a keyed
+  collection, `String()` both the key and the probe in the same commit — the
+  selector was doing a coercion you are now responsible for; (2) fixtures
+  written by the same person who wrote the code share its assumption about id
+  types, so the regression test must use the SHAPE the real adapter sends
+  (ours mounts integer right ids against string left ids); (3) an interpolated
+  attribute selector was also an injection waiting to happen — an id containing
+  a quote threw — so this is a repair, not just a port.
+- **W148 Writing a fresh array into reactive state on every recompute, while
+  `onPatched` schedules the next recompute, is a permanent rAF loop that looks
+  exactly like an idle screen.** (Integrations Cycle 5, found while profiling
+  something else.) `MappingCanvas._recompute()` ended with `this.ui.geom = geom`
+  — a new array every time, therefore always "changed" — and `onPatched(() =>
+  this._schedule())` turned each render into another frame's work. It shipped in
+  Cycle 2 and was survivable at six wires; at 200x40 it is a core burning for
+  nothing, with no error, no warning and no visible motion.
+  Rules: (1) any recompute→state→patch→recompute cycle needs a fixed point —
+  ours hashes the geometry into a signature and returns early when nothing a
+  human could see has moved; (2) "it feels fine" is not evidence on a fast
+  machine: measure recomputes-per-frame, which is one number and settles it
+  (ours: 8 scroll events in a frame → 0 synchronous, exactly 1 after);
+  (3) report the measured cost in the cycle report, because the next person to
+  add a layer needs the baseline (200x40 with 82 wires: median 1.7ms).
+- **W149 An aggregate badge may name a kind only when the WHOLE pile is that
+  kind — `any` is the wrong quantifier and it tells the lie right next to the
+  honest number.** (Integrations Cycle 5, caught on a synthetic 82-wire board.)
+  The dock chip that collapses parked wires computed `amber = ANY wire is a
+  suggestion`, so 51 wires containing one suggestion rendered "51 suggested
+  below" — beside a count that was correct, which is what makes it worse: the
+  reader has no reason to doubt the adjective when the number is right.
+  Rules: (1) `all`, not `any`, whenever the label names a category; (2) give the
+  mixed case its own honest wording rather than picking a winner ("51 wires
+  below"); (3) keep the raw sub-count on the aggregate (`sug`) so the caller can
+  say something better later without re-deriving it.
+- **W150 `mountWithCleanup` starts the REAL service stack, so on a database with
+  `mail` installed a component test must `defineMailModels()` before it can
+  render anything.** (Integrations Cycle 5.) Nine pure-function tests passed and
+  the two that mounted the component died on
+  `RPC_ERROR Cannot find a definition for model "discuss.channel": could not get
+  model from server environment (did you forget to use defineModels()?)` — an
+  error about a model the component has never heard of, raised before its first
+  render. Fix: `import { defineMailModels } from "@mail/../tests/mail_test_helpers"`
+  and call it beside `describe.current.tags(...)`.
+  Rules: (1) the import lives ONLY in `static/tests/` — it is a fact about the
+  test bundle, not a dependency of the addon, and the manifest must not grow one;
+  (2) a new `web.assets_unit_tests` bundle needs its asset attachments purged
+  (`DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%unit_tests%'`) AND a
+  cache-ignoring reload before `/web/tests` will list the new suite — a normal
+  reload serves the old bundle and the suite is simply absent, which reads as
+  "my tests did not compile"; (3) run them and look, because a test file that is
+  never loaded is indistinguishable from one that passes.
