@@ -135,7 +135,7 @@
                   t-att-disabled="state.busy ? 'disabled' : false" t-on-click="acceptAll">
             Accept all ≥90%
           </button>
-          <button t-if="canEdit" class="pbim-btn outline pbim-btn-sm"
+          <button t-if="canEdit and canSuggest" class="pbim-btn outline pbim-btn-sm"
                   t-att-disabled="state.busy ? 'disabled' : false" t-on-click="suggest">
             <t t-out="ic('zap', 14)"/> Suggest mappings
           </button>
@@ -164,7 +164,8 @@
                 <span class="pbms-step"><b>3</b> Draw a wire, or let us suggest them</span>
               </div>
               <div t-if="canEdit" class="pbms-first__acts">
-                <button class="pbim-btn primary" t-att-disabled="state.busy ? 'disabled' : false"
+                <button t-if="canSuggest" class="pbim-btn primary"
+                        t-att-disabled="state.busy ? 'disabled' : false"
                         t-on-click="suggest">
                   <t t-out="ic('zap', 15)"/> Suggest mappings
                 </button>

@@ -3782,6 +3782,23 @@ class PbFormulaStudio(models.AbstractModel):
         return sel.get(data_type, data_type)
 
     @staticmethod
+    def _as_id(value):
+        """An id from an arrival CONTEXT, or 0.
+
+        `pb_connector`/`pb_endpoint`/`pb_config` are written into a context by
+        whoever built the link and read back out of the browser, so they are
+        not guaranteed to be numbers — a hand-built or stale deep link can
+        carry a name, a list, or `None`. `int()` on that is a 500 on a screen
+        whose whole job is to be the friendly front door, so it is asked
+        politely and answered with "nothing was specified" (which the caller
+        then reports through `fell_back` rather than swallowing).
+        """
+        try:
+            return int(value or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    @staticmethod
     def _sample_text(value):
         """A sample value as one short, printable line.
 
@@ -3866,11 +3883,11 @@ class PbFormulaStudio(models.AbstractModel):
         # ---- arrival resolution ------------------------------------------
         fell_back = []
         by_conn = {c['id']: c for c in connectors}
-        cid = int(arrival.get('connector_id') or 0)
+        cid = self._as_id(arrival.get('connector_id'))
         if cid and cid not in by_conn:
             fell_back.append('connector')
             cid = 0
-        cfg_id = int(arrival.get('config_id') or 0)
+        cfg_id = self._as_id(arrival.get('config_id'))
         if cfg_id and cfg_id not in {c['id'] for c in configs}:
             fell_back.append('config')
             cfg_id = 0
@@ -3885,7 +3902,7 @@ class PbFormulaStudio(models.AbstractModel):
             # id, so it can name a connector the record rules hide from this
             # caller. The picker must never open on an option it does not list.
             cid = connectors[0]['id'] if connectors else 0
-        eid = int(arrival.get('endpoint_id') or 0)
+        eid = self._as_id(arrival.get('endpoint_id'))
         ep_ids = {e['id'] for e in (by_conn.get(cid, {}).get('endpoints') or [])}
         if eid and eid not in ep_ids:
             fell_back.append('endpoint')
@@ -3965,8 +3982,9 @@ class PbFormulaStudio(models.AbstractModel):
         FM = self.env['hr.integration.field.mapping']
         eps = self._api_endpoints(conn)
         ep = None
-        if endpoint_id and eps is not None:
-            cand = eps.filtered(lambda e: e.id == int(endpoint_id))
+        ep_wanted = self._as_id(endpoint_id)
+        if ep_wanted and eps is not None:
+            cand = eps.filtered(lambda e: e.id == ep_wanted)
             ep = cand[:1] or None
         endpoints = [{'id': e.id, 'name': e.name or e.code or '', 'code': e.code or '',
                       'data_type': e.data_type or '',
@@ -4082,10 +4100,11 @@ class PbFormulaStudio(models.AbstractModel):
         vals = {'connector_id': conn.id, 'source_field': src,
                 'target_rule_id': rule.id,
                 'source_field_label': (src or '').replace('_', ' ').title()}
-        if endpoint_id:
+        ep_wanted = self._as_id(endpoint_id)
+        if ep_wanted:
             eps = self._api_endpoints(conn)
-            ep = (eps or self.env['hr.integration.endpoint'].browse()) \
-                .filtered(lambda e: e.id == int(endpoint_id))[:1] if eps is not None else None
+            ep = (eps.filtered(lambda e: e.id == ep_wanted)[:1]
+                  if eps is not None else None)
             if ep:
                 vals['endpoint_id'] = ep.id
         # one source→one input per connector: drop existing on either side
