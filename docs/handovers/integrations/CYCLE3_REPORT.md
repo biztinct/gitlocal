@@ -175,4 +175,174 @@ ID (so a cloned or foreign row is untouched), only where `endpoint_code` is
 still empty (so a tenant that has already answered keeps their answer), and its
 table is compared against the shipped XML by `test_08` rather than trusted.
 
-*(deploy, test evidence and live validation appended below as each lands)*
+## Deploy
+
+| window | unit | EXIT | notes |
+|---|---|---|---|
+| main upgrade | `i3up` | **0** | 209 modules, registry loaded 45.9s, zero ERROR/CRITICAL; service restarted by the unit |
+| scoped tests (1st) | `i3test` | **1** | 4 failed, 3 errors — two real bugs, below |
+| fix redeploy + tests (2nd) | `i3test2` | **0** | **0 failed, 0 error(s) of 109 tests** |
+
+Both test windows ran with the **real service UP** and their own `--http-port`
+(8273) and their own `--logfile` — W131 and W132 applied from the start rather
+than after the incident. Checked afterwards: `ss -lntp` shows 8069 owned by the
+service pid alone, and no `odoo-bin` besides it.
+
+The upgrade window was a single W136 script: stop → poll for zero `odoo-bin`
+(clear after 2 polls) → `-u pb_hr_payroll_formula,pb_integrations
+--stop-after-init --http-port=8272 --logfile=/tmp/i3up.log` → `echo EXIT=$?` →
+`service odoo-server start`, launched with `systemd-run --no-block` (W133) and
+polled from outside.
+
+W118 version-diff over the **reverse-dependency closure** of the two changed
+modules (56 modules, 54 installed): the only drift was the two this cycle
+touched. No `pb_import_kit`-shaped straggler this time.
+
+Live versions now equal to the repo: `pb_hr_payroll_formula` **19.0.1.51.0**,
+`pb_integrations` **19.0.1.5.0**. Health after the window: `payobook/web/login`
+**200**, `acme.payobook.com/web/login` **200**, `payobook.com/` **200**.
+
+### The migration ran
+
+```
+INFO payobook odoo.upgrade.pb_hr_payroll_formula.19.0.1.51.0.post-stamp_endpoint_codes:
+IG-C3: stamped endpoint_code on 24 of 24 vendor mapping template row(s)
+```
+
+### The catalogue landed (asserted against the DATABASE, W13.1)
+
+```
+ endpoint_tmpl    | zoho               |     7
+ endpoint_tmpl    | darwin             |     2
+ rule_tmpl        | zoho               |     8
+ map_tmpl_stamped | zohoemployees      |    26     (9 pre-existing + 17 new)
+ map_tmpl_stamped | zohosalary         |     2
+ map_tmpl_stamped | zohoattsummary     |     1
+ map_tmpl_stamped | zohoovertime       |     1
+ map_tmpl_stamped | zoholeave          |     1
+ map_tmpl_stamped | darwinemployees    |     8
+ map_tmpl_stamped | darwincompensation |     2
+ map_tmpl_stamped | (blank)            |    41     (workday 13, sap 13, oracle 12, darwin 3)
+```
+
+## Two bugs the first test run found
+
+### 1. Every python transformation rule has been returning its default (`efbb64b5`)
+
+`_execute_python` called `safe_eval(..., mode='exec', nocopy=True)`. **Odoo 19
+removed `nocopy`** — the signature is now
+`safe_eval(expr, /, context=None, *, mode="eval", filename=None)`, and its
+docstring makes the old opt-in the only behaviour ("This dict will be mutated
+with any variables created during evaluation"). The call therefore raised
+`TypeError` before the expression ran, on every `rule_type='python'` rule, since
+the port.
+
+Nothing surfaced it because `_execute_for_records` wraps each rule in
+`except Exception` and writes `default_value` instead: a python rule did not
+fail loudly, it quietly returned 0, the payroll used the 0, and the only trace
+was one WARNING per employee per rule in a log nobody reads during a pull.
+
+It was found because this cycle ships the first python rules the codebase has
+had, and the first ones anybody asserted an ANSWER for — DEPCOUNT returned 0.0
+where the answer is 2, WORKEDHRS returned 0.0 where the answer is 10.5. Fixed
+by deleting the argument; four tests now stand on it.
+
+### 2. Cycle 1's three catalogue tests assumed an empty catalogue (same commit)
+
+`test_01`, `test_01b` and `test_05b` were written when
+`hr.integration.endpoint.template` had no rows, so they could say "one template
+in, one feed out" and count the whole `endpoint_ids` o2m. With seven shipped
+Zoho feeds that count is 8 — and the failure was the tests measuring the DATA
+rather than the mechanism. Each now names the row it created.
+
+`test_01b` was **strengthened, not loosened**: it deactivates the whole
+catalogue rather than one row, because proving a deactivated code is still taken
+for eight rows beats proving it for one. `test_05b`'s fix matters most —
+`assertEqual(mapping.endpoint_id, conn.endpoint_ids)` against an eight-record
+set would have passed for any of the eight.
+
+## Test suites (handover test 8)
+
+One scoped run, service up, `-u pb_hr_payroll_formula,pb_integrations,
+pb_formula_studio,pb_settings,pb_import_advanced` with the matching
+`--test-tags`:
+
+```
+pb_formula_studio:      16 tests  1.56s   988 queries
+pb_hr_payroll_formula:  42 tests  3.67s  1598 queries
+pb_import_advanced:     13 tests  1.51s  1045 queries
+pb_integrations:        41 tests  0.33s   276 queries
+pb_settings:            25 tests  0.09s   153 queries
+0 failed, 0 error(s) of 109 tests when loading database 'payobook'
+```
+
+Cycle 2's baseline on the same scoping was 85 tests; this cycle adds 24
+(`test_zoho_catalog.py` 14, `test_transform_preview.py` 4, and the rest from the
+studio/endpoint suites). The two known pre-existing failures (`pb_timeoff`
+test_05, `pb_today` hex) are outside this scoping and did not run — not fixed,
+per the non-goal.
+
+### Numbered tests 1–7 — where each is gated
+
+| # | what | gate | evidence |
+|---|---|---|---|
+| 1 | 7 endpoints, right ABM flags, idempotent re-run | `test_01`, `test_01b` | code/data_type/path/flag asserted per feed; re-sync `{created: 0, skipped: 7}`, a renamed feed keeps its name |
+| 2 | template apply stamps `endpoint_id`; existing wire never overwritten | `test_02`, `test_02b` | all 23 legacy paths land on `zohoemployees`; a pre-drawn `EmployeeID` wire keeps its feed, label and transform, and no duplicate appears |
+| 3 | rules create-only by `output_key` | `test_03`, `test_03b` | 8 created, re-apply `{rules_created: 0, rules_skipped: 8}`; a retuned + deactivated rule survives |
+| 4 | coverage battery | `test_04`, `test_04b` | 23 legacy source_paths present as a set; the 8 non-legacy rows pinned too, so drift in either direction fails |
+| 5 | substring-law audit | `test_05` | 32 unique codes read from the shipped XML, 0 violations, all UPPERCASE alnum |
+| 6 | expressions execute | `test_06`, `06b`, `06c`, `06d`, `06e` | OTHRS150 = 4.0 (approved 150% only), OTHRS200 = 3.0, OTHRS300 = 0.0; DEPCOUNT = 2 of 3 dependants; WORKEDHRS 28800s + '2:30' = **10.5**; empty and malformed payloads = 0.0, not a traceback; `_execute_for_records` writes the keys to `computed_data` |
+| 7 | Darwin parity | `test_07` | 2 feeds, POST, right data types; `employee_no`→`darwinemployees`, `basic`→`darwincompensation`; the 3 unevidenced rows assert **no** feed |
+| — | migration ↔ XML agreement | `test_08`, `test_08b` | the two lists of the same fact compared, and the live rows re-read |
+| — | count honesty | `test_07` (C1 file) | `feeds_known` asserted false in the degraded state and true outside it |
+| — | preview hygiene | `test_transform_preview.py` | 4 cases incl. the handler-order regression |
+
+## WP-5 — the live demo touch (JSON-RPC, `payobook`)
+
+Ran as the temporary validator (uid 2095) against the demo **"Zoho People"**
+connector, id **161**:
+
+```
+BEFORE  endpoints=3 mappings=8 rules=0
+catalog sync   -> {'created': 7, 'skipped': 3}
+template apply -> {'applied': 0, 'suggested': 31, 'total': 31,
+                   'rules_created': 8, 'rules_skipped': 0}
+AFTER   endpoints=10 mappings=39 rules=8
+
+  FEED zohoemployees    Employees              employee   legacy=True   maps=26  forms/P_Employee/records
+  FEED zohoattsummary   Attendance summary     attendance legacy=True   maps=1   attendance/getSummaryReport
+  FEED zohoovertime     Overtime requests      custom     legacy=True   maps=1   forms/overtime_request/getRecords
+  FEED zohosalary       Salary form            salary     legacy=False  maps=2   forms/P_Salary/records
+  FEED zoholeave        Leave records          leave      legacy=False  maps=1   api/v2/leavetracker/leaves/records
+  FEED zohoattdaily     Attendance by date     attendance legacy=False  maps=0   attendance/getAttendanceByDate
+  FEED zohotimesheet    Timesheets             custom     legacy=False  maps=0   timetracker/gettimesheet
+  FEED employee/dependent/leave  (the three the demo had DERIVED from its store rows)
+  RULES: DEPCOUNT(python) OTHRS150/200/210/270/300/390(sum) WORKEDHRS(python)
+  mappings with NO feed: 8
+```
+
+Three things worth reading twice:
+
+* **the catalogue sync skipped 3 and created 7.** The three skips are the
+  generic feeds pb_demo derived from the connector's own store rows in Cycle 1
+  (`employee`, `dependent`, `leave`); they keep their codes and their rows,
+  exactly as create-only promises. The demo world's history is not overwritten
+  by the vendor's catalogue arriving after it;
+* **`applied: 0, suggested: 31`.** Every wire is `suggested`, because the
+  config linked to this connector has no input codes matching the Zoho target
+  codes. That is D114.2 working: a template guess is never load-bearing until
+  the batch test confirms it against a real payload;
+* **8 mappings with no feed** are the demo's own pre-existing rows
+  (`bank_account`, `department`…), which no Zoho feed produces. They render
+  under "Unassigned", which is the honest answer, and they prove the stamping
+  did not reach for rows it had no evidence about.
+
+`is_demo` stamped on all 10 endpoints and all 39 mappings (C1's hygiene
+pattern). The 8 transformation rules have no `is_demo` field — `pb_demo` never
+added one to `hr.api.transformation.rule` — but they carry
+`ondelete='cascade'` on `connector_id`, so the demo clean path removes them with
+their connector. Noted rather than fixed: adding a field to another module's
+model is outside this cycle's scope, and the cascade already makes the clean
+correct.
+
+*(live browser validation appended below)*
