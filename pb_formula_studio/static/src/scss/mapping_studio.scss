@@ -112,7 +112,11 @@
 /* ------------------------------------------------------- rich dropdowns */
 .pbms-menu-scrim { position: fixed; inset: 0; z-index: 40; }
 .pbms-menu {
-    position: absolute; top: 116px; z-index: 41;
+    /* BELOW the story bar, never over it. Opening a picker that covers the
+       card you clicked hides the answer to "what am I changing" at the exact
+       moment the user is deciding — and the FROM side is two rows tall
+       (connector card + feed chip), which is what sets the offset. */
+    position: absolute; top: 208px; z-index: 41;
     width: 380px; max-height: 60vh; display: flex; flex-direction: column;
     background: #fff; border: 1px solid var(--pbim-line);
     border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh-lg); overflow: hidden;
