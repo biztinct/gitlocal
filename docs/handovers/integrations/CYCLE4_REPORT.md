@@ -73,9 +73,18 @@ raises.
 
 | # | hash | what |
 |---|---|---|
-| 1 | *(pending)* | docs(integrations): Cycle 4 report — WP-1, the secrets verdict |
+| 1 | `e64b314f` | docs(integrations): Cycle 4 report — WP-1 inspection and the secrets verdict |
+| 2 | `8c8ba59c` | feat(tools): the abm tenant's Zoho integration, seeded from the legacy evidence |
+| 3 | `cb46f1fe` | docs(integrations): Cycle 4 report — the abm upgrade and the seeding |
+| 4 | `66747680` | docs: Cycle 4's ledger — W141-W145 — and the abm validation |
 
-Nothing pushed. `.claude/settings.json`, `thaco/` and `ABM/` never staged.
+Nothing pushed (74 commits ahead of `origin/19.1`, four of them this cycle's).
+`.claude/settings.json`, `thaco/`, `ABM/` and the screenshot directory were
+never staged — verified by `git log --name-only` over the four commits.
+
+**One repo file changed**: `tools/abm_seed_integrations.py` (+349). No module
+code, no `om_hr_payroll`, no manifest, no version bump — everything else this
+cycle did was operations, and it lives in this report.
 
 ---
 
