@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.51.0',
+    'version': '19.0.1.52.0',
     'category': 'Human Resources/Payroll',
     'summary': 'State-of-the-art Excel-like formula-based salary calculation engine',
     'description': """
@@ -67,6 +67,10 @@ License: LGPL-3
         # same story the apply does.
         'data/integration_endpoints.xml',
         'data/mapping_templates.xml',
+        # Integrations Cycle 6 — what each of those feeds RETURNS. Loads after
+        # the endpoints whose `code` its rows quote, for the same
+        # read-top-down-and-the-story-holds reason.
+        'data/integration_endpoint_fields.xml',
         'data/transformation_rule_templates.xml',
         'data/formula_snippet_data.xml',
 

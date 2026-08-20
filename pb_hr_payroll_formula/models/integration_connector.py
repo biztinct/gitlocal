@@ -7,6 +7,8 @@ from datetime import date, datetime
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
+from .integration_endpoint import SOURCE_DATA_TYPES
+
 _logger = logging.getLogger(__name__)
 
 
@@ -414,7 +416,277 @@ class HrIntegrationConnector(models.Model):
 
         if vals_list:
             Endpoint.create(vals_list)
-        return {'created': len(vals_list), 'skipped': skipped}
+        result = {'created': len(vals_list), 'skipped': skipped}
+        # Cycle 6 — a feed's SHAPE is catalogued through the same door as the
+        # feed. Deliberately the same hook rather than a second button: an
+        # operator who has just pressed "Detect feeds" has said everything they
+        # need to say, and a catalogue that lists seven APIs and nothing about
+        # any of them is the half-answer this cycle exists to stop giving.
+        result['fields'] = self.action_sync_endpoint_field_catalog()
+        return result
+
+    def action_sync_endpoint_field_catalog(self):
+        """Instantiate this vendor's endpoint-FIELD templates on this connector.
+
+        CREATE-ONLY, matched on `(endpoint_id, path)`, with `active_test=False`
+        so a row an operator deactivated still owns its path and is not
+        resurrected as a duplicate — the identical argument
+        `action_sync_endpoint_catalog` makes about a deactivated feed's code.
+
+        A template whose `endpoint_code` this connector has no feed for is
+        SKIPPED and counted, never mapped onto "some other feed": the whole
+        value of the catalogue is that a path is attached to the API that
+        actually returns it.
+
+        Returns `{'created': n, 'skipped': n, 'unresolved': n}`.
+        """
+        self.ensure_one()
+        Field = self.env['hr.integration.endpoint.field']
+        Template = self.env['hr.integration.endpoint.field.template']
+        Endpoint = self.env['hr.integration.endpoint']
+        if not (Endpoint._schema_ready() and Field._schema_ready()):
+            return {'created': 0, 'skipped': 0, 'unresolved': 0}
+
+        endpoints = Endpoint.with_context(active_test=False).search(
+            [('connector_id', '=', self.id)])
+        by_code = {e.code: e for e in endpoints if e.code}
+        if not by_code:
+            return {'created': 0, 'skipped': 0, 'unresolved': 0}
+
+        existing = Field.with_context(active_test=False).search(
+            [('endpoint_id', 'in', endpoints.ids)])
+        taken = {(f.endpoint_id.id, f.path) for f in existing}
+
+        vals_list, skipped, unresolved = [], 0, 0
+        for t in Template.with_context(active_test=False).search(
+                [('connector_type', '=', self.connector_type)]):
+            ep = by_code.get(t.endpoint_code)
+            if not ep:
+                unresolved += 1
+                continue
+            key = (ep.id, t.path)
+            if not t.path or key in taken:
+                skipped += 1
+                continue
+            vals_list.append({
+                'endpoint_id': ep.id,
+                'path': t.path,
+                'label': t.label or t.path,
+                'source_data_type': t.source_data_type or 'string',
+                'sample_value': t.sample_value or False,
+                'is_required': t.is_required,
+                'notes': t.notes or False,
+                'sequence': t.sequence or 10,
+                'is_legacy_abm': t.is_legacy_abm,
+                'active': t.active,
+            })
+            taken.add(key)
+
+        if vals_list:
+            Field.create(vals_list)
+        return {'created': len(vals_list), 'skipped': skipped,
+                'unresolved': unresolved}
+
+    # ==========================================
+    # VENDOR METADATA FETCH (Cycle 6, WP-3)
+    # ==========================================
+    #
+    # Which connector classes can actually be ASKED what they deliver, and what
+    # the honest name for their answer is. Three tiers, because there are three
+    # genuinely different things `get_available_fields()` does in this codebase
+    # and calling them all "field discovery" would let a hard-coded example list
+    # arrive on screen wearing a live sync's clothes:
+    #
+    #   'live'   — a real request to the vendor. `zoho_connector.py:216` GETs
+    #              `forms/{form}/components`; `excel_connector.py:272` reads the
+    #              headers of the file that is loaded.
+    #   'sample' — derived from a sample record built into the connector class
+    #              (`darwin_connector.py:116`, `demo_connector.py:421`). Real
+    #              paths, real types, no network. Worth having, and worth saying.
+    #   None     — a STUB. `sap_connector.py:79`, `workday_connector.py:75` and
+    #              `oracle_connector.py:77` each log "not implemented" and then
+    #              return a hard-coded example list. Writing those into a
+    #              catalogue would publish four invented fields as SAP's schema,
+    #              which is the exact failure this whole cycle is about.
+    FIELD_FETCH_SUPPORT = {
+        'zoho': 'live',
+        'excel': 'live',
+        'darwin': 'sample',
+        'demo': 'sample',
+        'sap': None,
+        'workday': None,
+        'oracle': None,
+    }
+
+    # Zoho's metadata call reports the FORM a component belongs to; the feed
+    # catalogue is keyed on our own endpoint codes. Anything not listed falls
+    # back to the feed the operator pressed the button on.
+    _VENDOR_FORM_ENDPOINT = {
+        'P_Employee': 'zohoemployees',
+        'P_Salary': 'zohosalary',
+        'P_Attendance': 'zohoattsummary',
+    }
+
+    def field_fetch_capability(self):
+        """`{'mode', 'ready', 'reason'}` — can this connector be asked?
+
+        Split from the fetch itself so a UI can grey the button out with a
+        sentence rather than offering a door that always answers "no".
+        """
+        self.ensure_one()
+        mode = self.FIELD_FETCH_SUPPORT.get(self.connector_type)
+        if not mode:
+            return {'mode': None, 'ready': False, 'reason': _(
+                "Payobook's %s connector cannot yet ask that system what "
+                "fields it has. The expected fields below come from the "
+                "shipped catalogue instead.") % (
+                    dict(self._fields['connector_type'].selection).get(
+                        self.connector_type, self.connector_type))}
+        if mode == 'live' and not self._has_credentials():
+            return {'mode': mode, 'ready': False, 'reason': _(
+                "Add this connector's credentials first — the field list is "
+                "read from the vendor, over an authenticated call.")}
+        return {'mode': mode, 'ready': True, 'reason': ''}
+
+    def _has_credentials(self):
+        """Is there anything to authenticate WITH?
+
+        Read as booleans only. No caller of this method, and nothing it returns,
+        ever carries a secret's VALUE — the cockpit payload is built from this,
+        and a credential that reached the browser to be greyed out would be a
+        credential in a JSON response.
+        """
+        self.ensure_one()
+        if self.connector_type == 'excel':
+            return True          # the file is the credential
+        # `sudo()`: every one of these carries `groups="base.group_system"`
+        # (:98-121), so a payroll manager reading them directly gets an
+        # AccessError, not a False — and "is there a credential" is a question
+        # that must be answerable by the person looking at the cockpit. The
+        # sudo reads them and immediately throws the values away; only the
+        # boolean leaves this method.
+        rec = self.sudo()
+        return bool(rec.api_key or rec.access_token or rec.refresh_token
+                    or rec.password or rec.username)
+
+    def action_fetch_endpoint_fields(self, endpoint_id=None):
+        """Ask the vendor what this feed delivers, and catalogue the answer.
+
+        CREATE-ONLY on `(endpoint_id, path)` like every other catalogue in this
+        file, with ONE deliberate exception the handover asks for: an existing
+        row's `label` and `source_data_type` are REFRESHED from the vendor,
+        because those two are the vendor's to name and a renamed picklist that
+        keeps its old caption is a catalogue lying quietly. Everything an
+        operator can be said to own — `notes`, `active`, `sequence`,
+        `sample_value` — is left exactly as it is.
+
+        Returns `{'ok', 'created', 'updated', 'skipped', 'mode', 'msg'}`. It
+        never returns a credential, and it never raises at the caller: a vendor
+        that is down is a sentence, not a traceback.
+        """
+        self.ensure_one()
+        Field = self.env['hr.integration.endpoint.field']
+        Endpoint = self.env['hr.integration.endpoint']
+        blank = {'ok': False, 'created': 0, 'updated': 0, 'skipped': 0}
+        if not (Endpoint._schema_ready() and Field._schema_ready()):
+            return dict(blank, mode=None, msg=_(
+                "This database has not been upgraded for the field catalogue "
+                "yet."))
+        cap = self.field_fetch_capability()
+        if not cap['ready']:
+            return dict(blank, mode=cap['mode'], msg=cap['reason'])
+
+        endpoints = Endpoint.with_context(active_test=False).search(
+            [('connector_id', '=', self.id)])
+        by_code = {e.code: e for e in endpoints if e.code}
+        wanted = endpoints.filtered(lambda e: e.id == int(endpoint_id or 0))[:1]
+        fallback = wanted or endpoints.filtered(
+            lambda e: e.data_type == 'employee')[:1] or endpoints[:1]
+        if not fallback:
+            return dict(blank, mode=cap['mode'], msg=_(
+                "Catalogue this connector's feeds first."))
+
+        try:
+            raw = self._get_connector_instance().get_available_fields() or []
+        except Exception as e:
+            _logger.warning("Field fetch failed on connector %s (%s): %s: %s",
+                            self.id, self.connector_type, type(e).__name__, e)
+            return dict(blank, mode=cap['mode'], msg=_(
+                "That system could not be reached for its field list. The "
+                "details are in the server log."))
+
+        types = {k for k, _l in SOURCE_DATA_TYPES}
+        existing = {(f.endpoint_id.id, f.path): f
+                    for f in Field.with_context(active_test=False).search(
+                        [('endpoint_id', 'in', endpoints.ids)])}
+        vals_list, created, updated, skipped = [], 0, 0, 0
+        seen = set()
+        for item in raw:
+            if not isinstance(item, dict):
+                continue
+            # The vendor's `path` may be form-prefixed (`P_Employee.EmailID`);
+            # a mapping's `source_field` never is, and a catalogue row that
+            # does not JOIN to a mapping is a row nobody will ever see.
+            path = (item.get('name') or '').strip() or \
+                (item.get('path') or '').split('.')[-1].strip()
+            if not path:
+                continue
+            ep = by_code.get(
+                self._VENDOR_FORM_ENDPOINT.get(item.get('form') or '', ''),
+                fallback)
+            if wanted and ep.id != wanted.id:
+                continue
+            key = (ep.id, path)
+            if key in seen:
+                continue
+            seen.add(key)
+            dtype = item.get('data_type') or 'string'
+            dtype = dtype if dtype in types else 'string'
+            row = existing.get(key)
+            if row:
+                fresh = {}
+                label = (item.get('label') or '').strip()
+                if label and label != row.label:
+                    fresh['label'] = label
+                if dtype != row.source_data_type:
+                    fresh['source_data_type'] = dtype
+                if fresh:
+                    row.write(fresh)
+                    updated += 1
+                else:
+                    skipped += 1
+                continue
+            vals_list.append({
+                'endpoint_id': ep.id,
+                'path': path,
+                'label': (item.get('label') or '').strip() or path,
+                'source_data_type': dtype,
+                'sample_value': self._sample_str(item.get('sample_value')),
+                'is_required': bool(item.get('required')),
+                'sequence': 20,
+            })
+        if vals_list:
+            Field.create(vals_list)
+            created = len(vals_list)
+        if not (created or updated or skipped):
+            return dict(blank, mode=cap['mode'], msg=_(
+                "That system returned no fields for this feed."))
+        return {'ok': True, 'created': created, 'updated': updated,
+                'skipped': skipped, 'mode': cap['mode'],
+                'msg': _("%(new)s new, %(upd)s updated, %(same)s unchanged.",
+                         new=created, upd=updated, same=skipped)}
+
+    @staticmethod
+    def _sample_str(value):
+        """A vendor's sample, as a short string — or nothing at all.
+
+        `False` rather than `''` so the Char is genuinely empty; a sample that
+        is the literal string "None" is how a placeholder starts looking like
+        data.
+        """
+        if value is None or value is False or value == '':
+            return False
+        return str(value)[:128]
 
     def _stamp_endpoint(self, data_type, status, error=False):
         """Record a pull's outcome on the feed that produced it.
