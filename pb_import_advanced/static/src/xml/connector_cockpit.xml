@@ -65,6 +65,10 @@
               <t t-out="ic('refresh',15)"/> Guided pull…</button>
             <button t-if="canWrite" class="pbim-btn outline" t-on-click="() => this.openLink('action_launch_payroll_import')">
               <t t-out="ic('upload',15)"/> Start payroll import</button>
+            <!-- connector-scoped, no feed: "map something from this system",
+                 for the reader who has not decided which feed yet -->
+            <button t-if="hasMapping" class="pbim-btn ghost" t-on-click="() => this.openMapping(null)">
+              <t t-out="ic('gitMerge',15)"/> Open Mapping Studio</button>
           </div>
         </div>
 
@@ -109,6 +113,12 @@
                 <button t-if="hasLedgers" class="pbim-btn ghost pbim-btn-sm"
                         t-on-click="() => this.viewEndpointData(ep)">
                   <t t-out="ic('database',14)"/> View data
+                </button>
+                <!-- Integrations Cycle 2: the door Cycle 1 deliberately left
+                     out, now that there is something behind it. -->
+                <button t-if="hasMapping" class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openMapping(ep)">
+                  <t t-out="ic('gitMerge',14)"/> Map fields
                 </button>
               </div>
             </div>

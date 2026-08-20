@@ -279,6 +279,49 @@ export class ConnectorCockpit extends Component {
         });
     }
 
+    // ============================================================ mapping door
+    /**
+     * Is the Mapping Studio on this database?
+     *
+     * Same probe, same reason as `hasLedgers`: `pb_formula_studio` is not a
+     * dependency of this module, so the actions registry is the only honest
+     * question, and a button that would open nothing is simply not rendered
+     * (W29). Cycle 1 shipped this strip with NO map button precisely because
+     * the studio did not exist yet; it does now.
+     */
+    get hasMapping() {
+        return registry.category("actions").contains("pb_mapping_studio");
+    }
+
+    /**
+     * "Map fields", from a feed — the studio, already pointed at both ends.
+     *
+     * The whole point of the door is that it arrives CONFIGURED: this
+     * connector as the source, this feed as the source's feed, the API mode,
+     * and a chip back to this cockpit. A deep link that lands on the studio's
+     * defaults would be a link that makes the user do the work twice.
+     */
+    openMapping(ep) {
+        if (!this.hasMapping) { return; }
+        openHub(this.action, {
+            tag: "pb_mapping_studio",
+            context: {
+                pb_connector: this.connectorId,
+                pb_endpoint: (ep && ep.id) || 0,
+                pb_mode: "api",
+            },
+            back: {
+                label: this.d.name || _t("Connector"),
+                tag: SELF_TAG,
+                context: {
+                    connector_id: this.connectorId,
+                    back_to: this.backTo,
+                    back_label: this.backLabel,
+                },
+            },
+        });
+    }
+
     // =============================================================== credentials
     get credentials() { return this.d.credentials || { fields: [], editable: false }; }
     get canAdmin() { return !!this.credentials.editable; }

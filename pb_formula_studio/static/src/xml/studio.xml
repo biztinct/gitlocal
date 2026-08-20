@@ -1836,6 +1836,13 @@
                   </button>
                 </t>
               </t>
+              <!-- Integrations Cycle 2 — the graduation link. The overlay is
+                   unchanged otherwise: every scheme-centric flow reaches
+                   mapping from inside a configuration and still does. -->
+              <button t-if="hasMappingStudio" class="pbfs-btn ghost sm" t-on-click="openMappingStudio"
+                      title="Open this board full screen, with the source and the scheme both named">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>Open in Mapping Studio
+              </button>
               <button class="hs-x" t-on-click="closeMapping"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
             </div>
           </div>

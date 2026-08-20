@@ -120,16 +120,20 @@ class TestSettingsDescriptor(TransactionCase):
             "key pbst.cat.v1 also remembers one of these by name")
         self.assertEqual(len(set(keys)), len(keys))
 
-    def test_the_cockpit_tags_are_the_five_this_cycle_agreed_on(self):
+    def test_the_cockpit_tags_are_exactly_the_agreed_list(self):
         # Client-action cards are probed against the JS registry at open time, so
         # a renamed or mistyped tag makes its card vanish rather than break —
         # which is the right runtime behaviour and a terrible way to find out.
         # Pinning the set here is the only place a rename becomes loud.
+        #
+        # Integrations Cycle 2 adds `pb_mapping_studio` — a sixth door, and the
+        # method lost the word "five" from its name rather than keeping a name
+        # that lies about its own assertion (W76.3: amend at the site).
         self.assertEqual(
             sorted(set(_RE_TAG.findall(_js()))),
-            ['pb_formula_studio', 'pb_integrations', 'pb_statutory',
-             'pb_structures', 'pb_tenants'],
-            "the tags are the four payroll cockpits plus Tenants. The hub's own "
+            ['pb_formula_studio', 'pb_integrations', 'pb_mapping_studio',
+             'pb_statutory', 'pb_structures', 'pb_tenants'],
+            "the tags are the payroll cockpits plus Tenants. The hub's own "
             "return door is an XMLID, not a tag — a bare tag reaches the action "
             "service with no NAME, and the breadcrumb reads 'Unnamed'")
 
@@ -154,16 +158,21 @@ class TestSettingsDescriptor(TransactionCase):
                 "silently render its fallback" % name)
 
     def test_a_single_card_category_opens_its_one_door_directly(self):
-        """Integrations Cycle 1 — the rule, and the fact that it fires.
+        """Integrations Cycle 1's rule — and Cycle 2 proving it self-retires.
 
         Two halves, because each fails in the opposite direction and both are
         invisible at runtime. The RULE lives in `setCat`, which is a click
         handler — reading it out of the source is the only way to tell "the
         category has one card and the hub still renders a page for it" from
-        "the category has two cards". And the FACT that Integrations has
-        exactly one card is what makes the rule fire today; the moment Cycle 2
-        adds a Mapping Studio card, the section page returns on its own and
-        this half of the assertion is what will say so.
+        "the category has two cards".
+
+        The second half used to assert that Integrations had exactly ONE card,
+        with a note saying the moment Cycle 2 added a Mapping Studio card the
+        section page would return on its own and the assertion would say so.
+        It has, and it did. The assertion is REVERSED at the site rather than
+        deleted (W76.3), because the property that matters is unchanged and is
+        now the more interesting one: the generic rule was not edited, and the
+        category it was written for no longer triggers it.
 
         The source is read with its comments stripped (W101/W114): the
         paragraph above `setCat` has to be able to say `soleCard` out loud.
@@ -184,8 +193,17 @@ class TestSettingsDescriptor(TransactionCase):
         block = body.split('key: "integrations"', 1)[1].split('cards: [', 1)[1]
         block = block.split('\n    },', 1)[0]
         self.assertEqual(
-            len(_RE_CARD_ID.findall(block)), 1,
-            "Integrations is the category the single-card rule was written for")
+            _RE_CARD_ID.findall(block), ['integrations', 'mapping'],
+            "Integrations grew its second door in Cycle 2, so the generic rule "
+            "no longer fires for it and the section page is correct again")
+
+        # …and the rule is still live for whichever category has one card. A
+        # gate that only recorded the reversal would pass on a hub that had
+        # dropped `soleCard` altogether.
+        sole = _code(_js()).split('soleCard(cat) {', 1)[1].split('\n    }', 1)[0]
+        self.assertIn('cards.length === 1', sole,
+                      "the single-card rule must stay generic, not become a "
+                      "special case for a key")
 
     def test_a_card_may_carry_its_own_arrival_context(self):
         # `openHub` merges an arbitrary context (hub_nav.js:63); forwarding it

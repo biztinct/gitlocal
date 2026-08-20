@@ -155,6 +155,62 @@ class TestOneDoor(TransactionCase):
             'credentials.editable', js,
             "canAdmin must be derived from the payload's editable flag")
 
+    def test_the_mapping_studio_door_is_open_and_arrives_configured(self):
+        """Integrations Cycle 2 adds a door — deliberately, and here.
+
+        Cycle 1 shipped the feeds strip with NO map button and said so in the
+        template, because the studio did not exist and "a door that opens onto
+        nothing is worse than no door" (W29). The studio exists now, so the
+        button ships — and the thing worth gating is not that it EXISTS but
+        that it arrives CONFIGURED. A deep link that lands the studio on its
+        own defaults would send the user to a screen that looks right and is
+        mapping the wrong connector, which is this codebase's worst bug class
+        (W76.3/W117) and is invisible in a screenshot.
+        """
+        tpl = _read(get_module_path('pb_import_advanced')
+                    + '/static/src/xml/connector_cockpit.xml')
+        js = _read(get_module_path('pb_import_advanced')
+                   + '/static/src/js/connector_cockpit.js')
+        self.assertIn('this.openMapping(ep)', tpl,
+                      "a feed must be mappable from the strip it lives in")
+        self.assertIn('this.openMapping(null)', tpl,
+                      "…and the connector as a whole, for a reader who has not "
+                      "picked a feed yet")
+        self.assertIn('hasMapping', tpl,
+                      "the button is probed against the actions registry, so a "
+                      "database without pb_formula_studio renders no dead door")
+        for key in ('pb_connector', 'pb_endpoint', 'pb_mode'):
+            self.assertIn(key, js,
+                          "the door must carry %s or the studio opens on its "
+                          "own defaults" % key)
+        # …and it comes back. A one-way door is not a door (W5).
+        openmap = js.split('openMapping(ep) {', 1)[1].split('\n    }', 1)[0]
+        self.assertIn('back:', openmap)
+        self.assertIn('SELF_TAG', openmap)
+
+    def test_the_board_count_is_a_door_into_the_studio(self):
+        js = _read(get_module_path('pb_integrations')
+                   + '/static/src/js/integrations.js')
+        tpl = _read(get_module_path('pb_integrations')
+                    + '/static/src/xml/integrations.xml')
+        self.assertIn('openMappingStudio', js)
+        self.assertIn('pb_mapping_studio', js)
+        self.assertIn('itg-maplink', tpl,
+                      "the mappings count on a connector card opens the studio")
+        # The card itself opens the connector cockpit, so the inner button has
+        # to stop the click or one click does two navigations.
+        self.assertIn('t-on-click.stop="() => this.openMappingStudio(c)"', tpl)
+
+    def test_the_studio_action_record_carries_a_name(self):
+        act = self.env.ref('pb_formula_studio.action_pb_mapping_studio',
+                           raise_if_not_found=False)
+        self.assertTrue(act, "the Mapping Studio needs an action RECORD, not "
+                             "just a registry tag — a bare tag reaches the "
+                             "action service with no name and every breadcrumb "
+                             "through it reads 'Unnamed'")
+        self.assertEqual(act.tag, 'pb_mapping_studio')
+        self.assertTrue(act.name)
+
     def test_the_integrations_board_has_no_raw_list_tiles_left(self):
         for path in _client_sources('pb_integrations'):
             src = _read(path)
@@ -178,11 +234,18 @@ class TestOneDoor(TransactionCase):
     def test_the_door_enumeration_is_exactly_the_agreed_list(self):
         """No `pb_*` surface may open a raw satellite list.
 
-        This is the whole cycle in one assertion. Import's tile, the board's
-        three link tiles and the connector cockpit's two links were the five
+        This is IA Cycle 3 in one assertion. Import's tile, the board's three
+        link tiles and the connector cockpit's two links were the five
         client-side doors; the two that remain are server-side (`get_link` for
         the payroll-import form) and the hidden legacy menus, neither of which
         is a `pb_*` client source.
+
+        Integrations Cycle 2 added THREE doors and none of them belongs here:
+        the Settings card, the cockpit's "Map fields" and the board's mappings
+        count all open `pb_mapping_studio`, a cockpit — which is the shape this
+        gate exists to encourage. The list this test enumerates is the RAW-LIST
+        one, and it is unchanged. The new doors are gated positively, one test
+        each, above.
         """
         offenders = []
         for module in _pb_modules():
