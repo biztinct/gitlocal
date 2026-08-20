@@ -3818,6 +3818,27 @@ class PbFormulaStudio(models.AbstractModel):
         return text if len(text) <= 48 else text[:45] + '…'
 
     @api.model
+    def _config_for_connector(self, connector_id):
+        """The scheme this connector feeds most, or 0.
+
+        `_api_active_connector` answers the mirror question (given a config,
+        which connector) and this is the same arithmetic run the other way, for
+        the deep link that names a connector and no scheme. Ties go to the
+        lowest config id so the answer is STABLE — a resolver that returns a
+        different scheme on alternate clicks is worse than one that returns a
+        plain default.
+        """
+        FM = self.env['hr.integration.field.mapping']
+        counts = defaultdict(int)
+        for m in FM.search([('connector_id', '=', self._as_id(connector_id))]):
+            cfg = m.target_rule_id.config_id
+            if cfg:
+                counts[cfg.id] += 1
+        if not counts:
+            return 0
+        return max(sorted(counts), key=lambda cid: counts[cid])
+
+    @api.model
     def mapping_pickers(self, arrival=None):
         """Everything the Mapping Studio's FROM/TO pickers offer, in one call.
 
@@ -3891,6 +3912,14 @@ class PbFormulaStudio(models.AbstractModel):
         if cfg_id and cfg_id not in {c['id'] for c in configs}:
             fell_back.append('config')
             cfg_id = 0
+        if not cfg_id and cid:
+            # A link that arrives naming a CONNECTOR and no scheme is the board
+            # card's "6 mappings" being clicked. Landing on the default scheme
+            # then answers "0 mapped" to a user who clicked the number six —
+            # the board and the studio contradicting each other on the very
+            # click that joins them. So the scheme is resolved to the one this
+            # connector actually feeds.
+            cfg_id = self._config_for_connector(cid)
         if not cfg_id:
             cfg = self._pick_config(None)
             cfg_id = cfg.id if cfg else 0

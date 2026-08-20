@@ -134,6 +134,36 @@ class TestMappingStudio(TransactionCase):
             self.assertTrue(d['ok'])
             self.assertIsInstance(d['defaults']['config_id'], int)
 
+    def test_01e_a_connector_link_lands_on_the_scheme_it_actually_feeds(self):
+        """The board's "N mappings" is a door, and it must not contradict the
+        number it was printed on.
+
+        Found live: clicking "6 mappings" on a connector card opened the studio
+        on the DEFAULT scheme, which that connector feeds not at all, so the
+        story bar answered "0 mapped" to a user who had just clicked six.
+        """
+        conn = self._connector('IG-C2 resolver')
+        self._store(conn, 'employee', {'basic': 1, 'bonus': 2})
+        quiet = self._config('IG-C2 resolver quiet', ['basic'])
+        loud = self._config('IG-C2 resolver loud', ['basic', 'bonus'])
+        for path, rule in (('f:basic', loud.rule_ids.filtered(lambda r: r.code == 'basic')),
+                           ('f:bonus', loud.rule_ids.filtered(lambda r: r.code == 'bonus'))):
+            self.Studio.api_mapping_create(loud.id, conn.id, path, rule.id)
+
+        d = self.Studio.mapping_pickers({'connector_id': conn.id})
+        self.assertEqual(d['defaults']['connector_id'], conn.id)
+        self.assertEqual(d['defaults']['config_id'], loud.id,
+                         "a connector-only link must land on the scheme that "
+                         "connector actually feeds, not on the default")
+        self.assertEqual(d['defaults']['fell_back'], [])
+        self.assertNotEqual(loud.id, quiet.id)
+
+        # an EXPLICIT config still wins over the resolver — precedence is
+        # explicit > derived > default, and it must not be quietly reordered.
+        d2 = self.Studio.mapping_pickers({'connector_id': conn.id,
+                                          'config_id': quiet.id})
+        self.assertEqual(d2['defaults']['config_id'], quiet.id)
+
     def test_01c_a_feed_from_another_connector_is_refused_not_shown(self):
         a = self._connector('IG-C2 A')
         b = self._connector('IG-C2 B')
