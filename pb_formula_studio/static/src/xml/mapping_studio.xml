@@ -52,14 +52,28 @@
             </button>
           </div>
 
-          <!-- the wire between them: direction is the point -->
-          <div class="pbms-link">
-            <svg class="pbms-link__svg" viewBox="0 0 240 24" preserveAspectRatio="none">
-              <path class="pbms-link__p" d="M2 12 H 210"/>
-              <path class="pbms-link__h" d="M206 6 L 218 12 L 206 18"/>
+          <!-- ==== the rail between them ====
+               WP-5. It used to be a dashed line marching at 1.1s forever with a
+               stroked chevron on the end — a different vocabulary from the
+               wires on the board below it, animated when nothing was happening.
+               Now: one solid rail with the SAME triangular head the wires use,
+               still at rest, and the dash only flows while the board is
+               actually loading or suggesting. The counts stopped being labels:
+               "15 mapped" flashes every wire, "2 suggested" filters both
+               columns down to the suggestions. -->
+          <div t-attf-class="pbms-link {{ state.busy ? 'is-live' : '' }}">
+            <svg class="pbms-link__svg" viewBox="0 0 240 20" preserveAspectRatio="none">
+              <path class="pbms-link__p" d="M6 10 H 220"/>
+              <polygon class="pbms-link__h" points="234,10 220,3.5 220,16.5"/>
             </svg>
-            <span class="pbms-link__n"><b t-esc="mappedCount"/> mapped</span>
-            <span t-if="suggestedCount" class="pbms-link__s"><t t-esc="suggestedCount"/> suggested</span>
+            <div class="pbms-link__c">
+              <button class="pbms-count" t-att-disabled="mappedCount ? false : 'disabled'"
+                      title="Flash every mapped wire on the board"
+                      t-on-click="flashWires"><b t-esc="mappedCount"/> mapped</button>
+              <button t-if="suggestedCount" class="pbms-count sug"
+                      title="Show only the fields a suggestion touches"
+                      t-on-click="focusSuggested"><b t-esc="suggestedCount"/> suggested</button>
+            </div>
           </div>
 
           <div t-attf-class="pbms-end to {{ toSlot.kind === 'static' ? 'is-static' : '' }}">
@@ -181,11 +195,11 @@
                              leftTitle="'FROM — ' + fromSlot.title"
                              rightTitle="'TO — ' + toSlot.title"
                              canEdit="canEdit" busy="state.busy"
+                             command="state.cmd"
                              onAccept="(w) => this.accept(w)"
                              onReject="(w) => this.reject(w)"
                              onDelete="(w) => this.remove(w)"
                              onDraw="(l, r) => this.draw(l, r)"
-                             onSuggest="() => this.suggest()"
                              onTransformPreview="(ref, d) => this.transformPreview(ref, d)"
                              onTransformSave="(ref, v) => this.transformSave(ref, v)"/>
             </div>
