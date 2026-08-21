@@ -156,6 +156,15 @@ class TestPayslipTemplateImport(TransactionCase):
         self.assertIn('Courier New', self.earnings.note_html,
                       'table-cell fonts must survive HTML sanitizing')
 
+        borders = self.Studio.save_payslip_content(
+            self.config.id, 'section:%s' % self.earnings.id,
+            '<table style="border-collapse:collapse;border:2px solid #475569">'
+            '<tr><td style="border:none">Border-safe content</td></tr></table>')
+        self.assertTrue(borders['ok'])
+        self.assertIn('border', self.earnings.note_html,
+                      'table border presets must survive HTML sanitizing')
+        self.assertIn('Border-safe content', self.earnings.note_html)
+
         foreign = self.env['hr.formula.config'].create({
             'name': 'Foreign payslip config', 'code': 'FOREIGN_PS',
             'country_code': 'VN', 'state': 'draft',

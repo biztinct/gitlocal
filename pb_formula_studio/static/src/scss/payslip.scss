@@ -218,7 +218,7 @@
 .pbfs-ps .ps-rich-hint { padding: 7px 13px; border-bottom: 1px solid #E2E8F0; background: #F8FAFC; color: #64748B; font-size: 10.5px; }
 .pbfs-ps .ps-rich-hint-dot { display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: #10B981; }
 .pbfs-ps .ps-table-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; padding: 7px 12px; border-bottom: 1px solid #DDD6FE; background: #F5F3FF; }
-.pbfs-ps .ps-table-toolbar button { height: 28px; padding: 0 7px; border: 1px solid #D8D1F0; border-radius: 6px; background: #fff; color: #4C3F94; font-size: 10.5px; font-weight: 700; cursor: pointer; }
+.pbfs-ps .ps-table-toolbar button, .pbfs-ps .ps-table-toolbar select { height: 28px; padding: 0 7px; border: 1px solid #D8D1F0; border-radius: 6px; background: #fff; color: #4C3F94; font-size: 10.5px; font-weight: 700; cursor: pointer; }
 .pbfs-ps .ps-table-toolbar button:hover { border-color: #8B7BD1; background: #FAFAFF; }
 .pbfs-ps .ps-table-toolbar button.danger { border-color: #FECACA; color: #B91C1C; }
 .pbfs-ps .ps-table-toolbar button.danger:hover { border-color: #F87171; background: #FEF2F2; }
@@ -228,6 +228,9 @@
 .pbfs-ps .ps-table-context span { margin-top: 2px; color: #7C6DBA; font-size: 9px; white-space: nowrap; }
 .pbfs-ps .ps-cell-color { position: relative; height: 28px; display: inline-flex; align-items: center; gap: 5px; padding: 0 5px 0 7px; border: 1px solid #D8D1F0; border-radius: 6px; background: #fff; color: #64748B; font-size: 9.5px; font-weight: 700; cursor: pointer; }
 .pbfs-ps .ps-cell-color input { width: 19px; height: 19px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.pbfs-ps .ps-border-scope { height: 28px; display: inline-flex; align-items: center; gap: 5px; padding-left: 7px; border: 1px solid #D8D1F0; border-radius: 6px; background: #fff; color: #64748B; font-size: 9.5px; font-weight: 700; }
+.pbfs-ps .ps-border-scope select { min-width: 88px; height: 26px; padding-left: 2px; border: 0; }
+.pbfs-ps .ps-border-style { min-width: 82px; }
 .pbfs-ps .ps-rich-editor { flex: 1; min-height: 330px; max-height: 54vh; overflow: auto; margin: 12px; padding: 16px; border: 1px solid #DDE1EA; border-radius: 9px; outline: none; background: #fff; color: #334155; font-size: 13px; line-height: 1.55; }
 .pbfs-ps .ps-rich-editor:focus { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px #EDE9FE; }
 .pbfs-ps .ps-rich-editor table { width: 100%; border-collapse: collapse; margin: 10px 0; }

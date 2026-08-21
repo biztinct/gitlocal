@@ -2224,6 +2224,9 @@
                     <label class="ps-cell-color" title="Cell background colour"><span>Cell</span><input type="color" value="#FFFFFF" aria-label="Cell background colour" t-on-input="(ev) => this.psRichCellColor('background', ev)"/></label>
                     <label class="ps-cell-color" title="Cell text colour"><span>Text</span><input type="color" value="#334155" aria-label="Cell text colour" t-on-input="(ev) => this.psRichCellColor('text', ev)"/></label>
                     <button class="subtle" t-on-mousedown="psRichClearCellColor" title="Clear cell colours">Reset colour</button>
+                    <span class="ps-tool-sep"/>
+                    <label class="ps-border-scope"><span>Borders</span><select aria-label="Border scope" t-on-change="psRichSetBorderScope"><option value="table" t-att-selected="state.psRichBorderScope === 'table'">Whole table</option><option value="cell" t-att-selected="state.psRichBorderScope === 'cell'">Selected cell</option></select></label>
+                    <select class="ps-border-style" aria-label="Border style" title="Apply border style" t-on-mousedown="psRichRememberSelection" t-on-change="psRichBorder"><option value="">Style…</option><option value="default">Default</option><option value="none">No border</option><option value="light">Light</option><option value="standard">Standard</option><option value="strong">Strong</option></select>
                   </div>
                   <div class="ps-rich-hint"><span class="ps-rich-hint-dot"/>Choose <b>Label only</b> for the left cell and <b>Value only</b> for the right cell. Select words to style them, or click a table cell to style all its contents.</div>
                   <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop"></div>

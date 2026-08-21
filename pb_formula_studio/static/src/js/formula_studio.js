@@ -13,6 +13,7 @@ import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
 import { DocDrop } from "@biz_doc_ocr/js/doc_drop";
 import {
+    applyPayslipTableBorder,
     deletePayslipTable,
     deletePayslipTableColumn,
     deletePayslipTableRow,
@@ -237,6 +238,7 @@ export class PbFormulaStudio extends Component {
             psRichUsedIds: [],
             psRichTableActive: false,
             psRichTableLabel: "",
+            psRichBorderScope: "table", // table | cell
             // F12 — raw-Excel mode on the card (per-user preference)
             rawMode: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_raw_mode") === "1"),
             rawBuffer: "",
@@ -4707,6 +4709,7 @@ export class PbFormulaStudio extends Component {
         this.state.psRichUsedIds = this._psRichTokenIds(htmlValue || "");
         this.state.psRichTableActive = false;
         this.state.psRichTableLabel = "";
+        this.state.psRichBorderScope = "table";
         this.state.psRichDraft = this._psRichExpandTokens(htmlValue || "");
         this._psRichRange = null;
         this._psRichCellEl = null;
@@ -4929,6 +4932,18 @@ export class PbFormulaStudio extends Component {
         cell.style.removeProperty("color");
         if (!cell.getAttribute("style")) cell.removeAttribute("style");
         this._psRichSelectCell(cell);
+    }
+    psRichSetBorderScope(ev) {
+        this.state.psRichBorderScope = ev.target.value === "cell" ? "cell" : "table";
+    }
+    psRichBorder(ev) {
+        const preset = ev.target.value;
+        const cell = this._psRichActiveCell();
+        if (cell && preset) {
+            applyPayslipTableBorder(cell, this.state.psRichBorderScope, preset);
+            this._psRichSelectCell(cell);
+        }
+        ev.target.value = "";
     }
     psRichInsertComponent(component, ev) {
         if (ev) ev.preventDefault();
