@@ -163,3 +163,49 @@ class TestPayslipTemplateImport(TransactionCase):
             'name': 'payload.png', 'mime': 'image/png', 'data': 'not-base64!',
         })
         self.assertFalse(bad_data['ok'])
+
+    def test_06_rich_components_are_scoped_dynamic_and_replace_plain_lines(self):
+        content = (
+            '<table><tbody><tr>'
+            '<td>{{pb_component:%s:label}}</td>'
+            '<td>{{pb_component:%s:value}}</td>'
+            '</tr></tbody></table>'
+            '<p>{{pb_component:999999:value}}</p>'
+        ) % (self.bonus.id, self.bonus.id)
+        result = self.Studio.save_payslip_content(
+            self.config.id, 'section:%s' % self.earnings.id, content)
+        self.assertTrue(result['ok'])
+        self.assertIn('{{pb_component:%s:value}}' % self.bonus.id,
+                      self.earnings.note_html)
+        self.assertNotIn('999999', self.earnings.note_html,
+                         'foreign/stale component references are discarded')
+
+        rendered = self.config._render_payslip_content(
+            self.earnings.note_html, {self.bonus.id: 1250000}, '₫')
+        self.assertIn('Recognition bonus', rendered)
+        self.assertIn('₫1,250,000', rendered)
+        self.assertEqual(
+            self.config._payslip_content_rule_ids(
+                self.earnings.note_html, amount_only=True),
+            {self.bonus.id})
+
+        studio = self.Studio.payslip_studio_data(self.config.id)
+        earnings = next(s for s in studio['sections'] if s['id'] == self.earnings.id)
+        self.assertNotIn(self.bonus.id, [c['id'] for c in earnings['components']],
+                         'a dynamic value token replaces the ordinary line')
+        self.assertIn(self.bonus.id,
+                      [c['id'] for c in earnings['embedded_components']])
+        self.assertIn(self.bonus.id, [c['id'] for c in studio['rich_components']])
+        self.assertIn('pb-ps-component-value', earnings['note_rendered_html'])
+
+        removed = self.Studio.save_payslip_content(
+            self.config.id, 'section:%s' % self.earnings.id,
+            '<table><tbody><tr><td>Static label</td><td>Static value</td>'
+            '</tr></tbody></table>')
+        self.assertTrue(removed['ok'])
+        restored = self.Studio.payslip_studio_data(self.config.id)
+        restored_earnings = next(
+            s for s in restored['sections'] if s['id'] == self.earnings.id)
+        self.assertIn(self.bonus.id,
+                      [c['id'] for c in restored_earnings['components']],
+                      'removing the token restores the ordinary component line')

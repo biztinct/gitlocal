@@ -655,6 +655,19 @@ class HrPayslipFormula(models.Model):
         sections = Section.search(
             [('salary_structure_id', '=', config.id)], order='sequence, id'
         ) if config else Section.browse()
+        currency = (config.currency_id.symbol if (config and config.currency_id)
+                    else (self.company_id.currency_id.symbol if self.company_id else ''))
+        values_by_rule = {
+            rule.id: dsal.get(rule.code) for rule in config.rule_ids
+        } if config else {}
+        rich_blocks = []
+        if config:
+            rich_blocks = [config.payslip_header_html or '', config.payslip_footer_html or '']
+            rich_blocks.extend(section.note_html or '' for section in sections)
+        embedded_value_ids = set()
+        for block in rich_blocks:
+            embedded_value_ids.update(
+                config._payslip_content_rule_ids(block, amount_only=True))
 
         # Which config rules belong to each section; the rest (appears_on_payslip
         # but unsectioned) fall into a synthetic default section (C7).
@@ -662,7 +675,8 @@ class HrPayslipFormula(models.Model):
         out_sections = []
         for s in sections:
             comps = [r for r in config.rule_ids
-                     if r.payslip_identifier.id == s.id and r.appears_on_payslip]
+                     if r.payslip_identifier.id == s.id and r.appears_on_payslip
+                     and r.id not in embedded_value_ids]
             comps.sort(key=lambda r: (r.payslip_sequence or 0, r.sequence))
             lines = []
             for r in comps:
@@ -672,22 +686,33 @@ class HrPayslipFormula(models.Model):
                     continue
                 lines.append({'name': _line_name(r, r.code), 'total': total,
                               'is_deduction': total < 0})
-            if not lines and s.collapse_when_empty:
+            section_embedded_ids = config._payslip_content_rule_ids(
+                s.note_html or '', amount_only=True)
+            embedded_total = 0.0
+            embedded_visible = False
+            for rule in config.rule_ids.filtered(lambda r: r.id in section_embedded_ids):
+                total = dsal.get(rule.code, 0.0)
+                if _visible(rule, total):
+                    embedded_visible = True
+                    embedded_total += total
+            if not lines and not embedded_visible and s.collapse_when_empty:
                 continue
             title = (s.label_vi if (is_vi and s.label_vi) else False) or s.label or s.identifier or ''
             out_sections.append({
                 'title': title,
                 'color_hex': self._THEME_ACCENT_HEX.get(s.color_key or 'slate', '#64748B'),
-                'note_html': Markup(s.note_html or ''),
+                'note_html': config._render_payslip_content(
+                    s.note_html or '', values_by_rule, currency),
                 'lines': lines,
-                'subtotal': sum(l['total'] for l in lines),
+                'subtotal': sum(l['total'] for l in lines) + embedded_total,
             })
 
         # Default 'Payslip' section: config rules that appear on the payslip but
         # carry no section (never silently dropped).
         default_lines = []
         for r in config.rule_ids if config else []:
-            if r.code in sectioned_codes or not r.appears_on_payslip or r.payslip_identifier:
+            if (r.code in sectioned_codes or not r.appears_on_payslip
+                    or r.payslip_identifier or r.id in embedded_value_ids):
                 continue
             total = dsal.get(r.code, 0.0)
             if not _visible(r, total):
@@ -718,15 +743,15 @@ class HrPayslipFormula(models.Model):
             net_lines = self.line_ids.filtered(
                 lambda l: l.category_id and l.category_id.code == 'NET')
             net = sum(net_lines.mapped('total')) if net_lines else None
-        currency = (config.currency_id.symbol if (config and config.currency_id)
-                    else (self.company_id.currency_id.symbol if self.company_id else ''))
         return {
             'accent_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
             'font_stack': self._THEME_FONT_STACK.get(font_key, self._THEME_FONT_STACK['system']),
             'show_logo': show_logo and bool(logo),
             'logo': logo,
-            'header_html': Markup((config.payslip_header_html if config else False) or ''),
-            'footer_html': Markup((config.payslip_footer_html if config else False) or ''),
+            'header_html': config._render_payslip_content(
+                config.payslip_header_html or '', values_by_rule, currency) if config else Markup(''),
+            'footer_html': config._render_payslip_content(
+                config.payslip_footer_html or '', values_by_rule, currency) if config else Markup(''),
             'sections': out_sections,
             'net': net,
             'has_net': net is not None,

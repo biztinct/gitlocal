@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from markupsafe import Markup, escape
 import json
 import re
 import logging
@@ -441,6 +442,88 @@ class HrFormulaConfig(models.Model):
         sanitize=True,
         help="Optional formatted content shown after the payslip totals."
     )
+
+    # Dynamic components inside rich payslip content are persisted as inert,
+    # human-readable markers.  The editor turns them into non-editable chips;
+    # preview and print resolve them with the active sample/payslip values.
+    # Keeping the reference out of HTML attributes also means Odoo's HTML
+    # sanitizer can remain fully enabled without losing the component link.
+    _payslip_component_token_re = re.compile(
+        r'\{\{pb_component:(\d+):(label|value|both)\}\}')
+
+    def _normalise_payslip_content_tokens(self, html_value):
+        """Keep only canonical tokens belonging to this configuration."""
+        self.ensure_one()
+        allowed = set(self.rule_ids.ids)
+
+        def replace(match):
+            rule_id = int(match.group(1))
+            if rule_id not in allowed:
+                return ''
+            return '{{pb_component:%s:%s}}' % (rule_id, match.group(2))
+
+        return self._payslip_component_token_re.sub(replace, str(html_value or ''))
+
+    def _payslip_content_rule_ids(self, html_value, amount_only=False):
+        """Return scoped component ids referenced by a rich-content block."""
+        self.ensure_one()
+        allowed = set(self.rule_ids.ids)
+        result = set()
+        for match in self._payslip_component_token_re.finditer(str(html_value or '')):
+            rule_id, mode = int(match.group(1)), match.group(2)
+            if rule_id in allowed and (not amount_only or mode in ('value', 'both')):
+                result.add(rule_id)
+        return result
+
+    @staticmethod
+    def _payslip_token_value(rule, value, currency):
+        if value is None:
+            return '—'
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            return str(value)
+        number_format = rule.number_format or 'currency'
+        if number_format == 'percentage':
+            return ('{:,.2f}'.format(number * 100).rstrip('0').rstrip('.') + '%')
+        if number_format == 'integer':
+            return '{:,.0f}'.format(number)
+        if number_format == 'number':
+            return '{:,.2f}'.format(number).rstrip('0').rstrip('.')
+        sign = '−' if number < 0 else ''
+        return '%s%s%s' % (
+            sign, currency or '', '{:,.0f}'.format(abs(number)))
+
+    def _render_payslip_content(self, html_value, values_by_rule=None, currency=''):
+        """Resolve rich-content markers with values for preview or one slip."""
+        self.ensure_one()
+        rules = {rule.id: rule for rule in self.rule_ids}
+        values_by_rule = values_by_rule or {}
+
+        def replace(match):
+            rule = rules.get(int(match.group(1)))
+            if not rule:
+                return ''
+            mode = match.group(2)
+            name = ((rule.salary_rule_id.name if rule.salary_rule_id else False)
+                    or rule.name or rule.code or _('Component'))
+            value = self._payslip_token_value(
+                rule, values_by_rule.get(rule.id), currency)
+            if mode == 'label':
+                return '<span class="pb-ps-component pb-ps-component-label">%s</span>' % escape(name)
+            if mode == 'value':
+                return '<span class="pb-ps-component pb-ps-component-value">%s</span>' % escape(value)
+            return (
+                '<span class="pb-ps-component pb-ps-component-both">'
+                '<span class="pb-ps-component-name">%s</span>'
+                '<span class="pb-ps-component-amount">%s</span>'
+                '</span>'
+            ) % (escape(name), escape(value))
+
+        # html_value comes from a sanitize=True field.  Only escaped rule data
+        # is introduced while resolving markers, so the result remains safe.
+        return Markup(self._payslip_component_token_re.sub(
+            replace, str(html_value or '')))
 
     # ==========================================
     # DISPLAY NAME
