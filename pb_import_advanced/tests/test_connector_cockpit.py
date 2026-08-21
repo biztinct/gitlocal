@@ -475,16 +475,94 @@ class TestOneSyncTruthPerScreen(TransactionCase):
         self.assertEqual(card['last_sync'], '')
 
     def test_36_a_push_stamps_the_feed_it_filled(self):
-        """The same defect through the other door: `receive_pushed_records`
+        """The same defect through the other door: `webhook_ingest`
         wrote the connector's clock and left every card reading Never synced."""
         # `darwin` is the only connector class that implements `ingest_records`
         conn = self.Connector.create({
             'name': 'IG-C7 pushed', 'connector_type': 'darwin',
             'auth_type': 'api_key'})
-        conn.receive_pushed_records('employee', [
+        conn.webhook_ingest('employee', [
             {'external_id': 'IGC7-P1', 'name': 'Pushed One'}])
         conn.invalidate_recordset()
         d = self.Cockpit.get_connector_detail(conn.id)
         self.assertEqual(d['sync_truth']['kind'], 'sync')
         stamped = [e for e in d['endpoints'] if e['last_sync_iso']]
         self.assertTrue(stamped, "a push that fills a feed must stamp it")
+
+
+# ============================================ Integrations Cycle 7 — WP-4
+#
+# Two global launchers are `position: fixed` bottom-right on every backend
+# screen. A fixed launcher passing OVER a page as it scrolls is the pattern
+# working; what the browser measured on the owner's cockpit at 1450px, scrolled
+# to the very END, is not:
+#
+#     .lrn-fab              x 1324-1426  y 758-808
+#     .payai-floating-pill  x 1368-1426  y 818-876
+#     covered: the last two rows of the Transformations panel, permanently —
+#              `scrollTop` was already `scrollHeight - clientHeight`.
+#
+# The page reserved 26px against a 142px stack. Cycle 6's attempt moved the
+# launchers on ONE cockpit with a number measured at ONE viewport; this reserves
+# the stack's real footprint in the shared kit, for every cockpit.
+@tagged('post_install', '-at_install')
+class TestLaunchersClearTheLastRow(TransactionCase):
+
+    def _kit(self):
+        from odoo.modules.module import get_module_path
+        import os
+        path = os.path.join(get_module_path('pb_import_kit'),
+                            'static', 'src', 'scss', 'import_kit.scss')
+        with open(path, encoding='utf-8') as fh:
+            return fh.read()
+
+    # pb_learn's FAB has two homes and says so in its own stylesheet:
+    # `bottom: 160px` while the retired guided-tour launcher is installed, and
+    # `bottom: 92px` once it is not (`body.pb-coach-absent`). The kit reserves
+    # for both; these read the inputs back out of pb_learn, because the
+    # arithmetic lives in one module and the numbers it is arithmetic ON live
+    # in another, and nothing else would notice them drifting apart.
+    FAB_H = 50
+
+    def _reserved(self):
+        import re
+        scss = self._kit()
+        tall = re.search(
+            r'body:has\(\.lrn-coachhost\)[^{]*\{\s*padding-bottom:\s*(\d+)px', scss)
+        short = re.search(
+            r'body\.pb-coach-absent:has\(\.lrn-coachhost\)[^{]*\{\s*'
+            r'padding-bottom:\s*(\d+)px', scss)
+        return (int(tall.group(1)) if tall else 0,
+                int(short.group(1)) if short else 0)
+
+    def test_40_a_cockpit_reserves_the_launcher_stack_at_the_end_of_its_scroll(self):
+        tall, short = self._reserved()
+        self.assertTrue(
+            tall and short,
+            "the kit no longer reserves room for the floating launchers; a "
+            "cockpit's last row goes back under a button at full scroll")
+        self.assertGreater(tall, short,
+                           'the taller stack must reserve more, not less')
+        # the page's own 26px is inside both figures
+        self.assertGreaterEqual(short, 92 + self.FAB_H + 26)
+        self.assertGreaterEqual(tall, 160 + self.FAB_H + 26)
+
+    def test_41_the_reserved_height_still_matches_pb_learns_own_offsets(self):
+        import os
+        import re
+        from odoo.modules.module import get_module_path
+        learn = get_module_path('pb_learn')
+        if not learn:
+            self.skipTest('pb_learn is not on the addons path')
+        coach = os.path.join(learn, 'static', 'src', 'coach', 'coach.scss')
+        if not os.path.exists(coach):
+            self.skipTest('pb_learn no longer ships coach.scss')
+        with open(coach, encoding='utf-8') as fh:
+            src = fh.read()
+        offsets = [int(x) for x in re.findall(r'bottom:\s*(\d+)px', src)]
+        self.assertTrue(offsets, 'could not read a FAB offset out of pb_learn')
+        tall, short = self._reserved()
+        self.assertGreaterEqual(
+            tall, max(offsets) + self.FAB_H,
+            'pb_learn moved its launcher up; the kit reserves less than the '
+            "stack now occupies, so a cockpit's last row is under it again")

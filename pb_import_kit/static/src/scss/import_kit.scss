@@ -4,6 +4,54 @@
 //               pb_import_advanced. Namespaced so nothing leaks globally.
 // =====================================================================
 
+// ============ Integrations Cycle 7, WP-4 — the launchers stop sitting on the
+//              last row of a cockpit.
+//
+// Two global launchers are `position: fixed` bottom-right on every backend
+// screen: pb_learn's "Stuck?" FAB (`bottom: 92px`, 50px tall) and PayAI's pill
+// (`bottom: 24px`, 58px tall). Together they occupy the bottom **142px** of the
+// viewport at the right-hand edge.
+//
+// A fixed launcher passing OVER a page while it scrolls is the pattern working
+// as intended. What is not is what the browser measured on the owner's own
+// connector cockpit at 1450px, scrolled to the very end (`scrollTop` ===
+// `scrollHeight - clientHeight`):
+//
+//     .lrn-fab              x 1324-1426  y 758-808
+//     .payai-floating-pill  x 1368-1426  y 818-876
+//     covered:  "Dependants with a PIT number"  Active
+//               "Actual working hours incl. paid leave"  Active
+//
+// Those two rows are the LAST rows of the Transformations panel, and there is
+// no scroll left to move them out — the page reserved 26px against a 142px
+// stack, so its final rows are permanently under a button. That is the defect,
+// and it is a property of the SHELL, not of one cockpit, so it is fixed here in
+// the kit for all of them (W6).
+//
+// Reserved only when a launcher is actually mounted: `:has()` because both
+// hosts are outside every `.pbim` subtree. An engine without `:has()` drops the
+// rule and the padding stays at 26px — a degrade back to today, not a break.
+//
+// TWO reservations, because pb_learn's FAB has two homes and says so in its own
+// stylesheet: `bottom: 160px` while the retired guided-tour launcher is still
+// installed, and `bottom: 92px` once it is not (`body.pb-coach-absent`, set at
+// runtime by `first_login.js`). Reserving the taller figure unconditionally
+// would leave 68px of dead space at the end of every cockpit on every tenant
+// that has already retired it — which is this one, measured live. The FAB is
+// 50px tall in both; the page's own 26px padding is added on top.
+//
+// `tests/test_connector_cockpit.py::test_41` reads pb_learn's offsets back out
+// of pb_learn and asserts these two numbers still cover them, because the
+// arithmetic lives in one module and its inputs live in another.
+body:has(.lrn-coachhost) .pbim.pbim-page,
+body:has(.payai-floating-pill) .pbim.pbim-page {
+    padding-bottom: 236px;   // 160 + 50 + 26
+}
+body.pb-coach-absent:has(.lrn-coachhost) .pbim.pbim-page,
+body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbim-page {
+    padding-bottom: 168px;   // 92 + 50 + 26
+}
+
 .pbim {
     @include pbim-root-vars;
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

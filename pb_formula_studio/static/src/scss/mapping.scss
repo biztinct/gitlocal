@@ -111,7 +111,13 @@
 
 /* ---- columns ---- */
 .mapping-canvas .mc-cols { position: absolute; inset: 0; display: flex; z-index: 2; pointer-events: none; }
-.mapping-canvas .mc-col { width: 340px; display: flex; flex-direction: column; pointer-events: auto; min-height: 0; }
+/* The column width is a PROPERTY, not a number, because something outside this
+   file has to know it: the floating launchers are offset by exactly one column
+   plus a gutter so they land in the canvas rather than on the TO cards, and
+   Cycle 6's hard-coded 380px was that arithmetic done once, at one viewport
+   (C7 WP-4). The fallback keeps every host that does not set it rendering as
+   it always has. */
+.mapping-canvas .mc-col { width: var(--mc-col-w, 340px); display: flex; flex-direction: column; pointer-events: auto; min-height: 0; }
 .mapping-canvas .mc-col.left { margin-right: auto; }
 .mapping-canvas .mc-col.right { margin-left: auto; }
 .mapping-canvas .mc-col-head { display: flex; flex-direction: column; gap: 7px; padding: 11px 14px 9px; flex: none; }
