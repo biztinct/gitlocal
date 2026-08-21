@@ -252,4 +252,44 @@ comparison over an empty store would have been `0 == 0`, which proves nothing.
 
 ---
 
-_(WP-3, the live pass and the ledger follow as they land.)_
+## Tests — **144 run, 1 failed, 0 errors**, and the one failure is pre-existing
+
+Scoped suite over `pb_hr_payroll_formula`, `pb_integrations`, `pb_import_kit`
+and `biz_debrand`, on **payobook**, in its own window on its own port
+(`--http-port=8099 --gevent-port=8098`) with the real service up throughout.
+
+```
+2026-08-21 04:08:50  1 failed, 0 error(s) of 144 tests   (payobook)
+```
+
+The failure is `TestBizDebrandHttp.test_database_manager_debranded` — the stock
+database-manager page still carries `odoo.com` in its own markup. Its file was
+last touched **2026-07-04**, this cycle touched no `biz_debrand` file at all,
+and Cycle 7 recorded the same `EXIT_TESTS=1` for it. Pre-existing.
+
+**The brand gate is green**: `test_01_no_user_visible_platform_name` ran and
+passed across all 94 `pb_*`/`biz_*` modules with this cycle's new strings in
+the tree, as did `test_02` (the gate proving it can still fail) and `test_04`.
+
+### Three defects the live run found, all fixed
+
+| # | what | why it mattered |
+|---|---|---|
+| 1 | the composer offered **200 `hr.employee` columns** as the Zoho connector's fields | `get_available_source_fields`'s third layer is this product's own schema, right for the Mapping Studio and meaningless for a rule. A rule built on `activity_exception_decoration` would not error — it would answer a well-shaped 0 forever. Dropped in all three places it could leak (picker, save validator, assistant), with `fields_known` carrying the honest reason. **W164** |
+| 2 | a **lowercase output key was accepted** | `rule_save` upper-cased it before the validator could see it, so the rule that capitals matter was enforced by a coercion nobody is told about. Now refused, with the correct spelling in the message. **W165** |
+| 3 | `test_03d` could not pass | Odoo's `TransactionCase` overrides `assertRaises` and its override cannot take a TUPLE — `TypeError` before the code under test runs, reported as though the hardening were broken. **W160** |
+
+### Two runs lost to the environment, both now W-rules
+
+* `--no-http` does **not** stop an Odoo 19 test run binding `http_port`, so
+  W131's own escape hatch does not work on this build — the run died in
+  pre-flight on `Address already in use`. **W158**
+* `payobook_template` has **no administrator**, so
+  `_check_at_least_one_administrator` refuses every `res.users.create` on it
+  and six suites died in `setUpClass`. A Cycle 1 test that has passed for
+  months failed identically, which is what identified it as an environment fact
+  rather than a regression. **W159**
+
+---
+
+_(WP-3, the live pass and the final ledger follow as they land.)_
