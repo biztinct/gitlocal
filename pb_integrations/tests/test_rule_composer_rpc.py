@@ -239,6 +239,38 @@ class TestRuleComposerRpc(TransactionCase):
             if data['samples'].get(feed['data_type']):
                 self.assertIn(feed['data_type'], data['synthetic'])
 
+    def test_04k2_this_products_own_employee_schema_is_never_offered(self):
+        """Found on the LIVE board, which is the only place it could be found.
+
+        `get_available_source_fields` ends in a fallback layer — this
+        platform's own `hr.employee` columns — for a connector that has neither
+        stored rows nor a catalogue, and marks it `provenance='odoo'`. For the
+        Mapping Studio that is the only useful answer; for a transformation
+        RULE, which reads the stored payload and nothing else, it invites a
+        manager to build a rule over a field the source will never send. The
+        payobook Zoho People connector answered with 200 of them and not one
+        real field.
+        """
+        catalog = [
+            {'path': 'account_number', 'provenance': 'odoo', 'label': 'Account Number'},
+            {'path': 'Actual_Pay_Hour', 'provenance': 'catalog', 'label': 'Actual Pay Hour'},
+            {'path': 'OT_Type', 'provenance': 'live', 'label': 'OT Type'},
+            {'path': '', 'provenance': 'catalog'},
+        ]
+        kept = [f['path'] for f in self.Cockpit._payload_fields_only(catalog)]
+        self.assertEqual(kept, ['Actual_Pay_Hour', 'OT_Type'])
+
+        # …and a feed whose whole catalogue was that fallback says so, rather
+        # than rendering an empty picker with no reason.
+        bare = self.env['hr.integration.connector'].create({
+            'name': 'IG-C8 bare', 'connector_type': 'demo'})
+        data = self._as(self.manager).rule_composer_data(bare.id)
+        self.assertTrue(data['ok'])
+        for feed in data['feeds']:
+            self.assertIn('fields_known', feed)
+            for field in data['fields'].get(feed['data_type'], []):
+                self.assertNotEqual(field['provenance'], 'odoo')
+
     def test_04l_the_preview_is_the_engine(self):
         cockpit = self._as(self.manager)
         preview = cockpit.rule_preview(self.connector.id, self._spec())
