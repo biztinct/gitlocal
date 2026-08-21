@@ -1950,6 +1950,10 @@
               <div class="ps-lang" t-on-click="psToggleLang" t-att-title="'Preview labels: ' + (state.psLang === 'vi' ? 'Vietnamese' : 'English')">
                 <span t-att-class="state.psLang === 'en' ? 'on' : ''">EN</span><span t-att-class="state.psLang === 'vi' ? 'on' : ''">VI</span>
               </div>
+              <button t-if="state.psData and state.psData.can_edit" class="ps-import-btn" t-on-click="openPsImport" title="Upload a payslip and turn it into an editable layout">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
+                Import payslip
+              </button>
               <button t-if="state.psData and state.psData.can_edit" t-attf-class="ps-theme-btn {{ state.psThemeOpen ? 'on' : '' }}" t-on-click="togglePsTheme" title="Payslip theme — accent, font, logo">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996C19.518 15.994 22 13.512 22 10.437 22 5.775 17.51 2 12 2z"/></svg>
                 Theme
@@ -1995,6 +1999,9 @@
                             <button t-attf-class="ps-color sc-{{ ck }} {{ s.color_key === ck ? 'on' : '' }}" t-on-click="() => this.psSetSectionColor(s, ck)"/>
                           </t>
                         </div>
+                        <button t-attf-class="ps-sec-btn {{ s.note_html ? 'on' : '' }}" t-on-click="() => this.psOpenRich('section:' + s.id, s.label + ' content', s.note_html)" title="Add formatted text or a table">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h13"/><path d="M18 10v8M14 14h8"/></svg>
+                        </button>
                         <button t-attf-class="ps-sec-btn {{ s.collapse_when_empty ? 'on' : '' }}" t-on-click="() => this.psToggleCollapse(s)" title="Hide this section when it has no visible lines">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10 10 0 0 1 12 20C5 20 1 12 1 12a18 18 0 0 1 5.06-5.94M9.9 4.24A9 9 0 0 1 12 4c7 0 11 8 11 8a18 18 0 0 1-2.16 3.19M1 1l22 22"/></svg>
                         </button>
@@ -2058,6 +2065,11 @@
                   <button t-if="psTheme.has_logo" class="ps-theme-clear" t-on-click="psClearLogo">Clear</button>
                   <button t-attf-class="ps-theme-toggle {{ psTheme.show_logo ? 'on' : '' }}" t-on-click="psToggleLogo" t-esc="psTheme.show_logo ? 'Shown' : 'Hidden'"/>
                 </div>
+                <div class="ps-theme-row">
+                  <span class="ps-theme-lbl">Content</span>
+                  <button t-attf-class="ps-theme-upload {{ state.psData.header_html ? 'has' : '' }}" t-on-click="() => this.psOpenRich('header', 'Header content', state.psData.header_html)">Header</button>
+                  <button t-attf-class="ps-theme-upload {{ state.psData.footer_html ? 'has' : '' }}" t-on-click="() => this.psOpenRich('footer', 'Footer content', state.psData.footer_html)">Footer</button>
+                </div>
               </div>
 
               <div class="ps-slip" t-att-style="psSlipStyle">
@@ -2068,9 +2080,11 @@
                     <div class="ps-slip-sub" t-esc="state.psData.config.name"/>
                   </div>
                 </div>
+                <div t-if="state.psData.header_html" class="ps-slip-rich header" t-out="psHtml(state.psData.header_html)"/>
                 <t t-foreach="state.psData.sections" t-as="s" t-key="s.id">
                   <div t-if="psSectionShown(s)" t-attf-class="ps-slip-sec sc-{{ s.color_key }}">
                     <div class="ps-slip-sec-title" t-esc="psSectionTitle(s)"/>
+                    <div t-if="s.note_html" class="ps-slip-rich section" t-out="psHtml(s.note_html)"/>
                     <t t-foreach="psSectionVisibleComps(s)" t-as="c" t-key="c.id">
                       <div class="ps-slip-line"><span t-esc="c.name"/><span t-attf-class="ps-slip-amt {{ c.is_deduction ? 'ded' : '' }}"><t t-if="c.is_deduction">−</t><t t-esc="psVal(c)"/></span></div>
                     </t>
@@ -2078,11 +2092,89 @@
                   </div>
                 </t>
                 <div class="ps-slip-net" style="background: var(--ps-accent, #241F52);"><span>Net pay</span><span t-esc="vnd(psNet)"/></div>
+                <div t-if="state.psData.footer_html" class="ps-slip-rich footer" t-out="psHtml(state.psData.footer_html)"/>
               </div>
             </div>
           </div>
 
           <div t-elif="state.psBusy" class="ps-loading">Loading…</div>
+
+          <!-- Import assistant: upload → analyse → review → explicit apply. -->
+          <div t-if="state.psImportOpen" class="ps-sub-scrim" t-on-click="closePsImport">
+            <div class="ps-import" t-on-click="(ev) => ev.stopPropagation()">
+              <div class="ps-sub-head">
+                <div><b>Design from an existing payslip</b><small>We suggest the layout and field matches. You remain in control before anything changes.</small></div>
+                <button class="hs-x" t-on-click="closePsImport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+              </div>
+              <div class="ps-import-body">
+                <div t-if="!state.psImportDraft and !state.psImportBusy" class="ps-import-upload">
+                  <DocDrop onFile.bind="psAnalyseTemplate" label="'Drop a payslip here, or choose a file'" maxMb="10"/>
+                  <div class="ps-privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Text PDFs are read in your browser. Scans and images use your configured Document OCR; the temporary attachment is then removed.</span></div>
+                  <div t-if="state.psImportError" class="ps-import-alert danger" t-esc="state.psImportError"/>
+                </div>
+                <div t-if="state.psImportBusy" class="ps-import-loading"><span class="ps-spinner"/><b>Reading structure and matching payroll fields…</b><small>This can take a moment for scanned payslips.</small></div>
+                <div t-if="state.psImportDraft and !state.psImportBusy" class="ps-import-review">
+                  <div class="ps-import-summary">
+                    <div><span class="ps-import-file" t-esc="state.psImportDraft.filename"/><b><t t-esc="psImportSelectedCount"/> matched fields</b></div>
+                    <span class="ps-provider">Analysed by <t t-esc="state.psImportDraft.provider"/></span>
+                  </div>
+                  <div t-if="state.psImportDraft.warning" class="ps-import-alert" t-esc="state.psImportDraft.warning"/>
+                  <div class="ps-review-note"><b>Review the draft</b><span>Unticked or unmatched rows are left exactly where they are today. Existing sections are never deleted.</span></div>
+                  <div class="ps-import-sections">
+                    <div t-foreach="state.psImportDraft.sections" t-as="sec" t-key="sec.key" class="ps-import-section">
+                      <div class="ps-import-sec-head"><span t-attf-class="ps-import-dot sc-{{ sec.color_key }}"/><input t-att-value="sec.label" t-on-input="(ev) => sec.label = ev.target.value"/><span><t t-esc="sec.matches.length"/> suggestions</span></div>
+                      <div t-foreach="sec.matches" t-as="m" t-key="m_index" class="ps-import-match">
+                        <input type="checkbox" t-att-checked="m.selected" t-att-disabled="!m.rule_id" t-on-change="(ev) => this.psImportToggle(sec_index, m_index, ev)"/>
+                        <div class="ps-source"><small>Found on payslip</small><span t-esc="m.source_label"/></div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        <select t-on-change="(ev) => this.psImportSetMatch(sec_index, m_index, ev)">
+                          <option value="">Do not map</option>
+                          <option t-foreach="state.psImportDraft.options" t-as="opt" t-key="opt.id" t-att-value="opt.id" t-att-selected="opt.id === m.rule_id"><t t-esc="opt.col"/> · <t t-esc="opt.name"/> <t t-if="opt.code">(<t t-esc="opt.code"/>)</t></option>
+                        </select>
+                        <span t-attf-class="ps-confidence {{ m.confidence &gt;= 0.82 ? 'high' : 'review' }}"><t t-esc="Math.round(m.confidence * 100)"/>%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <details t-if="state.psImportDraft.unmatched.length" class="ps-unmatched"><summary><t t-esc="state.psImportDraft.unmatched.length"/> labels need your help</summary><div><span t-foreach="state.psImportDraft.unmatched" t-as="label" t-key="label" t-esc="label"/></div></details>
+                  <div t-if="state.psImportDraft.header_html or state.psImportDraft.footer_html" class="ps-import-content-preview">
+                    <div t-if="state.psImportDraft.header_html"><b>Detected header</b><div t-out="psHtml(state.psImportDraft.header_html)"/></div>
+                    <div t-if="state.psImportDraft.footer_html"><b>Detected footer</b><div t-out="psHtml(state.psImportDraft.footer_html)"/></div>
+                  </div>
+                  <div class="ps-import-options">
+                    <label><input type="checkbox" t-att-checked="state.psImportApplyTheme" t-on-change="psImportToggleTheme"/>Use detected colours and font</label>
+                    <label><input type="checkbox" t-att-checked="state.psImportApplyContent" t-on-change="psImportToggleContent"/>Use detected header and footer text</label>
+                  </div>
+                </div>
+              </div>
+              <div class="ps-sub-foot">
+                <button class="ps-secondary" t-on-click="closePsImport">Cancel</button>
+                <button t-if="state.psImportDraft" class="ps-primary" t-att-disabled="state.psImportBusy or !psImportSelectedCount" t-on-click="psApplyTemplate">Apply <t t-esc="psImportSelectedCount"/> matched fields</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sanitized rich content shared by browser preview and PDF report. -->
+          <div t-if="state.psRichOpen" class="ps-sub-scrim" t-on-click="closePsRich">
+            <div class="ps-rich" t-on-click="(ev) => ev.stopPropagation()">
+              <div class="ps-sub-head"><div><b t-esc="state.psRichTitle"/><small>Add text, lists or a compact table. The preview is what prints.</small></div><button class="hs-x" t-on-click="closePsRich"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+              <div class="ps-rich-toolbar" role="toolbar" aria-label="Text formatting">
+                <select title="Text style" t-on-change="psRichBlock"><option value="">Style</option><option value="p">Paragraph</option><option value="h3">Heading</option><option value="blockquote">Quote</option></select>
+                <button t-on-mousedown="(ev) => this.psRichToolbar('bold', ev)" title="Bold"><b>B</b></button>
+                <button t-on-mousedown="(ev) => this.psRichToolbar('italic', ev)" title="Italic"><i>I</i></button>
+                <button t-on-mousedown="(ev) => this.psRichToolbar('underline', ev)" title="Underline"><u>U</u></button>
+                <span class="ps-tool-sep"/>
+                <button t-on-mousedown="(ev) => this.psRichToolbar('insertUnorderedList', ev)" title="Bulleted list">• List</button>
+                <button t-on-mousedown="(ev) => this.psRichToolbar('insertOrderedList', ev)" title="Numbered list">1. List</button>
+                <button t-on-mousedown="(ev) => this.psRichToolbar('justifyLeft', ev)" title="Align left">⇤</button>
+                <button t-on-mousedown="(ev) => this.psRichToolbar('justifyCenter', ev)" title="Align centre">↔</button>
+                <span class="ps-tool-sep"/>
+                <button class="wide" t-on-mousedown="psRichInsertTableEvent" title="Insert a 2-column table">▦ Table</button>
+                <button class="wide" t-on-mousedown="(ev) => this.psRichToolbar('removeFormat', ev)" title="Clear formatting">Clear</button>
+              </div>
+              <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-out="psHtml(state.psRichDraft)"/>
+              <div class="ps-sub-foot"><button class="ps-secondary" t-on-click="closePsRich">Cancel</button><button class="ps-primary" t-att-disabled="state.psRichBusy" t-on-click="psSaveRich">Save content</button></div>
+            </div>
+          </div>
         </div>
       </div>
 

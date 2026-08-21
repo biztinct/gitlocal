@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from markupsafe import Markup
 from odoo.exceptions import UserError, ValidationError
 import json
 import logging
@@ -677,6 +678,7 @@ class HrPayslipFormula(models.Model):
             out_sections.append({
                 'title': title,
                 'color_hex': self._THEME_ACCENT_HEX.get(s.color_key or 'slate', '#64748B'),
+                'note_html': Markup(s.note_html or ''),
                 'lines': lines,
                 'subtotal': sum(l['total'] for l in lines),
             })
@@ -701,6 +703,7 @@ class HrPayslipFormula(models.Model):
             out_sections.append({
                 'title': _('Payslip'),
                 'color_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
+                'note_html': Markup(''),
                 'lines': default_lines,
                 'subtotal': sum(l['total'] for l in default_lines),
             })
@@ -722,6 +725,8 @@ class HrPayslipFormula(models.Model):
             'font_stack': self._THEME_FONT_STACK.get(font_key, self._THEME_FONT_STACK['system']),
             'show_logo': show_logo and bool(logo),
             'logo': logo,
+            'header_html': Markup((config.payslip_header_html if config else False) or ''),
+            'footer_html': Markup((config.payslip_footer_html if config else False) or ''),
             'sections': out_sections,
             'net': net,
             'has_net': net is not None,

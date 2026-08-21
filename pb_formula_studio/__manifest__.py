@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.79.0',
+    'version': '19.0.1.80.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -14,7 +14,7 @@
     # that was never declared, so a database without the kit would have loaded a
     # backend bundle with a dead import. Declared (Integrations C5).
     'depends': ['web', 'biz_theme', 'pb_hr_payroll_formula', 'pb_hr_payroll_base',
-                'pb_hub', 'pb_import_kit'],
+                'pb_hub', 'pb_import_kit', 'biz_doc_ocr'],
     'data': [
         'views/pb_formula_studio_action.xml',
         'views/pb_mapping_studio_action.xml',

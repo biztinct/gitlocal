@@ -44,6 +44,11 @@ class HrPayslipConfig(models.Model):
         default=False,
         help="Omit this section from the printed payslip when it has no visible lines."
     )
+    note_html = fields.Html(
+        string='Section Content',
+        sanitize=True,
+        help="Optional formatted text or table shown below the section title."
+    )
 
     def name_get(self):
         result = []

@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
+import base64
+import binascii
 import hashlib
+import html
 import json
 import logging
 import re
+import unicodedata
 from collections import defaultdict
+from difflib import SequenceMatcher
 
 try:
     import requests
@@ -4905,6 +4910,8 @@ class PbFormulaStudio(models.AbstractModel):
     # F9 — Payslip Studio
     # ------------------------------------------------------------------
     _SECTION_COLORS = ['slate', 'indigo', 'emerald', 'amber', 'rose', 'sky', 'violet']
+    _PAYSLIP_UPLOAD_MIMES = {'application/pdf', 'image/png', 'image/jpeg'}
+    _PAYSLIP_UPLOAD_MAX = 10 * 1024 * 1024
 
     def _payslip_comp(self, r, values):
         """One payslip line payload (value comes from the live preview)."""
@@ -4951,6 +4958,7 @@ class PbFormulaStudio(models.AbstractModel):
                 'label': s.label or s.identifier or '', 'label_vi': s.label_vi or '',
                 'sequence': s.sequence, 'color_key': s.color_key or 'slate',
                 'collapse_when_empty': bool(s.collapse_when_empty),
+                'note_html': s.note_html or '',
                 'components': [self._payslip_comp(r, values) for r in comps],
             })
         tray_sorted = sorted(tray, key=lambda r: r.sequence)
@@ -4969,8 +4977,376 @@ class PbFormulaStudio(models.AbstractModel):
                 'has_logo': bool(config.theme_logo),
             },
             'accent_hex': self._ACCENT_HEX,
+            'header_html': config.payslip_header_html or '',
+            'footer_html': config.payslip_footer_html or '',
             'can_edit': self._can_edit(),
         }
+
+    @staticmethod
+    def _payslip_import_norm(value):
+        value = unicodedata.normalize('NFKD', str(value or ''))
+        value = ''.join(ch for ch in value if not unicodedata.combining(ch))
+        return re.sub(r'[^a-z0-9]+', ' ', value.lower()).strip()
+
+    @staticmethod
+    def _payslip_import_list(value):
+        """Turn a provider's free-form/list-ish cell into short clean rows."""
+        if isinstance(value, list):
+            raw = value
+        else:
+            text = str(value or '').strip()
+            raw = []
+            if text.startswith('['):
+                try:
+                    parsed = json.loads(text)
+                    raw = parsed if isinstance(parsed, list) else []
+                except (TypeError, ValueError):
+                    raw = []
+            if not raw:
+                raw = re.split(r'[\r\n;]+', text)
+        out = []
+        for item in raw:
+            item = re.sub(r'^\s*(?:[-*•]|\d+[.)])\s*', '', str(item or '')).strip()
+            if item and item not in out:
+                out.append(item[:180])
+        return out[:120]
+
+    @staticmethod
+    def _payslip_import_html(value):
+        lines = [html.escape(x.strip()) for x in str(value or '').splitlines() if x.strip()]
+        return ''.join('<p>%s</p>' % line for line in lines[:12])
+
+    def _payslip_pdf_text_usable(self, value):
+        """Reject PDFs whose embedded font map yields one-letter gibberish."""
+        tokens = self._payslip_import_norm(value).split()
+        words = [token for token in tokens if len(token) >= 3 and not token.isdigit()]
+        return bool(len(words) >= 4 and len(words) / max(1, len(tokens)) >= 0.25)
+
+    def _payslip_rule_score(self, label, rule):
+        source = self._payslip_import_norm(label)
+        if not source:
+            return 0.0
+        names = {
+            self._payslip_import_norm(rule.code),
+            self._payslip_import_norm(rule.name),
+            self._payslip_import_norm(rule.salary_rule_id.name if rule.salary_rule_id else ''),
+        } - {''}
+        best = 0.0
+        for target in names:
+            if source == target:
+                return 0.99
+            if len(source) >= 4 and (source in target or target in source):
+                best = max(best, 0.90 * min(len(source), len(target)) / max(len(source), len(target)))
+            ratio = SequenceMatcher(None, source, target).ratio()
+            source_tokens, target_tokens = set(source.split()), set(target.split())
+            overlap = (len(source_tokens & target_tokens) / len(source_tokens | target_tokens)
+                       if source_tokens and target_tokens else 0.0)
+            best = max(best, ratio * 0.72 + overlap * 0.28)
+        return round(best, 3)
+
+    @api.model
+    def _build_payslip_template_draft(self, config, extracted, filename=''):
+        """Deterministically convert OCR output into a reviewable, write-free draft."""
+        cells = extracted.get('fields') or {}
+
+        def value(key):
+            cell = cells.get(key) or {}
+            return cell.get('value', '') if isinstance(cell, dict) else cell
+
+        layout_rows = self._payslip_import_list(value('layout_rows'))
+        headings = self._payslip_import_list(value('section_headings'))
+        loose_labels = self._payslip_import_list(value('line_labels'))
+        parsed_rows = []
+        current_section = ''
+        for raw in layout_rows:
+            parts = re.split(r'\s*(?:::|\|\||\t|\s+-\s+)\s*', raw, maxsplit=1)
+            if len(parts) == 2 and parts[0] and parts[1]:
+                section, label = parts
+                current_section = section
+            else:
+                section, label = current_section, raw
+            parsed_rows.append((section[:80], label[:120]))
+        if not parsed_rows:
+            parsed_rows = [('', label) for label in loose_labels]
+
+        # Tesseract/plain OCR returns prose. Only rows that actually match a
+        # configured component survive the confidence threshold below.
+        if not parsed_rows and extracted.get('raw_text'):
+            for raw in self._payslip_import_list(extracted.get('raw_text')):
+                clean = re.sub(r'\s+[-+]?\(?[\d.,]+\)?\s*$', '', raw).strip()
+                if 2 <= len(clean) <= 120:
+                    parsed_rows.append(('', clean))
+
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        used = set()
+        grouped = {}
+        group_order = []
+        unmatched = []
+        for stated_section, label in parsed_rows:
+            scored = sorted(((self._payslip_rule_score(label, r), r) for r in rules if r.id not in used),
+                            key=lambda pair: (-pair[0], pair[1].sequence, pair[1].id))
+            score, rule = scored[0] if scored else (0.0, rules.browse())
+            if not rule or score < 0.56:
+                if label and label not in unmatched:
+                    unmatched.append(label)
+                review_section = stated_section.strip() or _('Needs review')
+                review_key = self._payslip_import_norm(review_section) or 'needs review'
+                if review_key not in grouped:
+                    grouped[review_key] = {
+                        'key': review_key,
+                        'label': review_section[:80],
+                        'color_key': 'amber',
+                        'note_html': '',
+                        'matches': [],
+                    }
+                    group_order.append(review_key)
+                grouped[review_key]['matches'].append({
+                    'source_label': label,
+                    'rule_id': rule.id if rule and score >= 0.30 else False,
+                    'rule_name': ((rule.salary_rule_id.name if rule.salary_rule_id else False)
+                                  or rule.name or rule.code) if rule else '',
+                    'rule_code': (rule.code or '') if rule else '',
+                    'confidence': score,
+                    'selected': False,
+                })
+                continue
+            used.add(rule.id)
+            section = stated_section.strip()
+            if not section:
+                section = _group_for(rule)
+            section_key = self._payslip_import_norm(section) or 'payslip'
+            if section_key not in grouped:
+                grouped[section_key] = {
+                    'key': section_key,
+                    'label': section[:80] or _('Payslip'),
+                    'color_key': self._SECTION_COLORS[len(group_order) % len(self._SECTION_COLORS)],
+                    'note_html': '',
+                    'matches': [],
+                }
+                group_order.append(section_key)
+            grouped[section_key]['matches'].append({
+                'source_label': label,
+                'rule_id': rule.id,
+                'rule_name': (rule.salary_rule_id.name if rule.salary_rule_id else False) or rule.name or rule.code,
+                'rule_code': rule.code or '',
+                'confidence': score,
+                'selected': True,
+            })
+
+        # If the provider found headings but no row carried one, retain only
+        # headings with a natural payroll meaning; empty decorative sections do
+        # not improve the review draft.
+        if not grouped and headings:
+            for heading in headings[:8]:
+                key = self._payslip_import_norm(heading)
+                if key:
+                    grouped[key] = {'key': key, 'label': heading[:80],
+                                    'color_key': self._SECTION_COLORS[len(group_order) % len(self._SECTION_COLORS)],
+                                    'note_html': '', 'matches': []}
+                    group_order.append(key)
+
+        accent_words = self._payslip_import_norm(value('accent_colour'))
+        accent = next((key for key in self._SECTION_COLORS if key in accent_words), False)
+        font_words = self._payslip_import_norm(value('font_style'))
+        font = ('serif' if 'serif' in font_words else
+                ('mono' if 'mono' in font_words else
+                 ('system' if ('system' in font_words or 'sans serif' in font_words) else False)))
+        return {
+            'ok': bool(grouped or value('header_text') or value('footer_text')),
+            'filename': filename[:128],
+            'provider': extracted.get('provider') or 'none',
+            'warning': extracted.get('error') or '',
+            'sections': [grouped[key] for key in group_order],
+            'unmatched': unmatched[:40],
+            'header_html': self._payslip_import_html(value('header_text')),
+            'footer_html': self._payslip_import_html(value('footer_text')),
+            'theme': {'accent': accent, 'font': font},
+            'options': [{'id': r.id,
+                         'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
+                         'code': r.code or '', 'col': r.column_letter or ''} for r in rules],
+            'matched_count': len(used),
+        }
+
+    @api.model
+    def analyse_payslip_template(self, config_id, upload):
+        """Read an uploaded payslip once and return suggestions; retain no file."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
+        try:
+            config = self.env['hr.formula.config'].browse(int(config_id)).exists()
+        except (TypeError, ValueError):
+            config = self.env['hr.formula.config'].browse()
+        if not config:
+            return {'ok': False, 'msg': _("Configuration not found.")}
+        upload = upload if isinstance(upload, dict) else {}
+        mimetype = str(upload.get('mime') or '')
+        if mimetype not in self._PAYSLIP_UPLOAD_MIMES:
+            return {'ok': False, 'msg': _("Use a PDF, JPG or PNG payslip.")}
+        try:
+            raw = base64.b64decode(str(upload.get('data') or ''), validate=True)
+        except (binascii.Error, ValueError, TypeError):
+            return {'ok': False, 'msg': _("The uploaded file could not be read.")}
+        if not raw:
+            return {'ok': False, 'msg': _("The uploaded file is empty.")}
+        if len(raw) > self._PAYSLIP_UPLOAD_MAX:
+            return {'ok': False, 'msg': _("The payslip must be 10 MB or smaller.")}
+
+        schema = {
+            'doc_kinds': ['payslip'],
+            'fields': [
+                {'name': 'layout_rows', 'label': 'Layout rows', 'type': 'char',
+                 'hint': 'Every visible payroll row, one per line, exactly SECTION :: FIELD LABEL, in visual top-to-bottom order.'},
+                {'name': 'section_headings', 'label': 'Section headings', 'type': 'char',
+                 'hint': 'All headings in visual order, separated by new lines.'},
+                {'name': 'line_labels', 'label': 'Payroll field labels', 'type': 'char',
+                 'hint': 'All earnings, deduction and total labels, one per line, without amounts.'},
+                {'name': 'header_text', 'label': 'Reusable header text', 'type': 'char',
+                 'hint': 'Static heading or explanatory text only; exclude employee-specific values.'},
+                {'name': 'footer_text', 'label': 'Reusable footer text', 'type': 'char',
+                 'hint': 'Static notes or disclaimers only; exclude employee-specific values.'},
+                {'name': 'accent_colour', 'label': 'Dominant accent colour', 'type': 'char'},
+                {'name': 'font_style', 'label': 'Font style', 'type': 'char',
+                 'hint': 'system/sans-serif, serif, or monospace.'},
+            ],
+        }
+        # Odoo's bundled PDF.js extracts ordinary text PDFs in the browser.
+        # Treat it only as untrusted source text (never HTML/code); it is capped
+        # client + server and all eventual rich text is escaped/sanitized.
+        client_text = (str(upload.get('extracted_text') or '')[:80000]
+                       if mimetype == 'application/pdf' else '')
+        if self._payslip_pdf_text_usable(client_text):
+            extracted = {'fields': {}, 'raw_text': client_text,
+                         'provider': 'PDF text', 'error': False}
+        else:
+            attachment = self.env['ir.attachment'].create({
+                'name': str(upload.get('name') or 'payslip')[:128],
+                'datas': base64.b64encode(raw),
+                'mimetype': mimetype,
+                'res_model': 'hr.formula.config',
+                'res_id': config.id,
+            })
+            try:
+                extracted = self.env['biz.doc.ocr']._extract(schema, [attachment.id])
+            finally:
+                attachment.unlink()
+        draft = self._build_payslip_template_draft(
+            config, extracted or {}, str(upload.get('name') or 'payslip'))
+        if not draft['ok']:
+            draft['msg'] = draft['warning'] or _(
+                "No payroll fields could be recognised. Try a clearer image or configure Document OCR.")
+        return draft
+
+    @api.model
+    def apply_payslip_template(self, config_id, draft):
+        """Apply reviewed matches without deleting any existing layout content."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
+        try:
+            config = self.env['hr.formula.config'].browse(int(config_id)).exists()
+        except (TypeError, ValueError):
+            config = self.env['hr.formula.config'].browse()
+        if not config:
+            return {'ok': False, 'msg': _("Configuration not found.")}
+        draft = draft if isinstance(draft, dict) else {}
+        requested = draft.get('sections') if isinstance(draft.get('sections'), list) else []
+        Section = self.env['hr.payslip.config']
+        existing = Section.search([('salary_structure_id', '=', config.id)], order='sequence, id')
+        section_by_name = {self._payslip_import_norm(s.label or s.identifier): s for s in existing}
+        rules_by_id = {r.id: r for r in config.rule_ids}
+        used_rules, created, placed = set(), 0, 0
+
+        for section_index, row in enumerate(requested[:20]):
+            if not isinstance(row, dict):
+                continue
+            matches = row.get('matches') if isinstance(row.get('matches'), list) else []
+            selected = []
+            for match in matches[:160]:
+                if not isinstance(match, dict) or not match.get('selected'):
+                    continue
+                try:
+                    rule_id = int(match.get('rule_id'))
+                except (TypeError, ValueError):
+                    continue
+                if rule_id in rules_by_id and rule_id not in used_rules:
+                    selected.append(rules_by_id[rule_id])
+                    used_rules.add(rule_id)
+            if not selected:
+                continue
+            label = (re.sub(r'[\r\n\t]+', ' ', str(row.get('label') or _('Payslip')))
+                     .strip()[:80] or _('Payslip'))
+            key = self._payslip_import_norm(label) or 'payslip'
+            section = section_by_name.get(key)
+            if not section:
+                ident = re.sub(r'[^A-Za-z0-9]', '', label).upper()[:16] or 'SECTION'
+                codes = set(existing.mapped('identifier'))
+                candidate, suffix = ident, 1
+                while candidate in codes:
+                    suffix += 1
+                    candidate = ('%s%s' % (ident[:max(1, 16 - len(str(suffix)))], suffix))[:16]
+                color = row.get('color_key') if row.get('color_key') in self._SECTION_COLORS else self._SECTION_COLORS[section_index % len(self._SECTION_COLORS)]
+                section = Section.create({
+                    'salary_structure_id': config.id,
+                    'identifier': candidate,
+                    'label': label,
+                    'sequence': max(existing.mapped('sequence') or [0]) + 10,
+                    'color_key': color,
+                })
+                existing |= section
+                section_by_name[key] = section
+                created += 1
+            current = config.rule_ids.filtered(lambda r: r.payslip_identifier == section and r.id not in used_rules)
+            ordered = selected + list(current.sorted(key=lambda r: (r.payslip_sequence or 0, r.sequence)))
+            for index, rule in enumerate(ordered):
+                vals = {'payslip_identifier': section.id, 'payslip_sequence': (index + 1) * 10}
+                if rule in selected:
+                    vals['appears_on_payslip'] = True
+                    placed += 1
+                rule.write(vals)
+
+        content_vals = {}
+        if draft.get('apply_content'):
+            if draft.get('header_html'):
+                content_vals['payslip_header_html'] = draft['header_html']
+            if draft.get('footer_html'):
+                content_vals['payslip_footer_html'] = draft['footer_html']
+        if draft.get('apply_theme'):
+            theme = draft.get('theme') if isinstance(draft.get('theme'), dict) else {}
+            if theme.get('accent') in self._ACCENT_HEX:
+                content_vals['theme_accent'] = theme['accent']
+            if theme.get('font') in ('system', 'serif', 'mono'):
+                content_vals['theme_font'] = theme['font']
+        if content_vals:
+            config.write(content_vals)
+        return {'ok': True, 'created_sections': created, 'placed': placed}
+
+    @api.model
+    def save_payslip_content(self, config_id, target, html_value):
+        """Save sanitized rich content for header/footer/a section."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        try:
+            config = self.env['hr.formula.config'].browse(int(config_id)).exists()
+        except (TypeError, ValueError):
+            config = self.env['hr.formula.config'].browse()
+        if not config:
+            return {'ok': False}
+        html_value = str(html_value or '')[:50000]
+        if target == 'header':
+            config.write({'payslip_header_html': html_value or False})
+        elif target == 'footer':
+            config.write({'payslip_footer_html': html_value or False})
+        elif str(target).startswith('section:'):
+            try:
+                section_id = int(str(target).split(':', 1)[1])
+            except (TypeError, ValueError):
+                return {'ok': False, 'msg': _("Unknown content area.")}
+            section = self.env['hr.payslip.config'].browse(section_id)
+            if not section.exists() or section.salary_structure_id != config:
+                return {'ok': False, 'msg': _("Section not found in this configuration.")}
+            section.write({'note_html': html_value or False})
+        else:
+            return {'ok': False, 'msg': _("Unknown content area.")}
+        return {'ok': True}
 
     # W73 — accent palette hex (the LOCKED sc-* keys; mirrors payslip.scss +
     # hr_payslip_formula._THEME_ACCENT_HEX so preview and print never drift).
@@ -5068,7 +5444,7 @@ class PbFormulaStudio(models.AbstractModel):
         if not s.exists():
             return {'ok': False}
         allowed = {k: v for k, v in (vals or {}).items()
-                   if k in ('label', 'label_vi', 'color_key', 'collapse_when_empty')}
+                   if k in ('label', 'label_vi', 'color_key', 'collapse_when_empty', 'note_html')}
         if allowed:
             s.write(allowed)
         return {'ok': True}
