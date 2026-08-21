@@ -5,7 +5,7 @@
 > **Written incrementally and committed at every milestone** — a stall must not
 > lose the record (the handover says so because Cycles 2 and 7 both stalled).
 
-_Status: IN PROGRESS. Server half DEPLOYED and verified on all three databases; WP-3 (the composer component) building in parallel._
+_Status: **COMPLETE**. All four work packages shipped, deployed to payobook / abm / payobook_template, and live-validated on both live databases._
 
 ---
 
@@ -319,4 +319,160 @@ foreign pb_hr_payroll_formula files (payslip_config, formula_config,
 
 ---
 
-_(WP-3, the live pass and the final ledger follow as they land.)_
+## WP-3 — the Rule Composer component — **DONE**
+
+Built by a child agent against the WP-2 payload as a fixed contract
+(`2995cb8d`), plus three follow-up fixes from the live pass. `pb_integrations`
+→ **19.0.1.8.0**.
+
+`rule_composer.js` (≈990 lines) / `.xml` (≈480) / `.scss` (≈390), mounted as a
+sibling of `WfDrawer` inside `PbIntegrations` — the drawer still opens the
+mapping and store ledgers, unchanged. Chrome from the new `.pbim-modal*`
+primitive plus the shared `.pplw-*` wizard shell; class prefix `.itgrc-*`.
+
+The composer's kernel is exported and PURE — `suggestOutputKey`,
+`keyAfterRename`, `emitSpec`, `toFormula`, `toSteps`, `railSentence`,
+`readOnlyReason`, `PreviewPump` — because the six rules it enforces all fail
+invisibly. The preview pump is `mapping_canvas._tfPreview`'s mechanism
+extracted: 260 ms debounce plus a monotonic `++token` supersede, with the timer
+functions injected so a test can drive a manual clock and resolve two requests
+in the wrong order.
+
+`_ledger_rule` now prints the rule's own sentence in place of the selection
+label, turns the badge error-toned when `last_error` is set, and carries
+`connector_id` per row. `_detail_rule` gained the `date_check_operator` /
+`date_check_value` rows that were declared on the model and never rendered.
+
+## Live validation (handover test 10)
+
+W129 temporary single-company validators created through `odoo-bin shell`
+(`c8val`, uid 2282/2293 on payobook, uid 12 on abm), used for the whole pass and
+removed in the same session — **proven by `SELECT`, not by the script's output**
+(W144.3):
+
+```
+payobook: NO ROW      abm: NO ROW
+```
+
+abm's teardown cleared a `payroll.ai.conversation` first — the exact row that
+FK-blocked Cycle 4's teardown and made W144.
+
+### abm — the owner's board
+
+| what | result |
+|---|---|
+| all 8 rules open as sentences | ✓ the `WHAT IT DOES` column carries the full generated sentence for every one |
+| WORKEDHRS re-shot against the owner's original | ✓ `.ig-c8-shots/abm-BEFORE-workedhrs-drawer.png` → `abm-AFTER-workedhrs-composer.png` |
+| synthetic banner on the never-synced connector | ✓ *"These rows are illustrations of what this source will send. They are not records that were received."* |
+| "Describe it" via the deterministic fallback | ✓ *"The assistant is not configured, so these steps were matched from the words you used."* — and the draft was correct |
+| console errors | **0** |
+| responses ≥400 | **0 / 21** |
+
+The WORKEDHRS composer computes `619200 s / 3600 + 16:30 = 188.5` live from the
+catalogue illustration, and the modal scrolls inside itself while the page
+behind it does not move.
+
+### payobook — two rules built from scratch, as a novice
+
+| rule | clicks | result |
+|---|---:|---|
+| **Count dependants** — `DEPENDANTS` | **9** | rail read `7 records → 7 match → 7` before saving |
+| **Sum days where leave type is Annual Leave and status is Approved** — `ANNUALLEAVEDAYSAPPRO` | **20** | rail read `5 records → 3 match → 4`, the two Sick Leave rows struck through, per-record values 1 / 2 / 1 |
+
+Both counts include every typed field (the name, the two condition values, three
+picker searches). The output key was suggested from the name in both cases and
+never overwrote anything typed.
+
+The Excel lane, live on the second rule: `[days] * 8` over the same chip-built
+filter gave **32** (3 matches × 8); `[days] + NOPE([days])` put the human
+message in the proof rail *and disabled Save*; switching back to the steps
+restored `days` exactly and the rail returned to `5 records → 3 match → 4`.
+
+`last_error` surfaced in both places — the ledger badge turned `Error`-toned and
+the proof rail read *"The last time this rule ran it failed: …"* beside a live
+preview that still computed 7. Flag set and cleared on a rule this pass created.
+
+### The gates, refused live through the deployed RPC
+
+| attempt | refusal |
+|---|---|
+| `builder_mode='python'` | "The composer can only write guided rules and formulas. Advanced rules are edited in the backend form." |
+| guided spec carrying `python_code` + `filter_expression` | **saved** — and the row read back `python_code: false`, `filter_expression: false`, `builder_mode: guided` |
+| field not in the catalogue | "This source does not have a field called “Invented_Field”." |
+| lowercase key | "“c8lowerx” has to be capital letters and digits, starting with a letter — try “C8LOWERX”." |
+| underscored key | "“C8_UNDER” contains an underscore. Formulas cannot read an underscored name — try “C8UNDER”." |
+| substring collision | "“DEPENDANTSX” and the existing “DEPENDANTS” contain one another. A formula would rewrite the shorter inside the longer and work out 0 — rename one so neither contains the other." |
+| formula naming an unknown function | "NOPE is not a function this rule can use. The ones it understands are: ABS, AND, …" |
+| `__import__("os")` as a formula | "This formula uses something that is not allowed in a rule. …" |
+| `rule_preview` on a python rule | `{ok: false, readonly: true}` — `preview_transform`'s wording family |
+
+Console errors on payobook: **0**. Responses ≥400: **0 / 80**. Layout clean at
+**1450** and **1920** — card 1040 px, 0 children outside its bounds, no
+horizontal page scroll, body scrolls inside itself at both.
+
+### JavaScript suite — **15/15 green in the browser**
+
+`.ig-c8-shots/payobook-hoot-pb-integrations-green.png`. It took three rounds,
+and each round is a finding:
+
+1. `expect(...).toBeTruthy` — **hoot has no such matcher** (its family is
+   `toBe` / `toEqual` / `toMatch` / `toBeGreaterThan` / `toBeCloseTo` /
+   `toBeWithin` and the DOM ones), and hoot counts `expect()` called without a
+   matcher as a FAILURE rather than a vacuous pass. `node --check` parses it
+   perfectly happily.
+2. `_t` on a LAZY string throws *"translations have not been loaded"* the
+   moment a PURE test reads it. The branch returning `""` passed, so the test
+   looked like it exercised all three branches while two could not evaluate at
+   all. Fixed with the framework's own `patchTranslations()`.
+3. W156's corollary, concretely: the tests page loads
+   `a3e5252/web.assets_unit_tests.min.js` and I had warmed `09c2e6f` (the
+   *setup* bundle). Forcing a different URL updates a different cache key and
+   proves nothing — read the href out of the page, then force **that**.
+
+### Three defects the live pass found in the UI
+
+| # | what | why it mattered |
+|---|---|---|
+| 1 | **WORKEDHRS opened read-only** | the composer decided the lane with `builder_mode === "python" \|\| has_python`. `has_python` means "a python expression is still STORED on this row" — true of exactly DEPCOUNT and WORKEDHRS after the migration, because it deliberately keeps the original program as provenance. The one decision that makes the conversion auditable was also the one locking the owner out of both converted rules. The lane is `builder_mode` alone; `has_python` is now rendered for administrators as a collapsed *"How this rule was written before"* |
+| 2 | the two matcher/translation faults above | a suite that runs but whose assertions cannot execute is W81 wearing a green local gate |
+| 3 | *(not a defect)* | an apparent "lane switch loses the value steps" was my own probe double-clicking the switch. A clean single-click test shows `["days"] → formula → ["days"]` and the rail returning to the identical `5 records → 3 match → 4` |
+
+## Deploy — the whole cycle
+
+| unit | what | result |
+|---|---|---|
+| `c8deploy` | WP-1 / WP-2 / WP-4, three databases | `EXIT_payobook=0` `EXIT_abm=0` `EXIT_payobook_template=0` `ACTIVE=active` |
+| `c8tests` | first scoped run | died in pre-flight — **W158** |
+| `c8tests2` / `c8tests3` / `c8tests4` | scoped suite | 144 tests, 1 pre-existing failure |
+| `c8deploy2` | WP-3, three databases | `EXIT_payobook=0` `EXIT_abm=0` `EXIT_payobook_template=0` `ACTIVE=active` |
+| asset-only publishes ×3 | the three live fixes | no window needed (W136's corollary) |
+
+Final versions, identical on all three databases:
+
+```
+pb_hr_payroll_formula 19.0.1.60.0
+pb_integrations       19.0.1.8.0
+pb_import_kit         19.0.1.9.0
+```
+
+`payobook=200`, `abm=200`, `systemctl is-active odoo-server = active`.
+
+## Left on the live databases, deliberately
+
+Two rules on payobook's **Demo HRIS** connector, built during the novice pass
+and kept because they work and they demonstrate the feature: `DEPENDANTS` and
+`ANNUALLEAVEDAYSAPPRO`. Delete them if they are unwanted — nothing depends on
+them. The gate-probe rule `C8SMUGX` was removed. Nothing on abm was created,
+edited or synced; **the owner's connector id 1 was never touched** and no
+`Fetch fields` or sync action was pressed anywhere.
+
+## Ledger
+
+**W158–W167** appended to `docs/WORKFORCE_REDESIGN_CONVENTIONS.md` (168 rules
+total): the `--no-http` test-port trap; a golden template having no
+administrator; `TransactionCase`'s `assertRaises` refusing a tuple; a `str`
+subclass as spreadsheet-cell semantics; preview==execution by construction;
+fail-open vs fail-closed needing a test that breaks what it asks; a discovery
+ladder's last layer leaking into a second caller's question; a silent correction
+blinding its own validator; two agents sharing one git index; and W128's scan
+needing `sudo` or it cannot fail.
