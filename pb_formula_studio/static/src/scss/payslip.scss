@@ -205,16 +205,34 @@
 .pbfs-ps .ps-rich-toolbar button, .pbfs-ps .ps-rich-toolbar select { min-width: 31px; height: 30px; padding: 0 8px; border: 1px solid #DDE1EA; border-radius: 6px; background: #fff; color: #334155; font-size: 12px; cursor: pointer; }
 .pbfs-ps .ps-rich-toolbar button:hover { border-color: var(--i, #5A4BB0); color: var(--i600, #4A3D96); }
 .pbfs-ps .ps-rich-toolbar button.wide { min-width: 58px; }
+.pbfs-ps .ps-color-tool { position: relative; width: 32px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #DDE1EA; border-radius: 6px; background: #fff; color: #334155; cursor: pointer; }
+.pbfs-ps .ps-color-tool:hover { border-color: var(--i, #5A4BB0); }
+.pbfs-ps .ps-color-tool input { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; opacity: 0; cursor: pointer; }
+.pbfs-ps .ps-color-letter, .pbfs-ps .ps-highlight-letter { font-weight: 800; line-height: 1; }
+.pbfs-ps .ps-color-line { position: absolute; right: 7px; bottom: 4px; left: 7px; height: 3px; border-radius: 2px; background: #334155; }
+.pbfs-ps .ps-highlight-letter { padding: 3px 5px; border-radius: 3px; background: #FEF3C7; }
 .pbfs-ps .ps-tool-sep { width: 1px; height: 22px; margin: 0 4px; background: #DDE1EA; }
 .pbfs-ps .ps-rich-mode { display: flex; align-items: center; gap: 6px; margin-right: 2px; color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
 .pbfs-ps .ps-rich-mode select { min-width: 104px; color: #4C3F94; font-weight: 700; text-transform: none; letter-spacing: 0; }
 .pbfs-ps .ps-rich-hint { padding: 7px 13px; border-bottom: 1px solid #E2E8F0; background: #F8FAFC; color: #64748B; font-size: 10.5px; }
 .pbfs-ps .ps-rich-hint-dot { display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: #10B981; }
+.pbfs-ps .ps-table-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; padding: 7px 12px; border-bottom: 1px solid #DDD6FE; background: #F5F3FF; }
+.pbfs-ps .ps-table-toolbar button { height: 28px; padding: 0 7px; border: 1px solid #D8D1F0; border-radius: 6px; background: #fff; color: #4C3F94; font-size: 10.5px; font-weight: 700; cursor: pointer; }
+.pbfs-ps .ps-table-toolbar button:hover { border-color: #8B7BD1; background: #FAFAFF; }
+.pbfs-ps .ps-table-toolbar button.danger { border-color: #FECACA; color: #B91C1C; }
+.pbfs-ps .ps-table-toolbar button.danger:hover { border-color: #F87171; background: #FEF2F2; }
+.pbfs-ps .ps-table-toolbar button.subtle { color: #64748B; }
+.pbfs-ps .ps-table-context { min-width: 108px; display: flex; flex-direction: column; line-height: 1.15; }
+.pbfs-ps .ps-table-context b { color: #4C3F94; font-size: 10px; }
+.pbfs-ps .ps-table-context span { margin-top: 2px; color: #7C6DBA; font-size: 9px; white-space: nowrap; }
+.pbfs-ps .ps-cell-color { position: relative; height: 28px; display: inline-flex; align-items: center; gap: 5px; padding: 0 5px 0 7px; border: 1px solid #D8D1F0; border-radius: 6px; background: #fff; color: #64748B; font-size: 9.5px; font-weight: 700; cursor: pointer; }
+.pbfs-ps .ps-cell-color input { width: 19px; height: 19px; padding: 0; border: 0; background: transparent; cursor: pointer; }
 .pbfs-ps .ps-rich-editor { flex: 1; min-height: 330px; max-height: 54vh; overflow: auto; margin: 12px; padding: 16px; border: 1px solid #DDE1EA; border-radius: 9px; outline: none; background: #fff; color: #334155; font-size: 13px; line-height: 1.55; }
 .pbfs-ps .ps-rich-editor:focus { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px #EDE9FE; }
 .pbfs-ps .ps-rich-editor table { width: 100%; border-collapse: collapse; margin: 10px 0; }
 .pbfs-ps .ps-rich-editor th, .pbfs-ps .ps-rich-editor td { min-width: 90px; border: 1px solid #CBD5E1; padding: 7px 9px; }
 .pbfs-ps .ps-rich-editor th { background: #F1F5F9; }
+.pbfs-ps .ps-rich-editor .ps-rich-cell-selected { position: relative; outline: 2px solid var(--i, #5A4BB0); outline-offset: -2px; box-shadow: inset 0 0 0 1px #fff; }
 .pbfs-ps .ps-component-token { display: inline-flex; align-items: center; gap: 7px; max-width: 100%; margin: 1px 2px; padding: 3px 5px 3px 8px; border: 1px solid #C4B5FD; border-radius: 6px; background: #F5F3FF; color: #4C3F94; vertical-align: middle; white-space: nowrap; box-shadow: 0 1px 2px rgba(76, 63, 148, .08); }
 .pbfs-ps .ps-component-token.mode-value { border-color: #A7F3D0; background: #ECFDF5; color: #047857; font-variant-numeric: tabular-nums; }
 .pbfs-ps .ps-component-token-value { font-weight: 800; }

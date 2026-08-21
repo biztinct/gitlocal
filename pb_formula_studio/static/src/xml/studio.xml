@@ -2179,6 +2179,14 @@
                     <button t-on-mousedown="(ev) => this.psRichToolbar('bold', ev)" title="Bold"><b>B</b></button>
                     <button t-on-mousedown="(ev) => this.psRichToolbar('italic', ev)" title="Italic"><i>I</i></button>
                     <button t-on-mousedown="(ev) => this.psRichToolbar('underline', ev)" title="Underline"><u>U</u></button>
+                    <label class="ps-color-tool" title="Text colour">
+                      <span class="ps-color-letter">A</span><span class="ps-color-line"/>
+                      <input type="color" value="#334155" aria-label="Text colour" t-on-mousedown="psRichRememberSelection" t-on-input="(ev) => this.psRichTextColor('text', ev)"/>
+                    </label>
+                    <label class="ps-color-tool" title="Text highlight colour">
+                      <span class="ps-highlight-letter">A</span>
+                      <input type="color" value="#FEF3C7" aria-label="Text highlight colour" t-on-mousedown="psRichRememberSelection" t-on-input="(ev) => this.psRichTextColor('background', ev)"/>
+                    </label>
                     <span class="ps-tool-sep"/>
                     <button t-on-mousedown="(ev) => this.psRichToolbar('insertUnorderedList', ev)" title="Bulleted list">• List</button>
                     <button t-on-mousedown="(ev) => this.psRichToolbar('insertOrderedList', ev)" title="Numbered list">1. List</button>
@@ -2188,7 +2196,23 @@
                     <button class="wide" t-on-mousedown="psRichInsertTableEvent" title="Insert a 2-column table">▦ Table</button>
                     <button class="wide" t-on-mousedown="(ev) => this.psRichToolbar('removeFormat', ev)" title="Clear formatting">Clear</button>
                   </div>
-                  <div class="ps-rich-hint"><span class="ps-rich-hint-dot"/>Choose <b>Label only</b> for the left cell and <b>Value only</b> for the right cell. Remove a component with its ×.</div>
+                  <div t-if="state.psRichTableActive" class="ps-table-toolbar" role="toolbar" aria-label="Table editing">
+                    <div class="ps-table-context"><b>Selected cell</b><span t-esc="state.psRichTableLabel"/></div>
+                    <span class="ps-tool-sep"/>
+                    <button t-on-mousedown="(ev) => this.psRichTableAction('row_above', ev)" title="Add row above">＋ Row ↑</button>
+                    <button t-on-mousedown="(ev) => this.psRichTableAction('row_below', ev)" title="Add row below">＋ Row ↓</button>
+                    <button t-on-mousedown="(ev) => this.psRichTableAction('column_before', ev)" title="Add column to the left">＋ Col ←</button>
+                    <button t-on-mousedown="(ev) => this.psRichTableAction('column_after', ev)" title="Add column to the right">＋ Col →</button>
+                    <span class="ps-tool-sep"/>
+                    <button class="danger" t-on-mousedown="(ev) => this.psRichTableAction('delete_row', ev)" title="Delete selected row">− Row</button>
+                    <button class="danger" t-on-mousedown="(ev) => this.psRichTableAction('delete_column', ev)" title="Delete selected column">− Col</button>
+                    <button class="danger" t-on-mousedown="(ev) => this.psRichTableAction('delete_table', ev)" title="Delete table">Delete table</button>
+                    <span class="ps-tool-sep"/>
+                    <label class="ps-cell-color" title="Cell background colour"><span>Cell</span><input type="color" value="#FFFFFF" aria-label="Cell background colour" t-on-input="(ev) => this.psRichCellColor('background', ev)"/></label>
+                    <label class="ps-cell-color" title="Cell text colour"><span>Text</span><input type="color" value="#334155" aria-label="Cell text colour" t-on-input="(ev) => this.psRichCellColor('text', ev)"/></label>
+                    <button class="subtle" t-on-mousedown="psRichClearCellColor" title="Clear cell colours">Reset colour</button>
+                  </div>
+                  <div class="ps-rich-hint"><span class="ps-rich-hint-dot"/>Choose <b>Label only</b> for the left cell and <b>Value only</b> for the right cell. Click any table cell to add or remove rows and columns, or change its colours.</div>
                   <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop"></div>
                 </div>
               </div>
