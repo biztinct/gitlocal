@@ -101,7 +101,10 @@ class PbConnectorCockpit(models.AbstractModel):
             'type_label': TYPE_LABEL.get(c.connector_type, c.connector_type or '—'),
             'status': c.connection_status or 'disconnected',
             'status_label': STATUS_LABEL.get(c.connection_status, c.connection_status or 'Disconnected'),
-            'last_sync': str(c.last_sync or '')[:16],
+            # The same derived truth the detail header uses (C7 WP-5): a list
+            # and a detail that disagree about one connector is the same defect
+            # one screen further out.
+            'last_sync': self._sync_truth(c)['when'],
         }
 
     @api.model
@@ -127,7 +130,14 @@ class PbConnectorCockpit(models.AbstractModel):
             'type_label': TYPE_LABEL.get(c.connector_type, c.connector_type or '—'),
             'status': c.connection_status or 'disconnected',
             'status_label': STATUS_LABEL.get(c.connection_status, c.connection_status or 'Disconnected'),
+            # C7 WP-5 — kept for any caller that still reads it, but the header
+            # renders `sync_truth`, which is derived from the feeds the reader
+            # can see rather than from a field nothing on the screen
+            # corroborates.
             'last_sync': str(c.last_sync or '')[:16],
+            'sync_truth': self._sync_truth(c),
+            'conn_test': str(c.last_connection_test or '')[:16]
+                         if 'last_connection_test' in c._fields else '',
             'sync_status': c.last_sync_status or '',
             'sync_message': c.last_sync_message or '',
             'last_error': c.last_error or '',
@@ -145,6 +155,51 @@ class PbConnectorCockpit(models.AbstractModel):
             'next_actions': self._connector_actions(c),
             'error': None,
         }
+
+    # ============================================== one sync truth per screen
+    def _sync_truth(self, c):
+        """What this connector's HEADER is entitled to say about syncing.
+
+        Integrations Cycle 7, WP-5. The owner's cockpit read
+        `Connected · Last sync 2026-08-20 23:25` above seven feed cards that
+        each read `Never synced · 0 staged · 0 pulled`. Both halves came off
+        the same record and disagreed, which is the failure class this
+        programme exists to close.
+
+        The cause was upstream (a connection TEST stamped `last_sync`; fixed at
+        `base_connector.update_connector_status`, with a migration for the rows
+        it already wrote). The cure is this: the header stops reading a
+        connector-level field that nothing on the screen corroborates, and
+        derives its sentence from the SAME facts the cards are drawn from.
+
+        Three shapes, and the vocabulary differs deliberately so that two
+        sentences on one screen can never be read as one claim:
+
+          sync   at least one feed has run. `when` is the most recent of them,
+                 so the header cannot be newer than every card under it.
+          pull   no feed has run, but the connector carries a recorded pull
+                 with a status — a real event from before per-feed history
+                 existed. It is not thrown away to make the screen tidy; it is
+                 named "Last pull" and carries its own explanation.
+          never  neither. The header says exactly what every card says.
+
+        A connection test is reported separately and always, because it is a
+        different fact and the reader wanted it: "Connection tested <when>".
+        """
+        eps = []
+        Endpoint = self.env.get('hr.integration.endpoint') \
+            if 'hr.integration.endpoint' in self.env else None
+        if Endpoint is not None and Endpoint._schema_ready():
+            eps = [e.last_sync for e in c.endpoint_ids if e.last_sync]
+        if eps:
+            return {'kind': 'sync', 'when': str(max(eps))[:16], 'note': ''}
+        if c.last_sync:
+            return {
+                'kind': 'pull', 'when': str(c.last_sync)[:16],
+                'note': "This connector recorded a pull before it kept "
+                        "per-feed history, so no feed below shows it.",
+            }
+        return {'kind': 'never', 'when': '', 'note': ''}
 
     # =================================================================== feeds
     def _endpoint_row(self, e):

@@ -44,7 +44,32 @@
             <div class="pbim-hero-chips">
               <span class="pbim-chip"><t t-out="ic('plug',13)"/> <t t-esc="d.type_label"/></span>
               <span t-if="d.api_endpoint" class="pbim-chip"><t t-out="ic('link',13)"/> <t t-esc="d.api_endpoint"/></span>
-              <span t-if="d.last_sync" class="pbim-chip"><t t-out="ic('refresh',13)"/> Last sync <t t-esc="d.last_sync"/></span>
+              <!-- ==== C7 WP-5: one sync truth per screen ====
+                   This chip used to print `connector.last_sync` verbatim, and
+                   a successful "Test connection" wrote that field — so the
+                   header read `Last sync 2026-08-20 23:25` above seven cards
+                   that each read `Never synced`. It now renders `sync_truth`,
+                   derived from the SAME feed timestamps the cards are drawn
+                   from, and the three shapes use three different words so two
+                   sentences on one screen cannot be read as one claim. -->
+              <span t-if="d.sync_truth and d.sync_truth.kind === 'sync'" class="pbim-chip">
+                <t t-out="ic('refresh',13)"/> Last sync <t t-esc="d.sync_truth.when"/>
+              </span>
+              <span t-elif="d.sync_truth and d.sync_truth.kind === 'pull'" class="pbim-chip"
+                    t-att-title="d.sync_truth.note">
+                <t t-out="ic('refresh',13)"/> Last pull <t t-esc="d.sync_truth.when"/>
+              </span>
+              <span t-elif="d.sync_truth" class="pbim-chip muted"
+                    title="No feed on this connector has ever pulled data.">
+                <t t-out="ic('refresh',13)"/> Never synced
+              </span>
+              <!-- A test proves the credentials work and moves no data. It is a
+                   different fact, so it gets its own chip rather than borrowing
+                   the sync clock — which is what it had been doing. -->
+              <span t-if="d.conn_test" class="pbim-chip"
+                    title="The connection was tested at this time. A test moves no data.">
+                <t t-out="ic('plug',13)"/> Connection tested <t t-esc="d.conn_test"/>
+              </span>
             </div>
           </div>
           <div class="pbcc-hero-state">

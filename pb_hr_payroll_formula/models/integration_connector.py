@@ -199,7 +199,24 @@ class HrIntegrationConnector(models.Model):
     ], string='Status', default='disconnected', tracking=True)
 
     last_sync = fields.Datetime(
-        string='Last Sync'
+        string='Last Sync',
+        help="When this connector last PULLED data. Not written by a "
+             "connection test — see last_connection_test.",
+    )
+
+    # Integrations Cycle 7, WP-5. `base_connector.update_connector_status()`
+    # stamped `last_sync` on every CONNECTION-STATUS change, so a successful
+    # "Test connection" wrote the clock that the cockpit header prints as
+    # "Last sync". On abm that produced two truths on one screen: the header
+    # read `Connected · Last sync 2026-08-20 23:25` above seven feeds all
+    # reading `Never synced · 0 staged · 0 pulled`. The row proves it —
+    # last_sync_status NULL, total_synced_records NULL, zero store rows, and
+    # last_sync_message the literal string "Connection successful".
+    # A test is a fact about the CONNECTION and now has its own field.
+    last_connection_test = fields.Datetime(
+        string='Last Connection Test', readonly=True, copy=False,
+        help="When the connection to this system was last tested. A test "
+             "proves the credentials work; it moves no data.",
     )
 
     last_sync_status = fields.Selection([
@@ -1535,6 +1552,12 @@ class HrIntegrationConnector(models.Model):
         res = connector.ingest_records(data_type or 'employee', records)
         self.sudo().write({'last_sync': fields.Datetime.now(),
                            'last_sync_status': 'success'})
+        # …and the FEED, in the same breath. A push that stamps only the
+        # connector leaves the cockpit header saying "Last sync <now>" over a
+        # card that still reads "Never synced" — the same two-truths-on-one-
+        # screen defect WP-5 closed for the connection test, reached by the
+        # other door (Integrations Cycle 7).
+        self.sudo()._stamp_endpoint(data_type or 'employee', 'success')
         return res
 
     # ==========================================

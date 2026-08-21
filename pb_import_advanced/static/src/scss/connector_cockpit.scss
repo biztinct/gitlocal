@@ -4,6 +4,10 @@
     .pbcc-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 
     .pbcc-hero-state { margin-left: auto; flex: 0 0 auto; }
+    // C7 WP-5 — "Never synced" in the header is the ABSENCE of an event, and it
+    // has to read as one. In the kit's indigo it would look like a fact the
+    // connector is proud of, sitting beside a green Connected badge.
+    .pbim-chip.muted { background: var(--pbim-line-2); color: var(--pbim-muted); }
     .pbcc-hero .pbim-badge { font-size: 12px; padding: 5px 12px; }
     .pbcc-hero .pbim-hero-av svg { width: 24px; height: 24px; }
 

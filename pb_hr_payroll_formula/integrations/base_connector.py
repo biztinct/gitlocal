@@ -337,7 +337,21 @@ class BaseHRConnector(ABC):
 
     def update_connector_status(self, status: str, message: str = None):
         """
-        Update connector record with status.
+        Update connector record with connection status.
+
+        This is a claim about the CONNECTION — "the credentials work", "the
+        host refused us" — and about nothing else. It used to stamp
+        `last_sync` as well, which is how a successful `Test connection` came
+        to write the clock the cockpit header prints as "Last sync": on abm the
+        header read `Connected · Last sync 2026-08-20 23:25` over seven feeds
+        that each read `Never synced`, and the connector row carried a NULL
+        `last_sync_status`, NULL `total_synced_records`, zero data-store rows
+        and the message "Connection successful" (Integrations Cycle 7, WP-5).
+
+        A test moves no data, so it may not touch a field named for data
+        movement. `last_connection_test` is the fact this method is entitled to
+        write; `last_sync` belongs to `action_pull_data` and to
+        `_stamp_endpoint`, which stamp the feeds in the same breath.
 
         Args:
             status: Connection status
@@ -347,7 +361,7 @@ class BaseHRConnector(ABC):
 
         vals = {
             'connection_status': status,
-            'last_sync': datetime.now(),
+            'last_connection_test': datetime.now(),
         }
 
         if message:
