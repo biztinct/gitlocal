@@ -616,7 +616,12 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
         vals = {
             'connector_id': connector.id,
             'name': (spec.get('name') or '').strip()[:120],
-            'output_key': (spec.get('output_key') or '').strip().upper(),
+            # NOT `.upper()`. Silently correcting the key would mean the
+            # validator below can never SEE a lowercase one, and the rule that
+            # capitals matter would be enforced by a coercion nobody is told
+            # about — which is the same lie as a check that always passes. It
+            # is refused, with the correct spelling in the message.
+            'output_key': (spec.get('output_key') or '').strip(),
             'description': (spec.get('description') or '').strip()[:2000],
             'builder_mode': mode,
             'rule_type': rule_type,
@@ -680,6 +685,12 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
                 "“%s” contains an underscore. Formulas cannot read an "
                 "underscored name — try “%s”.") % (key, key.replace('_', '')))
         if not _KEY_RE.match(key):
+            suggestion = re.sub(r'[^A-Za-z0-9]', '', key).upper()
+            if suggestion and _KEY_RE.match(suggestion):
+                raise ValueError(_(
+                    "“%(given)s” has to be capital letters and digits, "
+                    "starting with a letter — try “%(fixed)s”.")
+                    % {'given': key, 'fixed': suggestion})
             raise ValueError(_(
                 "“%s” has to be capital letters and digits, starting with a "
                 "letter.") % key)

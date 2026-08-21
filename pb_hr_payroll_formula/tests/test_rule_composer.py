@@ -373,12 +373,20 @@ class TestRuleComposer(TransactionCase):
                          "every supported function needs a case in this test")
 
     def test_03d_the_hardening_refuses_what_it_exists_to_refuse(self):
+        # Written as an explicit try/except rather than `assertRaises`, because
+        # Odoo's TransactionCase OVERRIDES assertRaises and its override does
+        # `issubclass(exception, AccessError)` on the argument — so a TUPLE of
+        # exception classes raises `TypeError: issubclass() arg 1 must be a
+        # class` before the code under test runs at all. The failure reads like
+        # a broken assertion about the hardening and is nothing of the kind.
         for text in ("__import__('os')", 'env.cr.execute("x")', 'self.sudo()',
                      'lambda: 1', '(1).__class__', 'FOO([a])', '1 & 2',
                      '[a', 'bareword+1', 'IF(1)', ''):
-            with self.assertRaises((rule_formula.RuleFormulaError, UnsafeFormulaError),
-                                   msg='%r was not refused' % text):
+            try:
                 rule_formula.compile_rule_formula(text)
+            except (rule_formula.RuleFormulaError, UnsafeFormulaError):
+                continue
+            self.fail('%r was not refused by the rule-formula hardening' % text)
 
     def test_03e_if_does_not_evaluate_the_branch_it_did_not_choose(self):
         """Eager branches would make this raise and drop the row — a wrong
