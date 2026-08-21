@@ -208,8 +208,9 @@
                            placeholder="value"
                            t-on-input="(ev) => this.onConditionValue(c_index, ev)"/>
                     <button class="itgrc-x" t-att-disabled="readOnly"
-                            t-on-click="() => this.dropCondition(c_index)" title="Remove">
-                      <t t-out="ic('x', 13)"/>
+                            t-on-click="() => this.dropCondition(c_index)"
+                            title="Remove this condition">
+                      <t t-out="ic('trash', 13)"/>
                     </button>
                   </div>
                   <button t-if="!readOnly" class="itgrc-add" t-on-click="addCondition">

@@ -221,11 +221,16 @@
         &:hover { background: var(--pbim-rose-soft, #FCE7EF); color: var(--pbim-rose, #DC2668); }
     }
 
-    // A value step's remove button keeps to the right edge even when the row
-    // wraps. Left to itself it wrapped onto its own line, landing dead centre
-    // between two fields — the one place on this screen where a glyph is read
-    // as arithmetic, and it was read as one.
-    .itgrc-steprow > .itgrc-x { margin-left: auto; }
+    // A value step is ONE line. Left to wrap, its remove button dropped onto a
+    // line of its own, landing dead centre between two fields — the one place
+    // on this screen where a glyph is read as arithmetic, and it was read as
+    // one. The pieces shrink instead; the button keeps the right edge.
+    .itgrc-steprow {
+        flex-wrap: nowrap;
+        > .itgrc-x { margin-left: auto; }
+        > .itgrc-lbl { flex: 0 0 auto; white-space: nowrap; }
+        > .itg-select { flex: 0 1 auto; min-width: 0; }
+    }
 
     // The operator between value steps. Steps are summed, so it says so.
     .itgrc-op {
