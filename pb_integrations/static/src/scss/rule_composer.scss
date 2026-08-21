@@ -221,6 +221,23 @@
         &:hover { background: var(--pbim-rose-soft, #FCE7EF); color: var(--pbim-rose, #DC2668); }
     }
 
+    // A value step's remove button keeps to the right edge even when the row
+    // wraps. Left to itself it wrapped onto its own line, landing dead centre
+    // between two fields — the one place on this screen where a glyph is read
+    // as arithmetic, and it was read as one.
+    .itgrc-steprow > .itgrc-x { margin-left: auto; }
+
+    // The operator between value steps. Steps are summed, so it says so.
+    .itgrc-op {
+        display: flex; align-items: center; gap: 6px;
+        margin: 2px 0 6px 10px; font-size: 12px; font-weight: 700;
+        color: var(--pbim-primary-strong, #5A4BB0);
+        .sign {
+            display: grid; place-items: center; width: 20px; height: 20px;
+            border-radius: 999px; background: var(--pbim-soft, #EDEAF8);
+        }
+    }
+
     .itgrc-add {
         border: 1px dashed var(--pbim-primary-light, #CBC2EE); background: none;
         color: var(--pbim-primary-strong, #5A4BB0); cursor: pointer; font-family: inherit;

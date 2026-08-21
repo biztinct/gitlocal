@@ -311,30 +311,39 @@
 
                   <!-- the guided value steps -->
                   <t t-if="!isFormulaLane and !isCount and !isDateKind">
-                    <div t-foreach="state.draft.value_steps" t-as="s" t-key="s_index"
-                         class="itgrc-row">
-                      <div class="itgrc-pick">
-                        <button class="itgrc-pickbtn" t-att-disabled="readOnly"
-                                t-on-click="() => this.openPicker('step', s_index)">
-                          <span t-esc="fieldLabel(s.field)"/>
-                          <span class="cv" t-out="ic('chevronDown', 13)"/>
-                        </button>
-                        <t t-if="isPickerOpen('step', s_index)">
-                          <t t-call="pb_integrations.RuleComposerPicker"/>
-                        </t>
+                    <t t-foreach="state.draft.value_steps" t-as="s" t-key="s_index">
+                      <!-- The operator, said out loud. Steps ADD, and a reader
+                           may not assume that: a bare glyph sitting between two
+                           operands gets read as whatever glyph it is. -->
+                      <div t-if="s_index > 0" class="itgrc-op">
+                        <span class="sign" t-out="ic('plus', 12)"/>
+                        <span>plus</span>
                       </div>
-                      <span class="itgrc-lbl">this field contains</span>
-                      <select class="itg-select" t-att-disabled="readOnly"
-                              t-on-change="(ev) => this.onStepUnit(s_index, ev)">
-                        <option t-foreach="units" t-as="u" t-key="u.unit"
-                                t-att-value="u.unit" t-att-selected="s.contains === u.unit"
-                                t-esc="u.label"/>
-                      </select>
-                      <button class="itgrc-x" t-att-disabled="readOnly"
-                              t-on-click="() => this.dropStep(s_index)" title="Remove">
-                        <t t-out="ic('x', 13)"/>
-                      </button>
-                    </div>
+                      <div class="itgrc-row itgrc-steprow">
+                        <div class="itgrc-pick">
+                          <button class="itgrc-pickbtn" t-att-disabled="readOnly"
+                                  t-on-click="() => this.openPicker('step', s_index)">
+                            <span t-esc="fieldLabel(s.field)"/>
+                            <span class="cv" t-out="ic('chevronDown', 13)"/>
+                          </button>
+                          <t t-if="isPickerOpen('step', s_index)">
+                            <t t-call="pb_integrations.RuleComposerPicker"/>
+                          </t>
+                        </div>
+                        <span class="itgrc-lbl">this field contains</span>
+                        <select class="itg-select" t-att-disabled="readOnly"
+                                t-on-change="(ev) => this.onStepUnit(s_index, ev)">
+                          <option t-foreach="units" t-as="u" t-key="u.unit"
+                                  t-att-value="u.unit" t-att-selected="s.contains === u.unit"
+                                  t-esc="u.label"/>
+                        </select>
+                        <button class="itgrc-x" t-att-disabled="readOnly"
+                                t-on-click="() => this.dropStep(s_index)"
+                                title="Remove this field">
+                          <t t-out="ic('trash', 13)"/>
+                        </button>
+                      </div>
+                    </t>
                     <button t-if="!readOnly" class="itgrc-add" t-on-click="addStep">
                       <t t-out="ic('plus', 13)"/> plus another field
                     </button>
