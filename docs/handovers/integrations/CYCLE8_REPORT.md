@@ -5,7 +5,7 @@
 > **Written incrementally and committed at every milestone** — a stall must not
 > lose the record (the handover says so because Cycles 2 and 7 both stalled).
 
-_Status: IN PROGRESS. Last updated after WP-1, WP-2 and WP-4 (WP-3 building in parallel)._
+_Status: IN PROGRESS. Server half DEPLOYED and verified on all three databases; WP-3 (the composer component) building in parallel._
 
 ---
 
@@ -160,4 +160,96 @@ being a surprise inside somebody else's.
 
 ---
 
-_(WP-3, deploy, live validation and the ledger follow as they land.)_
+## Deploy — the server half
+
+W136 stall-proof unit `c8deploy` (the unit stops the service, upgrades all three
+databases, purges the asset cache and starts the service itself, launched with
+`systemd-run --no-block`, W133).
+
+**FILE-SCOPED, per W157.** The staging tree was built with
+`git archive HEAD -- <20 paths>` and transferred file by file with `install`.
+Never `rsync <module>/`. Proof the parallel session's work was not published:
+
+```
+absent(good) pb_hr_payroll_formula/models/payslip_config.py
+absent(good) pb_hr_payroll_formula/models/formula_config.py
+absent(good) pb_hr_payroll_formula/models/hr_payslip_formula.py
+absent(good) pb_hr_payroll_formula/report/payslip_themed.xml
+staged manifest version = 19.0.1.60.0   (their uncommitted bump to .61.0 was not shipped)
+```
+
+Pre-stop scan (W128/W143): one `odoo-bin` (the service, started 01:56:39 UTC),
+and `find … -newermt` over the addons tree returned **nothing** — no foreign run
+and no foreign file already on the server.
+
+| database | result |
+|---|---|
+| payobook | `EXIT_payobook=0` |
+| abm | `EXIT_abm=0` |
+| payobook_template | `EXIT_payobook_template=0` |
+
+`PUBLISHED=0`, `ACTIVE=active`, `payobook=200`, `abm=200`.
+
+Versions after, identical on all three: `pb_hr_payroll_formula 19.0.1.60.0`,
+`pb_integrations 19.0.1.7.0`, `pb_import_kit 19.0.1.9.0`.
+
+### The migration, read back off the live databases
+
+```
+payobook          templates 8 converted / 0 left alone; rules 8 converted / 0 left alone
+abm               templates 8 converted / 0 left alone; rules 8 converted / 0 left alone
+payobook_template templates 0 converted / 8 left alone; rules 0 converted / 0 left alone
+```
+
+`payobook_template`'s "8 left alone" is the idempotency guard doing its job:
+its catalogue rows are not `noupdate`-frozen, so the upgrade reloaded the
+now-guided-native data file and the post-migration correctly found nothing left
+to convert. All three databases end in the same state.
+
+**The owner's abm board, as it now reads** (`plain_summary`, straight out of the
+database):
+
+```
+OTHRS150   Adds up Actual_Pay_Hour over Custom / Other records
+           where OT_Type is 150% and ApprovalStatus is Approved
+ …200 …210 …270 …300 …390 — the same sentence, one band each
+DEPCOUNT   Counts rows in tabularSections.Dependent and Dependent Health
+           Insurance on each Employee Master Data record
+           where Dependent_PIT_Number is present
+WORKEDHRS  Adds up totalWorkedHours plus paidLeaveHours over Attendance records
+```
+
+That last line is the one the cycle was for. It was fifteen lines of
+`str(r.get(...)).strip()` / `isdigit()` arithmetic under a heading that said
+"Python Expression (Advanced)".
+
+## The abm recompute comparison — **8 / 8 identical**
+
+Read-only: the script browses each live rule, builds an IN-MEMORY twin
+(`new()`, never a row) carrying that rule's own retained provenance —
+`builder_mode='python'` plus the untouched `python_code` / `filter_expression` —
+and runs both over the same records. No sync action was called; the owner's
+connector id 1 was not touched.
+
+abm's seeded connector is deliberately disconnected and has no stored rows, so
+the comparison runs over the stated fixture (overtime rows that are rejected,
+of the wrong band and carrying `'n/a'`; four dependants of whom two have no PIT
+number; four attendance days including one malformed in both halves). A
+comparison over an empty store would have been `0 == 0`, which proves nothing.
+
+| rule | mode | legacy twin | guided | same | provenance kept |
+|---|---|---:|---:|:--:|---|
+| OTHRS150 | guided | 6.5 | 6.5 | ✓ | filter |
+| OTHRS200 | guided | 3.0 | 3.0 | ✓ | filter |
+| OTHRS210 | guided | 0.0 | 0.0 | ✓ | filter |
+| OTHRS270 | guided | 0.0 | 0.0 | ✓ | filter |
+| OTHRS300 | guided | 1.25 | 1.25 | ✓ | filter |
+| OTHRS390 | guided | 0.0 | 0.0 | ✓ | filter |
+| DEPCOUNT | guided | 2 | 2.0 | ✓ | python |
+| WORKEDHRS | guided | 11.5 | 11.5 | ✓ | python |
+
+`ALL_MATCH=True`  `ALL_GUIDED=True`  every `last_error` empty.
+
+---
+
+_(WP-3, the live pass and the ledger follow as they land.)_
