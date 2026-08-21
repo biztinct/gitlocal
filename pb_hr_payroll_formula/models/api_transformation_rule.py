@@ -11,6 +11,8 @@ from odoo.tools.sql import table_exists
 
 from .api_data_store import DATA_TYPES
 from .integration_endpoint import CONNECTOR_TYPES
+from ..formula_engine import rule_formula
+from ..formula_engine.excel_semantics import coerce_number
 
 _logger = logging.getLogger(__name__)
 
@@ -45,6 +47,239 @@ DATE_CHECK_OPERATORS = [
     ('after', 'Is After'),
     ('within', 'Is Within N months'),
 ]
+
+# ===========================================================================
+# Integrations Cycle 8 — the Rule Composer's vocabulary
+# ===========================================================================
+#
+# A transformation rule is a SENTENCE: take some records, keep some, derive one
+# number, name it. Everything below is the closed vocabulary that sentence is
+# built from, and it is closed on purpose — a guided rule generates NO code, so
+# there is nothing here a browser could widen into an expression.
+#
+# `builder_mode` names which lane a rule is written in:
+#
+#   guided  the four step-cards. Conditions and value steps are evaluated
+#           NATIVELY on plain dicts — zero safe_eval on this path.
+#   excel   the same steps, but the per-record value comes from an Excel
+#           formula over `excel_semantics` (formula_engine/rule_formula.py).
+#   python  the lane that was here before: the declarative `rule_type` fields
+#           AND `python_code`. It is the administrator's escape hatch, it is
+#           edited in the backend form, and no RPC in this codebase may write
+#           it (W12). Existing rows default to it, so nothing changes meaning
+#           the day this field arrives.
+BUILDER_MODES = [
+    ('guided', 'Guided steps'),
+    ('excel', 'Excel formula'),
+    ('python', 'Advanced (backend form)'),
+]
+
+RECORD_SOURCES = [
+    ('records', 'Each record from the feed'),
+    ('nested', 'Rows inside a table on each record'),
+]
+
+# The comparison vocabulary. Deliberately small: these nine cover every filter
+# the legacy ABM application expressed in python, and each of them can be read
+# aloud in the sentence the composer prints.
+CONDITION_OPERATORS = [
+    ('is', 'is'),
+    ('is_not', 'is not'),
+    ('contains', 'contains'),
+    ('present', 'is present'),
+    ('blank', 'is blank'),
+    ('gt', 'is more than'),
+    ('gte', 'is at least'),
+    ('lt', 'is less than'),
+    ('lte', 'is at most'),
+]
+CONDITION_OPS = {code for code, _label in CONDITION_OPERATORS}
+# The two that ask about the field rather than about a value, so the composer
+# hides the value box and the validator does not demand one.
+UNARY_OPS = {'present', 'blank'}
+
+# What a field CONTAINS, which is the question a novice can answer and the unit
+# conversion is the answer's consequence. Every entry converts into HOURS
+# except `number` and `days`, which are already the unit the rule reports in.
+VALUE_UNITS = [
+    ('number', 'a number'),
+    ('seconds', 'a number of seconds'),
+    ('hmm', 'hours and minutes, like 7:30'),
+    ('minutes', 'a number of minutes'),
+    ('days', 'a number of days'),
+]
+VALUE_UNIT_CODES = {code for code, _label in VALUE_UNITS}
+
+# The aggregates a guided rule may use. `date_diff`/`date_check` are already
+# declarative and stay field-driven; `python` is not a guided shape at all.
+GUIDED_RULE_TYPES = ('count', 'sum', 'avg', 'min', 'max')
+
+
+def _unit_value(raw, unit):
+    """One field value, in the rule's own unit — or None when it is not a value.
+
+    None is not zero, and the difference is the whole reason this returns it:
+    a row whose field is missing or malformed must be SKIPPED by the aggregate,
+    exactly as `_execute_aggregate` skips a `float()` that raises. Turning it
+    into a 0 would drag an average down and make a min wrong.
+
+    The `hmm` parse is `isdigit`-guarded on both halves rather than wrapped in
+    try/except, because that is precisely what the legacy WORKEDHRS did: a
+    malformed value contributes nothing and the rest of the day still counts.
+    """
+    if raw is None or raw is False:
+        return None
+    if isinstance(raw, bool):
+        return 1.0 if raw else 0.0
+    if unit == 'hmm':
+        parts = str(raw).strip().split(':')
+        if len(parts) == 2 and parts[0].strip().isdigit() and parts[1].strip().isdigit():
+            return int(parts[0].strip()) + int(parts[1].strip()) / 60.0
+        # Not "H:MM" at all — a bare number in a field declared as H:MM is
+        # read as hours rather than refused, which is what a human means when
+        # they type 8 into a box labelled hours and minutes.
+        number = coerce_number(raw)
+        return float(number) if number is not None else None
+    number = coerce_number(raw)
+    if number is None:
+        return None
+    if unit == 'seconds':
+        return number / 3600.0
+    if unit == 'minutes':
+        return number / 60.0
+    return float(number)
+
+
+def _text(value):
+    """A payload value as comparable text. `False` is the ORM's empty, and an
+    unset JSON key is `None`; both read as blank rather than as the words."""
+    if value is None or value is False:
+        return ''
+    if value is True:
+        return 'true'
+    return str(value).strip()
+
+
+def _condition_matches(row, condition):
+    """One KEEP row against one record. Never raises — a condition that cannot
+    be evaluated simply does not match, which is the leniency the legacy
+    `except Exception: pass` filter had and the one payroll depends on.
+
+    Comparison follows Excel and the excel lane: if BOTH sides read as numbers
+    they are compared as numbers ("8" equals 8.0), otherwise as trimmed,
+    case-insensitive text. The two lanes agreeing about equality is not a
+    nicety — the same rule is meant to give the same answer in either.
+    """
+    try:
+        field = (condition or {}).get('field') or ''
+        op = (condition or {}).get('op') or 'is'
+        if op not in CONDITION_OPS:
+            return False
+        raw, _found = rule_formula.resolve_ref(row, field)
+        if op == 'present':
+            return _text(raw) != ''
+        if op == 'blank':
+            return _text(raw) == ''
+        wanted = condition.get('value')
+        left, right = _text(raw), _text(wanted)
+        if op == 'contains':
+            return right.casefold() in left.casefold()
+        left_n, right_n = coerce_number(raw), coerce_number(wanted)
+        numeric = left_n is not None and right_n is not None
+        if op == 'is':
+            return left_n == right_n if numeric else left.casefold() == right.casefold()
+        if op == 'is_not':
+            return left_n != right_n if numeric else left.casefold() != right.casefold()
+        if not numeric:
+            # "more than" over text is not a question with an answer, and
+            # answering it alphabetically is how "9 > 10" becomes True.
+            return False
+        if op == 'gt':
+            return left_n > right_n
+        if op == 'gte':
+            return left_n >= right_n
+        if op == 'lt':
+            return left_n < right_n
+        return left_n <= right_n
+    except Exception:       # noqa: BLE001 — see the docstring: a row, not a crash
+        return False
+
+
+_AGG_VERB = {
+    'sum': 'Adds up', 'avg': 'Averages',
+    'min': 'Takes the smallest', 'max': 'Takes the largest',
+}
+_UNIT_LABEL = dict(VALUE_UNITS)
+_OP_LABEL = dict(CONDITION_OPERATORS)
+_DATA_TYPE_LABEL = dict(DATA_TYPES)
+
+
+def _spoken_conditions(spec):
+    """The KEEP step as half a sentence, or '' when nothing is filtered."""
+    rows = (spec or {}).get('rows') or []
+    if not rows:
+        return ''
+    joiner = ' or ' if (spec.get('join') or 'all') == 'any' else ' and '
+    parts = []
+    for row in rows:
+        field = row.get('field') or ''
+        label = _OP_LABEL.get(row.get('op') or 'is', row.get('op') or 'is')
+        if (row.get('op') or 'is') in UNARY_OPS:
+            parts.append('%s %s' % (field, label))
+        else:
+            parts.append('%s %s %s' % (field, label, row.get('value')))
+    return ' where ' + joiner.join(parts)
+
+
+def plain_summary_for(rule):
+    """The rule as one plain sentence, generated from the spec.
+
+    This is what the ledger prints in place of "Python Expression (Advanced)",
+    and it is a COMPUTED field rather than a stored description because a
+    sentence that can disagree with the rule it describes is worse than no
+    sentence. Product voice throughout: it names the feed, the fields and the
+    arithmetic, and it never names the platform.
+
+    Takes anything with the rule's attributes — the rule, the template, or an
+    in-memory draft — so the composer's preview and the saved row are described
+    by the same function.
+    """
+    mode = getattr(rule, 'builder_mode', None) or 'python'
+    if mode == 'python':
+        if getattr(rule, 'python_code', None):
+            return 'Advanced rule (Python), maintained by your administrator'
+        # A pre-composer declarative rule: still readable, still honest.
+        kind = dict(RULE_TYPES).get(rule.rule_type, rule.rule_type or '')
+        source = _DATA_TYPE_LABEL.get(rule.source_data_type, rule.source_data_type or '')
+        return ('%s over %s records, set up in the backend form'
+                % (kind, source)) if kind else 'Advanced rule'
+
+    source = _DATA_TYPE_LABEL.get(rule.source_data_type, rule.source_data_type or 'source')
+    nested = (getattr(rule, 'record_source', 'records') == 'nested')
+    subject = ('rows in %s on each %s record'
+               % (getattr(rule, 'nested_table_path', '') or 'the table', source)
+               ) if nested else '%s records' % source
+    where = _spoken_conditions(getattr(rule, 'filter_conditions', None))
+
+    if rule.rule_type == 'count':
+        return 'Counts %s%s' % (subject, where)
+
+    if mode == 'excel':
+        return ('%s the result of %s for each of the %s%s'
+                % (_AGG_VERB.get(rule.rule_type, 'Combines'),
+                   getattr(rule, 'excel_formula', '') or 'the formula',
+                   subject, where))
+
+    steps = getattr(rule, 'value_steps', None) or []
+    names = [s.get('field') or '' for s in steps if s.get('field')]
+    if not names:
+        return 'Reads %s%s' % (subject, where)
+    joined = names[0] if len(names) == 1 else (
+        ' plus '.join(names[:-1]) + ' plus ' + names[-1])
+    verb = _AGG_VERB.get(rule.rule_type, 'Combines')
+    if rule.rule_type == 'date_diff':
+        verb = 'Measures the time to'
+    return '%s %s over %s%s' % (verb, joined, subject, where)
 
 
 class HrApiTransformationRule(models.Model):
@@ -167,6 +402,67 @@ class HrApiTransformationRule(models.Model):
     active = fields.Boolean(string='Active', default=True)
 
     # ==========================================
+    # THE COMPOSER (Integrations Cycle 8)
+    # ==========================================
+    builder_mode = fields.Selection(
+        BUILDER_MODES, string='Written as', required=True, default='python',
+        help="How this rule is written. Guided steps and Excel formulas are "
+             "edited in the Rule Composer; the advanced lane is edited here, "
+             "in this form, and only by an administrator.",
+    )
+    record_source = fields.Selection(
+        RECORD_SOURCES, string='Take', required=True, default='records',
+        help="Whether the rule works through the feed's records, or through "
+             "the rows of a table carried INSIDE each record.",
+    )
+    nested_table_path = fields.Char(
+        string='Table inside the record',
+        help="Where the rows live on each record, e.g. "
+             "tabularSections.Dependent and Dependent Health Insurance.",
+    )
+    filter_conditions = fields.Json(
+        string='Keep',
+        help="The KEEP step, as data rather than as code: "
+             "{'join': 'all'|'any', 'rows': [{'field', 'op', 'value'}]}.",
+    )
+    value_steps = fields.Json(
+        string='Derive',
+        help="The DERIVE step: [{'field', 'contains'}]. Steps inside ONE "
+             "record are added together; the rule's own kind (sum, average, "
+             "smallest, largest) then applies across the records.",
+    )
+    excel_formula = fields.Char(
+        string='Excel formula',
+        help="The Excel lane's per-record value, with field names in square "
+             "brackets: [totalWorkedHours]/3600 + HOURS([paidLeaveHours]).",
+    )
+    plain_summary = fields.Char(
+        string='In plain words', compute='_compute_plain_summary', store=True,
+        help="What this rule does, said in one sentence.",
+    )
+
+    # ---- the silent-failure gap, closed -------------------------------
+    # Every failure used to be a log WARNING and a silent `default_value`
+    # (:241-246 before this cycle). A payroll that used the 0 had no way to
+    # know, and the only trace was one line per employee per rule in a log
+    # nobody reads during a pull — which is exactly how the `nocopy` breakage
+    # survived four cycles (W137). These two fields are that trace, on the
+    # record, where the person who owns the rule can see it.
+    last_error = fields.Char(
+        string='Last error', readonly=True,
+        help="What went wrong the last time this rule ran. Cleared "
+             "automatically as soon as it succeeds again.",
+    )
+    last_error_at = fields.Datetime(string='Last error at', readonly=True)
+
+    @api.depends('builder_mode', 'rule_type', 'source_data_type', 'record_source',
+                 'nested_table_path', 'filter_conditions', 'value_steps',
+                 'excel_formula', 'python_code')
+    def _compute_plain_summary(self):
+        for rule in self:
+            rule.plain_summary = plain_summary_for(rule)
+
+    # ==========================================
     # OPEN FORM (for inline list views)
     # ==========================================
     def action_open_form(self):
@@ -238,12 +534,14 @@ class HrApiTransformationRule(models.Model):
                         main_rec,
                     )
                     computed[rule.output_key] = value
+                    rule._clear_error()
                 except Exception as e:
                     _logger.warning(
                         "Transformation rule '%s' failed for employee %s: %s",
                         rule.name, emp_ext_id, str(e)
                     )
                     computed[rule.output_key] = rule.default_value
+                    rule._flag_error(e, emp_ext_id)
 
             # Write computed_data to the main record (salary or employee type)
             # Find the best target record to write computed_data to
@@ -254,6 +552,39 @@ class HrApiTransformationRule(models.Model):
                 existing_computed = dict(target.computed_data or {})
                 existing_computed.update(computed)
                 target.computed_data = existing_computed
+
+    # ---- the failure that used to be invisible -------------------------
+    def _flag_error(self, error, employee_ref=''):
+        """Record WHY this rule fell back to its default.
+
+        Written only when the message CHANGES: `_execute_for_records` runs
+        every rule once per employee, and a broken rule on a four-thousand-row
+        pull would otherwise be four thousand writes of the same sentence.
+
+        Sanitised (W40): the type and the message, capped. A rule's failure is
+        a configuration fact its owner needs, so it is not replaced by "see the
+        log" the way an unexpected preview failure is — but it is not a
+        traceback either.
+        """
+        self.ensure_one()
+        if not self.id:                     # an in-memory draft never writes
+            return
+        message = ('%s: %s' % (type(error).__name__, error))[:500] \
+            if str(error) else type(error).__name__
+        if employee_ref:
+            message = ('%s (while reading %s)' % (message, employee_ref))[:500]
+        if self.last_error == message:
+            return
+        self.sudo().write({'last_error': message,
+                           'last_error_at': fields.Datetime.now()})
+
+    def _clear_error(self):
+        """A success clears the flag — a stale error badge is a lie with a
+        timestamp on it. Guarded so a healthy rule writes nothing at all."""
+        self.ensure_one()
+        if not self.id or not self.last_error:
+            return
+        self.sudo().write({'last_error': False, 'last_error_at': False})
 
     def _execute_single(self, all_records_by_type, main_record):
         """
@@ -266,6 +597,14 @@ class HrApiTransformationRule(models.Model):
         Returns:
             The computed value (float, int, bool as 0/1)
         """
+        # THE COMPOSER LANES (Cycle 8). A guided or excel rule never reaches
+        # `safe_eval` at all: its conditions are evaluated natively on plain
+        # dicts and its value comes from either a unit conversion or the
+        # hardened excel converter. `python` is the lane everything was in
+        # before, unchanged below.
+        if self.builder_mode in ('guided', 'excel'):
+            return self._execute_builder(all_records_by_type, main_record)
+
         # Get source records for this rule's data type
         source_records_orm = all_records_by_type.get(self.source_data_type, [])
         source_records = [r.extracted_data or {} for r in source_records_orm]
@@ -332,6 +671,225 @@ class HrApiTransformationRule(models.Model):
             return max(values)
 
         return self.default_value
+
+    # ==========================================
+    # THE GUIDED / EXCEL ENGINE (Integrations Cycle 8)
+    # ==========================================
+    #
+    # THREE PRIMITIVES, ONE PATH. `_builder_expand` turns store rows into the
+    # rows the sentence talks about; `_builder_run` is the sentence. Execution
+    # calls them with no trace; the composer's preview calls THE SAME TWO with
+    # a dict, and the dict is filled in as the loops go. There is no second
+    # implementation to drift — which is the law `preview_transform` states in
+    # its own docstring and the reason this cycle could not simply write a
+    # "simulator".
+    #
+    # PROVEN, not asserted: `test_rule_composer.py` runs both entry points over
+    # identical specs and records and compares the numbers.
+
+    def _builder_expand(self, record_dicts):
+        """The TAKE step: which rows this rule is actually about.
+
+        `records` — one row per stored record, the ordinary case.
+        `nested`  — the rows of a table carried inside each record. Zoho
+                    returns dependants that way (one employee record holding a
+                    `tabularSections` list), which is why counting RECORDS
+                    answered 1 for an employee with four dependants and made
+                    DEPCOUNT a python rule in the first place.
+        """
+        if self.record_source != 'nested':
+            return list(record_dicts or [])
+        path = (self.nested_table_path or '').strip()
+        rows = []
+        for record in (record_dicts or []):
+            for row in self._nested_rows(record, path):
+                rows.append(row)
+        return rows
+
+    @staticmethod
+    def _nested_rows(record, path):
+        """Walk `path` into one record and return the list it names.
+
+        The whole path is tried as a single KEY first: a Zoho tabular section
+        is called "Dependent and Dependent Health Insurance", and one day a
+        vendor will ship a section whose name contains a dot. Only then is the
+        path split, which is the ordinary `a.b.c` case.
+        """
+        if not isinstance(record, dict) or not path:
+            return []
+        node = record
+        if path in node:
+            node = node[path]
+        else:
+            for part in path.split('.'):
+                if not isinstance(node, dict):
+                    return []
+                value, found = rule_formula.resolve_ref(node, part)
+                if not found:
+                    return []
+                node = value
+        if isinstance(node, dict):
+            # A table keyed by id rather than listed — its VALUES are the rows.
+            node = list(node.values())
+        return [r for r in node if isinstance(r, dict)] if isinstance(node, list) else []
+
+    def _row_matches(self, row):
+        """The KEEP step. No conditions means keep everything, which is the
+        honest reading of an empty filter and matches the legacy behaviour of
+        an empty `filter_expression`."""
+        spec = self.filter_conditions or {}
+        conditions = spec.get('rows') or []
+        if not conditions:
+            return True
+        results = [_condition_matches(row, c) for c in conditions]
+        return any(results) if (spec.get('join') or 'all') == 'any' else all(results)
+
+    def _row_value(self, row, compiled=None):
+        """The DERIVE step for ONE row — or None when the row has no value.
+
+        Guided: every step is read and converted into the rule's unit, and the
+        steps are ADDED. WORKEDHRS is the reason: its two halves arrive in one
+        payload as an integer count of seconds and an "H:MM" string, and no
+        single-field aggregate can add those.
+
+        Excel: the compiled formula, evaluated against this row.
+
+        None means "this row has nothing to contribute" and the aggregate skips
+        it — exactly as `_execute_aggregate` skips a value `float()` refuses.
+        Returning 0 instead would drag an average down and break a minimum.
+        """
+        if self.builder_mode == 'excel':
+            if compiled is None:
+                compiled = self._compiled_formula()
+            code, refs = compiled
+            return rule_formula.eval_rule_formula(code, refs, row)
+        total = None
+        for step in (self.value_steps or []):
+            field = (step or {}).get('field') or ''
+            unit = (step or {}).get('contains') or 'number'
+            if unit not in VALUE_UNIT_CODES:
+                unit = 'number'
+            raw, _found = rule_formula.resolve_ref(row, field)
+            value = _unit_value(raw, unit)
+            if value is None:
+                continue
+            total = value if total is None else total + value
+        return total
+
+    def _compiled_formula(self):
+        """This rule's Excel formula, compiled. Raises `RuleFormulaError`,
+        which `_execute_for_records` turns into `last_error` — a formula that
+        stopped compiling is exactly the invisible breakage this cycle set out
+        to make visible."""
+        return rule_formula.compile_rule_formula(self.excel_formula)
+
+    def _builder_run(self, rows, main_record=None, trace=None):
+        """The sentence, over the rows the TAKE step produced.
+
+        `trace` is an OPTIONAL dict. When it is given, the same loops that
+        compute the answer also record what they saw — how many rows arrived,
+        which ones matched, what each contributed. That is the whole of the
+        composer's proof rail, and it is a decoration on this function rather
+        than a copy of it.
+        """
+        if trace is not None:
+            trace['records_in'] = len(rows)
+            trace['rows'] = []
+
+        compiled = self._compiled_formula() if self.builder_mode == 'excel' else None
+
+        matched, values = [], []
+        for index, row in enumerate(rows):
+            keep = self._row_matches(row)
+            value = None
+            if keep:
+                matched.append(row)
+                if self.rule_type in ('sum', 'avg', 'min', 'max'):
+                    value = self._row_value(row, compiled)
+                    if value is not None:
+                        values.append(value)
+            if trace is not None and index < 60:
+                trace['rows'].append({
+                    'i': index, 'kept': keep,
+                    'value': value if value is not None else None,
+                    'cells': self._trace_cells(row),
+                })
+        if trace is not None:
+            trace['matched'] = len(matched)
+            trace['valued'] = len(values)
+
+        if self.rule_type == 'count':
+            result = float(len(matched))
+        elif self.rule_type in ('sum', 'avg', 'min', 'max'):
+            if not values:
+                result = self.default_value
+            elif self.rule_type == 'sum':
+                result = sum(values)
+            elif self.rule_type == 'avg':
+                result = sum(values) / len(values)
+            elif self.rule_type == 'min':
+                result = min(values)
+            else:
+                result = max(values)
+        elif self.rule_type == 'date_diff':
+            result = self._execute_date_diff(matched, main_record)
+        elif self.rule_type == 'date_check':
+            result = self._execute_date_check(matched, main_record)
+        else:
+            # `python` cannot be reached from here (`_execute_single` routes it
+            # away) and an unknown kind is a data defect, not a value.
+            result = self.default_value
+        if trace is not None:
+            trace['result'] = result
+        return result
+
+    def _trace_cells(self, row):
+        """The handful of fields this rule actually mentions, for the proof
+        rail. A record can be a hundred keys wide and the rail is a column —
+        showing everything would bury the two the reader is checking."""
+        names = []
+        for condition in ((self.filter_conditions or {}).get('rows') or []):
+            if condition.get('field'):
+                names.append(condition['field'])
+        for step in (self.value_steps or []):
+            if step.get('field'):
+                names.append(step['field'])
+        if self.builder_mode == 'excel' and self.excel_formula:
+            try:
+                names.extend(rule_formula.compile_rule_formula(self.excel_formula)[1])
+            except Exception:       # noqa: BLE001 — the rail still shows rows
+                pass
+        cells, seen = [], set()
+        for name in names:
+            if name in seen:
+                continue
+            seen.add(name)
+            raw, _found = rule_formula.resolve_ref(row, name)
+            text = _text(raw)
+            cells.append({'k': name, 'v': text if len(text) <= 60 else text[:57] + '…'})
+            if len(cells) >= 4:
+                break
+        return cells
+
+    def _execute_builder(self, all_records_by_type, main_record, trace=None):
+        """The guided/excel lane's entry point from the execution engine."""
+        source_records_orm = all_records_by_type.get(self.source_data_type, [])
+        record_dicts = [r.extracted_data or {} for r in source_records_orm]
+        return self._builder_run(
+            self._builder_expand(record_dicts), main_record, trace)
+
+    def preview_on_records(self, record_dicts, main_record=None):
+        """The traced twin, for the composer. SAME two primitives as execution.
+
+        Returns `{result, records_in, matched, valued, rows: [...]}`. Nothing
+        here writes: the caller hands it plain dicts and an (optionally
+        in-memory) rule, and the proof rail is the trace.
+        """
+        self.ensure_one()
+        trace = {}
+        self._builder_run(self._builder_expand(record_dicts or []),
+                          main_record, trace)
+        return trace
 
     def _execute_date_diff(self, source_records, main_record):
         """
@@ -538,11 +1096,32 @@ class HrApiTransformationRuleTemplate(models.Model):
 
     python_code = fields.Text()
 
+    # Cycle 8 — the composer's spec, mirrored so a vendor row can ship as a
+    # SENTENCE rather than as a python program. Same names, same types, same
+    # meaning as the rule's; `_COPIED` carries every one of them across.
+    builder_mode = fields.Selection(BUILDER_MODES, required=True, default='python')
+    record_source = fields.Selection(RECORD_SOURCES, required=True, default='records')
+    nested_table_path = fields.Char()
+    filter_conditions = fields.Json()
+    value_steps = fields.Json()
+    excel_formula = fields.Char()
+    plain_summary = fields.Char(compute='_compute_plain_summary', store=True)
+
     default_value = fields.Float(default=0.0)
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
     is_legacy_abm = fields.Boolean(
         help="Used by the legacy ABM application.")
+
+    @api.depends('builder_mode', 'rule_type', 'source_data_type', 'record_source',
+                 'nested_table_path', 'filter_conditions', 'value_steps',
+                 'excel_formula', 'python_code')
+    def _compute_plain_summary(self):
+        """The same generator the rule uses — one function, so a catalogue row
+        and the rule instantiated from it can never describe themselves
+        differently."""
+        for template in self:
+            template.plain_summary = plain_summary_for(template)
 
     _type_key_uniq = models.Constraint(
         'unique(connector_type, output_key)',
@@ -555,12 +1134,23 @@ class HrApiTransformationRuleTemplate(models.Model):
     # same shape: the template has `connector_type` and `is_legacy_abm`, which
     # the rule has no column for, and the rule has `connector_id`, which is the
     # thing instantiation supplies.
+    #
+    # Cycle 8 adds the six composer fields. Three of the rule's new columns are
+    # deliberately NOT here and each for the same reason — they are not
+    # attributes of a catalogue row:
+    #   `plain_summary`            computed on both models from the fields
+    #                              above, so copying it would be copying an
+    #                              answer instead of the question;
+    #   `last_error`/`last_error_at`  what happened on THIS database during
+    #                              THIS pull. A vendor template has never run.
     _COPIED = (
         'name', 'output_key', 'description', 'rule_type', 'source_data_type',
         'aggregate_field', 'filter_expression', 'date_source_field',
         'date_compare_to', 'date_fixed_value', 'date_unit',
         'date_check_operator', 'date_check_value', 'python_code',
         'default_value', 'sequence',
+        'builder_mode', 'record_source', 'nested_table_path',
+        'filter_conditions', 'value_steps', 'excel_formula',
     )
 
     @api.model

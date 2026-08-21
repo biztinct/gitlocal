@@ -13,6 +13,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="output_key"/>
+                <field name="plain_summary" optional="show"/>
                 <field name="rule_type"/>
                 <field name="source_data_type"/>
                 <field name="aggregate_field"
@@ -42,10 +43,22 @@
                         </h1>
                     </div>
 
+                    <!-- Integrations Cycle 8: what happened the last time this
+                         rule RAN. It used to be a log warning nobody read, and
+                         a payslip that used the default (W137). -->
+                    <div class="alert alert-danger" role="alert"
+                         invisible="not last_error">
+                        <strong>This rule could not be worked out the last time it ran.</strong>
+                        <field name="last_error" readonly="1" nolabel="1"/>
+                        <field name="last_error_at" readonly="1"/>
+                    </div>
+
                     <group>
                         <group string="Rule Configuration">
                             <field name="connector_id"/>
                             <field name="output_key" placeholder="e.g., NUM_DEPENDENTS"/>
+                            <field name="builder_mode"/>
+                            <field name="plain_summary" readonly="1"/>
                             <field name="rule_type"/>
                             <field name="source_data_type"/>
                             <field name="sequence"/>
@@ -55,6 +68,21 @@
                             <field name="default_value"/>
                             <field name="description" placeholder="Explain what this rule computes..."/>
                         </group>
+                    </group>
+
+                    <!-- The TAKE step and the Excel lane's formula. The KEEP
+                         and DERIVE steps are structured data and are built in
+                         the Rule Composer; this form deliberately does not
+                         become a second editor for them — `plain_summary`
+                         above says what they hold. -->
+                    <group string="Composer steps"
+                           invisible="builder_mode == 'python'">
+                        <field name="record_source"/>
+                        <field name="nested_table_path"
+                               invisible="record_source != 'nested'"/>
+                        <field name="excel_formula"
+                               invisible="builder_mode != 'excel'"
+                               placeholder="[totalWorkedHours]/3600 + HOURS([paidLeaveHours])"/>
                     </group>
 
                     <!-- Aggregate Settings -->

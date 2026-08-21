@@ -34,3 +34,4 @@ from . import test_integration_endpoints
 from . import test_zoho_catalog
 from . import test_transform_preview
 from . import test_endpoint_field_catalog
+from . import test_rule_composer
