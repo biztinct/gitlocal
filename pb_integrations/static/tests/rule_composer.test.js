@@ -15,6 +15,12 @@
 import { describe, expect, test } from "@odoo/hoot";
 import { animationFrame } from "@odoo/hoot-mock";
 import { mountWithCleanup, onRpc } from "@web/../tests/web_test_helpers";
+// `_t` on a LAZY string throws "translations have not been loaded" the moment
+// anything reads it, and a PURE test never mounts the stack that loads them.
+// Found by running this suite in the browser: `readOnlyReason` returns `_t(...)`
+// sentences, so the two branches that produce one could not be compared at all
+// while the branch that returns "" passed happily.
+import { patchTranslations } from "@web/../tests/_framework/translation_test_helpers";
 // `mountWithCleanup` starts the REAL service stack, and on a database with mail
 // installed that stack reaches for `discuss.channel` before this component ever
 // renders. A test-bundle-only import (W150 rule 1); nothing in the addon knows
@@ -36,6 +42,9 @@ import {
 
 describe.current.tags("desktop");
 defineMailModels();
+// Every `_t` in this suite then evaluates to its own English source, which is
+// exactly what the assertions below compare against.
+patchTranslations();
 
 // ------------------------------------------------------------------ helpers
 
