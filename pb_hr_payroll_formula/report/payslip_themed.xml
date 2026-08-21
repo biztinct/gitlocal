@@ -27,7 +27,20 @@
                             .pb-ps-rich th { background: #F1F5F9; }
                             .pb-ps-component-value, .pb-ps-component-amount { font-weight: 700; white-space: nowrap; }
                             .pb-ps-component-both { display: flex; align-items:baseline; justify-content:space-between; gap:12px; width:100%; }
+                            .pb-ps-imported { font-size:11px; line-height:1.25; color:#111827; }
+                            .pb-ps-imported table { page-break-inside:auto; }
+                            .pb-ps-imported tr { page-break-inside:avoid; page-break-after:auto; }
                         </style>
+                        <!-- A reconstructed import is a complete editable page. Seeded
+                             templates have no layout_html and keep the established
+                             section renderer byte-for-byte through the t-else path. -->
+                        <t t-if="ps['layout_html']">
+                            <div t-if="ps['show_logo'] and ps['logo']" style="margin-bottom:7px;">
+                                <img t-att-src="image_data_uri(ps['logo'])" style="max-height:58px; max-width:180px;" alt="Logo"/>
+                            </div>
+                            <div class="pb-ps-rich pb-ps-imported" t-out="ps['layout_html']"/>
+                        </t>
+                        <t t-else="">
                         <!-- brand header: logo (theme_logo/theme_show_logo) + accent rule -->
                         <div t-attf-style="display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid {{ ps['accent_hex'] }}; padding-bottom:10px; margin-bottom:16px;">
                             <div>
@@ -86,6 +99,7 @@
                             <span><t t-esc="'{:,.0f}'.format(ps['net'])"/> <t t-esc="ps['currency']"/></span>
                         </div>
                         <div t-if="ps['footer_html']" class="pb-ps-rich" style="font-size:11.5px; margin-top:14px; color:#475569;" t-out="ps['footer_html']"/>
+                        </t>
                     </div>
                 </t>
             </t>

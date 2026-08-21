@@ -231,6 +231,7 @@ export class PbFormulaStudio extends Component {
             psImportError: "",
             psImportApplyTheme: true,
             psImportApplyContent: true,
+            psImportApplyLayout: true,
             psRichOpen: false,       // header / section / footer rich-content editor
             psRichTarget: null,
             psRichTitle: "",
@@ -4593,6 +4594,16 @@ export class PbFormulaStudio extends Component {
         await this._saveTheme({ logo: "" });
         this.state.psLogoV++;
     }
+    async psClearImportedLayout() {
+        if (!this.state.psData || !this.state.psData.can_edit) return;
+        const r = await this.orm.call("pb.formula.studio", "save_payslip_content",
+            [this.state.config.id, "layout", ""]);
+        if (r && r.ok) {
+            this.notif.add(_t("Section layout restored. The seeded sections and component placements were kept."),
+                { type: "success" });
+            await this._loadPayslip(this.state.psData.sample_id);
+        }
+    }
 
     // ---- uploaded payslip → reviewable layout draft ----
     openPsImport() {
@@ -4603,6 +4614,7 @@ export class PbFormulaStudio extends Component {
         this.state.psImportError = "";
         this.state.psImportApplyTheme = true;
         this.state.psImportApplyContent = true;
+        this.state.psImportApplyLayout = true;
     }
     closePsImport() {
         if (!this.state.psImportBusy) this.state.psImportOpen = false;
@@ -4614,7 +4626,8 @@ export class PbFormulaStudio extends Component {
         this.state.psImportDraft = null;
         try {
             if (file.mime === "application/pdf") {
-                file = { ...file, extracted_text: await this._psExtractPdfText(file.data) };
+                const extracted = await this._psExtractPdf(file.data);
+                file = { ...file, extracted_text: extracted.text, pdf_layout: extracted.layout };
             }
             const r = await this.orm.call("pb.formula.studio", "analyse_payslip_template",
                 [this.state.config.id, file]);
@@ -4626,7 +4639,7 @@ export class PbFormulaStudio extends Component {
             this.state.psImportBusy = false;
         }
     }
-    async _psExtractPdfText(data) {
+    async _psExtractPdf(data) {
         try {
             await loadPDFJSAssets();
             window.Util = window.pdfjsLib.Util;
@@ -4634,22 +4647,67 @@ export class PbFormulaStudio extends Component {
             const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
             const task = window.pdfjsLib.getDocument({ data: bytes });
             const pdf = await task.promise;
-            const pages = [];
+            const pageTexts = [];
+            const layoutPages = [];
+            let palette = [];
             for (let pageNo = 1; pageNo <= Math.min(pdf.numPages || 0, 8); pageNo++) {
                 const page = await pdf.getPage(pageNo);
+                const viewport = page.getViewport({ scale: 1 });
+                if (pageNo === 1) {
+                    const thumbViewport = page.getViewport({ scale: .45 });
+                    const canvas = document.createElement("canvas");
+                    canvas.width = Math.max(1, Math.round(thumbViewport.width));
+                    canvas.height = Math.max(1, Math.round(thumbViewport.height));
+                    const context = canvas.getContext("2d", { willReadFrequently: true });
+                    if (context) {
+                        await page.render({ canvasContext: context, viewport: thumbViewport }).promise;
+                        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+                        const counts = new Map();
+                        for (let i = 0; i < pixels.length; i += 64) {
+                            const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2], a = pixels[i + 3];
+                            if (a < 180 || (r > 242 && g > 242 && b > 242) || (r + g + b < 105)) continue;
+                            if (Math.max(r, g, b) - Math.min(r, g, b) < 12) continue;
+                            const key = [r, g, b].map(value => Math.round(value / 16) * 16)
+                                .map(value => Math.min(255, value));
+                            const hex = `#${key.map(value => value.toString(16).padStart(2, "0")).join("")}`;
+                            counts.set(hex, (counts.get(hex) || 0) + 1);
+                        }
+                        palette = [...counts.entries()].sort((a, b) => b[1] - a[1])
+                            .slice(0, 4).map(entry => entry[0]);
+                    }
+                }
                 const content = await page.getTextContent();
                 let text = "";
+                const items = [];
                 for (const item of content.items || []) {
                     text += (item.str || "") + (item.hasEOL ? "\n" : " ");
+                    if (!item.str || !item.str.trim()) continue;
+                    const tx = window.pdfjsLib.Util.transform(viewport.transform, item.transform);
+                    const fontHeight = Math.max(1, Math.hypot(tx[2], tx[3]));
+                    const style = (content.styles && content.styles[item.fontName]) || {};
+                    const fontHint = `${item.fontName || ""} ${style.fontFamily || ""}`.toLowerCase();
+                    items.push({
+                        text: item.str.trim().slice(0, 240),
+                        x: Math.max(0, Math.min(1000, tx[4] / viewport.width * 1000)),
+                        y: Math.max(0, Math.min(1000, tx[5] / viewport.height * 1000)),
+                        width: Math.max(0, Math.min(1000, (item.width || 0) / viewport.width * 1000)),
+                        height: Math.max(1, Math.min(100, fontHeight / viewport.height * 1000)),
+                        bold: /bold|black|heavy|semibold/.test(fontHint),
+                        italic: /italic|oblique/.test(fontHint),
+                    });
                 }
-                pages.push(text.trim());
+                pageTexts.push(text.trim());
+                layoutPages.push({ width: viewport.width, height: viewport.height, items });
             }
             if (pdf.destroy) await pdf.destroy();
-            return pages.filter(Boolean).join("\n").slice(0, 80000);
+            return {
+                text: pageTexts.filter(Boolean).join("\n").slice(0, 80000),
+                layout: { version: 1, pages: layoutPages.slice(0, 4), palette },
+            };
         } catch (e) {
             // Scanned/password-protected PDFs continue to the configured OCR
             // provider; failure here must never block that stronger path.
-            return "";
+            return { text: "", layout: { version: 1, pages: [] } };
         }
     }
     psImportToggle(sectionIndex, matchIndex, ev) {
@@ -4674,6 +4732,7 @@ export class PbFormulaStudio extends Component {
     }
     psImportToggleTheme(ev) { this.state.psImportApplyTheme = ev.target.checked; }
     psImportToggleContent(ev) { this.state.psImportApplyContent = ev.target.checked; }
+    psImportToggleLayout(ev) { this.state.psImportApplyLayout = ev.target.checked; }
     get psImportSelectedCount() {
         const draft = this.state.psImportDraft;
         if (!draft) return 0;
@@ -4687,6 +4746,7 @@ export class PbFormulaStudio extends Component {
                 ...this.state.psImportDraft,
                 apply_theme: this.state.psImportApplyTheme,
                 apply_content: this.state.psImportApplyContent,
+                apply_layout: this.state.psImportApplyLayout,
             };
             const r = await this.orm.call("pb.formula.studio", "apply_payslip_template",
                 [this.state.config.id, payload]);
@@ -4767,12 +4827,20 @@ export class PbFormulaStudio extends Component {
         return `<span class="ps-component-token mode-${mode}" contenteditable="false" data-ps-rule-id="${component.id}" data-ps-mode="${mode}" title="Dynamic payroll component ${code}">${body}<button type="button" tabindex="-1" data-ps-remove-component="1" title="Remove component">×</button></span>`;
     }
     _psRichExpandTokens(htmlValue) {
-        return String(htmlValue || "").replace(
+        const components = String(htmlValue || "").replace(
             /\{\{pb_component:(\d+):(label|value|both)\}\}/g,
             (_token, ruleId, mode) => {
                 const component = this._psRichComponent(ruleId);
                 return component ? this._psRichTokenHtml(component, mode) : "";
             });
+        const labels = {
+            employee_name: "Employee name", employee_id: "Employee ID",
+            department: "Department", date_from: "Period start",
+            date_to: "Period end", period: "Pay period",
+        };
+        return components.replace(
+            /\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}/g,
+            (_token, key) => `<span class="ps-meta-token" contenteditable="false" data-ps-meta="${key}" title="Live employee detail">${labels[key]}</span>`);
     }
     get psRichComponents() {
         const all = (this.state.psData && this.state.psData.rich_components) || [];
@@ -5047,6 +5115,12 @@ export class PbFormulaStudio extends Component {
             const mode = token.dataset.psMode;
             const marker = ruleId && ["label", "value", "both"].includes(mode)
                 ? `{{pb_component:${ruleId}:${mode}}}` : "";
+            token.replaceWith(document.createTextNode(marker));
+        }
+        for (const token of clone.querySelectorAll(".ps-meta-token")) {
+            const key = token.dataset.psMeta || "";
+            const marker = ["employee_name", "employee_id", "department", "date_from", "date_to", "period"].includes(key)
+                ? `{{pb_meta:${key}}}` : "";
             token.replaceWith(document.createTextNode(marker));
         }
         // Browsers implement fontName with the legacy <font face="…"> tag.

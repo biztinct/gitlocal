@@ -4943,7 +4943,8 @@ class PbFormulaStudio(models.AbstractModel):
         values_by_rule = {r.id: values.get(r.column_letter) for r in rules}
         currency = config.currency_id.symbol if config.currency_id else '₫'
 
-        rich_blocks = [config.payslip_header_html or '', config.payslip_footer_html or '']
+        rich_blocks = [config.payslip_header_html or '', config.payslip_footer_html or '',
+                       config.payslip_layout_html or '']
         rich_blocks.extend(s.note_html or '' for s in sections)
         embedded_value_ids = set()
         for block in rich_blocks:
@@ -5002,10 +5003,20 @@ class PbFormulaStudio(models.AbstractModel):
             'accent_hex': self._ACCENT_HEX,
             'header_html': config.payslip_header_html or '',
             'footer_html': config.payslip_footer_html or '',
+            'layout_html': config.payslip_layout_html or '',
             'header_rendered_html': config._render_payslip_content(
                 config.payslip_header_html or '', values_by_rule, currency),
             'footer_rendered_html': config._render_payslip_content(
                 config.payslip_footer_html or '', values_by_rule, currency),
+            'layout_rendered_html': config._render_payslip_content(
+                config.payslip_layout_html or '', values_by_rule, currency, {
+                    'employee_name': _('Employee name'),
+                    'employee_id': _('Employee ID'),
+                    'department': _('Department'),
+                    'date_from': _('Period start'),
+                    'date_to': _('Period end'),
+                    'period': _('Pay period'),
+                }),
             'can_edit': self._can_edit(),
         }
 
@@ -5053,23 +5064,242 @@ class PbFormulaStudio(models.AbstractModel):
         source = self._payslip_import_norm(label)
         if not source:
             return 0.0
+        source_variants = {source}
+        latin_label = re.sub(r'\([^)]*\)', ' ', str(label or ''))
+        source_variants.add(self._payslip_import_norm(latin_label))
+        for part in re.split(r'\s[/|]\s', str(label or '')):
+            source_variants.add(self._payslip_import_norm(part))
+        source_variants.discard('')
         names = {
             self._payslip_import_norm(rule.code),
             self._payslip_import_norm(rule.name),
             self._payslip_import_norm(rule.salary_rule_id.name if rule.salary_rule_id else ''),
         } - {''}
         best = 0.0
-        for target in names:
-            if source == target:
-                return 0.99
-            if len(source) >= 4 and (source in target or target in source):
-                best = max(best, 0.90 * min(len(source), len(target)) / max(len(source), len(target)))
-            ratio = SequenceMatcher(None, source, target).ratio()
-            source_tokens, target_tokens = set(source.split()), set(target.split())
-            overlap = (len(source_tokens & target_tokens) / len(source_tokens | target_tokens)
-                       if source_tokens and target_tokens else 0.0)
-            best = max(best, ratio * 0.72 + overlap * 0.28)
+        for candidate in source_variants:
+            for target in names:
+                if candidate == target:
+                    return 0.99
+                if len(candidate) >= 4 and (candidate in target or target in candidate):
+                    best = max(best, 0.90 * min(len(candidate), len(target))
+                               / max(len(candidate), len(target)))
+                ratio = SequenceMatcher(None, candidate, target).ratio()
+                source_tokens, target_tokens = set(candidate.split()), set(target.split())
+                overlap = (len(source_tokens & target_tokens) / len(source_tokens | target_tokens)
+                           if source_tokens and target_tokens else 0.0)
+                best = max(best, ratio * 0.72 + overlap * 0.28)
         return round(best, 3)
+
+    @staticmethod
+    def _payslip_pdf_layout_rows(layout):
+        """Validate and fold positioned PDF.js text items into visual rows."""
+        pages = layout.get('pages') if isinstance(layout, dict) else []
+        if not isinstance(pages, list):
+            return []
+        out = []
+        for page_index, page in enumerate(pages[:4]):
+            items = page.get('items') if isinstance(page, dict) else []
+            if not isinstance(items, list):
+                continue
+            clean = []
+            for item in items[:2500]:
+                if not isinstance(item, dict):
+                    continue
+                text_value = re.sub(r'[\x00-\x1f]+', ' ', str(item.get('text') or '')).strip()
+                if not text_value:
+                    continue
+                try:
+                    x = max(0.0, min(1000.0, float(item.get('x') or 0)))
+                    y = max(0.0, min(1000.0, float(item.get('y') or 0)))
+                    width = max(0.0, min(1000.0, float(item.get('width') or 0)))
+                    height = max(1.0, min(100.0, float(item.get('height') or 10)))
+                except (TypeError, ValueError):
+                    continue
+                clean.append({
+                    'text': text_value[:240], 'x': x, 'y': y,
+                    'width': width, 'height': height,
+                    'bold': bool(item.get('bold')), 'italic': bool(item.get('italic')),
+                })
+            clean.sort(key=lambda item: (item['y'], item['x']))
+            rows = []
+            for item in clean:
+                tolerance = max(4.0, min(11.0, item['height'] * .78))
+                row = next((candidate for candidate in reversed(rows[-3:])
+                            if candidate['y_min'] - tolerance <= item['y']
+                            <= candidate['y_max'] + tolerance), None)
+                if row is None:
+                    row = {'y': item['y'], 'y_min': item['y'],
+                           'y_max': item['y'], 'items': []}
+                    rows.append(row)
+                row['items'].append(item)
+                row['y'] = sum(cell['y'] for cell in row['items']) / len(row['items'])
+                row['y_min'] = min(row['y_min'], item['y'])
+                row['y_max'] = max(row['y_max'], item['y'])
+            for row_index, row in enumerate(rows):
+                row['items'].sort(key=lambda item: item['x'])
+                row['id'] = 'p%s-r%s' % (page_index + 1, row_index + 1)
+                row['page'] = page_index + 1
+                row['text'] = ' '.join(item['text'] for item in row['items']).strip()
+                if row['text']:
+                    out.append(row)
+        return out[:500]
+
+    def _payslip_geometry_rows(self, layout):
+        """Classify positioned text into headings and payroll rows."""
+        rows = self._payslip_pdf_layout_rows(layout)
+        current_section = ''
+        in_body = False
+        for row in rows:
+            text_value = row['text']
+            norm = self._payslip_import_norm(text_value)
+            is_section = bool(re.match(r'^\s*(?:[ivx]+[.)/]|section\s+\d+)',
+                                       text_value, re.I))
+            if is_section:
+                in_body = True
+                heading = re.sub(r'\s+hours?\s+amount\s*$', '', text_value,
+                                 flags=re.I).strip()
+                heading = re.sub(r'\s+(?:hours?|amount)\s*$', '', heading,
+                                 flags=re.I).strip()
+                current_section = heading[:160]
+                row.update({'kind': 'section', 'section': current_section,
+                            'label': heading})
+                continue
+            if not in_body:
+                row.update({'kind': 'header', 'section': '', 'label': ''})
+                continue
+            if ('thank you' in norm or 'cam on' in norm or 'contribution' in norm
+                    or norm.startswith('page ')):
+                row.update({'kind': 'footer', 'section': '', 'label': text_value})
+                continue
+            if (current_section and re.fullmatch(r'[\W_]*[A-ZÀ-Ỹ\s]+[\W_]*', text_value)
+                    and len(text_value.strip()) < 80):
+                previous = next((candidate for candidate in reversed(rows[:rows.index(row)])
+                                 if candidate.get('kind') == 'section'), None)
+                if previous:
+                    previous['label'] = ('%s %s' % (previous['label'], text_value)).strip()
+                    previous['text'] = ('%s %s' % (previous['text'], text_value)).strip()
+                    current_section = previous['label'][:160]
+                    row.update({'kind': 'continuation', 'section': current_section,
+                                'label': ''})
+                    continue
+            label_candidates = sorted(
+                [item for item in row['items']
+                 if 115 <= item['x'] < 785
+                 and not re.fullmatch(r'[-–—+()\d.,%\s]+', item['text'])],
+                key=lambda item: (item['y'], item['x']))
+            label_lines = []
+            for item in label_candidates:
+                line = next((candidate for candidate in reversed(label_lines[-2:])
+                             if abs(candidate['y'] - item['y']) <= 3.5), None)
+                if line is None:
+                    line = {'y': item['y'], 'items': []}
+                    label_lines.append(line)
+                line['items'].append(item)
+                line['y'] = sum(cell['y'] for cell in line['items']) / len(line['items'])
+            label_items = [item for line in label_lines
+                           for item in sorted(line['items'], key=lambda cell: cell['x'])]
+            label = ' '.join(item['text'] for item in label_items).strip()
+            if not label:
+                label = re.sub(r'^\s*\d+(?:[.)]\s*|\s+)', '', text_value)
+                label = re.sub(r'\s+[-+()\d.,%]+\s*$', '', label).strip()
+            kind = 'total' if re.search(r'\btotal\b', label, re.I) else 'line'
+            row.update({'kind': kind, 'section': current_section,
+                        'label': label[:240]})
+        return rows
+
+    @staticmethod
+    def _payslip_import_styled_label(value):
+        """Preserve bilingual emphasis without accepting source HTML."""
+        escaped = html.escape(str(value or '').strip())
+        return re.sub(r'(\([^()]+\))', r'<em>\1</em>', escaped)
+
+    def _payslip_geometry_html(self, rows, layout=None):
+        """Rebuild an editable, safe table document from positioned PDF text."""
+        body = [row for row in rows if row.get('kind') in ('section', 'line', 'total')]
+        if not body:
+            return ''
+        title_row = next((row for row in rows
+                          if row.get('kind') == 'header'
+                          and 'pay slip' in self._payslip_import_norm(row['text'])), None)
+        title = (' '.join(item['text'] for item in title_row['items']
+                          if item['x'] < 480).strip()
+                 if title_row else _('PAYSLIP'))
+        title = title or _('PAYSLIP')
+        palette = layout.get('palette') if isinstance(layout, dict) else []
+        primary = next((str(color).lower() for color in palette[:4]
+                        if re.fullmatch(r'#[0-9a-fA-F]{6}', str(color))), '#786e67')
+        first_y = body[0]['y']
+        footer_rows = [row for row in rows if row.get('kind') == 'footer'
+                       and row['y'] > first_y and not row['text'].lower().startswith('page')]
+
+        parts = [
+            '<div class="pb-imported-document" style="font-family:Arial,Helvetica,sans-serif;color:#111827">',
+            '<table style="width:100%;border-collapse:collapse;border:none;margin:0 0 5px">',
+            '<tbody><tr>',
+            '<td style="width:50%;border:none;padding:2px 4px;vertical-align:bottom">',
+            '<div style="font-size:17px;font-weight:700;font-style:italic;color:%s">%s</div>'
+            '<div style="font-size:11px;font-weight:700;font-style:italic">{{pb_meta:period}}</div>'
+            '</td>' % (primary, html.escape(title)),
+            '<td style="width:50%;border:none;padding:0;vertical-align:bottom">',
+            '<table style="width:100%;border-collapse:collapse;border:1px solid #9ca3af;margin:0">',
+            '<tbody>',
+            '<tr><td style="border:1px solid #d1d5db;padding:3px 5px;font-style:italic">Full name:</td>'
+            '<td style="border:1px solid #d1d5db;padding:3px 5px">{{pb_meta:employee_name}}</td></tr>',
+            '<tr><td style="border:1px solid #d1d5db;padding:3px 5px;font-style:italic">Employee ID:</td>'
+            '<td style="border:1px solid #d1d5db;padding:3px 5px">{{pb_meta:employee_id}}</td></tr>',
+            '<tr><td style="border:1px solid #d1d5db;padding:3px 5px;font-style:italic">Department:</td>'
+            '<td style="border:1px solid #d1d5db;padding:3px 5px">{{pb_meta:department}}</td></tr>',
+            '</tbody></table></td></tr></tbody></table>',
+            '<table style="width:100%;table-layout:fixed;border-collapse:collapse;border:1px solid #111827;margin:0">',
+            '<colgroup><col style="width:11%"/><col style="width:50%"/>'
+            '<col style="width:14%"/><col style="width:25%"/></colgroup><tbody>',
+        ]
+        for row in body:
+            label = self._payslip_import_styled_label(row.get('label') or row['text'])
+            if row['kind'] == 'section':
+                has_columns = ('hour' in self._payslip_import_norm(row['text'])
+                               and 'amount' in self._payslip_import_norm(row['text']))
+                parts.append(
+                    '<tr><td colspan="%s" style="border:1px solid #111827;padding:4px 6px;'
+                    'background-color:#d9d9d9;font-size:12px;font-weight:700">%s</td>%s</tr>' % (
+                        2 if has_columns else 4, label,
+                        ('<td style="border:1px solid #111827;padding:4px 6px;background-color:#d9d9d9;'
+                         'font-style:italic;text-align:right">Hours</td>'
+                         '<td style="border:1px solid #111827;padding:4px 6px;background-color:#d9d9d9;'
+                         'font-style:italic;text-align:right">Amount</td>') if has_columns else ''))
+                continue
+            placeholder = '{{pb_import_row:%s}}' % row['id']
+            if row['kind'] == 'total':
+                parts.append(
+                    '<tr><td colspan="3" style="border:1px solid #111827;padding:4px 7px;'
+                    'font-weight:700;text-align:right">%s</td>'
+                    '<td style="border:1px solid #111827;padding:4px 7px;font-weight:700;'
+                    'text-align:right;white-space:nowrap">%s</td></tr>' % (label, placeholder))
+                continue
+            index_item = next((item['text'] for item in row['items']
+                               if item['x'] < 140 and re.fullmatch(r'\d+', item['text'])), '')
+            norm_label = self._payslip_import_norm(row.get('label'))
+            source_hours = any(580 <= item['x'] < 785
+                               and re.search(r'\d', item['text']) for item in row['items'])
+            source_amount = any(item['x'] >= 785 and re.search(r'\d', item['text'])
+                                for item in row['items'])
+            use_hours = source_hours and (not source_amount or 'dependent' in norm_label
+                                          or 'hour' in norm_label)
+            hours = placeholder if use_hours else ('—' if source_hours else '')
+            amount = placeholder if not use_hours else ('—' if source_amount else '')
+            parts.append(
+                '<tr><td style="border:1px solid #111827;padding:4px 6px;text-align:center">%s</td>'
+                '<td style="border:1px solid #111827;padding:4px 7px">%s</td>'
+                '<td style="border:1px solid #111827;padding:4px 7px;text-align:right;white-space:nowrap">%s</td>'
+                '<td style="border:1px solid #111827;padding:4px 7px;text-align:right;white-space:nowrap">%s</td></tr>' % (
+                    html.escape(index_item), label, hours, amount))
+        parts.append('</tbody></table>')
+        if footer_rows:
+            footer = ' '.join(row['text'] for row in footer_rows[:2])
+            parts.append('<div style="padding:6px 10px;text-align:center;font-size:11px;'
+                         'font-weight:700;font-style:italic">%s</div>' % html.escape(footer))
+        parts.append('</div>')
+        return ''.join(parts)[:120000]
 
     @api.model
     def _build_payslip_template_draft(self, config, extracted, filename=''):
@@ -5083,18 +5313,28 @@ class PbFormulaStudio(models.AbstractModel):
         layout_rows = self._payslip_import_list(value('layout_rows'))
         headings = self._payslip_import_list(value('section_headings'))
         loose_labels = self._payslip_import_list(value('line_labels'))
+        geometry_rows = self._payslip_geometry_rows(extracted.get('pdf_layout') or {})
         parsed_rows = []
-        current_section = ''
-        for raw in layout_rows:
-            parts = re.split(r'\s*(?:::|\|\||\t|\s+-\s+)\s*', raw, maxsplit=1)
-            if len(parts) == 2 and parts[0] and parts[1]:
-                section, label = parts
-                current_section = section
-            else:
-                section, label = current_section, raw
-            parsed_rows.append((section[:80], label[:120]))
+        if geometry_rows:
+            parsed_rows = [
+                (row.get('section', '')[:160], row.get('label', '')[:240], row['id'])
+                for row in geometry_rows if row.get('kind') in ('line', 'total')
+                and row.get('label')
+            ]
+            headings = [row.get('label', '') for row in geometry_rows
+                        if row.get('kind') == 'section']
+        else:
+            current_section = ''
+            for raw in layout_rows:
+                parts = re.split(r'\s*(?:::|\|\||\t|\s+-\s+)\s*', raw, maxsplit=1)
+                if len(parts) == 2 and parts[0] and parts[1]:
+                    section, label = parts
+                    current_section = section
+                else:
+                    section, label = current_section, raw
+                parsed_rows.append((section[:80], label[:120], ''))
         if not parsed_rows:
-            parsed_rows = [('', label) for label in loose_labels]
+            parsed_rows = [('', label, '') for label in loose_labels]
 
         # Tesseract/plain OCR returns prose. Only rows that actually match a
         # configured component survive the confidence threshold below.
@@ -5102,14 +5342,14 @@ class PbFormulaStudio(models.AbstractModel):
             for raw in self._payslip_import_list(extracted.get('raw_text')):
                 clean = re.sub(r'\s+[-+]?\(?[\d.,]+\)?\s*$', '', raw).strip()
                 if 2 <= len(clean) <= 120:
-                    parsed_rows.append(('', clean))
+                    parsed_rows.append(('', clean, ''))
 
         rules = config.rule_ids.sorted(key=lambda r: r.sequence)
         used = set()
         grouped = {}
         group_order = []
         unmatched = []
-        for stated_section, label in parsed_rows:
+        for stated_section, label, layout_row_id in parsed_rows:
             scored = sorted(((self._payslip_rule_score(label, r), r) for r in rules if r.id not in used),
                             key=lambda pair: (-pair[0], pair[1].sequence, pair[1].id))
             score, rule = scored[0] if scored else (0.0, rules.browse())
@@ -5135,6 +5375,7 @@ class PbFormulaStudio(models.AbstractModel):
                     'rule_code': (rule.code or '') if rule else '',
                     'confidence': score,
                     'selected': False,
+                    'layout_row_id': layout_row_id,
                 })
                 continue
             used.add(rule.id)
@@ -5158,6 +5399,7 @@ class PbFormulaStudio(models.AbstractModel):
                 'rule_code': rule.code or '',
                 'confidence': score,
                 'selected': True,
+                'layout_row_id': layout_row_id,
             })
 
         # If the provider found headings but no row carried one, retain only
@@ -5178,8 +5420,11 @@ class PbFormulaStudio(models.AbstractModel):
         font = ('serif' if 'serif' in font_words else
                 ('mono' if 'mono' in font_words else
                  ('system' if ('system' in font_words or 'sans serif' in font_words) else False)))
+        imported_layout = self._payslip_geometry_html(
+            geometry_rows, extracted.get('pdf_layout') or {})
         return {
-            'ok': bool(grouped or value('header_text') or value('footer_text')),
+            'ok': bool(grouped or value('header_text') or value('footer_text')
+                       or imported_layout),
             'filename': filename[:128],
             'provider': extracted.get('provider') or 'none',
             'warning': extracted.get('error') or '',
@@ -5187,6 +5432,17 @@ class PbFormulaStudio(models.AbstractModel):
             'unmatched': unmatched[:40],
             'header_html': self._payslip_import_html(value('header_text')),
             'footer_html': self._payslip_import_html(value('footer_text')),
+            'layout_html': imported_layout,
+            'layout_preview_html': re.sub(
+                r'\{\{pb_import_row:[^}]+\}\}', '—', imported_layout),
+            'layout_quality': {
+                'tables': 2 if imported_layout else 0,
+                'rows': len([row for row in geometry_rows
+                             if row.get('kind') in ('line', 'total')]),
+                'merged_cells': len([row for row in geometry_rows
+                                     if row.get('kind') in ('section', 'total')]),
+                'styles': bool(imported_layout),
+            },
             'theme': {'accent': accent, 'font': font},
             'options': [{'id': r.id,
                          'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
@@ -5256,6 +5512,11 @@ class PbFormulaStudio(models.AbstractModel):
                 extracted = self.env['biz.doc.ocr']._extract(schema, [attachment.id])
             finally:
                 attachment.unlink()
+        if mimetype == 'application/pdf' and isinstance(upload.get('pdf_layout'), dict):
+            # Positioned text is generated locally by the same bundled PDF.js
+            # reader as client_text. The strict row validator below caps pages,
+            # items, coordinates and text before any HTML is generated.
+            extracted['pdf_layout'] = upload['pdf_layout']
         draft = self._build_payslip_template_draft(
             config, extracted or {}, str(upload.get('name') or 'payslip'))
         if not draft['ok']:
@@ -5281,6 +5542,7 @@ class PbFormulaStudio(models.AbstractModel):
         section_by_name = {self._payslip_import_norm(s.label or s.identifier): s for s in existing}
         rules_by_id = {r.id: r for r in config.rule_ids}
         used_rules, created, placed = set(), 0, 0
+        layout_matches = {}
 
         for section_index, row in enumerate(requested[:20]):
             if not isinstance(row, dict):
@@ -5297,6 +5559,9 @@ class PbFormulaStudio(models.AbstractModel):
                 if rule_id in rules_by_id and rule_id not in used_rules:
                     selected.append(rules_by_id[rule_id])
                     used_rules.add(rule_id)
+                    row_id = str(match.get('layout_row_id') or '')
+                    if re.fullmatch(r'p\d+-r\d+', row_id):
+                        layout_matches[row_id] = rule_id
             if not selected:
                 continue
             label = (re.sub(r'[\r\n\t]+', ' ', str(row.get('label') or _('Payslip')))
@@ -5336,6 +5601,21 @@ class PbFormulaStudio(models.AbstractModel):
                 content_vals['payslip_header_html'] = draft['header_html']
             if draft.get('footer_html'):
                 content_vals['payslip_footer_html'] = draft['footer_html']
+        if draft.get('apply_layout') and draft.get('layout_html'):
+            layout_html = str(draft.get('layout_html') or '')[:120000]
+
+            def replace_layout_row(match):
+                rule_id = layout_matches.get(match.group(1))
+                return ('{{pb_component:%s:value}}' % rule_id) if rule_id else '—'
+
+            layout_html = re.sub(
+                r'\{\{pb_import_row:(p\d+-r\d+)\}\}', replace_layout_row,
+                layout_html)
+            # Never persist unresolved import instructions or cross-config
+            # component ids. Meta markers are a fixed non-executable whitelist.
+            layout_html = re.sub(r'\{\{pb_import_row:[^}]+\}\}', '—', layout_html)
+            content_vals['payslip_layout_html'] = config._normalise_payslip_content_tokens(
+                layout_html)
         if draft.get('apply_theme'):
             theme = draft.get('theme') if isinstance(draft.get('theme'), dict) else {}
             if theme.get('accent') in self._ACCENT_HEX:
@@ -5358,11 +5638,13 @@ class PbFormulaStudio(models.AbstractModel):
         if not config:
             return {'ok': False}
         html_value = config._normalise_payslip_content_tokens(
-            str(html_value or '')[:50000])
+            str(html_value or '')[:120000])
         if target == 'header':
             config.write({'payslip_header_html': html_value or False})
         elif target == 'footer':
             config.write({'payslip_footer_html': html_value or False})
+        elif target == 'layout':
+            config.write({'payslip_layout_html': html_value or False})
         elif str(target).startswith('section:'):
             try:
                 section_id = int(str(target).split(':', 1)[1])

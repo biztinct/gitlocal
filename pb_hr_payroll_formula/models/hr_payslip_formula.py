@@ -662,7 +662,8 @@ class HrPayslipFormula(models.Model):
         } if config else {}
         rich_blocks = []
         if config:
-            rich_blocks = [config.payslip_header_html or '', config.payslip_footer_html or '']
+            rich_blocks = [config.payslip_header_html or '', config.payslip_footer_html or '',
+                           config.payslip_layout_html or '']
             rich_blocks.extend(section.note_html or '' for section in sections)
         embedded_value_ids = set()
         for block in rich_blocks:
@@ -743,6 +744,16 @@ class HrPayslipFormula(models.Model):
             net_lines = self.line_ids.filtered(
                 lambda l: l.category_id and l.category_id.code == 'NET')
             net = sum(net_lines.mapped('total')) if net_lines else None
+        meta = {
+            'employee_name': self.employee_id.name or '',
+            'employee_id': (self.employee_id.employee_id
+                            or self.employee_id.barcode or ''),
+            'department': self.employee_id.department_id.name or '',
+            'date_from': self.date_from.strftime('%d/%m/%Y') if self.date_from else '',
+            'date_to': self.date_to.strftime('%d/%m/%Y') if self.date_to else '',
+        }
+        meta['period'] = ('From %s to %s' % (meta['date_from'], meta['date_to'])
+                          if meta['date_from'] or meta['date_to'] else '')
         return {
             'accent_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
             'font_stack': self._THEME_FONT_STACK.get(font_key, self._THEME_FONT_STACK['system']),
@@ -752,6 +763,8 @@ class HrPayslipFormula(models.Model):
                 config.payslip_header_html or '', values_by_rule, currency) if config else Markup(''),
             'footer_html': config._render_payslip_content(
                 config.payslip_footer_html or '', values_by_rule, currency) if config else Markup(''),
+            'layout_html': config._render_payslip_content(
+                config.payslip_layout_html or '', values_by_rule, currency, meta) if config else Markup(''),
             'sections': out_sections,
             'net': net,
             'has_net': net is not None,
