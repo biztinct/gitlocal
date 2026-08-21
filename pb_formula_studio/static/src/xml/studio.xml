@@ -2189,7 +2189,7 @@
                     <button class="wide" t-on-mousedown="(ev) => this.psRichToolbar('removeFormat', ev)" title="Clear formatting">Clear</button>
                   </div>
                   <div class="ps-rich-hint"><span class="ps-rich-hint-dot"/>Choose <b>Label only</b> for the left cell and <b>Value only</b> for the right cell. Remove a component with its ×.</div>
-                  <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop" t-out="psHtml(state.psRichDraft)"/>
+                  <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop"></div>
                 </div>
               </div>
               <div class="ps-sub-foot"><button class="ps-secondary" t-on-click="closePsRich">Cancel</button><button class="ps-primary" t-att-disabled="state.psRichBusy" t-on-click="psSaveRich">Save content</button></div>
