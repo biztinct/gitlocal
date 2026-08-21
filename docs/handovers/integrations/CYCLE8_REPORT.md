@@ -292,4 +292,31 @@ the tree, as did `test_02` (the gate proving it can still fail) and `test_04`.
 
 ---
 
+## ⚠ Incident: one worktree, two agents, one git index — W166
+
+The composer component (WP-3) was built by a child agent in this same
+worktree. It had run `git add` on its files; a moment later the parent ran
+`git commit` for an unrelated documentation change, and **that commit took the
+whole index** — 2 000 lines of a UI landed inside a commit whose message
+described a ledger update.
+
+Explicit file staging, which is what W157 asks for and what every commit in this
+cycle did, does not prevent this: `git commit` commits the INDEX, not the paths
+the caller happened to name.
+
+**Repaired**: `git reset --soft HEAD~1`, `git restore --staged pb_integrations
+pb_import_kit`, re-commit only the two docs files. The child's working files
+were not touched at any point, and it was told, because its next `git commit`
+would otherwise have found nothing staged with no way to discover why.
+
+Audit after the repair — every file in every one of this cycle's commits:
+
+```
+foreign-file audit (thaco / ABM / .claude / pb_formula_studio / ONBOARDING):  CLEAN
+foreign pb_hr_payroll_formula files (payslip_config, formula_config,
+        hr_payslip_formula, payslip_themed):                                 CLEAN
+```
+
+---
+
 _(WP-3, the live pass and the final ledger follow as they land.)_
