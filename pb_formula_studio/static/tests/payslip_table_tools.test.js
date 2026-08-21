@@ -2,6 +2,7 @@
 
 import { describe, expect, test } from "@odoo/hoot";
 import {
+    applyPayslipTableBorder,
     deletePayslipTableColumn,
     deletePayslipTableRow,
     insertPayslipTableColumn,
@@ -72,5 +73,35 @@ test("editing a nested table never changes its outer table", () => {
     insertPayslipTableColumn(nestedCell, true);
     expect(nested.rows[0].cells.length).toBe(3);
     expect(table.rows[0].cells.length).toBe(2);
+    host.remove();
+});
+
+test("border presets can target a whole table and restore defaults", () => {
+    const { host, table } = tableFixture();
+    const selected = table.rows[1].cells[0];
+
+    expect(applyPayslipTableBorder(selected, "table", "light")).toBe(5);
+    expect(table.style.borderStyle).toBe("solid");
+    expect(table.style.borderWidth).toBe("1px");
+    expect(table.style.borderCollapse).toBe("collapse");
+    expect(Array.from(table.querySelectorAll("th, td")).every(cell =>
+        cell.style.borderStyle === "solid" && cell.style.borderWidth === "1px")).toBe(true);
+
+    applyPayslipTableBorder(selected, "table", "default");
+    expect(table.style.border).toBe("");
+    expect(table.style.borderCollapse).toBe("");
+    expect(Array.from(table.querySelectorAll("th, td")).every(cell =>
+        cell.style.border === "")).toBe(true);
+    host.remove();
+});
+
+test("no-border preset can target one cell without changing its table", () => {
+    const { host, table } = tableFixture();
+    const selected = table.rows[1].cells[0];
+
+    expect(applyPayslipTableBorder(selected, "cell", "none")).toBe(1);
+    expect(selected.style.border).toBe("none");
+    expect(table.rows[1].cells[1].style.border).toBe("");
+    expect(table.style.border).toBe("");
     host.remove();
 });

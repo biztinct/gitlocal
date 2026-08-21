@@ -25,6 +25,17 @@ function emptyCellLike(source) {
     return cell;
 }
 
+const BORDER_PRESETS = {
+    none: "none",
+    light: "1px solid #E2E8F0",
+    standard: "1px solid #94A3B8",
+    strong: "2px solid #475569",
+};
+
+function cleanEmptyStyle(element) {
+    if (element && !element.getAttribute("style")) element.removeAttribute("style");
+}
+
 export function payslipTableContext(cell) {
     const row = cell && cell.closest && cell.closest("tr");
     const table = row && row.closest("table");
@@ -95,4 +106,23 @@ export function deletePayslipTable(cell) {
     if (!context) return false;
     context.table.remove();
     return true;
+}
+
+export function applyPayslipTableBorder(cell, scope = "table", preset = "default") {
+    const context = payslipTableContext(cell);
+    if (!context || !["cell", "table"].includes(scope)
+            || !["default", ...Object.keys(BORDER_PRESETS)].includes(preset)) return 0;
+    const cells = context.rows.flatMap(row => Array.from(row.cells));
+    const targets = scope === "cell" ? [context.cell] : [context.table, ...cells];
+    for (const target of targets) {
+        if (preset === "default") target.style.removeProperty("border");
+        else target.style.border = BORDER_PRESETS[preset];
+        cleanEmptyStyle(target);
+    }
+    if (scope === "table") {
+        if (preset === "default") context.table.style.removeProperty("border-collapse");
+        else context.table.style.borderCollapse = "collapse";
+        cleanEmptyStyle(context.table);
+    }
+    return targets.length;
 }
