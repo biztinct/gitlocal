@@ -1,15 +1,17 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, useEffect, useExternalListener, onWillStart, onMounted, onPatched, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useRef, useEffect, useExternalListener, onWillStart, onMounted, onPatched, onWillUnmount, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { loadPDFJSAssets } from "@web/core/utils/pdfjs";
 import { GridStudio } from "./grid/grid_studio";
 import { MappingCanvas } from "./mapping/mapping_canvas";
 import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
+import { DocDrop } from "@biz_doc_ocr/js/doc_drop";
 // IA Cycle 4 — the ONE Studio change this cycle makes. Arriving here from the
 // Settings hub's cog path used to be a one-way trip: the Studio renders no
 // control panel, so there is no Odoo breadcrumb, and nothing in it said where
@@ -112,7 +114,7 @@ export class CfgCombo extends Component {
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { CfgCombo, GridStudio, MappingCanvas, FindReplace, CommandPalette, HoverCard, HubBackChip };
+    static components = { CfgCombo, GridStudio, MappingCanvas, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop };
     static props = ["*"];
 
     setup() {
@@ -211,6 +213,17 @@ export class PbFormulaStudio extends Component {
             psEditSec: null,         // section id whose title is inline-editing
             psThemeOpen: false,      // W73 — theme panel open
             psLogoV: 0,              // W73 — logo cache-buster (bumped on upload/clear)
+            psImportOpen: false,     // uploaded payslip → reviewed layout draft
+            psImportBusy: false,
+            psImportDraft: null,
+            psImportError: "",
+            psImportApplyTheme: true,
+            psImportApplyContent: true,
+            psRichOpen: false,       // header / section / footer rich-content editor
+            psRichTarget: null,
+            psRichTitle: "",
+            psRichDraft: "",
+            psRichBusy: false,
             // F12 — raw-Excel mode on the card (per-user preference)
             rawMode: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_raw_mode") === "1"),
             rawBuffer: "",
@@ -4457,6 +4470,8 @@ export class PbFormulaStudio extends Component {
         this.state.psOpen = true;
         this.state.psData = null;
         this.state.psEditSec = null;
+        this.state.psImportOpen = false;
+        this.state.psRichOpen = false;
         this._loadPayslip();
     }
     closePayslip() { this.state.psOpen = false; }
@@ -4476,6 +4491,9 @@ export class PbFormulaStudio extends Component {
     psSectionTitle(s) {
         return (this.state.psLang === "vi" && s.label_vi) ? s.label_vi : (s.label || s.identifier);
     }
+    // Values passed here are either fields.Html (sanitized by Odoo on write)
+    // or import text escaped server-side before its <p> wrapper is built.
+    psHtml(value) { return markup(value || ""); }
 
     // component value formatting (typed, reusing fmtTyped)
     psVal(c) { return this.fmtTyped(c, c.value); }
@@ -4553,6 +4571,177 @@ export class PbFormulaStudio extends Component {
     async psClearLogo() {
         await this._saveTheme({ logo: "" });
         this.state.psLogoV++;
+    }
+
+    // ---- uploaded payslip → reviewable layout draft ----
+    openPsImport() {
+        if (!this.state.psData || !this.state.psData.can_edit) return;
+        this.state.psImportOpen = true;
+        this.state.psImportBusy = false;
+        this.state.psImportDraft = null;
+        this.state.psImportError = "";
+        this.state.psImportApplyTheme = true;
+        this.state.psImportApplyContent = true;
+    }
+    closePsImport() {
+        if (!this.state.psImportBusy) this.state.psImportOpen = false;
+    }
+    async psAnalyseTemplate(file) {
+        if (this.state.psImportBusy) return;
+        this.state.psImportBusy = true;
+        this.state.psImportError = "";
+        this.state.psImportDraft = null;
+        try {
+            if (file.mime === "application/pdf") {
+                file = { ...file, extracted_text: await this._psExtractPdfText(file.data) };
+            }
+            const r = await this.orm.call("pb.formula.studio", "analyse_payslip_template",
+                [this.state.config.id, file]);
+            if (r && r.ok) this.state.psImportDraft = r;
+            else this.state.psImportError = (r && (r.msg || r.warning)) || _t("The payslip could not be analysed.");
+        } catch (e) {
+            this.state.psImportError = _t("The payslip could not be analysed. Check the Document OCR configuration and try again.");
+        } finally {
+            this.state.psImportBusy = false;
+        }
+    }
+    async _psExtractPdfText(data) {
+        try {
+            await loadPDFJSAssets();
+            window.Util = window.pdfjsLib.Util;
+            const binary = atob(data || "");
+            const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
+            const task = window.pdfjsLib.getDocument({ data: bytes });
+            const pdf = await task.promise;
+            const pages = [];
+            for (let pageNo = 1; pageNo <= Math.min(pdf.numPages || 0, 8); pageNo++) {
+                const page = await pdf.getPage(pageNo);
+                const content = await page.getTextContent();
+                let text = "";
+                for (const item of content.items || []) {
+                    text += (item.str || "") + (item.hasEOL ? "\n" : " ");
+                }
+                pages.push(text.trim());
+            }
+            if (pdf.destroy) await pdf.destroy();
+            return pages.filter(Boolean).join("\n").slice(0, 80000);
+        } catch (e) {
+            // Scanned/password-protected PDFs continue to the configured OCR
+            // provider; failure here must never block that stronger path.
+            return "";
+        }
+    }
+    psImportToggle(sectionIndex, matchIndex, ev) {
+        const match = this.state.psImportDraft.sections[sectionIndex].matches[matchIndex];
+        match.selected = ev.target.checked;
+    }
+    psImportSetMatch(sectionIndex, matchIndex, ev) {
+        const match = this.state.psImportDraft.sections[sectionIndex].matches[matchIndex];
+        const ruleId = parseInt(ev.target.value, 10) || false;
+        if (ruleId) {
+            for (const section of this.state.psImportDraft.sections) {
+                for (const other of section.matches) {
+                    if (other !== match && other.rule_id === ruleId) other.selected = false;
+                }
+            }
+        }
+        const option = this.state.psImportDraft.options.find(o => o.id === ruleId);
+        match.rule_id = ruleId;
+        match.rule_name = option ? option.name : "";
+        match.rule_code = option ? option.code : "";
+        match.selected = Boolean(ruleId);
+    }
+    psImportToggleTheme(ev) { this.state.psImportApplyTheme = ev.target.checked; }
+    psImportToggleContent(ev) { this.state.psImportApplyContent = ev.target.checked; }
+    get psImportSelectedCount() {
+        const draft = this.state.psImportDraft;
+        if (!draft) return 0;
+        return draft.sections.reduce((n, s) => n + s.matches.filter(m => m.selected && m.rule_id).length, 0);
+    }
+    async psApplyTemplate() {
+        if (!this.state.psImportDraft || this.state.psImportBusy || !this.psImportSelectedCount) return;
+        this.state.psImportBusy = true;
+        try {
+            const payload = {
+                ...this.state.psImportDraft,
+                apply_theme: this.state.psImportApplyTheme,
+                apply_content: this.state.psImportApplyContent,
+            };
+            const r = await this.orm.call("pb.formula.studio", "apply_payslip_template",
+                [this.state.config.id, payload]);
+            if (r && r.ok) {
+                this.notif.add(_t("Template applied: %s fields placed, %s sections created.", r.placed, r.created_sections), { type: "success" });
+                this.state.psImportOpen = false;
+                await this._loadPayslip(this.state.psData.sample_id);
+            } else {
+                this.state.psImportError = (r && r.msg) || _t("The template could not be applied.");
+            }
+        } finally {
+            this.state.psImportBusy = false;
+        }
+    }
+
+    // ---- compact rich-content editor (stored HTML is sanitized server-side) ----
+    psOpenRich(target, title, htmlValue) {
+        if (!this.state.psData || !this.state.psData.can_edit) return;
+        this.state.psRichTarget = target;
+        this.state.psRichTitle = title;
+        this.state.psRichDraft = htmlValue || "";
+        this._psRichRange = null;
+        this.state.psRichOpen = true;
+    }
+    closePsRich() { if (!this.state.psRichBusy) this.state.psRichOpen = false; }
+    _psRichEditor() { return document.querySelector(".ps-rich-editor"); }
+    psRichRememberSelection() {
+        const editor = this._psRichEditor();
+        const selection = window.getSelection && window.getSelection();
+        if (!editor || !selection || !selection.rangeCount) return;
+        const range = selection.getRangeAt(0);
+        if (editor.contains(range.commonAncestorContainer)) this._psRichRange = range.cloneRange();
+    }
+    psRichCommand(command, value = null) {
+        const editor = this._psRichEditor();
+        if (!editor) return;
+        editor.focus();
+        if (this._psRichRange && editor.contains(this._psRichRange.commonAncestorContainer)) {
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(this._psRichRange);
+        }
+        document.execCommand(command, false, value);
+        this.psRichRememberSelection();
+    }
+    psRichToolbar(command, ev) {
+        if (ev) ev.preventDefault();
+        this.psRichCommand(command);
+    }
+    psRichBlock(ev) {
+        const value = ev.target.value;
+        if (value) this.psRichCommand("formatBlock", value);
+        ev.target.value = "";
+    }
+    psRichInsertTable() {
+        this.psRichCommand("insertHTML", '<table><tbody><tr><th>Label</th><th>Value</th></tr><tr><td>Edit me</td><td>Edit me</td></tr></tbody></table><p><br></p>');
+    }
+    psRichInsertTableEvent(ev) {
+        if (ev) ev.preventDefault();
+        this.psRichInsertTable();
+    }
+    async psSaveRich() {
+        if (this.state.psRichBusy) return;
+        const editor = this._psRichEditor();
+        const htmlValue = editor ? editor.innerHTML : this.state.psRichDraft;
+        this.state.psRichBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "save_payslip_content",
+                [this.state.config.id, this.state.psRichTarget, htmlValue]);
+            if (r && r.ok) {
+                this.state.psRichOpen = false;
+                await this._loadPayslip(this.state.psData.sample_id);
+            } else this.notif.add((r && r.msg) || _t("Content could not be saved."), { type: "warning" });
+        } finally {
+            this.state.psRichBusy = false;
+        }
     }
 
     // ---- drag & drop (native HTML5) ----

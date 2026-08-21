@@ -431,6 +431,16 @@ class HrFormulaConfig(models.Model):
         string='Payslip Logo',
         help="Brand logo for the themed payslip. Falls back to the company logo.")
     theme_show_logo = fields.Boolean(string='Show Logo on Payslip', default=True)
+    payslip_header_html = fields.Html(
+        string='Payslip Header Content',
+        sanitize=True,
+        help="Optional formatted content shown below the employee header."
+    )
+    payslip_footer_html = fields.Html(
+        string='Payslip Footer Content',
+        sanitize=True,
+        help="Optional formatted content shown after the payslip totals."
+    )
 
     # ==========================================
     # DISPLAY NAME
