@@ -4869,7 +4869,19 @@ export class PbFormulaStudio extends Component {
     }
     psRichFont(ev) {
         const value = ev.target.value;
-        if (value) this.psRichCommand("fontName", value);
+        const editor = this._psRichEditor();
+        const range = this._psRichRange;
+        const cell = this._psRichActiveCell();
+        const hasTextSelection = Boolean(editor && range && !range.collapsed
+            && editor.contains(range.commonAncestorContainer));
+        if (value && cell && !hasTextSelection) {
+            if (value === "inherit") cell.style.removeProperty("font-family");
+            else cell.style.fontFamily = value;
+            if (!cell.getAttribute("style")) cell.removeAttribute("style");
+            this._psRichSelectCell(cell);
+        } else if (value) {
+            this.psRichCommand("fontName", value);
+        }
         ev.target.value = "";
     }
     psRichInsertTable() {

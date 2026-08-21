@@ -2225,7 +2225,7 @@
                     <label class="ps-cell-color" title="Cell text colour"><span>Text</span><input type="color" value="#334155" aria-label="Cell text colour" t-on-input="(ev) => this.psRichCellColor('text', ev)"/></label>
                     <button class="subtle" t-on-mousedown="psRichClearCellColor" title="Clear cell colours">Reset colour</button>
                   </div>
-                  <div class="ps-rich-hint"><span class="ps-rich-hint-dot"/>Choose <b>Label only</b> for the left cell and <b>Value only</b> for the right cell. Click any table cell to add or remove rows and columns, or change its colours.</div>
+                  <div class="ps-rich-hint"><span class="ps-rich-hint-dot"/>Choose <b>Label only</b> for the left cell and <b>Value only</b> for the right cell. Select words to style them, or click a table cell to style all its contents.</div>
                   <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop"></div>
                 </div>
               </div>
