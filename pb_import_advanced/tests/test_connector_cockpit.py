@@ -272,3 +272,72 @@ class TestConnectorCockpitFeeds(TransactionCase):
         board = self.env['pb.integrations'].get_board()
         row = next(r for r in board['connectors'] if r['id'] == conn.id)
         self.assertEqual(row['feeds_stale'], 1)
+
+
+# ============================================ Integrations Cycle 7 — WP-3
+#
+# The feeds strip started with two buttons (Cycle 1), gained "Map fields"
+# (Cycle 2) and "Fetch fields" (Cycle 6). At four it stopped fitting: the row
+# was `display: flex` with no `flex-wrap`, and every `.pbim-btn` carries
+# `white-space: nowrap`, so the buttons could neither wrap nor shrink and ran
+# out past the card's edge.
+#
+# Both of these are STATIC assertions, because both failures are invisible to
+# every other kind of test: a missing `flex-wrap` renders, and a button gated on
+# a per-feed fact renders too — it just renders differently on different cards,
+# which is the thing the owner actually saw.
+@tagged('post_install', '-at_install')
+class TestFeedCardActionsFit(TransactionCase):
+
+    def _read(self, *parts):
+        from odoo.modules.module import get_module_path
+        import os
+        path = os.path.join(get_module_path('pb_import_advanced'), *parts)
+        with open(path, encoding='utf-8') as fh:
+            return fh.read()
+
+    def test_20_the_action_row_wraps_instead_of_overflowing(self):
+        scss = self._read('static', 'src', 'scss', 'connector_cockpit.scss')
+        block = scss.split('.pbcc-feed__acts', 1)
+        self.assertEqual(len(block), 2, '.pbcc-feed__acts rule has gone away')
+        rule = block[1].split('}', 2)[0]
+        self.assertIn('flex-wrap: wrap', rule,
+                      'four nowrap buttons in an unwrapped flex row is the '
+                      'overflow the owner reported')
+        self.assertIn('margin-top: auto', rule,
+                      'grid stretches cards to a common height; a wrapped row '
+                      'without this sits its actions at a different Y from '
+                      'its neighbours')
+        # and nothing above it may clip, or the fix is invisible
+        card = scss.split('.pbcc-feed {', 1)[1].split('}', 1)[0]
+        self.assertNotIn('overflow: hidden', card)
+
+    def test_21_every_feed_card_offers_the_same_actions(self):
+        """The rule, stated and enforced: an action button on a feed card is
+        gated on a CONNECTOR-level fact — may this user write, does the studio
+        exist, does this vendor's class implement metadata — never on anything
+        about the individual feed.
+
+        So the button SET is identical on every card of a connector, by
+        construction. That matters because it is the other half of what the
+        owner saw: nothing clips here, so an inner card's overflowing button is
+        painted over by the next card in the grid and looks absent, while the
+        rightmost card's spills into empty track and looks present. One cause,
+        two symptoms — and a per-feed gate would have made it a real third.
+        """
+        from xml.etree import ElementTree
+        xml = self._read('static', 'src', 'xml', 'connector_cockpit.xml')
+        tree = ElementTree.fromstring(xml)
+        row = [el for el in tree.iter()
+               if 'pbcc-feed__acts' in (el.get('class') or '')]
+        self.assertEqual(len(row), 1, 'the feed action row moved or multiplied')
+        buttons = [b for b in row[0] if b.tag == 'button']
+        self.assertGreaterEqual(len(buttons), 3)
+        for b in buttons:
+            gate = b.get('t-if') or ''
+            self.assertNotIn(
+                'ep.', gate,
+                "a feed-card button gated on the feed itself would make the "
+                "card set vary at random: %r" % gate)
+            # the click handler is per-feed; only the GATE may not be
+            self.assertIn('ep', b.get('t-on-click') or 'ep')
