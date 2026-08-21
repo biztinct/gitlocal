@@ -2673,3 +2673,134 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   mid-flight (the [[payobook-deploy]] rule against rewriting shared history,
   one layer down); (3) explicit staging already protects the HISTORY — this is
   the same hazard reaching PRODUCTION instead, and it needs its own habit.
+- **W158 `--no-http` does NOT stop an Odoo 19 test run binding `http_port`, so
+  W131's own escape hatch does not work on this build.** (Integrations Cycle 8,
+  the first of two runs lost to picking a database and a flag.) W131 rule 1
+  says a test run gets its **own `--http-port`** *or* `--no-http` when no
+  HttpCase is in scope. The suites in question were all `TransactionCase`, so
+  the second option looked like the stronger one — a process that never opens a
+  socket cannot take 8069 however it ends. It opens it anyway: with tests
+  enabled Odoo starts the HTTP service regardless, and the run died in
+  pre-flight with `Address already in use / Port 8069 is in use by another
+  program` before a single test loaded. Rules: (1) there is only ONE safe form
+  on this build — `--http-port=<other> --gevent-port=<other>`, always, whatever
+  is in scope; (2) the failure is loud and instant, which is the good case —
+  the bad case is the same flag on a box where the real service is DOWN, where
+  it would have bound 8069 and served production (W131's original incident);
+  (3) end the test process by PID in the same script that launched it, never
+  `pkill -f`.
+- **W159 A golden TEMPLATE database has no administrator, so EVERY
+  `res.users.create` on it raises — and any suite that builds a persona cannot
+  run there.** (Integrations Cycle 8, the second lost run.) Running the scoped
+  suite against `payobook_template` looked strictly better than against
+  `payobook`: the template serves no traffic, so the `-u` a test run needs is
+  not an `-u` of a production database. Six of the failures were one cause —
+  `ValidationError: You must have at least an administrator user.` raised by
+  `res.users._check_at_least_one_administrator` from inside `create`, on a
+  brand-new user that adds nobody and removes nobody. The tenant template is
+  scrubbed of its administrator by construction, so the constraint has nothing
+  to count and refuses the write that would leave it that way. A Cycle 1 test
+  that has passed for months (`test_04_a_plain_formula_user_reads_feeds…`)
+  failed identically, which is what identified it as an environment fact rather
+  than a defect in this cycle's code. Rules: (1) the scoped suite runs on the
+  database the feature runs on; a template DB is for `-u`, not for tests;
+  (2) when several unrelated suites fail in one run, diff the failures against
+  a suite that PREDATES the change — one shared cause is an environment, many
+  causes are a regression; (3) the same constraint makes the template
+  unusable for any W129 validator, so a live pass cannot be staged there
+  either.
+- **W160 Odoo's `TransactionCase` OVERRIDES `assertRaises`, and its override
+  cannot take a TUPLE of exception classes.** (Integrations Cycle 8.)
+  `odoo/tests/common.py:507` does `issubclass(exception, AccessError)` on the
+  argument, so `assertRaises((A, B))` raises `TypeError: issubclass() arg 1
+  must be a class` **before the code under test runs at all** — and the report
+  names the test that was checking the hardening, so it reads as "the hardening
+  is broken" and is nothing of the kind. Rules: (1) one exception class per
+  `assertRaises`, or write the try/except by hand — which is better anyway,
+  because the manual form can name the INPUT that escaped
+  (`self.fail('%r was not refused' % text)`) and `assertRaises` cannot;
+  (2) a gate test that fails for a harness reason is W127's shape inverted: a
+  gate that cannot PASS is quoted as evidence of a bug that does not exist.
+- **W161 A `str` SUBCLASS is the honest way to give a payload value
+  spreadsheet semantics — and `str`'s own arithmetic is wrong SILENTLY.**
+  (Integrations Cycle 8, the Excel lane.) `totalWorkedHours` arrives as the
+  STRING `"36000"`, and `[totalWorkedHours]/3600` has to mean 10 rather than
+  raise. Excel solves this with one value that reads as text in a text context
+  and as a number in an arithmetic one. Subclassing `str` gets that almost for
+  free: every helper in `excel_semantics` already knows what to do with a
+  string (`coerce_number` handles thousands separators, decimal marks and a
+  trailing `%`), so the delegation stays real instead of becoming a second set
+  of conversions that can drift — which a wrapper class would have forced,
+  because `coerce_number` answers `None` for anything that is not a str or a
+  number. What must be overridden is exactly the operators where `str`'s own
+  meaning is wrong: `+` concatenates, `*` repeats, and `>` compares
+  alphabetically, so `"9" > "10"` is **True**. That last one has no symptom —
+  it is a filter quietly keeping the wrong rows. Rules: (1) override `__eq__`
+  and the four comparisons together with the arithmetic, and re-declare
+  `__hash__ = str.__hash__` (defining `__eq__` sets it to None); (2) the
+  comparison test uses values delivered the way the API delivers them — both
+  sides as text — because a fixture written with real ints cannot see this bug
+  at all.
+- **W162 "Preview == execution" is enforceable by CONSTRUCTION, not by
+  discipline: ONE function with an optional trace dict.** (Integrations Cycle
+  8, obeying the law `preview_transform`'s docstring states.) The obvious build
+  is a `simulate()` beside the engine, and it is wrong the first time somebody
+  edits one of them. Instead the engine's own loops take a `trace=None`
+  argument and fill it in as they go: execution passes nothing, the composer's
+  proof rail passes `{}` and reads what comes back. There is no second
+  implementation to keep in step, and the test that proves it runs both ENTRY
+  POINTS over identical inputs and compares the numbers. The other half is the
+  DRAFT: a rule that has never been saved still has to run through the real
+  engine, and `Model.new(vals)` is what makes that possible — a full in-memory
+  record with every method and no row, so the preview of an unsaved rule is the
+  same code as the pull of a saved one. Corollary: anything the engine writes
+  (here `last_error`) must be guarded on `self.id`, or the draft path writes.
+- **W163 A fail-OPEN gate and a fail-CLOSED gate are indistinguishable in the
+  happy path, so the only test that tells them apart BREAKS the thing they
+  ask.** (Integrations Cycle 8.) `pb.formula.studio._can_edit` ends
+  `except Exception: return True` — defensible where it decides whether a
+  pencil is drawn, because the ACL refuses the write anyway. Copied to a method
+  that decides whether a WRITE runs, it becomes "the group lookup raised, so
+  let them", which is not a sentence anybody wants under a payroll rule. Both
+  versions return True for a manager and False for a reader, so no ordinary
+  test can see the difference. The one that can monkeypatches
+  `res.users.has_group` to raise and asserts the gate REFUSES. Rules: (1) a
+  gate's failure mode is part of its contract and belongs in its docstring next
+  to the groups it names; (2) never copy a gate across the read/write boundary
+  without re-deciding which way it fails; (3) prove the whitelist the same way
+  — `rule_save` is proven not to reach `python_code` by POSTING one and reading
+  the row back, never by reading the code.
+- **W164 A discovery ladder's LAST layer is scoped to the question its FIRST
+  caller asked, and the second caller inherits a wrong answer stated
+  confidently.** (Integrations Cycle 8, found through the deployed RPC on the
+  live payobook board — W135 and W152's family, third instance.)
+  `get_available_source_fields` has three layers and the third is this
+  product's own `hr.employee` columns, reached when a connector has neither
+  stored rows nor a catalogue and marked `provenance='odoo'` so no surface can
+  present it as the vendor's shape. For the Mapping Studio that layer is the
+  only useful answer for a brand-new connector — a mapping's left-hand side
+  really can be a native column. For a transformation RULE, which reads the
+  stored API payload and nothing else, it is meaningless: the composer's field
+  picker answered with **200 fields and not one of them real**
+  (`account_number`, `activity_exception_decoration`). A rule built on one
+  would not error; it would skip every row and answer a well-shaped zero
+  forever. Rules: (1) when you reuse a discovery function, enumerate its
+  fallback layers and decide EACH one for your question — the provenance key
+  exists so you can, and ignoring it is what makes the leak silent; (2) the
+  honest answer for a feed with nothing known is an EMPTY picker plus the
+  reason (`fields_known`), never a full one; (3) whatever the picker drops, the
+  save VALIDATOR must drop too, or a hand-typed real field is refused by a
+  check whose catalogue is fiction.
+- **W165 Silently CORRECTING user input makes the validator unable to see the
+  case it exists to refuse.** (Integrations Cycle 8, caught by the live suite.)
+  `rule_save` upper-cased the output key on the way into the values dict, so
+  `c8lower` was accepted and the test that asked for a refusal watched a save
+  succeed. The data was still right, which is the trap: the rule that capitals
+  matter was being enforced by a coercion nobody is told about, and the day the
+  coercion moves or a second caller skips it, the rule is gone with no failing
+  test to say so. Rules: (1) validate what the user TYPED, then refuse with the
+  correct spelling in the message ("try C8LOWER") — a refusal that teaches
+  costs one more sentence and leaves the rule visible; (2) a normalisation and
+  a validation must never live on the same value in the same function; (3) if
+  several sibling checks exist (underscore, shape, collision), make them all
+  refuse or all correct — half of each is how one of them stops being real.
