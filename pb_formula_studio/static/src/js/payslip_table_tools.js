@@ -26,11 +26,14 @@ function emptyCellLike(source) {
 }
 
 const BORDER_PRESETS = {
-    none: "none",
     light: "1px solid #E2E8F0",
     standard: "1px solid #94A3B8",
     strong: "2px solid #475569",
 };
+
+const BORDER_STYLE_PROPERTIES = [
+    "border", "border-width", "border-style", "border-color", "border-image",
+];
 
 function cleanEmptyStyle(element) {
     if (element && !element.getAttribute("style")) element.removeAttribute("style");
@@ -111,12 +114,13 @@ export function deletePayslipTable(cell) {
 export function applyPayslipTableBorder(cell, scope = "table", preset = "default") {
     const context = payslipTableContext(cell);
     if (!context || !["cell", "table"].includes(scope)
-            || !["default", ...Object.keys(BORDER_PRESETS)].includes(preset)) return 0;
+            || !["default", "none", ...Object.keys(BORDER_PRESETS)].includes(preset)) return 0;
     const cells = context.rows.flatMap(row => Array.from(row.cells));
     const targets = scope === "cell" ? [context.cell] : [context.table, ...cells];
     for (const target of targets) {
-        if (preset === "default") target.style.removeProperty("border");
-        else target.style.border = BORDER_PRESETS[preset];
+        for (const property of BORDER_STYLE_PROPERTIES) target.style.removeProperty(property);
+        if (preset === "none") target.style.borderStyle = "none";
+        else if (preset !== "default") target.style.border = BORDER_PRESETS[preset];
         cleanEmptyStyle(target);
     }
     if (scope === "table") {
