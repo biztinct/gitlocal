@@ -567,24 +567,36 @@ class HrApiTransformationRule(models.Model):
         traceback either.
         """
         self.ensure_one()
-        if not self.id:                     # an in-memory draft never writes
-            return
-        message = ('%s: %s' % (type(error).__name__, error))[:500] \
-            if str(error) else type(error).__name__
-        if employee_ref:
-            message = ('%s (while reading %s)' % (message, employee_ref))[:500]
-        if self.last_error == message:
-            return
-        self.sudo().write({'last_error': message,
-                           'last_error_at': fields.Datetime.now()})
+        # Never let error-FLAGGING break the pull it is describing. Same shape
+        # and same reason as `integration_field_mapping._flag_transform_error`:
+        # this runs inside the engine's own except-arm, and an exception raised
+        # there would turn a recorded failure into an unrecorded crash.
+        try:
+            if not self.id:                 # an in-memory draft never writes
+                return
+            message = ('%s: %s' % (type(error).__name__, error))[:500] \
+                if str(error) else type(error).__name__
+            if employee_ref:
+                message = ('%s (while reading %s)' % (message, employee_ref))[:500]
+            if self.last_error == message:
+                return
+            self.sudo().write({'last_error': message,
+                               'last_error_at': fields.Datetime.now()})
+        except Exception as flag_error:      # noqa: BLE001 — see above
+            _logger.warning("Could not record the failure of rule %s: %s",
+                            self.output_key or self.id, flag_error)
 
     def _clear_error(self):
         """A success clears the flag — a stale error badge is a lie with a
         timestamp on it. Guarded so a healthy rule writes nothing at all."""
         self.ensure_one()
-        if not self.id or not self.last_error:
-            return
-        self.sudo().write({'last_error': False, 'last_error_at': False})
+        try:
+            if not self.id or not self.last_error:
+                return
+            self.sudo().write({'last_error': False, 'last_error_at': False})
+        except Exception as flag_error:      # noqa: BLE001
+            _logger.warning("Could not clear the failure flag on rule %s: %s",
+                            self.output_key or self.id, flag_error)
 
     def _execute_single(self, all_records_by_type, main_record):
         """
