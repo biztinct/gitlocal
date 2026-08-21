@@ -522,10 +522,15 @@ class TestRuleComposer(TransactionCase):
     def test_09_the_summary_reads_as_a_sentence_and_never_names_the_platform(self):
         conn = self._connector()
         rule = self._guided_ot(conn, '150%')
+        # The feed is named by its LABEL, not by its technical code: the
+        # sentence is read by a payroll manager, and "Custom / Other" is what
+        # every other surface in the product calls that feed. Asserted in full
+        # rather than by fragment, because the whole point of the field is that
+        # it reads as one sentence.
         self.assertEqual(
             rule.plain_summary,
-            'Adds up Actual_Pay_Hour over custom records where OT_Type is 150% '
-            'and ApprovalStatus is Approved')
+            'Adds up Actual_Pay_Hour over Custom / Other records where OT_Type '
+            'is 150% and ApprovalStatus is Approved')
 
         python_rule = self._rule(conn, builder_mode='python', rule_type='python',
                                  output_key='PY', python_code='result = 1')
