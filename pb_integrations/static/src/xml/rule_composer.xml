@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Section comments use `=` rules: a doubled hyphen inside an XML comment is
+       a parse error that takes the whole file down (W22), and the same trap
+       covers naming a CSS custom property, whose prefix is two hyphens (W72).
+       Every expression here resolves against the COMPONENT: a JavaScript global
+       in a `t-att` compiles to `ctx.<name>` and kills the surface at mount
+       (W96), so anything computed lives in a method. -->
+  <t t-name="pb_integrations.RuleComposer">
+    <div class="pbim pbim-modal-scrim itgrc-scrim" t-on-click="onScrimClick">
+      <div class="pbim-modal itgrc" t-on-click.stop="onCardClick">
+
+        <div class="pbim-modal__head">
+          <span class="itgrc-hic" t-out="ic('sigma', 18)"/>
+          <div>
+            <div class="pbim-modal__ttl" t-esc="headTitle"/>
+            <div class="pbim-modal__sub" t-esc="headSub"/>
+          </div>
+          <span class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="requestClose" title="Close">
+            <t t-out="ic('x', 16)"/>
+          </button>
+        </div>
+
+        <div class="pbim-modal__body itgrc-body" t-on-click="onBodyClick">
+
+          <div t-if="state.loading" class="pbim-busy">
+            <div class="pbim-spin"/><span>Loading…</span>
+          </div>
+
+          <div t-elif="state.loadError" class="itgrc-err" t-esc="state.loadError"/>
+
+          <div t-elif="!state.connectorId" class="itgrc-front">
+            <!-- ==== which system? ====
+                 The comment lives INSIDE the branch on purpose: `t-elif` and
+                 `t-else` bind to the IMMEDIATELY preceding sibling, and a
+                 comment between two branches breaks the pairing into a runtime
+                 template error rather than a build one (W23). Shown only when a
+                 rule is started from a table that is not scoped to one
+                 connector; with a scope, or one connector, it never appears. -->
+            <h3 class="itgrc-h">Which system's data does this rule read?</h3>
+            <div t-if="connectorChoices.length" class="itgrc-cxs">
+              <button t-foreach="connectorChoices" t-as="c" t-key="c.id"
+                      class="itgrc-cx" t-on-click="() => this.pickConnector(c.id)">
+                <span class="ic" t-out="ic(c.icon or 'plug', 18)"/>
+                <span class="nm" t-esc="c.name"/>
+              </button>
+            </div>
+            <p t-else="" class="itgrc-note">Connect a system first — a transformation rule reads the records one of them has pulled.</p>
+          </div>
+
+          <div t-elif="showFrontDoor" class="itgrc-front">
+            <!-- ==== the front door ==== -->
+            <div class="itgrc-ai">
+              <div class="itgrc-ai__h">
+                <span t-out="ic('sparkles', 16)"/>
+                <span>Describe it in words</span>
+              </div>
+              <div class="itgrc-ai__row">
+                <input class="pplw-in" t-att-value="state.ai.text"
+                       placeholder="Add up Actual Pay Hour where OT Type is 150% and Approval Status is Approved"
+                       t-on-input="onAiText"/>
+                <button class="pbim-btn primary" t-att-disabled="state.ai.busy"
+                        t-on-click="draftIt">
+                  <t t-out="ic('sparkles', 15)"/> Draft it
+                </button>
+              </div>
+              <div t-if="state.ai.error" class="itgrc-err" t-esc="state.ai.error"/>
+            </div>
+
+            <h3 class="itgrc-h">Or start from one of these</h3>
+            <div class="itgrc-recipes">
+              <t t-foreach="recipes" t-as="r" t-key="r.key">
+                <button t-if="!r.exists" class="itgrc-recipe"
+                        t-on-click="() => this.startFrom(r)">
+                  <span class="ic" t-out="ic(r.icon, 18)"/>
+                  <span class="tt" t-esc="r.title"/>
+                  <span class="bl" t-esc="r.blurb"/>
+                  <span t-if="r.vendor" class="vd">From this vendor's catalogue</span>
+                </button>
+                <div t-else="" class="itgrc-recipe is-taken">
+                  <span class="ic" t-out="ic(r.icon, 18)"/>
+                  <span class="tt" t-esc="r.title"/>
+                  <span class="bl" t-esc="r.blurb"/>
+                  <span class="vd">Already on this connector</span>
+                </div>
+              </t>
+            </div>
+          </div>
+
+          <div t-else="" class="itgrc-cols">
+            <!-- ==== the composer: four steps, and the data answering ==== -->
+            <div class="itgrc-steps">
+
+              <div t-if="state.ribbon" class="itgrc-ribbon">
+                <span t-out="ic('sparkles', 15)"/>
+                <div>
+                  <div t-esc="state.ribbon"/>
+                  <div t-if="ribbonSource" class="sub" t-esc="ribbonSource"/>
+                </div>
+                <button class="itgrc-ribbon__x" t-on-click="dismissRibbon" title="Dismiss">
+                  <t t-out="ic('x', 12)"/>
+                </button>
+              </div>
+
+              <div t-if="readOnlyNote" class="itgrc-ro" t-esc="readOnlyNote"/>
+
+              <!-- ==== the advanced lane, read only ==== -->
+              <t t-if="isPython">
+                <div class="itgrc-card">
+                  <div class="itgrc-card__h"><span class="n">1</span><span>What this rule does</span></div>
+                  <p class="itgrc-summary" t-esc="state.draft.plain_summary"/>
+                  <div class="itgrc-prov">
+                    <div t-if="state.draft.legacy_filter" class="itgrc-kv">
+                      <span class="k">Keeps records where</span>
+                      <span class="v" t-esc="state.draft.legacy_filter"/>
+                    </div>
+                    <div t-if="state.draft.legacy_aggregate" class="itgrc-kv">
+                      <span class="k">Works out its number from</span>
+                      <span class="v" t-esc="state.draft.legacy_aggregate"/>
+                    </div>
+                    <div class="itgrc-kv">
+                      <span class="k">Output key</span>
+                      <span class="v" t-esc="state.draft.output_key"/>
+                    </div>
+                  </div>
+                  <details t-if="payload.is_admin and state.draft.python_code" class="itgrc-code">
+                    <summary>The expression this rule runs</summary>
+                    <pre t-esc="state.draft.python_code"/>
+                  </details>
+                </div>
+              </t>
+
+              <t t-else="">
+                <!-- ==== TAKE ==== -->
+                <div class="itgrc-card">
+                  <div class="itgrc-card__h">
+                    <span class="n">1</span><span>Take</span>
+                    <span class="itgrc-chip" t-esc="chipRecords"/>
+                  </div>
+                  <div class="itgrc-feeds">
+                    <!-- ONE class attribute: a static `class` and a
+                         `t-attf-class` both compile to `class` and the last one
+                         written silently wins (W23). -->
+                    <button t-foreach="feeds" t-as="f" t-key="f.data_type"
+                            t-attf-class="pbim-fchip {{ state.draft.source_data_type === f.data_type ? 'on' : '' }}"
+                            t-att-disabled="readOnly"
+                            t-on-click="() => this.setFeed(f.data_type)"
+                            t-esc="feedLabel(f)"/>
+                  </div>
+                  <p t-if="feedFieldsUnknown" class="itgrc-note" t-esc="emptyCatalogueNote"/>
+                  <div class="itgrc-seg">
+                    <button class="pbim-segbtn"
+                            t-att-class="{ 'on': state.draft.record_source === 'records' }"
+                            t-att-disabled="readOnly"
+                            t-on-click="() => this.setRecordSource('records')">Each record</button>
+                    <button class="pbim-segbtn"
+                            t-att-class="{ 'on': state.draft.record_source === 'nested' }"
+                            t-att-disabled="readOnly"
+                            t-on-click="() => this.setRecordSource('nested')">Rows inside a table</button>
+                  </div>
+                  <t t-if="state.draft.record_source === 'nested'">
+                    <select t-if="nestedTables.length" class="itg-select"
+                            t-att-disabled="readOnly" t-on-change="onNestedTable">
+                      <option value="">Choose the table</option>
+                      <option t-foreach="nestedTables" t-as="tb" t-key="tb.path"
+                              t-att-value="tb.path"
+                              t-att-selected="state.draft.nested_table_path === tb.path"
+                              t-esc="nestedLabel(tb)"/>
+                    </select>
+                    <p t-else="" class="itgrc-note">No table inside a record was found in this feed's sample.</p>
+                  </t>
+                </div>
+
+                <!-- ==== KEEP ==== -->
+                <div class="itgrc-card">
+                  <div class="itgrc-card__h">
+                    <span class="n">2</span><span>Keep</span>
+                    <span class="itgrc-chip" t-esc="chipMatched"/>
+                  </div>
+                  <div class="itgrc-seg">
+                    <button t-foreach="vocabulary.joins or []" t-as="j" t-key="j.join"
+                            class="pbim-segbtn"
+                            t-att-class="{ 'on': state.draft.filter_conditions.join === j.join }"
+                            t-att-disabled="readOnly"
+                            t-on-click="() => this.setJoin(j.join)" t-esc="j.label"/>
+                  </div>
+                  <div t-foreach="conditions" t-as="c" t-key="c_index" class="itgrc-row">
+                    <div class="itgrc-pick">
+                      <button class="itgrc-pickbtn" t-att-disabled="readOnly"
+                              t-on-click="() => this.openPicker('cond', c_index)">
+                        <span t-esc="fieldLabel(c.field)"/>
+                        <span class="cv" t-out="ic('chevronDown', 13)"/>
+                      </button>
+                      <t t-if="isPickerOpen('cond', c_index)">
+                        <t t-call="pb_integrations.RuleComposerPicker"/>
+                      </t>
+                    </div>
+                    <select class="itg-select" t-att-disabled="readOnly"
+                            t-on-change="(ev) => this.onConditionOp(c_index, ev)">
+                      <option t-foreach="vocabulary.operators or []" t-as="op" t-key="op.op"
+                              t-att-value="op.op" t-att-selected="c.op === op.op"
+                              t-esc="op.label"/>
+                    </select>
+                    <input t-if="!isUnary(c.op)" class="pplw-in itgrc-val"
+                           t-att-value="c.value" t-att-disabled="readOnly"
+                           placeholder="value"
+                           t-on-input="(ev) => this.onConditionValue(c_index, ev)"/>
+                    <button class="itgrc-x" t-att-disabled="readOnly"
+                            t-on-click="() => this.dropCondition(c_index)" title="Remove">
+                      <t t-out="ic('x', 13)"/>
+                    </button>
+                  </div>
+                  <button t-if="!readOnly" class="itgrc-add" t-on-click="addCondition">
+                    <t t-out="ic('plus', 13)"/> add condition
+                  </button>
+                  <p t-if="!conditions.length" class="itgrc-note">With no condition every record is kept.</p>
+                </div>
+
+                <!-- ==== DERIVE ==== -->
+                <div class="itgrc-card">
+                  <div class="itgrc-card__h">
+                    <span class="n">3</span><span>Derive</span>
+                    <span class="itgrc-chip" t-esc="chipValued"/>
+                    <span class="itgrc-sp"/>
+                    <button t-if="!readOnly and !isFormulaLane" class="itgrc-lane"
+                            t-on-click="switchToFormula">
+                      <t t-out="ic('arrowLeftRight', 13)"/> Switch to a formula
+                    </button>
+                    <button t-if="!readOnly and isFormulaLane" class="itgrc-lane"
+                            t-on-click="switchToSteps">
+                      <t t-out="ic('arrowLeftRight', 13)"/> Back to the steps
+                    </button>
+                  </div>
+
+                  <select t-if="!isDateKind" class="itg-select" t-att-disabled="readOnly"
+                          t-on-change="onRuleType">
+                    <option t-foreach="ruleTypes" t-as="rt" t-key="rt.kind"
+                            t-att-value="rt.kind"
+                            t-att-selected="state.draft.rule_type === rt.kind"
+                            t-esc="rt.label"/>
+                  </select>
+
+                  <!-- the two field-driven kinds are sentences about dates -->
+                  <t t-if="isDateKind">
+                    <div class="itgrc-row">
+                      <div class="itgrc-pick">
+                        <button class="itgrc-pickbtn" t-att-disabled="readOnly"
+                                t-on-click="() => this.openPicker('date', 0)">
+                          <span t-esc="fieldLabel(state.draft.date_source_field)"/>
+                          <span class="cv" t-out="ic('chevronDown', 13)"/>
+                        </button>
+                        <t t-if="isPickerOpen('date', 0)">
+                          <t t-call="pb_integrations.RuleComposerPicker"/>
+                        </t>
+                      </div>
+                      <select class="itg-select" t-att-disabled="readOnly"
+                              t-on-change="(ev) => this.onDateField('date_compare_to', ev)">
+                        <option t-foreach="dateCompareTo" t-as="o" t-key="o.value"
+                                t-att-value="o.value"
+                                t-att-selected="state.draft.date_compare_to === o.value"
+                                t-esc="o.label"/>
+                      </select>
+                      <select class="itg-select" t-att-disabled="readOnly"
+                              t-on-change="(ev) => this.onDateField('date_unit', ev)">
+                        <option t-foreach="dateUnits" t-as="u" t-key="u.value"
+                                t-att-value="u.value"
+                                t-att-selected="state.draft.date_unit === u.value"
+                                t-esc="u.label"/>
+                      </select>
+                    </div>
+                    <div t-if="state.draft.rule_type === 'date_check'" class="itgrc-row">
+                      <select class="itg-select" t-att-disabled="readOnly"
+                              t-on-change="(ev) => this.onDateField('date_check_operator', ev)">
+                        <option value="">no test</option>
+                        <option t-foreach="dateCheckOperators" t-as="o" t-key="o.value"
+                                t-att-value="o.value"
+                                t-att-selected="state.draft.date_check_operator === o.value"
+                                t-esc="o.label"/>
+                      </select>
+                      <input class="pplw-in itgrc-val" t-att-value="state.draft.date_check_value"
+                             t-att-disabled="readOnly"
+                             t-on-input="(ev) => this.onDateField('date_check_value', ev)"/>
+                    </div>
+                  </t>
+
+                  <p t-if="isCount" class="itgrc-note" t-esc="countNote"/>
+
+                  <!-- the formula lane -->
+                  <t t-if="isFormulaLane">
+                    <input class="pplw-in itgrc-mono" t-att-value="state.draft.excel_formula"
+                           t-att-disabled="readOnly"
+                           placeholder="[totalWorkedHours]/3600 + HOURS([paidLeaveHours])"
+                           t-on-input="onFormula"/>
+                    <div class="itgrc-fns">
+                      <span t-foreach="functions" t-as="fn" t-key="fn.name"
+                            class="itgrc-fn" t-att-title="fn.help" t-esc="fn.name"/>
+                    </div>
+                    <div class="itgrc-pick">
+                      <button class="itgrc-pickbtn is-ghost" t-att-disabled="readOnly"
+                              t-on-click="() => this.openPicker('insert', 0)">
+                        <t t-out="ic('plus', 13)"/>
+                        <span>Insert a field</span>
+                      </button>
+                      <t t-if="isPickerOpen('insert', 0)">
+                        <t t-call="pb_integrations.RuleComposerInsert"/>
+                      </t>
+                    </div>
+                  </t>
+
+                  <!-- the guided value steps -->
+                  <t t-if="!isFormulaLane and !isCount and !isDateKind">
+                    <div t-foreach="state.draft.value_steps" t-as="s" t-key="s_index"
+                         class="itgrc-row">
+                      <div class="itgrc-pick">
+                        <button class="itgrc-pickbtn" t-att-disabled="readOnly"
+                                t-on-click="() => this.openPicker('step', s_index)">
+                          <span t-esc="fieldLabel(s.field)"/>
+                          <span class="cv" t-out="ic('chevronDown', 13)"/>
+                        </button>
+                        <t t-if="isPickerOpen('step', s_index)">
+                          <t t-call="pb_integrations.RuleComposerPicker"/>
+                        </t>
+                      </div>
+                      <span class="itgrc-lbl">this field contains</span>
+                      <select class="itg-select" t-att-disabled="readOnly"
+                              t-on-change="(ev) => this.onStepUnit(s_index, ev)">
+                        <option t-foreach="units" t-as="u" t-key="u.unit"
+                                t-att-value="u.unit" t-att-selected="s.contains === u.unit"
+                                t-esc="u.label"/>
+                      </select>
+                      <button class="itgrc-x" t-att-disabled="readOnly"
+                              t-on-click="() => this.dropStep(s_index)" title="Remove">
+                        <t t-out="ic('x', 13)"/>
+                      </button>
+                    </div>
+                    <button t-if="!readOnly" class="itgrc-add" t-on-click="addStep">
+                      <t t-out="ic('plus', 13)"/> plus another field
+                    </button>
+                  </t>
+                </div>
+
+                <!-- ==== CALL IT ==== -->
+                <div class="itgrc-card">
+                  <div class="itgrc-card__h"><span class="n">4</span><span>Call it</span></div>
+                  <label class="pplw-label">Name</label>
+                  <input class="pplw-in" t-att-value="state.draft.name"
+                         t-att-disabled="readOnly"
+                         placeholder="Overtime 150% — hours" t-on-input="onName"/>
+                  <label class="pplw-label">Output key</label>
+                  <input class="pplw-in itgrc-mono" t-att-value="state.draft.output_key"
+                         t-att-disabled="readOnly"
+                         placeholder="OTHRS150" t-on-input="onKey"/>
+                  <p class="itgrc-note">Capital letters and digits only, and no underscore — this is the name a pay component reads it by.</p>
+                  <label class="pplw-label">Description</label>
+                  <input class="pplw-in" t-att-value="state.draft.description"
+                         t-att-disabled="readOnly" t-on-input="onDescription"/>
+                  <label class="pplw-label">If nothing matches, use</label>
+                  <input class="pplw-in itgrc-val" t-att-value="state.draft.default_value"
+                         t-att-disabled="readOnly" t-on-input="onDefault"/>
+                </div>
+              </t>
+            </div>
+
+            <!-- ==== the proof rail ==== -->
+            <div class="itgrc-rail">
+              <div t-if="state.draft.last_error" class="itgrc-rail__err" t-esc="lastErrorNote"/>
+
+              <t t-if="isPython">
+                <p class="itgrc-note">An advanced rule is not tried out here.</p>
+              </t>
+
+              <t t-else="">
+                <div t-if="state.preview.synthetic" class="itgrc-synth">
+                  <span t-out="ic('beaker', 15)"/>
+                  <span t-esc="syntheticNote"/>
+                </div>
+
+                <div class="itgrc-rail__h">
+                  <span t-out="ic('play', 14)"/>
+                  <span>What the data says</span>
+                  <span t-if="state.preview.loading" class="itgrc-rail__busy">…</span>
+                </div>
+
+                <div t-if="state.preview.ok === false" class="itgrc-err"
+                     t-esc="state.preview.error"/>
+
+                <t t-else="">
+                  <div class="itgrc-rail__sent" t-esc="railSentence"/>
+
+                  <div class="itgrc-rows">
+                    <div t-foreach="previewRows" t-as="row" t-key="row.i"
+                         class="itgrc-prow" t-att-class="{ 'is-out': !row.kept }">
+                      <div class="cells">
+                        <span t-foreach="row.cells" t-as="cell" t-key="cell.k" class="cell">
+                          <b t-esc="cell.k"/>: <t t-esc="cell.v"/>
+                        </span>
+                      </div>
+                      <span t-if="row.value !== null" class="val" t-esc="row.value"/>
+                    </div>
+                  </div>
+                  <p t-if="!previewRows.length" class="itgrc-note">No rows to run this against yet.</p>
+
+                  <div class="itgrc-result">
+                    <span class="l">Result</span>
+                    <span class="n" t-esc="resultText"/>
+                  </div>
+                </t>
+              </t>
+            </div>
+          </div>
+        </div>
+
+        <div class="pbim-modal__foot">
+          <t t-if="state.confirmClose">
+            <span class="itgrc-confirm">This rule has not been saved.</span>
+            <span class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="discardAndClose">Discard it</button>
+            <button class="pbim-btn primary" t-on-click="keepEditing">Keep editing</button>
+          </t>
+          <t t-else="">
+            <!-- The rule as a SENTENCE, recomputed by the preview on every
+                 edit: `state.draft.plain_summary` is the SAVED row's summary and
+                 would go stale the moment a step changed, which is the worst
+                 kind of wrong — plausible, and one step behind. -->
+            <span t-if="footSummary" class="itgrc-foot__sum" t-esc="footSummary"/>
+            <span class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="requestClose">Close</button>
+            <button t-if="state.draft and !readOnly" class="pbim-btn primary"
+                    t-att-disabled="!canSave" t-on-click="save">
+              <t t-out="ic('check', 15)"/> Save rule
+            </button>
+          </t>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ==== the searchable field picker ====
+       A sub-template so the three places that need one cannot drift apart. It
+       reads `pickerGroups`, which is filtered by whatever was typed. -->
+  <t t-name="pb_integrations.RuleComposerPicker">
+    <div class="itgrc-pop">
+      <input class="pplw-in itgrc-popq" placeholder="Search fields…"
+             t-on-input="onPickerSearch"/>
+      <div class="itgrc-popscroll">
+        <t t-foreach="pickerGroups" t-as="g" t-key="g.key">
+          <div class="itgrc-popgrp" t-esc="g.label"/>
+          <button t-foreach="g.fields" t-as="f" t-key="f.path" class="itgrc-popitem"
+                  t-on-click="() => this.choosePickerField(f)">
+            <span class="nm" t-esc="f.label"/>
+            <span t-if="f.sample" class="sm" t-esc="f.sample"/>
+          </button>
+        </t>
+      </div>
+      <div t-if="catalogueEmpty" class="itgrc-note" t-esc="emptyCatalogueNote"/>
+      <div t-elif="!pickerGroups.length" class="itgrc-note">No field matches that.</div>
+      <button t-if="catalogueEmpty and typedFieldName" class="itgrc-add itgrc-usetyped"
+              t-on-click="useTypedField" t-esc="useTypedLabel"/>
+    </div>
+  </t>
+
+  <t t-name="pb_integrations.RuleComposerInsert">
+    <div class="itgrc-pop">
+      <input class="pplw-in itgrc-popq" placeholder="Search fields…"
+             t-on-input="onPickerSearch"/>
+      <div class="itgrc-popscroll">
+        <t t-foreach="pickerGroups" t-as="g" t-key="g.key">
+          <div class="itgrc-popgrp" t-esc="g.label"/>
+          <button t-foreach="g.fields" t-as="f" t-key="f.path" class="itgrc-popitem"
+                  t-on-click="() => this.insertRef(f)">
+            <span class="nm" t-esc="f.label"/>
+            <span t-if="f.sample" class="sm" t-esc="f.sample"/>
+          </button>
+        </t>
+      </div>
+      <div t-if="catalogueEmpty" class="itgrc-note" t-esc="emptyCatalogueNote"/>
+    </div>
+  </t>
+
+</templates>

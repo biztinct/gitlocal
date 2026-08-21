@@ -128,6 +128,14 @@
                 <span t-esc="t.label"/>
               </button>
               <span class="itg-tabsub" t-if="state.ledger" t-esc="state.ledger.subtitle"/>
+              <!-- The trailing edge of the tab strip. A rule is the one thing in
+                   this view a manager CREATES, so it is the one place with a
+                   primary button; the flag is a group read, and the server's
+                   own save gate fails closed behind it. -->
+              <button t-if="state.kind === 'rule' and state.canEditRules"
+                      class="pbim-btn primary itg-newrule" t-on-click="newRule">
+                <t t-out="ic('plus',15)"/> New rule
+              </button>
             </div>
 
             <!-- A connector deep-link is a SCOPE, and it says so, and it can be
@@ -240,6 +248,17 @@
           </div>
         </div>
       </WfDrawer>
+
+      <!-- ==== the rule, as a sentence you can change ====
+           A SIBLING of the drawer, not a child: the drawer is a 320px reading
+           panel and this is a builder with its own proof rail. The other three
+           ledger kinds still open the drawer above, unchanged. -->
+      <RuleComposer t-if="state.composer"
+                    connectorId="state.composer.connectorId"
+                    ruleId="state.composer.ruleId"
+                    connectors="composerConnectors"
+                    onClose="() => this.closeComposer()"
+                    onSaved="() => this.onRuleSaved()"/>
     </div>
   </t>
 

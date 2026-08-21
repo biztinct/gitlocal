@@ -558,29 +558,47 @@ class PbIntegrations(models.AbstractModel):
         total = R.with_context(active_test=False).search_count(dom)
         rows = []
         for r in recs:
+            error = getattr(r, 'last_error', '') or ''
+            # The KIND column prints the rule's own SENTENCE (Cycle 8). "Sum
+            # Field Across Records" is a selection label, true of half the
+            # table and an answer to nobody's question; "Adds up Actual Pay Hour
+            # where OT Type is 150%" is what the reader came to find out. The
+            # selection label is the fallback for a row whose summary has not
+            # been computed yet — a blank cell would read as a broken rule.
+            summary = (getattr(r, 'plain_summary', '') or ''
+                       or _sel(R, 'rule_type', r.rule_type))
             rows.append({
                 'id': r.id,
+                # The composer opens on a CONNECTOR, and the row is the only
+                # thing the client has when it is clicked.
+                'connector_id': r.connector_id.id,
                 'cells': [
                     r.name or '—',
                     r.output_key or '—',
-                    _sel(R, 'rule_type', r.rule_type),
+                    summary,
                     r.connector_id.name or '—',
                 ],
-                'badge': {'label': 'Active' if r.active else 'Off',
-                          'tone': 'ok' if r.active else 'muted'},
+                # An error outranks "off": a rule that is on and failing is the
+                # row somebody is looking for, and "Active" beside a silent
+                # failure is the badge telling the lie (W149's shape).
+                'badge': ({'label': 'Error', 'tone': 'err'} if error else
+                          {'label': 'Active' if r.active else 'Off',
+                           'tone': 'ok' if r.active else 'muted'}),
                 '_f': {'connector': r.connector_id.name or '',
-                       'state': 'active' if r.active else 'off'},
+                       'state': ('error' if error else
+                                 'active' if r.active else 'off')},
                 '_s': ' '.join(x for x in [r.name or '', r.output_key or '',
+                                           summary, error,
                                            r.connector_id.name or ''] if x),
             })
         return {
             'title': 'Transformation rules',
             'subtitle': 'Values derived from the stored records before mapping runs.',
-            'search_ph': 'Search rule name, output key, connector…',
+            'search_ph': 'Search rule name, output key, what it does…',
             'empty': 'No transformation rules on these connectors.',
             'columns': [{'label': 'Rule', 'wide': True},
                         {'label': 'Output key'},
-                        {'label': 'Kind'},
+                        {'label': 'What it does', 'wide': True},
                         {'label': 'Connector'}],
             'facets': self._facets(rows, [('connector', 'Connector'), ('state', 'State')]),
             'rows': rows, 'total': total, 'shown': len(rows),
@@ -609,6 +627,14 @@ class PbIntegrations(models.AbstractModel):
                     {'label': 'Compare to', 'value': _sel(R, 'date_compare_to', r.date_compare_to)},
                     {'label': 'Fixed date', 'value': _s(r.date_fixed_value)},
                     {'label': 'Unit', 'value': _sel(R, 'date_unit', r.date_unit)},
+                    # Declared on the model since the beginning and never
+                    # rendered here — so a `date_check` rule showed its source
+                    # field and its unit and silently withheld the actual TEST,
+                    # which is the only part of it a reader wants. Fixed in
+                    # passing (Cycle 8).
+                    {'label': 'Test', 'value': _sel(R, 'date_check_operator',
+                                                    r.date_check_operator)},
+                    {'label': 'Test value', 'value': r.date_check_value},
                 ]),
                 self._section('Expression', [
                     {'label': 'Python', 'value': r.python_code or '', 'wrap': True},
@@ -618,6 +644,14 @@ class PbIntegrations(models.AbstractModel):
                     {'label': 'Sequence', 'value': r.sequence},
                     {'label': 'Default', 'value': r.default_value},
                     {'label': 'Connector', 'value': r.connector_id.name or ''},
+                    # A rule that fails answers with its default and says
+                    # nothing — which is the gap Cycle 8 closed on the model.
+                    # Surfacing it here is the other half: an error nobody can
+                    # read is an error nobody will fix.
+                    {'label': 'Last error',
+                     'value': getattr(r, 'last_error', '') or '',
+                     'tone': 'err', 'wrap': True},
+                    {'label': 'Failed at', 'value': _s(getattr(r, 'last_error_at', ''))},
                 ]),
             ] if s],
         }

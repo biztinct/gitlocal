@@ -51,10 +51,23 @@ through the shared `ic()` registry.
         'web.assets_backend': [
             'pb_integrations/static/src/scss/integrations.scss',
             'pb_integrations/static/src/scss/integration_onboarding.scss',
+            'pb_integrations/static/src/scss/rule_composer.scss',
+            # The composer is imported BY the cockpit, so it is listed before
+            # it: a module that is loaded after its importer works by luck of
+            # the bundler's resolution and not by declaration.
+            'pb_integrations/static/src/js/rule_composer.js',
             'pb_integrations/static/src/js/integrations.js',
             'pb_integrations/static/src/js/integration_onboarding.js',
+            'pb_integrations/static/src/xml/rule_composer.xml',
             'pb_integrations/static/src/xml/integrations.xml',
             'pb_integrations/static/src/xml/integration_onboarding.xml',
+        ],
+        # Loaded only by /web/tests — never part of the backend bundle. The
+        # mail test helpers this suite imports live in `static/tests/` and
+        # nowhere else: they are a fact about the test bundle, not a dependency
+        # of the addon (W150).
+        'web.assets_unit_tests': [
+            'pb_integrations/static/tests/**/*',
         ],
     },
     'installable': True,
