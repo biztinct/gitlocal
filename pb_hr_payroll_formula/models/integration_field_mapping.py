@@ -442,7 +442,8 @@ Example: value * 1.1 if value > 1000 else value
     # SOURCE FIELD DISCOVERY (T4.3)
     # ==========================================
     @api.model
-    def get_available_source_fields(self, connector_id, data_type=None):
+    def get_available_source_fields(self, connector_id, data_type=None,
+                                    endpoint_id=None):
         """What this connector can offer as a source field, and where it is
         KNOWN from.
 
@@ -504,6 +505,18 @@ Example: value * 1.1 if value > 1000 else value
         scoped = bool(data_type) and data_type in known
         if scoped:
             domain = domain + [('data_type', '=', data_type)]
+        endpoint = self.env['hr.integration.endpoint']
+        if endpoint_id and endpoint._schema_ready():
+            endpoint = endpoint.browse(int(endpoint_id)).exists()
+            if not endpoint or endpoint.connector_id != connector:
+                endpoint = self.env['hr.integration.endpoint']
+        else:
+            endpoint = self.env['hr.integration.endpoint']
+        if endpoint:
+            # Keep legacy unassigned rows visible beside exact new provenance;
+            # dropping them would make working pre-upgrade mappings disappear.
+            domain += ['|', ('endpoint_id', '=', endpoint.id),
+                       ('endpoint_id', '=', False)]
 
         # ---- layer 1: what actually arrived
         stores = Store.search(domain, order='pull_date desc, id desc', limit=20)
@@ -532,7 +545,9 @@ Example: value * 1.1 if value > 1000 else value
         # every field of the five feeds that have never run — as "not sent", so
         # a board that should have been quiet was 58 amber chips. Drift is a
         # claim about a feed that ran, and it may only be made about that feed.
-        if scoped:
+        if endpoint:
+            synced_types = {data_type} if endpoint.last_sync else set()
+        elif scoped:
             synced_types = {data_type} if (stores or Store.search_count(domain)) else set()
         else:
             synced_types = {
@@ -541,7 +556,8 @@ Example: value * 1.1 if value > 1000 else value
             }
 
         # ---- layer 2: what it is expected to deliver
-        catalog = self._catalog_source_fields(connector, data_type if scoped else None)
+        catalog = self._catalog_source_fields(
+            connector, data_type if scoped else None, endpoint=endpoint)
         merged = {}
         for path, item in catalog.items():
             if path in live:
@@ -562,7 +578,7 @@ Example: value * 1.1 if value > 1000 else value
         return self._odoo_source_fields()
 
     @api.model
-    def _catalog_source_fields(self, connector, data_type=None):
+    def _catalog_source_fields(self, connector, data_type=None, endpoint=None):
         """The `catalog` layer: `{path: item}` for one connector.
 
         Two sources, both of them claims this platform can stand behind before a
@@ -586,7 +602,9 @@ Example: value * 1.1 if value > 1000 else value
         Field = self.env['hr.integration.endpoint.field']
         if Endpoint._schema_ready() and Field._schema_ready():
             dom = [('endpoint_id.connector_id', '=', connector.id)]
-            if data_type:
+            if endpoint:
+                dom += [('endpoint_id', '=', endpoint.id)]
+            elif data_type:
                 dom = dom + [('data_type', '=', data_type)]
             for f in Field.search(dom):
                 if not f.path or f.path in out:

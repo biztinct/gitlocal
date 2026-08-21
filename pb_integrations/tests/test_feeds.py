@@ -42,6 +42,47 @@ class TestFeeds(TransactionCase):
         self.assertEqual(P.get_ledger('mapping', None, 'employee')['total'],
                          P.get_ledger('mapping')['total'])
 
+    def test_exact_endpoint_scope_never_widens_to_a_sibling_feed(self):
+        Connector = self.env['hr.integration.connector']
+        Endpoint = self.env['hr.integration.endpoint']
+        Store = self.env['hr.api.data.store']
+        connector = Connector.create({
+            'name': 'Ledger exact-feed scope', 'connector_type': 'demo',
+        })
+        first = Endpoint.create({
+            'connector_id': connector.id, 'name': 'First custom feed',
+            'code': 'ledgerfirst', 'data_type': 'custom',
+            'operation': 'generic', 'path': 'first',
+        })
+        second = Endpoint.create({
+            'connector_id': connector.id, 'name': 'Second custom feed',
+            'code': 'ledgersecond', 'data_type': 'custom',
+            'operation': 'generic', 'path': 'second',
+        })
+        for endpoint in (first, second):
+            Store.create({
+                'connector_id': connector.id, 'endpoint_id': endpoint.id,
+                'data_type': 'custom', 'raw_payload': {'feed': endpoint.code},
+            })
+
+        scoped = self.env['pb.integrations'].get_ledger(
+            'store', connector.id, 'custom', first.id)
+        self.assertEqual(scoped['total'], 1)
+        self.assertEqual(
+            Store.browse(scoped['rows'][0]['id']).endpoint_id, first)
+
+        other = Connector.create({
+            'name': 'Ledger scope boundary', 'connector_type': 'demo',
+        })
+        foreign = Endpoint.create({
+            'connector_id': other.id, 'name': 'Foreign feed',
+            'code': 'ledgerforeign', 'data_type': 'custom',
+            'operation': 'generic', 'path': 'foreign',
+        })
+        refused = self.env['pb.integrations'].get_ledger(
+            'store', connector.id, 'custom', foreign.id)
+        self.assertEqual(refused['total'], 0)
+
     def test_the_board_reports_feeds_beside_the_counts_it_always_had(self):
         board = self.env['pb.integrations'].get_board()
         self.assertIn('feeds', board['kpis'])

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
+from urllib.parse import urljoin, urlparse
 
 from odoo import _, api, models
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -33,6 +35,10 @@ DATA_TYPE_ICON = {
     'leave': 'umbrella', 'dependent': 'user', 'benefit': 'shieldCheck',
     'tax': 'percent', 'custom': 'layers',
 }
+DEFAULT_API_BASE = {
+    'zoho': 'https://people.zoho.com/people/api',
+    'darwin': 'https://api.darwinbox.in',
+}
 
 # ============================================================== credentials
 #
@@ -43,19 +49,14 @@ DATA_TYPE_ICON = {
 # one path returns one, every future path is a judgement call.
 #
 # `secret` marks the fields Odoo itself keeps behind `base.group_system`
-# (`integration_connector.py`:88-126). The three OAuth locations are plain
-# configuration on the connector, but they are listed here because they are
-# edited in the same breath as the credentials they belong to — and they are
-# returned the same way, as `is_set` only, so the rule has no exceptions to
-# remember.
+# (`integration_connector.py`:88-126). Public OAuth locations and scopes live
+# in the Connection & Feed Studio now; mixing them into a write-only secrets
+# panel made an ordinary URL impossible to review after saving it.
 CRED_SETS = {
     'oauth2': [
         ('client_id', 'Client ID', True),
         ('client_secret', 'Client Secret', True),
         ('refresh_token', 'Refresh Token', True),
-        ('oauth_authorize_url', 'Authorization URL', False),
-        ('oauth_token_url', 'Token URL', False),
-        ('oauth_scope', 'OAuth Scope', False),
     ],
     'api_key': [('api_key', 'API Key', True)],
     'basic': [('username', 'Username', True), ('password', 'Password', True)],
@@ -63,11 +64,10 @@ CRED_SETS = {
 }
 
 # Everything `save_credentials` will write, and the ONLY things it will write.
-# `api_endpoint` and `auth_type` are here because changing an auth type without
-# being able to fill in what it then needs is a dead end.
+# Public endpoint/OAuth configuration has a separate whitelist and validator.
 WRITABLE_CREDENTIAL_KEYS = (
     {k for fields_ in CRED_SETS.values() for k, _l, _s in fields_}
-    | {'api_endpoint', 'auth_type'}
+    | {'auth_type'}
 )
 
 
@@ -147,6 +147,7 @@ class PbConnectorCockpit(models.AbstractModel):
             'data_store_count': len(c.data_store_ids),
             'rules': rules,
             'endpoints': self._endpoints(c),
+            'configuration': self._configuration(c),
             'credentials': self._credentials(c),
             'can_write': c.has_access('write'),
             # Cycle 6 — can this vendor be ASKED for its field list, and if not
@@ -203,6 +204,19 @@ class PbConnectorCockpit(models.AbstractModel):
 
     # =================================================================== feeds
     def _endpoint_row(self, e):
+        configured_base = e.connector_id.api_endpoint or DEFAULT_API_BASE.get(
+            e.connector_id.connector_type, '')
+        base = configured_base.rstrip('/') + '/'
+        path = e.path or ''
+        full_url = path if path.startswith(('http://', 'https://')) else \
+            urljoin(base, path.lstrip('/')) if base and path else ''
+        operation = e.operation or 'catalog_only'
+        template_backed = bool(
+            self.env['hr.integration.endpoint.template'].with_context(
+                active_test=False).search([
+                    ('connector_type', '=', e.connector_id.connector_type),
+                    ('code', '=', e.code),
+                ], limit=1))
         return {
             'id': e.id,
             'name': e.name or e.code or '—',
@@ -210,9 +224,16 @@ class PbConnectorCockpit(models.AbstractModel):
             'data_type': e.data_type or '',
             'data_type_label': dict(
                 e._fields['data_type'].selection).get(e.data_type, e.data_type or ''),
+            'operation': operation,
+            'operation_label': dict(
+                e._fields['operation'].selection).get(operation, operation),
+            'runnable': bool(e.active and operation != 'catalog_only' and path),
+            'active': bool(e.active),
+            'template_backed': template_backed,
             'icon': DATA_TYPE_ICON.get(e.data_type, 'database'),
             'method': (e.http_method or 'get').upper(),
             'path': e.path or '',
+            'full_url': full_url,
             'params_note': e.params_note or '',
             # Both halves of W46: the machine twin beside the display one, from
             # the same field in the same expression, so the two can never end up
@@ -223,6 +244,7 @@ class PbConnectorCockpit(models.AbstractModel):
             'last_error': e.last_error or '',
             'synced': e.synced_count,
             'staged': e.staged_count,
+            'legacy_unassigned': e.unassigned_count,
             'mapping_count': e.mapping_count,
             'is_legacy_abm': bool(e.is_legacy_abm),
             # Integrations Cycle 6 — how many fields this feed is KNOWN to
@@ -230,6 +252,53 @@ class PbConnectorCockpit(models.AbstractModel):
             # catalogue, which is the same "hidden, not wrong" answer the feeds
             # strip itself gives there.
             'field_count': self._endpoint_field_count(e),
+        }
+
+    def _configuration(self, c):
+        web_base = self.env['ir.config_parameter'].sudo().get_param(
+            'web.base.url', '')
+        callback = c.oauth_redirect_uri or (
+            web_base.rstrip('/') + '/zoho/callback' if web_base else '')
+        endpoints = self._endpoints(c)
+        runnable = sum(1 for row in endpoints if row['runnable'])
+        issues = []
+        effective_base = c.api_endpoint or DEFAULT_API_BASE.get(c.connector_type, '')
+        if c.connector_type != 'excel' and not effective_base:
+            issues.append('Add the API base URL.')
+        secret_state = c.sudo()
+        if c.auth_type == 'oauth2' and not (
+                secret_state.refresh_token or
+                (secret_state.access_token and secret_state.token_expiry)):
+            issues.append('Complete OAuth or add a refresh token.')
+        incomplete = sum(
+            1 for row in endpoints
+            if row['active'] and row['operation'] != 'catalog_only'
+            and not row['path'])
+        if incomplete:
+            issues.append(_('%s executable feeds need a path.') % incomplete)
+        return {
+            'api_endpoint': effective_base,
+            'api_endpoint_is_default': bool(not c.api_endpoint and effective_base),
+            'api_version': c.api_version or '',
+            'sync_interval': c.sync_interval or 0,
+            'auth_type': c.auth_type or 'oauth2',
+            'oauth_authorize_url': c.oauth_authorize_url or '',
+            'oauth_token_url': c.oauth_token_url or '',
+            'oauth_scope': c.oauth_scope or '',
+            'oauth_redirect_uri': c.oauth_redirect_uri or '',
+            'effective_redirect_uri': callback,
+            # Exact, copy-ready values for Zoho's "Create New Client" form.
+            # Credential readiness leaves this method only as booleans; the
+            # write-only secret contract of `_credentials` remains intact.
+            'application_home_url': web_base.rstrip('/'),
+            'oauth_client_ready': bool(
+                secret_state.client_id and secret_state.client_secret),
+            'oauth_token_ready': bool(secret_state.refresh_token),
+            'runnable': runnable,
+            'total': len(endpoints),
+            'issues': issues,
+            'ready': not issues,
+            'can_edit': c.has_access('write'),
         }
 
     def _endpoint_field_count(self, e):
@@ -247,7 +316,12 @@ class PbConnectorCockpit(models.AbstractModel):
             if 'hr.integration.endpoint' in self.env else None
         if Endpoint is None or not Endpoint._schema_ready():
             return []
-        return [self._endpoint_row(e) for e in c.endpoint_ids]
+        # Configuration must be able to turn an inactive feed back on. Reading
+        # only the one2many's default active scope made deactivation a one-way
+        # door: the row disappeared from the only screen that could restore it.
+        rows = Endpoint.with_context(active_test=False).search(
+            [('connector_id', '=', c.id)], order='sequence, name, id')
+        return [self._endpoint_row(e) for e in rows]
 
     # ============================================================= credentials
     def _credentials(self, c):
@@ -341,7 +415,7 @@ class PbConnectorCockpit(models.AbstractModel):
             return {'error': 'That feed is not on this connector.'}
         err = None
         try:
-            c.action_pull_data(data_types=[ep.data_type])
+            c.action_pull_endpoint(ep.id)
         except Exception as e:
             err = str(getattr(e, 'name', None) or e) or 'Pull failed'
             _logger.warning("Endpoint sync failed for %s/%s: %s",
@@ -376,6 +450,180 @@ class PbConnectorCockpit(models.AbstractModel):
         detail['error'] = err
         detail['catalog'] = res
         return detail
+
+    # ======================================================= feed configuration
+    @staticmethod
+    def _clean_url(value, label, allow_empty=True):
+        value = (value or '').strip()
+        if not value and allow_empty:
+            return False
+        parsed = urlparse(value)
+        if parsed.scheme not in ('http', 'https') or not parsed.netloc:
+            raise ValidationError(_('%s must be a complete HTTP(S) URL.') % label)
+        if parsed.username or parsed.password:
+            raise ValidationError(_('%s must not contain credentials.') % label)
+        return value.rstrip('/')
+
+    @api.model
+    def save_configuration(self, connector_id, connector_vals, endpoint_rows):
+        """Save public connection settings and additive feed definitions.
+
+        Secrets stay behind `save_credentials`; this method never accepts
+        their keys. A missing endpoint id creates a custom feed, while existing
+        ids are resolved through this connector so the browser cannot move or
+        edit another connector's row. There is intentionally no delete verb.
+        """
+        c = self.env['hr.integration.connector'].browse(int(connector_id or 0))
+        if not c.exists():
+            return {'error': 'Connector not found'}
+        if not c.has_access('write'):
+            raise AccessError(_('You cannot configure this connector.'))
+
+        incoming = connector_vals or {}
+        vals = {}
+        if 'api_endpoint' in incoming:
+            vals['api_endpoint'] = self._clean_url(
+                incoming.get('api_endpoint'), _('API endpoint'))
+        for key, label in (
+                ('oauth_authorize_url', _('Authorization URL')),
+                ('oauth_token_url', _('Token URL')),
+                ('oauth_redirect_uri', _('Redirect URI'))):
+            if key in incoming:
+                vals[key] = self._clean_url(incoming.get(key), label)
+        if 'oauth_scope' in incoming:
+            vals['oauth_scope'] = (incoming.get('oauth_scope') or '').strip() or False
+        if 'api_version' in incoming:
+            vals['api_version'] = (incoming.get('api_version') or '').strip() or False
+        if 'sync_interval' in incoming:
+            try:
+                interval = int(incoming.get('sync_interval') or 0)
+            except (TypeError, ValueError):
+                raise ValidationError(_('Sync interval must be a whole number.'))
+            if interval < 0 or interval > 525600:
+                raise ValidationError(_(
+                    'Sync interval must be between 0 and 525600 minutes.'))
+            vals['sync_interval'] = interval
+        if vals:
+            c.write(vals)
+
+        Endpoint = self.env['hr.integration.endpoint']
+        if not Endpoint._schema_ready():
+            if endpoint_rows:
+                raise ValidationError(_(
+                    'Upgrade this database before changing feed definitions.'))
+            c.invalidate_recordset()
+            return self.get_connector_detail(c.id)
+        allowed_operations = {key for key, _label in
+                              Endpoint._fields['operation'].selection}
+        allowed_types = {key for key, _label in
+                         Endpoint._fields['data_type'].selection}
+        allowed_methods = {key for key, _label in
+                           Endpoint._fields['http_method'].selection}
+        existing = Endpoint.with_context(active_test=False).search([
+            ('connector_id', '=', c.id)])
+        claimed_codes = {row.code: row.id for row in existing if row.code}
+        for position, raw in enumerate(endpoint_rows or [], start=1):
+            endpoint_id = int(raw.get('id') or 0)
+            endpoint = existing.filtered(lambda row: row.id == endpoint_id)[:1]
+            if endpoint_id and not endpoint:
+                raise AccessError(_('That feed does not belong to this connector.'))
+            code = (raw.get('code') or '').strip().lower()
+            if not re.fullmatch(r'[a-z0-9][a-z0-9_-]{1,63}', code):
+                raise ValidationError(_(
+                    'Feed codes use 2–64 lowercase letters, numbers, hyphens '
+                    'or underscores.'))
+            owner_id = claimed_codes.get(code)
+            if owner_id and owner_id != endpoint.id:
+                raise ValidationError(_(
+                    'Feed code “%s” is already used on this connector.') % code)
+            if endpoint and code != endpoint.code:
+                seeded = self.env['hr.integration.endpoint.template'].with_context(
+                    active_test=False).search([
+                        ('connector_type', '=', c.connector_type),
+                        ('code', '=', endpoint.code),
+                    ], limit=1)
+                if seeded:
+                    raise ValidationError(_(
+                        'A vendor feed code is stable and cannot be renamed. '
+                        'Change its display name instead.'))
+            operation = raw.get('operation') or 'catalog_only'
+            data_type = raw.get('data_type') or ''
+            method = (raw.get('http_method') or 'get').lower()
+            if (operation not in allowed_operations or data_type not in allowed_types
+                    or method not in allowed_methods):
+                raise ValidationError(_(
+                    'That feed has an unsupported configuration value.'))
+            if (endpoint and data_type != endpoint.data_type and
+                    self.env['hr.api.data.store'].search_count([
+                        ('endpoint_id', '=', endpoint.id)])):
+                raise ValidationError(_(
+                    '“Produces” cannot change after this feed has stored data. '
+                    'Create a new feed instead so existing provenance remains true.'))
+            path = (raw.get('path') or '').strip()
+            if path.startswith(('http://', 'https://')):
+                path = self._clean_url(path, _('Feed URL'))
+            elif path.startswith('//'):
+                raise ValidationError(_('A feed path cannot start with //.'))
+            row_vals = {
+                'connector_id': c.id,
+                'name': (raw.get('name') or code).strip(),
+                'code': code,
+                'data_type': data_type,
+                'operation': operation,
+                'http_method': method,
+                'path': path or False,
+                'params_note': (raw.get('params_note') or '').strip() or False,
+                'active': bool(raw.get('active')),
+            }
+            if endpoint:
+                old_code = endpoint.code
+                endpoint.write(row_vals)
+                if old_code != code:
+                    claimed_codes.pop(old_code, None)
+                claimed_codes[code] = endpoint.id
+            else:
+                created = Endpoint.create(row_vals)
+                existing |= created
+                claimed_codes[code] = created.id or -position
+
+        c.invalidate_recordset()
+        return self.get_connector_detail(c.id)
+
+    @api.model
+    def restore_endpoint_template(self, connector_id, endpoint_id):
+        """Explicitly restore one feed; automatic detection never overwrites."""
+        c = self.env['hr.integration.connector'].browse(int(connector_id or 0))
+        if not c.exists() or not c.has_access('write'):
+            raise AccessError(_('You cannot configure this connector.'))
+        Endpoint = self.env['hr.integration.endpoint']
+        if not Endpoint._schema_ready():
+            return {'error': 'Upgrade this database before restoring feeds.'}
+        endpoint = Endpoint.with_context(
+            active_test=False).search([
+                ('connector_id', '=', c.id),
+                ('id', '=', int(endpoint_id or 0)),
+            ], limit=1)
+        if not endpoint:
+            return {'error': 'Feed not found'}
+        template = self.env['hr.integration.endpoint.template'].with_context(
+            active_test=False).search([
+                ('connector_type', '=', c.connector_type),
+                ('code', '=', endpoint.code),
+            ], limit=1)
+        if not template:
+            return {'error': 'This custom feed has no vendor template.'}
+        endpoint.write({
+            'name': template.name, 'data_type': template.data_type,
+            'operation': template.operation or 'catalog_only',
+            'http_method': template.http_method or 'get',
+            'path': template.path or False,
+            'params_note': template.params_note or False,
+            'description': template.description or False,
+            'sequence': template.sequence or 10,
+            'is_legacy_abm': template.is_legacy_abm,
+            'active': template.active,
+        })
+        return self.get_connector_detail(c.id)
 
     @api.model
     def fetch_endpoint_fields(self, connector_id, endpoint_id):

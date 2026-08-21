@@ -4025,7 +4025,8 @@ class PbFormulaStudio(models.AbstractModel):
                      for e in (eps or [])]
         try:
             fields_ = FM.get_available_source_fields(
-                conn.id, ep.data_type if ep else None) or []
+                conn.id, ep.data_type if ep else None,
+                ep.id if ep else None) or []
         except Exception as e:
             # The `except` stays — a board that renders with an empty FROM
             # column beats a 500 — but it no longer stays SILENT. Cycle 6 shipped
@@ -4192,7 +4193,8 @@ class PbFormulaStudio(models.AbstractModel):
         FM = self.env['hr.integration.field.mapping']
         try:
             fields_ = FM.get_available_source_fields(
-                conn.id, endpoint.data_type if endpoint else None) or []
+                conn.id, endpoint.data_type if endpoint else None,
+                endpoint.id if endpoint else None) or []
         except Exception:
             return {}
         found = next((f for f in fields_ if f.get('path') == path), None)

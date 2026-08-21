@@ -11,8 +11,10 @@
 
          `is_legacy_abm` marks the three feeds the ABM application ran in
          production. The other four are Zoho People APIs this platform's own
-         connector knows how to call; they are catalogued so an operator can see
-         the whole surface, not just the part one predecessor used.
+         connector knows how to call, plus one dormant Timesheets definition;
+         they are catalogued so an operator can see the whole surface, not just
+         the part one predecessor used. Dormant means catalogue-only, never a
+         Sync button that implies the call has been proven.
 
          W13.1 — this file is `noupdate="1"`, so these rows are FROZEN in each
          database the moment they first load, and a later correction to a path
@@ -39,6 +41,7 @@
             <field name="code">zohoemployees</field>
             <field name="name">Employees</field>
             <field name="data_type">employee</field>
+            <field name="operation">employee</field>
             <field name="http_method">get</field>
             <field name="path">forms/P_Employee/records</field>
             <field name="params_note">sIndex, limit=200 (paginated)</field>
@@ -61,6 +64,7 @@ and not dependent rows.</field>
             <field name="code">zohoattsummary</field>
             <field name="name">Attendance summary</field>
             <field name="data_type">attendance</field>
+            <field name="operation">attendance_summary</field>
             <field name="http_method">get</field>
             <field name="path">attendance/getSummaryReport</field>
             <field name="params_note">startDate, endDate (dd-MM-yyyy), dateFormat</field>
@@ -82,6 +86,7 @@ transformation rule reproduces the legacy arithmetic
             <field name="code">zohoovertime</field>
             <field name="name">Overtime requests</field>
             <field name="data_type">custom</field>
+            <field name="operation">overtime</field>
             <field name="http_method">get</field>
             <field name="path">forms/overtime_request/getRecords</field>
             <field name="params_note">searchColumn=EMPLOYEEMAILALIAS, fromDate/toDate (dd-MM-yyyy), limit=200</field>
@@ -91,12 +96,12 @@ transformation rule reproduces the legacy arithmetic
 270% / 300% / 390%) with the payable hours in `Actual_Pay_Hour`
 (om_hr_payroll/models/hr_zoho_staging.py:472-485).
 
-DO NOT reproduce the legacy call pattern: it issued ONE request per employee,
-inside the loop over the attendance summary (:471), which is an N+1 against a
-rate-limited API. The feed is date-scoped, so a single windowed pull answers
-for everybody — and that is also why the OTHRS* rules carry no date filter of
-their own (the legacy re-filtered each record against the same window it had
-just asked for, :497-557).</field>
+The proven request contract searches on EMPLOYEEMAILALIAS, so the runtime keeps
+the legacy per-employee request pattern (:471). That is deliberately visible in
+the parameter note: it is rate-limit-sensitive and should only be replaced once
+a tenant has verified that its Zoho form accepts a safe window-only call. The
+OTHRS* rules carry no date filter of their own because the API call already
+scopes every response to the payroll window (:497-557).</field>
         </record>
 
         <record id="ep_zoho_salary" model="hr.integration.endpoint.template">
@@ -104,6 +109,7 @@ just asked for, :497-557).</field>
             <field name="code">zohosalary</field>
             <field name="name">Salary form</field>
             <field name="data_type">salary</field>
+            <field name="operation">salary</field>
             <field name="http_method">get</field>
             <field name="path">forms/P_Salary/records</field>
             <field name="params_note">searchField=Employee_ID.Zoho_ID, searchOperator=Is, searchText</field>
@@ -118,16 +124,14 @@ which took pay from the payroll spreadsheet rather than from Zoho.</field>
             <field name="code">zoholeave</field>
             <field name="name">Leave records</field>
             <field name="data_type">leave</field>
+            <field name="operation">leave</field>
             <field name="http_method">get</field>
-            <field name="path">api/v2/leavetracker/leaves/records</field>
-            <field name="params_note">from, to (dd/MM/yyyy)</field>
+            <field name="path">leave/getLeaveDetails</field>
+            <field name="params_note">empId, fromDate, toDate</field>
             <field name="sequence">50</field>
-            <field name="description">The leave tracker's own v2 API, for the whole company in a
-date window (om_hr_payroll/models/hr_zoho.py:218 — dormant there, never
-reached production). This platform's connector calls the older per-employee
-`leave/getLeaveDetails` instead (integrations/zoho_connector.py:495); the v2
-records API is the one to prefer, because it does not need a request per
-person.</field>
+            <field name="description">The per-employee leave endpoint used by this platform
+(integrations/zoho_connector.py). It is intentionally the executable path,
+rather than the dormant v2 records path previously shown by the catalogue.</field>
         </record>
 
         <record id="ep_zoho_att_daily" model="hr.integration.endpoint.template">
@@ -135,6 +139,7 @@ person.</field>
             <field name="code">zohoattdaily</field>
             <field name="name">Attendance by date</field>
             <field name="data_type">attendance</field>
+            <field name="operation">attendance_daily</field>
             <field name="http_method">get</field>
             <field name="path">attendance/getAttendanceByDate</field>
             <field name="params_note">empId, sdate, edate</field>
@@ -150,6 +155,7 @@ number is disputed.</field>
             <field name="code">zohotimesheet</field>
             <field name="name">Timesheets</field>
             <field name="data_type">custom</field>
+            <field name="operation">catalog_only</field>
             <field name="http_method">get</field>
             <field name="path">timetracker/gettimesheet</field>
             <field name="params_note">dateFormat, startDate, endDate</field>
@@ -157,7 +163,8 @@ number is disputed.</field>
             <field name="description">The time tracker. Catalogued because the legacy code names it
 (om_hr_payroll/models/hr_zoho.py:182) — but it names it in a COMMENTED-OUT
 line, immediately replaced by the attendance summary report. Nothing has ever
-called it here, so treat the parameters as unverified.</field>
+called it here, so its default execution is deliberately Catalogue only and
+the parameters remain unverified.</field>
         </record>
 
         <!-- ================= DarwinHR / Darwinbox =================
@@ -170,6 +177,7 @@ called it here, so treat the parameters as unverified.</field>
             <field name="code">darwinemployees</field>
             <field name="name">Employee directory</field>
             <field name="data_type">employee</field>
+            <field name="operation">employee</field>
             <field name="http_method">post</field>
             <field name="path">masterapi/employeedirectory</field>
             <field name="params_note">POST body: page, page_size=200, api_key, datasetKey</field>
@@ -188,6 +196,7 @@ which is a route rather than a feed and therefore has no row of its own.</field>
             <field name="code">darwincompensation</field>
             <field name="name">Compensation</field>
             <field name="data_type">salary</field>
+            <field name="operation">salary</field>
             <field name="http_method">post</field>
             <field name="path">masterapi/compensation</field>
             <field name="params_note">POST body: employee_ids, date range, api_key, datasetKey</field>
