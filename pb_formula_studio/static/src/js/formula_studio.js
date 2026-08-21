@@ -4698,6 +4698,14 @@ export class PbFormulaStudio extends Component {
         this.state.psRichDraft = this._psRichExpandTokens(htmlValue || "");
         this._psRichRange = null;
         this.state.psRichOpen = true;
+        // The contenteditable subtree is browser-owned once editing begins.
+        // Seed it after OWL mounts the shell so VHtml never tries to reconcile
+        // nodes inserted or removed by the selection/range APIs.
+        window.requestAnimationFrame(() => {
+            if (!this.state.psRichOpen) return;
+            const editor = this._psRichEditor();
+            if (editor) editor.innerHTML = this.state.psRichDraft || "";
+        });
     }
     closePsRich() { if (!this.state.psRichBusy) this.state.psRichOpen = false; }
     _psRichEditor() { return document.querySelector(".ps-rich-editor"); }
