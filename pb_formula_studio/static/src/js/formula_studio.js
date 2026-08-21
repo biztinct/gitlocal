@@ -4867,6 +4867,11 @@ export class PbFormulaStudio extends Component {
         if (value) this.psRichCommand("formatBlock", value);
         ev.target.value = "";
     }
+    psRichFont(ev) {
+        const value = ev.target.value;
+        if (value) this.psRichCommand("fontName", value);
+        ev.target.value = "";
+    }
     psRichInsertTable() {
         this.psRichCommand("insertHTML", '<table><tbody><tr><th>Label</th><th>Value</th></tr><tr><td>Edit me</td><td>Edit me</td></tr></tbody></table><p><br></p>');
     }
@@ -5000,6 +5005,19 @@ export class PbFormulaStudio extends Component {
             const marker = ruleId && ["label", "value", "both"].includes(mode)
                 ? `{{pb_component:${ruleId}:${mode}}}` : "";
             token.replaceWith(document.createTextNode(marker));
+        }
+        // Browsers implement fontName with the legacy <font face="…"> tag.
+        // Store a modern inline style instead: Odoo's sanitizer keeps the safe
+        // font-family declaration and the same HTML works in preview and PDF.
+        for (const font of clone.querySelectorAll("font[face]")) {
+            const span = document.createElement("span");
+            const existingStyle = font.getAttribute("style");
+            const color = font.getAttribute("color");
+            if (existingStyle) span.setAttribute("style", existingStyle);
+            span.style.fontFamily = font.getAttribute("face") || "inherit";
+            if (color) span.style.color = color;
+            while (font.firstChild) span.appendChild(font.firstChild);
+            font.replaceWith(span);
         }
         for (const cell of clone.querySelectorAll(".ps-rich-cell-selected")) {
             cell.classList.remove("ps-rich-cell-selected");

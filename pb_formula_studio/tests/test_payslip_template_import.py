@@ -140,6 +140,14 @@ class TestPayslipTemplateImport(TransactionCase):
                       'safe cell colours must survive HTML sanitizing')
         self.assertIn('color', self.earnings.note_html)
 
+        font = self.Studio.save_payslip_content(
+            self.config.id, 'section:%s' % self.earnings.id,
+            '<p><span style="font-family:Georgia,serif">Font-safe content</span></p>')
+        self.assertTrue(font['ok'])
+        self.assertIn('font-family', self.earnings.note_html,
+                      'selected editor fonts must survive HTML sanitizing')
+        self.assertIn('Georgia', self.earnings.note_html)
+
         foreign = self.env['hr.formula.config'].create({
             'name': 'Foreign payslip config', 'code': 'FOREIGN_PS',
             'country_code': 'VN', 'state': 'draft',
