@@ -341,3 +341,150 @@ class TestFeedCardActionsFit(TransactionCase):
                 "card set vary at random: %r" % gate)
             # the click handler is per-feed; only the GATE may not be
             self.assertIn('ep', b.get('t-on-click') or 'ep')
+
+
+# ============================================ Integrations Cycle 7 — WP-5
+#
+# "Last sync 2026-08-20 23:25" in the header, over seven feeds that each read
+# "Never synced · 0 staged · 0 pulled". Two truths on one screen, both drawn
+# from the same record.
+@tagged('post_install', '-at_install')
+class TestOneSyncTruthPerScreen(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.Cockpit = cls.env['pb.import.connector.cockpit']
+        cls.Connector = cls.env['hr.integration.connector']
+        cls.Store = cls.env['hr.api.data.store']
+
+    def _connector(self, name):
+        return self.Connector.create({
+            'name': name, 'connector_type': 'demo', 'auth_type': 'api_key'})
+
+    def test_30_a_connection_test_does_not_write_the_sync_clock(self):
+        """The root cause, asserted at the method that caused it.
+
+        `update_connector_status` is the only writer of `last_sync` in this
+        codebase that never wrote `last_sync_status` beside it — which is how
+        `Test connection` came to stamp the field the header prints.
+        """
+        conn = self._connector('IG-C7 tested')
+        self.assertFalse(conn.last_sync)
+        conn._get_connector_instance().update_connector_status(
+            'connected', 'Connection successful')
+        conn.invalidate_recordset()
+        self.assertFalse(
+            conn.last_sync,
+            "a connection test moves no data and may not touch last_sync")
+        self.assertTrue(conn.last_connection_test)
+        self.assertEqual(conn.connection_status, 'connected')
+
+    def test_31_header_and_feeds_agree_on_a_connector_that_never_pulled(self):
+        conn = self._connector('IG-C7 virgin')
+        self.Store.create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'employee_external_id': 'IGC7-1', 'raw_payload': {'a': 1}})
+        conn.action_sync_endpoint_catalog()
+        conn._get_connector_instance().update_connector_status(
+            'connected', 'Connection successful')
+
+        d = self.Cockpit.get_connector_detail(conn.id)
+        # every card says the same thing…
+        self.assertTrue(d['endpoints'])
+        for ep in d['endpoints']:
+            self.assertFalse(ep['last_sync_iso'])
+        # …and so does the header
+        self.assertEqual(d['sync_truth']['kind'], 'never')
+        self.assertEqual(d['sync_truth']['when'], '')
+        # the test is still reported — a fact is not deleted to tidy a screen,
+        # it is given the name it actually has
+        self.assertTrue(d['conn_test'])
+
+    def test_32_the_header_can_never_be_newer_than_every_card_under_it(self):
+        conn = self._connector('IG-C7 partly synced')
+        for dt in ('employee', 'attendance'):
+            self.Store.create({
+                'connector_id': conn.id, 'data_type': dt,
+                'employee_external_id': 'IGC7-%s' % dt, 'raw_payload': {'a': 1}})
+        conn.action_sync_endpoint_catalog()
+        eps = conn.endpoint_ids
+        self.assertGreaterEqual(len(eps), 2)
+        eps[0].last_sync = '2024-03-01 10:00:00'
+        eps[1].last_sync = '2024-05-02 11:30:00'
+        # a connector-level stamp that is NEWER than any feed must not win: it
+        # is the shape the defect took, and the header would out-claim its own
+        # cards again
+        conn.last_sync = '2026-08-20 23:25:00'
+        conn.last_sync_status = 'success'
+
+        d = self.Cockpit.get_connector_detail(conn.id)
+        self.assertEqual(d['sync_truth']['kind'], 'sync')
+        self.assertEqual(d['sync_truth']['when'], '2024-05-02 11:30')
+        newest = max(e['last_sync_iso'] for e in d['endpoints'] if e['last_sync_iso'])
+        self.assertTrue(newest.startswith('2024-05-02'))
+
+    def test_33_a_recorded_pull_with_no_feed_history_is_named_not_erased(self):
+        """Demo HRIS on payobook: a real pull from before `_stamp_endpoint`
+        existed. The fact is true and stays on the screen — under a different
+        word, with its own explanation, so it cannot be read as a claim about
+        the cards below it."""
+        conn = self._connector('IG-C7 legacy pull')
+        self.Store.create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'employee_external_id': 'IGC7-L', 'raw_payload': {'a': 1}})
+        conn.action_sync_endpoint_catalog()
+        conn.last_sync = '2024-02-18 04:53:11'
+        conn.last_sync_status = 'success'
+
+        d = self.Cockpit.get_connector_detail(conn.id)
+        self.assertEqual(d['sync_truth']['kind'], 'pull')
+        self.assertEqual(d['sync_truth']['when'], '2024-02-18 04:53')
+        self.assertIn('per-feed history', d['sync_truth']['note'])
+        # the word is not "sync", because the cards say "Never synced"
+        self.assertNotEqual(d['sync_truth']['kind'], 'sync')
+
+    def test_34_a_sync_moves_both_the_card_and_the_header(self):
+        conn = self._connector('IG-C7 syncs')
+        self.Store.create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'employee_external_id': 'IGC7-S', 'raw_payload': {'a': 1}})
+        conn.action_sync_endpoint_catalog()
+        ep = conn.endpoint_ids[0]
+
+        before = self.Cockpit.get_connector_detail(conn.id)
+        self.assertEqual(before['sync_truth']['kind'], 'never')
+
+        self.Cockpit.sync_endpoint(conn.id, ep.id)
+        after = self.Cockpit.get_connector_detail(conn.id)
+        self.assertEqual(after['sync_truth']['kind'], 'sync')
+        self.assertTrue(after['sync_truth']['when'])
+        row = next(e for e in after['endpoints'] if e['id'] == ep.id)
+        self.assertTrue(row['last_sync_iso'],
+                        "the card and the header must move together or the "
+                        "screen has two truths again")
+
+    def test_35_the_list_card_tells_the_same_story_as_the_detail(self):
+        conn = self._connector('IG-C7 listed')
+        conn._get_connector_instance().update_connector_status(
+            'connected', 'Connection successful')
+        cards = self.Cockpit.get_connectors()['connectors']
+        card = next(c for c in cards if c['id'] == conn.id)
+        detail = self.Cockpit.get_connector_detail(conn.id)
+        self.assertEqual(card['last_sync'], detail['sync_truth']['when'])
+        self.assertEqual(card['last_sync'], '')
+
+    def test_36_a_push_stamps_the_feed_it_filled(self):
+        """The same defect through the other door: `receive_pushed_records`
+        wrote the connector's clock and left every card reading Never synced."""
+        # `darwin` is the only connector class that implements `ingest_records`
+        conn = self.Connector.create({
+            'name': 'IG-C7 pushed', 'connector_type': 'darwin',
+            'auth_type': 'api_key'})
+        conn.receive_pushed_records('employee', [
+            {'external_id': 'IGC7-P1', 'name': 'Pushed One'}])
+        conn.invalidate_recordset()
+        d = self.Cockpit.get_connector_detail(conn.id)
+        self.assertEqual(d['sync_truth']['kind'], 'sync')
+        stamped = [e for e in d['endpoints'] if e['last_sync_iso']]
+        self.assertTrue(stamped, "a push that fills a feed must stamp it")
