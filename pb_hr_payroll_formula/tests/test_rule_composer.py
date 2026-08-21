@@ -539,6 +539,92 @@ class TestRuleComposer(TransactionCase):
             self.assertNotIn('odoo', (text or '').lower(),
                              "no user-visible string may name the platform")
 
+    # ==================================================================== 4b
+    #
+    # THE MIGRATION. `_convert` is imported and driven directly rather than
+    # asserted about: an idempotency claim that is not executed twice is a
+    # paragraph, and the second run is the one that can go wrong.
+
+    def _legacy_shaped_rules(self, conn):
+        """The eight, spelled exactly as Cycle 3 shipped them."""
+        made = self.Rule.browse()
+        for band in OT_BANDS:
+            made |= self._legacy_ot(conn, band)
+        made |= self._rule(
+            conn, builder_mode='python', rule_type='python',
+            output_key='DEPCOUNT', source_data_type='employee',
+            python_code="deps = 0\n"
+                        "for r in records:\n"
+                        "    rows = (r.get('tabularSections') or {}).get("
+                        "'Dependent and Dependent Health Insurance') or []\n"
+                        "    for d in rows:\n"
+                        "        if d.get('Dependent_PIT_Number'):\n"
+                        "            deps = deps + 1\n"
+                        "result = deps\n")
+        made |= self._rule(
+            conn, builder_mode='python', rule_type='python',
+            output_key='WORKEDHRS', source_data_type='attendance',
+            python_code="total = 0.0\n"
+                        "for r in records:\n"
+                        "    worked = str(r.get('totalWorkedHours') or 0).strip()\n"
+                        "result = total\n")
+        return made
+
+    def test_04_the_migration_converts_the_eight_and_is_safe_to_run_twice(self):
+        from odoo.modules.module import get_module_path
+        import importlib.util
+        import os
+        path = os.path.join(
+            get_module_path('pb_hr_payroll_formula'), 'migrations',
+            '19.0.1.60.0', 'post-rules_become_sentences.py')
+        spec = importlib.util.spec_from_file_location('ig_c8_migration', path)
+        migration = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(migration)
+
+        conn = self._connector('IG-C8 migration')
+        rules = self._legacy_shaped_rules(conn)
+
+        changed, skipped, _ = migration._convert(rules, 'rule')
+        self.assertEqual(changed, 8, "all eight should convert")
+        self.assertEqual(skipped, 0)
+        for rule in rules:
+            self.assertEqual(rule.builder_mode, 'guided', rule.output_key)
+            self.assertTrue(rule.plain_summary, rule.output_key)
+        # The provenance is KEPT — deleting it would delete the answer to
+        # "is the sentence really what the legacy did?".
+        by_key = {r.output_key: r for r in rules}
+        self.assertTrue(by_key['OTHRS150'].filter_expression)
+        self.assertTrue(by_key['DEPCOUNT'].python_code)
+        self.assertEqual(by_key['DEPCOUNT'].rule_type, 'count')
+        self.assertEqual(by_key['WORKEDHRS'].rule_type, 'sum')
+
+        # RUN IT AGAIN. Nothing may change, and nothing may be re-converted.
+        changed2, skipped2, _ = migration._convert(rules, 'rule')
+        self.assertEqual(changed2, 0, "a second -u must be a no-op")
+        self.assertEqual(skipped2, 8)
+
+    def test_04c_a_retuned_rule_is_left_exactly_as_it_is(self):
+        """Create-only doctrine, one layer over: a rule that silently reverts
+        to the vendor's arithmetic is a payslip that silently changes."""
+        from odoo.modules.module import get_module_path
+        import importlib.util
+        import os
+        path = os.path.join(
+            get_module_path('pb_hr_payroll_formula'), 'migrations',
+            '19.0.1.60.0', 'post-rules_become_sentences.py')
+        spec = importlib.util.spec_from_file_location('ig_c8_migration2', path)
+        migration = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(migration)
+
+        conn = self._connector('IG-C8 retuned')
+        rule = self._legacy_ot(conn, '150%')
+        rule.write({'filter_expression': "rec.get('OT_Type') == '150%'"})
+        changed, skipped, _ = migration._convert(rule, 'rule')
+        self.assertEqual(changed, 0)
+        self.assertEqual(skipped, 1)
+        self.assertEqual(rule.builder_mode, 'python',
+                         "an operator's edit survives the migration")
+
     def test_09b_the_template_and_its_rule_describe_themselves_identically(self):
         template = self.env['hr.api.transformation.rule.template'].create({
             'connector_type': 'demo', 'name': 'T', 'output_key': 'TKEY',

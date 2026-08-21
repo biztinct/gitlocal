@@ -65,10 +65,23 @@ LEGACY_EMPLOYEE_FIELDS = {
 }
 
 # The eight aggregations, `output_key: rule_type`.
+#
+# AMENDED BY INTEGRATIONS CYCLE 8, in the commit that ships the data change and
+# with the reasoning here rather than in a later "fix the build" commit (W138:
+# a test amended out of band is a test nobody can tell was weakened).
+#
+# DEPCOUNT and WORKEDHRS were `python`, and each for a shape the engine did not
+# have. DEPCOUNT counted rows inside a TABULAR SECTION of one employee record,
+# which no count over RECORDS could express; `record_source = nested` is that
+# missing idea, so it is an ordinary `count` now. WORKEDHRS had to add an
+# integer count of SECONDS to an "H:MM" string in one payload; `value_steps` is
+# that missing idea, so it is an ordinary `sum` now. Neither is a weakening —
+# `test_rule_composer.py` asserts both compute the SAME numbers the python did,
+# on fixtures carrying the malformed values the python guarded against.
 ZOHO_RULES = {
     'OTHRS150': 'sum', 'OTHRS200': 'sum', 'OTHRS210': 'sum',
     'OTHRS270': 'sum', 'OTHRS300': 'sum', 'OTHRS390': 'sum',
-    'DEPCOUNT': 'python', 'WORKEDHRS': 'python',
+    'DEPCOUNT': 'count', 'WORKEDHRS': 'sum',
 }
 
 
@@ -189,6 +202,12 @@ class TestZohoCatalogue(TransactionCase):
         self.assertEqual(sorted(rules), sorted(ZOHO_RULES))
         for key, rule_type in ZOHO_RULES.items():
             self.assertEqual(rules[key].rule_type, rule_type, key)
+            # Cycle 8 — the catalogue no longer ships python. Its own test, so
+            # that a row quietly regaining a program is a failure here rather
+            # than a surprise on somebody's live board (W138's corollary: the
+            # shipped data gets its OWN assertion).
+            self.assertEqual(rules[key].builder_mode, 'guided', key)
+            self.assertTrue(rules[key].plain_summary, key)
 
         # An operator retunes one, then somebody re-applies the template.
         rules['OTHRS150'].write({'default_value': 7.0, 'active': False})
