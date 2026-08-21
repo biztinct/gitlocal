@@ -86,6 +86,8 @@
             </button>
           </div>
           <div class="right">
+            <button t-if="canWrite" class="pbim-btn outline" t-on-click="() => this.openConfiguration()">
+              <t t-out="ic('settings',15)"/> Configure connection</button>
             <button t-if="canWrite and d.status === 'connected' and d.type !== 'excel'" class="pbim-btn outline" t-on-click="openSync">
               <t t-out="ic('refresh',15)"/> Guided pull…</button>
             <button t-if="canWrite" class="pbim-btn outline" t-on-click="() => this.openLink('action_launch_payroll_import')">
@@ -105,11 +107,17 @@
              a door that opens onto nothing is worse than no door (W29). -->
         <div class="pbim-panel pbcc-feeds">
           <div class="pbim-panel-h">
-            <h2 class="pbim-h2">Feeds <span class="pbcc-count" t-esc="endpoints.length"/></h2>
-            <button t-if="canWrite" class="pbim-btn ghost pbim-btn-sm" t-on-click="detectFeeds"
-                    title="Read the vendor catalogue and the records already in the store">
-              <t t-out="ic('search',14)"/> Detect feeds
-            </button>
+            <div><h2 class="pbim-h2">Feeds <span class="pbcc-count" t-esc="endpoints.length"/></h2>
+              <p class="pbcc-feedhint">Installed from the vendor catalogue; your edits are never overwritten automatically.</p></div>
+            <div class="pbcc-panel-actions" t-if="canWrite">
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openConfiguration()">
+                <t t-out="ic('settings',14)"/> Configure
+              </button>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="detectFeeds"
+                      title="Add missing local templates and data-store evidence; this does not scan the vendor API">
+                <t t-out="ic('search',14)"/> Find missing feeds
+              </button>
+            </div>
           </div>
 
           <div t-if="endpoints.length" class="pbcc-feedgrid">
@@ -125,6 +133,8 @@
               <div class="pbcc-feed__sync">
                 <t t-esc="since(ep.last_sync_iso)"/>
                 <span t-if="ep.is_legacy_abm" class="pbcc-feed__abm">ABM</span>
+                <span t-if="!ep.active" class="pbcc-feed__mode off">Off</span>
+                <span t-elif="!ep.runnable" class="pbcc-feed__mode">Catalogue only</span>
               </div>
               <div class="pbcc-feed__counts">
                 <t t-esc="counts(ep)"/>
@@ -135,13 +145,21 @@
                      be a claim about the vendor rather than about us (W79). -->
                 <t t-if="fieldsLabel(ep)"> · <span class="pbcc-feed__flds" t-esc="fieldsLabel(ep)"/></t>
               </div>
+              <div t-if="legacyRowsLabel(ep)" class="pbcc-feed__legacy"
+                   title="These records predate exact feed tracking and remain available in the connector data store.">
+                <t t-out="ic('alert',12)"/> <t t-esc="legacyRowsLabel(ep)"/>
+              </div>
               <div t-if="ep.last_error" class="pbcc-feed__err" t-esc="ep.last_error"/>
               <div class="pbcc-feed__acts">
-                <button t-if="canWrite" class="pbim-btn outline pbim-btn-sm"
+                <button t-if="canWrite and ep.runnable" class="pbim-btn outline pbim-btn-sm"
                         t-att-disabled="state.syncing ? 'disabled' : false"
                         t-on-click="() => this.syncEndpoint(ep)">
                   <t t-if="state.syncing === ep.id"><span class="pbim-spin pbcc-feed__spin"/> Syncing…</t>
                   <t t-else=""><t t-out="ic('refresh',14)"/> Sync</t>
+                </button>
+                <button t-elif="canWrite" class="pbim-btn outline pbim-btn-sm"
+                        t-on-click="() => this.openConfiguration(ep)" title="Configure an executable operation and path">
+                  <t t-out="ic('settings',14)"/> Configure
                 </button>
                 <button t-if="hasLedgers" class="pbim-btn ghost pbim-btn-sm"
                         t-on-click="() => this.viewEndpointData(ep)">
@@ -175,8 +193,9 @@
             </div>
           </div>
           <div t-elif="canWrite" class="pbim-empty">
-            No feeds catalogued yet. “Detect feeds” reads this vendor's catalogue
-            and the records already in the data store.
+            No feeds catalogued yet. “Find missing feeds” checks the installed
+            vendor catalogue and records already in the data store; it does not
+            scan the vendor API.
           </div>
           <div t-else="" class="pbim-empty">No feeds catalogued yet.</div>
         </div>
@@ -281,6 +300,179 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Full-screen studio: one save boundary for connection, OAuth and feeds. -->
+      <div t-if="state.configOpen" class="pbcc-studio">
+        <div class="pbcc-studio__shell">
+          <header class="pbcc-studio__head">
+            <div class="pbcc-studio__title">
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="closeConfiguration">
+                <t t-out="ic('back',14)"/> Connector
+              </button>
+              <div>
+                <h1>Connection &amp; Feed Studio</h1>
+                <p><t t-esc="d.name"/> · configure once, understand every URL before it runs</p>
+              </div>
+            </div>
+            <div class="pbcc-studio__save">
+              <span t-if="d.configuration and d.configuration.issues.length"
+                    class="pbcc-studio__issue">
+                <t t-out="ic('alert',14)"/> <t t-esc="d.configuration.issues.length"/> checks
+              </span>
+              <button class="pbim-btn ghost" t-on-click="closeConfiguration">Cancel</button>
+              <button class="pbim-btn primary" t-att-disabled="state.configSaving ? 'disabled' : false"
+                      t-on-click="saveConfiguration">
+                <t t-if="state.configSaving"><span class="pbim-spin pbcc-feed__spin"/> Saving…</t>
+                <t t-else=""><t t-out="ic('check',15)"/> Save configuration</t>
+              </button>
+            </div>
+          </header>
+
+          <div class="pbcc-studio__summary">
+            <div class="pbcc-studio__metric">
+              <span class="ic"><t t-out="ic('link',17)"/></span>
+              <div><strong t-esc="state.config.api_endpoint ? 'Base URL set' : 'Base URL needed'"/>
+                <small>All relative feed paths inherit this URL</small></div>
+            </div>
+            <div class="pbcc-studio__metric">
+              <span class="ic"><t t-out="ic('plug',17)"/></span>
+              <div><strong><t t-esc="draftRunnableCount"/> of <t t-esc="state.feedDrafts.length"/> runnable</strong>
+                <small>Catalogue-only feeds never pretend to sync</small></div>
+            </div>
+            <div class="pbcc-studio__metric">
+              <span class="ic"><t t-out="ic('lock',17)"/></span>
+              <div><strong t-esc="credentials.auth_label"/><small>Secrets remain write-only</small></div>
+            </div>
+          </div>
+
+          <nav class="pbcc-studio__tabs">
+            <button t-att-class="{ 'on': state.configTab === 'connection' }"
+                    t-on-click="() => this.setConfigTab('connection')">
+              <t t-out="ic('link',14)"/> Connection
+            </button>
+            <button t-att-class="{ 'on': state.configTab === 'feeds' }"
+                    t-on-click="() => this.setConfigTab('feeds')">
+              <t t-out="ic('database',14)"/> Feeds <span t-esc="state.feedDrafts.length"/>
+            </button>
+            <button t-att-class="{ 'on': state.configTab === 'oauth' }"
+                    t-on-click="() => this.setConfigTab('oauth')">
+              <t t-out="ic('lock',14)"/> OAuth
+            </button>
+          </nav>
+
+          <main class="pbcc-studio__body">
+            <section t-if="state.configTab === 'connection'" class="pbcc-config-page">
+              <div class="pbcc-config-copy">
+                <span class="eyebrow">Connection foundation</span>
+                <h2>One trusted root for every feed</h2>
+                <p>Relative feed paths are resolved against this base URL. Absolute feed URLs remain independent.</p>
+              </div>
+              <div class="pbcc-config-card">
+                <label class="pbcc-config-field wide"><span>API base URL</span>
+                  <input type="url" placeholder="https://people.zoho.com/people/api"
+                         t-att-value="state.config.api_endpoint or ''"
+                         t-on-input="(ev) => this.onConfigInput('api_endpoint', ev)"/>
+                  <small t-if="state.config.api_endpoint_is_default">Vendor default shown. Saving makes it explicit for this connector.</small>
+                  <small t-else="">Example: https://people.zoho.com/people/api</small>
+                </label>
+                <label class="pbcc-config-field"><span>API version label</span>
+                  <input t-att-value="state.config.api_version or ''"
+                         t-on-input="(ev) => this.onConfigInput('api_version', ev)"/>
+                  <small>Reference only; the resolved feed URLs are the execution truth.</small>
+                </label>
+                <label class="pbcc-config-field"><span>Expected sync cadence</span>
+                  <div class="pbcc-input-suffix"><input type="number" min="0"
+                         t-att-value="state.config.sync_interval or 0"
+                         t-on-input="(ev) => this.onConfigInput('sync_interval', ev)"/><em>minutes</em></div>
+                  <small>Used for overdue status, not scheduling. 0 means manual only.</small>
+                </label>
+                <div class="pbcc-config-note wide">
+                  <t t-out="ic('shieldCheck',17)"/>
+                  <div><strong>Safe inheritance</strong><span>Changing the base URL updates only relative feeds. Any feed with a complete URL is left untouched.</span></div>
+                </div>
+              </div>
+            </section>
+
+            <section t-if="state.configTab === 'feeds'" class="pbcc-feedstudio">
+              <aside class="pbcc-feedstudio__list">
+                <div class="pbcc-feedstudio__listhead"><div><strong>Feed catalogue</strong><small>Seeded templates and your additions</small></div>
+                  <button class="pbim-btn ghost pbim-btn-sm" t-on-click="addFeed"><t t-out="ic('plus',13)"/> Add</button>
+                </div>
+                <button t-foreach="state.feedDrafts" t-as="feed" t-key="feed.key"
+                        t-attf-class="pbcc-feedpick {{ state.selectedFeedKey === feed.key ? 'on' : '' }}"
+                        t-on-click="() => this.selectFeed(feed)">
+                  <span t-attf-class="dot {{ feed.active ? (feed.operation === 'catalog_only' ? 'warn' : 'ok') : 'off' }}"/>
+                  <span class="text"><strong t-esc="feed.name"/><small><t t-esc="feed.http_method.toUpperCase()"/> · <t t-esc="feed.code"/></small></span>
+                  <t t-out="ic('chevron',14)"/>
+                </button>
+              </aside>
+
+              <div t-if="selectedFeed" class="pbcc-feededitor">
+                <div class="pbcc-feededitor__head">
+                  <div><span class="eyebrow">Feed definition</span><h2 t-esc="selectedFeed.name"/></div>
+                  <label class="pbcc-switch"><input type="checkbox" t-att-checked="selectedFeed.active"
+                         t-on-change="onFeedActive"/><span/> Active</label>
+                </div>
+                <div class="pbcc-feedurl">
+                  <span t-esc="selectedFeed.http_method.toUpperCase()"/>
+                  <code t-esc="feedPreview(selectedFeed)"/>
+                  <button t-on-click="() => this.copyText(feedPreview(selectedFeed))" title="Copy resolved URL"><t t-out="ic('copy',13)"/></button>
+                </div>
+                <div class="pbcc-feedform">
+                  <label class="pbcc-config-field"><span>Display name</span><input t-att-value="selectedFeed.name" t-on-input="(ev) => this.onFeedInput('name', ev)"/></label>
+                  <label class="pbcc-config-field"><span>Stable code</span><input class="mono" t-att-disabled="selectedFeed.template_backed ? 'disabled' : false" t-att-value="selectedFeed.code" t-on-input="(ev) => this.onFeedInput('code', ev)"/><small t-if="selectedFeed.template_backed">Vendor identity; use the display name for local wording.</small></label>
+                  <label class="pbcc-config-field"><span>Execution</span><select t-on-change="(ev) => this.onFeedInput('operation', ev)">
+                    <option t-foreach="feedOperations" t-as="op" t-key="op[0]" t-att-value="op[0]" t-att-selected="selectedFeed.operation === op[0]" t-esc="op[1]"/>
+                  </select><small>Catalogue only is visible and mappable, but cannot run.</small></label>
+                  <label class="pbcc-config-field"><span>Produces</span><select
+                      t-att-disabled="selectedFeedTypeLocked ? 'disabled' : false"
+                      t-on-change="(ev) => this.onFeedInput('data_type', ev)">
+                    <option t-foreach="feedDataTypes" t-as="dt" t-key="dt[0]" t-att-value="dt[0]" t-att-selected="selectedFeed.data_type === dt[0]" t-esc="dt[1]"/>
+                  </select><small t-if="selectedFeedTypeLocked">Fixed by the selected execution handler.</small></label>
+                  <label class="pbcc-config-field"><span>HTTP method</span><select t-on-change="(ev) => this.onFeedInput('http_method', ev)">
+                    <option t-foreach="feedMethods" t-as="m" t-key="m[0]" t-att-value="m[0]" t-att-selected="selectedFeed.http_method === m[0]" t-esc="m[1]"/>
+                  </select></label>
+                  <label class="pbcc-config-field wide"><span>Relative path or complete URL</span><input class="mono" t-att-value="selectedFeed.path" t-on-input="(ev) => this.onFeedInput('path', ev)"/></label>
+                  <label class="pbcc-config-field wide"><span>Parameter contract</span><textarea rows="2" t-att-value="selectedFeed.params_note" t-on-input="(ev) => this.onFeedInput('params_note', ev)"/><small>Human-readable guidance shown to operators; runtime parameters follow the selected execution handler.</small></label>
+                </div>
+                <div class="pbcc-feededitor__foot">
+                  <div><strong>Template safety</strong><span>Detect feeds only adds missing definitions and never overwrites this feed.</span></div>
+                  <button t-if="selectedFeed.id" class="pbim-btn ghost pbim-btn-sm" t-on-click="restoreSelectedFeed"><t t-out="ic('refresh',13)"/> Restore vendor template</button>
+                </div>
+              </div>
+              <div t-else="" class="pbim-empty">Add or select a feed to configure it.</div>
+            </section>
+
+            <section t-if="state.configTab === 'oauth'" class="pbcc-config-page">
+              <div class="pbcc-config-copy"><span class="eyebrow">Authorization contract</span><h2>Make every OAuth address explicit</h2><p>Blank provider URLs continue to use the connector’s proven defaults. The resolved callback is ready to copy into Zoho.</p></div>
+              <div class="pbcc-config-card">
+                <div class="pbcc-console-setup wide">
+                  <div class="pbcc-console-setup__head">
+                    <div><span class="eyebrow">Zoho API Console</span><strong>Create a Server-based Application</strong></div>
+                    <span class="pbim-badge ok">Copy-ready</span>
+                  </div>
+                  <div class="pbcc-console-setup__row"><span>Client type</span><code>Server-based Applications</code></div>
+                  <div class="pbcc-console-setup__row"><span>Client name</span><code>Payobook</code></div>
+                  <div class="pbcc-console-setup__row"><span>Homepage URL</span><code t-esc="state.config.application_home_url or 'Your Payobook URL'"/><button t-if="state.config.application_home_url" t-on-click="() => this.copyText(state.config.application_home_url)" title="Copy homepage URL"><t t-out="ic('copy',13)"/></button></div>
+                  <div class="pbcc-console-setup__row important"><span>Authorized redirect URI</span><code t-esc="state.config.oauth_redirect_uri or state.config.effective_redirect_uri"/><button t-on-click="() => this.copyText(state.config.oauth_redirect_uri or state.config.effective_redirect_uri)" title="Copy redirect URI"><t t-out="ic('copy',13)"/></button></div>
+                  <p>After Zoho creates the client, save its Client ID and Client Secret in Payobook. The redirect URI must match character-for-character.</p>
+                </div>
+                <label class="pbcc-config-field wide"><span>Authorization URL</span><input type="url" placeholder="https://accounts.zoho.com/oauth/v2/auth" t-att-value="state.config.oauth_authorize_url or ''" t-on-input="(ev) => this.onConfigInput('oauth_authorize_url', ev)"/></label>
+                <label class="pbcc-config-field wide"><span>Token URL</span><input type="url" placeholder="https://accounts.zoho.com/oauth/v2/token" t-att-value="state.config.oauth_token_url or ''" t-on-input="(ev) => this.onConfigInput('oauth_token_url', ev)"/></label>
+                <label class="pbcc-config-field wide"><span>OAuth scopes</span><textarea rows="2" t-att-value="state.config.oauth_scope or ''" t-on-input="(ev) => this.onConfigInput('oauth_scope', ev)"/></label>
+                <label class="pbcc-config-field wide"><span>Redirect URI override</span><input type="url" t-att-placeholder="state.config.effective_redirect_uri" t-att-value="state.config.oauth_redirect_uri or ''" t-on-input="(ev) => this.onConfigInput('oauth_redirect_uri', ev)"/><small>Leave blank to use the Payobook callback below.</small></label>
+                <div class="pbcc-callback wide"><div><span>Effective callback URI</span><code t-esc="state.config.oauth_redirect_uri or state.config.effective_redirect_uri"/></div><button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.copyText(state.config.oauth_redirect_uri or state.config.effective_redirect_uri)"><t t-out="ic('copy',13)"/> Copy</button></div>
+                <div class="pbcc-oauth-connect wide">
+                  <div><strong t-esc="state.config.oauth_client_ready ? 'Ready to authorize with Zoho' : 'Client credentials needed'"/><span t-if="state.config.oauth_client_ready">Uses a one-time, 10-minute state check. Tokens remain server-side and are never returned to this screen.</span><span t-else="">Add the Client ID and Client Secret Zoho gave you; saved values are never shown again.</span></div>
+                  <button t-if="canAdmin and state.config.oauth_client_ready" class="pbim-btn primary" t-on-click="beginOAuth"><t t-out="ic('plug',14)"/> Save &amp; connect Zoho</button>
+                  <button t-elif="canAdmin" class="pbim-btn outline" t-on-click="openCredentialSetup"><t t-out="ic('lock',14)"/> Add Client ID &amp; secret</button>
+                  <span t-else="" class="pbcc-studio__issue">System administrator required</span>
+                </div>
+              </div>
+            </section>
+          </main>
+        </div>
       </div>
 
       <div t-if="state.busy" class="pbcc-overlay"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>

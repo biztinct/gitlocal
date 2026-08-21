@@ -20,17 +20,17 @@ Two rules the whole file is built to:
      will run many times over a row an operator has renamed or re-pathed. It may
      therefore only ever ADD an endpoint that is missing by `code` — the same
      never-overwrite semantics `action_apply_mapping_template` has for mappings.
-  2. **The counts are the BOARD's counts.** `staged_count` is
-     `hr.integration.connector._compute_data_store_count`'s domain narrowed by
-     data type — `state != 'archived'` — so the sum of a connector's feeds equals
-     the number the Integrations board prints on its card. Two screens that
-     disagree about how many records are waiting is worse than one screen that
-     does not mention it (W62).
+  2. **The counts are the BOARD's counts.** New rows are counted against their
+     exact endpoint. Legacy rows without an endpoint are carried once, by the
+     first feed of that data type, so the sum of a connector's feeds still equals
+     the number the Integrations board prints on its card without making sibling
+     feeds claim the same rows (W62).
 """
 import logging
 
-from odoo import api, fields, models
-from odoo.tools.sql import table_exists
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+from odoo.tools.sql import column_exists, table_exists
 
 from .api_data_store import DATA_TYPES
 
@@ -52,6 +52,31 @@ CONNECTOR_TYPES = [
 ]
 
 HTTP_METHODS = [('get', 'GET'), ('post', 'POST')]
+
+# The operation is the executable meaning of a feed.  `data_type` alone cannot
+# carry it: Zoho has two attendance feeds and two custom feeds, and choosing a
+# chip by data type made the selected path irrelevant.  `catalog_only` is an
+# honest first-class state for documented APIs that are not safe to execute yet.
+ENDPOINT_OPERATIONS = [
+    ('catalog_only', 'Catalogue only'),
+    ('generic', 'Connector-defined operation'),
+    ('employee', 'Employee master'),
+    ('salary', 'Salary / compensation'),
+    ('attendance_summary', 'Attendance summary'),
+    ('overtime', 'Overtime requests'),
+    ('attendance_daily', 'Attendance by employee/date'),
+    ('leave', 'Leave records'),
+    ('timesheet', 'Timesheets'),
+]
+OPERATION_DATA_TYPES = {
+    'employee': 'employee',
+    'salary': 'salary',
+    'attendance_summary': 'attendance',
+    'overtime': 'custom',
+    'attendance_daily': 'attendance',
+    'leave': 'leave',
+    'timesheet': 'custom',
+}
 
 # The per-FIELD type vocabulary, declared once (Integrations Cycle 6).
 #
@@ -110,6 +135,11 @@ class HrIntegrationEndpoint(models.Model):
         DATA_TYPES, string='Data Type', required=True, index=True,
         help="What kind of record this feed produces. Shared with the API data "
              "store, so a feed's rows can always be found.")
+    operation = fields.Selection(
+        ENDPOINT_OPERATIONS, string='Execution', default='catalog_only',
+        required=True,
+        help="The runtime handler for this feed. Catalogue-only feeds remain "
+             "visible and mappable but cannot misleadingly report a sync.")
 
     http_method = fields.Selection(HTTP_METHODS, string='Method', default='get')
     path = fields.Char(
@@ -138,6 +168,10 @@ class HrIntegrationEndpoint(models.Model):
         string='Staged Records', compute='_compute_counts')
     mapping_count = fields.Integer(
         string='Field Mappings', compute='_compute_counts')
+    unassigned_count = fields.Integer(
+        string='Legacy Unassigned Records', compute='_compute_counts',
+        help="Older rows with this connector and data type whose exact source "
+             "feed cannot be inferred safely.")
 
     # W33: `_sql_constraints = [...]` is no longer supported on Odoo 19 — the
     # registry logs one WARNING and then ignores the list, so the constraint
@@ -147,6 +181,17 @@ class HrIntegrationEndpoint(models.Model):
         'unique(connector_id, code)',
         'This connector already has a feed with that code.',
     )
+
+    @api.constrains('operation', 'data_type')
+    def _check_operation_data_type(self):
+        for record in self:
+            expected = OPERATION_DATA_TYPES.get(record.operation)
+            if expected and record.data_type != expected:
+                raise ValidationError(_(
+                    'Execution “%(operation)s” must produce %(data_type)s data.',
+                    operation=dict(ENDPOINT_OPERATIONS).get(
+                        record.operation, record.operation),
+                    data_type=dict(DATA_TYPES).get(expected, expected)))
 
     # ------------------------------------------------------------- deployed?
     @api.model
@@ -172,14 +217,16 @@ class HrIntegrationEndpoint(models.Model):
         indistinguishable from one that has no feeds (W79), so this says so in
         the log, once per registry, naming the database.
         """
-        if table_exists(self.env.cr, self._table):
+        if (table_exists(self.env.cr, self._table) and
+                column_exists(self.env.cr, self._table, 'operation')):
             return True
         if not self.env.registry.__dict__.get('_pb_feeds_schema_warned'):
             self.env.registry.__dict__['_pb_feeds_schema_warned'] = True
             _logger.warning(
-                "Database %s loads the connector-feeds code but has no %s "
-                "table: this database has not been upgraded since the model "
-                "was added. Feeds are hidden until `-u pb_hr_payroll_formula` "
+                "Database %s loads the connector-feeds code but its %s "
+                "schema is not current: this database has not been upgraded "
+                "since executable feeds were added. Feeds are hidden until "
+                "`-u pb_hr_payroll_formula` "
                 "runs here. Every other Integrations surface is unaffected.",
                 self.env.cr.dbname, self._table)
         return False
@@ -188,11 +235,11 @@ class HrIntegrationEndpoint(models.Model):
     def _compute_counts(self):
         """Store-row and mapping arithmetic, batched.
 
-        `staged_count` is the connector board's own definition narrowed by data
-        type; `synced_count` counts EVERY row this feed has ever put in the
-        store, archived ones included — a row that was archived was still
-        pulled. The two therefore nest (`staged <= synced`) and neither can
-        contradict the number on the board.
+        `staged_count` uses the connector board's active-row definition;
+        `synced_count` counts every row this exact feed has ever put in the
+        store, archived ones included. Pre-feed rows remain unassigned and are
+        counted once by the first matching feed, with `unassigned_count`
+        exposing that ambiguity rather than silently duplicating it.
         """
         Store = self.env['hr.api.data.store']
         Map = self.env['hr.integration.field.mapping']
@@ -203,23 +250,49 @@ class HrIntegrationEndpoint(models.Model):
         conn_ids = sorted({k[0] for k in keys})
         types = sorted({k[1] for k in keys})
 
-        # `_read_group` (not `read_group`): Odoo 19's own aggregation door,
-        # returning tuples with the many2one already browsed.
+        # New pulls name their exact endpoint. Older rows have only connector
+        # + data type. Keep those rows visible without duplicating them across
+        # sibling feeds: the first feed for that type carries them in its total,
+        # while every sibling receives `unassigned_count` so the ambiguity is
+        # explicit in the UI.
         synced, staged = {}, {}
-        if conn_ids and types:
-            base = [('connector_id', 'in', conn_ids), ('data_type', 'in', types)]
+        legacy_synced, legacy_staged, first_by_key = {}, {}, {}
+        ids = [e.id for e in self if e.id]
+        if ids:
             synced = {
-                (conn.id, dt): n for conn, dt, n in Store._read_group(
-                    base, ['connector_id', 'data_type'], ['__count'])
+                ep.id: n for ep, n in Store._read_group(
+                    [('endpoint_id', 'in', ids)], ['endpoint_id'], ['__count'])
+                if ep
             }
             staged = {
-                (conn.id, dt): n for conn, dt, n in Store._read_group(
-                    base + STAGED_DOMAIN, ['connector_id', 'data_type'],
-                    ['__count'])
+                ep.id: n for ep, n in Store._read_group(
+                    [('endpoint_id', 'in', ids)] + STAGED_DOMAIN,
+                    ['endpoint_id'], ['__count'])
+                if ep
             }
+        if conn_ids and types:
+            legacy_base = [
+                ('connector_id', 'in', conn_ids),
+                ('data_type', 'in', types),
+                ('endpoint_id', '=', False),
+            ]
+            legacy_synced = {
+                (conn.id, dt): n for conn, dt, n in Store._read_group(
+                    legacy_base, ['connector_id', 'data_type'], ['__count'])
+            }
+            legacy_staged = {
+                (conn.id, dt): n for conn, dt, n in Store._read_group(
+                    legacy_base + STAGED_DOMAIN,
+                    ['connector_id', 'data_type'], ['__count'])
+            }
+            all_eps = self.with_context(active_test=False).search([
+                ('connector_id', 'in', conn_ids), ('data_type', 'in', types),
+            ], order='sequence, id')
+            for endpoint in all_eps:
+                first_by_key.setdefault(
+                    (endpoint.connector_id.id, endpoint.data_type), endpoint.id)
 
         maps = {}
-        ids = [e.id for e in self if e.id]
         if ids:
             maps = {
                 ep.id: n for ep, n in Map._read_group(
@@ -229,8 +302,12 @@ class HrIntegrationEndpoint(models.Model):
 
         for e in self:
             key = (e.connector_id.id, e.data_type)
-            e.synced_count = synced.get(key, 0)
-            e.staged_count = staged.get(key, 0)
+            is_legacy_owner = first_by_key.get(key) == e.id
+            e.synced_count = synced.get(e.id, 0) + (
+                legacy_synced.get(key, 0) if is_legacy_owner else 0)
+            e.staged_count = staged.get(e.id, 0) + (
+                legacy_staged.get(key, 0) if is_legacy_owner else 0)
+            e.unassigned_count = legacy_synced.get(key, 0)
             e.mapping_count = maps.get(e.id, 0)
 
 
@@ -251,6 +328,8 @@ class HrIntegrationEndpointTemplate(models.Model):
     code = fields.Char(required=True)
     name = fields.Char(required=True)
     data_type = fields.Selection(DATA_TYPES, required=True)
+    operation = fields.Selection(
+        ENDPOINT_OPERATIONS, default='catalog_only', required=True)
     http_method = fields.Selection(HTTP_METHODS, default='get')
     path = fields.Char()
     params_note = fields.Char()
@@ -264,3 +343,14 @@ class HrIntegrationEndpointTemplate(models.Model):
         'unique(connector_type, code)',
         'That vendor already has an endpoint template with this code.',
     )
+
+    @api.constrains('operation', 'data_type')
+    def _check_operation_data_type(self):
+        for record in self:
+            expected = OPERATION_DATA_TYPES.get(record.operation)
+            if expected and record.data_type != expected:
+                raise ValidationError(_(
+                    'Execution “%(operation)s” must produce %(data_type)s data.',
+                    operation=dict(ENDPOINT_OPERATIONS).get(
+                        record.operation, record.operation),
+                    data_type=dict(DATA_TYPES).get(expected, expected)))

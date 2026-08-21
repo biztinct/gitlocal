@@ -88,6 +88,8 @@ export class PbIntegrations extends Component {
             // it says so on screen, and it can be dropped.
             dataType: ctx.pb_data_type || "",
             dataTypeName: ctx.pb_data_type_name || "",
+            endpointId: ctx.pb_endpoint ? Number(ctx.pb_endpoint) : 0,
+            endpointName: ctx.pb_endpoint_name || "",
             ledger: null, ledgerLoading: false,
             lsearch: "", f: {},
             drawer: null, drawerLoading: false,
@@ -262,14 +264,18 @@ export class PbIntegrations extends Component {
         this.state.connectorName = "";
         this.state.dataType = "";
         this.state.dataTypeName = "";
+        this.state.endpointId = 0;
+        this.state.endpointName = "";
         await this.loadLedger();
     }
 
     /** Drop the feed scope, keeping the connector one. */
     async clearDataTypeScope() {
-        if (!this.state.dataType) { return; }
+        if (!this.state.dataType && !this.state.endpointId) { return; }
         this.state.dataType = "";
         this.state.dataTypeName = "";
+        this.state.endpointId = 0;
+        this.state.endpointName = "";
         await this.loadLedger();
     }
 
@@ -279,7 +285,7 @@ export class PbIntegrations extends Component {
             const d = await this.orm.call(
                 "pb.integrations", "get_ledger",
                 [this.state.kind, this.state.connectorId || false,
-                 this.state.dataType || false]);
+                 this.state.dataType || false, this.state.endpointId || false]);
             this.state.ledger = d;
             const f = {};
             for (const fac of (d.facets || [])) { f[fac.key] = ""; }
@@ -342,12 +348,14 @@ export class PbIntegrations extends Component {
 
     /** The feed scope's sentence — one getter, one msgid (W80). */
     get feedScopeLabel() {
-        return _t("Feed: %s", this.state.dataTypeName || this.state.dataType);
+        return _t("Feed: %s", this.state.endpointName ||
+                  this.state.dataTypeName || this.state.dataType);
     }
 
     /** The feed scope only means anything on the store tab. */
     get feedScopeActive() {
-        return !!(this.state.dataType && this.state.kind === "store");
+        return !!((this.state.endpointId || this.state.dataType) &&
+                  this.state.kind === "store");
     }
 
     get footLabel() {

@@ -8,6 +8,7 @@ import requests
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
 import logging
+from urllib.parse import urlencode, urljoin
 
 from .base_connector import BaseHRConnector
 
@@ -32,6 +33,56 @@ class ZohoConnector(BaseHRConnector):
         super().__init__(connector_record)
         self.access_token = None
         self.token_expiry = None
+
+    # ==========================================
+    # CONFIGURED URL RESOLUTION
+    # ==========================================
+
+    def _base_url(self) -> str:
+        """The tenant's configured API root, with the legacy root as fallback."""
+        return (self.connector.api_endpoint or self.BASE_URL).rstrip('/')
+
+    def _auth_url(self, leaf: str) -> str:
+        """Resolve OAuth URLs from connector configuration before defaults."""
+        configured = (self.connector.oauth_token_url if leaf == 'token'
+                      else self.connector.oauth_authorize_url)
+        if configured:
+            return configured.strip()
+        return f"{self.AUTH_URL}/{leaf}"
+
+    def _redirect_uri(self) -> str:
+        """Return the exact provider callback without accidental double slashes."""
+        if self.connector.oauth_redirect_uri:
+            return self.connector.oauth_redirect_uri.strip()
+        web_base = self.env['ir.config_parameter'].sudo().get_param(
+            'web.base.url', '').rstrip('/')
+        return f"{web_base}/zoho/callback"
+
+    def _endpoint_url(self, code: str, fallback_path: str) -> str:
+        """Resolve one feed through its connector-specific catalogue record.
+
+        Existing databases are safe: an absent endpoint or blank path uses the
+        exact path the connector used before feeds became executable.
+        """
+        endpoint = self.connector.endpoint_ids.filtered(
+            lambda row: row.active and row.code == code)[:1]
+        path = (endpoint.path if endpoint and endpoint.path else fallback_path)
+        if path.startswith(('http://', 'https://')):
+            return path
+        return urljoin(self._base_url() + '/', path.lstrip('/'))
+
+    def _feed_request(self, code: str, fallback_path: str, params=None,
+                      timeout=30):
+        endpoint = self.connector.endpoint_ids.filtered(
+            lambda row: row.active and row.code == code)[:1]
+        method = (endpoint.http_method if endpoint else 'get') or 'get'
+        return requests.request(
+            method.upper(), self._endpoint_url(code, fallback_path),
+            headers=self._get_headers(),
+            params=params if method == 'get' else None,
+            json=params if method == 'post' else None,
+            timeout=timeout,
+        )
 
     # ==========================================
     # AUTHENTICATION
@@ -86,7 +137,7 @@ class ZohoConnector(BaseHRConnector):
             True if refresh successful
         """
         try:
-            url = f"{self.AUTH_URL}/token"
+            url = self._auth_url('token')
 
             data = {
                 'refresh_token': self.connector.refresh_token,
@@ -144,7 +195,7 @@ class ZohoConnector(BaseHRConnector):
                 return False, "Authentication failed"
 
             # Try to fetch a simple endpoint
-            url = f"{self.BASE_URL}/forms"
+            url = urljoin(self._base_url() + '/', 'forms')
             response = requests.get(
                 url,
                 headers=self._get_headers(),
@@ -213,7 +264,9 @@ class ZohoConnector(BaseHRConnector):
         fields = []
 
         try:
-            url = f"{self.BASE_URL}/forms/{form_name}/components"
+            # Form metadata has no feed of its own. It intentionally follows
+            # the configured base while the data calls below follow feed paths.
+            url = urljoin(self._base_url() + '/', f"forms/{form_name}/components")
             response = requests.get(
                 url,
                 headers=self._get_headers(),
@@ -281,8 +334,6 @@ class ZohoConnector(BaseHRConnector):
         employees = []
 
         try:
-            url = f"{self.BASE_URL}/forms/P_Employee/records"
-
             params = {
                 'sIndex': 1,
                 'limit': 200,
@@ -296,12 +347,9 @@ class ZohoConnector(BaseHRConnector):
                     params['searchText'] = filters['status']
 
             while True:
-                response = requests.get(
-                    url,
-                    headers=self._get_headers(),
-                    params=params,
-                    timeout=60
-                )
+                response = self._feed_request(
+                    'zohoemployees', 'forms/P_Employee/records',
+                    params=params, timeout=60)
 
                 if response.status_code != 200:
                     _logger.error(f"Failed to fetch employees: {response.status_code}")
@@ -408,19 +456,14 @@ class ZohoConnector(BaseHRConnector):
             Salary data dictionary
         """
         try:
-            url = f"{self.BASE_URL}/forms/P_Salary/records"
             params = {
                 'searchField': 'Employee_ID.Zoho_ID',
                 'searchOperator': 'Is',
                 'searchText': employee_id,
             }
 
-            response = requests.get(
-                url,
-                headers=self._get_headers(),
-                params=params,
-                timeout=30
-            )
+            response = self._feed_request(
+                'zohosalary', 'forms/P_Salary/records', params=params)
 
             if response.status_code == 200:
                 data = response.json()
@@ -451,19 +494,14 @@ class ZohoConnector(BaseHRConnector):
             List of attendance records
         """
         try:
-            url = f"{self.BASE_URL}/attendance/getAttendanceByDate"
             params = {
                 'empId': employee_id,
                 'sdate': date_from,
                 'edate': date_to,
             }
 
-            response = requests.get(
-                url,
-                headers=self._get_headers(),
-                params=params,
-                timeout=30
-            )
+            response = self._feed_request(
+                'zohoattdaily', 'attendance/getAttendanceByDate', params=params)
 
             if response.status_code == 200:
                 data = response.json()
@@ -492,19 +530,14 @@ class ZohoConnector(BaseHRConnector):
             List of leave records
         """
         try:
-            url = f"{self.BASE_URL}/leave/getLeaveDetails"
             params = {
                 'empId': employee_id,
                 'fromDate': date_from,
                 'toDate': date_to,
             }
 
-            response = requests.get(
-                url,
-                headers=self._get_headers(),
-                params=params,
-                timeout=30
-            )
+            response = self._feed_request(
+                'zoholeave', 'leave/getLeaveDetails', params=params)
 
             if response.status_code == 200:
                 data = response.json()
@@ -516,18 +549,151 @@ class ZohoConnector(BaseHRConnector):
         return []
 
     # ==========================================
+    # FEED-SCOPED EXECUTION
+    # ==========================================
+
+    @staticmethod
+    def _result_rows(payload) -> List[Dict[str, Any]]:
+        """Normalise the common Zoho response envelopes without inventing data."""
+        value = payload
+        if isinstance(value, dict) and isinstance(value.get('summaryReport'), list):
+            value = value.get('summaryReport') or []
+        if isinstance(value, dict) and 'response' in value:
+            value = value.get('response') or {}
+        if isinstance(value, dict) and 'result' in value:
+            value = value.get('result') or []
+        if isinstance(value, list):
+            rows = []
+            for row in value:
+                if not isinstance(row, dict):
+                    continue
+                nested = [item for group in row.values() if isinstance(group, list)
+                          for item in group if isinstance(item, dict)]
+                rows.extend(nested or [row])
+            return rows
+        if isinstance(value, dict):
+            # Some report APIs key the result by employee/email.
+            rows = []
+            for key, row in value.items():
+                if isinstance(row, dict):
+                    rows.append(dict(row, _result_key=key))
+                elif isinstance(row, list):
+                    rows.extend(item for item in row if isinstance(item, dict))
+            return rows or [value]
+        return []
+
+    @staticmethod
+    def _period(value: str, fmt: str = '%d-%m-%Y') -> str:
+        try:
+            return datetime.strptime(str(value), '%Y-%m-%d').strftime(fmt)
+        except (TypeError, ValueError):
+            return str(value or '')
+
+    def fetch_endpoint_records(
+        self, endpoint, employees: List[Dict[str, str]], date_from: str, date_to: str
+    ) -> List[Dict[str, Any]]:
+        """Execute the selected feed, returning store-ready envelopes.
+
+        Every envelope has `payload` and an optional `employee_external_id`.
+        The endpoint record supplies the URL; the operation supplies only the
+        parameter strategy and response normalisation.
+        """
+        operation = endpoint.operation or 'catalog_only'
+        if operation == 'catalog_only':
+            raise ValueError("This feed is catalogue-only and has no runtime handler.")
+
+        if operation == 'employee':
+            return [
+                {'payload': row,
+                 'employee_external_id': str(row.get('id') or row.get('employee_id') or '')}
+                for row in self.fetch_employees()
+            ]
+
+        refs = [item if isinstance(item, dict) else {'id': str(item), 'email': ''}
+                for item in employees]
+        rows = []
+        if operation in ('salary', 'attendance_daily', 'leave'):
+            for ref in refs:
+                employee_id = ref.get('id') or ''
+                if operation == 'salary':
+                    values = self._get_employee_salary(employee_id)
+                    values = [values] if values else []
+                elif operation == 'attendance_daily':
+                    values = self._get_employee_attendance(
+                        employee_id, date_from, date_to)
+                else:
+                    values = self._get_employee_leave(
+                        employee_id, date_from, date_to)
+                for value in values:
+                    rows.append({'payload': value,
+                                 'employee_external_id': str(employee_id)})
+            return rows
+
+        params = {}
+        if operation == 'attendance_summary':
+            params = {
+                'startDate': self._period(date_from),
+                'endDate': self._period(date_to),
+                'dateFormat': 'dd-MM-yyyy',
+            }
+        elif operation == 'overtime':
+            for ref in refs:
+                email = ref.get('email') or ''
+                if not email:
+                    continue
+                params = {
+                    'sIndex': 1, 'limit': 200,
+                    'searchColumn': 'EMPLOYEEMAILALIAS',
+                    'searchValue': email, 'dateFormat': 'dd-MM-yyyy',
+                    'fromDate': self._period(date_from),
+                    'toDate': self._period(date_to),
+                }
+                response = self._feed_request(
+                    endpoint.code, endpoint.path or '', params=params, timeout=60)
+                response.raise_for_status()
+                for value in self._result_rows(response.json()):
+                    rows.append({
+                        'payload': value,
+                        'employee_external_id': str(ref.get('id') or email),
+                    })
+            return rows
+        elif operation == 'timesheet':
+            params = {
+                'startDate': self._period(date_from),
+                'endDate': self._period(date_to),
+                'dateFormat': 'dd-MM-yyyy',
+            }
+
+        response = requests.request(
+            (endpoint.http_method or 'get').upper(),
+            self._endpoint_url(endpoint.code, endpoint.path or ''),
+            headers=self._get_headers(),
+            params=params if (endpoint.http_method or 'get') == 'get' else None,
+            json=params if (endpoint.http_method or 'get') == 'post' else None,
+            timeout=60,
+        )
+        response.raise_for_status()
+        email_to_id = {str(ref.get('email') or '').lower(): ref.get('id')
+                       for ref in refs if ref.get('email')}
+        for value in self._result_rows(response.json()):
+            ext = (value.get('employeeId') or value.get('EmployeeID') or
+                   value.get('empId') or value.get('emailId') or '')
+            ext = email_to_id.get(str(ext).lower(), ext)
+            rows.append({'payload': value, 'employee_external_id': str(ext)})
+        return rows
+
+    # ==========================================
     # OAUTH FLOW HELPERS
     # ==========================================
 
-    def get_authorization_url(self) -> str:
+    def get_authorization_url(self, state: str = '') -> str:
         """
         Get OAuth authorization URL for initial setup.
 
         Returns:
             Authorization URL to redirect user to
         """
-        redirect_uri = self.connector.oauth_redirect_uri or \
-                       f"{self.env['ir.config_parameter'].sudo().get_param('web.base.url')}/zoho/callback"
+        redirect_uri = self._redirect_uri()
 
         scope = self.connector.oauth_scope or \
                 "ZOHOPEOPLE.forms.READ,ZOHOPEOPLE.attendance.READ,ZOHOPEOPLE.leave.READ"
@@ -540,11 +706,13 @@ class ZohoConnector(BaseHRConnector):
             'access_type': 'offline',
             'prompt': 'consent',
         }
+        if state:
+            params['state'] = state
 
-        param_str = '&'.join(f"{k}={v}" for k, v in params.items())
-        return f"{self.AUTH_URL}/auth?{param_str}"
+        param_str = urlencode(params)
+        return f"{self._auth_url('auth')}?{param_str}"
 
-    def exchange_code_for_tokens(self, code: str) -> bool:
+    def exchange_code_for_tokens(self, code: str, token_url: str = '') -> bool:
         """
         Exchange authorization code for access and refresh tokens.
 
@@ -555,10 +723,11 @@ class ZohoConnector(BaseHRConnector):
             True if exchange successful
         """
         try:
-            redirect_uri = self.connector.oauth_redirect_uri or \
-                           f"{self.env['ir.config_parameter'].sudo().get_param('web.base.url')}/zoho/callback"
+            redirect_uri = self._redirect_uri()
 
-            url = f"{self.AUTH_URL}/token"
+            # A safe location-specific URL from the callback is used only when
+            # the connector has no explicit token URL of its own.
+            url = self.connector.oauth_token_url or token_url or self._auth_url('token')
             data = {
                 'code': code,
                 'client_id': self.connector.client_id,
@@ -578,12 +747,16 @@ class ZohoConnector(BaseHRConnector):
 
             expires_in = result.get('expires_in', 3600)
 
-            self.connector.sudo().write({
+            vals = {
                 'access_token': result['access_token'],
-                'refresh_token': result.get('refresh_token', ''),
                 'token_expiry': datetime.now() + timedelta(seconds=expires_in),
                 'connection_status': 'connected',
-            })
+            }
+            # Zoho may omit a refresh token on a later consent. Never erase a
+            # working one merely because this response did not repeat it.
+            if result.get('refresh_token'):
+                vals['refresh_token'] = result['refresh_token']
+            self.connector.sudo().write(vals)
 
             return True
 

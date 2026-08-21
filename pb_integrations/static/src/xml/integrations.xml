@@ -148,8 +148,8 @@
               <span class="itg-scope__ic" t-out="ic('database',13)"/>
               <span t-esc="feedScopeLabel"/>
               <button class="itg-scope__x" t-on-click="clearDataTypeScope"
-                      title="Show every data type">
-                <t t-out="ic('x',12)"/> Every type
+                      title="Show every feed">
+                <t t-out="ic('x',12)"/> Every feed
               </button>
             </div>
 

@@ -15,6 +15,7 @@
                   decoration-success="state == 'extracted'"
                   decoration-info="state == 'consumed'">
                 <field name="connector_id"/>
+                <field name="endpoint_id" optional="show"/>
                 <field name="employee_external_id"/>
                 <field name="employee_id"/>
                 <field name="data_type"/>
@@ -69,6 +70,7 @@
                     <group>
                         <group string="Identity">
                             <field name="connector_id"/>
+                            <field name="endpoint_id"/>
                             <field name="data_type"/>
                             <field name="employee_external_id"/>
                             <field name="employee_id"/>
@@ -147,6 +149,7 @@
                 <field name="employee_external_id"/>
                 <field name="employee_id"/>
                 <field name="connector_id"/>
+                <field name="endpoint_id"/>
                 <separator/>
                 <filter string="Has Changes" name="has_changes" domain="[('has_changes', '=', True)]"/>
                 <filter string="Errors" name="errors" domain="[('state', '=', 'error')]"/>
@@ -163,6 +166,7 @@
                 <separator/>
                 <group name="group_by">
                     <filter string="Connector" name="group_connector" context="{'group_by': 'connector_id'}"/>
+                    <filter string="Source Feed" name="group_endpoint" context="{'group_by': 'endpoint_id'}"/>
                     <filter string="Data Type" name="group_data_type" context="{'group_by': 'data_type'}"/>
                     <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Pull Date" name="group_pull_date" context="{'group_by': 'pull_date:month'}"/>

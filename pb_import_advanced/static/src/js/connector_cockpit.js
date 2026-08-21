@@ -25,6 +25,29 @@ const MODEL = "pb.import.connector.cockpit";
 /** The cockpit's own tag, so the ledgers can send the user back TO A CONNECTOR. */
 const SELF_TAG = "pb_import_connector_cockpit";
 
+const FEED_OPERATIONS = [
+    ["catalog_only", _t("Catalogue only")],
+    ["generic", _t("Connector-defined operation")],
+    ["employee", _t("Employee master")],
+    ["salary", _t("Salary / compensation")],
+    ["attendance_summary", _t("Attendance summary")],
+    ["overtime", _t("Overtime requests")],
+    ["attendance_daily", _t("Attendance by employee/date")],
+    ["leave", _t("Leave records")],
+    ["timesheet", _t("Timesheets")],
+];
+const FEED_DATA_TYPES = [
+    ["employee", _t("Employee master data")], ["salary", _t("Salary / compensation")],
+    ["attendance", _t("Attendance")], ["leave", _t("Leave / time-off")],
+    ["dependent", _t("Dependants")], ["benefit", _t("Benefits")],
+    ["tax", _t("Tax")], ["custom", _t("Custom / other")],
+];
+const OPERATION_DATA_TYPE = {
+    employee: "employee", salary: "salary",
+    attendance_summary: "attendance", attendance_daily: "attendance",
+    overtime: "custom", timesheet: "custom", leave: "leave",
+};
+
 export class ConnectorCockpit extends Component {
     static template = "pb_import_advanced.ConnectorCockpit";
     static props = ["*"];
@@ -66,10 +89,19 @@ export class ConnectorCockpit extends Component {
             cred: {},
             credClear: {},
             credSaving: false,
+            // Full-screen configuration studio. Drafts are client-only until
+            // the single Save; closing is therefore a real cancel operation.
+            configOpen: false,
+            configTab: "connection",
+            config: {},
+            feedDrafts: [],
+            selectedFeedKey: "",
+            configSaving: false,
         });
         // A click anywhere else closes the overflow menu. An event handler, not
         // a lifecycle hook — it only ever writes this component's own state.
         useExternalListener(window, "click", () => { this.state.kebab = false; });
+        useExternalListener(window, "message", (ev) => this.onOAuthMessage(ev));
         onWillStart(async () => { await this.refresh(); });
     }
 
@@ -86,6 +118,9 @@ export class ConnectorCockpit extends Component {
 
     ic(n, s = 16) { return ic(n, s); }
     get d() { return this.state.detail || {}; }
+    get feedOperations() { return FEED_OPERATIONS; }
+    get feedDataTypes() { return FEED_DATA_TYPES; }
+    get feedMethods() { return [["get", "GET"], ["post", "POST"]]; }
     initials() { return (this.d.name || "?").trim().slice(0, 2).toUpperCase(); }
 
     async refresh() {
@@ -224,6 +259,11 @@ export class ConnectorCockpit extends Component {
             staged: ep.staged, synced: ep.synced, mapped: ep.mapping_count,
         });
     }
+    legacyRowsLabel(ep) {
+        return ep.legacy_unassigned
+            ? _t("%s older rows are not tied to an exact feed", ep.legacy_unassigned)
+            : "";
+    }
 
     async syncEndpoint(ep) {
         if (this.state.syncing) { return; }
@@ -243,8 +283,19 @@ export class ConnectorCockpit extends Component {
             if (res && typeof res.data_store_count === "number") {
                 this.state.detail.data_store_count = res.data_store_count;
             }
-            if (res && res.error) { this.notif.add(res.error, { type: "warning" }); }
-            else { this.notif.add(_t("Feed synced."), { type: "success" }); }
+            if (res && res.error) {
+                this.notif.add(res.error, { type: "warning" });
+            } else if (res && res.endpoint && res.endpoint.status === "failed") {
+                this.notif.add(
+                    res.endpoint.last_error || _t("The feed ran, but its records could not be staged."),
+                    { type: "danger" });
+            } else if (res && res.endpoint && res.endpoint.status === "partial") {
+                this.notif.add(
+                    _t("The feed synced with some staging errors. Review the feed card."),
+                    { type: "warning" });
+            } else {
+                this.notif.add(_t("Feed synced."), { type: "success" });
+            }
         } catch (e) {
             console.warn("pb_import_advanced: endpoint sync failed", e);
             this.notif.add(_t("That feed could not be synced."), { type: "danger" });
@@ -298,11 +349,240 @@ export class ConnectorCockpit extends Component {
         }
     }
 
-    /** Derive the feeds from the vendor catalogue and from what is in the store. */
-    detectFeeds() {
-        return this._run(
-            this.orm.call(MODEL, "sync_catalog", [this.connectorId]),
-            _t("Detecting feeds…"));
+    /** Add missing local catalogue rows; this is not a remote API scan. */
+    async detectFeeds() {
+        this.state.busy = true;
+        this.state.busyMsg = _t("Checking the installed vendor catalogue…");
+        try {
+            const res = await this.orm.call(MODEL, "sync_catalog", [this.connectorId]);
+            if (res && typeof res === "object") { this.state.detail = res; }
+            if (res && res.error) {
+                this.notif.add(res.error, { type: "warning" });
+            } else {
+                const cat = (res && res.catalog) || {};
+                this.notif.add(
+                    cat.created
+                        ? _t("%s missing feeds added. Existing configuration was kept.", cat.created)
+                        : _t("Feed catalogue is already complete. Nothing was overwritten."),
+                    { type: "success" });
+            }
+        } catch (e) {
+            this.notif.add(_t("The installed feed catalogue could not be checked."),
+                           { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // ==================================================== configuration studio
+    openConfiguration(endpoint = null) {
+        const cfg = this.d.configuration || {};
+        this.state.config = { ...cfg };
+        this.state.feedDrafts = (this.endpoints || []).map((ep) => ({
+            id: ep.id,
+            key: `feed-${ep.id}`,
+            name: ep.name || "",
+            code: ep.code || "",
+            data_type: ep.data_type || "custom",
+            operation: ep.operation || "catalog_only",
+            http_method: (ep.method || "GET").toLowerCase(),
+            path: ep.path || "",
+            params_note: ep.params_note || "",
+            active: ep.active !== false,
+            template_backed: !!ep.template_backed,
+        }));
+        const selected = endpoint && endpoint.id
+            ? this.state.feedDrafts.find((feed) => feed.id === endpoint.id) : null;
+        this.state.selectedFeedKey = selected ? selected.key :
+            (this.state.feedDrafts.length ? this.state.feedDrafts[0].key : "");
+        this.state.configTab = selected ? "feeds" : "connection";
+        this.state.configOpen = true;
+    }
+
+    closeConfiguration() {
+        if (this.state.configSaving) { return; }
+        this.state.configOpen = false;
+        this.state.config = {};
+        this.state.feedDrafts = [];
+        this.state.selectedFeedKey = "";
+    }
+
+    get selectedFeed() {
+        return this.state.feedDrafts.find(
+            (feed) => feed.key === this.state.selectedFeedKey) || null;
+    }
+    get selectedFeedTypeLocked() {
+        return !!(this.selectedFeed && OPERATION_DATA_TYPE[this.selectedFeed.operation]);
+    }
+    get draftRunnableCount() {
+        return this.state.feedDrafts.filter(
+            (feed) => feed.active && feed.operation !== "catalog_only" && !!feed.path).length;
+    }
+
+    selectFeed(feed) { this.state.selectedFeedKey = feed.key; }
+    setConfigTab(tab) { this.state.configTab = tab; }
+    onConfigInput(key, ev) {
+        this.state.config[key] = ev.target.value || "";
+        if (key === "api_endpoint") { this.state.config.api_endpoint_is_default = false; }
+    }
+    onFeedInput(key, ev) {
+        if (!this.selectedFeed) { return; }
+        const value = ev.target.value || "";
+        this.selectedFeed[key] = value;
+        // Built-in handlers have a fixed output contract. Keep the dependent
+        // field aligned immediately instead of waiting for a server error.
+        if (key === "operation" && OPERATION_DATA_TYPE[value]) {
+            this.selectedFeed.data_type = OPERATION_DATA_TYPE[value];
+        }
+    }
+    onFeedActive(ev) {
+        if (this.selectedFeed) { this.selectedFeed.active = !!ev.target.checked; }
+    }
+
+    addFeed() {
+        const key = `new-${Date.now()}-${this.state.feedDrafts.length}`;
+        const feed = {
+            id: 0, key, name: _t("New feed"), code: "newfeed",
+            data_type: "custom", operation: "catalog_only",
+            http_method: "get", path: "", params_note: "", active: true,
+            template_backed: false,
+        };
+        this.state.feedDrafts.push(feed);
+        this.state.selectedFeedKey = key;
+        this.state.configTab = "feeds";
+    }
+
+    feedPreview(feed) {
+        if (!feed || !feed.path) { return _t("Add a path to preview the URL"); }
+        if (/^https?:\/\//i.test(feed.path)) { return feed.path; }
+        const base = (this.state.config.api_endpoint || "").replace(/\/$/, "");
+        return base ? `${base}/${feed.path.replace(/^\//, "")}` : feed.path;
+    }
+
+    async copyText(value) {
+        if (!value || !navigator.clipboard) { return; }
+        await navigator.clipboard.writeText(value);
+        this.notif.add(_t("Copied."), { type: "success" });
+    }
+
+    _publicConfiguration() {
+        const cfg = this.state.config;
+        return {
+            api_endpoint: cfg.api_endpoint || "",
+            api_version: cfg.api_version || "",
+            sync_interval: cfg.sync_interval || 0,
+            oauth_authorize_url: cfg.oauth_authorize_url || "",
+            oauth_token_url: cfg.oauth_token_url || "",
+            oauth_scope: cfg.oauth_scope || "",
+            oauth_redirect_uri: cfg.oauth_redirect_uri || "",
+        };
+    }
+
+    _feedRows() {
+        return this.state.feedDrafts.map((feed) => ({
+            id: feed.id || 0, name: feed.name, code: feed.code,
+            data_type: feed.data_type, operation: feed.operation,
+            http_method: feed.http_method, path: feed.path,
+            params_note: feed.params_note, active: !!feed.active,
+        }));
+    }
+
+    async beginOAuth() {
+        const popup = window.open(
+            "about:blank",
+            "pb_zoho_oauth", "popup=yes,width=620,height=760");
+        if (!popup) {
+            this.notif.add(_t("Allow pop-ups to connect Zoho."), { type: "warning" });
+            return;
+        }
+        try {
+            // The label says Save & connect: persist the entire visible draft
+            // before leaving for Zoho, so the callback refresh loses nothing.
+            const res = await this.orm.call(
+                MODEL, "save_configuration",
+                [this.connectorId, this._publicConfiguration(), this._feedRows()]);
+            if (res && res.error) { throw new Error(res.error); }
+            if (res) { this.state.detail = res; }
+            popup.location.href = `/pb/integrations/oauth/${this.connectorId}/start`;
+        } catch (e) {
+            popup.close();
+            this.notif.add(
+                (e && e.message) || _t("OAuth settings could not be saved."),
+                { type: "danger" });
+        }
+    }
+
+    openCredentialSetup() {
+        // OAuth provider locations are public configuration; the Client ID
+        // and secret stay in the cockpit's established write-only editor.
+        this.closeConfiguration();
+        this.state.credOpen = true;
+        requestAnimationFrame(() => {
+            document.querySelector(".pbcc-cred")?.scrollIntoView({
+                behavior: "smooth", block: "center",
+            });
+        });
+    }
+
+    async onOAuthMessage(ev) {
+        if (ev.origin !== window.location.origin || !ev.data ||
+                ev.data.type !== "pb-zoho-oauth") { return; }
+        await this.refresh();
+        if (this.state.configOpen) {
+            const tab = this.state.configTab;
+            this.openConfiguration();
+            this.state.configTab = tab;
+        }
+        this.notif.add(
+            ev.data.status === "success" ? _t("Zoho is connected.") :
+                _t("Zoho authorization did not complete."),
+            { type: ev.data.status === "success" ? "success" : "warning" });
+    }
+
+    async saveConfiguration() {
+        if (this.state.configSaving) { return; }
+        this.state.configSaving = true;
+        try {
+            const publicConfig = this._publicConfiguration();
+            const rows = this._feedRows();
+            const res = await this.orm.call(
+                MODEL, "save_configuration", [this.connectorId, publicConfig, rows]);
+            if (res && !res.error) {
+                this.state.detail = res;
+                this.state.configOpen = false;
+                this.notif.add(_t("Connection and feeds saved."), { type: "success" });
+            } else {
+                this.notif.add((res && res.error) || _t("Configuration was not saved."),
+                               { type: "warning" });
+            }
+        } catch (e) {
+            const message = (e && e.data && e.data.message) ||
+                (e && e.message) || _t("Configuration was not saved.");
+            this.notif.add(message.toString(), { type: "danger" });
+        } finally {
+            this.state.configSaving = false;
+        }
+    }
+
+    async restoreSelectedFeed() {
+        const feed = this.selectedFeed;
+        if (!feed || !feed.id) { return; }
+        try {
+            const res = await this.orm.call(
+                MODEL, "restore_endpoint_template", [this.connectorId, feed.id]);
+            if (res && !res.error) {
+                this.state.detail = res;
+                this.openConfiguration();
+                this.state.configTab = "feeds";
+                this.state.selectedFeedKey = `feed-${feed.id}`;
+                this.notif.add(_t("Vendor template restored."), { type: "success" });
+            } else {
+                this.notif.add((res && res.error) || _t("Template was not restored."),
+                               { type: "warning" });
+            }
+        } catch (e) {
+            this.notif.add(_t("Template was not restored."), { type: "danger" });
+        }
     }
 
     /** This feed's rows, in the Integrations Data view, scoped both ways. */
@@ -316,6 +596,8 @@ export class ConnectorCockpit extends Component {
                 pb_connector_name: this.d.name || "",
                 pb_data_type: ep.data_type,
                 pb_data_type_name: ep.data_type_label || "",
+                pb_endpoint: ep.id,
+                pb_endpoint_name: ep.name || ep.code || "",
             },
             back: {
                 label: this.d.name || _t("Connector"),

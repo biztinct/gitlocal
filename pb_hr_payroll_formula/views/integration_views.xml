@@ -129,6 +129,7 @@
                                 <field name="oauth_authorize_url"/>
                                 <field name="oauth_token_url"/>
                                 <field name="oauth_scope"/>
+                                <field name="oauth_redirect_uri"/>
                             </group>
                         </page>
 

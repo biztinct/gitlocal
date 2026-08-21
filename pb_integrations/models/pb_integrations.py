@@ -21,6 +21,7 @@ import json
 import logging
 
 from odoo import api, fields, models
+from odoo.tools.sql import column_exists
 
 _logger = logging.getLogger(__name__)
 
@@ -232,19 +233,18 @@ class PbIntegrations(models.AbstractModel):
         return self.env['hr.integration.connector'].search([]).ids
 
     @api.model
-    def get_ledger(self, kind, connector_id=None, data_type=None):
+    def get_ledger(self, kind, connector_id=None, data_type=None,
+                   endpoint_id=None):
         """One satellite table as a grid descriptor.
 
         `kind` is looked up in LEDGERS rather than used to index `self.env`: a
         forged kind must not be able to point this method at another table.
 
-        `data_type` is the feed scope the connector cockpit's "View data" button
-        arrives with. It is validated against the store's OWN selection, not
-        passed through — a value from the browser reaching a domain unchecked is
-        the same class of hole the `kind` whitelist exists to close — and it is
-        only meaningful for the store, which is the one satellite that carries
-        the column. On the other two it is ignored rather than refused: the tab
-        strip stays usable when you switch away from Data store.
+        `endpoint_id` is the exact feed scope the connector cockpit's "View
+        data" button arrives with; `data_type` remains as backward-compatible
+        context for older callers. Both are validated, and neither may widen
+        the connector scope. On the other ledgers they are ignored so the tab
+        strip stays usable.
         """
         spec = LEDGERS.get(kind)
         if not spec or spec['model'] not in self.env:
@@ -262,6 +262,18 @@ class PbIntegrations(models.AbstractModel):
                 self.env['hr.api.data.store']._fields['data_type'].selection)
             if data_type in known:
                 dom = dom + [('data_type', '=', data_type)]
+        if kind == 'store' and endpoint_id:
+            Endpoint = self.env.get('hr.integration.endpoint') \
+                if 'hr.integration.endpoint' in self.env else None
+            endpoint = Endpoint.browse(int(endpoint_id)).exists() \
+                if Endpoint is not None and Endpoint._schema_ready() else Endpoint
+            allowed = bool(
+                endpoint and endpoint.connector_id.id in scope and
+                (not connector_id or endpoint.connector_id.id == int(connector_id)))
+            # A forged/stale endpoint id must narrow to nothing, never fall back
+            # to the broader data-type view the caller did not ask for.
+            dom = dom + ([('endpoint_id', '=', endpoint.id)] if allowed
+                         else [('id', '=', 0)])
         builder = getattr(self, '_ledger_%s' % kind)
         return builder(dom)
 
@@ -439,6 +451,7 @@ class PbIntegrations(models.AbstractModel):
     @api.model
     def _ledger_store(self, dom):
         S = self.env['hr.api.data.store']
+        has_feed = column_exists(self.env.cr, S._table, 'endpoint_id')
         total = S.search_count(dom)
         recs = S.search(dom, order='pull_date desc, id desc', limit=LIMIT)
         rows = []
@@ -446,37 +459,47 @@ class PbIntegrations(models.AbstractModel):
             state = r.state or 'raw'
             tone = {'extracted': 'ok', 'consumed': 'info', 'error': 'err',
                     'archived': 'muted'}.get(state, 'muted')
+            feed = (r.endpoint_id.name or r.endpoint_id.code or 'Unassigned') \
+                if has_feed else ''
+            cells = [
+                r.employee_external_id or (r.employee_id.name if r.employee_id else '—'),
+                _sel(S, 'data_type', r.data_type),
+                r.connector_id.name or '—',
+                _s(r.pull_date)[:16],
+            ]
+            facets = {'connector': r.connector_id.name or '', 'state': state}
+            if has_feed:
+                cells.insert(2, feed)
+                facets['feed'] = feed
             rows.append({
                 'id': r.id,
-                'cells': [
-                    r.employee_external_id or (r.employee_id.name if r.employee_id else '—'),
-                    _sel(S, 'data_type', r.data_type),
-                    r.connector_id.name or '—',
-                    _s(r.pull_date)[:16],
-                ],
+                'cells': cells,
                 'badge': {'label': _sel(S, 'state', state), 'tone': tone},
-                '_f': {'connector': r.connector_id.name or '',
-                       'state': state},
+                '_f': facets,
                 '_s': ' '.join(x for x in [r.employee_external_id or '',
                                            r.employee_id.name if r.employee_id else '',
-                                           r.connector_id.name or ''] if x),
+                                           r.connector_id.name or '', feed] if x),
             })
+        columns = [{'label': 'Key', 'wide': True}, {'label': 'Data type'}]
+        facet_spec = [('connector', 'Connector'), ('state', 'State')]
+        if has_feed:
+            columns.append({'label': 'Feed'})
+            facet_spec.append(('feed', 'Feed'))
+        columns.extend([{'label': 'Connector'}, {'label': 'Pulled'}])
         return {
             'title': 'API data store',
             'subtitle': 'Everything the connectors have pulled — raw, extracted and versioned.',
             'search_ph': 'Search external id, employee, connector…',
             'empty': 'Nothing has been pulled into the store yet.',
-            'columns': [{'label': 'Key', 'wide': True},
-                        {'label': 'Data type'},
-                        {'label': 'Connector'},
-                        {'label': 'Pulled'}],
-            'facets': self._facets(rows, [('connector', 'Connector'), ('state', 'State')]),
+            'columns': columns,
+            'facets': self._facets(rows, facet_spec),
             'rows': rows, 'total': total, 'shown': len(rows),
         }
 
     @api.model
     def _detail_store(self, r):
         S = self.env['hr.api.data.store']
+        has_feed = column_exists(self.env.cr, S._table, 'endpoint_id')
         raw, raw_more = _payload_preview(r.raw_payload)
         ext, ext_more = _payload_preview(r.extracted_data)
         com, com_more = _payload_preview(r.computed_data)
@@ -485,6 +508,9 @@ class PbIntegrations(models.AbstractModel):
                 {'label': 'External employee id', 'value': r.employee_external_id or ''},
                 {'label': 'Matched employee', 'value': r.employee_id.name if r.employee_id else ''},
                 {'label': 'Data type', 'value': _sel(S, 'data_type', r.data_type)},
+                {'label': 'Source feed', 'value': (
+                    r.endpoint_id.name or r.endpoint_id.code or 'Unassigned')
+                    if has_feed else ''},
                 {'label': 'Connector', 'value': r.connector_id.name or ''},
             ]),
             self._section('Period', [

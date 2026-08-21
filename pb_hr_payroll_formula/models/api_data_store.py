@@ -6,7 +6,7 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -51,6 +51,25 @@ class HrApiDataStore(models.Model):
         'hr.integration.connector', string='Source Connector',
         required=True, ondelete='cascade', index=True,
     )
+    endpoint_id = fields.Many2one(
+        'hr.integration.endpoint', string='Source Feed',
+        ondelete='set null', index=True,
+        domain="[('connector_id', '=', connector_id)]",
+        help="Exact feed that produced this row. Older rows can remain "
+             "unassigned when their original feed cannot be inferred safely.",
+    )
+
+    @api.constrains('connector_id', 'endpoint_id', 'data_type')
+    def _check_source_feed_identity(self):
+        for record in self:
+            if not record.endpoint_id:
+                continue
+            if record.endpoint_id.connector_id != record.connector_id:
+                raise ValidationError(_(
+                    'The source feed must belong to the same connector.'))
+            if record.endpoint_id.data_type != record.data_type:
+                raise ValidationError(_(
+                    'The source feed and stored row must use the same data type.'))
     data_type = fields.Selection(
         DATA_TYPES, string='Data Type', required=True, index=True)
 
@@ -267,8 +286,9 @@ class HrApiDataStore(models.Model):
     # ==========================================
     def _compute_version_and_diff(self):
         """
-        For each record, find the previous version with same employee+data_type+connector,
-        compute version number, and generate change_summary.
+        For each record, find the previous version from the same exact feed,
+        employee and period, then compute its change summary. Unassigned legacy
+        rows version only against other unassigned rows.
         """
         for rec in self:
             # Find previous version
@@ -276,6 +296,7 @@ class HrApiDataStore(models.Model):
                 ('connector_id', '=', rec.connector_id.id),
                 ('employee_external_id', '=', rec.employee_external_id),
                 ('data_type', '=', rec.data_type),
+                ('endpoint_id', '=', rec.endpoint_id.id or False),
                 ('id', '!=', rec.id),
             ]
             # If we have period, match on period too

@@ -142,6 +142,12 @@ class HrIntegrationConnector(models.Model):
         string='OAuth Scope'
     )
 
+    oauth_redirect_uri = fields.Char(
+        string='OAuth Redirect URI',
+        help="Exact callback URI registered with the OAuth provider. When "
+             "empty, Payobook uses <web base URL>/zoho/callback."
+    )
+
     # ==========================================
     # FIELD MAPPINGS
     # ==========================================
@@ -234,9 +240,10 @@ class HrIntegrationConnector(models.Model):
     )
 
     sync_interval = fields.Integer(
-        string='Sync Interval (minutes)',
+        string='Expected Sync Cadence (minutes)',
         default=60,
-        help="Automatic sync interval in minutes (0 = manual only)"
+        help="Freshness target used to flag overdue feeds. It does not create "
+             "a scheduled job; 0 means manual-only with no overdue ageing."
     )
 
     # ==========================================
@@ -395,6 +402,7 @@ class HrIntegrationConnector(models.Model):
                 'name': t.name or t.code,
                 'code': t.code,
                 'data_type': t.data_type,
+                'operation': t.operation or 'catalog_only',
                 'http_method': t.http_method or 'get',
                 'path': t.path or False,
                 'params_note': t.params_note or False,
@@ -423,6 +431,7 @@ class HrIntegrationConnector(models.Model):
                 'name': labels.get(dt, dt),
                 'code': self._free_endpoint_code(dt, codes),
                 'data_type': dt,
+                'operation': 'generic',
                 'http_method': 'get',
                 'description': _(
                     'Derived from records already in the API data store.'),
@@ -740,6 +749,7 @@ class HrIntegrationConnector(models.Model):
                 'name': labels.get(data_type, data_type),
                 'code': self._free_endpoint_code(data_type, taken),
                 'data_type': data_type,
+                'operation': 'generic',
                 'sequence': 50,
             })
         ep.write({
@@ -1101,6 +1111,126 @@ class HrIntegrationConnector(models.Model):
     # ==========================================
     # PULL DATA — Core API Integration
     # ==========================================
+    def action_pull_endpoint(self, endpoint_id, period_from=None, period_to=None,
+                             triggered_by='manual'):
+        """Execute exactly one configured feed.
+
+        This is deliberately endpoint-scoped, not data-type-scoped.  A Zoho
+        connector has two attendance feeds and two custom feeds; reducing the
+        click to `attendance` or `custom` discarded the path the user selected.
+        Older connectors remain safe because their seeded operation is filled
+        by the module migration, and newly catalogued rows carry it directly.
+        """
+        self.ensure_one()
+        endpoint = self.endpoint_ids.filtered(
+            lambda row: row.id == int(endpoint_id or 0))[:1]
+        if not endpoint:
+            raise UserError(_('That feed does not belong to this connector.'))
+        if not endpoint.active:
+            raise UserError(_('Activate this feed before syncing it.'))
+        if (endpoint.operation or 'catalog_only') == 'catalog_only':
+            raise UserError(_(
+                'This feed is catalogued for reference but has no executable '
+                'handler. Choose an execution type in Feed configuration.'))
+        if not endpoint.path and self.connector_type == 'zoho':
+            raise UserError(_('Add a path before syncing this feed.'))
+
+        import calendar
+        if not period_from:
+            today = date.today()
+            period_from = today.replace(day=1)
+            period_to = today.replace(
+                day=calendar.monthrange(today.year, today.month)[1])
+        period_to = period_to or period_from
+
+        connector = self._get_connector_instance()
+        # Connectors that have one feed per data type keep their established
+        # pull implementation. Zoho implements the endpoint-aware interface
+        # because it is the connector where several feeds share a data type.
+        if not hasattr(connector, 'fetch_endpoint_records'):
+            return self.with_context(pb_source_endpoint_id=endpoint.id).action_pull_data(
+                data_types=[endpoint.data_type], period_from=period_from,
+                period_to=period_to, triggered_by=triggered_by)
+        if not connector.authenticate():
+            endpoint.write({
+                'last_sync': fields.Datetime.now(),
+                'last_sync_status': 'failed',
+                'last_error': _('Authentication failed'),
+            })
+            raise UserError(_('Authentication failed for connector %s') % self.name)
+        results = {'pulled': 0, 'changes': 0, 'errors': []}
+        try:
+            employees = self.env['hr.api.data.store'].search([
+                ('connector_id', '=', self.id),
+                ('data_type', '=', 'employee'),
+                ('state', '!=', 'archived'),
+            ])
+            employee_refs = []
+            seen_employee_ids = set()
+            for row in employees:
+                external_id = row.employee_external_id
+                if not external_id or external_id in seen_employee_ids:
+                    continue
+                payload = row.raw_payload if isinstance(row.raw_payload, dict) else {}
+                raw = payload.get('_raw') if isinstance(payload.get('_raw'), dict) else {}
+                employee_refs.append({
+                    'id': external_id,
+                    'email': payload.get('email') or payload.get('EmailID') or
+                             raw.get('EmailID') or '',
+                })
+                seen_employee_ids.add(external_id)
+            started = time.time()
+            rows = connector.fetch_endpoint_records(
+                endpoint, employee_refs, str(period_from), str(period_to))
+            pull_ms = int((time.time() - started) * 1000)
+            Store = self.env['hr.api.data.store']
+            for item in rows:
+                self._store_api_record(
+                    Store, item.get('payload') or {},
+                    data_type=endpoint.data_type,
+                    endpoint_id=endpoint.id,
+                    employee_external_id=item.get('employee_external_id') or None,
+                    period_from=period_from,
+                    period_to=period_to,
+                    pull_ms=pull_ms,
+                    triggered_by=triggered_by,
+                    results=results,
+                )
+            now = fields.Datetime.now()
+            outcome = ('partial' if results['errors'] and results['pulled']
+                       else 'failed' if results['errors'] else 'success')
+            error_text = '; '.join(results['errors'][:3])[:512] or False
+            endpoint.write({
+                'last_sync': now, 'last_sync_status': outcome,
+                'last_error': error_text,
+            })
+            self.write({
+                'connection_status': 'connected',
+                'last_sync': now,
+                'last_sync_status': outcome,
+                'last_sync_message': _(
+                    '%(feed)s pulled %(count)s records with %(errors)s errors.',
+                    feed=endpoint.name, count=results['pulled'],
+                    errors=len(results['errors'])) if results['errors'] else _(
+                        '%(feed)s pulled %(count)s records.',
+                        feed=endpoint.name, count=results['pulled']),
+                'total_synced_records': results['pulled'],
+                'last_error': error_text,
+            })
+            return results
+        except Exception as exc:
+            endpoint.write({
+                'last_sync': fields.Datetime.now(),
+                'last_sync_status': 'failed',
+                'last_error': str(exc)[:512],
+            })
+            self.write({
+                'last_sync_status': 'failed',
+                'last_sync_message': _('%s failed.') % endpoint.name,
+                'last_error': str(exc),
+            })
+            raise
+
     def action_pull_data(self, data_types=None, period_from=None, period_to=None,
                          triggered_by='manual'):
         """
@@ -1139,6 +1269,17 @@ class HrIntegrationConnector(models.Model):
             'changes': 0,
             'errors': [],
         }
+        endpoint_by_type = {}
+        Endpoint = self.env['hr.integration.endpoint']
+        if Endpoint._schema_ready():
+            grouped = {}
+            for row in Endpoint.with_context(active_test=False).search([
+                    ('connector_id', '=', self.id)]):
+                grouped.setdefault(row.data_type, []).append(row.id)
+            endpoint_by_type = {
+                data_type: ids[0] for data_type, ids in grouped.items()
+                if len(ids) == 1
+            }
 
         try:
             connector = self._get_connector_instance()
@@ -1158,6 +1299,7 @@ class HrIntegrationConnector(models.Model):
                         self._store_api_record(
                             DataStore, emp_data,
                             data_type='employee',
+                            endpoint_id=endpoint_by_type.get('employee'),
                             period_from=period_from,
                             period_to=period_to,
                             pull_ms=pull_ms,
@@ -1199,6 +1341,7 @@ class HrIntegrationConnector(models.Model):
                                 self._store_api_record(
                                     DataStore, salary_data,
                                     data_type='salary',
+                                    endpoint_id=endpoint_by_type.get('salary'),
                                     employee_external_id=str(emp_id),
                                     period_from=period_from,
                                     period_to=period_to,
@@ -1231,6 +1374,7 @@ class HrIntegrationConnector(models.Model):
                                 self._store_api_record(
                                     DataStore, dep_record,
                                     data_type='dependent',
+                                    endpoint_id=endpoint_by_type.get('dependent'),
                                     employee_external_id=str(emp_id),
                                     period_from=period_from,
                                     period_to=period_to,
@@ -1262,6 +1406,7 @@ class HrIntegrationConnector(models.Model):
                             self._store_api_record(
                                 DataStore, att_record,
                                 data_type='attendance',
+                                endpoint_id=endpoint_by_type.get('attendance'),
                                 employee_external_id=str(emp_id),
                                 period_from=period_from,
                                 period_to=period_to,
@@ -1294,6 +1439,7 @@ class HrIntegrationConnector(models.Model):
                                 self._store_api_record(
                                     DataStore, leave_record,
                                     data_type='leave',
+                                    endpoint_id=endpoint_by_type.get('leave'),
                                     employee_external_id=str(emp_id),
                                     period_from=period_from,
                                     period_to=period_to,
@@ -1354,6 +1500,7 @@ class HrIntegrationConnector(models.Model):
         }
 
     def _store_api_record(self, DataStore, raw_data, data_type,
+                          endpoint_id=None,
                           employee_external_id=None, period_from=None,
                           period_to=None, pull_ms=0, triggered_by='manual',
                           results=None):
@@ -1368,6 +1515,8 @@ class HrIntegrationConnector(models.Model):
         """
         if results is None:
             results = {'pulled': 0, 'changes': 0, 'errors': []}
+        endpoint_id = endpoint_id or self.env.context.get(
+            'pb_source_endpoint_id') or False
 
         # Try to extract employee external ID from the data if not provided
         if not employee_external_id and isinstance(raw_data, dict):
@@ -1381,6 +1530,7 @@ class HrIntegrationConnector(models.Model):
         try:
             record = DataStore.create({
                 'connector_id': self.id,
+                'endpoint_id': endpoint_id or False,
                 'data_type': data_type,
                 'employee_external_id': employee_external_id,
                 'period_from': period_from,
