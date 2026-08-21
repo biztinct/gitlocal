@@ -4701,11 +4701,15 @@ export class PbFormulaStudio extends Component {
         // The contenteditable subtree is browser-owned once editing begins.
         // Seed it after OWL mounts the shell so VHtml never tries to reconcile
         // nodes inserted or removed by the selection/range APIs.
-        window.requestAnimationFrame(() => {
-            if (!this.state.psRichOpen) return;
+        const target = this.state.psRichTarget;
+        const draft = this.state.psRichDraft || "";
+        const seedEditor = (attempt = 0) => {
+            if (!this.state.psRichOpen || this.state.psRichTarget !== target) return;
             const editor = this._psRichEditor();
-            if (editor) editor.innerHTML = this.state.psRichDraft || "";
-        });
+            if (editor) editor.innerHTML = draft;
+            else if (attempt < 5) setTimeout(() => seedEditor(attempt + 1), 16);
+        };
+        setTimeout(seedEditor, 0);
     }
     closePsRich() { if (!this.state.psRichBusy) this.state.psRichOpen = false; }
     _psRichEditor() { return document.querySelector(".ps-rich-editor"); }
