@@ -31,6 +31,9 @@ from . import integration_endpoint_field
 from . import formula_mapping_template
 from . import api_data_store
 from . import api_transformation_rule
+# Cycle 8 — imports names from api_transformation_rule, so it MUST come after
+# it (the registry adds model classes in import order, W84's family).
+from . import rule_assistant
 from . import payslip_config
 from . import payslip_import_mapping
 from . import hr_employee
