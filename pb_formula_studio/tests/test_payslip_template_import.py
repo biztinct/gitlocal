@@ -251,3 +251,55 @@ class TestPayslipTemplateImport(TransactionCase):
         self.assertIn(self.bonus.id,
                       [c['id'] for c in restored_earnings['components']],
                       'removing the token restores the ordinary component line')
+
+    def test_07_positioned_pdf_reconstructs_an_editable_full_document(self):
+        def item(text, x, y, width=80, height=14):
+            return {'text': text, 'x': x, 'y': y, 'width': width,
+                    'height': height, 'bold': False, 'italic': False}
+
+        layout = {'version': 1, 'pages': [{'items': [
+            item('PAY SLIP/ PHIẾU LƯƠNG', 40, 120, 300, 22),
+            item('I. TAXABLE INCOME / CÁC KHOẢN THU NHẬP CHỊU THUẾ', 45, 210, 570),
+            item('Hours', 690, 210), item('Amount', 870, 210),
+            item('1', 95, 240), item('Basic salary', 175, 240, 250),
+            item('(Lương cơ bản)', 420, 240, 160), item('13,030,000', 870, 240),
+            item('Total I (Tổng cộng I)', 550, 270, 250), item('13,030,000', 870, 270),
+            item('II. DEDUCTIONS / CÁC KHOẢN KHẤU TRỪ', 45, 310, 650),
+            item('1', 95, 340), item('Personal income tax', 175, 340, 280),
+            item('(Thuế thu nhập cá nhân)', 455, 340, 220), item('99,841', 890, 340),
+            item("THANK YOU FOR YOUR CONTRIBUTION", 180, 390, 620),
+        ]}]}
+        result = self.Studio.analyse_payslip_template(self.config.id, {
+            'name': 'positioned.pdf', 'mime': 'application/pdf',
+            'data': base64.b64encode(b'%PDF-1.4 positioned fixture').decode(),
+            'extracted_text': 'Basic salary 13,030,000\nPersonal income tax 99,841',
+            'pdf_layout': layout,
+        })
+        self.assertTrue(result['ok'])
+        self.assertEqual(result['layout_quality']['rows'], 3)
+        self.assertIn('table-layout:fixed', result['layout_html'])
+        self.assertIn('colspan="3"', result['layout_html'])
+        self.assertIn('background-color:#d9d9d9', result['layout_html'])
+        self.assertIn('<em>(Lương cơ bản)</em>', result['layout_html'])
+        self.assertIn('{{pb_meta:employee_name}}', result['layout_html'])
+        self.assertIn('{{pb_import_row:', result['layout_html'])
+
+        result.update({'apply_layout': True, 'apply_content': False,
+                       'apply_theme': False})
+        applied = self.Studio.apply_payslip_template(self.config.id, result)
+        self.assertTrue(applied['ok'])
+        self.assertIn('{{pb_component:%s:value}}' % self.basic.id,
+                      self.config.payslip_layout_html)
+        self.assertIn('{{pb_component:%s:value}}' % self.tax.id,
+                      self.config.payslip_layout_html)
+        self.assertNotIn('pb_import_row', self.config.payslip_layout_html)
+        rendered = self.config._render_payslip_content(
+            self.config.payslip_layout_html,
+            {self.basic.id: 13030000, self.tax.id: 99841}, '₫',
+            {'employee_name': 'Sample employee', 'employee_id': 'E-001',
+             'department': 'R&D', 'period': 'From 01/01/2026 to 31/01/2026'})
+        self.assertIn('Sample employee', rendered)
+        self.assertIn('₫13,030,000', rendered)
+        studio = self.Studio.payslip_studio_data(self.config.id)
+        self.assertTrue(studio['layout_html'])
+        self.assertIn('Employee name', studio['layout_rendered_html'])

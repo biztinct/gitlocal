@@ -1965,6 +1965,11 @@
           <div class="ps-body" t-if="state.psData and state.psData.ok">
             <!-- LEFT: layout canvas -->
             <div class="ps-canvas">
+              <div t-if="state.psData.layout_html" class="ps-layout-active">
+                <div><b>Imported document layout is active</b><span>The preview and print use the reconstructed page. Edit it to add components, rows, columns, merges, borders, colours, and fonts.</span></div>
+                <button t-on-click="() => this.psOpenRich('layout', 'Imported payslip document', state.psData.layout_html)">Edit document</button>
+                <button class="subtle" t-on-click="psClearImportedLayout">Use section layout</button>
+              </div>
               <!-- tray of unplaced components -->
               <div t-attf-class="ps-tray {{ state.psOverZone === 'tray' ? 'over' : '' }}"
                    t-on-dragover="(ev) => this.psDragOverZone('tray', ev)" t-on-drop="(ev) => this.psDrop(false, ev)">
@@ -2069,10 +2074,16 @@
                   <span class="ps-theme-lbl">Content</span>
                   <button t-attf-class="ps-theme-upload {{ state.psData.header_html ? 'has' : '' }}" t-on-click="() => this.psOpenRich('header', 'Header content', state.psData.header_html)">Header</button>
                   <button t-attf-class="ps-theme-upload {{ state.psData.footer_html ? 'has' : '' }}" t-on-click="() => this.psOpenRich('footer', 'Footer content', state.psData.footer_html)">Footer</button>
+                  <button t-attf-class="ps-theme-upload {{ state.psData.layout_html ? 'has' : '' }}" t-on-click="() => this.psOpenRich('layout', 'Imported payslip document', state.psData.layout_html)">Document</button>
                 </div>
               </div>
 
-              <div class="ps-slip" t-att-style="psSlipStyle">
+              <div t-attf-class="ps-slip {{ state.psData.layout_html ? 'imported' : '' }}" t-att-style="psSlipStyle">
+                <t t-if="state.psData.layout_html">
+                  <img t-if="psLogoUrl" class="ps-slip-logo imported" t-att-src="psLogoUrl" alt="Logo"/>
+                  <div class="ps-slip-rich imported-document" t-out="psHtml(state.psData.layout_rendered_html)"/>
+                </t>
+                <t t-else="">
                 <div class="ps-slip-head">
                   <img t-if="psLogoUrl" class="ps-slip-logo" t-att-src="psLogoUrl" alt="Logo"/>
                   <div>
@@ -2093,6 +2104,7 @@
                 </t>
                 <div class="ps-slip-net" style="background: var(--ps-accent, #241F52);"><span>Net pay</span><span t-esc="vnd(psNet)"/></div>
                 <div t-if="state.psData.footer_rendered_html" class="ps-slip-rich footer" t-out="psHtml(state.psData.footer_rendered_html)"/>
+                </t>
               </div>
             </div>
           </div>
@@ -2140,7 +2152,15 @@
                     <div t-if="state.psImportDraft.header_html"><b>Detected header</b><div t-out="psHtml(state.psImportDraft.header_html)"/></div>
                     <div t-if="state.psImportDraft.footer_html"><b>Detected footer</b><div t-out="psHtml(state.psImportDraft.footer_html)"/></div>
                   </div>
+                  <div t-if="state.psImportDraft.layout_preview_html" class="ps-import-layout-preview">
+                    <div class="ps-import-layout-head">
+                      <div><b>Reconstructed document</b><span><t t-esc="state.psImportDraft.layout_quality.rows"/> rows · <t t-esc="state.psImportDraft.layout_quality.merged_cells"/> merged header/total cells · styles retained</span></div>
+                      <span>Editable after import</span>
+                    </div>
+                    <div class="ps-import-layout-page" t-out="psHtml(state.psImportDraft.layout_preview_html)"/>
+                  </div>
                   <div class="ps-import-options">
+                    <label t-if="state.psImportDraft.layout_html"><input type="checkbox" t-att-checked="state.psImportApplyLayout" t-on-change="psImportToggleLayout"/>Replicate the full page layout</label>
                     <label><input type="checkbox" t-att-checked="state.psImportApplyTheme" t-on-change="psImportToggleTheme"/>Use detected colours and font</label>
                     <label><input type="checkbox" t-att-checked="state.psImportApplyContent" t-on-change="psImportToggleContent"/>Use detected header and footer text</label>
                   </div>

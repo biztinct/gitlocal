@@ -442,6 +442,13 @@ class HrFormulaConfig(models.Model):
         sanitize=True,
         help="Optional formatted content shown after the payslip totals."
     )
+    payslip_layout_html = fields.Html(
+        string='Imported Payslip Document Layout',
+        sanitize=True,
+        help=("Optional full-document layout reconstructed from an uploaded "
+              "payslip. When set, it replaces the standard section preview and "
+              "print body without deleting the seeded section configuration.")
+    )
 
     # Dynamic components inside rich payslip content are persisted as inert,
     # human-readable markers.  The editor turns them into non-editable chips;
@@ -450,6 +457,8 @@ class HrFormulaConfig(models.Model):
     # sanitizer can remain fully enabled without losing the component link.
     _payslip_component_token_re = re.compile(
         r'\{\{pb_component:(\d+):(label|value|both)\}\}')
+    _payslip_meta_token_re = re.compile(
+        r'\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}')
 
     def _normalise_payslip_content_tokens(self, html_value):
         """Keep only canonical tokens belonging to this configuration."""
@@ -494,11 +503,12 @@ class HrFormulaConfig(models.Model):
         return '%s%s%s' % (
             sign, currency or '', '{:,.0f}'.format(abs(number)))
 
-    def _render_payslip_content(self, html_value, values_by_rule=None, currency=''):
+    def _render_payslip_content(self, html_value, values_by_rule=None, currency='', meta=None):
         """Resolve rich-content markers with values for preview or one slip."""
         self.ensure_one()
         rules = {rule.id: rule for rule in self.rule_ids}
         values_by_rule = values_by_rule or {}
+        meta = meta or {}
 
         def replace(match):
             rule = rules.get(int(match.group(1)))
@@ -522,8 +532,12 @@ class HrFormulaConfig(models.Model):
 
         # html_value comes from a sanitize=True field.  Only escaped rule data
         # is introduced while resolving markers, so the result remains safe.
-        return Markup(self._payslip_component_token_re.sub(
-            replace, str(html_value or '')))
+        rendered = self._payslip_component_token_re.sub(
+            replace, str(html_value or ''))
+        rendered = self._payslip_meta_token_re.sub(
+            lambda match: str(escape(meta.get(match.group(1)) or '—')),
+            rendered)
+        return Markup(rendered)
 
     # ==========================================
     # DISPLAY NAME
