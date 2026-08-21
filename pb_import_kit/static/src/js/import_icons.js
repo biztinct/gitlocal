@@ -129,6 +129,14 @@ export const IC = {
     // system stops being one (W2).
     maximize:     '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
     eyeOff:       '<path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m2 2 20 20"/>',
+    // Integrations Cycle 8 — the Rule Composer. `sparkles` is the drafting
+    // assistant (and the ONLY thing on that surface that could have been an
+    // emoji, which is why it is here instead); `chevronDown` opens a picker;
+    // `arrowLeftRight` is the guided⇄formula switch, a swap rather than a
+    // direction. Added to the SHARED registry, never to a module-local map (W2).
+    sparkles:     '<path d="M9.94 14.34 12 20l2.06-5.66L20 12l-5.94-2.34L12 4l-2.06 5.66L4 12z"/><path d="M19 4v3M17.5 5.5h3"/>',
+    chevronDown:  '<path d="m6 9 6 6 6-6"/>',
+    arrowLeftRight: '<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
 };
 
 /**
