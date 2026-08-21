@@ -2176,6 +2176,19 @@
                     <label class="ps-rich-mode"><span>Insert as</span><select title="Component display" t-on-change="psRichSetMode"><option value="both" t-att-selected="state.psRichMode === 'both'">Label + value</option><option value="label" t-att-selected="state.psRichMode === 'label'">Label only</option><option value="value" t-att-selected="state.psRichMode === 'value'">Value only</option></select></label>
                     <span class="ps-tool-sep"/>
                     <select title="Text style" t-on-change="psRichBlock"><option value="">Style</option><option value="p">Paragraph</option><option value="h3">Heading</option><option value="blockquote">Quote</option></select>
+                    <select class="ps-rich-font" title="Font family" aria-label="Font family" t-on-mousedown="psRichRememberSelection" t-on-change="psRichFont">
+                      <option value="">Font</option>
+                      <option value="inherit" style="font-family:inherit">Document font</option>
+                      <option value="Arial, sans-serif" style="font-family:Arial,sans-serif">Arial</option>
+                      <option value="Helvetica, Arial, sans-serif" style="font-family:Helvetica,Arial,sans-serif">Helvetica</option>
+                      <option value="Georgia, serif" style="font-family:Georgia,serif">Georgia</option>
+                      <option value="Times New Roman, Times, serif" style="font-family:'Times New Roman',Times,serif">Times New Roman</option>
+                      <option value="Verdana, Geneva, sans-serif" style="font-family:Verdana,Geneva,sans-serif">Verdana</option>
+                      <option value="Tahoma, Arial, sans-serif" style="font-family:Tahoma,Arial,sans-serif">Tahoma</option>
+                      <option value="Trebuchet MS, Arial, sans-serif" style="font-family:'Trebuchet MS',Arial,sans-serif">Trebuchet MS</option>
+                      <option value="Courier New, Courier, monospace" style="font-family:'Courier New',Courier,monospace">Courier New</option>
+                      <option value="Garamond, Georgia, serif" style="font-family:Garamond,Georgia,serif">Garamond</option>
+                    </select>
                     <button t-on-mousedown="(ev) => this.psRichToolbar('bold', ev)" title="Bold"><b>B</b></button>
                     <button t-on-mousedown="(ev) => this.psRichToolbar('italic', ev)" title="Italic"><i>I</i></button>
                     <button t-on-mousedown="(ev) => this.psRichToolbar('underline', ev)" title="Underline"><u>U</u></button>
