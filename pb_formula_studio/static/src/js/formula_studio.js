@@ -12,6 +12,14 @@ import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
 import { DocDrop } from "@biz_doc_ocr/js/doc_drop";
+import {
+    deletePayslipTable,
+    deletePayslipTableColumn,
+    deletePayslipTableRow,
+    insertPayslipTableColumn,
+    insertPayslipTableRow,
+    payslipTableContext,
+} from "./payslip_table_tools";
 // IA Cycle 4 — the ONE Studio change this cycle makes. Arriving here from the
 // Settings hub's cog path used to be a one-way trip: the Studio renders no
 // control panel, so there is no Odoo breadcrumb, and nothing in it said where
@@ -227,6 +235,8 @@ export class PbFormulaStudio extends Component {
             psRichQuery: "",
             psRichMode: "both",     // label | value | both
             psRichUsedIds: [],
+            psRichTableActive: false,
+            psRichTableLabel: "",
             // F12 — raw-Excel mode on the card (per-user preference)
             rawMode: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_raw_mode") === "1"),
             rawBuffer: "",
@@ -4695,8 +4705,11 @@ export class PbFormulaStudio extends Component {
         this.state.psRichQuery = "";
         this.state.psRichMode = "both";
         this.state.psRichUsedIds = this._psRichTokenIds(htmlValue || "");
+        this.state.psRichTableActive = false;
+        this.state.psRichTableLabel = "";
         this.state.psRichDraft = this._psRichExpandTokens(htmlValue || "");
         this._psRichRange = null;
+        this._psRichCellEl = null;
         this.state.psRichOpen = true;
         // The contenteditable subtree is browser-owned once editing begins.
         // Seed it after OWL mounts the shell so VHtml never tries to reconcile
@@ -4711,7 +4724,11 @@ export class PbFormulaStudio extends Component {
         };
         setTimeout(seedEditor, 0);
     }
-    closePsRich() { if (!this.state.psRichBusy) this.state.psRichOpen = false; }
+    closePsRich() {
+        if (this.state.psRichBusy) return;
+        this._psRichSelectCell(null);
+        this.state.psRichOpen = false;
+    }
     _psRichEditor() { return document.querySelector(".ps-rich-editor"); }
     _psRichEscape(value) {
         return String(value == null ? "" : value)
@@ -4769,12 +4786,59 @@ export class PbFormulaStudio extends Component {
             .map(node => parseInt(node.dataset.psRuleId, 10)).filter(Boolean);
         this.state.psRichUsedIds = [...new Set(ids)];
     }
-    psRichRememberSelection() {
+    _psRichCellFromRange(range) {
+        const editor = this._psRichEditor();
+        if (!editor || !range) return null;
+        let node = range.commonAncestorContainer;
+        if (node && node.nodeType !== Node.ELEMENT_NODE) node = node.parentElement;
+        const cell = node && node.closest && node.closest("td, th");
+        return cell && editor.contains(cell) ? cell : null;
+    }
+    _psRichSelectCell(cell) {
+        const editor = this._psRichEditor();
+        if (this._psRichCellEl && this._psRichCellEl.isConnected) {
+            this._psRichCellEl.classList.remove("ps-rich-cell-selected");
+        }
+        const context = cell && editor && editor.contains(cell)
+            ? payslipTableContext(cell) : null;
+        this._psRichCellEl = context ? cell : null;
+        this.state.psRichTableActive = Boolean(context);
+        this.state.psRichTableLabel = context
+            ? `Row ${context.rowIndex + 1}, column ${context.cellIndex + 1} · ${context.rows.length} × ${context.columnCount}`
+            : "";
+        if (context) cell.classList.add("ps-rich-cell-selected");
+    }
+    _psRichActiveCell() {
+        const editor = this._psRichEditor();
+        if (this._psRichCellEl && this._psRichCellEl.isConnected
+                && editor && editor.contains(this._psRichCellEl)) return this._psRichCellEl;
+        return this._psRichCellFromRange(this._psRichRange);
+    }
+    _psRichPlaceCaret(cell) {
+        const editor = this._psRichEditor();
+        if (!cell || !editor || !editor.contains(cell)) {
+            this._psRichSelectCell(null);
+            return;
+        }
+        const range = document.createRange();
+        range.selectNodeContents(cell);
+        range.collapse(false);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        this._psRichRange = range.cloneRange();
+        this._psRichSelectCell(cell);
+        editor.focus();
+    }
+    psRichRememberSelection(ev) {
         const editor = this._psRichEditor();
         const selection = window.getSelection && window.getSelection();
         if (!editor || !selection || !selection.rangeCount) return;
         const range = selection.getRangeAt(0);
-        if (editor.contains(range.commonAncestorContainer)) this._psRichRange = range.cloneRange();
+        if (!editor.contains(range.commonAncestorContainer)) return;
+        this._psRichRange = range.cloneRange();
+        const eventCell = ev && ev.target && ev.target.closest && ev.target.closest("td, th");
+        this._psRichSelectCell(eventCell || this._psRichCellFromRange(range));
     }
     psRichCommand(command, value = null) {
         const editor = this._psRichEditor();
@@ -4809,6 +4873,45 @@ export class PbFormulaStudio extends Component {
     psRichInsertTableEvent(ev) {
         if (ev) ev.preventDefault();
         this.psRichInsertTable();
+    }
+    psRichTextColor(command, ev) {
+        const value = ev && ev.target && ev.target.value;
+        if (!/^#[0-9a-f]{6}$/i.test(value || "")) return;
+        this.psRichCommand(command === "background" ? "hiliteColor" : "foreColor", value);
+    }
+    psRichTableAction(action, ev) {
+        if (ev) ev.preventDefault();
+        const cell = this._psRichActiveCell();
+        if (!cell) { this._psRichSelectCell(null); return; }
+        let next = cell;
+        if (action === "row_above") next = insertPayslipTableRow(cell, false);
+        else if (action === "row_below") next = insertPayslipTableRow(cell, true);
+        else if (action === "column_before") next = insertPayslipTableColumn(cell, false);
+        else if (action === "column_after") next = insertPayslipTableColumn(cell, true);
+        else if (action === "delete_row") next = deletePayslipTableRow(cell);
+        else if (action === "delete_column") next = deletePayslipTableColumn(cell);
+        else if (action === "delete_table") {
+            deletePayslipTable(cell);
+            next = null;
+        }
+        this._psRichPlaceCaret(next);
+    }
+    psRichCellColor(kind, ev) {
+        const value = ev && ev.target && ev.target.value;
+        const cell = this._psRichActiveCell();
+        if (!cell || !/^#[0-9a-f]{6}$/i.test(value || "")) return;
+        if (kind === "background") cell.style.backgroundColor = value;
+        else cell.style.color = value;
+        this._psRichSelectCell(cell);
+    }
+    psRichClearCellColor(ev) {
+        if (ev) ev.preventDefault();
+        const cell = this._psRichActiveCell();
+        if (!cell) return;
+        cell.style.removeProperty("background-color");
+        cell.style.removeProperty("color");
+        if (!cell.getAttribute("style")) cell.removeAttribute("style");
+        this._psRichSelectCell(cell);
     }
     psRichInsertComponent(component, ev) {
         if (ev) ev.preventDefault();
@@ -4881,7 +4984,7 @@ export class PbFormulaStudio extends Component {
     }
     psRichEditorClick(ev) {
         const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-component]");
-        if (!remove) { this.psRichRememberSelection(); return; }
+        if (!remove) { this.psRichRememberSelection(ev); return; }
         ev.preventDefault();
         const token = remove.closest(".ps-component-token");
         if (token) token.remove();
@@ -4897,6 +5000,10 @@ export class PbFormulaStudio extends Component {
             const marker = ruleId && ["label", "value", "both"].includes(mode)
                 ? `{{pb_component:${ruleId}:${mode}}}` : "";
             token.replaceWith(document.createTextNode(marker));
+        }
+        for (const cell of clone.querySelectorAll(".ps-rich-cell-selected")) {
+            cell.classList.remove("ps-rich-cell-selected");
+            if (!cell.className) cell.removeAttribute("class");
         }
         return clone.innerHTML;
     }

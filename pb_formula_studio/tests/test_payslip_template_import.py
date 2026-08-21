@@ -131,6 +131,15 @@ class TestPayslipTemplateImport(TransactionCase):
         self.assertIn('Safe table', self.earnings.note_html)
         self.assertNotIn('<script', self.earnings.note_html)
 
+        coloured = self.Studio.save_payslip_content(
+            self.config.id, 'section:%s' % self.earnings.id,
+            '<table><tr><td style="background-color:#fef3c7;color:#334155">'
+            'Coloured cell</td></tr></table>')
+        self.assertTrue(coloured['ok'])
+        self.assertIn('background-color', self.earnings.note_html,
+                      'safe cell colours must survive HTML sanitizing')
+        self.assertIn('color', self.earnings.note_html)
+
         foreign = self.env['hr.formula.config'].create({
             'name': 'Foreign payslip config', 'code': 'FOREIGN_PS',
             'country_code': 'VN', 'state': 'draft',
