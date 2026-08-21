@@ -22,7 +22,10 @@ its Cycle 1 — the endpoint model and the navigation streamlining — takes it 
 **W130**; **Cycle 2** — the Mapping Studio — takes it to **W136**; **Cycle 3** — the Zoho
 People catalogue, the legacy ABM inventory as shipped data — takes it to **W140**;
 **Cycle 4** — the abm tenant's catch-up upgrade and the seeding of its real Zoho
-integration — CLOSES the programme at **W145**.
+integration — takes it to **W145**; **Cycle 5** (the wires) to **W150**;
+**Cycle 6** (the expected-field catalogue) to **W153**; and **Cycle 7** — the
+white-label gate, the one-gesture wire, the feed cards, the launcher and the
+single sync truth — CLOSES the programme at **W157**.
 73 rules, not 74: there is no W32 — see the note below.
 Second numbering note: P5's W68 and IA-C1's first five entries were written the same afternoon in
 two sessions and both claimed W68. P5 committed first, so P5 keeps W68 and the IA entries were
@@ -2594,3 +2597,79 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   positive case passes either way; (3) a warning that fires on a screen with
   nothing wrong trains the reader to stop reading warnings, which costs more
   than the missing warning would have.
+- **W154 A brand rule that is not a TEST is a cleaning rota, and the tree gets
+  dirty again between cleans.** (Integrations Cycle 7.) The owner's words were
+  "I do not want Odoo mentioned anywhere to the user in any form ... in fact we
+  did a big exercise of debranding before" — and the seventeen user-visible
+  strings this cycle found are what the previous exercise left behind. The gate
+  (`biz_debrand/tests/test_no_odoo_in_ui.py`) walks every `pb_*`/`biz_*` module
+  on the addons path, DERIVED by directory prefix rather than listed, so a
+  module added next month is covered without anybody remembering.
+  Two scanner rules, each of which produced a false clean run inside this cycle
+  before it was found: (1) **a field label is POSITIONAL at least as often as
+  it is `string=`** — `fields.Char('Odoo Field')` passed a scanner that read
+  only keywords, so scan EVERY positional string a `fields.*()` constructor
+  takes plus every `Selection` label; (2) **a multi-line `msgid` opens with a
+  bare `msgid ""`, exactly as the PO header entry does** — a line-wise reader
+  that treats `msgid ""` as "the header" silently exempts every long string in
+  the catalogue, which hid six real Vietnamese translations. Assemble PO
+  entries whole and skip only the entry whose ASSEMBLED msgid is empty.
+  Third rule: the boundary is "could an end user READ this string?", so
+  imports, xmlids, model/module names, log lines, comments, docstrings and CSS
+  class names stay — and a debranding SEAM (`biz_theme`'s `stripOdoo()`,
+  `biz_debrand`'s scrub patterns) must keep the literal it exists to remove.
+  The allowlist shipped EMPTY; prove the mechanism with a test rather than with
+  a resident entry, and make every future entry carry a written reason.
+- **W155 A number measured at one viewport is not a layout rule, and a fixed
+  launcher over a scrolling page only misbehaves at the END of the scroll.**
+  (Integrations Cycle 7, WP-4, after Cycle 6 attempted the same item twice.)
+  Cycle 6 wrote `right: 380px` for the Mapping Studio's floating launchers,
+  measured at 1900px. The columns are a fixed 340px and the board fills the
+  viewport, so that number is correct at every width **by coincidence** and
+  silently wrong the day the column width changes; it is now
+  `calc(var(--mc-col-w) + 26px)` with `.mc-col` consuming the same property.
+  The real defect was on the OTHER surface and only visible at
+  `scrollTop === scrollHeight - clientHeight`: the connector cockpit reserved
+  26px of bottom padding against a 142px launcher stack, so its last two rows
+  sat permanently under a button with no scroll left to move them. Rules:
+  (1) a fixed launcher passing over content mid-scroll is the pattern working
+  — measure at FULL scroll, which is the only position where "covered" means
+  "unreachable"; (2) reserve the stack in the shared kit (`.pbim-page`), not on
+  the one cockpit that reported it; (3) when the reservation is arithmetic on
+  ANOTHER module's CSS, read that module's numbers back out of it in a test —
+  pb_learn's FAB has two homes (`bottom: 160px`, and `92px` under
+  `body.pb-coach-absent`) and reserving only one of them is a bug nobody would
+  see; (4) express the offset as what it IS ("one column plus a gutter"), not
+  as what it measured.
+- **W156 `Element.prototype.scrollTo` has no setter, and a whole SCSS bundle
+  dies on one comment.** (Integrations Cycle 7, both found by the browser after
+  green local gates.) `el.scrollTo = fn` throws "Cannot assign to read only
+  property" inside an ES module — spy with
+  `Object.defineProperty(el, 'scrollTo', {configurable: true, value: fn})`
+  instead. And a `/* … */` block that is CLOSED and then continued with more
+  ` *  …` lines is not a comment: Dart Sass reports
+  `Invalid CSS after "...": expected 1 selector or at-rule` and
+  `web.assets_web` falls back to a 39KB degraded stub for the whole database —
+  the page renders unstyled with "A css error occured, using an old style".
+  Corollary that cost two rounds of confusion: the degraded bundle is CACHED by
+  the browser under the same content-addressed URL, so a fixed compile still
+  looks broken. `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` is
+  necessary and NOT sufficient; force the client cache too with
+  `fetch(href, {cache: 'reload'})` on the exact href (a `?cb=` query updates a
+  DIFFERENT cache key and proves nothing) before reloading the page.
+- **W157 `rsync <module>/` publishes ANOTHER SESSION's uncommitted work, and an
+  `-u` blesses it.** (Integrations Cycle 7.) A parallel session was building a
+  "Configure connection" feature in the same worktree — ~800 uncommitted lines
+  across `pb_hr_payroll_formula` and `pb_import_advanced`, including
+  `zoho_connector.py` on a tenant holding real vendor credentials. Deploying
+  whole module directories pushed all of it live; its
+  `connector_cockpit.py` read `e.operation`, a field declared in a module that
+  was NOT in the same `-u`, and every connector cockpit on both databases
+  answered "Could not load this connector."
+  Rules: (1) when `git status` shows modifications in files you did not touch,
+  deploy FILE-scoped (`git show HEAD:<path>` → `install`), never
+  `rsync <module>/`; (2) the repair is to restore the published files to HEAD
+  and restart — not to revert the other session's WORKING TREE, which may be
+  mid-flight (the [[payobook-deploy]] rule against rewriting shared history,
+  one layer down); (3) explicit staging already protects the HISTORY — this is
+  the same hazard reaching PRODUCTION instead, and it needs its own habit.
