@@ -2825,3 +2825,21 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   way to discover why; (4) an agent that runs long enough to be interrupted
   should re-stage immediately before committing rather than trusting an earlier
   `add`.
+- **W167 W128's pre-stop scan needs `sudo` on this box, and without it `find`
+  returns an EMPTY list that reads exactly like "clean".** (Integrations Cycle
+  8 — W127's shape, on the one instrument the deploy ritual depends on.) The
+  scan W128 prescribes is
+  `find /odoo/odoo-server/addons -name '*.py' -newermt "<process start>"`, and
+  the addons tree on this server is not world-readable: run as the ordinary SSH
+  user it prints its permission errors to stderr, exits, and produces no lines
+  on stdout. A cycle that pipes it, greps it, or simply reads the output sees
+  nothing and reports "no foreign file" — which is the answer it would give if
+  the tree were genuinely untouched. This cycle reported two clean scans that
+  way before running the same command with `sudo` and getting three files back.
+  Rules: (1) `sudo find …`, always, and 2>&1 rather than discarding stderr —
+  a permission error is the scan telling you it did not run; (2) prove the
+  scan the way W127 says to prove a gate: `touch` a file under the tree and
+  confirm it APPEARS, before trusting an empty answer on files you believe are
+  fine; (3) the same applies to every `grep`/`md5sum` against
+  `/odoo/odoo-server/addons` in a deploy check — a `Permission denied` in the
+  middle of a verification table is a missing row, not a passing one.
