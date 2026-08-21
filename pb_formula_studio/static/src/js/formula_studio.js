@@ -4801,8 +4801,32 @@ export class PbFormulaStudio extends Component {
     psRichInsertComponent(component, ev) {
         if (ev) ev.preventDefault();
         const token = this._psRichTokenHtml(component, this.state.psRichMode || "both");
-        if (!token) return;
-        this.psRichCommand("insertHTML", token + "&#8203;");
+        const editor = this._psRichEditor();
+        if (!token || !editor) return;
+        editor.focus();
+        const selection = window.getSelection();
+        let range = this._psRichRange;
+        if (!range || !editor.contains(range.commonAncestorContainer)) {
+            range = document.createRange();
+            range.selectNodeContents(editor);
+            range.collapse(false);
+        } else {
+            range = range.cloneRange();
+        }
+        // execCommand("insertHTML") unwraps contenteditable=false spans in some
+        // table-cell contexts.  Insert the fragment through the live Range so
+        // the component wrapper and its rule metadata survive serialization.
+        const fragment = range.createContextualFragment(token + "\u200B");
+        const last = fragment.lastChild;
+        range.deleteContents();
+        range.insertNode(fragment);
+        if (last) {
+            range.setStartAfter(last);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            this._psRichRange = range.cloneRange();
+        }
         this._psRichRefreshUsed();
     }
     psRichComponentDragStart(component, ev) {
