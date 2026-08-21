@@ -273,12 +273,15 @@ test("cancel drops what is pending and what is in flight", async () => {
 test("a python rule and a non-manager both open read-only, with different sentences", () => {
     const pythonRule = { ...blankSpec(), builder_mode: "python", has_python: true };
     const pythonNote = readOnlyReason(payload(), pythonRule);
-    expect(pythonNote).toBeTruthy();
+    // NOT `toBeTruthy` — hoot has no such matcher, and `expect()` with no
+    // matcher FAILS the test rather than passing it vacuously. These are
+    // sentences, so the honest assertion is that they are not the empty one.
+    expect(pythonNote).not.toBe("");
     // The neutral product voice: never the name of the platform underneath.
     expect(pythonNote.toLowerCase().includes("odoo")).toBe(false);
 
     const lockedNote = readOnlyReason(payload({ can_edit: false }), blankSpec());
-    expect(lockedNote).toBeTruthy();
+    expect(lockedNote).not.toBe("");
     expect(lockedNote.toLowerCase().includes("odoo")).toBe(false);
 
     // Two different refusals mean opposite things to the reader — one is about
@@ -313,7 +316,7 @@ test("a CONVERTED rule keeps its old program as provenance and stays editable", 
 
     // …and the lane is decided by builder_mode ALONE, in both directions.
     expect(readOnlyReason(payload(), { ...converted, builder_mode: "python" }))
-        .toBeTruthy();
+        .not.toBe("");
     expect(readOnlyReason(payload(), { ...blankSpec(), has_python: false }))
         .toBe("");
 });
