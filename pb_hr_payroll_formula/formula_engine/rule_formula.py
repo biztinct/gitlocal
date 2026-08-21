@@ -53,7 +53,7 @@ from .excel_semantics import (
 
 __all__ = [
     'Cell', 'RuleFormulaError', 'compile_rule_formula', 'eval_rule_formula',
-    'resolve_ref', 'FUNCTION_HELP', 'SUPPORTED_FUNCTIONS',
+    'resolve_ref', 'norm_name', 'FUNCTION_HELP', 'SUPPORTED_FUNCTIONS',
 ]
 
 
@@ -67,9 +67,18 @@ class RuleFormulaError(ValueError):
 # Reference resolution — a record dict is not a spreadsheet row
 # ---------------------------------------------------------------------------
 
-def _norm(key):
-    """A field name reduced to what a human would call 'the same name'."""
+def norm_name(key):
+    """A field name reduced to what a human would call 'the same name'.
+
+    Public, because three callers outside this module have to normalise the
+    SAME way or they will disagree with the run-time lookup: the save
+    validator, the assistant's catalogue snap and the composer's picker.
+    """
     return re.sub(r'[\s_.\-]+', '', str(key or '')).casefold()
+
+
+# The old private spelling, kept as an alias for this module's own internals.
+_norm = norm_name
 
 
 class Cell(str):
