@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import excel_semantics
+from . import rule_formula
 from . import if_chain
 from . import cell_refs
 from .cell_refs import shift_rows
