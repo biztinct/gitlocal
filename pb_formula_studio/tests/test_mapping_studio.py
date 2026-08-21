@@ -438,3 +438,47 @@ class TestMappingStudio(TransactionCase):
                 continue
             for key in ('left', 'right', 'wires', 'can_edit'):
                 self.assertIn(key, payload)
+
+
+# ============================================ Integrations Cycle 7 — WP-4
+#
+# The floating launchers are offset off the TO column on this board and nowhere
+# else. Cycle 6 wrote that offset as `right: 380px`, a number measured at the
+# 1900px viewport it was tested on; at the owner's 1450px the FAB lands at
+# x 968-1070 against a column starting at 1110 — correct by 40px of luck rather
+# than by construction, and silently wrong the day the column width changes.
+#
+# The offset is now stated as what it is: one column, plus a gutter. Both files
+# read the column width from the same custom property, and this asserts they
+# still do — a CSS mismatch renders, so nothing else would ever notice.
+@tagged('post_install', '-at_install')
+class TestLauncherOffsetFollowsTheColumn(TransactionCase):
+
+    def _scss(self, name):
+        import os
+        from odoo.modules.module import get_module_path
+        path = os.path.join(get_module_path('pb_formula_studio'),
+                            'static', 'src', 'scss', name)
+        with open(path, encoding='utf-8') as fh:
+            return fh.read()
+
+    def test_50_the_launcher_offset_is_one_column_not_a_measured_number(self):
+        studio = self._scss('mapping_studio.scss')
+        block = studio.split('.o_web_client:has(.pbim.pbms .pbms-wrap)', 1)
+        self.assertEqual(len(block), 2, 'the launcher-offset rule has gone')
+        rule = block[1].split('\n}', 1)[0]
+        for sel in ('.lrn-fab', '.payai-floating-pill'):
+            self.assertIn(sel, rule, '%s is no longer moved off the column' % sel)
+        self.assertIn('var(--mc-col-w)', rule,
+                      'the offset is a magic number again; it has to be '
+                      'derived from the column it is avoiding')
+        self.assertIn('--mc-col-w:', rule,
+                      'the property the offset reads must be set on the same '
+                      'host, or it resolves to nothing on a sibling')
+
+    def test_51_the_column_reads_the_same_property_the_offset_does(self):
+        canvas = self._scss('mapping.scss')
+        self.assertIn('.mapping-canvas .mc-col { width: var(--mc-col-w,', canvas,
+                      'the column stopped consuming the property the launcher '
+                      'offset is computed from — the two can now disagree '
+                      'without either file changing')

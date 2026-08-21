@@ -68,9 +68,21 @@
  *
  *  pb_learn and pb_payroll_ai are not touched; their defaults are unchanged on
  *  every other screen. */
+ *  CYCLE 7 CORRECTION. Cycle 6 wrote `right: 380px`, a number measured at the
+ *  1900px viewport it was tested on. The columns are a FIXED 340px wide and the
+ *  board fills the viewport, so the TO column's left edge is always
+ *  `100vw - 340px` — which means 380px is right at every width by luck rather
+ *  than by construction, and any change to the column width silently breaks it.
+ *  Measured at the owner's 1450px before the correction: FAB x 968-1070, TO
+ *  column x 1110-1450 — clear, but by 40px of coincidence.
+ *
+ *  The offset is now stated as what it IS: one column, plus a gutter. The
+ *  column width lives in a custom property that `.mc-col` itself consumes, so
+ *  the two cannot drift apart without somebody editing one line. */
 .o_web_client:has(.pbim.pbms .pbms-wrap) {
-    .lrn-fab             { right: 380px; }   /* right edge 1540, clear of 1580 */
-    .payai-floating-pill { right: 380px; }
+    --mc-col-w: 340px;
+    .lrn-fab             { right: calc(var(--mc-col-w) + 26px); }
+    .payai-floating-pill { right: calc(var(--mc-col-w) + 26px); }
 }
 
 /* ======================================================== the top bar ======
