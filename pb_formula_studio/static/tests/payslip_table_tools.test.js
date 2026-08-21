@@ -100,7 +100,8 @@ test("no-border preset can target one cell without changing its table", () => {
     const selected = table.rows[1].cells[0];
 
     expect(applyPayslipTableBorder(selected, "cell", "none")).toBe(1);
-    expect(selected.style.border).toBe("none");
+    expect(selected.style.borderStyle).toBe("none");
+    expect(selected.getAttribute("style")).toBe("border-style: none;");
     expect(table.rows[1].cells[1].style.border).toBe("");
     expect(table.style.border).toBe("");
     host.remove();
