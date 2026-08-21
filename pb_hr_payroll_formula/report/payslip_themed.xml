@@ -25,6 +25,8 @@
                             .pb-ps-rich table { width: 100%; border-collapse: collapse; margin: 6px 0; }
                             .pb-ps-rich th, .pb-ps-rich td { border: 1px solid #CBD5E1; padding: 4px 6px; text-align: left; }
                             .pb-ps-rich th { background: #F1F5F9; }
+                            .pb-ps-component-value, .pb-ps-component-amount { font-weight: 700; white-space: nowrap; }
+                            .pb-ps-component-both { display: flex; align-items:baseline; justify-content:space-between; gap:12px; width:100%; }
                         </style>
                         <!-- brand header: logo (theme_logo/theme_show_logo) + accent rule -->
                         <div t-attf-style="display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid {{ ps['accent_hex'] }}; padding-bottom:10px; margin-bottom:16px;">

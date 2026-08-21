@@ -224,6 +224,9 @@ export class PbFormulaStudio extends Component {
             psRichTitle: "",
             psRichDraft: "",
             psRichBusy: false,
+            psRichQuery: "",
+            psRichMode: "both",     // label | value | both
+            psRichUsedIds: [],
             // F12 — raw-Excel mode on the card (per-user preference)
             rawMode: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_raw_mode") === "1"),
             rawBuffer: "",
@@ -4511,6 +4514,9 @@ export class PbFormulaStudio extends Component {
     psSectionTotal(s) {
         let t = 0;
         for (const c of this.psSectionVisibleComps(s)) t += (c.is_deduction ? -1 : 1) * (c.value || 0);
+        for (const c of (s.embedded_components || []).filter(c => this.psVisible(c))) {
+            t += (c.is_deduction ? -1 : 1) * (c.value || 0);
+        }
         return t;
     }
     get psNet() {
@@ -4686,12 +4692,71 @@ export class PbFormulaStudio extends Component {
         if (!this.state.psData || !this.state.psData.can_edit) return;
         this.state.psRichTarget = target;
         this.state.psRichTitle = title;
-        this.state.psRichDraft = htmlValue || "";
+        this.state.psRichQuery = "";
+        this.state.psRichMode = "both";
+        this.state.psRichUsedIds = this._psRichTokenIds(htmlValue || "");
+        this.state.psRichDraft = this._psRichExpandTokens(htmlValue || "");
         this._psRichRange = null;
         this.state.psRichOpen = true;
     }
     closePsRich() { if (!this.state.psRichBusy) this.state.psRichOpen = false; }
     _psRichEditor() { return document.querySelector(".ps-rich-editor"); }
+    _psRichEscape(value) {
+        return String(value == null ? "" : value)
+            .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+    }
+    _psRichTokenIds(htmlValue) {
+        const ids = [];
+        const re = /\{\{pb_component:(\d+):(label|value|both)\}\}/g;
+        for (const match of String(htmlValue || "").matchAll(re)) {
+            const id = parseInt(match[1], 10);
+            if (id && !ids.includes(id)) ids.push(id);
+        }
+        return ids;
+    }
+    _psRichComponent(ruleId) {
+        return ((this.state.psData && this.state.psData.rich_components) || [])
+            .find(c => c.id === parseInt(ruleId, 10));
+    }
+    _psRichTokenHtml(component, mode) {
+        if (!component || !["label", "value", "both"].includes(mode)) return "";
+        const name = this._psRichEscape(component.name || component.code || "Component");
+        const value = this._psRichEscape(this.psVal(component));
+        const code = this._psRichEscape(component.col || component.code || "");
+        const body = mode === "label"
+            ? `<span class="ps-component-token-name">${name}</span>`
+            : mode === "value"
+                ? `<span class="ps-component-token-value">${value}</span>`
+                : `<span class="ps-component-token-name">${name}</span><span class="ps-component-token-value">${value}</span>`;
+        return `<span class="ps-component-token mode-${mode}" contenteditable="false" data-ps-rule-id="${component.id}" data-ps-mode="${mode}" title="Dynamic payroll component ${code}">${body}<button type="button" tabindex="-1" data-ps-remove-component="1" title="Remove component">×</button></span>`;
+    }
+    _psRichExpandTokens(htmlValue) {
+        return String(htmlValue || "").replace(
+            /\{\{pb_component:(\d+):(label|value|both)\}\}/g,
+            (_token, ruleId, mode) => {
+                const component = this._psRichComponent(ruleId);
+                return component ? this._psRichTokenHtml(component, mode) : "";
+            });
+    }
+    get psRichComponents() {
+        const all = (this.state.psData && this.state.psData.rich_components) || [];
+        const query = (this.state.psRichQuery || "").trim().toLowerCase();
+        const filtered = query ? all.filter(c =>
+            [c.name, c.code, c.col, c.group].some(value =>
+                String(value || "").toLowerCase().includes(query))) : all;
+        return filtered.slice(0, 120);
+    }
+    psRichSearch(ev) { this.state.psRichQuery = ev.target.value || ""; }
+    psRichSetMode(ev) { this.state.psRichMode = ev.target.value || "both"; }
+    psRichIsUsed(component) { return this.state.psRichUsedIds.includes(component.id); }
+    _psRichRefreshUsed() {
+        const editor = this._psRichEditor();
+        if (!editor) return;
+        const ids = [...editor.querySelectorAll(".ps-component-token")]
+            .map(node => parseInt(node.dataset.psRuleId, 10)).filter(Boolean);
+        this.state.psRichUsedIds = [...new Set(ids)];
+    }
     psRichRememberSelection() {
         const editor = this._psRichEditor();
         const selection = window.getSelection && window.getSelection();
@@ -4703,10 +4768,16 @@ export class PbFormulaStudio extends Component {
         const editor = this._psRichEditor();
         if (!editor) return;
         editor.focus();
+        const selection = window.getSelection();
         if (this._psRichRange && editor.contains(this._psRichRange.commonAncestorContainer)) {
-            const selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(this._psRichRange);
+        } else {
+            const range = document.createRange();
+            range.selectNodeContents(editor);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
         document.execCommand(command, false, value);
         this.psRichRememberSelection();
@@ -4727,10 +4798,75 @@ export class PbFormulaStudio extends Component {
         if (ev) ev.preventDefault();
         this.psRichInsertTable();
     }
+    psRichInsertComponent(component, ev) {
+        if (ev) ev.preventDefault();
+        const token = this._psRichTokenHtml(component, this.state.psRichMode || "both");
+        if (!token) return;
+        this.psRichCommand("insertHTML", token + "&#8203;");
+        this._psRichRefreshUsed();
+    }
+    psRichComponentDragStart(component, ev) {
+        if (!ev || !ev.dataTransfer) return;
+        ev.dataTransfer.effectAllowed = "copy";
+        ev.dataTransfer.setData("application/x-pb-payslip-component", JSON.stringify({
+            id: component.id, mode: this.state.psRichMode || "both",
+        }));
+    }
+    psRichEditorDragOver(ev) {
+        if (!ev || !ev.dataTransfer || !Array.from(ev.dataTransfer.types || []).includes("application/x-pb-payslip-component")) return;
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = "copy";
+    }
+    psRichEditorDrop(ev) {
+        if (!ev || !ev.dataTransfer) return;
+        const raw = ev.dataTransfer.getData("application/x-pb-payslip-component");
+        if (!raw) return;
+        ev.preventDefault();
+        let payload;
+        try { payload = JSON.parse(raw); } catch (_e) { return; }
+        const component = this._psRichComponent(payload.id);
+        const editor = this._psRichEditor();
+        if (!component || !editor) return;
+        let range = null;
+        if (document.caretRangeFromPoint) range = document.caretRangeFromPoint(ev.clientX, ev.clientY);
+        else if (document.caretPositionFromPoint) {
+            const pos = document.caretPositionFromPoint(ev.clientX, ev.clientY);
+            if (pos) {
+                range = document.createRange();
+                range.setStart(pos.offsetNode, pos.offset);
+                range.collapse(true);
+            }
+        }
+        if (range && editor.contains(range.commonAncestorContainer)) this._psRichRange = range;
+        const previousMode = this.state.psRichMode;
+        this.state.psRichMode = payload.mode || "both";
+        this.psRichInsertComponent(component);
+        this.state.psRichMode = previousMode;
+    }
+    psRichEditorClick(ev) {
+        const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-component]");
+        if (!remove) { this.psRichRememberSelection(); return; }
+        ev.preventDefault();
+        const token = remove.closest(".ps-component-token");
+        if (token) token.remove();
+        this._psRichRefreshUsed();
+    }
+    _psRichSerializedHtml() {
+        const editor = this._psRichEditor();
+        if (!editor) return this.state.psRichDraft || "";
+        const clone = editor.cloneNode(true);
+        for (const token of clone.querySelectorAll(".ps-component-token")) {
+            const ruleId = parseInt(token.dataset.psRuleId, 10);
+            const mode = token.dataset.psMode;
+            const marker = ruleId && ["label", "value", "both"].includes(mode)
+                ? `{{pb_component:${ruleId}:${mode}}}` : "";
+            token.replaceWith(document.createTextNode(marker));
+        }
+        return clone.innerHTML;
+    }
     async psSaveRich() {
         if (this.state.psRichBusy) return;
-        const editor = this._psRichEditor();
-        const htmlValue = editor ? editor.innerHTML : this.state.psRichDraft;
+        const htmlValue = this._psRichSerializedHtml();
         this.state.psRichBusy = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "save_payslip_content",

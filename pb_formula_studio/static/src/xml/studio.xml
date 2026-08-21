@@ -2080,11 +2080,11 @@
                     <div class="ps-slip-sub" t-esc="state.psData.config.name"/>
                   </div>
                 </div>
-                <div t-if="state.psData.header_html" class="ps-slip-rich header" t-out="psHtml(state.psData.header_html)"/>
+                <div t-if="state.psData.header_rendered_html" class="ps-slip-rich header" t-out="psHtml(state.psData.header_rendered_html)"/>
                 <t t-foreach="state.psData.sections" t-as="s" t-key="s.id">
                   <div t-if="psSectionShown(s)" t-attf-class="ps-slip-sec sc-{{ s.color_key }}">
                     <div class="ps-slip-sec-title" t-esc="psSectionTitle(s)"/>
-                    <div t-if="s.note_html" class="ps-slip-rich section" t-out="psHtml(s.note_html)"/>
+                    <div t-if="s.note_rendered_html" class="ps-slip-rich section" t-out="psHtml(s.note_rendered_html)"/>
                     <t t-foreach="psSectionVisibleComps(s)" t-as="c" t-key="c.id">
                       <div class="ps-slip-line"><span t-esc="c.name"/><span t-attf-class="ps-slip-amt {{ c.is_deduction ? 'ded' : '' }}"><t t-if="c.is_deduction">−</t><t t-esc="psVal(c)"/></span></div>
                     </t>
@@ -2092,7 +2092,7 @@
                   </div>
                 </t>
                 <div class="ps-slip-net" style="background: var(--ps-accent, #241F52);"><span>Net pay</span><span t-esc="vnd(psNet)"/></div>
-                <div t-if="state.psData.footer_html" class="ps-slip-rich footer" t-out="psHtml(state.psData.footer_html)"/>
+                <div t-if="state.psData.footer_rendered_html" class="ps-slip-rich footer" t-out="psHtml(state.psData.footer_rendered_html)"/>
               </div>
             </div>
           </div>
@@ -2153,25 +2153,45 @@
             </div>
           </div>
 
-          <!-- Sanitized rich content shared by browser preview and PDF report. -->
+          <!-- Component-aware rich content shared by browser preview and PDF report. -->
           <div t-if="state.psRichOpen" class="ps-sub-scrim" t-on-click="closePsRich">
             <div class="ps-rich" t-on-click="(ev) => ev.stopPropagation()">
-              <div class="ps-sub-head"><div><b t-esc="state.psRichTitle"/><small>Add text, lists or a compact table. The preview is what prints.</small></div><button class="hs-x" t-on-click="closePsRich"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-              <div class="ps-rich-toolbar" role="toolbar" aria-label="Text formatting">
-                <select title="Text style" t-on-change="psRichBlock"><option value="">Style</option><option value="p">Paragraph</option><option value="h3">Heading</option><option value="blockquote">Quote</option></select>
-                <button t-on-mousedown="(ev) => this.psRichToolbar('bold', ev)" title="Bold"><b>B</b></button>
-                <button t-on-mousedown="(ev) => this.psRichToolbar('italic', ev)" title="Italic"><i>I</i></button>
-                <button t-on-mousedown="(ev) => this.psRichToolbar('underline', ev)" title="Underline"><u>U</u></button>
-                <span class="ps-tool-sep"/>
-                <button t-on-mousedown="(ev) => this.psRichToolbar('insertUnorderedList', ev)" title="Bulleted list">• List</button>
-                <button t-on-mousedown="(ev) => this.psRichToolbar('insertOrderedList', ev)" title="Numbered list">1. List</button>
-                <button t-on-mousedown="(ev) => this.psRichToolbar('justifyLeft', ev)" title="Align left">⇤</button>
-                <button t-on-mousedown="(ev) => this.psRichToolbar('justifyCenter', ev)" title="Align centre">↔</button>
-                <span class="ps-tool-sep"/>
-                <button class="wide" t-on-mousedown="psRichInsertTableEvent" title="Insert a 2-column table">▦ Table</button>
-                <button class="wide" t-on-mousedown="(ev) => this.psRichToolbar('removeFormat', ev)" title="Clear formatting">Clear</button>
+              <div class="ps-sub-head"><div><b t-esc="state.psRichTitle"/><small>Insert live payroll components anywhere — including inside table cells. Values update for every employee.</small></div><button class="hs-x" t-on-click="closePsRich"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+              <div class="ps-rich-workspace">
+                <aside class="ps-rich-components">
+                  <div class="ps-rich-components-head"><b>Components</b><span>Click or drag to the cursor</span></div>
+                  <div class="ps-rich-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input t-att-value="state.psRichQuery" t-on-input="psRichSearch" placeholder="Search name, code or column…"/></div>
+                  <div class="ps-rich-component-list">
+                    <button t-foreach="psRichComponents" t-as="c" t-key="c.id" class="ps-rich-component" draggable="true" t-on-dragstart="(ev) => this.psRichComponentDragStart(c, ev)" t-on-mousedown="psRichRememberSelection" t-on-click="(ev) => this.psRichInsertComponent(c, ev)" t-att-title="'Insert ' + c.name">
+                      <span class="ps-rich-component-col" t-esc="c.col"/>
+                      <span class="ps-rich-component-copy"><b t-esc="c.name"/><small><t t-esc="c.group"/> · <t t-esc="psVal(c)"/></small></span>
+                      <span t-if="psRichIsUsed(c)" class="ps-rich-used">Used</span>
+                      <span t-else="" class="ps-rich-add">＋</span>
+                    </button>
+                    <div t-if="!psRichComponents.length" class="ps-rich-no-components">No components match your search.</div>
+                  </div>
+                </aside>
+                <div class="ps-rich-compose">
+                  <div class="ps-rich-toolbar" role="toolbar" aria-label="Text formatting">
+                    <label class="ps-rich-mode"><span>Insert as</span><select title="Component display" t-on-change="psRichSetMode"><option value="both" t-att-selected="state.psRichMode === 'both'">Label + value</option><option value="label" t-att-selected="state.psRichMode === 'label'">Label only</option><option value="value" t-att-selected="state.psRichMode === 'value'">Value only</option></select></label>
+                    <span class="ps-tool-sep"/>
+                    <select title="Text style" t-on-change="psRichBlock"><option value="">Style</option><option value="p">Paragraph</option><option value="h3">Heading</option><option value="blockquote">Quote</option></select>
+                    <button t-on-mousedown="(ev) => this.psRichToolbar('bold', ev)" title="Bold"><b>B</b></button>
+                    <button t-on-mousedown="(ev) => this.psRichToolbar('italic', ev)" title="Italic"><i>I</i></button>
+                    <button t-on-mousedown="(ev) => this.psRichToolbar('underline', ev)" title="Underline"><u>U</u></button>
+                    <span class="ps-tool-sep"/>
+                    <button t-on-mousedown="(ev) => this.psRichToolbar('insertUnorderedList', ev)" title="Bulleted list">• List</button>
+                    <button t-on-mousedown="(ev) => this.psRichToolbar('insertOrderedList', ev)" title="Numbered list">1. List</button>
+                    <button t-on-mousedown="(ev) => this.psRichToolbar('justifyLeft', ev)" title="Align left">⇤</button>
+                    <button t-on-mousedown="(ev) => this.psRichToolbar('justifyCenter', ev)" title="Align centre">↔</button>
+                    <span class="ps-tool-sep"/>
+                    <button class="wide" t-on-mousedown="psRichInsertTableEvent" title="Insert a 2-column table">▦ Table</button>
+                    <button class="wide" t-on-mousedown="(ev) => this.psRichToolbar('removeFormat', ev)" title="Clear formatting">Clear</button>
+                  </div>
+                  <div class="ps-rich-hint"><span class="ps-rich-hint-dot"/>Choose <b>Label only</b> for the left cell and <b>Value only</b> for the right cell. Remove a component with its ×.</div>
+                  <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop" t-out="psHtml(state.psRichDraft)"/>
+                </div>
               </div>
-              <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-out="psHtml(state.psRichDraft)"/>
               <div class="ps-sub-foot"><button class="ps-secondary" t-on-click="closePsRich">Cancel</button><button class="ps-primary" t-att-disabled="state.psRichBusy" t-on-click="psSaveRich">Save content</button></div>
             </div>
           </div>

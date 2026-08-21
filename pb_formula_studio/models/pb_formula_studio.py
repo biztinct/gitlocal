@@ -4940,11 +4940,25 @@ class PbFormulaStudio(models.AbstractModel):
         samples = [{'id': s.id, 'name': s.name} for s in config.sample_data_ids]
         sid = int(sample_id) if sample_id else (samples[0]['id'] if samples else False)
         values = self._compute(config, sid).get('values', {}) if sid else {}
+        values_by_rule = {r.id: values.get(r.column_letter) for r in rules}
+        currency = config.currency_id.symbol if config.currency_id else '₫'
+
+        rich_blocks = [config.payslip_header_html or '', config.payslip_footer_html or '']
+        rich_blocks.extend(s.note_html or '' for s in sections)
+        embedded_value_ids = set()
+        for block in rich_blocks:
+            embedded_value_ids.update(
+                config._payslip_content_rule_ids(block, amount_only=True))
 
         payslip_rules = [r for r in rules if r.appears_on_payslip]
         by_sec = defaultdict(list)
         tray = []
         for r in payslip_rules:
+            # A value/both token is the visual placement of this component.
+            # Suppress its ordinary line until the token is removed, at which
+            # point the untouched section assignment makes it reappear.
+            if r.id in embedded_value_ids:
+                continue
             if r.payslip_identifier:
                 by_sec[r.payslip_identifier.id].append(r)
             else:
@@ -4953,21 +4967,30 @@ class PbFormulaStudio(models.AbstractModel):
         for s in sections:
             comps = sorted(by_sec.get(s.id, []),
                            key=lambda r: (r.payslip_sequence or 0, r.sequence))
+            embedded_ids = config._payslip_content_rule_ids(
+                s.note_html or '', amount_only=True)
             sec_payload.append({
                 'id': s.id, 'identifier': s.identifier or '',
                 'label': s.label or s.identifier or '', 'label_vi': s.label_vi or '',
                 'sequence': s.sequence, 'color_key': s.color_key or 'slate',
                 'collapse_when_empty': bool(s.collapse_when_empty),
                 'note_html': s.note_html or '',
+                'note_rendered_html': config._render_payslip_content(
+                    s.note_html or '', values_by_rule, currency),
+                'embedded_components': [
+                    self._payslip_comp(r, values) for r in rules
+                    if r.id in embedded_ids
+                ],
                 'components': [self._payslip_comp(r, values) for r in comps],
             })
         tray_sorted = sorted(tray, key=lambda r: r.sequence)
         return {
             'ok': True,
             'config': {'id': config.id, 'name': config.name,
-                       'currency': config.currency_id.symbol if config.currency_id else '₫'},
+                       'currency': currency},
             'sections': sec_payload,
             'tray': [self._payslip_comp(r, values) for r in tray_sorted],
+            'rich_components': [self._payslip_comp(r, values) for r in rules],
             'samples': samples, 'sample_id': sid,
             'colors': self._SECTION_COLORS,
             'theme': {
@@ -4979,6 +5002,10 @@ class PbFormulaStudio(models.AbstractModel):
             'accent_hex': self._ACCENT_HEX,
             'header_html': config.payslip_header_html or '',
             'footer_html': config.payslip_footer_html or '',
+            'header_rendered_html': config._render_payslip_content(
+                config.payslip_header_html or '', values_by_rule, currency),
+            'footer_rendered_html': config._render_payslip_content(
+                config.payslip_footer_html or '', values_by_rule, currency),
             'can_edit': self._can_edit(),
         }
 
@@ -5330,7 +5357,8 @@ class PbFormulaStudio(models.AbstractModel):
             config = self.env['hr.formula.config'].browse()
         if not config:
             return {'ok': False}
-        html_value = str(html_value or '')[:50000]
+        html_value = config._normalise_payslip_content_tokens(
+            str(html_value or '')[:50000])
         if target == 'header':
             config.write({'payslip_header_html': html_value or False})
         elif target == 'footer':
