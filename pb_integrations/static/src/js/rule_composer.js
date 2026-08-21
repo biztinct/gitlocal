@@ -247,7 +247,14 @@ export function railSentence(preview, translate = _t) {
  * "read-only" would leave both of them guessing.
  */
 export function readOnlyReason(payload, draft) {
-    if ((draft || {}).builder_mode === "python" || (draft || {}).has_python) {
+    // `builder_mode` ALONE decides the lane. NOT `has_python` — that key means
+    // "a python expression is still stored on this row", and after Cycle 8's
+    // migration it is true of DEPCOUNT and WORKEDHRS, which are guided rules
+    // that KEEP their original program as inert provenance so the sentence can
+    // be checked against what the legacy actually did. Reading it as a lane
+    // locked the owner out of the only two rules this whole cycle was for, and
+    // did it on the live abm board (found there, by opening WORKEDHRS).
+    if ((draft || {}).builder_mode === "python") {
         return _t("This rule is maintained in the backend form by an "
                   + "administrator, so it opens here as a summary you can read "
                   + "but not change.");
@@ -469,9 +476,21 @@ export class RuleComposer extends Component {
 
     isUnary(op) { return this.unaryOps.has(op); }
 
+    /** The LANE, which is `builder_mode` and nothing else — see readOnlyReason. */
     get isPython() {
-        const d = this.state.draft || {};
-        return d.builder_mode === "python" || !!d.has_python;
+        return (this.state.draft || {}).builder_mode === "python";
+    }
+
+    /**
+     * Is there a python expression still stored on this row?
+     *
+     * PROVENANCE, not a lane. Cycle 8's migration left the original program in
+     * place on DEPCOUNT and WORKEDHRS precisely so the generated sentence can
+     * be checked against what the legacy actually did, and an administrator
+     * looking at a converted rule should be able to see both.
+     */
+    get hasLegacyPython() {
+        return !!(this.state.draft || {}).has_python;
     }
 
     get readOnly() {

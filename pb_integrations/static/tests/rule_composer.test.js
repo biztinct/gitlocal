@@ -290,6 +290,34 @@ test("a python rule and a non-manager both open read-only, with different senten
     expect(readOnlyReason(payload(), blankSpec())).toBe("");
 });
 
+test("a CONVERTED rule keeps its old program as provenance and stays editable", () => {
+    // Found on the live abm board, by opening the one rule the whole cycle was
+    // for. Cycle 8's migration converts DEPCOUNT and WORKEDHRS to guided steps
+    // and DELIBERATELY leaves `python_code` in place, so the generated sentence
+    // can be checked against what the legacy actually did — which makes
+    // `has_python` TRUE on a rule that is not in the advanced lane at all.
+    // Reading that key as a lane locked the owner out of both of them.
+    const converted = {
+        ...blankSpec(),
+        builder_mode: "guided",
+        rule_type: "sum",
+        value_steps: [
+            { field: "totalWorkedHours", contains: "seconds" },
+            { field: "paidLeaveHours", contains: "hmm" },
+        ],
+        has_python: true,
+        python_code: "total = 0.0\nfor r in records:\n    ...\nresult = total\n",
+        plain_summary: "Adds up totalWorkedHours plus paidLeaveHours over Attendance records",
+    };
+    expect(readOnlyReason(payload(), converted)).toBe("");
+
+    // …and the lane is decided by builder_mode ALONE, in both directions.
+    expect(readOnlyReason(payload(), { ...converted, builder_mode: "python" }))
+        .toBeTruthy();
+    expect(readOnlyReason(payload(), { ...blankSpec(), has_python: false }))
+        .toBe("");
+});
+
 test("a python rule renders no save affordance", async () => {
     onRpc("pb.integrations", "rule_composer_data", () => payload({
         rule: { ...blankSpec(), id: 4, name: "WORKEDHRS", output_key: "WORKEDHRS",

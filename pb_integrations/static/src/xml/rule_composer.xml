@@ -360,6 +360,17 @@
                   <input class="pplw-in itgrc-val" t-att-value="state.draft.default_value"
                          t-att-disabled="readOnly" t-on-input="onDefault"/>
                 </div>
+
+                <!-- PROVENANCE, for a rule that used to be a program.
+                     DEPCOUNT and WORKEDHRS keep the expression they were
+                     converted FROM, so the sentence above can be checked
+                     against what the legacy actually did. It is inert: a
+                     guided rule never reaches it. Administrators only, and
+                     collapsed, because it is evidence rather than a control. -->
+                <details t-if="payload.is_admin and hasLegacyPython" class="itgrc-code">
+                  <summary>How this rule was written before</summary>
+                  <pre t-esc="state.draft.python_code"/>
+                </details>
               </t>
             </div>
 
