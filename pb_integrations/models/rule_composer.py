@@ -223,7 +223,12 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
                  'sample': f.get('sample'), 'type': f.get('type') or 'string',
                  'provenance': f.get('provenance') or 'catalog',
                  'feed_type': data_type}
-                for f in catalog if f.get('path')]
+                for f in self._payload_fields_only(catalog)]
+            # Honest rather than empty-and-silent: the picker says WHY it has
+            # nothing to offer, and the save validator skips its catalogue
+            # check for exactly the same feeds (a check that could not run must
+            # not be reported as a check that failed).
+            feed['fields_known'] = bool(fields_by_type[data_type])
 
             rows, is_synthetic = self._rule_sample_rows(connector, data_type,
                                                         fields_by_type[data_type])
@@ -268,6 +273,31 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
             'functions': rule_formula.FUNCTION_HELP,
             'ai': self.env['hr.api.rule.assistant'].assistant_status(),
         }
+
+    @staticmethod
+    def _payload_fields_only(catalog):
+        """Drop the `hr.employee` fallback layer. Found on the live board.
+
+        `get_available_source_fields` ends in a third layer — this platform's
+        OWN employee schema — when a connector has neither stored rows nor a
+        catalogue, and marks it `provenance='odoo'` precisely so no surface can
+        present it as the vendor's shape. For the Mapping Studio that layer is
+        the only useful answer for a brand-new connector: a mapping's left-hand
+        side really can be a native column.
+
+        For a transformation RULE it is meaningless and actively misleading. A
+        rule reads the stored API payload and nothing else, so offering
+        `activity_exception_decoration` in the field picker would invite a
+        payroll manager to build a rule over a field the source will never
+        send — which computes a well-shaped zero, forever. Live on payobook the
+        Zoho People connector answered with 200 such fields and not one real
+        one.
+
+        The honest answer for that connector is an EMPTY picker plus the
+        reason, which is what `fields_known` carries.
+        """
+        return [f for f in (catalog or [])
+                if f.get('path') and f.get('provenance') != 'odoo']
 
     @api.model
     def _rule_sample_rows(self, connector, data_type, catalog):
@@ -467,9 +497,9 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
     def _rule_catalog(self, connector, data_type):
         try:
             return [{'path': f.get('path'), 'sample': f.get('sample')}
-                    for f in self.env['hr.integration.field.mapping']
-                    .get_available_source_fields(connector.id, data_type)
-                    if f.get('path')]
+                    for f in self._payload_fields_only(
+                        self.env['hr.integration.field.mapping']
+                        .get_available_source_fields(connector.id, data_type))]
         except Exception as error:               # noqa: BLE001 — W152
             _logger.warning("Rule composer catalogue read failed for connector "
                             "%s feed %s: %s: %s — validation will refuse every "
@@ -749,12 +779,12 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
         catalog = []
         for data_type in feeds:
             try:
-                for field in Mapping.get_available_source_fields(connector.id, data_type):
-                    if field.get('path'):
-                        catalog.append({'path': field['path'],
-                                        'label': field.get('label') or field['path'],
-                                        'feed_type': data_type,
-                                        'sample': field.get('sample')})
+                for field in self._payload_fields_only(
+                        Mapping.get_available_source_fields(connector.id, data_type)):
+                    catalog.append({'path': field['path'],
+                                    'label': field.get('label') or field['path'],
+                                    'feed_type': data_type,
+                                    'sample': field.get('sample')})
             except Exception as error:           # noqa: BLE001 — W152
                 _logger.warning("Rule assistant could not read feed %s of "
                                 "connector %s: %s: %s", data_type, connector.id,
