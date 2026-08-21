@@ -67,7 +67,8 @@
  *  its most specific argument, so this is (0,4,0) and wins.
  *
  *  pb_learn and pb_payroll_ai are not touched; their defaults are unchanged on
- *  every other screen. */
+ *  every other screen.
+ *
  *  CYCLE 7 CORRECTION. Cycle 6 wrote `right: 380px`, a number measured at the
  *  1900px viewport it was tested on. The columns are a FIXED 340px wide and the
  *  board fills the viewport, so the TO column's left edge is always
