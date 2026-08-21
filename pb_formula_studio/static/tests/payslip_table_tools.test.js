@@ -7,7 +7,10 @@ import {
     deletePayslipTableRow,
     insertPayslipTableColumn,
     insertPayslipTableRow,
+    mergePayslipTableCellDown,
+    mergePayslipTableCellRight,
     payslipTableContext,
+    splitPayslipTableCell,
 } from "@pb_formula_studio/js/payslip_table_tools";
 
 describe.current.tags("desktop");
@@ -104,5 +107,39 @@ test("no-border preset can target one cell without changing its table", () => {
     expect(selected.getAttribute("style")).toBe("border-style: none;");
     expect(table.rows[1].cells[1].style.border).toBe("");
     expect(table.style.border).toBe("");
+    host.remove();
+});
+
+test("cells merge to the right, preserve live content, and split again", () => {
+    const { host, table } = tableFixture();
+    const selected = table.rows[1].cells[0];
+
+    expect(mergePayslipTableCellRight(selected)).toBe(selected);
+    expect(table.rows[1].cells.length).toBe(1);
+    expect(selected.colSpan).toBe(2);
+    expect(selected.querySelectorAll("[data-token]").length).toBe(1);
+
+    expect(splitPayslipTableCell(selected)).toBe(selected);
+    expect(table.rows[1].cells.length).toBe(2);
+    expect(selected.colSpan).toBe(1);
+    expect(selected.querySelectorAll("[data-token]").length).toBe(1);
+    host.remove();
+});
+
+test("cells merge downward and split back into the following row", () => {
+    const { host, table } = tableFixture();
+    const extra = document.createElement("tr");
+    extra.innerHTML = "<td>Allowance</td><td>20</td>";
+    table.tBodies[0].appendChild(extra);
+    const selected = table.rows[1].cells[0];
+
+    expect(mergePayslipTableCellDown(selected)).toBe(selected);
+    expect(selected.rowSpan).toBe(2);
+    expect(table.rows[2].cells.length).toBe(1);
+    expect(selected.textContent).toContain("Allowance");
+
+    expect(splitPayslipTableCell(selected)).toBe(selected);
+    expect(selected.rowSpan).toBe(1);
+    expect(table.rows[2].cells.length).toBe(2);
     host.remove();
 });

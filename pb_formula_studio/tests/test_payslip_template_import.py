@@ -165,6 +165,14 @@ class TestPayslipTemplateImport(TransactionCase):
                       'table border presets must survive HTML sanitizing')
         self.assertIn('Border-safe content', self.earnings.note_html)
 
+        merged = self.Studio.save_payslip_content(
+            self.config.id, 'section:%s' % self.earnings.id,
+            '<table><tr><td colspan="2" rowspan="2">Merged content</td></tr>'
+            '<tr></tr></table>')
+        self.assertTrue(merged['ok'])
+        self.assertIn('colspan="2"', self.earnings.note_html)
+        self.assertIn('rowspan="2"', self.earnings.note_html)
+
         foreign = self.env['hr.formula.config'].create({
             'name': 'Foreign payslip config', 'code': 'FOREIGN_PS',
             'country_code': 'VN', 'state': 'draft',

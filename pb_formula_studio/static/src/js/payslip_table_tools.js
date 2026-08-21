@@ -25,6 +25,28 @@ function emptyCellLike(source) {
     return cell;
 }
 
+function blankSplitCell(source) {
+    const cell = emptyCellLike(source);
+    cell.removeAttribute("colspan");
+    cell.removeAttribute("rowspan");
+    return cell;
+}
+
+function hasMeaningfulContent(cell) {
+    return Array.from(cell.childNodes).some(node =>
+        node.nodeType === Node.TEXT_NODE
+            ? Boolean(node.textContent.trim())
+            : node.nodeName !== "BR");
+}
+
+function appendMergedContent(cell, neighbour) {
+    const sourceHasContent = hasMeaningfulContent(neighbour);
+    if (!sourceHasContent) return;
+    if (!hasMeaningfulContent(cell)) cell.innerHTML = "";
+    else cell.appendChild(document.createElement("br"));
+    while (neighbour.firstChild) cell.appendChild(neighbour.firstChild);
+}
+
 const BORDER_PRESETS = {
     light: "1px solid #E2E8F0",
     standard: "1px solid #94A3B8",
@@ -109,6 +131,55 @@ export function deletePayslipTable(cell) {
     if (!context) return false;
     context.table.remove();
     return true;
+}
+
+export function mergePayslipTableCellRight(cell) {
+    const context = payslipTableContext(cell);
+    if (!context) return null;
+    const neighbour = context.row.cells[context.cellIndex + 1];
+    if (!neighbour || neighbour.rowSpan !== context.cell.rowSpan) return null;
+    appendMergedContent(context.cell, neighbour);
+    context.cell.colSpan += neighbour.colSpan;
+    neighbour.remove();
+    return context.cell;
+}
+
+export function mergePayslipTableCellDown(cell) {
+    const context = payslipTableContext(cell);
+    if (!context) return null;
+    const targetRow = context.rows[context.rowIndex + context.cell.rowSpan];
+    const neighbour = targetRow && targetRow.cells[context.cellIndex];
+    if (!neighbour || neighbour.colSpan !== context.cell.colSpan) return null;
+    appendMergedContent(context.cell, neighbour);
+    context.cell.rowSpan += neighbour.rowSpan;
+    neighbour.remove();
+    return context.cell;
+}
+
+export function splitPayslipTableCell(cell) {
+    const context = payslipTableContext(cell);
+    if (!context) return null;
+    const columnSpan = context.cell.colSpan;
+    const rowSpan = context.cell.rowSpan;
+    if (columnSpan <= 1 && rowSpan <= 1) return null;
+
+    context.cell.removeAttribute("colspan");
+    context.cell.removeAttribute("rowspan");
+    let current = context.cell;
+    for (let index = 1; index < columnSpan; index++) {
+        const blank = blankSplitCell(context.cell);
+        current.after(blank);
+        current = blank;
+    }
+    for (let rowOffset = 1; rowOffset < rowSpan; rowOffset++) {
+        const row = context.rows[context.rowIndex + rowOffset];
+        if (!row) continue;
+        const before = row.cells[context.cellIndex] || null;
+        for (let columnOffset = 0; columnOffset < columnSpan; columnOffset++) {
+            row.insertBefore(blankSplitCell(context.cell), before);
+        }
+    }
+    return context.cell;
 }
 
 export function applyPayslipTableBorder(cell, scope = "table", preset = "default") {

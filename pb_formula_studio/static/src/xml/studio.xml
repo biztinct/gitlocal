@@ -2217,6 +2217,10 @@
                     <button t-on-mousedown="(ev) => this.psRichTableAction('column_before', ev)" title="Add column to the left">＋ Col ←</button>
                     <button t-on-mousedown="(ev) => this.psRichTableAction('column_after', ev)" title="Add column to the right">＋ Col →</button>
                     <span class="ps-tool-sep"/>
+                    <button t-on-mousedown="(ev) => this.psRichTableAction('merge_right', ev)" title="Merge with cell on the right">Merge →</button>
+                    <button t-on-mousedown="(ev) => this.psRichTableAction('merge_down', ev)" title="Merge with cell below">Merge ↓</button>
+                    <button class="subtle" t-on-mousedown="(ev) => this.psRichTableAction('split_cell', ev)" title="Split merged cell">Split</button>
+                    <span class="ps-tool-sep"/>
                     <button class="danger" t-on-mousedown="(ev) => this.psRichTableAction('delete_row', ev)" title="Delete selected row">− Row</button>
                     <button class="danger" t-on-mousedown="(ev) => this.psRichTableAction('delete_column', ev)" title="Delete selected column">− Col</button>
                     <button class="danger" t-on-mousedown="(ev) => this.psRichTableAction('delete_table', ev)" title="Delete table">Delete table</button>

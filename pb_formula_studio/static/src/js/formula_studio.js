@@ -19,7 +19,10 @@ import {
     deletePayslipTableRow,
     insertPayslipTableColumn,
     insertPayslipTableRow,
+    mergePayslipTableCellDown,
+    mergePayslipTableCellRight,
     payslipTableContext,
+    splitPayslipTableCell,
 } from "./payslip_table_tools";
 // IA Cycle 4 — the ONE Studio change this cycle makes. Arriving here from the
 // Settings hub's cog path used to be a one-way trip: the Studio renders no
@@ -4908,6 +4911,19 @@ export class PbFormulaStudio extends Component {
         else if (action === "row_below") next = insertPayslipTableRow(cell, true);
         else if (action === "column_before") next = insertPayslipTableColumn(cell, false);
         else if (action === "column_after") next = insertPayslipTableColumn(cell, true);
+        else if (action === "merge_right") {
+            next = mergePayslipTableCellRight(cell);
+            if (!next) this.notif.add(_t("There is no compatible cell to merge on the right."), { type: "warning" });
+            next = next || cell;
+        } else if (action === "merge_down") {
+            next = mergePayslipTableCellDown(cell);
+            if (!next) this.notif.add(_t("There is no compatible cell to merge below."), { type: "warning" });
+            next = next || cell;
+        } else if (action === "split_cell") {
+            next = splitPayslipTableCell(cell);
+            if (!next) this.notif.add(_t("This cell is not merged."), { type: "warning" });
+            next = next || cell;
+        }
         else if (action === "delete_row") next = deletePayslipTableRow(cell);
         else if (action === "delete_column") next = deletePayslipTableColumn(cell);
         else if (action === "delete_table") {
