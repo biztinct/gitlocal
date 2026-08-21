@@ -108,7 +108,30 @@
     .pbcc-feed__err { font-size: 11.5px; font-weight: 600; color: var(--pbim-rose);
         background: var(--pbim-rose-soft); border-radius: 8px; padding: 6px 9px;
         overflow: hidden; text-overflow: ellipsis; }
-    .pbcc-feed__acts { display: flex; gap: 7px; margin-top: 2px; }
+    // ---------------------------------------------- the action row (C7 WP-3)
+    //
+    // Cycle 1 shipped this strip with two buttons, Cycle 2 added "Map fields"
+    // and Cycle 6 "Fetch fields". Four `.pbim-btn`s measure ~400px; the card is
+    // 258px at its narrowest. The row was `display: flex` with NO `flex-wrap`,
+    // and every `.pbim-btn` carries `white-space: nowrap` — so the buttons
+    // could neither wrap nor shrink and simply ran out past the card's edge.
+    //
+    // Nothing clips here, which is why it looked like two different bugs: an
+    // inner card's overflow is painted OVER by the next card in the grid (later
+    // sibling, later paint), so its last button vanishes and the card seems to
+    // be offering fewer actions; the RIGHTMOST card of a row has empty grid
+    // track to spill into, so the same overflow is fully visible outside the
+    // card. One cause, two symptoms — the owner reported both.
+    //
+    // `margin-top: auto` because a wrapped row is taller: grid stretches every
+    // card in a row to the same height, and without it a card whose buttons
+    // took two lines would sit its actions at a different Y from its
+    // neighbours'.
+    .pbcc-feed__acts {
+        display: flex; flex-wrap: wrap; gap: 7px;
+        margin-top: auto; padding-top: 2px;
+        .pbim-btn { flex: 0 1 auto; min-width: 0; }
+    }
     .pbcc-feed__spin { width: 13px; height: 13px; border-width: 2px; }
 
     // ======================================================== the credentials
