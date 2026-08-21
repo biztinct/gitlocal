@@ -259,8 +259,14 @@ and `biz_debrand`, on **payobook**, in its own window on its own port
 (`--http-port=8099 --gevent-port=8098`) with the real service up throughout.
 
 ```
-2026-08-21 04:08:50  1 failed, 0 error(s) of 144 tests   (payobook)
+2026-08-21 04:08:50  1 failed, 0 error(s) of 144 tests   (payobook)   after WP-1/2/4
+2026-08-21 04:42:24  1 failed, 0 error(s) of 144 tests   (payobook)   CONFIRMATION, after WP-3
 ```
+
+The run was repeated at the very end because WP-3 changed `pb_integrations
+/models/pb_integrations.py` (`_ledger_rule` / `_detail_rule`) after the first
+run — a suite that was green before the last Python change is not a green
+suite. Same verdict, same single failure.
 
 The failure is `TestBizDebrandHttp.test_database_manager_debranded` — the stock
 database-manager page still carries `odoo.com` in its own markup. Its file was
