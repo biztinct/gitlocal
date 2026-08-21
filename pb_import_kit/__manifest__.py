@@ -9,7 +9,7 @@ badge, button) and the Lucide icon map + ic() helper. Theme variants:
 the powder-blue default (Import) and `.ppl` light-teal (People). Consumers
 add class "pbim" (powder) or "pbim ppl" (teal) on their root.
 """,
-    'version': '19.0.1.8.0',
+    'version': '19.0.1.9.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -24,6 +24,7 @@ add class "pbim" (powder) or "pbim ppl" (teal) on their root.
             'pb_import_kit/static/src/scss/theme_people.scss',
             'pb_import_kit/static/src/scss/theme_setup.scss',
             'pb_import_kit/static/src/scss/wizard_shell.scss',
+            'pb_import_kit/static/src/scss/modal.scss',
             'pb_import_kit/static/src/js/import_icons.js',
         ],
     },
