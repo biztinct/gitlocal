@@ -10,7 +10,7 @@ The signature is exact rather than heuristic. That method is the ONLY writer of
 `last_sync` in this codebase that does not also write `last_sync_status`:
 
     action_pull_data          last_sync + last_sync_status ('success'/'partial')
-    receive_pushed_records    last_sync + last_sync_status ('success')
+    webhook_ingest            last_sync + last_sync_status ('success')
     _stamp_endpoint           the ENDPOINT's own last_sync
     update_connector_status   last_sync, and no status at all   <-- this one
 
