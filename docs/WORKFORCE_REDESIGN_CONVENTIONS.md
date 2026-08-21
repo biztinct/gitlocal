@@ -2804,3 +2804,24 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   a validation must never live on the same value in the same function; (3) if
   several sibling checks exist (underscore, shape, collision), make them all
   refuse or all correct — half of each is how one of them stops being real.
+- **W166 Two agents in one worktree share one INDEX, so one agent's `git add`
+  is committed by the other agent's `git commit` — and explicit staging does
+  not protect against it.** (Integrations Cycle 8, W157's sibling: the same
+  hazard, one layer in.) W157 is about a parallel session's files reaching
+  PRODUCTION through an `rsync`. This is the same collision reaching HISTORY,
+  and the habit that stops W157 does not stop it: this cycle's every commit
+  named its files explicitly, and one of them still swallowed a child agent's
+  entire work-in-progress — 2 000 lines of a component — because the child had
+  run `git add` a moment earlier and the parent's `git commit` takes whatever
+  is in the index, not whatever the parent staged. The commit message described
+  a documentation change; the diff contained a UI.
+  Rules: (1) stage and commit in ONE command (`git add <paths…> && git commit
+  -F -`), so the window between them is a single process; (2) `git show --stat
+  --format= HEAD` after EVERY commit, and read it — the only cheap proof that a
+  commit contains what its message says; (3) the repair is `git reset --soft
+  HEAD~1`, `git restore --staged <the other agent's paths>`, re-commit — the
+  other agent's WORKING FILES are never touched, and it must be TOLD, because
+  its next `git commit` would otherwise find nothing to commit and it has no
+  way to discover why; (4) an agent that runs long enough to be interrupted
+  should re-stage immediately before committing rather than trusting an earlier
+  `add`.
