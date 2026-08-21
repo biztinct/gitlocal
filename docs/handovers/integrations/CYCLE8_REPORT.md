@@ -1,0 +1,163 @@
+# Integrations Program — Cycle 8 report: The Rule Composer
+
+> Handover: `CYCLE8_RULE_COMPOSER.md`. Conventions: `docs/WORKFORCE_REDESIGN_CONVENTIONS.md`
+> (binding through W157, this cycle appends W158+) and `docs/FORMULA_ENGINE_CONVENTIONS.md`.
+> **Written incrementally and committed at every milestone** — a stall must not
+> lose the record (the handover says so because Cycles 2 and 7 both stalled).
+
+_Status: IN PROGRESS. Last updated after WP-1, WP-2 and WP-4 (WP-3 building in parallel)._
+
+---
+
+## WP-1 — model + engine: guided rules as first-class citizens — **DONE**
+
+`pb_hr_payroll_formula` 19.0.1.59.0 → **19.0.1.60.0**.
+
+### What shipped
+
+| file | what |
+|---|---|
+| `formula_engine/rule_formula.py` (new, 470 lines) | the Excel lane: `Cell` (a payload value that reads as text and computes as a number), `resolve_ref` (exact key, then case/space/underscore-insensitive), the recursive converter, the closed function table, `eval_rule_formula` |
+| `models/api_transformation_rule.py` | six spec fields + `plain_summary` + `last_error`/`last_error_at`; the guided engine; the traced twin; the vocabulary constants; the same six fields mirrored on the template model and added to `_COPIED` |
+| `models/rule_assistant.py` (new) | `hr.api.rule.assistant` — the drafting gateway and its deterministic floor |
+| `views/api_transformation_rule_views.xml` | the `last_error` alert, `builder_mode`, `plain_summary`, the TAKE step and the Excel formula |
+| `tests/test_rule_composer.py` (new) | handover tests 1, 2, 3, 5, 6, 7 + the summary/no-platform-name assertions |
+
+### Design decisions worth reading
+
+**Preview == execution is a fact about the code, not a promise.** There are two
+primitives — `_builder_expand` (which rows the sentence is about) and
+`_builder_run` (the sentence). Execution calls them with no trace; the
+composer's preview calls **the same two** with a dict, and the loops that
+compute the answer fill it in as they go. `test_06` runs both entry points over
+identical specs and asserts the numbers are equal; `test_06c` previews a rule
+that has never been saved (`Rule.new(...)`), proving the draft path is the same
+engine and writes nothing.
+
+**None is not zero.** `_unit_value` and `_row_value` return `None` for a value
+that is missing or unreadable, and the aggregate SKIPS it — exactly as
+`_execute_aggregate` skips a `float()` that raises. Returning 0 would drag an
+average down and break a minimum. `test_01c` asserts each conversion produces a
+number *and that it is not zero*, which is the assertion shape W137 was
+diagnosed by.
+
+**Zero `safe_eval` on the guided path.** Conditions are evaluated natively on
+plain dicts by `_condition_matches`, which never raises: a condition that cannot
+be evaluated does not match. That is the same leniency the legacy
+`except Exception: pass` filter had, and payroll depends on it.
+
+**One equality, two lanes.** `is`/`is_not` compare as numbers when both sides
+read as numbers and as trimmed, case-insensitive text otherwise — the same rule
+`excel_streq` and the `Cell` class apply. The two lanes agreeing about equality
+is not a nicety; the same rule is meant to give the same answer in either.
+
+**`IF` is lazy.** `IF([h]=0, 0, 100/[h])` must not raise on a zero row and drop
+it from the aggregate — a wrong answer that looks exactly like a right one.
+The converter wraps both branches in lambdas (`test_03e`).
+
+**The silent-failure gap.** `_flag_error` writes only when the message CHANGES
+(a broken rule on a 4 000-row pull would otherwise be 4 000 identical writes)
+and `_clear_error` writes only when there is something to clear. The value still
+falls back to `default_value`, exactly as before — what is new is that the
+reason is on the record instead of in a log nobody reads during a pull.
+
+### Parity table (handover test 2) — asserted in `test_02*`
+
+Fixtures reproduce the real payload shapes: overtime rows that are rejected,
+pending, of the wrong band, missing their hour count and carrying `'n/a'`
+instead of a number; four dependants of whom two have no PIT number; four
+attendance days including one malformed in both halves.
+
+| rule | legacy path | guided path | excel path | expected |
+|---|---|---|---|---|
+| OTHRS150 | 6.5 | 6.5 | — | 6.5 |
+| OTHRS200 | 3.0 | 3.0 | — | 3.0 |
+| OTHRS210 | 0.0 | 0.0 | — | 0.0 |
+| OTHRS270 | 0.0 | 0.0 | — | 0.0 |
+| OTHRS300 | 1.25 | 1.25 | — | 1.25 |
+| OTHRS390 | 0.0 | 0.0 | — | 0.0 |
+| DEPCOUNT | 2 | 2.0 | — | 2 |
+| WORKEDHRS | 11.5 | 11.5 | 11.5 | 11.5 |
+
+Both halves are asserted: that the two paths agree, **and** that the number is
+the one the legacy application computed. An equality alone would pass if both
+were broken.
+
+### Deviation from the handover's commit plan
+
+Commits 1 and 2 (`guided model + native engine + last_error` and `the Excel
+lane`) are **one commit**. `formula_engine/rule_formula.py` holds `Cell` and
+`resolve_ref`, and the GUIDED lane uses both — every condition and every value
+step resolves its field through `resolve_ref`, because a novice who reads
+`Actual Pay Hour` off the screen must not have to know the API spells it
+`Actual_Pay_Hour`. Splitting the file across two commits would have shipped an
+intermediate commit that does not import. The commit message names both halves.
+
+---
+
+## ⚠ A parallel session is editing `pb_hr_payroll_formula` — W157, again
+
+`git status` shows four files modified that this cycle never touched, adding a
+payslip `note_html` feature:
+
+```
+ M pb_hr_payroll_formula/models/formula_config.py       (+10)
+ M pb_hr_payroll_formula/models/hr_payslip_formula.py   (+4)
+ M pb_hr_payroll_formula/models/payslip_config.py       (+5, a new fields.Html)
+ M pb_hr_payroll_formula/report/payslip_themed.xml      (+4)
+```
+
+That is exactly the incident Cycle 7 ended with: `rsync <module>/` would publish
+another session's work in progress to two live databases and an `-u` would bless
+it — and one of those files adds a COLUMN, which is a schema change that would
+land without its own upgrade being intended.
+
+**Handling**: the deploy is FILE-SCOPED (W157 rule 1) — every file this cycle
+owns is transferred by name, and none of the four above is transferred. They are
+not staged, not committed and not touched. `git show --stat` on every commit
+confirms only this cycle's files are in them.
+
+---
+
+## WP-2 — composer RPCs — **DONE**
+
+`pb_integrations` 19.0.1.6.0 → **19.0.1.7.0**. `models/rule_composer.py`
+extends `pb.integrations` (no sudo, caller's rights, as the rest of the file).
+
+| RPC | law |
+|---|---|
+| `rule_composer_data` | one call, the existing provenance ladder, per-feed `synthetic` flag |
+| `rule_preview` | the traced engine run; refuses `python` in `preview_transform`'s wording family |
+| `rule_save` | **fail-closed**, whitelisted, catalogue-checked, key-checked |
+| `rule_archive` | same gate |
+| `rule_propose` | drafts; never writes; the draft is re-checked by the save validator |
+
+**The gate proof.** `_rule_can_edit` is the deliberate opposite of the Mapping
+Studio's `_can_edit`, which ends `except Exception: return True`. That is
+defensible where it decides whether a pencil is drawn and indefensible where it
+decides whether a write runs. `test_04b` monkeypatches `res.users.has_group` to
+raise and asserts the gate refuses.
+
+**`python_code` cannot be reached.** `_rule_draft_vals` is the only place a spec
+becomes values and it assembles them key by key from a literal list.
+`test_04c` posts a legal guided spec carrying `python_code`,
+`filter_expression` and `aggregate_field`, asserts the save SUCCEEDS, then reads
+the row back and asserts all three are empty. `test_04d` proves an existing
+python rule is refused outright rather than merely hidden.
+
+## WP-4 — migration + parity — **DONE**
+
+`migrations/19.0.1.60.0/post-rules_become_sentences.py` + the data file made
+guided-native for fresh installs. Idempotency and edit-protection are driven,
+not asserted: `test_04` runs `_convert` twice (8 changed, then 0 changed / 8
+skipped) and `test_04c` retunes a filter and watches the migration leave it
+alone.
+
+`test_zoho_catalog.ZOHO_RULES` amended IN this commit with the reasoning beside
+the dict (W138), plus a new assertion that every shipped catalogue row is
+`guided` and carries a summary — so the data gets its own test rather than
+being a surprise inside somebody else's.
+
+---
+
+_(WP-3, deploy, live validation and the ledger follow as they land.)_
