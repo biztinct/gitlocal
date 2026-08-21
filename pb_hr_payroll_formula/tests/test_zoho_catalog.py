@@ -41,7 +41,10 @@ ZOHO_FEEDS = {
     'zohoattsummary': ('attendance', 'attendance/getSummaryReport', True),
     'zohoovertime': ('custom', 'forms/overtime_request/getRecords', True),
     'zohosalary': ('salary', 'forms/P_Salary/records', False),
-    'zoholeave': ('leave', 'api/v2/leavetracker/leaves/records', False),
+    # The executable connector calls this proven v2/hr-relative endpoint.
+    # `api/v2/leavetracker/leaves/records` was the older catalogue guess and
+    # is corrected create-safely by the 19.0.1.59.0 migration.
+    'zoholeave': ('leave', 'leave/getLeaveDetails', False),
     'zohoattdaily': ('attendance', 'attendance/getAttendanceByDate', False),
     'zohotimesheet': ('custom', 'timetracker/gettimesheet', False),
 }

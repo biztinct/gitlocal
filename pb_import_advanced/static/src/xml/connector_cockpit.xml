@@ -151,15 +151,12 @@
               </div>
               <div t-if="ep.last_error" class="pbcc-feed__err" t-esc="ep.last_error"/>
               <div class="pbcc-feed__acts">
-                <button t-if="canWrite and ep.runnable" class="pbim-btn outline pbim-btn-sm"
-                        t-att-disabled="state.syncing ? 'disabled' : false"
+                <button t-if="canWrite" class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="(state.syncing or !ep.runnable) ? 'disabled' : false"
+                        t-att-title="ep.runnable ? 'Pull only this feed' : 'Catalogue-only feed. Use Configure to choose an executable operation before syncing.'"
                         t-on-click="() => this.syncEndpoint(ep)">
                   <t t-if="state.syncing === ep.id"><span class="pbim-spin pbcc-feed__spin"/> Syncing…</t>
                   <t t-else=""><t t-out="ic('refresh',14)"/> Sync</t>
-                </button>
-                <button t-elif="canWrite" class="pbim-btn outline pbim-btn-sm"
-                        t-on-click="() => this.openConfiguration(ep)" title="Configure an executable operation and path">
-                  <t t-out="ic('settings',14)"/> Configure
                 </button>
                 <button t-if="hasLedgers" class="pbim-btn ghost pbim-btn-sm"
                         t-on-click="() => this.viewEndpointData(ep)">
