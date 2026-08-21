@@ -103,6 +103,16 @@
         font-size: 12px;
         color: var(--pbim-muted, #64748B);
     }
+    // The trailing edge of the tab strip (Cycle 8). It carries NO auto margin of
+    // its own: `.itg-tabsub` already has one, and an auto margin pushes the
+    // whole tail of a flex row — so the subtitle and this button travel to the
+    // right edge together. A second `margin-left: auto` would split the free
+    // space between the two and strand the subtitle in the middle.
+    .itg-newrule {
+        flex: 0 0 auto;
+        padding: 7px 13px;
+        font-size: 12.5px;
+    }
 
     // A deep-linked scope is VISIBLE and REMOVABLE. A filter you cannot see is
     // a table that lies by omission.

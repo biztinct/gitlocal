@@ -31,8 +31,10 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { user } from "@web/core/user";
 import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
+import { RuleComposer } from "@pb_integrations/js/rule_composer";
 
 const STATUS_CHIPS = [
     { id: "all", label: "All" }, { id: "connected", label: "Connected" },
@@ -55,7 +57,7 @@ const LEDGER_TABS = [
 
 export class PbIntegrations extends Component {
     static template = "pb_integrations.PbIntegrations";
-    static components = { HubBackChip, WfDrawer };
+    static components = { HubBackChip, WfDrawer, RuleComposer };
     static props = ["*"];
 
     setup() {
@@ -93,6 +95,13 @@ export class PbIntegrations extends Component {
             ledger: null, ledgerLoading: false,
             lsearch: "", f: {},
             drawer: null, drawerLoading: false,
+
+            // ---- the Rule Composer (Cycle 8) ----
+            // A SIBLING of the drawer, never a child of it: the drawer is a
+            // 320px reading panel and a builder is not a reading panel. The
+            // other three ledger kinds keep it exactly as they had it.
+            composer: null,
+            canEditRules: false,
         });
 
         // One navigation at a time (C1's flag).
@@ -100,6 +109,10 @@ export class PbIntegrations extends Component {
 
         onWillStart(async () => {
             await this.load();
+            // Asked ONCE, and only about a group — the write itself is gated
+            // server-side by `rule_save`, which fails CLOSED. This flag decides
+            // whether a button is drawn, and a hidden control is never a gate.
+            this.state.canEditRules = await this._readRuleRights();
             if (this.state.view === "data") { await this.loadLedger(); }
         });
     }
@@ -376,6 +389,17 @@ export class PbIntegrations extends Component {
      */
     async openRow(r) {
         if (!r.id) { return; }
+        // A transformation rule is not a row to READ, it is a rule to CHANGE —
+        // so it opens the composer instead of the drawer (Cycle 8). Everything
+        // below this line is the other three kinds, untouched.
+        if (this.state.kind === "rule") {
+            this.state.drawer = null;
+            this.state.composer = {
+                ruleId: r.id,
+                connectorId: r.connector_id || this.state.connectorId || 0,
+            };
+            return;
+        }
         // Shown immediately from what the row already knows, then filled in: an
         // empty panel that appears at once reads as loading, a click with
         // nothing on screen for 200ms reads as a dead row.
@@ -399,6 +423,62 @@ export class PbIntegrations extends Component {
     }
 
     closeDrawer() { this.state.drawer = null; }
+
+    // ================================================== the Rule Composer
+    /**
+     * May this user change a transformation rule?
+     *
+     * The group, not a probe RPC: `rule_save` is the real gate and it fails
+     * CLOSED, so this only decides whether "New rule" is drawn. A failure to
+     * READ the group is reported rather than swallowed (W40) and answers no —
+     * a button that is certain to be refused is worse than an absent one.
+     */
+    async _readRuleRights() {
+        try {
+            if (await user.hasGroup("pb_hr_payroll_formula.group_formula_manager")) {
+                return true;
+            }
+            return await user.hasGroup("pb_hr_payroll_formula.group_formula_admin");
+        } catch (e) {
+            console.warn("pb_integrations: could not read the rule-editing rights", e);
+            return false;
+        }
+    }
+
+    /**
+     * The composer needs a connector; the tab may not be scoped to one.
+     *
+     * MEMOISED on the source array's identity. A getter that builds a fresh
+     * array on every render hands a child a prop that has "changed" every time
+     * and re-renders it for nothing — the same shape of waste as writing a new
+     * array into reactive state on every recompute (W148), one layer out. The
+     * board's connector list only changes when `load()` reassigns it.
+     */
+    get composerConnectors() {
+        if (this._cxSource !== this.state.connectors) {
+            this._cxSource = this.state.connectors;
+            this._cxCache = this.state.connectors.map(
+                (c) => ({ id: c.id, name: c.name, icon: c.icon }));
+        }
+        return this._cxCache;
+    }
+
+    newRule() {
+        this.state.drawer = null;
+        this.state.composer = { ruleId: 0, connectorId: this.state.connectorId || 0 };
+    }
+
+    closeComposer() { this.state.composer = null; }
+
+    /**
+     * A saved rule changes the SENTENCE the ledger prints for it, so the table
+     * is re-read rather than patched: the summary is computed and stored on the
+     * server, and guessing it here would be a second implementation of it.
+     */
+    async onRuleSaved() {
+        this.state.composer = null;
+        await this.loadLedger();
+    }
 
     // ================================================================== doors
     /** The connector cockpit, told where it came from and how to get back. */
