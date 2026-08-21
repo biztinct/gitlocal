@@ -5225,7 +5225,7 @@ class PbFormulaStudio(models.AbstractModel):
                           if item['x'] < 480).strip()
                  if title_row else _('PAYSLIP'))
         title = title or _('PAYSLIP')
-        palette = layout.get('palette') if isinstance(layout, dict) else []
+        palette = (layout.get('palette') or []) if isinstance(layout, dict) else []
         primary = next((str(color).lower() for color in palette[:4]
                         if re.fullmatch(r'#[0-9a-fA-F]{6}', str(color))), '#786e67')
         first_y = body[0]['y']
