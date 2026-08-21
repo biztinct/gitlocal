@@ -124,8 +124,8 @@
 
 /* ---- uploaded-template assistant + rich editor ---- */
 .pbfs-ps .ps-sub-scrim { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; padding: 28px; background: rgba(20, 16, 50, .5); backdrop-filter: blur(2px); }
-.pbfs-ps .ps-import, .pbfs-ps .ps-rich { width: min(920px, 96vw); max-height: min(790px, 86vh); display: flex; flex-direction: column; overflow: hidden; border-radius: 16px; background: #fff; box-shadow: 0 28px 70px rgba(15, 12, 40, .34); }
-.pbfs-ps .ps-rich { width: min(760px, 94vw); }
+.pbfs-ps .ps-import, .pbfs-ps .ps-rich { width: 96vw; max-width: 920px; max-height: 86vh; display: flex; flex-direction: column; overflow: hidden; border-radius: 16px; background: #fff; box-shadow: 0 28px 70px rgba(15, 12, 40, .34); }
+.pbfs-ps .ps-rich { width: 94vw; max-width: 760px; }
 .pbfs-ps .ps-sub-head { display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; border-bottom: 1px solid var(--line, #E8E9F3); }
 .pbfs-ps .ps-sub-head > div { flex: 1; }
 .pbfs-ps .ps-sub-head b { display: block; font-size: 16px; color: var(--ink, #1E1B2E); }
