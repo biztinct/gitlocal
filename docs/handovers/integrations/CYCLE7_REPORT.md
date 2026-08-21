@@ -369,8 +369,8 @@ win the header back.
    a design system stops being one.
 5. **abm's brand parameters were written.** Configuration, not code, and not in
    the handover; recorded above with its exact undo.
-6. **Commits are 8, not 7.** The extra one is the two test-name corrections the
-   live run forced. This programme's history says those land as their own
+6. **Commits are 9, not 7.** The extras are the two test-name corrections and
+   the SCSS comment that was not one — both forced by the live run. This programme's history says those land as their own
    commit rather than being folded back into the feature they correct.
 
 ---
@@ -592,7 +592,8 @@ exact undo.
 | 5 | `11301903` | fix: one sync truth per screen |
 | 6 | `68e5976f` | fix: the launcher stops sitting on the content |
 | 7 | `06d7047f` | fix(tests): three names the live run corrected |
-| 8 | `ce96088b` | docs(integrations): Cycle 7's ledger — W154-W157 — and the report |
+| 8 | `c84e57d8` | docs(integrations): Cycle 7's ledger — W154-W157 — and the report |
+| 9 | `2b3f66b7` | fix(pb_formula_studio): a comment that was not one |
 
 Explicit staging throughout; verified with `git show --stat` that no commit
 swept a file belonging to the parallel session. Nothing pushed.
