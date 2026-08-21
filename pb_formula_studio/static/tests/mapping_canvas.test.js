@@ -374,8 +374,17 @@ test("an end at the very top of its list scrolls as close as it can, and still r
     // the ASKED-FOR offset, not the resulting scrollTop: `behavior: "smooth"`
     // means the property has not moved yet when the next frame runs, and
     // asserting on it would be asserting on the engine's animation clock.
+    //
+    // `defineProperty`, not `lbody.scrollTo = …`: `scrollTo` is an accessor on
+    // `Element.prototype` with no setter, so a plain assignment throws
+    // "Cannot assign to read only property" in strict mode — which is what an
+    // ES module is. An OWN property shadows the prototype's and needs no
+    // teardown, because the element is torn down with the fixture.
     const asked = [];
-    lbody.scrollTo = (opt) => asked.push(opt.top);
+    Object.defineProperty(lbody, "scrollTo", {
+        configurable: true,
+        value: (opt) => asked.push(opt.top),
+    });
 
     canvas.centreBoth(canvas.ui.geom[0]);
     await animationFrame();
