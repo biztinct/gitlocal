@@ -470,6 +470,7 @@ export class PbFormulaStudio extends Component {
         this.rawEditorRef = useRef("rawEditor");
         this.depCanvasRef = useRef("depCanvas");
         this._rawNeedsSeed = false;
+        this._psRichNeedsSeed = false;
         this._liveTimer = null;
         this._offerTimer = null;   // W98 — debounced offer recompute
         this._offerToken = 0;      // monotonic supersede token (C8)
@@ -559,6 +560,20 @@ export class PbFormulaStudio extends Component {
             if (this._rawNeedsSeed && this.rawEditorRef.el) {
                 this.rawEditorRef.el.value = this.state.rawBuffer;
                 this._rawNeedsSeed = false;
+            }
+            // The contenteditable document is intentionally browser-owned.
+            // Updating the reactive Used badges can nevertheless make OWL
+            // reconcile its nominally empty editor node. Restore the captured
+            // draft only when that reconciliation changed the live DOM; when it
+            // did not, leave the nodes and current caret completely untouched.
+            if (this._psRichNeedsSeed && this.state.psRichOpen) {
+                const richEditor = this._psRichEditor();
+                if (richEditor && richEditor.innerHTML !== this.state.psRichDraft) {
+                    richEditor.innerHTML = this.state.psRichDraft || "";
+                    this._psRichRange = null;
+                    this._psRichCellEl = null;
+                }
+                this._psRichNeedsSeed = false;
             }
             requestAnimationFrame(() => { this.applyZoom(); this.applyInlineFit(); });
         });
@@ -4774,6 +4789,7 @@ export class PbFormulaStudio extends Component {
         this.state.psRichTableLabel = "";
         this.state.psRichBorderScope = "table";
         this.state.psRichDraft = this._psRichExpandTokens(htmlValue || "");
+        this._psRichNeedsSeed = false;
         this._psRichRange = null;
         this._psRichCellEl = null;
         this.state.psRichOpen = true;
@@ -4863,6 +4879,11 @@ export class PbFormulaStudio extends Component {
         if (!editor) return;
         const ids = [...editor.querySelectorAll(".ps-component-token")]
             .map(node => parseInt(node.dataset.psRuleId, 10)).filter(Boolean);
+        // Capture user-owned DOM before changing reactive state. Without this,
+        // the patch that refreshes the left-hand Used badges can restore the
+        // pre-edit document and silently undo an insert or removal.
+        this.state.psRichDraft = editor.innerHTML;
+        this._psRichNeedsSeed = true;
         this.state.psRichUsedIds = [...new Set(ids)];
     }
     _psRichCellFromRange(range) {
