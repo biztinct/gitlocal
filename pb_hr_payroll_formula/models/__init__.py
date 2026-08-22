@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+# COLROLES — plain-Python module (no model class); imported here so the classifier
+# is loadable as `odoo.addons.pb_hr_payroll_formula.models.column_role_classifier`
+# from wizards, the import batch, the migration and the studio RPC alike.
+from . import column_role_classifier
 from . import formula_config
 from . import formula_config_tests
 from . import formula_rule
@@ -43,6 +47,7 @@ from . import hr_payslip_run
 from . import hr_payroll_structure_formula
 from . import hr_contract
 from . import contract_component_change
+from . import contract_advantage_typed
 from . import payroll_import_batch
 from . import payroll_import_line
 from . import payroll_cycle_carryover

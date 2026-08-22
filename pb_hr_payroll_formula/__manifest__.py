@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.65.0',
+    'version': '19.0.1.66.0',
     'category': 'Human Resources/Payroll',
     'summary': 'State-of-the-art Excel-like formula-based salary calculation engine',
     'description': """
@@ -83,6 +83,7 @@ License: LGPL-3
         'views/api_transformation_rule_views.xml',
         'views/payroll_import_views.xml',
         'views/contract_component_change_views.xml',
+        'views/contract_advantage_typed_views.xml',
         'views/payslip_config_views.xml',
         'views/payslip_import_mapping_views.xml',
         'views/hr_employee_views.xml',

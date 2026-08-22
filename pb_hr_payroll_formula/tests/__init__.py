@@ -35,3 +35,7 @@ from . import test_zoho_catalog
 from . import test_transform_preview
 from . import test_endpoint_field_catalog
 from . import test_rule_composer
+# COLROLES — column roles + typed contract components. The pure-Python classifier
+# table (`test_column_role_classifier.py`) is deliberately NOT imported here: it runs
+# under a bare python3 and needs no database.
+from . import test_column_roles

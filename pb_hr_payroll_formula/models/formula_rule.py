@@ -16,6 +16,10 @@ _logger = logging.getLogger(__name__)
 VERSIONED_FIELDS = {
     'excel_formula', 'code', 'name', 'category_id',
     'column_type', 'number_format', 'appears_on_payslip',
+    # COLROLES — moving a column out of Payroll (or back into it) changes what the
+    # structure is understood to DO, so it earns a version row like any other
+    # structural edit.
+    'column_role',
     # B4: statutory constant values are versioned too, so applying a
     # legislation pack (or any rate/cap edit) leaves an F7 audit trail.
     'constant_value',
@@ -355,6 +359,37 @@ class HrFormulaRule(models.Model):
         string='Requires New Contract',
         default=False,
         help="If enabled, changes to this component will trigger a new contract effective date."
+    )
+
+    # ==========================================
+    # COLUMN ROLE (COLROLES)
+    # ==========================================
+    # An imported salary structure is a flat wall of columns in which the employee
+    # code, the bank account and the actual pay components are indistinguishable.
+    # The role says what a column is FOR. Nothing in this phase acts on it beyond
+    # employee-code recognition — the exclusions and the studio lens come later —
+    # so a wrong role is, for now, only a wrong label.
+    column_role = fields.Selection([
+        ('payroll', 'Payroll'),
+        ('identity', 'Identity'),
+        ('profile', 'Employee Profile'),
+        ('contract', 'Contract'),
+        ('bank', 'Bank'),
+        ('reference', 'Reference'),
+    ], string='Column Role', default='payroll', required=True,
+        help="What this column is for. Only Payroll columns feed the calculation.")
+
+    column_role_source = fields.Selection([
+        ('auto', 'Auto-classified'),
+        ('user', 'Set by a person'),
+    ], string='Role Source', default='auto', required=True,
+        help="Whether the role was auto-classified or set by a person.")
+
+    is_text_component = fields.Boolean(
+        string='Text Component',
+        default=False,
+        help="This contract component holds text (a grade, a reference, a note) "
+             "rather than an amount, so it is stored and compared as text."
     )
 
     is_visible_in_grid = fields.Boolean(
@@ -1284,6 +1319,14 @@ class HrFormulaRule(models.Model):
         fill/import); `skip_formula_version` opts a write out entirely; a mutable
         `formula_version_seen` set in context dedupes multiple writes to the same
         rule within one logical operation (see save_component)."""
+        # COLROLES / CR-A1 — a role written WITHOUT an explicit source is a person
+        # choosing it (a backend form edit, a list-view inline edit). Every automatic
+        # writer — the import wizards, the upgrade migration, the reclassify RPC —
+        # passes `column_role_source` itself, and none of them may overwrite a row
+        # already marked 'user'.
+        if vals and 'column_role' in vals and 'column_role_source' not in vals:
+            vals = dict(vals, column_role_source='user')
+
         tracked = VERSIONED_FIELDS & set(vals or {})
         if (tracked
                 and not self.env.context.get('skip_formula_version')
@@ -1337,6 +1380,7 @@ class HrFormulaRule(models.Model):
             'category_id': self.category_id.id or False,
             'category_name': self.category_id.name or '',
             'column_type': self.column_type or '',
+            'column_role': self.column_role or '',
             'number_format': self.number_format or '',
             'appears_on_payslip': bool(self.appears_on_payslip),
             'column_letter': self.column_letter or '',
