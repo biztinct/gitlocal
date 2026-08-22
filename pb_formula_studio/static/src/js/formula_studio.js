@@ -4819,12 +4819,17 @@ export class PbFormulaStudio extends Component {
         const name = this._psRichEscape(component.name || component.code || "Component");
         const value = this._psRichEscape(this.psVal(component));
         const code = this._psRichEscape(component.col || component.code || "");
-        const body = mode === "label"
-            ? `<span class="ps-component-token-name">${name}</span>`
-            : mode === "value"
-                ? `<span class="ps-component-token-value">${value}</span>`
-                : `<span class="ps-component-token-name">${name}</span><span class="ps-component-token-value">${value}</span>`;
-        return `<span class="ps-component-token mode-${mode}" contenteditable="false" data-ps-rule-id="${component.id}" data-ps-mode="${mode}" title="Dynamic payroll component ${code}">${body}<button type="button" tabindex="-1" data-ps-remove-component="1" title="Remove component">×</button></span>`;
+        const modeLabel = mode === "label" ? "label" : mode === "value" ? "value" : "label and value";
+        // Tokens must identify themselves while the document is being edited.
+        // A value-only component often has no sample payslip value, so showing
+        // only `— ×` made an inserted component indistinguishable from an empty
+        // cell.  The identity below is editor chrome: serialization still
+        // collapses the whole span to {{pb_component:id:mode}}, and the printed
+        // payslip therefore contains only the requested label/value.
+        const identity = `<span class="ps-component-token-identity">${code ? `<small>${code}</small>` : ""}<span>${name}</span></span>`;
+        const preview = mode === "label" ? ""
+            : `<span class="ps-component-token-preview"><small>Preview</small><span class="ps-component-token-value">${value}</span></span>`;
+        return `<span class="ps-component-token mode-${mode}" contenteditable="false" data-ps-rule-id="${component.id}" data-ps-mode="${mode}" title="Live payroll component ${code}: ${name} · inserts ${modeLabel}">${identity}${preview}<button type="button" tabindex="-1" data-ps-remove-component="1" title="Remove ${name}">×</button></span>`;
     }
     _psRichExpandTokens(htmlValue) {
         const components = String(htmlValue || "").replace(
@@ -4840,7 +4845,7 @@ export class PbFormulaStudio extends Component {
         };
         return components.replace(
             /\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}/g,
-            (_token, key) => `<span class="ps-meta-token" contenteditable="false" data-ps-meta="${key}" title="Live employee detail">${labels[key]}</span>`);
+            (_token, key) => `<span class="ps-meta-token" contenteditable="false" data-ps-meta="${key}" title="Live employee detail — supplied by the employee and pay period, not a payroll component"><small>Employee detail</small><span>${labels[key]}</span></span>`);
     }
     get psRichComponents() {
         const all = (this.state.psData && this.state.psData.rich_components) || [];
