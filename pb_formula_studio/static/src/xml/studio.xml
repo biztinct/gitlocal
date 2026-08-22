@@ -2257,7 +2257,7 @@
                     <span class="ps-rich-hint-item"><span class="ps-rich-hint-dot meta"/><span><b>Employee detail</b> — name, ID, department or pay period supplied from the employee record.</span></span>
                     <span class="ps-rich-hint-item"><span>Select words to style them, or click a table cell to style all its contents.</span></span>
                   </div>
-                  <div class="ps-rich-editor" contenteditable="true" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop"></div>
+                  <div class="ps-rich-editor" contenteditable="true" t-on-mousedown="psRichEditorPointerDown" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop"></div>
                 </div>
               </div>
               <div class="ps-sub-foot"><button class="ps-secondary" t-on-click="closePsRich">Cancel</button><button class="ps-primary" t-att-disabled="state.psRichBusy" t-on-click="psSaveRich">Save content</button></div>
