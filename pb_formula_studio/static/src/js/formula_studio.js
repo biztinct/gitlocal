@@ -24,6 +24,12 @@ import {
     payslipTableContext,
     splitPayslipTableCell,
 } from "./payslip_table_tools";
+import {
+    alignPayslipImage,
+    cleanPayslipImages,
+    decoratePayslipImages,
+    resizePayslipImage,
+} from "./payslip_image_tools";
 // IA Cycle 4 — the ONE Studio change this cycle makes. Arriving here from the
 // Settings hub's cog path used to be a one-way trip: the Studio renders no
 // control panel, so there is no Odoo breadcrumb, and nothing in it said where
@@ -247,6 +253,7 @@ export class PbFormulaStudio extends Component {
             psRichTableActive: false,
             psRichTableLabel: "",
             psRichBorderScope: "table", // table | cell
+            psRichImageBusy: false,
             // F12 — raw-Excel mode on the card (per-user preference)
             rawMode: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_raw_mode") === "1"),
             rawBuffer: "",
@@ -476,6 +483,7 @@ export class PbFormulaStudio extends Component {
         this._rawNeedsSeed = false;
         this._psRichNeedsSeed = false;
         this._psRichNativeRemoveClick = (ev) => this._psRichRemoveTokenFromEvent(ev);
+        this._psRichNativeRemoveImageClick = (ev) => this._psRichRemoveImageFromEvent(ev);
         this._liveTimer = null;
         this._offerTimer = null;   // W98 — debounced offer recompute
         this._offerToken = 0;      // monotonic supersede token (C8)
@@ -578,7 +586,11 @@ export class PbFormulaStudio extends Component {
                     this._psRichRange = null;
                     this._psRichCellEl = null;
                 }
-                if (richEditor) this._psRichBindTokenControls(richEditor);
+                if (richEditor) {
+                    this._psRichDecorateImages(richEditor);
+                    this._psRichBindTokenControls(richEditor);
+                    this._psRichRestoreSelectedImage(richEditor);
+                }
                 this._psRichNeedsSeed = false;
             }
             requestAnimationFrame(() => { this.applyZoom(); this.applyInlineFit(); });
@@ -4829,6 +4841,9 @@ export class PbFormulaStudio extends Component {
         this._psRichNeedsSeed = false;
         this._psRichRange = null;
         this._psRichCellEl = null;
+        this._psRichImageEl = null;
+        this._psRichSelectedImageId = null;
+        this._psRichUploadedImageIds = [];
         this.state.psRichOpen = true;
         // The contenteditable subtree is browser-owned once editing begins.
         // Seed it after OWL mounts the shell so VHtml never tries to reconcile
@@ -4844,16 +4859,24 @@ export class PbFormulaStudio extends Component {
                 // reconciliation. Its injected controls therefore bind at the
                 // same imperative boundary instead of relying on framework
                 // delegation through a contenteditable island.
+                this._psRichDecorateImages(editor);
                 this._psRichBindTokenControls(editor);
             }
             else if (attempt < 5) setTimeout(() => seedEditor(attempt + 1), 16);
         };
         setTimeout(seedEditor, 0);
     }
-    closePsRich() {
-        if (this.state.psRichBusy) return;
+    async closePsRich() {
+        if (this.state.psRichBusy || this.state.psRichImageBusy) return;
         this._psRichSelectCell(null);
+        this._psRichSelectImage(null);
         this.state.psRichOpen = false;
+        const uploadedIds = this._psRichUploadedImageIds || [];
+        this._psRichUploadedImageIds = [];
+        if (uploadedIds.length) {
+            await this.orm.call("pb.formula.studio", "discard_payslip_content_images",
+                [this.state.config.id, uploadedIds]);
+        }
     }
     _psRichEditor() { return document.querySelector(".ps-rich-editor"); }
     _psRichEscape(value) {
@@ -4954,6 +4977,47 @@ export class PbFormulaStudio extends Component {
             remove.addEventListener("pointerdown", this._psRichNativeRemoveClick);
             remove.addEventListener("click", this._psRichNativeRemoveClick);
         }
+        for (const remove of editor.querySelectorAll("[data-ps-remove-image]")) {
+            remove.removeEventListener("pointerdown", this._psRichNativeRemoveImageClick);
+            remove.removeEventListener("click", this._psRichNativeRemoveImageClick);
+            remove.addEventListener("pointerdown", this._psRichNativeRemoveImageClick);
+            remove.addEventListener("click", this._psRichNativeRemoveImageClick);
+        }
+    }
+    _psRichDecorateImages(editor) { decoratePayslipImages(editor); }
+    _psRichImageId(wrapper) {
+        const image = wrapper && wrapper.querySelector("img.pb-ps-inline-image");
+        if (!image) return null;
+        const explicit = parseInt(image.dataset.psImageId, 10);
+        if (explicit) return explicit;
+        const match = String(image.getAttribute("src") || "")
+            .match(/\/web\/image\/ir\.attachment\/(\d+)\/datas/);
+        return match ? parseInt(match[1], 10) : null;
+    }
+    _psRichSelectImage(wrapper) {
+        const editor = this._psRichEditor();
+        if (this._psRichImageEl && this._psRichImageEl.isConnected) {
+            this._psRichImageEl.classList.remove("ps-rich-image-selected");
+        }
+        this._psRichImageEl = wrapper && editor && editor.contains(wrapper) ? wrapper : null;
+        this._psRichSelectedImageId = this._psRichImageEl
+            ? this._psRichImageId(this._psRichImageEl) : null;
+        if (this._psRichImageEl) this._psRichImageEl.classList.add("ps-rich-image-selected");
+    }
+    _psRichRestoreSelectedImage(editor) {
+        if (!editor || !this._psRichSelectedImageId) return;
+        const id = this._psRichSelectedImageId;
+        const image = editor.querySelector(`[data-ps-image-id="${id}"]`)
+            || editor.querySelector(`img[src*="/web/image/ir.attachment/${id}/datas"]`);
+        if (image) {
+            this._psRichImageEl = image.closest(".pb-ps-inline-image-wrap");
+            if (this._psRichImageEl) this._psRichImageEl.classList.add("ps-rich-image-selected");
+        }
+    }
+    _psRichActiveImage() {
+        const editor = this._psRichEditor();
+        return this._psRichImageEl && this._psRichImageEl.isConnected
+            && editor && editor.contains(this._psRichImageEl) ? this._psRichImageEl : null;
     }
     _psRichRefreshUsed() {
         const editor = this._psRichEditor();
@@ -5045,6 +5109,15 @@ export class PbFormulaStudio extends Component {
     }
     psRichToolbar(command, ev) {
         if (ev) ev.preventDefault();
+        const image = this._psRichActiveImage();
+        const imageAlignment = {
+            justifyLeft: "left", justifyCenter: "center", justifyRight: "right",
+        }[command];
+        if (image && imageAlignment) {
+            alignPayslipImage(image, imageAlignment);
+            this.state.psRichDraft = this._psRichEditor().innerHTML;
+            return;
+        }
         this.psRichCommand(command);
     }
     psRichBlock(ev) {
@@ -5075,6 +5148,57 @@ export class PbFormulaStudio extends Component {
     psRichInsertTableEvent(ev) {
         if (ev) ev.preventDefault();
         this.psRichInsertTable();
+    }
+    async psRichUploadImage(ev) {
+        const file = ev && ev.target && ev.target.files && ev.target.files[0];
+        if (!file || this.state.psRichImageBusy) return;
+        const input = ev.target;
+        const editor = this._psRichEditor();
+        if (editor) {
+            this.state.psRichDraft = editor.innerHTML;
+            this._psRichNeedsSeed = true;
+        }
+        this.state.psRichImageBusy = true;
+        try {
+            const data = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = event => resolve(String(event.target.result || "").split(",")[1] || "");
+                reader.onerror = () => reject(new Error("read"));
+                reader.readAsDataURL(file);
+            });
+            const result = await this.orm.call("pb.formula.studio", "upload_payslip_content_image", [
+                this.state.config.id,
+                { name: file.name, mime: file.type, data },
+            ]);
+            if (!result || !result.ok) {
+                this.notif.add((result && result.msg) || _t("The image could not be uploaded."), { type: "warning" });
+                return;
+            }
+            this._psRichUploadedImageIds.push(result.id);
+            const name = this._psRichEscape(result.name || file.name || "Image");
+            const url = this._psRichEscape(result.url);
+            this._psRichInsertTokenHtml(
+                `<span class="pb-ps-inline-image-wrap" style="display:block;text-align:left">`
+                + `<img class="pb-ps-inline-image" data-ps-image-id="${result.id}" src="${url}" alt="${name}" style="width:160px;max-width:100%;height:auto">`
+                + `</span>`);
+            const liveEditor = this._psRichEditor();
+            this._psRichDecorateImages(liveEditor);
+            const image = liveEditor && liveEditor.querySelector(`[data-ps-image-id="${result.id}"]`);
+            this._psRichSelectImage(image && image.closest(".pb-ps-inline-image-wrap"));
+            this.notif.add(_t("Image inserted. Use the alignment and size controls to position it."), { type: "success" });
+        } catch (_error) {
+            this.notif.add(_t("The image could not be read."), { type: "warning" });
+        } finally {
+            input.value = "";
+            this.state.psRichImageBusy = false;
+        }
+    }
+    psRichImageSize(ev) {
+        const size = ev && ev.target && ev.target.value;
+        if (size && !resizePayslipImage(this._psRichActiveImage(), size)) {
+            this.notif.add(_t("Select an image in the document first."), { type: "info" });
+        }
+        if (ev && ev.target) ev.target.value = "";
     }
     psRichTextColor(command, ev) {
         const value = ev && ev.target && ev.target.value;
@@ -5244,12 +5368,32 @@ export class PbFormulaStudio extends Component {
         }
         return true;
     }
+    _psRichRemoveImageFromEvent(ev) {
+        const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-image]");
+        if (!remove) return false;
+        ev.preventDefault();
+        ev.stopPropagation();
+        const wrapper = remove.closest(".pb-ps-inline-image-wrap");
+        if (wrapper && wrapper.isConnected) {
+            if (wrapper === this._psRichImageEl) {
+                this._psRichImageEl = null;
+                this._psRichSelectedImageId = null;
+            }
+            wrapper.remove();
+            this._psRichRefreshUsed();
+        }
+        return true;
+    }
     psRichEditorPointerDown(ev) {
-        const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-token]");
+        const remove = ev.target && ev.target.closest
+            && ev.target.closest("[data-ps-remove-token], [data-ps-remove-image]");
         if (remove) ev.preventDefault();
     }
     psRichEditorClick(ev) {
+        if (this._psRichRemoveImageFromEvent(ev)) return;
         if (this._psRichRemoveTokenFromEvent(ev)) return;
+        const image = ev.target && ev.target.closest && ev.target.closest("img.pb-ps-inline-image");
+        this._psRichSelectImage(image && image.closest(".pb-ps-inline-image-wrap"));
         this.psRichRememberSelection(ev);
     }
     _psRichSerializedHtml() {
@@ -5286,6 +5430,7 @@ export class PbFormulaStudio extends Component {
             cell.classList.remove("ps-rich-cell-selected");
             if (!cell.className) cell.removeAttribute("class");
         }
+        cleanPayslipImages(clone);
         return clone.innerHTML;
     }
     async psSaveRich() {
@@ -5296,6 +5441,7 @@ export class PbFormulaStudio extends Component {
             const r = await this.orm.call("pb.formula.studio", "save_payslip_content",
                 [this.state.config.id, this.state.psRichTarget, htmlValue]);
             if (r && r.ok) {
+                this._psRichUploadedImageIds = [];
                 this.state.psRichOpen = false;
                 await this._loadPayslip(this.state.psData.sample_id);
             } else this.notif.add((r && r.msg) || _t("Content could not be saved."), { type: "warning" });

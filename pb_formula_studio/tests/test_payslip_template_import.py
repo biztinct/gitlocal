@@ -182,6 +182,56 @@ class TestPayslipTemplateImport(TransactionCase):
         self.assertFalse(denied['ok'])
         self.assertNotIn('Cross-config', self.earnings.note_html)
 
+    def test_03b_inline_image_upload_is_safe_persisted_and_cleaned(self):
+        # A minimal real PNG signature + IHDR-shaped body is enough for the
+        # upload contract; Odoo stores the bytes without decoding the pixels.
+        png = b'\x89PNG\r\n\x1a\n' + b'content-image-fixture'
+        uploaded = self.Studio.upload_payslip_content_image(self.config.id, {
+            'name': 'Payroll logo.png',
+            'mime': 'image/png',
+            'data': base64.b64encode(png).decode(),
+        })
+        self.assertTrue(uploaded['ok'])
+        attachment = self.env['ir.attachment'].browse(uploaded['id'])
+        self.assertTrue(attachment.exists())
+        self.assertEqual(attachment.res_model, 'hr.formula.config')
+        self.assertEqual(attachment.res_id, self.config.id)
+        self.assertIn('access_token=', uploaded['url'])
+
+        saved = self.Studio.save_payslip_content(
+            self.config.id, 'layout',
+            '<span class="pb-ps-inline-image-wrap" '
+            'style="display:block;text-align:right">'
+            '<img class="pb-ps-inline-image" src="%s" alt="Payroll logo" '
+            'style="width:96px;max-width:100%%;height:auto"></span>' % uploaded['url'])
+        self.assertTrue(saved['ok'])
+        self.assertIn('<img', self.config.payslip_layout_html)
+        self.assertIn('/web/image/ir.attachment/%s/datas' % attachment.id,
+                      self.config.payslip_layout_html)
+        self.assertIn('text-align', self.config.payslip_layout_html)
+        self.assertIn('right', self.config.payslip_layout_html)
+        self.assertIn('width', self.config.payslip_layout_html)
+        self.assertIn('96px', self.config.payslip_layout_html)
+
+        self.Studio.save_payslip_content(self.config.id, 'layout', '<p>Image removed</p>')
+        self.assertFalse(attachment.exists(),
+                         'removing a saved image also removes its managed attachment')
+
+        abandoned = self.Studio.upload_payslip_content_image(self.config.id, {
+            'name': 'Abandoned.webp', 'mime': 'image/webp',
+            'data': base64.b64encode(b'RIFF\x04\x00\x00\x00WEBP').decode(),
+        })
+        self.assertTrue(abandoned['ok'])
+        discarded = self.Studio.discard_payslip_content_images(
+            self.config.id, [abandoned['id'], 'not-an-id'])
+        self.assertEqual(discarded['removed'], 1)
+
+        disguised = self.Studio.upload_payslip_content_image(self.config.id, {
+            'name': 'Not really an image.png', 'mime': 'image/png',
+            'data': base64.b64encode(b'<script>alert(1)</script>').decode(),
+        })
+        self.assertFalse(disguised['ok'])
+
     def test_04_text_pdf_has_a_keyless_local_analysis_path(self):
         result = self.Studio.analyse_payslip_template(self.config.id, {
             'name': 'text-payslip.pdf',
