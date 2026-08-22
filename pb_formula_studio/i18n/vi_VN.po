@@ -509,3 +509,8 @@ msgstr "Hiện tất cả các nhóm"
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
 msgid "not sent anywhere yet"
 msgstr "chưa được gửi đi đâu"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.mapping_canvas
+msgid "Nothing to show on this side."
+msgstr "Không có gì để hiển thị ở cột này."

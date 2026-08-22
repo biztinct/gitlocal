@@ -119,9 +119,17 @@
                   <span class="mc-plug right"/>
                 </div>
               </t>
+              <!-- An empty column has TWO causes and they need different sentences.
+                   "Nothing matches that" over a list the adapter never sent is a
+                   lie, and the Clear button under it is a verb with nothing to
+                   undo — the reader clears a filter they never set and concludes
+                   the board is broken. -->
               <div t-if="!lview.length" class="mc-col-empty">
-                Nothing matches that.
-                <button t-on-click="() => this.clearFilters('left')">Clear</button>
+                <t t-if="props.leftItems.length">
+                  Nothing matches that.
+                  <button t-on-click="() => this.clearFilters('left')">Clear</button>
+                </t>
+                <t t-else="">Nothing to show on this side.</t>
               </div>
             </div>
           </div>
@@ -175,8 +183,11 @@
                 </div>
               </t>
               <div t-if="!rview.length" class="mc-col-empty">
-                Nothing matches that.
-                <button t-on-click="() => this.clearFilters('right')">Clear</button>
+                <t t-if="props.rightItems.length">
+                  Nothing matches that.
+                  <button t-on-click="() => this.clearFilters('right')">Clear</button>
+                </t>
+                <t t-else="">Nothing to show on this side.</t>
               </div>
             </div>
           </div>

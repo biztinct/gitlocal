@@ -173,3 +173,9 @@ appends gotchas here (CR-numbered).
   than a change to the item shape — and they must be, because `_group_for` matches substrings
   (CR10) and a `BASIC` component grouping as a Deduction is a trap the role lanes have no reason to
   inherit.
+- CR25 (P3): an empty MappingCanvas column said "Nothing matches that. / Clear" whatever the cause.
+  It is true when a filter emptied the list and a LIE when the adapter simply sent nothing — which
+  the employee board makes routine, because payroll columns are withheld until asked for. The Clear
+  button under it is then a verb with nothing to undo. Split by `props.leftItems.length`: filtered →
+  the old sentence and the button; genuinely empty → "Nothing to show on this side." and no button.
+  Any adapter that can legitimately return an empty side depends on this.
