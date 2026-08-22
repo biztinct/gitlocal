@@ -1,7 +1,8 @@
 /** @odoo-module **/
-import { Component, useState, useRef, onMounted, onPatched, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onPatched, onWillUnmount, onWillUpdateProps } from "@odoo/owl";
 import { FormulaBar } from "./formula_bar";
 import { CellAutocomplete } from "./cell_autocomplete";
+import { _t } from "@web/core/l10n/translation";
 
 // Property rows are a fixed vocabulary — index math stays trivial.
 const ROWS = ["name", "category", "type", "formula", "value", "status"];
@@ -18,6 +19,10 @@ export class GridStudio extends Component {
     // refreshed props on the next render.
     static props = {
         components: Array,
+        // COLROLES P2 — 'payroll' | 'all'. Parent owns it (persisted there); the
+        // grid only reads it, so switching the lens is a re-render, not a reload.
+        lens: { type: String, optional: true },
+        onToggleLens: { type: Function, optional: true },   // () => parent flips the lens
         preview: Object,
         graph: { type: Object, optional: true },
         canEdit: { type: Boolean, optional: true },
@@ -100,6 +105,11 @@ export class GridStudio extends Component {
         this._edgeDir = 0;           // auto-scroll direction at a drag/fill window edge
         this._edgeTimer = null;
         onWillUnmount(() => { this._teardownFill(); this._detachScroll(); this._stopEdgeScroll(); });
+        // COLROLES P2: the LENS is flipped in the parent, so unlike a fold the grid
+        // cannot relocate focus before the change — it has to do it as the new props
+        // arrive, or `focused` resolves to a column that is about to stop rendering
+        // and _scrollFocusIntoView queries a dead node (same trap as S-F1).
+        onWillUpdateProps((next) => this._relocateForLens(next));
         onMounted(() => { this._attachScroll(); this._consumePendingSnippet(); });
         this.scrollerRef = useRef("scroller");
         this.editorRef = useRef("editor");
@@ -114,9 +124,41 @@ export class GridStudio extends Component {
     // ---- derived (recomputed against CURRENT props each render) ----
     // F111: display order follows `sequence` (letters are frozen identities that
     // no longer track position), falling back to letter order for older payloads.
+    // COLROLES P2 — TWO independent hides, both honoured here and nowhere else,
+    // so every downstream consumer (viewOrdered, displayColumns, keyboard nav,
+    // drag-fill, virtualization) inherits them for free:
+    //   · the LENS hides people/bank/reference columns while 'payroll' is on;
+    //   · `is_visible_in_grid === false` hides ONE column in BOTH lenses (the
+    //     per-column switch on the Cell Editor — Everything is not an override).
+    // Legacy rows carry is_visible_in_grid=true, so the lens must not consult it.
+    // ONE definition of "visible", used by the render path and by the pre-render
+    // focus relocation below (which has to ask about the INCOMING lens).
+    _inLens(c, lens = this.props.lens) {
+        if (c.is_visible_in_grid === false) return false;
+        return lens === "all" || ((c.column_role || "payroll") === "payroll");
+    }
     get ordered() {
-        return [...this.props.components].sort((a, b) =>
+        return this.props.components.filter(c => this._inLens(c)).sort((a, b) =>
             ((a.sequence ?? 0) - (b.sequence ?? 0)) || (this._colNum(a.col) - this._colNum(b.col)));
+    }
+    // How many columns the current lens is holding back (footer pill).
+    get hiddenCount() { return this.props.components.length - this.ordered.length; }
+    // One whole sentence per case — a "s" fragment glued on in the template is
+    // untranslatable in a language that does not form plurals that way.
+    get hiddenLabel() {
+        const n = this.hiddenCount;
+        return n === 1 ? _t("1 column hidden") : _t("%s columns hidden", n);
+    }
+    _relocateForLens(next) {
+        const shown = (next.components || []).filter(c => this._inLens(c, next.lens));
+        const ok = new Set(shown.map(c => c.id));
+        if (this.ui.selection.some(id => !ok.has(id))) {
+            this.ui.selection = this.ui.selection.filter(id => ok.has(id));
+        }
+        if (this.ui.anchorId != null && !ok.has(this.ui.anchorId)) this.ui.anchorId = null;
+        if (this.ui.focus.colId == null || ok.has(this.ui.focus.colId)) return;
+        if (this.ui.editing) this.ui.editing = null;   // its cell is unmounting
+        this.ui.focus = { colId: shown.length ? shown[0].id : null, row: this.ui.focus.row };
     }
     get focused() { return this.props.components.find(c => c.id === this.ui.focus.colId) || null; }
 

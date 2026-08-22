@@ -935,7 +935,25 @@
                 </button>
               </div>
             </div>
-            <t t-foreach="visibleGroups" t-as="grp" t-key="grp">
+            <!-- COLROLES P2 — the lens. Payroll shows what makes pay; Everything
+                 adds the people, bank and reference columns that came in with it. -->
+            <div class="ol-lens">
+              <div class="pbfs-seg sm" data-coach="fs-lens">
+                <button t-att-class="state.lens === 'payroll' ? 'active' : ''"
+                        t-on-click="() => this.setLens('payroll')"
+                        title="Show only the columns that make pay">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>
+                  <span class="tx">Payroll</span>
+                </button>
+                <button t-att-class="state.lens === 'all' ? 'active' : ''"
+                        t-on-click="() => this.setLens('all')"
+                        title="Show every column, including people and bank data">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span class="tx">Everything</span>
+                </button>
+              </div>
+            </div>
+            <t t-foreach="lensAll ? visibleGroups : payrollGroups" t-as="grp" t-key="grp">
               <div class="ol-grp" t-esc="grp"/>
               <div t-foreach="groupItems(grp)" t-as="c" t-key="c.id"
                    t-att-data-col="c.col"
@@ -943,11 +961,37 @@
                    t-attf-style="{{ depStyle(c) }}"
                    t-on-click="() => this.selectComponent(c.id)">
                 <span class="ol-col" t-esc="c.col"/>
+                <span t-if="roleOf(c) !== 'payroll'" t-attf-class="ol-role r-{{ roleOf(c) }}" t-att-title="roleLabel(roleOf(c))">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="roleIcon(roleOf(c))"/><t t-call="pb_formula_studio.RoleIco"/></svg>
+                </span>
                 <span class="ol-nm" t-esc="c.name"/>
                 <span t-if="!c.is_valid" class="ol-err" title="Has errors"/>
                 <span class="ol-val" t-esc="previewVal(c.col)"/>
                 <span t-attf-class="ol-typ {{ c.type }}" t-esc="c.type"/>
               </div>
+            </t>
+            <!-- Payroll lens: everything that is not pay collapses to ONE quiet row.
+                 It is never dropped — the count says exactly how much is tucked away. -->
+            <t t-if="!lensAll and peopleCount">
+              <button t-attf-class="ol-people {{ state.peopleOpen ? 'open' : '' }}" t-on-click="togglePeople">
+                <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                <svg class="ppl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                <span class="t">People &amp; data</span>
+                <span class="n" t-esc="peopleCount"/>
+              </button>
+              <t t-if="state.peopleOpen">
+                <div t-foreach="peopleItems" t-as="c" t-key="c.id"
+                     t-att-data-col="c.col"
+                     t-attf-class="ol-item ol-item--ppl {{ c.id === state.selectedId ? 'active' : '' }}"
+                     t-on-click="() => this.selectComponent(c.id)">
+                  <span class="ol-col" t-esc="c.col"/>
+                  <span t-attf-class="ol-role r-{{ roleOf(c) }}" t-att-title="roleLabel(roleOf(c))">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="roleIcon(roleOf(c))"/><t t-call="pb_formula_studio.RoleIco"/></svg>
+                  </span>
+                  <span class="ol-nm" t-esc="c.name"/>
+                  <span class="ol-rolelbl" t-esc="roleLabel(roleOf(c))"/>
+                </div>
+              </t>
             </t>
           </div>
 
@@ -1249,6 +1293,30 @@
                             <option t-foreach="state.fieldMeta.salary_rules or []" t-as="r" t-key="r.id" t-att-value="r.id" t-att-selected="state.draft.salary_rule_id === r.id"><t t-esc="r.name"/> (<t t-esc="r.code"/>)</option>
                           </select></div>
                       </div>
+
+                      <!-- COLROLES P2 — what this column is FOR. Six chips, one
+                           chosen; the consequences of a non-pay role are offered
+                           below as an explicit action, never applied silently. -->
+                      <div class="ce-rolefield">
+                        <label>What this column is for
+                          <span t-if="state.draft.column_role_source === 'auto'" class="ce-rolesrc" title="Nobody has set this yet — the system worked it out from the column heading">auto</span>
+                          <span t-else="" class="ce-rolesrc set" title="Someone chose this role by hand">set by a person</span>
+                        </label>
+                        <div class="ce-roles">
+                          <button t-foreach="roleOptions" t-as="r" t-key="r.key"
+                                  t-attf-class="ce-role r-{{ r.key }} {{ draftRole === r.key ? 'on' : '' }}"
+                                  t-att-title="r.hint"
+                                  t-on-click="() => this.setDraftRole(r.key)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="r.icon"/><t t-call="pb_formula_studio.RoleIco"/></svg>
+                            <span t-esc="r.label"/>
+                          </button>
+                        </div>
+                        <div t-if="draftRole !== 'payroll'" class="ce-rolehint" t-esc="roleHint(draftRole)"/>
+                        <button t-if="roleDefaultsOffered" class="ce-roleapply" t-on-click="applyRoleDefaults">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                          This is not pay — also take it off the payslip and out of the grid
+                        </button>
+                      </div>
                     </div>
 
                     <div class="ce-sec">
@@ -1321,7 +1389,9 @@
                 Preview · <t t-esc="sampleName"/>
               </button>
             </div>
-            <GridStudio components="state.components" preview="state.preview" graph="state.graph"
+            <GridStudio components="state.components" lens="state.lens"
+                        onToggleLens="() => this.toggleLens()"
+                        preview="state.preview" graph="state.graph"
                         canEdit="state.canEdit" selectedId="state.selectedId"
                         onSelect="(id) => this.selectComponent(id)"
                         formatValue="(col) => this.previewVal(col)"
@@ -1579,7 +1649,12 @@
               <t t-foreach="['error','warning','hint']" t-as="sev" t-key="sev">
                 <t t-if="problemsOf(sev).length">
                   <div t-foreach="problemsOf(sev)" t-as="p" t-key="p.key" t-attf-class="pp-row {{ sev }}">
-                    <span class="pp-dot"/>
+                    <!-- the glyph says WHAT KIND of problem; the left border + tint
+                         still say how serious it is (probIcon has always existed —
+                         COLROLES finally renders it, with the five role checks). -->
+                    <span class="pp-ic">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="probIcon(p.kind)"/><t t-call="pb_formula_studio.ProbIco"/></svg>
+                    </span>
                     <div class="pp-main">
                       <div class="pp-t"><t t-esc="p.title"/></div>
                       <div class="pp-d"><t t-esc="p.detail"/></div>
@@ -4082,6 +4157,34 @@
     <t t-elif="icon === 'share'"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></t>
     <t t-elif="icon === 'payai'"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></t>
     <t t-elif="icon === 'export'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></t>
+  </t>
+
+  <!-- COLROLES P2 — column-role glyphs, keyed by ROLES[].icon in formula_studio.js
+       (inner SVG shapes only; the wrapping <svg> carries the stroke settings). -->
+  <t t-name="pb_formula_studio.RoleIco">
+    <t t-if="icon === 'coins'"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4M16.71 13.88l.7.71-2.82 2.82"/></t>
+    <t t-elif="icon === 'idcard'"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="9" cy="11" r="2.4"/><path d="M5 17c.6-1.8 2.1-2.6 4-2.6s3.4.8 4 2.6M15 9h4M15 13h4"/></t>
+    <t t-elif="icon === 'user'"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></t>
+    <t t-elif="icon === 'briefcase'"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></t>
+    <t t-elif="icon === 'bank'"><line x1="3" y1="21" x2="21" y2="21"/><path d="M3 10h18M12 3 21 8H3l9-5z"/><line x1="6" y1="10" x2="6" y2="21"/><line x1="10" y1="10" x2="10" y2="21"/><line x1="14" y1="10" x2="14" y2="21"/><line x1="18" y1="10" x2="18" y2="21"/></t>
+    <t t-elif="icon === 'filetext'"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="15" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></t>
+  </t>
+
+  <!-- Problem-rail glyphs, keyed by probIcon(kind) in formula_studio.js. Same
+       inner-shapes contract as CmdIco / RoleIco. -->
+  <t t-name="pb_formula_studio.ProbIco">
+    <t t-if="icon === 'alert'"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></t>
+    <t t-elif="icon === 'cycle'"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H4.2"/></t>
+    <t t-elif="icon === 'unplug'"><path d="m19 5 3-3M2 22l3-3"/><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4z"/><path d="m12 6 6 6 2.3-2.3a2.4 2.4 0 0 0 0-3.4l-2.6-2.6a2.4 2.4 0 0 0-3.4 0z"/></t>
+    <t t-elif="icon === 'hash'"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></t>
+    <t t-elif="icon === 'eye'"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></t>
+    <t t-elif="icon === 'copy'"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></t>
+    <t t-elif="icon === 'wand'"><path d="m3 21 9-9"/><path d="M14.5 2.5 12 5l3.5 3.5L18 6a2.12 2.12 0 0 0-3.5-3.5z"/><path d="M9 6 6 9"/></t>
+    <t t-elif="icon === 'link'"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12.2 19"/></t>
+    <t t-elif="icon === 'note'"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="15" y2="13"/></t>
+    <t t-elif="icon === 'idcard'"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="9" cy="11" r="2.4"/><path d="M5 17c.6-1.8 2.1-2.6 4-2.6s3.4.8 4 2.6M15 9h4M15 13h4"/></t>
+    <t t-elif="icon === 'bank'"><line x1="3" y1="21" x2="21" y2="21"/><path d="M3 10h18M12 3 21 8H3l9-5z"/><line x1="6" y1="10" x2="6" y2="21"/><line x1="10" y1="10" x2="10" y2="21"/><line x1="14" y1="10" x2="14" y2="21"/><line x1="18" y1="10" x2="18" y2="21"/></t>
+    <t t-else=""><circle cx="12" cy="12" r="4.5"/></t>
   </t>
 
 </templates>
