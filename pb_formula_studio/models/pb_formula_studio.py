@@ -4912,6 +4912,11 @@ class PbFormulaStudio(models.AbstractModel):
     _SECTION_COLORS = ['slate', 'indigo', 'emerald', 'amber', 'rose', 'sky', 'violet']
     _PAYSLIP_UPLOAD_MIMES = {'application/pdf', 'image/png', 'image/jpeg'}
     _PAYSLIP_UPLOAD_MAX = 10 * 1024 * 1024
+    _PAYSLIP_CONTENT_IMAGE_MIMES = {'image/png', 'image/jpeg', 'image/webp'}
+    _PAYSLIP_CONTENT_IMAGE_MAX = 4 * 1024 * 1024
+    _PAYSLIP_CONTENT_IMAGE_MARKER = 'pb_payslip_content_image'
+    _PAYSLIP_CONTENT_IMAGE_RE = re.compile(
+        r'/web/image/ir\.attachment/(\d+)/datas(?:\?[^"\'<>\s]*)?')
 
     def _payslip_comp(self, r, values):
         """One payslip line payload (value comes from the live preview)."""
@@ -5628,6 +5633,108 @@ class PbFormulaStudio(models.AbstractModel):
             config.write(content_vals)
         return {'ok': True, 'created_sections': created, 'placed': placed}
 
+    @staticmethod
+    def _payslip_content_image_matches_mime(raw, mimetype):
+        """Reject renamed/non-image payloads before creating an attachment."""
+        if mimetype == 'image/png':
+            return raw.startswith(b'\x89PNG\r\n\x1a\n')
+        if mimetype == 'image/jpeg':
+            return raw.startswith(b'\xff\xd8\xff')
+        if mimetype == 'image/webp':
+            return len(raw) >= 12 and raw[:4] == b'RIFF' and raw[8:12] == b'WEBP'
+        return False
+
+    @api.model
+    def _payslip_content_image_ids(self, config):
+        """Attachment ids referenced anywhere in this config's saved template."""
+        blocks = [config.payslip_header_html, config.payslip_footer_html,
+                  config.payslip_layout_html]
+        blocks.extend(self.env['hr.payslip.config'].search([
+            ('salary_structure_id', '=', config.id),
+        ]).mapped('note_html'))
+        return {
+            int(match.group(1))
+            for block in blocks
+            for match in self._PAYSLIP_CONTENT_IMAGE_RE.finditer(str(block or ''))
+        }
+
+    @api.model
+    def _cleanup_payslip_content_images(self, config, candidate_ids=None):
+        """Delete only our own unreferenced inline-image attachments."""
+        domain = [
+            ('res_model', '=', 'hr.formula.config'),
+            ('res_id', '=', config.id),
+            ('description', '=', self._PAYSLIP_CONTENT_IMAGE_MARKER),
+        ]
+        if candidate_ids is not None:
+            clean_ids = []
+            for value in candidate_ids:
+                try:
+                    clean_ids.append(int(value))
+                except (TypeError, ValueError):
+                    continue
+            if not clean_ids:
+                return 0
+            domain.append(('id', 'in', clean_ids))
+        referenced = self._payslip_content_image_ids(config)
+        orphaned = self.env['ir.attachment'].search(domain).filtered(
+            lambda attachment: attachment.id not in referenced)
+        count = len(orphaned)
+        orphaned.unlink()
+        return count
+
+    @api.model
+    def upload_payslip_content_image(self, config_id, upload):
+        """Store a safe inline payslip image and return a tokenised image URL."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("Configuration not found.")}
+        upload = upload if isinstance(upload, dict) else {}
+        mimetype = str(upload.get('mime') or '').lower()
+        if mimetype not in self._PAYSLIP_CONTENT_IMAGE_MIMES:
+            return {'ok': False, 'msg': _("Use a PNG, JPEG or WebP image.")}
+        try:
+            raw = base64.b64decode(str(upload.get('data') or ''), validate=True)
+        except (binascii.Error, ValueError, TypeError):
+            return {'ok': False, 'msg': _("The image file could not be read.")}
+        if not raw:
+            return {'ok': False, 'msg': _("The image file is empty.")}
+        if len(raw) > self._PAYSLIP_CONTENT_IMAGE_MAX:
+            return {'ok': False, 'msg': _("The image must be 4 MB or smaller.")}
+        if not self._payslip_content_image_matches_mime(raw, mimetype):
+            return {'ok': False, 'msg': _("The file contents do not match the selected image type.")}
+        original_name = re.sub(r'[\x00-\x1f\\/]+', ' ', str(upload.get('name') or 'Image')).strip()
+        name = (original_name or 'Image')[:128]
+        attachment = self.env['ir.attachment'].create({
+            'name': name,
+            'datas': base64.b64encode(raw),
+            'mimetype': mimetype,
+            'res_model': 'hr.formula.config',
+            'res_id': config.id,
+            'description': self._PAYSLIP_CONTENT_IMAGE_MARKER,
+        })
+        attachment.generate_access_token()
+        return {
+            'ok': True,
+            'id': attachment.id,
+            'name': name,
+            'url': '/web/image/ir.attachment/%s/datas?access_token=%s' % (
+                attachment.id, attachment.access_token),
+        }
+
+    @api.model
+    def discard_payslip_content_images(self, config_id, attachment_ids):
+        """Remove uploads abandoned when the user cancels the editor."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        return {'ok': True, 'removed': self._cleanup_payslip_content_images(
+            config, attachment_ids if isinstance(attachment_ids, list) else [])}
+
     @api.model
     def save_payslip_content(self, config_id, target, html_value):
         """Save sanitized rich content for header/footer/a section."""
@@ -5642,10 +5749,13 @@ class PbFormulaStudio(models.AbstractModel):
         html_value = config._normalise_payslip_content_tokens(
             str(html_value or '')[:120000])
         if target == 'header':
+            previous_html = config.payslip_header_html
             config.write({'payslip_header_html': html_value or False})
         elif target == 'footer':
+            previous_html = config.payslip_footer_html
             config.write({'payslip_footer_html': html_value or False})
         elif target == 'layout':
+            previous_html = config.payslip_layout_html
             config.write({'payslip_layout_html': html_value or False})
         elif str(target).startswith('section:'):
             try:
@@ -5655,9 +5765,15 @@ class PbFormulaStudio(models.AbstractModel):
             section = self.env['hr.payslip.config'].browse(section_id)
             if not section.exists() or section.salary_structure_id != config:
                 return {'ok': False, 'msg': _("Section not found in this configuration.")}
+            previous_html = section.note_html
             section.write({'note_html': html_value or False})
         else:
             return {'ok': False, 'msg': _("Unknown content area.")}
+        previous_ids = [
+            int(match.group(1))
+            for match in self._PAYSLIP_CONTENT_IMAGE_RE.finditer(str(previous_html or ''))
+        ]
+        self._cleanup_payslip_content_images(config, previous_ids)
         return {'ok': True}
 
     @api.model
