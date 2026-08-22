@@ -154,16 +154,29 @@
 .pbfs-ps .ps-primary { border: 1px solid var(--i, #5A4BB0); background: var(--i, #5A4BB0); color: #fff; }
 .pbfs-ps .ps-primary:disabled { opacity: .5; cursor: not-allowed; }
 .pbfs-ps .ps-secondary { border: 1px solid var(--line, #E8E9F3); background: #fff; color: #475569; }
-.pbfs-ps .ps-template-delete { width: min(440px, 92vw); padding: 28px; border-radius: 17px; background: #fff; box-shadow: 0 28px 70px rgba(15, 12, 40, .34); text-align: center; }
-.pbfs-ps .ps-template-delete-icon { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto 15px; border-radius: 14px; background: #FEF2F2; color: #DC2626; }
+.pbfs-ps .ps-template-delete { width: 460px; max-width: 92vw; padding: 28px; border: 1px solid #F1F5F9; border-radius: 19px; background: #fff; box-shadow: 0 32px 80px rgba(15, 12, 40, .38); text-align: center; }
+.pbfs-ps .ps-template-delete-icon { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto 11px; border-radius: 15px; background: #FEF2F2; color: #DC2626; box-shadow: inset 0 0 0 1px #FEE2E2; }
 .pbfs-ps .ps-template-delete-icon svg { width: 25px; height: 25px; }
-.pbfs-ps .ps-template-delete h3 { margin: 0 0 8px; color: #1E293B; font-size: 18px; }
-.pbfs-ps .ps-template-delete p { margin: 0; color: #64748B; font-size: 13px; line-height: 1.55; }
+.pbfs-ps .ps-template-delete-kicker { margin-bottom: 5px; color: #DC2626; font-size: 9.5px; font-weight: 900; letter-spacing: .075em; text-transform: uppercase; }
+.pbfs-ps .ps-template-delete h3 { margin: 0 0 7px; color: #1E293B; font-size: 19px; letter-spacing: -.01em; }
+.pbfs-ps .ps-template-delete p { max-width: 360px; margin: 0 auto; color: #64748B; font-size: 12.5px; line-height: 1.5; }
+.pbfs-ps .ps-template-delete-impact { display: grid; gap: 7px; margin-top: 17px; text-align: left; }
+.pbfs-ps .ps-template-delete-impact > div { position: relative; padding: 10px 12px 10px 38px; border: 1px solid; border-radius: 10px; }
+.pbfs-ps .ps-template-delete-impact > div::before { position: absolute; top: 12px; left: 13px; width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; font-size: 11px; font-weight: 900; }
+.pbfs-ps .ps-template-delete-impact .remove { border-color: #FECACA; background: #FFF7F7; }
+.pbfs-ps .ps-template-delete-impact .remove::before { content: "−"; background: #FEE2E2; color: #B91C1C; }
+.pbfs-ps .ps-template-delete-impact .keep { border-color: #A7F3D0; background: #F3FFF9; }
+.pbfs-ps .ps-template-delete-impact .keep::before { content: "✓"; background: #D1FAE5; color: #047857; }
+.pbfs-ps .ps-template-delete-impact span, .pbfs-ps .ps-template-delete-impact b { display: block; }
+.pbfs-ps .ps-template-delete-impact span { color: #94A3B8; font-size: 8.5px; font-weight: 900; letter-spacing: .055em; text-transform: uppercase; }
+.pbfs-ps .ps-template-delete-impact b { margin-top: 2px; color: #334155; font-size: 11.5px; line-height: 1.35; }
 .pbfs-ps .ps-template-delete-note { margin-top: 15px; padding: 10px 12px; border-radius: 9px; background: #FFF7ED; color: #9A3412; font-size: 11.5px; line-height: 1.45; text-align: left; }
 .pbfs-ps .ps-template-delete-actions { display: flex; gap: 9px; margin-top: 20px; }
-.pbfs-ps .ps-template-delete-actions button { flex: 1; min-height: 36px; border-radius: 8px; font-size: 12.5px; font-weight: 800; cursor: pointer; }
+.pbfs-ps .ps-template-delete-actions button { min-height: 38px; padding: 0 14px; border-radius: 9px; font-size: 12px; font-weight: 800; cursor: pointer; }
+.pbfs-ps .ps-template-delete-actions .ps-secondary { flex: 0 0 auto; }
+.pbfs-ps .ps-template-delete-actions .ps-template-delete-confirm { flex: 1; }
 .pbfs-ps .ps-template-delete-confirm { border: 1px solid #DC2626; background: #DC2626; color: #fff; }
-.pbfs-ps .ps-template-delete-confirm:hover { background: #B91C1C; }
+.pbfs-ps .ps-template-delete-confirm:hover { border-color: #B91C1C; background: #B91C1C; box-shadow: 0 8px 18px rgba(185, 28, 28, .2); }
 .pbfs-ps .ps-template-delete-actions button:disabled { opacity: .55; cursor: not-allowed; }
 .pbfs-ps .ps-import-body { flex: 1; min-height: 310px; overflow: auto; padding: 20px; background: #F8F9FD; }
 .pbfs-ps .ps-import-upload { max-width: 650px; margin: 20px auto; --bdo-accent: var(--i, #5A4BB0); }
