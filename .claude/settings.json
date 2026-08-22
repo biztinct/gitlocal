@@ -8,7 +8,11 @@
       "Write(*)",
       "Bash(rm -rf /private/tmp/claude-502/-Users-adity-Documents-GitHub-gitlocal/*/tasks/*)",
       "Bash(rm -f /tmp/pb_approval.tar.gz)",
-      "Bash(ssh Payobook19v2 'until test -f /tmp/pbfs.done; do sleep 4; done; echo DONE; systemctl is-active odoo-server.service; sudo grep -ciE \"traceback|critical|ERROR\" /tmp/pbfs.log; sudo grep -iE \"Module pb_formula_studio loaded|loading pb_formula_studio\" /tmp/pbfs.log | tail -2')"
+      "Bash(ssh Payobook19v2 'until test -f /tmp/pbfs.done; do sleep 4; done; echo DONE; systemctl is-active odoo-server.service; sudo grep -ciE \"traceback|critical|ERROR\" /tmp/pbfs.log; sudo grep -iE \"Module pb_formula_studio loaded|loading pb_formula_studio\" /tmp/pbfs.log | tail -2')",
+      "WebFetch(domain:www.deputy.com)",
+      "WebFetch(domain:connecteam.com)",
+      "WebSearch",
+      "WebFetch(domain:www.businessnewsdaily.com)"
     ]
   }
 }
