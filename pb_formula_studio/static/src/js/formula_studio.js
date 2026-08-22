@@ -43,8 +43,25 @@ import {
 import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
 import { _t } from "@web/core/l10n/translation";
 
-const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals"];
-const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669" };
+// COLROLES P2 — "People & Data" is the fifth outline group, matching PEOPLE_GROUP
+// in pb_formula_studio.py. It is deliberately LAST: the payroll reads top-down and
+// the data it travels with collects underneath.
+const PEOPLE_GROUP = "People & Data";
+const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals", PEOPLE_GROUP];
+const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669", people: "#64748B" };
+
+// COLROLES P2 — role vocabulary. Order is the picker's order (pay first, then the
+// data that surrounds it); `icon` keys the RoleIco template in studio.xml. Labels
+// and hints are NOT here: _t() at module scope would be evaluated before the
+// translations are loaded, so they are resolved per render in roleLabel/roleHint.
+const ROLES = [
+    { key: "payroll", icon: "coins" },
+    { key: "identity", icon: "idcard" },
+    { key: "profile", icon: "user" },
+    { key: "contract", icon: "briefcase" },
+    { key: "bank", icon: "bank" },
+    { key: "reference", icon: "filetext" },
+];
 const OPSYM = { "+": "+", "-": "−", "*": "×", "/": "÷", "^": "^" };
 
 // W18 (D-F2) — keyboard-shortcut registry for the shortcuts overlay. The GRID rows
@@ -256,6 +273,15 @@ export class PbFormulaStudio extends Component {
             psRichImageBusy: false,
             // F12 — raw-Excel mode on the card (per-user preference)
             rawMode: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_raw_mode") === "1"),
+            // COLROLES P2 — the lens. 'payroll' shows only the columns that make
+            // pay; 'all' shows everything. Default 'payroll' when the key is absent,
+            // so a first visit lands on the decluttered view. Persisted per user
+            // (a preference, not per-config state).
+            lens: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_lens") === "all") ? "all" : "payroll",
+            // Expansion of the tucked-away People & data row under the Payroll lens.
+            // Deliberately NOT persisted: it re-collapses every visit so the sidebar
+            // opens quiet, and expanding it is a cheap, obvious gesture.
+            peopleOpen: false,
             rawBuffer: "",
             rawFor: null,            // component id the current buffer belongs to
             rawValid: null,          // {valid, message} from validate_formula_live
@@ -612,6 +638,7 @@ export class PbFormulaStudio extends Component {
             this.state.pinnedSamples = [];   // W4 — pins are per-config, client-session only
             this.state.previewExtra = {};
             this.state.folds = {};           // W8 — folds are per-config, client-session only
+            this.state.peopleOpen = false;   // COLROLES — a new structure opens quiet
         }
         this.state.config = d.config;
         this.state.components = d.components;
@@ -1078,6 +1105,12 @@ export class PbFormulaStudio extends Component {
         add("act.offer", "Actions", "Offer calculator", "offer calculator hypothetical hire net breakdown simulate salary", () => this.openOfferCalc());
         add("view.settings", "Views", "Settings", "settings configuration setup", () => this.setView("settings"));
         add("view.shortcuts", "Views", "Keyboard shortcuts", "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
+        // COLROLES P2 — flip the lens without reaching for the sidebar control.
+        add("view.lens", "Views",
+            this.lensAll ? _t("Show payroll columns only") : _t("Show every column"),
+            "lens payroll everything people data columns hide show identity bank",
+            () => this.toggleLens(),
+            this.lensAll ? _t("Hide people & data columns") : _t("Include people & data columns"));
         if (this.state.canEdit) add("act.new", "Actions", "New component", "add new create column", () => this.addComponentQuick());
         if (this.state.canEdit) add("act.import", "Actions", "Import from Excel…", "import excel upload spreadsheet workbook", () => this.importExcelInto());
         add("act.find", "Actions", "Find & replace", "find search replace formula", () => this.openFind());
@@ -1355,6 +1388,48 @@ export class PbFormulaStudio extends Component {
     }
     groupItems(g) { return this.state.components.filter(c => c.group === g); }
     get visibleGroups() { return GROUPS.filter(g => this.groupItems(g).length); }
+
+    // ==== COLROLES P2 — the lens =============================================
+    // Two lenses over the SAME loaded payload (no reload, no RPC): 'payroll'
+    // shows the four pay groups and tucks the rest behind one row; 'all' renders
+    // People & Data as an ordinary fifth group.
+    roleOf(c) { return (c && c.column_role) || "payroll"; }
+    roleMeta(role) { return ROLES.find(r => r.key === (role || "payroll")) || ROLES[0]; }
+    roleIcon(role) { return this.roleMeta(role).icon; }
+    roleLabel(role) {
+        return {
+            payroll: _t("Payroll"), identity: _t("Identity"),
+            profile: _t("Employee profile"), contract: _t("Contract"),
+            bank: _t("Bank"), reference: _t("Reference"),
+        }[role || "payroll"] || _t("Payroll");
+    }
+    roleHint(role) {
+        return {
+            payroll: _t("Feeds the calculation."),
+            identity: _t("Says which employee the row belongs to."),
+            profile: _t("Personal details kept on the employee."),
+            contract: _t("Terms kept on the contract."),
+            bank: _t("Payment details."),
+            reference: _t("A code or note carried along."),
+        }[role || "payroll"] || "";
+    }
+    get roleOptions() {
+        return ROLES.map(r => ({ ...r, label: this.roleLabel(r.key), hint: this.roleHint(r.key) }));
+    }
+    // The four pay groups — People & Data is rendered separately under the
+    // Payroll lens and inline (via visibleGroups) under Everything.
+    get payrollGroups() { return this.visibleGroups.filter(g => g !== PEOPLE_GROUP); }
+    get peopleItems() { return this.groupItems(PEOPLE_GROUP); }
+    get peopleCount() { return this.peopleItems.length; }
+    get lensAll() { return this.state.lens === "all"; }
+    setLens(lens) {
+        const v = lens === "all" ? "all" : "payroll";
+        if (this.state.lens === v) return;
+        this.state.lens = v;
+        try { localStorage.setItem("pbfs_lens", v); } catch (e) { /* private mode */ }
+    }
+    toggleLens() { this.setLens(this.lensAll ? "payroll" : "all"); }
+    togglePeople() { this.state.peopleOpen = !this.state.peopleOpen; }
     get sampleName() {
         const s = this.state.samples.find(s => s.id === this.state.preview.sample_id);
         return s ? s.name : "—";
@@ -1438,7 +1513,7 @@ export class PbFormulaStudio extends Component {
         return (c.excel_formula || "").replace(/^=/, "").trim().startsWith("-");
     }
     ring(score) { const C = 2 * Math.PI * 19; return { dash: C, offset: C * (1 - (score || 0) / 100) }; }
-    catKey(group) { return { Inputs: "info", Earnings: "earn", Deductions: "ded", Totals: "total" }[group] || "earn"; }
+    catKey(group) { return { Inputs: "info", Earnings: "earn", Deductions: "ded", Totals: "total", [PEOPLE_GROUP]: "people" }[group] || "earn"; }
     colOf(c) { return c ? CAT_COLOR[this.catKey(c.group)] : "#4F46E5"; }
 
     // ---- dependency highlighting ----
@@ -2485,6 +2560,27 @@ export class PbFormulaStudio extends Component {
     }
     setEditScope(scope) { this.state.editScope = scope; }
     toggleAdvanced() { this.state.advOpen = !this.state.advOpen; }
+
+    // ---- COLROLES P2 — role picker on the Cell Editor ----------------------
+    // Changing the role is one click; the CONSEQUENCES of that change (stop
+    // printing it on the payslip, stop showing it in the grid) are offered as a
+    // separate, explicit chip. Never silent — a role change must not quietly
+    // rewrite two other switches behind the operator's back.
+    get draftRole() { return this.state.draft.column_role || "payroll"; }
+    setDraftRole(role) {
+        if (this.draftRole === role) return;
+        this.state.draft.column_role = role;
+        // a person is choosing it, so the picker stops reading "auto-classified"
+        this.state.draft.column_role_source = "user";
+    }
+    get roleDefaultsOffered() {
+        return this.state.editMode && this.draftRole !== "payroll"
+            && (this.state.draft.appears_on_payslip || this.state.draft.is_visible_in_grid);
+    }
+    applyRoleDefaults() {
+        this.state.draft.appears_on_payslip = false;
+        this.state.draft.is_visible_in_grid = false;
+    }
     setDraftField(field, ev) {
         const t = ev.target;
         let v = t.type === "checkbox" ? t.checked : t.value;
@@ -4059,6 +4155,9 @@ export class PbFormulaStudio extends Component {
         return {
             invalid: "alert", empty: "alert", cycle: "cycle", unused: "unplug",
             magic: "hash", offpayslip: "eye", dupe: "copy", simplify: "wand",
+            // COLROLES P2 — column-role health
+            noident: "idcard", refinformula: "link", bankunmapped: "bank",
+            idunmapped: "unplug", nonpayslip: "eye", note: "note",
         }[kind] || "dot";
     }
 

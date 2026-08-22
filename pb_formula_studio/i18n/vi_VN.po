@@ -1,0 +1,303 @@
+# Translation of Payobook Formula Studio.
+# This file contains the translation of the following modules:
+# 	* pb_formula_studio
+#
+# COLROLES Phase 2 seeds this catalogue with the column-role vocabulary: the
+# lens, the People & data section, the role picker and the five role health
+# checks. Earlier Studio strings are not back-filled here — this file is the
+# start of the module's catalogue, not a complete export of it.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook Formula Studio\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-22 00:00+0000\n"
+"PO-Revision-Date: 2026-08-22 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ---------------------------------------------------------------- the lens
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Payroll"
+msgstr "Bảng lương"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Everything"
+msgstr "Tất cả"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Show only the columns that make pay"
+msgstr "Chỉ hiển thị các cột tạo nên tiền lương"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Show every column, including people and bank data"
+msgstr "Hiển thị mọi cột, kể cả dữ liệu nhân sự và ngân hàng"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "People & data"
+msgstr "Nhân sự & dữ liệu"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Show payroll columns only"
+msgstr "Chỉ hiển thị cột bảng lương"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Show every column"
+msgstr "Hiển thị mọi cột"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Hide people & data columns"
+msgstr "Ẩn các cột nhân sự & dữ liệu"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Include people & data columns"
+msgstr "Bao gồm các cột nhân sự & dữ liệu"
+
+# ---------------------------------------------------------- the grid tally
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:0
+msgid "1 column hidden"
+msgstr "1 cột đang bị ẩn"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:0
+msgid "%s columns hidden"
+msgstr "%s cột đang bị ẩn"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.grid_studio
+msgid "Show everything"
+msgstr "Hiển thị tất cả"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.grid_studio
+msgid "Show people, bank and reference columns too"
+msgstr "Hiển thị cả các cột nhân sự, ngân hàng và tham chiếu"
+
+# ------------------------------------------------------------- role picker
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Identity"
+msgstr "Định danh"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Employee profile"
+msgstr "Hồ sơ nhân viên"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Feeds the calculation."
+msgstr "Tham gia vào phép tính lương."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Says which employee the row belongs to."
+msgstr "Cho biết dòng này thuộc về nhân viên nào."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Personal details kept on the employee."
+msgstr "Thông tin cá nhân lưu trên hồ sơ nhân viên."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Terms kept on the contract."
+msgstr "Điều khoản lưu trên hợp đồng lao động."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Payment details."
+msgstr "Thông tin thanh toán."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "A code or note carried along."
+msgstr "Một mã hoặc ghi chú đi kèm."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "What this column is for"
+msgstr "Cột này dùng để làm gì"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "auto"
+msgstr "tự động"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "set by a person"
+msgstr "do người dùng chọn"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid ""
+"Nobody has set this yet — the system worked it out from the column heading"
+msgstr ""
+"Chưa có ai chọn giá trị này — hệ thống tự suy ra từ tiêu đề cột"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Someone chose this role by hand"
+msgstr "Vai trò này do người dùng chọn thủ công"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "This is not pay — also take it off the payslip and out of the grid"
+msgstr ""
+"Đây không phải khoản lương — hãy bỏ khỏi phiếu lương và khỏi bảng tính"
+
+# ------------------------------------------------------- role health checks
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "No column identifies the employee"
+msgstr "Không có cột nào định danh nhân viên"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This structure takes values per employee but no column is marked as the "
+"employee's identity, so an import cannot tell whose row is whose. Open a "
+"column such as the employee code and set its role to Identity."
+msgstr ""
+"Cấu trúc này nhận giá trị theo từng nhân viên nhưng không cột nào được đánh "
+"dấu là định danh nhân viên, nên khi nhập dữ liệu hệ thống không biết dòng nào "
+"của ai. Hãy mở một cột như mã nhân viên và đặt vai trò là Định danh."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s (%s) is used in a calculation"
+msgstr "%s (%s) đang được dùng trong một công thức"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This column is filed as %s rather than pay, yet another column's formula "
+"reads it. Either the role is wrong or the formula is — a column that is not "
+"pay is not guaranteed to hold a number."
+msgstr ""
+"Cột này được xếp là %s chứ không phải khoản lương, nhưng công thức của một "
+"cột khác lại đọc nó. Hoặc vai trò sai, hoặc công thức sai — một cột không "
+"phải khoản lương không chắc chắn chứa số."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This column holds text, yet another column's formula reads it as a number. "
+"Either the text setting is wrong or the formula is."
+msgstr ""
+"Cột này chứa văn bản, nhưng công thức của một cột khác lại đọc nó như một "
+"con số. Hoặc thiết lập văn bản sai, hoặc công thức sai."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s (%s) is bank data with nowhere to go"
+msgstr "%s (%s) là dữ liệu ngân hàng nhưng không có nơi lưu"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This column holds bank details but is not mapped to a field, so importing it "
+"stores nothing."
+msgstr ""
+"Cột này chứa thông tin ngân hàng nhưng chưa được ánh xạ tới trường nào, nên "
+"nhập dữ liệu sẽ không lưu được gì."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s (%s) is imported but goes nowhere"
+msgstr "%s (%s) được nhập vào nhưng không đi đâu cả"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This column identifies the employee but is not mapped to a field, so it is "
+"used to find the row and then discarded — map it if the value should also be "
+"stored."
+msgstr ""
+"Cột này định danh nhân viên nhưng chưa được ánh xạ tới trường nào, nên nó chỉ "
+"dùng để tìm dòng rồi bị bỏ đi — hãy ánh xạ nếu giá trị cũng cần được lưu."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This column is filed as %s, but it is neither mapped to a field nor kept on "
+"the contract — the imported value is read and then dropped."
+msgstr ""
+"Cột này được xếp là %s, nhưng không được ánh xạ tới trường nào và cũng không "
+"lưu trên hợp đồng — giá trị nhập vào chỉ được đọc rồi bỏ đi."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s (%s) is shown on the payslip"
+msgstr "%s (%s) đang hiển thị trên phiếu lương"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This column is filed as %s, not pay, yet it prints as a payslip line. "
+"Employees will see it among their earnings and deductions."
+msgstr ""
+"Cột này được xếp là %s chứ không phải khoản lương, nhưng vẫn in ra như một "
+"dòng trên phiếu lương. Nhân viên sẽ thấy nó lẫn giữa các khoản thu nhập và "
+"khấu trừ."
+
+# ----------------------------------------------- role names inside a sentence
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "the employee identity"
+msgstr "định danh nhân viên"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "employee profile data"
+msgstr "dữ liệu hồ sơ nhân viên"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "contract data"
+msgstr "dữ liệu hợp đồng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "bank data"
+msgstr "dữ liệu ngân hàng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "a reference"
+msgstr "một tham chiếu"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "pay"
+msgstr "khoản lương"

@@ -81,3 +81,30 @@ appends gotchas here (CR-numbered).
   coercion to raw string, and that would break CR-A7 neutrality on an existing config. Only marker
   or field-mapping evidence assigns identity there; a lexicon identity hit is demoted to `profile`.
   The studio `reclassify_roles` RPC has no such restraint (it is an explicit human-triggered act).
+- CR9 (P2): the LENS is parent state, so the grid cannot relocate focus BEFORE it changes the way
+  `toggleFold` does (S-F1). GridStudio therefore relocates focus/selection/anchor in
+  `onWillUpdateProps` (`_relocateForLens`), or `focused` resolves to a column that is about to stop
+  rendering and `_scrollFocusIntoView` queries a dead node. Any future parent-owned display filter
+  needs the same hook.
+- CR10 (P2): `_group_for`'s Deductions lexicon matches **substrings**, so a component coded `BASIC`
+  contains `SI` and has ALWAYS grouped as a Deduction. It bit a Phase-2 test fixture. Do not
+  "fix" it casually — `_group_for` feeds payslip sections (:5497) and `is_deduction` display flags,
+  so tightening it would silently re-section live payslips.
+- CR11 (P2): `appears_on_payslip` defaults **True**, so every column the classifier re-filed as
+  non-payroll trips the new `nonpayslip` warning until a person acts (live abm: 6 warnings, one per
+  people column). That is the intended prompt, not a bug — but expect a freshly-imported structure
+  to open with one warning per people column, and do not tune the check to hide them.
+- CR12 (P2): `probIcon` (formula_studio.js) had existed for several waves and was rendered
+  **nowhere** — the problems rail drew only a severity dot. Phase 2 wired it through a new
+  `pb_formula_studio.ProbIco` sub-template, so every problem kind (not just the five role checks)
+  now carries a glyph. Same inner-shapes contract as `CmdIco`/`RoleIco`.
+- CR13 (P2): on the `payobook` DB every role-bearing config (VPTQ ×2, Viet Retail) belongs to
+  **company 2**, while the apex admin session's companies are 5/6/7 — and `get_config_list` is
+  company-filtered, so those configs are simply absent from the switcher. Live validation of any
+  role surface must use **abm** (config 7, 70 payroll + 6 people columns) unless someone switches
+  company first. Do not read "no People & data row on payobook" as a broken build.
+- CR14 (P2): `is_visible_in_grid=false` now hides a column in BOTH lenses (locked decision), and
+  Phase 1 set it False for NEW non-payroll rules — so people columns imported from here on are
+  invisible in the grid even under Everything. The grid's footer pill ("N columns hidden" +
+  "Show everything") is the ONLY affordance that says so; if Phase 3/4 adds another grid entry
+  point, it needs the same tally or columns will appear to have been deleted.

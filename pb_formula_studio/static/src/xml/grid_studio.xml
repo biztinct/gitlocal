@@ -16,6 +16,16 @@
       </button>
       <span class="g2-toolbar-hint">Drag a column header to reorder — letters stay fixed</span>
     </div>
+    <!-- COLROLES P2 — what the lens is holding back. The grid never silently
+         drops a column: if something is not on screen, this says so and offers
+         the way back. -->
+    <div class="g2-lensbar" t-if="hiddenCount">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9.7 9.7 0 0 0 5.4-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+      <span t-esc="hiddenLabel"/>
+      <button t-if="props.onToggleLens and props.lens !== 'all'" class="g2-lensbtn"
+              t-on-click="() => this.props.onToggleLens()"
+              title="Show people, bank and reference columns too">Show everything</button>
+    </div>
     <!-- W8 — collapse-by-category fold chips (view transform; available to all viewers) -->
     <div class="g2-foldbar" t-if="props.onToggleFold and foldableCategories.length > 1">
       <span class="g2-foldbar-lbl">

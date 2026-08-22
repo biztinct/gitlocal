@@ -68,10 +68,21 @@ def _narr_numbers_ok(text, allowed):
 # Category grouping for the outline (by code/name heuristics)
 _NET_CODES = {'NET', 'NETPAY', 'NET_PAY', 'NETSALARY', 'TAKEHOME', 'TAKE_HOME'}
 
+# COLROLES P2 — the fifth outline group. Everything the classifier decided is NOT
+# a pay component (the employee code, the bank account, the join date, a cost
+# centre reference) leaves the four payroll buckets and collects here, so the
+# outline reads as "the payroll" plus "the people data it travels with".
+PEOPLE_GROUP = 'People & Data'
+
 
 def _group_for(rule):
     code = (rule.code or '').upper()
     name = (rule.name or '').lower()
+    # The role wins over every name heuristic: a column called "Tax code" is a
+    # reference even though "TAX" says Deductions to the lexicon below.
+    # getattr keeps this safe on a database whose formula module is older.
+    if (getattr(rule, 'column_role', False) or 'payroll') != 'payroll':
+        return PEOPLE_GROUP
     if rule.column_type == 'input':
         return 'Inputs'
     if any(k in code or k in name for k in ('NET', 'GROSS', 'TOTAL', 'thực nhận', 'tổng')):
@@ -310,6 +321,15 @@ class PbFormulaStudio(models.AbstractModel):
                 'appears_on_payslip': bool(r.appears_on_payslip),
                 'depends_on': depends.get(r.id, []),
                 'used_by': used_by.get(r.id, []),
+                # COLROLES P2 — what the column is FOR. The lens, the role chips
+                # and the grid filter all read these; the client still guards with
+                # `c.column_role || 'payroll'` so an older payload degrades to the
+                # pre-roles behaviour instead of blanking the outline.
+                'column_role': r.column_role or 'payroll',
+                'column_role_source': r.column_role_source or 'auto',
+                'is_contract_component': bool(r.is_contract_component),
+                'is_text_component': bool(r.is_text_component),
+                'is_visible_in_grid': bool(r.is_visible_in_grid),
             })
 
         samples = [{'id': s.id, 'name': s.name} for s in config.sample_data_ids]
@@ -659,6 +679,20 @@ class PbFormulaStudio(models.AbstractModel):
             'employee_count': self._config_employee_count(config),
         }
 
+    # COLROLES P2 — lower-case role names for use INSIDE a sentence ("filed as
+    # employee profile data"). The Selection labels on the field are title-case
+    # because they head a form field; these read as prose.
+    @api.model
+    def _role_label(self, role):
+        # Literal _() calls (not _(variable)) so the terms are extractable.
+        return {
+            'identity': _("the employee identity"),
+            'profile': _("employee profile data"),
+            'contract': _("contract data"),
+            'bank': _("bank data"),
+            'reference': _("a reference"),
+        }.get(role or 'payroll', _("pay"))
+
     @api.model
     def _can_edit(self):
         """Edit/Delete/PayAI affordances are for Formula Managers/Admins (who hold
@@ -813,7 +847,11 @@ class PbFormulaStudio(models.AbstractModel):
     # ------------------------------------------------------------------
     # Fields the grid may bulk-edit across a column selection. Everything else is
     # rejected so a stray key can never mass-mutate formulas/codes/types.
-    _BULK_FIELDS = {'category_id', 'number_format', 'appears_on_payslip', 'is_visible_in_grid'}
+    # COLROLES P2: `column_role` joins the list so a whole run of imported people
+    # columns can be re-filed in one gesture. The model's write funnel stamps
+    # column_role_source='user' for us (formula_rule.py write override, CR-A1).
+    _BULK_FIELDS = {'category_id', 'number_format', 'appears_on_payslip',
+                    'is_visible_in_grid', 'column_role'}
 
     @api.model
     def bulk_update_components(self, rule_ids, vals):
@@ -1033,6 +1071,7 @@ class PbFormulaStudio(models.AbstractModel):
         'number_format', 'decimal_places', 'column_width', 'text_align',
         'appears_on_payslip', 'is_visible_in_grid', 'report_visible',
         'is_required', 'is_editable', 'is_contract_component', 'requires_new_contract',
+        'column_role',
     )
     _EDIT_M2O = ('category_id', 'salary_rule_id', 'integration_connector_id')
 
@@ -1070,6 +1109,11 @@ class PbFormulaStudio(models.AbstractModel):
             'is_editable': bool(r.is_editable),
             'is_contract_component': bool(r.is_contract_component),
             'requires_new_contract': bool(r.requires_new_contract),
+            # COLROLES P2 — role picker. `column_role_source` is readonly here: it
+            # says whether a person already chose this role or the classifier did.
+            'column_role': r.column_role or 'payroll',
+            'column_role_source': r.column_role_source or 'auto',
+            'is_text_component': bool(r.is_text_component),
             # readonly diagnostics
             'python_formula': r.python_formula or '',
             'formula_dependencies': r.formula_dependencies or '',
@@ -1092,6 +1136,12 @@ class PbFormulaStudio(models.AbstractModel):
             if k in self._EDIT_M2O:
                 v = int(v) if v else False
             write_vals[k] = v
+        # COLROLES / CR-A1 — a role arriving through the editor was chosen by a
+        # person, so it is stamped as such HERE rather than trusted from the
+        # client. (formula_rule.write would infer the same thing; saying it
+        # explicitly means no future caller can quietly pass source='auto'.)
+        if 'column_role' in write_vals and write_vals['column_role'] != rule.column_role:
+            write_vals['column_role_source'] = 'user'
         # proactive duplicate-code guard (the DB unique constraint is not
         # reliably enforced on this table, so check here).
         if write_vals.get('code'):
@@ -3340,6 +3390,92 @@ class PbFormulaStudio(models.AbstractModel):
                      _("%s (%s) is a total but hidden") % (r.name or '', r.column_letter),
                      _("This looks like a total or net figure yet it is not shown on "
                        "the payslip. Employees will not see it."),
+                     rule=r)
+
+        # 4b) COLROLES — column-role health. Five checks that only became askable
+        # once every column carried a role. All metadata; nothing is computed.
+        roles = {r.id: (r.column_role or 'payroll') for r in rules}
+        # Everything any OTHER column's formula reads. TWO sources, because a real
+        # Excel formula refers to a column by LETTER ('=B2*C2') while
+        # formula_dependencies is a comma-joined mix of letters and codes (CR2) —
+        # checking only the codes would miss every ordinary formula.
+        # A formula that names itself is a cycle, already reported above — so the
+        # reader is always some OTHER column (refs are kept per rule to say so).
+        refs_by_rule = {}
+        for r in rules:
+            if r.column_type != 'formula':
+                continue
+            cols = set(self._expand_refs(r.excel_formula, by_col))
+            for code in (r.formula_dependencies or '').split(','):
+                code = code.strip().upper()
+                if code:
+                    cols.add(code)
+            refs_by_rule[r.id] = cols
+        # components this structure already routes somewhere on import
+        mapped_rule_ids = set(self.env['hr.payslip.import.mapping'].search(
+            [('salary_structure_id', '=', config.id)]).mapped('component_id').ids)
+
+        # (a) nothing says who the row belongs to
+        if any(r.column_type == 'input' for r in rules) and 'identity' not in roles.values():
+            _add('noident', 'error',
+                 _("No column identifies the employee"),
+                 _("This structure takes values per employee but no column is marked "
+                   "as the employee's identity, so an import cannot tell whose row "
+                   "is whose. Open a column such as the employee code and set its "
+                   "role to Identity."))
+
+        for r in rules:
+            role = roles[r.id]
+            code = (r.code or '').strip().upper()
+            letter = (r.column_letter or '').strip().upper()
+            names = {n for n in (code, letter) if n}
+            is_read = any(names & refs for rid, refs in refs_by_rule.items() if rid != r.id)
+
+            # (b) a people/reference column feeding a calculation
+            if is_read and (role != 'payroll' or r.is_text_component):
+                _add('refinformula', 'error',
+                     _("%s (%s) is used in a calculation") % (r.name or '', r.column_letter),
+                     (_("This column is filed as %s rather than pay, yet another "
+                        "column's formula reads it. Either the role is wrong or "
+                        "the formula is — a column that is not pay is not "
+                        "guaranteed to hold a number.") % self._role_label(role)
+                      if role != 'payroll' else
+                      _("This column holds text, yet another column's formula reads "
+                        "it as a number. Either the text setting is wrong or the "
+                        "formula is.")),
+                     rule=r)
+
+            # (c) a bank column that lands nowhere
+            if role == 'bank' and r.id not in mapped_rule_ids:
+                _add('bankunmapped', 'warning',
+                     _("%s (%s) is bank data with nowhere to go") % (r.name or '', r.column_letter),
+                     _("This column holds bank details but is not mapped to a field, "
+                       "so importing it stores nothing."),
+                     rule=r)
+
+            # (d) people data imported into thin air
+            if (role in ('identity', 'profile', 'contract')
+                    and not r.is_contract_component and r.id not in mapped_rule_ids):
+                # An identity column is not "dropped" — it is what finds the
+                # employee — so it gets its own, truthful sentence.
+                _add('idunmapped', 'hint',
+                     _("%s (%s) is imported but goes nowhere") % (r.name or '', r.column_letter),
+                     (_("This column identifies the employee but is not mapped to a "
+                        "field, so it is used to find the row and then discarded — "
+                        "map it if the value should also be stored.")
+                      if role == 'identity' else
+                      _("This column is filed as %s, but it is neither mapped to a "
+                        "field nor kept on the contract — the imported value is "
+                        "read and then dropped.") % self._role_label(role)),
+                     rule=r)
+
+            # (e) people data printed as if it were pay
+            if role != 'payroll' and r.appears_on_payslip:
+                _add('nonpayslip', 'warning',
+                     _("%s (%s) is shown on the payslip") % (r.name or '', r.column_letter),
+                     _("This column is filed as %s, not pay, yet it prints as a "
+                       "payslip line. Employees will see it among their earnings "
+                       "and deductions.") % self._role_label(role),
                      rule=r)
 
         # 5b) W83 — untested formula components (absence of a test is a smell,
