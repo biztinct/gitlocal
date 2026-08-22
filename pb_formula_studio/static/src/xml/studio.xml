@@ -1399,21 +1399,39 @@
         </t>
       </div>
 
-      <!-- delete-configuration confirm -->
+      <!-- remove-configuration confirm: deletes when clean, archives when the
+           configuration already produced payroll that must stay readable -->
       <div t-if="state.confirmDel" class="pbfs-confirm-scrim" t-on-click="cancelDeleteConfig">
         <div class="pbfs-confirm" t-on-click="(ev) => ev.stopPropagation()">
-          <div class="cf-ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          <div t-attf-class="cf-ic {{ state.confirmDel.mode === 'archive' ? 'archive' : '' }}">
+            <svg t-if="state.confirmDel.mode === 'archive'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            <svg t-else="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
           </div>
-          <h3>Delete this configuration?</h3>
-          <p><b t-esc="state.confirmDel.name"/> and its <t t-esc="state.confirmDel.count"/> component<t t-if="state.confirmDel.count !== 1">s</t> will be permanently removed. This cannot be undone.</p>
-          <div t-if="state.confirmDel.state === 'active'" class="cf-warn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            This configuration is <b>active</b> — deleting it may affect payroll that relies on it.
-          </div>
+          <t t-if="state.confirmDel.mode === 'archive'">
+            <h3>Archive this configuration?</h3>
+            <p><b t-esc="state.confirmDel.name"/> is used by <b t-esc="state.confirmDel.blockedBy"/>, so it cannot be deleted. Archiving hides it from everyday use and keeps that history intact.</p>
+            <div class="cf-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              You can bring it back later from the archived configurations filter.
+            </div>
+          </t>
+          <t t-else="">
+            <h3>Delete this configuration?</h3>
+            <p><b t-esc="state.confirmDel.name"/> and its <t t-esc="state.confirmDel.count"/> component<t t-if="state.confirmDel.count !== 1">s</t> will be permanently removed. This cannot be undone.</p>
+            <div class="cf-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+              No payslips, imports or carry-forwards depend on it — nothing else is lost.
+            </div>
+            <div t-if="state.confirmDel.state === 'active'" class="cf-warn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              This configuration is <b>active</b> — deleting it may affect payroll that relies on it.
+            </div>
+          </t>
           <div class="cf-actions">
             <button class="pbfs-btn ghost" t-on-click="cancelDeleteConfig">Cancel</button>
-            <button class="pbfs-btn danger-solid" t-on-click="confirmDeleteConfig">Delete configuration</button>
+            <!-- archiving is reversible, so it does not wear the destructive red -->
+            <button t-if="state.confirmDel.mode === 'archive'" class="pbfs-btn primary" t-on-click="confirmDeleteConfig">Archive configuration</button>
+            <button t-else="" class="pbfs-btn danger-solid" t-on-click="confirmDeleteConfig">Delete configuration</button>
           </div>
         </div>
       </div>
@@ -2825,6 +2843,13 @@
                     <button class="pbfs-btn soft sm" t-on-click="() => this.chooseConfig(c.id)">Open</button>
                     <button t-if="csCanEdit" class="pbfs-btn ghost sm" t-att-disabled="state.csCloningId === c.id" t-on-click="(ev) => this.csClone(c, ev)">
                       <t t-if="state.csCloningId === c.id">Cloning…</t><t t-else="">Clone</t>
+                    </button>
+                    <!-- Delete only when nothing depends on it; otherwise Archive. -->
+                    <button t-if="csCanEdit and c.can_delete" class="pbfs-btn ghost sm cs-danger" t-on-click="(ev) => this.csRemove(c, ev)" title="Delete this configuration permanently">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete
+                    </button>
+                    <button t-elif="csCanEdit" class="pbfs-btn ghost sm" t-on-click="(ev) => this.csRemove(c, ev)" t-att-title="'Used by ' + (c.delete_blocked_by || 'existing payroll data') + ' — archive instead of deleting'">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Archive
                     </button>
                   </div>
                 </div>

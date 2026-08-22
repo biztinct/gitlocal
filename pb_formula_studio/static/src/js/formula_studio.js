@@ -1884,6 +1884,26 @@ export class PbFormulaStudio extends Component {
             await this._loadCsBoard();
         } finally { this.state.csCloningId = null; }
     }
+    // Gallery Delete/Archive — the card already carries the server's verdict, but
+    // re-ask so a config that gained payslips since the board loaded can't slip
+    // through with a Delete dialog.
+    async csRemove(card, ev) {
+        if (ev) ev.stopPropagation();
+        if (this._lockedNotice()) return;
+        let verdict = null;
+        try {
+            verdict = await this.orm.call("pb.formula.studio", "config_delete_eligibility", [card.id]);
+        } catch (e) { /* fall back to the card's own verdict */ }
+        const fresh = verdict && verdict.ok ? verdict : card;
+        this.askDeleteConfig({
+            id: card.id,
+            name: card.name,
+            rule_count: card.rule_count,
+            state: card.state,
+            can_delete: fresh.can_delete,
+            delete_blocked_by: fresh.delete_blocked_by,
+        }, null);
+    }
 
     // ---- Legislation packs (B4) ----
     openLegislation() {
@@ -5634,32 +5654,62 @@ export class PbFormulaStudio extends Component {
             else { this.notif.add("Could not add a component.", { type: "danger" }); }
         } finally { this.state.wizardBusy = false; }
     }
-    // ----- delete a whole configuration (picker trash + build-panel discard) -----
+    // ----- remove a whole configuration (picker trash + build-panel discard) -----
+    // A config that never produced payroll can be deleted outright; one that has
+    // payslips/batches/carry-forwards behind it can only be archived, so the same
+    // dialog switches mode rather than offering a button that would only fail.
     askDeleteConfig(cfg, ev) {
         if (ev) ev.stopPropagation();
         if (!cfg || !cfg.id) return;
+        const blocked = cfg.can_delete === false;
         this.state.confirmDel = {
             id: cfg.id,
             name: cfg.name || "this configuration",
             count: (cfg.rule_count != null ? cfg.rule_count : (cfg.count || 0)),
             state: cfg.state || "draft",
+            mode: blocked ? "archive" : "delete",
+            blockedBy: blocked ? (cfg.delete_blocked_by || "existing payroll data") : "",
         };
+    }
+    askArchiveConfig(cfg, ev) {
+        if (ev) ev.stopPropagation();
+        if (!cfg || !cfg.id) return;
+        this.askDeleteConfig(cfg, null);
+        if (this.state.confirmDel) this.state.confirmDel.mode = "archive";
     }
     cancelDeleteConfig() { this.state.confirmDel = null; }
     async confirmDeleteConfig() {
         const d = this.state.confirmDel;
         if (!d) return;
+        const archiving = d.mode === "archive";
         const wasCurrent = d.id === this.state.config.id;
-        const r = await this.orm.call("pb.formula.studio", "delete_config", [d.id]);
-        if (!r || !r.ok) {
-            this.notif.add(r && r.msg ? r.msg : "Could not delete configuration", { type: "warning" });
+        const method = archiving ? "archive_config" : "delete_config";
+        let r;
+        try {
+            r = await this.orm.call("pb.formula.studio", method, [d.id]);
+        } catch (e) {
+            this.notif.add(`Could not ${archiving ? "archive" : "delete"} configuration`, { type: "danger" });
             this.state.confirmDel = null;
             return;
         }
-        this.notif.add(`Deleted “${d.name}”`, { type: "success" });
+        if (!r || !r.ok) {
+            this.notif.add(r && r.msg ? r.msg : `Could not ${archiving ? "archive" : "delete"} configuration`,
+                           { type: "warning" });
+            // The server may have found history the card didn't know about —
+            // keep the dialog open, switched to the archive path.
+            if (r && r.can_archive && !archiving) {
+                d.mode = "archive";
+                d.blockedBy = d.blockedBy || "existing payroll data";
+            } else {
+                this.state.confirmDel = null;
+            }
+            return;
+        }
+        this.notif.add(`${archiving ? "Archived" : "Deleted"} “${d.name}”`, { type: "success" });
         this.state.confirmDel = null;
         this.state.configPickerOpen = false;
         this.state.selectedId = null;
+        if (this.state.configSwitcherOpen) await this._loadCsBoard();
         await this.load(wasCurrent ? undefined : this.state.config.id);
     }
     discardConfig() {

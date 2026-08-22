@@ -556,6 +556,39 @@ class PbFormulaStudio(models.AbstractModel):
         return 0
 
     @api.model
+    def _delete_eligibility(self, config):
+        """Can this config be removed outright, or only archived?
+
+        A config that never touched real payroll (no payslips, import batches,
+        carry-forwards, prorations, retro adjustments or field mappings) is safe
+        to delete — everything else it owns is config-scoped metadata that
+        cascades. Anything else must be archived so the history it produced
+        stays readable.
+
+        Returns ``{'can_delete': bool, 'delete_blockers': [...],
+        'delete_blocked_by': str}`` for merging into a cockpit card.
+        """
+        try:
+            blockers = config._delete_blockers()
+        except Exception:  # pragma: no cover - never break the board over this
+            _logger.exception("delete eligibility failed for config %s", config.id)
+            return {'can_delete': False, 'delete_blockers': [],
+                    'delete_blocked_by': _('existing payroll data')}
+        return {
+            'can_delete': not blockers,
+            'delete_blockers': blockers,
+            'delete_blocked_by': config._delete_blocker_message(blockers) if blockers else '',
+        }
+
+    @api.model
+    def config_delete_eligibility(self, config_id):
+        """Fresh delete/archive verdict for one config (called before confirming)."""
+        cfg = self.env['hr.formula.config'].browse(int(config_id))
+        if not cfg.exists():
+            return {'ok': False, 'error': 'not_found'}
+        return dict({'ok': True, 'name': cfg.name or ''}, **self._delete_eligibility(cfg))
+
+    @api.model
     def get_impact_analysis(self, rule_id):
         """Impact of one component: its transitive upstream (what feeds it),
         transitive downstream (what it feeds), the payslip-visible slice of that
@@ -1923,6 +1956,8 @@ class PbFormulaStudio(models.AbstractModel):
                 'is_branch': bool(c.parent_branch_id),
                 'is_variant': bool(c.master_config_id),
                 'is_master': bool(c.variant_ids),
+                # --- delete vs archive eligibility (see _delete_eligibility) ---
+                **self._delete_eligibility(c),
             })
         # rank so the boards needing attention (errors, pending, low score) float up
         cards.sort(key=lambda k: (
@@ -7895,16 +7930,51 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def delete_config(self, config_id):
-        """Delete a configuration from the cockpit (any state)."""
+        """Delete a configuration from the cockpit.
+
+        Refuses when the config produced real payroll history — the caller is
+        told to archive instead. ``unlink()`` guards this too; checking here
+        just buys a readable message and leaves the cursor clean.
+        """
         cfg = self.env['hr.formula.config'].browse(int(config_id))
         if not cfg.exists():
             return {'ok': True}
+        verdict = self._delete_eligibility(cfg)
+        if not verdict['can_delete']:
+            return {'ok': False, 'can_archive': True, 'msg': _(
+                "\"%(name)s\" is used by %(blockers)s, so it can't be deleted. "
+                "Archive it instead to hide it without losing that history.",
+                name=cfg.name or '', blockers=verdict['delete_blocked_by'],
+            )}
+        name = cfg.name or ''
         try:
             cfg.unlink()
+        except UserError as e:
+            return {'ok': False, 'can_archive': True, 'msg': str(e)}
         except Exception as e:
-            # e.g. referenced by payslips / restrict FK
-            return {'ok': False, 'msg': 'Could not delete: %s' % (str(e).splitlines()[0] if str(e) else 'it may be in use.')}
-        return {'ok': True}
+            _logger.exception("delete_config failed for %s", config_id)
+            return {'ok': False, 'can_archive': True, 'msg': _(
+                "Could not delete \"%(name)s\": %(err)s",
+                name=name, err=(str(e).splitlines()[0] if str(e) else _('it may be in use.')),
+            )}
+        return {'ok': True, 'deleted': True, 'name': name}
+
+    @api.model
+    def archive_config(self, config_id):
+        """Archive a configuration from the cockpit gallery (soft delete)."""
+        cfg = self.env['hr.formula.config'].browse(int(config_id))
+        if not cfg.exists():
+            return {'ok': False, 'error': 'not_found'}
+        name = cfg.name or ''
+        try:
+            cfg.action_archive()
+        except Exception as e:
+            _logger.exception("archive_config failed for %s", config_id)
+            return {'ok': False, 'msg': _(
+                "Could not archive \"%(name)s\": %(err)s",
+                name=name, err=(str(e).splitlines()[0] if str(e) else _('unexpected error.')),
+            )}
+        return {'ok': True, 'archived': True, 'name': name}
 
 
 class SampleDataWizardStudio(models.TransientModel):

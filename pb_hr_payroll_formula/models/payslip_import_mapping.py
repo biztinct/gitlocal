@@ -30,7 +30,11 @@ class HrPayslipImportMapping(models.Model):
     salary_structure_id = fields.Many2one(
         'hr.formula.config',
         string='Salary Structure',
-        required=True
+        required=True,
+        # Setup metadata, not payroll history: these go with the configuration
+        # rather than blocking its removal (required + no ondelete would have
+        # defaulted to RESTRICT and made a merely-configured config undeletable).
+        ondelete='cascade',
     )
     component_id = fields.Many2one(
         'hr.formula.rule',

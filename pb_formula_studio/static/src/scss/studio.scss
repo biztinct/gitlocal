@@ -503,7 +503,10 @@
     .ai-input .send svg { width: 18px; height: 18px; stroke: #fff; }
 
     /* delete-config confirm */
-    .pbfs-confirm-scrim { position: fixed; inset: 0; background: rgba(15,12,40,.5); display: flex; align-items: center; justify-content: center; z-index: 1080; padding: 24px; }
+    /* Topmost of all overlays (the stack below runs to 1500): this dialog is
+       raised FROM the config switcher and the build panel, so it has to clear
+       whatever opened it or the confirmation renders invisibly behind it. */
+    .pbfs-confirm-scrim { position: fixed; inset: 0; background: rgba(15,12,40,.5); display: flex; align-items: center; justify-content: center; z-index: 1600; padding: 24px; }
     .pbfs-confirm { width: 440px; max-width: 100%; background: #fff; border-radius: 18px; padding: 28px 28px 22px; box-shadow: 0 30px 80px rgba(15,12,40,.4); text-align: center; }
     .pbfs-confirm .cf-ic { width: 52px; height: 52px; border-radius: 14px; background: #FEF2F2; color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
     .pbfs-confirm .cf-ic svg { width: 26px; height: 26px; }
@@ -512,6 +515,10 @@
     .pbfs-confirm p b { color: var(--ink); font-weight: 800; }
     .pbfs-confirm .cf-warn { display: flex; align-items: flex-start; gap: 9px; text-align: left; margin-top: 16px; padding: 11px 13px; background: var(--amber-soft); border-radius: 11px; font-size: 12.5px; color: #92400E; line-height: 1.45; }
     .pbfs-confirm .cf-warn svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px; }
+    /* archive variant: this is a safe, reversible action — drop the red alarm */
+    .pbfs-confirm .cf-ic.archive { background: var(--i-soft); color: var(--i); }
+    .pbfs-confirm .cf-note { display: flex; align-items: flex-start; gap: 9px; text-align: left; margin-top: 16px; padding: 11px 13px; background: var(--i-soft); border-radius: 11px; font-size: 12.5px; color: var(--i600); line-height: 1.45; }
+    .pbfs-confirm .cf-note svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px; }
     .pbfs-confirm .cf-actions { display: flex; gap: 10px; margin-top: 22px; }
     .pbfs-confirm .cf-actions .pbfs-btn { flex: 1; justify-content: center; }
 
