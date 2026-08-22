@@ -240,6 +240,7 @@ export class PbFormulaStudio extends Component {
             psRichQuery: "",
             psRichMode: "both",     // label | value | both
             psRichUsedIds: [],
+            psRichUsedMetaKeys: [],
             psRichTableActive: false,
             psRichTableLabel: "",
             psRichBorderScope: "table", // table | cell
@@ -4787,6 +4788,7 @@ export class PbFormulaStudio extends Component {
         this.state.psRichQuery = "";
         this.state.psRichMode = "both";
         this.state.psRichUsedIds = this._psRichTokenIds(htmlValue || "");
+        this.state.psRichUsedMetaKeys = this._psRichMetaKeys(htmlValue || "");
         this.state.psRichTableActive = false;
         this.state.psRichTableLabel = "";
         this.state.psRichBorderScope = "table";
@@ -4835,6 +4837,14 @@ export class PbFormulaStudio extends Component {
         }
         return ids;
     }
+    _psRichMetaKeys(htmlValue) {
+        const keys = [];
+        const re = /\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}/g;
+        for (const match of String(htmlValue || "").matchAll(re)) {
+            if (!keys.includes(match[1])) keys.push(match[1]);
+        }
+        return keys;
+    }
     _psRichComponent(ruleId) {
         return ((this.state.psData && this.state.psData.rich_components) || [])
             .find(c => c.id === parseInt(ruleId, 10));
@@ -4854,7 +4864,23 @@ export class PbFormulaStudio extends Component {
         const identity = `<span class="ps-component-token-identity">${code ? `<small>${code}</small>` : ""}<span>${name}</span></span>`;
         const preview = mode === "label" ? ""
             : `<span class="ps-component-token-preview"><small>Preview</small><span class="ps-component-token-value">${value}</span></span>`;
-        return `<span class="ps-component-token mode-${mode}" contenteditable="false" data-ps-rule-id="${component.id}" data-ps-mode="${mode}" title="Live payroll component ${code}: ${name} · inserts ${modeLabel}">${identity}${preview}<button type="button" tabindex="-1" data-ps-remove-component="1" title="Remove ${name}">×</button></span>`;
+        return `<span class="ps-component-token mode-${mode}" contenteditable="false" data-ps-rule-id="${component.id}" data-ps-mode="${mode}" title="Live payroll component ${code}: ${name} · inserts ${modeLabel}">${identity}${preview}<button type="button" tabindex="-1" data-ps-remove-token="1" title="Remove ${name}">×</button></span>`;
+    }
+    _psRichMetaField(key) {
+        return [
+            { key: "employee_name", name: "Employee name", badge: "NAME", source: "Employee record" },
+            { key: "employee_id", name: "Employee ID", badge: "ID", source: "Employee record" },
+            { key: "department", name: "Department", badge: "DEPT", source: "Employee record" },
+            { key: "period", name: "Pay period", badge: "PER", source: "Payslip period" },
+            { key: "date_from", name: "Period start", badge: "FROM", source: "Payslip period" },
+            { key: "date_to", name: "Period end", badge: "TO", source: "Payslip period" },
+        ].find(field => field.key === key);
+    }
+    _psRichMetaTokenHtml(fieldOrKey) {
+        const field = typeof fieldOrKey === "string" ? this._psRichMetaField(fieldOrKey) : fieldOrKey;
+        if (!field) return "";
+        const name = this._psRichEscape(field.name);
+        return `<span class="ps-meta-token" contenteditable="false" data-ps-meta="${field.key}" title="Live ${name} — supplied by the employee or payslip period"><small>Employee detail</small><span>${name}</span><button type="button" tabindex="-1" data-ps-remove-token="1" title="Remove ${name}">×</button></span>`;
     }
     _psRichExpandTokens(htmlValue) {
         const components = String(htmlValue || "").replace(
@@ -4863,14 +4889,17 @@ export class PbFormulaStudio extends Component {
                 const component = this._psRichComponent(ruleId);
                 return component ? this._psRichTokenHtml(component, mode) : "";
             });
-        const labels = {
-            employee_name: "Employee name", employee_id: "Employee ID",
-            department: "Department", date_from: "Period start",
-            date_to: "Period end", period: "Pay period",
-        };
         return components.replace(
             /\{\{pb_meta:(employee_name|employee_id|department|date_from|date_to|period)\}\}/g,
-            (_token, key) => `<span class="ps-meta-token" contenteditable="false" data-ps-meta="${key}" title="Live employee detail — supplied by the employee and pay period, not a payroll component"><small>Employee detail</small><span>${labels[key]}</span></span>`);
+            (_token, key) => this._psRichMetaTokenHtml(key));
+    }
+    get psRichMetaFields() {
+        const fields = ["employee_name", "employee_id", "department", "period", "date_from", "date_to"]
+            .map(key => this._psRichMetaField(key));
+        const query = (this.state.psRichQuery || "").trim().toLowerCase();
+        return query ? fields.filter(field =>
+            [field.name, field.key, field.source].some(value =>
+                String(value || "").toLowerCase().includes(query))) : fields;
     }
     get psRichComponents() {
         const all = (this.state.psData && this.state.psData.rich_components) || [];
@@ -4883,9 +4912,10 @@ export class PbFormulaStudio extends Component {
     psRichSearch(ev) { this.state.psRichQuery = ev.target.value || ""; }
     psRichSetMode(ev) { this.state.psRichMode = ev.target.value || "both"; }
     psRichIsUsed(component) { return this.state.psRichUsedIds.includes(component.id); }
+    psRichMetaIsUsed(field) { return this.state.psRichUsedMetaKeys.includes(field.key); }
     _psRichBindTokenControls(editor) {
         if (!editor) return;
-        for (const remove of editor.querySelectorAll("[data-ps-remove-component]")) {
+        for (const remove of editor.querySelectorAll("[data-ps-remove-token]")) {
             remove.removeEventListener("pointerdown", this._psRichNativeRemoveClick);
             remove.removeEventListener("click", this._psRichNativeRemoveClick);
             remove.addEventListener("pointerdown", this._psRichNativeRemoveClick);
@@ -4897,12 +4927,15 @@ export class PbFormulaStudio extends Component {
         if (!editor) return;
         const ids = [...editor.querySelectorAll(".ps-component-token")]
             .map(node => parseInt(node.dataset.psRuleId, 10)).filter(Boolean);
+        const metaKeys = [...editor.querySelectorAll(".ps-meta-token")]
+            .map(node => node.dataset.psMeta).filter(key => this._psRichMetaField(key));
         // Capture user-owned DOM before changing reactive state. Without this,
         // the patch that refreshes the left-hand Used badges can restore the
         // pre-edit document and silently undo an insert or removal.
         this.state.psRichDraft = editor.innerHTML;
         this._psRichNeedsSeed = true;
         this.state.psRichUsedIds = [...new Set(ids)];
+        this.state.psRichUsedMetaKeys = [...new Set(metaKeys)];
         this._psRichBindTokenControls(editor);
     }
     _psRichCellFromRange(range) {
@@ -5074,9 +5107,7 @@ export class PbFormulaStudio extends Component {
         }
         ev.target.value = "";
     }
-    psRichInsertComponent(component, ev) {
-        if (ev) ev.preventDefault();
-        const token = this._psRichTokenHtml(component, this.state.psRichMode || "both");
+    _psRichInsertTokenHtml(token) {
         const editor = this._psRichEditor();
         if (!token || !editor) return;
         editor.focus();
@@ -5105,6 +5136,14 @@ export class PbFormulaStudio extends Component {
         }
         this._psRichRefreshUsed();
     }
+    psRichInsertComponent(component, ev) {
+        if (ev) ev.preventDefault();
+        this._psRichInsertTokenHtml(this._psRichTokenHtml(component, this.state.psRichMode || "both"));
+    }
+    psRichInsertMeta(field, ev) {
+        if (ev) ev.preventDefault();
+        this._psRichInsertTokenHtml(this._psRichMetaTokenHtml(field));
+    }
     psRichComponentDragStart(component, ev) {
         if (!ev || !ev.dataTransfer) return;
         ev.dataTransfer.effectAllowed = "copy";
@@ -5112,21 +5151,27 @@ export class PbFormulaStudio extends Component {
             id: component.id, mode: this.state.psRichMode || "both",
         }));
     }
+    psRichMetaDragStart(field, ev) {
+        if (!ev || !ev.dataTransfer) return;
+        ev.dataTransfer.effectAllowed = "copy";
+        ev.dataTransfer.setData("application/x-pb-payslip-meta", JSON.stringify({ key: field.key }));
+    }
     psRichEditorDragOver(ev) {
-        if (!ev || !ev.dataTransfer || !Array.from(ev.dataTransfer.types || []).includes("application/x-pb-payslip-component")) return;
+        const types = ev && ev.dataTransfer ? Array.from(ev.dataTransfer.types || []) : [];
+        if (!types.includes("application/x-pb-payslip-component") && !types.includes("application/x-pb-payslip-meta")) return;
         ev.preventDefault();
         ev.dataTransfer.dropEffect = "copy";
     }
     psRichEditorDrop(ev) {
         if (!ev || !ev.dataTransfer) return;
-        const raw = ev.dataTransfer.getData("application/x-pb-payslip-component");
+        const rawMeta = ev.dataTransfer.getData("application/x-pb-payslip-meta");
+        const raw = rawMeta || ev.dataTransfer.getData("application/x-pb-payslip-component");
         if (!raw) return;
         ev.preventDefault();
         let payload;
         try { payload = JSON.parse(raw); } catch (_e) { return; }
-        const component = this._psRichComponent(payload.id);
         const editor = this._psRichEditor();
-        if (!component || !editor) return;
+        if (!editor) return;
         let range = null;
         if (document.caretRangeFromPoint) range = document.caretRangeFromPoint(ev.clientX, ev.clientY);
         else if (document.caretPositionFromPoint) {
@@ -5138,17 +5183,24 @@ export class PbFormulaStudio extends Component {
             }
         }
         if (range && editor.contains(range.commonAncestorContainer)) this._psRichRange = range;
+        if (rawMeta) {
+            const field = this._psRichMetaField(payload.key);
+            if (field) this.psRichInsertMeta(field);
+            return;
+        }
+        const component = this._psRichComponent(payload.id);
+        if (!component) return;
         const previousMode = this.state.psRichMode;
         this.state.psRichMode = payload.mode || "both";
         this.psRichInsertComponent(component);
         this.state.psRichMode = previousMode;
     }
     _psRichRemoveTokenFromEvent(ev) {
-        const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-component]");
+        const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-token]");
         if (!remove) return false;
         ev.preventDefault();
         ev.stopPropagation();
-        const token = remove.closest(".ps-component-token");
+        const token = remove.closest(".ps-component-token, .ps-meta-token");
         // pointerdown removes before Chromium's contenteditable selection
         // machinery can swallow the eventual click. The connected check keeps
         // the click fallback idempotent if the detached button later receives
@@ -5160,7 +5212,7 @@ export class PbFormulaStudio extends Component {
         return true;
     }
     psRichEditorPointerDown(ev) {
-        const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-component]");
+        const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-token]");
         if (remove) ev.preventDefault();
     }
     psRichEditorClick(ev) {
