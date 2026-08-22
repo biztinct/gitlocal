@@ -4886,7 +4886,9 @@ export class PbFormulaStudio extends Component {
     _psRichBindTokenControls(editor) {
         if (!editor) return;
         for (const remove of editor.querySelectorAll("[data-ps-remove-component]")) {
+            remove.removeEventListener("pointerdown", this._psRichNativeRemoveClick);
             remove.removeEventListener("click", this._psRichNativeRemoveClick);
+            remove.addEventListener("pointerdown", this._psRichNativeRemoveClick);
             remove.addEventListener("click", this._psRichNativeRemoveClick);
         }
     }
@@ -5147,8 +5149,14 @@ export class PbFormulaStudio extends Component {
         ev.preventDefault();
         ev.stopPropagation();
         const token = remove.closest(".ps-component-token");
-        if (token) token.remove();
-        this._psRichRefreshUsed();
+        // pointerdown removes before Chromium's contenteditable selection
+        // machinery can swallow the eventual click. The connected check keeps
+        // the click fallback idempotent if the detached button later receives
+        // the remainder of the same synthetic event sequence.
+        if (token && token.isConnected) {
+            token.remove();
+            this._psRichRefreshUsed();
+        }
         return true;
     }
     psRichEditorPointerDown(ev) {
