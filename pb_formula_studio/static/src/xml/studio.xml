@@ -2120,16 +2120,19 @@
           <div t-elif="state.psBusy" class="ps-loading">Loading…</div>
 
           <div t-if="state.psDeleteOpen" class="ps-sub-scrim" t-on-click="psCancelDeleteTemplate">
-            <div class="ps-template-delete" t-on-click="(ev) => ev.stopPropagation()">
+            <div class="ps-template-delete" role="dialog" aria-modal="true" aria-labelledby="ps-template-delete-title" t-on-click="(ev) => ev.stopPropagation()">
               <div class="ps-template-delete-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4h8v2"/></svg></div>
-              <h3 t-if="state.psDeleteKind === 'imported'">Delete imported template?</h3>
-              <h3 t-else="">Delete section template?</h3>
-              <p t-if="state.psDeleteKind === 'imported'">The reconstructed document and its edits will be permanently removed. Your existing section template will become active again.</p>
-              <p t-else="">All sections, formatted section content, header, and footer will be permanently removed. Payroll formulas and components are kept and returned to the Unplaced tray.</p>
-              <div class="ps-template-delete-note"><b>This cannot be undone.</b> You can create or import a new template afterwards.</div>
+              <div class="ps-template-delete-kicker"><t t-if="state.psDeleteKind === 'imported'">Imported document</t><t t-else="">Section layout</t></div>
+              <h3 id="ps-template-delete-title"><t t-if="state.psDeleteKind === 'imported'">Delete this imported template?</t><t t-else="">Delete this section template?</t></h3>
+              <p>This removes only the active payslip design. Your payroll calculation setup is not affected.</p>
+              <div class="ps-template-delete-impact">
+                <div class="remove"><span>Will delete</span><b t-if="state.psDeleteKind === 'imported'">Imported document and all document edits</b><b t-else="">All sections, header, footer, and formatted section content</b></div>
+                <div class="keep"><span>Will keep</span><b t-if="state.psDeleteKind === 'imported'">Section template, components, formulas, and branding</b><b t-else="">Components, formulas, and branding; components return to Unplaced</b></div>
+              </div>
+              <div class="ps-template-delete-note"><b>This cannot be undone.</b> You can create or import another template afterwards.</div>
               <div class="ps-template-delete-actions">
-                <button class="ps-secondary" t-att-disabled="state.psDeleteBusy" t-on-click="psCancelDeleteTemplate">Cancel</button>
-                <button class="ps-template-delete-confirm" t-att-disabled="state.psDeleteBusy" t-on-click="psConfirmDeleteTemplate"><t t-if="state.psDeleteBusy">Deleting…</t><t t-else="">Delete template</t></button>
+                <button class="ps-secondary" t-att-disabled="state.psDeleteBusy" t-on-click="psCancelDeleteTemplate">Keep template</button>
+                <button class="ps-template-delete-confirm" t-att-disabled="state.psDeleteBusy" t-on-click="psConfirmDeleteTemplate"><t t-if="state.psDeleteBusy">Deleting…</t><t t-elif="state.psDeleteKind === 'imported'">Delete imported template</t><t t-else="">Delete section template</t></button>
               </div>
             </div>
           </div>
