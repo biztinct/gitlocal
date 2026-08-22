@@ -184,6 +184,7 @@
                                 <li><strong>Component:</strong> Field name from your Excel header row</li>
                                 <li><strong>Component Type:</strong> Category from merged cells above header</li>
                                 <li><strong>Type:</strong> Input (manual data entry) or Formula (auto-calculated)</li>
+                                <li><strong>Role:</strong> What the column is for. Only Payroll columns feed the calculation — Identity, Employee Profile, Contract and Bank columns are people data.</li>
                             </ul>
                             <p class="mt-1 mb-0">Uncheck "Include" to skip importing a component. Edit Code/Name if needed.</p>
                         </div>
@@ -196,6 +197,7 @@
                                 <field name="original_header" string="Component"/>
                                 <field name="component_type" string="Category"/>
                                 <field name="column_type" string="Type"/>
+                                <field name="column_role" string="Role"/>
                                 <field name="data_source" string="Source"/>
                                 <field name="sample_value" string="Sample"/>
                                 <field name="excel_formula" string="Formula"

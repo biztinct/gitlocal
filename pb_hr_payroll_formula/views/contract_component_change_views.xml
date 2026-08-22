@@ -12,6 +12,9 @@
                 <field name="advantage_template_code"/>
                 <field name="old_amount"/>
                 <field name="new_amount"/>
+                <!-- Text components record their before/after here (COLROLES). -->
+                <field name="old_text_value" optional="hide"/>
+                <field name="new_text_value" optional="hide"/>
                 <field name="effective_date"/>
                 <field name="change_source"/>
                 <field name="import_batch_id"/>
@@ -38,6 +41,8 @@
                         <group>
                             <field name="old_amount"/>
                             <field name="new_amount"/>
+                            <field name="old_text_value"/>
+                            <field name="new_text_value"/>
                             <field name="effective_date"/>
                             <field name="change_source"/>
                             <field name="import_batch_id"/>

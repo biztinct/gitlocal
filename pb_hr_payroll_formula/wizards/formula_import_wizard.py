@@ -9,6 +9,8 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
 
+from ..models import column_role_classifier
+
 _logger = logging.getLogger(__name__)
 
 
@@ -228,6 +230,41 @@ class FormulaImportWizard(models.TransientModel):
             }
         }
 
+    # ------------------------------------------------------------------
+    # COLROLES — role plumbing shared by both import paths
+    # ------------------------------------------------------------------
+    SAMPLE_LIMIT = 10
+    SAMPLE_SCAN_ROWS = 40
+
+    def _collect_column_samples(self, data_sheet, col_idx, first_data_row):
+        """Up to SAMPLE_LIMIT non-empty values below the header, read from the
+        data_only workbook. These are what tell an inferred contract component apart
+        from an amount one, and what makes an all-text column a reference column."""
+        samples = []
+        if not data_sheet or first_data_row is None:
+            return samples
+        max_row = data_sheet.max_row or 0
+        last_row = min(max_row, first_data_row + self.SAMPLE_SCAN_ROWS)
+        for row_num in range(first_data_row, last_row + 1):
+            try:
+                value = data_sheet.cell(row=row_num, column=col_idx).value
+            except Exception:
+                break
+            if column_role_classifier.is_blank_sample(value):
+                continue
+            samples.append(value)
+            if len(samples) >= self.SAMPLE_LIMIT:
+                break
+        return samples
+
+    def _role_rule_values(self, role):
+        """Rule values implied by a role on a NEWLY created rule.
+
+        Anything that is not a payroll column is not a pay line and not a grid column,
+        so it starts hidden from both. This applies at import time only — existing
+        rules keep whatever visibility somebody already chose for them."""
+        return column_role_classifier.role_rule_defaults(role)
+
     def _import_from_excel(self):
         """
         Import configuration from Excel file using advanced header detection.
@@ -401,6 +438,22 @@ class FormulaImportWizard(models.TransientModel):
             code = self._generate_code_from_label(name, existing_codes)
             existing_codes.add(code)
 
+            # The colour-blind reader has no font signals at all, so the classifier
+            # gets only what this path can honestly see: the header text, the merged
+            # category band above it, and the first few values underneath.
+            col_index = column_index_from_string(col_letter) if col_letter else None
+            samples = self._collect_column_samples(
+                data_sheet, col_index, data_start_row) if col_index else []
+            role, role_tier, role_reason = column_role_classifier.classify_column(
+                name,
+                column_type=column_type,
+                band_label=comp_type or None,
+                sample_values=samples,
+            )
+            _logger.debug(
+                "Excel import: column %s (%s) -> role=%s tier=%s (%s)",
+                col_letter, name, role, role_tier, role_reason)
+
             max_sequence += 10
             values = {
                 'config_id': self.config_id.id,
@@ -415,6 +468,7 @@ class FormulaImportWizard(models.TransientModel):
                 'data_source_field': name,
                 'number_format': False,
             }
+            values.update(self._role_rule_values(role))
             if excel_formula:
                 values['excel_formula'] = excel_formula
 
@@ -672,6 +726,50 @@ class FormulaImportWizard(models.TransientModel):
             cell = formula_sheet.cell(row=row_num, column=col_idx)
             return is_red_font(cell)
 
+        def is_green_font(cell):
+            """Green HEADER font = "this contract component holds text" (CR-A4).
+
+            Thresholds mirror `is_green_color` in the constant-value reader. There is
+            no clash with the green FILL that marks the formula row, nor with a green
+            font on a constant VALUE cell: this is only ever asked about cells inside
+            the header band."""
+            try:
+                font = cell.font
+                if font and font.color:
+                    color = font.color
+                    if color.type == 'rgb' and color.rgb:
+                        rgb = str(color.rgb).upper()
+                        if len(rgb) >= 6:
+                            if len(rgb) == 8:
+                                r, g, b = int(rgb[2:4], 16), int(rgb[4:6], 16), int(rgb[6:8], 16)
+                            else:
+                                r, g, b = int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+                            if g > 150 and r < 150 and b < 150:
+                                return True
+                            if g > 180 and r > 180 and b < 150:
+                                return True
+                            if g > 200 and g > r and g > b:
+                                return True
+                    elif color.type == 'indexed' and color.indexed in [3, 11]:
+                        return True
+                    elif color.type == 'theme' and color.theme in [6, 9]:
+                        return True
+            except Exception:
+                pass
+            return False
+
+        def is_green_in_merge(row_num, col_idx):
+            if merge_parser:
+                merge_info = merge_parser.get_merge_at(row_num, col_idx)
+                if merge_info:
+                    for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                        for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                            cell = formula_sheet.cell(row=m_row, column=m_col)
+                            if is_green_font(cell):
+                                return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return is_green_font(cell)
+
         def is_underline_in_merge(row_num, col_idx):
             if merge_parser:
                 merge_info = merge_parser.get_merge_at(row_num, col_idx)
@@ -771,6 +869,14 @@ class FormulaImportWizard(models.TransientModel):
                 identifier_map[col_letter] = str(identifier_value).strip()
 
         _logger.info("Excel color import: identifier_map sample: %s", list(identifier_map.items())[:20])
+
+        # The identifier row here carries PAYSLIP section codes ("ITAXABLEINCOMECC"),
+        # not employee identifiers, so it is deliberately NOT fed to the classifier as
+        # `on_identifier_row` — see COLROLES ledger CR5.
+        first_data_row = max(formula_row, header_block_end) + 1
+
+        def collect_samples(col_idx):
+            return self._collect_column_samples(sheet, col_idx, first_data_row)
 
         if not self.preserve_existing:
             self.config_id.rule_ids.unlink()
@@ -883,8 +989,28 @@ class FormulaImportWizard(models.TransientModel):
 
             header_row = header_rows.get(col_letter, header_block_end)
             report_visible = is_bold_in_merge(header_row, col_idx)
-            is_contract_component = is_red_in_merge(header_row, col_idx)
+            is_red = is_red_in_merge(header_row, col_idx)
+            is_green = is_green_in_merge(header_row, col_idx)
+            # Green is authoritative text, red is a component whose kind is inferred
+            # from what the column actually contains (CR-A4). Underline means "start a
+            # new contract when this changes" for either colour.
+            is_contract_component = is_red or is_green
             requires_new_contract = is_contract_component and is_underline_in_merge(header_row, col_idx)
+
+            samples = collect_samples(col_idx)
+            role, role_tier, role_reason = column_role_classifier.classify_column(
+                name,
+                column_type=column_type,
+                is_contract_component=is_red,
+                is_text_component=is_green,
+                band_label=comp_type or None,
+                sample_values=samples,
+            )
+            is_text_component = is_green or (
+                is_red and role == column_role_classifier.ROLE_CONTRACT)
+            _logger.debug(
+                "Excel color import: column %s (%s) -> role=%s tier=%s (%s)",
+                col_letter, name, role, role_tier, role_reason)
 
             max_sequence += 10
             values = {
@@ -903,7 +1029,9 @@ class FormulaImportWizard(models.TransientModel):
                 'report_visible': report_visible,
                 'is_contract_component': is_contract_component,
                 'requires_new_contract': requires_new_contract,
+                'is_text_component': is_text_component,
             }
+            values.update(self._role_rule_values(role))
             if excel_formula:
                 values['excel_formula'] = excel_formula
 

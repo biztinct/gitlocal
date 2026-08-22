@@ -6,6 +6,18 @@ from datetime import date, datetime, timedelta, time
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from ..formula_engine.column_manager import ColumnManager
+# COLROLES — the employee-code marker tuple and the header-candidate lists used to
+# exist in three and five copies respectively inside this file, drifting apart by a
+# word or two each time somebody added a spelling. `column_role_classifier` is now
+# the definition; the names below are the same strings in the same order.
+from .column_role_classifier import (
+    EMPLOYEE_CODE_MARKERS,
+    EMPLOYEE_CODE_HEADER_CANDIDATES,
+    EMPLOYEE_NAME_HEADER_CANDIDATES,
+    EXTERNAL_CODE_HEADER_CANDIDATES,
+    EXTERNAL_NAME_HEADER_CANDIDATES,
+    PRIMARY_KEY_HEADER_CANDIDATES,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -428,7 +440,7 @@ class HrPayrollImportBatch(models.Model):
             if mapped_employee_code not in (None, ''):
                 employee_code = self._normalize_code(mapped_employee_code)
 
-            employee_name = self._extract_field(raw_data, ['employee_name', 'name', 'full_name', 'emp_name'])
+            employee_name = self._extract_field(raw_data, list(EMPLOYEE_NAME_HEADER_CANDIDATES))
             mapped_employee_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
             if mapped_employee_name not in (None, ''):
                 employee_name = mapped_employee_name
@@ -528,16 +540,9 @@ class HrPayrollImportBatch(models.Model):
             raw_data = emp_data['merged_data']
 
             # Extract key fields for matching
-            employee_code = self._normalize_code(self._extract_field(raw_data, [
-                'employee_code', 'employee code', 'emp_code', 'emp code',
-                'EmployeeID', 'employee_id', 'emp_id',
-                'staff id', 'staff code', 'code', 'id',
-            ]) or ext_id)
+            employee_code = self._normalize_code(self._extract_field(raw_data, list(EXTERNAL_CODE_HEADER_CANDIDATES)) or ext_id)
 
-            employee_name = self._extract_field(raw_data, [
-                'employee_name', 'name', 'full_name', 'emp_name',
-                'FirstName', 'Display Name',
-            ])
+            employee_name = self._extract_field(raw_data, list(EXTERNAL_NAME_HEADER_CANDIDATES))
 
             employee_email = self._extract_field(raw_data, [
                 'email', 'work_email', 'emp_email', 'employee_email',
@@ -735,7 +740,7 @@ class HrPayrollImportBatch(models.Model):
         """
         Employee = self.env['hr.employee']
         raw_data = line.get_raw_data() if line else {}
-        employee_name = line.employee_name or self._extract_field(raw_data, ['employee_name', 'name', 'full_name', 'emp_name'])
+        employee_name = line.employee_name or self._extract_field(raw_data, list(EMPLOYEE_NAME_HEADER_CANDIDATES))
         mapped_employee_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
         if mapped_employee_name not in (None, ''):
             employee_name = mapped_employee_name
@@ -748,11 +753,7 @@ class HrPayrollImportBatch(models.Model):
         if mapped_employee_email not in (None, ''):
             employee_email = mapped_employee_email
 
-        employee_code = line.employee_code or self._extract_field(raw_data, [
-            'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
-            'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
-            'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
-        ])
+        employee_code = line.employee_code or self._extract_field(raw_data, list(EMPLOYEE_CODE_HEADER_CANDIDATES))
         mapped_employee_code = self._get_employee_identifier_value(raw_data)
         if mapped_employee_code not in (None, ''):
             employee_code = mapped_employee_code
@@ -1775,11 +1776,7 @@ class HrPayrollImportBatch(models.Model):
         mapped_fields |= mirror_fields.intersection(set(contract_mappings.mapped('target_field_id.name')))
         updates = self._get_mapping_updates(employee, raw_data, mappings=mappings)
 
-        emp_code = self._extract_field(raw_data, [
-            'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
-            'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
-            'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
-        ])
+        emp_code = self._extract_field(raw_data, list(EMPLOYEE_CODE_HEADER_CANDIDATES))
         if not emp_code and line and line.employee_code:
             emp_code = line.employee_code
         emp_code = self._normalize_code(emp_code) if emp_code is not None else emp_code
@@ -1996,7 +1993,7 @@ class HrPayrollImportBatch(models.Model):
         config = self.formula_config_id
         rules = config.rule_ids.sorted(key=lambda r: r.sequence)
 
-        employee_code_markers = ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID')
+        employee_code_markers = EMPLOYEE_CODE_MARKERS
 
         def is_employee_code_rule(rule):
             tokens = [
@@ -2256,12 +2253,19 @@ class HrPayrollImportBatch(models.Model):
         input_values = {}
         config = self.formula_config_id
         employee = employee or (contract.employee_id if contract else None)
-        employee_code_markers = ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID')
+        employee_code_markers = EMPLOYEE_CODE_MARKERS
         contract_component_amounts = {}
         if contract:
             for advantage in contract.advantages_ids:
+                template = advantage.advantage_template_id
+                # Text-typed components have no amount to contribute; letting them in
+                # would feed a permanent 0.0 into any formula naming them, which is
+                # worse than the formula plainly having no such input.
+                if template and 'value_type' in template._fields \
+                        and template.value_type == 'text':
+                    continue
                 code = advantage.advantage_template_code or (
-                    advantage.advantage_template_id.code if advantage.advantage_template_id else False
+                    template.code if template else False
                 )
                 if code:
                     normalized_code = self._normalize_header_key(code)
@@ -2616,13 +2620,7 @@ class HrPayrollImportBatch(models.Model):
         return ''.join(ch for ch in str(value).lower() if ch.isalnum())
 
     def _find_primary_key_header(self, headers):
-        candidates = [
-            'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
-            'employee id', 'employee_id', 'emp id', 'empid', 'employee no', 'employee number',
-            'staff id', 'staff code',
-            'id no', 'id_no', 'id',
-            'msnv', 'ma nv', 'manv', 'ma so nhan vien',
-        ]
+        candidates = list(PRIMARY_KEY_HEADER_CANDIDATES)
         for candidate in candidates:
             target = self._normalize_header_key(candidate)
             for header in headers:
@@ -2726,7 +2724,17 @@ class HrPayrollImportBatch(models.Model):
         return value, True
 
     def _is_employee_code_rule(self, rule):
-        employee_code_markers = ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID')
+        """Role first, marker heuristic second.
+
+        The marker scan below is the original test and stays as the fallback, so a
+        rule nobody has classified yet behaves exactly as it did. The role short-
+        circuits it because a column an operator has explicitly filed as Identity is
+        an identifier even when its header does not happen to contain the word
+        "code" — and the upgrade migration only hands out `identity` on marker or
+        field-mapping evidence, so no existing row changes hands here."""
+        if getattr(rule, 'column_role', False) == 'identity':
+            return True
+        employee_code_markers = EMPLOYEE_CODE_MARKERS
         tokens = [
             (rule.code or '').upper(),
             (rule.name or '').upper(),
@@ -2790,6 +2798,22 @@ class HrPayrollImportBatch(models.Model):
             return stripped
         return value
 
+    def _normalize_component_text(self, value):
+        """Spreadsheet cell -> the string a text component stores. Whole floats are
+        rendered without the trailing `.0` openpyxl gives them, because a job grade
+        read as 3.0 should land on the contract as "3"."""
+        if value is None:
+            return ''
+        if isinstance(value, bool):
+            return 'Yes' if value else 'No'
+        if isinstance(value, float) and value.is_integer():
+            return str(int(value))
+        if isinstance(value, (int, float)):
+            return str(value)
+        if isinstance(value, (datetime, date)):
+            return value.isoformat()
+        return str(value).strip()
+
     def _float_equal(self, left, right, tolerance=0.0001):
         try:
             return abs(float(left or 0.0) - float(right or 0.0)) <= tolerance
@@ -2807,6 +2831,7 @@ class HrPayrollImportBatch(models.Model):
         template = self.env['hr.contract.advantage.template'].search([
             ('code', '=', rule.code)
         ], limit=1)
+        wanted_type = 'text' if getattr(rule, 'is_text_component', False) else 'amount'
         if not template:
             template = self.env['hr.contract.advantage.template'].create({
                 'name': rule.name or rule.code,
@@ -2814,7 +2839,16 @@ class HrPayrollImportBatch(models.Model):
                 'lower_bound': 0.0,
                 'upper_bound': 0.0,
                 'default_value': 0.0,
+                'value_type': wanted_type,
             })
+        elif 'value_type' in template._fields and template.value_type != wanted_type:
+            # An existing template is NEVER flipped. Every line already filed under it
+            # was written as the other kind, and re-typing the template would silently
+            # reinterpret all of that history. The workbook is told, not obeyed.
+            _logger.warning(
+                "Contract component sync: rule %s wants value type %s but template %s "
+                "is already %s — keeping the template as it is.",
+                rule.code, wanted_type, template.code, template.value_type)
         cache[rule.code] = template
         return template
 
@@ -2829,8 +2863,9 @@ class HrPayrollImportBatch(models.Model):
                 advantage_map[code] = line
         return advantage_map
 
-    def _log_contract_component_change(self, contract, template, old_amount, new_amount, source, notes=None):
-        self.env['hr.contract.advantage.change'].create({
+    def _log_contract_component_change(self, contract, template, old_amount, new_amount,
+                                       source, notes=None, old_text=None, new_text=None):
+        vals = {
             'contract_id': contract.id,
             'advantage_template_id': template.id,
             'old_amount': old_amount,
@@ -2839,7 +2874,12 @@ class HrPayrollImportBatch(models.Model):
             'change_source': source,
             'import_batch_id': self.id,
             'notes': notes or False,
-        })
+        }
+        Change = self.env['hr.contract.advantage.change']
+        if 'old_text_value' in Change._fields:
+            vals['old_text_value'] = old_text or False
+            vals['new_text_value'] = new_text or False
+        Change.create(vals)
 
     def _create_new_contract_for_components(self, contract):
         if not contract:
@@ -2870,11 +2910,31 @@ class HrPayrollImportBatch(models.Model):
         for rule in rules:
             template = self._get_or_create_advantage_template(rule, template_cache)
             existing_line = line_map.get(template.code)
+            is_text = 'value_type' in template._fields and template.value_type == 'text'
             value, found = self._get_rule_raw_value(
                 raw_data,
                 rule,
                 allow_column_letter=False,
             )
+            if is_text:
+                # Text components never touch `amount`; an absent cell keeps whatever
+                # the contract already says rather than blanking it.
+                if found:
+                    new_value = self._normalize_component_text(value)
+                else:
+                    new_value = (existing_line.text_value or '') if existing_line else ''
+                desired_values[template.code] = {
+                    'template': template,
+                    'value': new_value,
+                    'found': found,
+                    'rule': rule,
+                    'is_text': True,
+                }
+                if found and rule.requires_new_contract:
+                    old_text = (existing_line.text_value or '') if existing_line else ''
+                    if old_text != new_value:
+                        new_contract_needed = True
+                continue
             if found:
                 new_value = self._normalize_rule_input_value(rule, value)
             else:
@@ -2898,6 +2958,7 @@ class HrPayrollImportBatch(models.Model):
                 'value': new_value,
                 'found': found,
                 'rule': rule,
+                'is_text': False,
             }
 
             if found and rule.requires_new_contract:
@@ -2918,7 +2979,28 @@ class HrPayrollImportBatch(models.Model):
             line_obj = line_map.get(code)
             source = 'import' if found else 'import_default'
 
-            if line_obj:
+            if data.get('is_text'):
+                if line_obj:
+                    old_text = line_obj.text_value or ''
+                    if old_text != new_value:
+                        line_obj.write({'text_value': new_value or False})
+                        self._log_contract_component_change(
+                            contract, template, 0.0, 0.0, source,
+                            old_text=old_text, new_text=new_value
+                        )
+                else:
+                    line_obj = self.env['hr.contract.advantage'].create({
+                        'contract_id': contract.id,
+                        'advantage_template_id': template.id,
+                        'text_value': new_value or False,
+                    })
+                    line_map[code] = line_obj
+                    self._log_contract_component_change(
+                        contract, template, 0.0, 0.0, source,
+                        notes='Created contract component',
+                        old_text='', new_text=new_value
+                    )
+            elif line_obj:
                 old_value = line_obj.amount
                 if not self._float_equal(old_value, new_value):
                     line_obj.write({'amount': new_value})

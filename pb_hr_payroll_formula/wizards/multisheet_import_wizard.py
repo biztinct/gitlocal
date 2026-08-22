@@ -18,6 +18,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
 from ..formula_engine import excel_semantics
+from ..models import column_role_classifier
 
 _logger = logging.getLogger(__name__)
 
@@ -533,6 +534,7 @@ class MultiSheetImportWizard(models.TransientModel):
                         'report_visible_map': color_info['report_visible_map'],
                         'contract_component_map': color_info.get('contract_component_map', {}),
                         'requires_new_contract_map': color_info.get('requires_new_contract_map', {}),
+                        'text_component_map': color_info.get('text_component_map', {}),
                         'header_block_start': color_info['header_block_start'],
                         'formula_row': color_info['formula_row'],
                     }
@@ -651,6 +653,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 report_visible_map = ctx.get('report_visible_map', {})
                 contract_component_map = ctx.get('contract_component_map', {})
                 requires_new_contract_map = ctx.get('requires_new_contract_map', {})
+                text_component_map = ctx.get('text_component_map', {})
 
                 for idx, header_info in enumerate(sheet_data['headers']):
                     col_letter = header_info['column_letter']
@@ -690,6 +693,31 @@ class MultiSheetImportWizard(models.TransientModel):
                         uniform_val = self._column_uniform_value(
                             sheet_data, data_sheet, header_info['value'], col_letter)
 
+                    is_text_component = bool(text_component_map.get(col_letter))
+                    resolved_column_type = ('input' if is_red_data_column else
+                                            ('formula' if col_letter in formula_columns else 'input'))
+                    # `is_referenced` here means "the main sheet reads this column",
+                    # which is exactly the guarantee the classifier needs to keep a
+                    # referenced column in payroll whatever its header says.
+                    column_role, role_tier, role_reason = column_role_classifier.classify_column(
+                        header_info['value'],
+                        column_type=resolved_column_type,
+                        is_contract_component=(
+                            bool(contract_component_map.get(col_letter)) and not is_text_component),
+                        is_text_component=is_text_component,
+                        band_label=header_info.get('component_type') or None,
+                        sample_values=[sample] if sample else None,
+                        is_referenced=bool(is_referenced),
+                    )
+                    if is_text_component or (
+                            contract_component_map.get(col_letter)
+                            and column_role == column_role_classifier.ROLE_CONTRACT):
+                        is_text_component = True
+                    _logger.debug(
+                        "Multisheet import: %s!%s (%s) -> role=%s tier=%s (%s)",
+                        sheet_line.sheet_name, col_letter, header_info['value'],
+                        column_role, role_tier, role_reason)
+
                     column_lines.append({
                         'wizard_id': self.id,
                         'sheet_line_id': sheet_line.id,
@@ -702,9 +730,10 @@ class MultiSheetImportWizard(models.TransientModel):
                         'report_visible': bool(report_visible_map.get(col_letter)),
                         'is_contract_component': bool(contract_component_map.get(col_letter)),
                         'requires_new_contract': bool(requires_new_contract_map.get(col_letter)),
+                        'is_text_component': is_text_component,
+                        'column_role': column_role,
                         'is_selected': True,  # All columns selected by default
-                        'column_type': 'input' if is_red_data_column else
-                                       ('formula' if col_letter in formula_columns else 'input'),
+                        'column_type': resolved_column_type,
                         'sample_value': sample,
                         'uniform_value': uniform_val or False,
                         'has_cross_sheet_ref': has_cross_ref,
@@ -1156,6 +1185,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'report_visible': bool(col_sel.report_visible),
                         'is_contract_component': bool(col_sel.is_contract_component),
                         'requires_new_contract': bool(col_sel.requires_new_contract),
+                        'is_text_component': bool(col_sel.is_text_component),
+                        'column_role': col_sel.column_role or 'payroll',
                         'column_type': col_sel.column_type,
                         'excel_formula': excel_formula,
                         'resolved_formula': '',  # Will be filled during resolution
@@ -2067,6 +2098,48 @@ class MultiSheetImportWizard(models.TransientModel):
             cell = formula_sheet.cell(row=row_num, column=col_idx)
             return is_red_font(cell)
 
+        def is_green_font(cell):
+            """Green HEADER font = contract component that holds TEXT (CR-A4).
+
+            Same thresholds as the red reader above, mirrored onto the green channel.
+            Asked only about header-band cells, so it cannot collide with the green
+            FILL that marks the formula row."""
+            try:
+                font = cell.font
+                if font and font.color:
+                    color = font.color
+                    if color.type == 'rgb' and color.rgb:
+                        rgb = str(color.rgb).upper()
+                        if len(rgb) >= 6:
+                            if len(rgb) == 8:
+                                r, g, b = int(rgb[2:4], 16), int(rgb[4:6], 16), int(rgb[6:8], 16)
+                            else:
+                                r, g, b = int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+                            if g > 150 and r < 150 and b < 150:
+                                return True
+                            if g > 180 and r > 180 and b < 150:
+                                return True
+                            if g > 200 and g > r and g > b:
+                                return True
+                    elif color.type == 'indexed' and color.indexed in [3, 11]:
+                        return True
+                    elif color.type == 'theme' and color.theme in [6, 9]:
+                        return True
+            except Exception:
+                pass
+            return False
+
+        def is_green_in_merge(row_num, col_idx):
+            merge_info = merge_parser.get_merge_at(row_num, col_idx)
+            if merge_info:
+                for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                    for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                        cell = formula_sheet.cell(row=m_row, column=m_col)
+                        if is_green_font(cell):
+                            return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return is_green_font(cell)
+
         def is_underline_in_merge(row_num, col_idx):
             merge_info = merge_parser.get_merge_at(row_num, col_idx)
             if merge_info:
@@ -2084,6 +2157,7 @@ class MultiSheetImportWizard(models.TransientModel):
         report_visible_map = {}
         contract_component_map = {}
         requires_new_contract_map = {}
+        text_component_map = {}
 
         for col_idx in range(1, max_col + 1):
             col_letter = get_column_letter(col_idx)
@@ -2124,7 +2198,12 @@ class MultiSheetImportWizard(models.TransientModel):
             header_map[col_letter] = value_str
             header_rows[col_letter] = header_row
             report_visible_map[col_letter] = is_bold_in_merge(header_row, col_idx)
-            contract_component_map[col_letter] = is_red_in_merge(header_row, col_idx)
+            is_red = is_red_in_merge(header_row, col_idx)
+            is_green = is_green_in_merge(header_row, col_idx)
+            # Green is an authoritative text component, red is a component whose kind
+            # is inferred from its sample values later (CR-A4).
+            text_component_map[col_letter] = is_green
+            contract_component_map[col_letter] = is_red or is_green
             requires_new_contract_map[col_letter] = (
                 contract_component_map[col_letter] and is_underline_in_merge(header_row, col_idx)
             )
@@ -2179,6 +2258,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     'is_contract_component': contract_component_map.get(h['column_letter'], False),
                     'requires_new_contract': requires_new_contract_map.get(h['column_letter'], False),
                     'payslip_identifier': identifier_map.get(h['column_letter']),
+                    'is_text_component': text_component_map.get(h['column_letter'], False),
                 }
                 for h in headers
             ],
@@ -2196,6 +2276,7 @@ class MultiSheetImportWizard(models.TransientModel):
             'report_visible_map': report_visible_map,
             'contract_component_map': contract_component_map,
             'requires_new_contract_map': requires_new_contract_map,
+            'text_component_map': text_component_map,
             'header_block_start': header_block_start,
             'header_block_end': header_block_end,
             'formula_row': formula_row,
@@ -2832,7 +2913,13 @@ class MultiSheetImportWizard(models.TransientModel):
                     'report_visible': bool(comp.report_visible),
                     'is_contract_component': bool(comp.is_contract_component),
                     'requires_new_contract': bool(comp.requires_new_contract),
+                    'is_text_component': bool(comp.is_text_component),
                 }
+                # Role defaults belong to a NEWLY created rule only; an existing
+                # rule keeps the visibility somebody already chose for it, and a
+                # role a person set by hand is never overwritten (CR-A1).
+                role_vals = column_role_classifier.role_rule_defaults(
+                    comp.column_role or 'payroll')
                 if sequence is not None:
                     rule_vals['sequence'] = sequence
 
@@ -2882,11 +2969,14 @@ class MultiSheetImportWizard(models.TransientModel):
                 if existing_rule and self.update_existing:
                     # F7: overwriting an existing rule via import is a versioned
                     # 'import' event (fresh creates are version-0 / unversioned).
+                    if all(r.column_role_source != 'user' for r in existing_rule):
+                        rule_vals['column_role'] = role_vals['column_role']
+                        rule_vals['column_role_source'] = 'auto'
                     existing_rule.with_context(
                         formula_version_reason='import').write(rule_vals)
                     updated_rules.append(existing_rule)
                 elif not existing_rule:
-                    new_rule = self.env['hr.formula.rule'].create(rule_vals)
+                    new_rule = self.env['hr.formula.rule'].create(dict(rule_vals, **role_vals))
                     created_rules.append(new_rule)
 
             # Update missing fields with their data source settings
@@ -3466,6 +3556,23 @@ class MultiSheetComponentPreview(models.TransientModel):
         string='Requires New Contract'
     )
 
+    # COLROLES — what this column is FOR. Auto-classified during analysis and
+    # editable in the Review step, which is the one moment a person is already
+    # looking at every column of the workbook.
+    column_role = fields.Selection([
+        ('payroll', 'Payroll'),
+        ('identity', 'Identity'),
+        ('profile', 'Employee Profile'),
+        ('contract', 'Contract'),
+        ('bank', 'Bank'),
+        ('reference', 'Reference'),
+    ], string='Role', default='payroll')
+
+    is_text_component = fields.Boolean(
+        string='Text Component',
+        help="Contract component holding text rather than an amount."
+    )
+
     column_type = fields.Selection([
         ('input', 'Input'),
         ('formula', 'Formula'),
@@ -3659,6 +3766,23 @@ class MultiSheetColumnSelection(models.TransientModel):
     requires_new_contract = fields.Boolean(
         string='Requires New Contract',
         readonly=True
+    )
+
+    # COLROLES — what this column is FOR. Auto-classified during analysis and
+    # editable in the Review step, which is the one moment a person is already
+    # looking at every column of the workbook.
+    column_role = fields.Selection([
+        ('payroll', 'Payroll'),
+        ('identity', 'Identity'),
+        ('profile', 'Employee Profile'),
+        ('contract', 'Contract'),
+        ('bank', 'Bank'),
+        ('reference', 'Reference'),
+    ], string='Role', default='payroll')
+
+    is_text_component = fields.Boolean(
+        string='Text Component',
+        help="Contract component holding text rather than an amount."
     )
 
     # Selection controls

@@ -672,6 +672,77 @@ class PbFormulaStudio(models.AbstractModel):
             return True
 
     @api.model
+    def reclassify_roles(self, config_id):
+        """Re-run the column-role classifier over one salary structure.
+
+        Backend only for now — nothing in the studio calls this yet; the lens that
+        will is the next phase. It exists here so the classification can be replayed
+        after the lexicons change without an upgrade, and so this phase's result on a
+        live structure can be inspected before anything acts on it.
+
+        Rows whose role a person set by hand are read but never written (CR-A1), and
+        the return value names every row that moved so the change can be reviewed
+        rather than merely trusted.
+        """
+        if not self._can_edit():
+            raise AccessError(_("You do not have permission to reclassify columns."))
+
+        from odoo.addons.pb_hr_payroll_formula.models import column_role_classifier as crc
+
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            raise UserError(_("That salary structure no longer exists."))
+
+        rules = config.rule_ids
+        # A column named in ANY other column's dependency list is payroll, whatever
+        # its header says — the codes arrive comma-joined (CR2).
+        referenced = set()
+        for rule in rules:
+            for code in (rule.formula_dependencies or '').split(','):
+                code = code.strip().upper()
+                if code:
+                    referenced.add(code)
+
+        changed = []
+        counts = dict.fromkeys(crc.ROLES, 0)
+        for rule in rules:
+            role, tier, reason = crc.classify_column(
+                rule.name,
+                column_type=rule.column_type,
+                is_contract_component=bool(rule.is_contract_component)
+                and not bool(rule.is_text_component),
+                is_text_component=bool(rule.is_text_component),
+                band_label=rule.component_type or None,
+                is_referenced=(rule.code or '').strip().upper() in referenced,
+            )
+            counts[role] = counts.get(role, 0) + 1
+            if rule.column_role_source == 'user' or role == rule.column_role:
+                continue
+            changed.append({
+                'id': rule.id,
+                'code': rule.code,
+                'name': rule.name,
+                'from': rule.column_role,
+                'to': role,
+                'tier': tier,
+                'reason': reason,
+            })
+
+        for entry in changed:
+            self.env['hr.formula.rule'].browse(entry['id']).write({
+                'column_role': entry['to'],
+                'column_role_source': 'auto',
+            })
+
+        return {
+            'ok': True,
+            'config_id': config.id,
+            'config_name': config.name,
+            'changed': changed,
+            'counts': counts,
+        }
+
+    @api.model
     def _field_meta(self):
         """Option lists for the inline component editor (loaded once)."""
         Rule = self.env['hr.formula.rule']

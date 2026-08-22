@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Contract components can hold text as well as an amount (COLROLES / CR-A3).
+      The list lives in om_hr_payroll's contract form; this inherited view adds the
+      two new columns there rather than editing that module, so nothing outside
+      pb_hr_payroll_formula has to be upgraded to show them.
+
+      Text Value shows by default because a component that has one is exactly the
+      case somebody is looking for; Value Type is hidden by default because it is a
+      property of the template, not of this line.
+    -->
+    <record id="view_hr_contract_form_typed_components" model="ir.ui.view">
+        <field name="name">hr.contract.form.typed.components</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_contract_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='amount']"
+                   position="after">
+                <field name="text_value" optional="show"/>
+                <field name="value_type" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

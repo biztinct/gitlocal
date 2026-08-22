@@ -19,6 +19,7 @@
                 <field name="component_type" string="Category" optional="show"/>
                 <field name="code"/>
                 <field name="column_type" string="Type"/>
+                <field name="column_role" string="Role" optional="show"/>
                 <field name="data_source" string="Source"/>
                 <field name="excel_formula_display" invisible="column_type != 'formula'" optional="show"/>
                 <field name="data_source_field" invisible="column_type != 'input'" optional="hide"/>
@@ -135,6 +136,10 @@
                                     <field name="decimal_places"/>
                                     <field name="column_width"/>
                                 </group>
+                                <group string="Role">
+                                    <field name="column_role"/>
+                                    <field name="column_role_source" readonly="1"/>
+                                </group>
                                 <group string="Visibility">
                                     <field name="appears_on_payslip"/>
                                     <field name="is_visible_in_grid"/>
@@ -143,6 +148,8 @@
                                 <group string="Contract">
                                     <field name="is_contract_component"/>
                                     <field name="requires_new_contract"
+                                           invisible="not is_contract_component"/>
+                                    <field name="is_text_component"
                                            invisible="not is_contract_component"/>
                                 </group>
                             </group>
@@ -270,6 +277,11 @@
                 <filter name="invalid" string="Invalid"
                         domain="[('is_valid', '=', False)]"/>
                 <separator/>
+                <filter name="role_payroll" string="Payroll Columns"
+                        domain="[('column_role', '=', 'payroll')]"/>
+                <filter name="role_people" string="People Data Columns"
+                        domain="[('column_role', '!=', 'payroll')]"/>
+                <separator/>
                 <filter name="on_payslip" string="On Payslip"
                         domain="[('appears_on_payslip', '=', True)]"/>
                 <group name="group_by">
@@ -277,6 +289,8 @@
                             context="{'group_by': 'column_type'}"/>
                     <filter name="group_data_source" string="Data Source"
                             context="{'group_by': 'data_source'}"/>
+                    <filter name="group_role" string="Role"
+                            context="{'group_by': 'column_role'}"/>
                     <filter name="group_component_type" string="Component Type"
                             context="{'group_by': 'component_type'}"/>
                     <filter name="group_sheet" string="Source Sheet"
