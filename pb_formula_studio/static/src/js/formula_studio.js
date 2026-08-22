@@ -5124,13 +5124,25 @@ export class PbFormulaStudio extends Component {
         this.psRichInsertComponent(component);
         this.state.psRichMode = previousMode;
     }
-    psRichEditorClick(ev) {
+    _psRichRemoveTokenFromEvent(ev) {
         const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-component]");
-        if (!remove) { this.psRichRememberSelection(ev); return; }
+        if (!remove) return false;
         ev.preventDefault();
+        ev.stopPropagation();
         const token = remove.closest(".ps-component-token");
         if (token) token.remove();
         this._psRichRefreshUsed();
+        return true;
+    }
+    psRichEditorPointerDown(ev) {
+        // Buttons inside a contenteditable table can be consumed by the
+        // browser's selection machinery before click. Remove on pointer-down,
+        // which is also early enough to stop the caret entering the token.
+        this._psRichRemoveTokenFromEvent(ev);
+    }
+    psRichEditorClick(ev) {
+        if (this._psRichRemoveTokenFromEvent(ev)) return;
+        this.psRichRememberSelection(ev);
     }
     _psRichSerializedHtml() {
         const editor = this._psRichEditor();
