@@ -303,3 +303,43 @@ class TestPayslipTemplateImport(TransactionCase):
         studio = self.Studio.payslip_studio_data(self.config.id)
         self.assertTrue(studio['layout_html'])
         self.assertIn('Employee name', studio['layout_rendered_html'])
+
+    def test_08_template_deletion_keeps_formulas_and_separates_layout_modes(self):
+        self.config.write({
+            'payslip_layout_html': '<p>Imported document</p>',
+            'payslip_header_html': '<p>Section header</p>',
+            'payslip_footer_html': '<p>Section footer</p>',
+            'theme_accent': 'rose',
+        })
+        self.basic.write({
+            'payslip_identifier': self.earnings.id,
+            'appears_on_payslip': True,
+        })
+
+        imported = self.Studio.delete_payslip_template(self.config.id, 'imported')
+        self.assertTrue(imported['ok'])
+        self.assertFalse(self.config.payslip_layout_html)
+        self.assertTrue(self.earnings.exists(),
+                        'deleting the imported document reveals the retained sections')
+        self.assertEqual(self.basic.payslip_identifier, self.earnings)
+        self.assertIn('Section header', self.config.payslip_header_html)
+
+        self.config.payslip_layout_html = '<p>Active imported document</p>'
+        refused = self.Studio.delete_payslip_template(self.config.id, 'section')
+        self.assertFalse(refused['ok'],
+                         'a stale client cannot delete hidden sections under an import')
+        self.assertTrue(self.earnings.exists())
+
+        self.config.payslip_layout_html = False
+        section = self.Studio.delete_payslip_template(self.config.id, 'section')
+        self.assertTrue(section['ok'])
+        self.assertFalse(self.env['hr.payslip.config'].search([
+            ('salary_structure_id', '=', self.config.id),
+        ]))
+        self.assertFalse(self.basic.payslip_identifier)
+        self.assertTrue(self.basic.appears_on_payslip,
+                        'formulas remain eligible and return to the Unplaced tray')
+        self.assertFalse(self.config.payslip_header_html)
+        self.assertFalse(self.config.payslip_footer_html)
+        self.assertEqual(self.config.theme_accent, 'rose',
+                         'brand/theme settings are not part of a section template')

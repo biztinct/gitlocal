@@ -5004,6 +5004,8 @@ class PbFormulaStudio(models.AbstractModel):
             'header_html': config.payslip_header_html or '',
             'footer_html': config.payslip_footer_html or '',
             'layout_html': config.payslip_layout_html or '',
+            'section_template_active': bool(
+                sections or config.payslip_header_html or config.payslip_footer_html),
             'header_rendered_html': config._render_payslip_content(
                 config.payslip_header_html or '', values_by_rule, currency),
             'footer_rendered_html': config._render_payslip_content(
@@ -5657,6 +5659,48 @@ class PbFormulaStudio(models.AbstractModel):
         else:
             return {'ok': False, 'msg': _("Unknown content area.")}
         return {'ok': True}
+
+    @api.model
+    def delete_payslip_template(self, config_id, template_kind):
+        """Delete exactly the active presentation mode without touching formulas.
+
+        Imported documents overlay the retained section template, so removing
+        one only clears ``payslip_layout_html``. A section template deletion is
+        structural: sections and their rich content are removed, component
+        assignments return to the tray, and header/footer content is cleared.
+        Theme/branding and the payroll rules themselves deliberately survive.
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("Configuration not found.")}
+        if template_kind == 'imported':
+            config.write({'payslip_layout_html': False})
+            return {'ok': True, 'kind': 'imported'}
+        if template_kind != 'section':
+            return {'ok': False, 'msg': _("Unknown payslip template type.")}
+        if config.payslip_layout_html:
+            return {'ok': False, 'msg': _(
+                "Delete the active imported template before deleting the section template.")}
+
+        Section = self.env['hr.payslip.config']
+        sections = Section.search([('salary_structure_id', '=', config.id)])
+        assigned = config.rule_ids.filtered(lambda rule: rule.payslip_identifier)
+        assigned.write({'payslip_identifier': False})
+        section_count = len(sections)
+        component_count = len(assigned)
+        sections.unlink()
+        config.write({
+            'payslip_header_html': False,
+            'payslip_footer_html': False,
+        })
+        return {
+            'ok': True,
+            'kind': 'section',
+            'deleted_sections': section_count,
+            'returned_components': component_count,
+        }
 
     # W73 — accent palette hex (the LOCKED sc-* keys; mirrors payslip.scss +
     # hr_payslip_formula._THEME_ACCENT_HEX so preview and print never drift).

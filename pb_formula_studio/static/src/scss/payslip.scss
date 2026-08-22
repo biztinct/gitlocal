@@ -28,7 +28,14 @@
 .pbfs-ps .ps-layout-active b { color: #4C3F94; font-size: 12.5px; }
 .pbfs-ps .ps-layout-active span { margin-top: 2px; color: #64748B; font-size: 10.5px; }
 .pbfs-ps .ps-layout-active button { height: 30px; padding: 0 10px; border: 1px solid #7C6DBA; border-radius: 7px; background: #5A4BB0; color: #fff; font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap; }
-.pbfs-ps .ps-layout-active button.subtle { border-color: #D8D1F0; background: #fff; color: #64748B; }
+.pbfs-ps .ps-layout-active button.danger { border-color: #FCA5A5; background: #fff; color: #B91C1C; }
+.pbfs-ps .ps-layout-active button.danger:hover { border-color: #EF4444; background: #FEF2F2; }
+.pbfs-ps .ps-section-template-active { border-color: #CBD5E1; background: linear-gradient(135deg, #F8FAFC, #F1F5F9); }
+.pbfs-ps .ps-section-template-active b { color: #334155; }
+.pbfs-ps .ps-template-empty { padding: 12px 14px; border: 1px solid #BAE6FD; border-radius: 11px; background: #F0F9FF; }
+.pbfs-ps .ps-template-empty b, .pbfs-ps .ps-template-empty span { display: block; }
+.pbfs-ps .ps-template-empty b { color: #075985; font-size: 12.5px; }
+.pbfs-ps .ps-template-empty span { margin-top: 2px; color: #64748B; font-size: 10.5px; }
 
 .pbfs-ps .ps-tray { border: 1.5px dashed var(--i-soft2, #DDD6F2); border-radius: 13px; background: #fff; padding: 11px 13px; transition: border-color .13s, background .13s; }
 .pbfs-ps .ps-tray.over { border-color: var(--i, #5A4BB0); background: var(--i-soft, #EDEAF8); }
@@ -147,6 +154,17 @@
 .pbfs-ps .ps-primary { border: 1px solid var(--i, #5A4BB0); background: var(--i, #5A4BB0); color: #fff; }
 .pbfs-ps .ps-primary:disabled { opacity: .5; cursor: not-allowed; }
 .pbfs-ps .ps-secondary { border: 1px solid var(--line, #E8E9F3); background: #fff; color: #475569; }
+.pbfs-ps .ps-template-delete { width: min(440px, 92vw); padding: 28px; border-radius: 17px; background: #fff; box-shadow: 0 28px 70px rgba(15, 12, 40, .34); text-align: center; }
+.pbfs-ps .ps-template-delete-icon { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto 15px; border-radius: 14px; background: #FEF2F2; color: #DC2626; }
+.pbfs-ps .ps-template-delete-icon svg { width: 25px; height: 25px; }
+.pbfs-ps .ps-template-delete h3 { margin: 0 0 8px; color: #1E293B; font-size: 18px; }
+.pbfs-ps .ps-template-delete p { margin: 0; color: #64748B; font-size: 13px; line-height: 1.55; }
+.pbfs-ps .ps-template-delete-note { margin-top: 15px; padding: 10px 12px; border-radius: 9px; background: #FFF7ED; color: #9A3412; font-size: 11.5px; line-height: 1.45; text-align: left; }
+.pbfs-ps .ps-template-delete-actions { display: flex; gap: 9px; margin-top: 20px; }
+.pbfs-ps .ps-template-delete-actions button { flex: 1; min-height: 36px; border-radius: 8px; font-size: 12.5px; font-weight: 800; cursor: pointer; }
+.pbfs-ps .ps-template-delete-confirm { border: 1px solid #DC2626; background: #DC2626; color: #fff; }
+.pbfs-ps .ps-template-delete-confirm:hover { background: #B91C1C; }
+.pbfs-ps .ps-template-delete-actions button:disabled { opacity: .55; cursor: not-allowed; }
 .pbfs-ps .ps-import-body { flex: 1; min-height: 310px; overflow: auto; padding: 20px; background: #F8F9FD; }
 .pbfs-ps .ps-import-upload { max-width: 650px; margin: 20px auto; --bdo-accent: var(--i, #5A4BB0); }
 .pbfs-ps .ps-privacy { display: flex; align-items: center; gap: 8px; max-width: 510px; margin: 12px auto 0; color: #64748B; font-size: 11.5px; }
