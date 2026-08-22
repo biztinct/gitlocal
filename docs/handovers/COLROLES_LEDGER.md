@@ -1,5 +1,10 @@
 # COLROLES — Column Roles & People-Data Mapping: conventions + gotcha ledger
 
+**STATUS: PROGRAM COMPLETE — all 4 phases designed, built, deployed and live on abm · acme ·
+payobook · payobook_template (2026-08-23).** Phase commits: 1185009c (P1), 4176cf44 + e32d4d5a +
+12d58756 (P2/P3), plus the Phase-4 commit. Final module versions: pb_hr_payroll_formula
+19.0.1.68.0 · pb_formula_studio 19.0.1.114.0 · om_hr_payroll 19.0.1.0.2 (Python-only hook, no `-u`).
+
 Program: declutter Formula Studio via a first-class `column_role` on `hr.formula.rule`, typed
 (text-capable) contract components, studio-native people/bank mapping, import auto-classification.
 Approved plan: `~/.claude/plans/i-want-you-to-giggly-hummingbird.md`. Phases: 1 roles-exist (backend),
@@ -179,3 +184,47 @@ appends gotchas here (CR-numbered).
   button under it is then a verb with nothing to undo. Split by `props.leftItems.length`: filtered →
   the old sentence and the button; genuinely empty → "Nothing to show on this side." and no button.
   Any adapter that can legitimately return an empty side depends on this.
+- CR26 (P4): `is_green_font` (formula_import_wizard.py) requires **g > 150**, so Excel's palette
+  "Green" `#00B050` registers as a text-component marker but the darker HTML green `#008000`
+  (g = 128) does **not**. The Phase-1 test fixture painted its green headers `#008000` and then
+  asserted `is_contract_component` — an assertion the importer was never going to satisfy. Nobody
+  noticed because the whole `TestColumnRoles` class had been dying in `setUpClass` since Phase 1
+  (CR19: `country_code` required, no default) and therefore had never actually run in CI. Both are
+  fixed. The THRESHOLD was deliberately left alone: loosening green is a CR10-shaped trap. Live
+  consequence to keep in mind — a customer who picks "Dark Green" from Excel's palette gets no
+  text-component marker at all.
+- CR27 (P4): `hr.formula.rule.create` assigns its own `sequence` from the column-letter high-water
+  mark, so a `sequence` passed INTO `create()` does not survive. Any fixture or import path that
+  depends on component ORDER must `write` the sequence after creation (and an order assertion
+  should set it against creation order, or it proves nothing).
+- CR28 (P4): `hr.formula.multisheet.component.preview`, `...sheet.line` and `...missing.field`
+  shipped with `perm_unlink=0` while `column.selection` and `append.order` had `1`. The wizard
+  deletes its previews when a step is re-run, so pressing **Back** from Review Components and
+  re-processing raised `You are not allowed to delete …` — a dead end in the exact step Phase 4
+  polishes. Granted unlink to all three (they are wizard-owned transients).
+- CR29 (P4): an xlsx export is **never byte-identical across runs** — xlsxwriter stamps
+  `docProps/core.xml` with the current time. A "the output did not change" regression test must
+  hash the zip ENTRIES with `docProps/core.xml` excluded (proven stable: two consecutive
+  pre-change exports of the same batch hashed equal, and post-change matched them exactly).
+- CR30 (P4): `.ce-tog` is `display: inline-flex`, so the second toggle added to the Advanced
+  settings block sat on the same line and ran into the first one's label. Toggles that must stack
+  need their own wrapper (`.ce-togs`); do not change `.ce-tog` itself — the Automation tab lays its
+  toggles out horizontally on purpose.
+- CR31 (P4): the studio's "Import from Excel" is the **multisheet** wizard
+  (`importExcelInto` / `importExcel` / `cfg_import_excel`), NOT `hr.formula.import.wizard`. The
+  Phase-4 handover's "single-sheet import completion → deep link" therefore had to live somewhere
+  both wizards reach: `hr.formula.config.studio_people_mapping_action(rules)` +
+  `role_counts_for_rules` / `format_role_summary`. The studio marks its own imports with a
+  `pbfs_studio_import` context flag; the studio honours `pbfs_open_people_mapping` in
+  `onWillStart`. Any future import entry point needs BOTH halves or the loop stays open.
+- CR32 (P4, environment): on `payobook_template` two integration tests error out of the box —
+  `TestEndpointFieldCatalogue.test_07_acls` and
+  `TestEndpointCatalogue.test_04_a_plain_formula_user_reads_feeds_and_cannot_write_them`, both on
+  `duplicate key … hr_integration_endpoint_connector_code_uniq`. They belong to the Integrations
+  programme, predate COLROLES and collide with existing rows in that database, not with anything
+  this programme touched.
+- CR33 (P4): the apex admin password documented in this ledger (`ash@biztinct.com/admin1234`) is
+  **no longer valid for XML-RPC or `/web/session/authenticate`** — both answer `Access Denied`
+  (no TOTP configured, so it is simply a changed password). Live validation must reuse the
+  authenticated Chrome-MCP session (`fetch('/web/dataset/call_kw', …)` from inside the page), which
+  also carries the right `allowed_company_ids` and so sidesteps CR13.

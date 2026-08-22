@@ -265,6 +265,36 @@ class FormulaImportWizard(models.TransientModel):
         rules keep whatever visibility somebody already chose for them."""
         return column_role_classifier.role_rule_defaults(role)
 
+    # ------------------------------------------------------------------
+    # COLROLES P4 — what the import turned out to BE, not just how much of it
+    # ------------------------------------------------------------------
+    # Every column-role signal is decided during the import and then, until now,
+    # thrown away at the finish line: the user was told "58 rules imported" and
+    # left to discover on their own that six of them were people data needing a
+    # mapping. These two helpers close that loop for both single-sheet paths.
+    def _role_summary_part(self, created_rules):
+        """"41 payroll · 2 identity · 4 bank columns", or '' when nothing landed."""
+        Config = self.env['hr.formula.config']
+        return Config.format_role_summary(Config.role_counts_for_rules(created_rules))
+
+    def _import_completion_action(self, created_rules, msg_parts):
+        summary = self._role_summary_part(created_rules)
+        if summary:
+            msg_parts = list(msg_parts) + [summary]
+        params = {
+            'message': ' | '.join(msg_parts),
+            'type': 'success',
+            'sticky': False,
+        }
+        next_action = self.config_id.studio_people_mapping_action(created_rules)
+        if next_action:
+            params['next'] = next_action
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': params,
+        }
+
     def _import_from_excel(self):
         """
         Import configuration from Excel file using advanced header detection.
@@ -533,15 +563,7 @@ class FormulaImportWizard(models.TransientModel):
         if blue_constants_created > 0:
             msg_parts.append(_('%d blue constants (converted from %%)') % blue_constants_created)
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': ' | '.join(msg_parts),
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+        return self._import_completion_action(created_rules, msg_parts)
 
     def _import_from_excel_color_coded(self):
         """
@@ -1095,15 +1117,7 @@ class FormulaImportWizard(models.TransientModel):
         if constant_rules_created:
             msg_parts.append(_('%d constant rules added') % constant_rules_created)
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': ' | '.join(msg_parts),
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+        return self._import_completion_action(created_rules, msg_parts)
 
     def action_download_template(self):
         """Download Excel template for import."""

@@ -320,7 +320,15 @@
                       <CfgCombo options="cfgMeta('connectors')" value="state.setDraft.connector_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('connector_id', id)"/></div>
                     <div class="ce-field"><label>Reference code</label><input class="ce-input mono" t-att-value="state.setDraft.code" t-on-input="(ev)=>this.setCfgField('code',ev)"/></div>
                   </div>
-                  <label class="ce-tog" style="margin-top:14px"><input type="checkbox" t-att-checked="state.setDraft.use_color_coded_excel_import" t-on-change="(ev)=>this.setCfgField('use_color_coded_excel_import',ev)"/><span>Use color-coded Excel import</span></label>
+                  <!-- `.ce-tog` is inline-flex, so a second toggle would sit on the
+                       same line and run into the first (COLROLES P4). The toggles
+                       stack in their own column instead. -->
+                  <div class="ce-togs">
+                    <label class="ce-tog"><input type="checkbox" t-att-checked="state.setDraft.use_color_coded_excel_import" t-on-change="(ev)=>this.setCfgField('use_color_coded_excel_import',ev)"/><span>Use color-coded Excel import</span></label>
+                    <!-- opt-in, and the label says what "off" does too, because off
+                         is what every existing structure is. -->
+                    <label class="ce-tog" title="Off: the payroll workbook opens with its standard employee columns. On: it opens with the columns you marked Identity or Employee Profile here, in their own order."><input type="checkbox" t-att-checked="state.setDraft.export_identity_columns" t-on-change="(ev)=>this.setCfgField('export_identity_columns',ev)"/><span>Open the payroll export with this structure's own identity columns</span></label>
+                  </div>
                 </t>
               </div>
             </t>
@@ -1502,6 +1510,73 @@
             <!-- archiving is reversible, so it does not wear the destructive red -->
             <button t-if="state.confirmDel.mode === 'archive'" class="pbfs-btn primary" t-on-click="confirmDeleteConfig">Archive configuration</button>
             <button t-else="" class="pbfs-btn danger-solid" t-on-click="confirmDeleteConfig">Delete configuration</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLROLES P4 — reclassification review. Opens on a dry run: every row is
+           a proposal until it is applied, and only ticked rows are written. -->
+      <div t-if="state.reclassOpen" class="pbfs-rcl-scrim" t-on-click="closeReclassify">
+        <div class="pbfs-rcl" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="rcl-head">
+            <div class="rcl-title">
+              <h3>Review column classification</h3>
+              <span t-esc="state.config.name"/>
+            </div>
+            <button class="pbfs-btn ghost sm" t-on-click="closeReclassify" aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div t-if="state.reclassBusy and !state.reclassData" class="rcl-note">Re-reading every column…</div>
+          <t t-elif="state.reclassData and state.reclassData.error">
+            <div class="rcl-note warn">That structure could not be re-read. Nothing was changed.</div>
+          </t>
+          <t t-elif="!reclassRows.length">
+            <div class="rcl-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+              <b>Every column is already filed the way this reads it.</b>
+              <span>Columns you set by hand are never listed here — they stay exactly as you left them.</span>
+            </div>
+          </t>
+          <t t-else="">
+            <div class="rcl-note">
+              <t t-esc="reclassRows.length"/> column<t t-if="reclassRows.length !== 1">s</t> would be refiled.
+              Untick anything you disagree with — only ticked rows are written, and the rest keep the role they have now.
+            </div>
+            <div class="rcl-bulk">
+              <button class="pbfs-btn ghost sm" t-on-click="() => this.setReclassAll(true)">Accept all</button>
+              <button class="pbfs-btn ghost sm" t-on-click="() => this.setReclassAll(false)">Skip all</button>
+              <span class="rcl-count"><t t-esc="reclassAcceptedIds.length"/> of <t t-esc="reclassRows.length"/> accepted</span>
+            </div>
+            <div class="rcl-rows">
+              <label t-foreach="reclassRows" t-as="row" t-key="row.id" t-attf-class="rcl-row {{ row.accept ? '' : 'skipped' }}">
+                <input type="checkbox" t-att-checked="row.accept" t-on-change="() => this.toggleReclassRow(row)"/>
+                <div class="rcl-col">
+                  <b t-esc="row.name || row.code"/>
+                  <span class="rcl-code mono" t-esc="row.code"/>
+                </div>
+                <div class="rcl-move">
+                  <span class="rcl-from" t-esc="row.from_label"/>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                  <span class="rcl-to" t-esc="row.to_label"/>
+                </div>
+                <div class="rcl-why">
+                  <span t-attf-class="rcl-tier {{ row.tier }}" t-esc="row.tier"/>
+                  <span t-esc="row.reason"/>
+                </div>
+              </label>
+            </div>
+          </t>
+
+          <div class="rcl-actions">
+            <p class="rcl-fine">Accepting keeps these columns machine-classified, so a later re-read can improve them. Change a role by hand in the component editor to lock it against that.</p>
+            <div class="rcl-btns">
+              <button class="pbfs-btn ghost" t-on-click="closeReclassify">Close</button>
+              <button t-if="reclassRows.length" class="pbfs-btn primary" t-att-disabled="state.reclassBusy or !reclassAcceptedIds.length" t-on-click="applyReclassify">
+                Apply <t t-esc="reclassAcceptedIds.length"/> change<t t-if="reclassAcceptedIds.length !== 1">s</t>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -4184,6 +4259,7 @@
     <t t-elif="icon === 'share'"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></t>
     <t t-elif="icon === 'payai'"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></t>
     <t t-elif="icon === 'export'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></t>
+    <t t-elif="icon === 'reclassify'"><path d="M3 6h10M3 12h7M3 18h4"/><path d="M17 4v11"/><polyline points="13.5 11.5 17 15 20.5 11.5"/><circle cx="17" cy="19.4" r="1.2"/></t>
   </t>
 
   <!-- COLROLES P2 — column-role glyphs, keyed by ROLES[].icon in formula_studio.js

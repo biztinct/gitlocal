@@ -14,6 +14,7 @@ import base64
 import io
 import re
 import logging
+from markupsafe import Markup, escape
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -249,6 +250,19 @@ class MultiSheetImportWizard(models.TransientModel):
         compute='_compute_import_stats'
     )
 
+    # COLROLES P4 — the Review step is where a person decides what each column IS;
+    # the per-role tally belongs at the top of it, not only in the finished import.
+    role_summary_html = fields.Html(
+        string='Column Roles',
+        compute='_compute_role_summary',
+        sanitize=False,
+    )
+
+    role_likely_count = fields.Integer(
+        string='Inferred Roles',
+        compute='_compute_role_summary',
+    )
+
     # ==========================================
     # COMPUTED FIELDS
     # ==========================================
@@ -264,6 +278,59 @@ class MultiSheetImportWizard(models.TransientModel):
             rec.import_count = len(previews)
             rec.duplicate_count = len(rec.component_preview_ids.filtered('is_duplicate'))
             rec.formula_count = len(previews.filtered(lambda p: p.column_type == 'formula'))
+
+    ROLE_CHIP_COLORS = {
+        'payroll': ('#eef2ff', '#3730a3'),
+        'identity': ('#ecfeff', '#155e75'),
+        'profile': ('#f0fdf4', '#166534'),
+        'contract': ('#fefce8', '#854d0e'),
+        'bank': ('#fdf2f8', '#9d174d'),
+        'reference': ('#f8fafc', '#475569'),
+    }
+
+    @api.depends('component_preview_ids.column_role',
+                 'component_preview_ids.column_role_tier',
+                 'component_preview_ids.include_in_import')
+    def _compute_role_summary(self):
+        """A chip per role that actually has columns, plus how many of them were
+        inferred rather than matched. Built as plain inline-styled markup so the
+        wizard needs no asset bundle of its own."""
+        labels = dict(
+            self.env['hr.formula.multisheet.component.preview']
+            ._fields['column_role'].selection)
+        for rec in self:
+            previews = rec.component_preview_ids.filtered('include_in_import')
+            tally = {}
+            for preview in previews:
+                role = preview.column_role or 'payroll'
+                tally[role] = tally.get(role, 0) + 1
+            chips = []
+            for role in ('payroll', 'identity', 'profile', 'contract', 'bank', 'reference'):
+                count = tally.get(role)
+                if not count:
+                    continue
+                bg, fg = rec.ROLE_CHIP_COLORS.get(role, ('#f1f5f9', '#334155'))
+                chips.append(Markup(
+                    '<span style="display:inline-flex;align-items:baseline;gap:6px;'
+                    'padding:3px 10px;margin:0 6px 6px 0;border-radius:999px;'
+                    'background:%s;color:%s;font-size:12px;font-weight:600;">'
+                    '<span style="font-size:13px;">%s</span>%s</span>'
+                ) % (bg, fg, count, escape(labels.get(role, role))))
+            rec.role_likely_count = len(previews.filtered(
+                lambda p: p.column_role_tier == 'likely'))
+            if not chips:
+                rec.role_summary_html = False
+                continue
+            note = Markup('')
+            if rec.role_likely_count:
+                note = Markup(
+                    '<div style="margin-top:2px;font-size:12px;color:#64748b;">'
+                    '<span style="color:#b45309;">●</span> %s</div>'
+                ) % (_("%s column(s) carry a dot: their role was inferred from a "
+                       "resemblance — worth a glance before importing.")
+                     % rec.role_likely_count)
+            rec.role_summary_html = Markup('<div>%s%s</div>') % (
+                Markup('').join(chips), note)
 
     @api.depends('component_preview_ids')
     def _compute_cross_sheet_stats(self):
@@ -732,6 +799,7 @@ class MultiSheetImportWizard(models.TransientModel):
                         'requires_new_contract': bool(requires_new_contract_map.get(col_letter)),
                         'is_text_component': is_text_component,
                         'column_role': column_role,
+                        'column_role_tier': role_tier,
                         'is_selected': True,  # All columns selected by default
                         'column_type': resolved_column_type,
                         'sample_value': sample,
@@ -1187,6 +1255,7 @@ class MultiSheetImportWizard(models.TransientModel):
                         'requires_new_contract': bool(col_sel.requires_new_contract),
                         'is_text_component': bool(col_sel.is_text_component),
                         'column_role': col_sel.column_role or 'payroll',
+                        'column_role_tier': col_sel.column_role_tier or 'default',
                         'column_type': col_sel.column_type,
                         'excel_formula': excel_formula,
                         'resolved_formula': '',  # Will be filled during resolution
@@ -2996,6 +3065,18 @@ class MultiSheetImportWizard(models.TransientModel):
                 "Updated: %d rules"
             ) % (len(created_rules), len(updated_rules))
 
+            # COLROLES P4 — say what those rules turned out to BE. The roles were
+            # decided during this import and were, until now, discarded at the
+            # finish line; a workbook whose people columns went unnoticed is
+            # exactly the workbook that never gets mapped.
+            touched = self.env['hr.formula.rule'].browse(
+                [r.id for rules in (created_rules, updated_rules) for r in rules])
+            Config = self.env['hr.formula.config']
+            role_summary = Config.format_role_summary(
+                Config.role_counts_for_rules(touched))
+            if role_summary:
+                message += '\n' + role_summary
+
             # D-E5: don't let non-numeric constants pass off as a clean import.
             if unparseable_constants:
                 shown = ', '.join(
@@ -3005,7 +3086,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     "as 0 — set them manually: %s"
                 ) % (len(unparseable_constants), shown)
 
-            next_action = self.config_id.get_formview_action()
+            next_action = (self.config_id.studio_people_mapping_action(touched)
+                           or self.config_id.get_formview_action())
             next_action['target'] = 'current'
 
             return {
@@ -3568,6 +3650,27 @@ class MultiSheetComponentPreview(models.TransientModel):
         ('reference', 'Reference'),
     ], string='Role', default='payroll')
 
+    # COLROLES P4 — how sure that role is. Display-only, transient-only: it never
+    # reaches hr.formula.rule, it only lets the Review step mark the rows that were
+    # a resemblance rather than a match, so a human looks at those first.
+    column_role_tier = fields.Selection([
+        ('certain', 'Certain'),
+        ('likely', 'Likely'),
+        ('default', 'Fallback'),
+    ], string='Role Confidence', default='default')
+
+    role_tier_dot = fields.Char(
+        string='!',
+        compute='_compute_role_tier_dot',
+        help="A dot means this column's role was inferred from a resemblance, not "
+             "an exact match — worth a glance before importing."
+    )
+
+    @api.depends('column_role_tier')
+    def _compute_role_tier_dot(self):
+        for line in self:
+            line.role_tier_dot = '\u25cf' if line.column_role_tier == 'likely' else ''
+
     is_text_component = fields.Boolean(
         string='Text Component',
         help="Contract component holding text rather than an amount."
@@ -3779,6 +3882,27 @@ class MultiSheetColumnSelection(models.TransientModel):
         ('bank', 'Bank'),
         ('reference', 'Reference'),
     ], string='Role', default='payroll')
+
+    # COLROLES P4 — how sure that role is. Display-only, transient-only: it never
+    # reaches hr.formula.rule, it only lets the Review step mark the rows that were
+    # a resemblance rather than a match, so a human looks at those first.
+    column_role_tier = fields.Selection([
+        ('certain', 'Certain'),
+        ('likely', 'Likely'),
+        ('default', 'Fallback'),
+    ], string='Role Confidence', default='default')
+
+    role_tier_dot = fields.Char(
+        string='!',
+        compute='_compute_role_tier_dot',
+        help="A dot means this column's role was inferred from a resemblance, not "
+             "an exact match — worth a glance before importing."
+    )
+
+    @api.depends('column_role_tier')
+    def _compute_role_tier_dot(self):
+        for line in self:
+            line.role_tier_dot = '\u25cf' if line.column_role_tier == 'likely' else ''
 
     is_text_component = fields.Boolean(
         string='Text Component',

@@ -178,6 +178,12 @@
                             <field name="formula_count" string="Formulas Detected"/>
                             <field name="duplicate_count" string="Duplicates Found"/>
                         </group>
+                        <!-- COLROLES P4 — what this workbook turned out to be,
+                             counted per role, right above the list where those
+                             roles can still be changed. -->
+                        <div class="mt-2 mb-3" invisible="not role_summary_html">
+                            <field name="role_summary_html" nolabel="1" readonly="1"/>
+                        </div>
                         <div class="alert alert-info" role="alert">
                             <p><strong>Review Detected Components</strong></p>
                             <ul class="mb-0">
@@ -198,6 +204,12 @@
                                 <field name="component_type" string="Category"/>
                                 <field name="column_type" string="Type"/>
                                 <field name="column_role" string="Role"/>
+                                <!-- the "likely" dot: this role was a resemblance,
+                                     not a match. Display-only. -->
+                                <field name="role_tier_dot" string="!" readonly="1"
+                                       optional="show"/>
+                                <field name="column_role_tier" string="Confidence"
+                                       readonly="1" optional="hide"/>
                                 <field name="data_source" string="Source"/>
                                 <field name="sample_value" string="Sample"/>
                                 <field name="excel_formula" string="Formula"

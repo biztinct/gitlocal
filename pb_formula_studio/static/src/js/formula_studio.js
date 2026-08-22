@@ -224,6 +224,11 @@ export class PbFormulaStudio extends Component {
             rateErr: "",
             ratePreviewIncome: 40000000,
             ratePreview: null,       // {value, result, compiled}
+            // COLROLES P4 — reclassification review. `rows` carry an `accept` flag
+            // that only ever leaves this object as a list of ids to write.
+            reclassOpen: false,
+            reclassBusy: false,
+            reclassData: null,       // {rows:[{id,code,name,from,to,tier,reason,accept}], counts, error}
             // F10 — mapping canvas (multi-adapter)
             mapOpen: false,
             mapBusy: false,
@@ -573,11 +578,17 @@ export class PbFormulaStudio extends Component {
             // arriving from a config row → open that config's Settings surface
             const cfgId = (a.params && a.params.config_id) || (a.context && a.context.config_id);
             const openWiz = (a.params && a.params.open_wizard) || (a.context && a.context.open_wizard);
+            // COLROLES P4 — arriving from an import that produced people columns:
+            // open the structure AND its people-mapping board, which is the next
+            // thing that has to happen and the thing nobody ever found on their own.
+            const peopleSignal = (a.params && a.params.pbfs_open_people_mapping)
+                || (a.context && a.context.pbfs_open_people_mapping);
             if (cfgId) {
                 if (!this.state.config || this.state.config.id !== cfgId) await this.load(cfgId);
                 if ((a.params && a.params.open_settings) || (a.context && a.context.open_settings)) {
                     await this.openSettings();
                 }
+                if (peopleSignal && this.state.config) this.openMapping("employee");
             } else if (!openWiz && !this.state.empty) {
                 // Fresh entry (left-menu "Formula Engine" / dashboard) with no target
                 // config → land on the Payroll-configurations picker so the user
@@ -1200,6 +1211,7 @@ export class PbFormulaStudio extends Component {
                 T("problems", "Problems", "Lint checks and rename-refactor", "problems", "rose", () => this.openProblems(), this.problemCount || null),
                 T("branches", "Branches", "Fork this config, trial a change, merge back", "branches", "blue", () => this.openBranches(), cfg.branch_count || null),
                 T("variants", "Variants", "One master scheme, many synced variants", "variants", "teal", () => this.openVariants(), cfg.variant_count || null),
+                T("reclassify", "Review classification", "Re-check what each column is for, and accept only the changes you agree with", "reclassify", "teal", () => this.openReclassify()),
                 T("legislation", "Legislation", "Roll a statutory change across every configuration", "legislation", "amber", () => this.openLegislation()),
                 T("releases", "Releases", "Review and sign off formula changes", "releases", "green", () => this.openReleases()),
             ] },
@@ -4568,6 +4580,60 @@ export class PbFormulaStudio extends Component {
         });
     }
 
+    /**
+     * COLROLES P4 — reclassification, as a proposal rather than an act.
+     *
+     * `reclassify_roles` has existed since Phase 1 and has always written every row
+     * it moved the moment it was called. That is fine for a migration and wrong for
+     * a button: a person looking at "Bonus → Reference" wants to disagree with THAT
+     * row without abandoning the other eleven. So the dialog opens on `dry_run`
+     * (nothing written), every row arrives accepted, and Apply sends back only the
+     * ids still ticked.
+     *
+     * Rows a person set by hand never appear here at all — the RPC skips
+     * `column_role_source === 'user'` before it builds the diff.
+     */
+    async openReclassify() {
+        if (!this.state.config) return;
+        this.state.reclassOpen = true;
+        this.state.reclassData = null;
+        this.state.reclassBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "reclassify_roles",
+                [this.state.config.id, true]);
+            this.state.reclassData = {
+                rows: (r.changed || []).map(c => ({ ...c, accept: true })),
+                counts: r.counts || {},
+            };
+        } catch (e) {
+            this.state.reclassData = { rows: [], counts: {}, error: true };
+        } finally {
+            this.state.reclassBusy = false;
+        }
+    }
+    closeReclassify() { this.state.reclassOpen = false; }
+    get reclassRows() { return (this.state.reclassData && this.state.reclassData.rows) || []; }
+    get reclassAcceptedIds() { return this.reclassRows.filter(r => r.accept).map(r => r.id); }
+    toggleReclassRow(row) { row.accept = !row.accept; }
+    setReclassAll(accept) { for (const r of this.reclassRows) r.accept = accept; }
+    async applyReclassify() {
+        const ids = this.reclassAcceptedIds;
+        if (!ids.length) { this.notif.add(_t("Nothing accepted — nothing changed."), { type: "warning" }); return; }
+        this.state.reclassBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "reclassify_roles",
+                [this.state.config.id, false, ids]);
+            const n = (r && r.applied ? r.applied.length : 0);
+            this.notif.add(_t("%s column(s) refiled", n), { type: "success" });
+            this.state.reclassOpen = false;
+            await this.load(this.state.config.id);
+        } catch (e) {
+            this.notif.add(_t("Could not apply the reclassification."), { type: "danger" });
+        } finally {
+            this.state.reclassBusy = false;
+        }
+    }
+
     openMapping(mode) {
         this.state.mapMode = mode || this.state.mapMode || "cycle";
         this.state.mapOpen = true;
@@ -5833,7 +5899,7 @@ export class PbFormulaStudio extends Component {
             this.state.wizardOpen = false;
             this.action.doAction(
                 { type: "ir.actions.act_window", name: "Import from Excel", res_model: "hr.formula.multisheet.import.wizard",
-                  view_mode: "form", views: [[false, "form"]], target: "new", context: { default_config_id: r.config_id } },
+                  view_mode: "form", views: [[false, "form"]], target: "new", context: { default_config_id: r.config_id, pbfs_studio_import: true } },
                 { onClose: () => this.load(r.config_id) });
         } finally { this.state.wizardBusy = false; }
     }
@@ -5844,7 +5910,7 @@ export class PbFormulaStudio extends Component {
         if (!cid) return;
         this.action.doAction(
             { type: "ir.actions.act_window", name: "Import from Excel", res_model: "hr.formula.multisheet.import.wizard",
-              view_mode: "form", views: [[false, "form"]], target: "new", context: { default_config_id: cid } },
+              view_mode: "form", views: [[false, "form"]], target: "new", context: { default_config_id: cid, pbfs_studio_import: true } },
             { onClose: () => this.load(cid) });
     }
     async applyStarter(key) {
