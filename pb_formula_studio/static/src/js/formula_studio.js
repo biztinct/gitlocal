@@ -232,6 +232,9 @@ export class PbFormulaStudio extends Component {
             psImportApplyTheme: true,
             psImportApplyContent: true,
             psImportApplyLayout: true,
+            psDeleteOpen: false,     // guarded removal of imported / section template
+            psDeleteKind: null,      // imported | section
+            psDeleteBusy: false,
             psRichOpen: false,       // header / section / footer rich-content editor
             psRichTarget: null,
             psRichTitle: "",
@@ -4509,6 +4512,9 @@ export class PbFormulaStudio extends Component {
         this.state.psEditSec = null;
         this.state.psImportOpen = false;
         this.state.psRichOpen = false;
+        this.state.psDeleteOpen = false;
+        this.state.psDeleteKind = null;
+        this.state.psDeleteBusy = false;
         this._loadPayslip();
     }
     closePayslip() { this.state.psOpen = false; }
@@ -4612,14 +4618,41 @@ export class PbFormulaStudio extends Component {
         await this._saveTheme({ logo: "" });
         this.state.psLogoV++;
     }
-    async psClearImportedLayout() {
+    psAskDeleteTemplate(kind) {
         if (!this.state.psData || !this.state.psData.can_edit) return;
-        const r = await this.orm.call("pb.formula.studio", "save_payslip_content",
-            [this.state.config.id, "layout", ""]);
-        if (r && r.ok) {
-            this.notif.add(_t("Section layout restored. The seeded sections and component placements were kept."),
-                { type: "success" });
-            await this._loadPayslip(this.state.psData.sample_id);
+        const activeKind = this.state.psData.layout_html ? "imported"
+            : (this.state.psData.section_template_active ? "section" : null);
+        if (kind !== activeKind) return;
+        this.state.psDeleteKind = kind;
+        this.state.psDeleteOpen = true;
+        this.state.psDeleteBusy = false;
+    }
+    psCancelDeleteTemplate() {
+        if (this.state.psDeleteBusy) return;
+        this.state.psDeleteOpen = false;
+        this.state.psDeleteKind = null;
+    }
+    async psConfirmDeleteTemplate() {
+        if (!this.state.psDeleteOpen || this.state.psDeleteBusy || !this.state.psDeleteKind) return;
+        const kind = this.state.psDeleteKind;
+        this.state.psDeleteBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "delete_payslip_template",
+                [this.state.config.id, kind]);
+            if (r && r.ok) {
+                this.state.psDeleteOpen = false;
+                this.state.psDeleteKind = null;
+                const message = kind === "imported"
+                    ? _t("Imported template deleted. Your section template is now active.")
+                    : _t("Section template deleted. Components are ready in the Unplaced tray.");
+                this.notif.add(message, { type: "success" });
+                await this._loadPayslip(this.state.psData.sample_id);
+            } else {
+                this.notif.add((r && r.msg) || _t("The template could not be deleted."),
+                    { type: "warning" });
+            }
+        } finally {
+            this.state.psDeleteBusy = false;
         }
     }
 

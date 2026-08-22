@@ -1940,7 +1940,8 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
               <div>
                 <b>Payslip Studio</b>
-                <small>Drag components into sections — the preview is what prints</small>
+                <small t-if="state.psData and state.psData.layout_html">Edit the imported document — the preview is what prints</small>
+                <small t-else="">Drag components into sections — the preview is what prints</small>
               </div>
             </div>
             <div class="ps-head-actions">
@@ -1950,9 +1951,9 @@
               <div class="ps-lang" t-on-click="psToggleLang" t-att-title="'Preview labels: ' + (state.psLang === 'vi' ? 'Vietnamese' : 'English')">
                 <span t-att-class="state.psLang === 'en' ? 'on' : ''">EN</span><span t-att-class="state.psLang === 'vi' ? 'on' : ''">VI</span>
               </div>
-              <button t-if="state.psData and state.psData.can_edit" class="ps-import-btn" t-on-click="openPsImport" title="Upload a payslip and turn it into an editable layout">
+              <button t-if="state.psData and state.psData.can_edit" class="ps-import-btn" t-on-click="openPsImport" t-att-title="state.psData.layout_html ? 'Replace the imported document with another payslip' : 'Upload a payslip and turn it into an editable layout'">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
-                Import payslip
+                <t t-if="state.psData.layout_html">Replace payslip</t><t t-else="">Import payslip</t>
               </button>
               <button t-if="state.psData and state.psData.can_edit" t-attf-class="ps-theme-btn {{ state.psThemeOpen ? 'on' : '' }}" t-on-click="togglePsTheme" title="Payslip theme — accent, font, logo">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996C19.518 15.994 22 13.512 22 10.437 22 5.775 17.51 2 12 2z"/></svg>
@@ -1968,8 +1969,14 @@
               <div t-if="state.psData.layout_html" class="ps-layout-active">
                 <div><b>Imported document layout is active</b><span>The preview and print use the reconstructed page. Edit it to add components, rows, columns, merges, borders, colours, and fonts.</span></div>
                 <button t-on-click="() => this.psOpenRich('layout', 'Imported payslip document', state.psData.layout_html)">Edit document</button>
-                <button class="subtle" t-on-click="psClearImportedLayout">Use section layout</button>
+                <button class="danger" t-on-click="() => this.psAskDeleteTemplate('imported')" title="Delete the imported document template">Delete template</button>
               </div>
+              <div t-elif="state.psData.section_template_active" class="ps-layout-active ps-section-template-active">
+                <div><b>Section template is active</b><span>Components, sections, header, and footer below define the payslip. Delete only when you want to rebuild the section template from scratch.</span></div>
+                <button class="danger" t-on-click="() => this.psAskDeleteTemplate('section')" title="Delete the section template">Delete template</button>
+              </div>
+              <div t-else="" class="ps-template-empty"><b>No section template yet</b><span>Drag components after adding your first section, or import an existing payslip.</span></div>
+              <t t-if="!state.psData.layout_html">
               <!-- tray of unplaced components -->
               <div t-attf-class="ps-tray {{ state.psOverZone === 'tray' ? 'over' : '' }}"
                    t-on-dragover="(ev) => this.psDragOverZone('tray', ev)" t-on-drop="(ev) => this.psDrop(false, ev)">
@@ -2038,6 +2045,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add section
                 </button>
               </div>
+              </t>
             </div>
 
             <!-- RIGHT: live payslip preview -->
@@ -2110,6 +2118,21 @@
           </div>
 
           <div t-elif="state.psBusy" class="ps-loading">Loading…</div>
+
+          <div t-if="state.psDeleteOpen" class="ps-sub-scrim" t-on-click="psCancelDeleteTemplate">
+            <div class="ps-template-delete" t-on-click="(ev) => ev.stopPropagation()">
+              <div class="ps-template-delete-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4h8v2"/></svg></div>
+              <h3 t-if="state.psDeleteKind === 'imported'">Delete imported template?</h3>
+              <h3 t-else="">Delete section template?</h3>
+              <p t-if="state.psDeleteKind === 'imported'">The reconstructed document and its edits will be permanently removed. Your existing section template will become active again.</p>
+              <p t-else="">All sections, formatted section content, header, and footer will be permanently removed. Payroll formulas and components are kept and returned to the Unplaced tray.</p>
+              <div class="ps-template-delete-note"><b>This cannot be undone.</b> You can create or import a new template afterwards.</div>
+              <div class="ps-template-delete-actions">
+                <button class="ps-secondary" t-att-disabled="state.psDeleteBusy" t-on-click="psCancelDeleteTemplate">Cancel</button>
+                <button class="ps-template-delete-confirm" t-att-disabled="state.psDeleteBusy" t-on-click="psConfirmDeleteTemplate"><t t-if="state.psDeleteBusy">Deleting…</t><t t-else="">Delete template</t></button>
+              </div>
+            </div>
+          </div>
 
           <!-- Import assistant: upload → analyse → review → explicit apply. -->
           <div t-if="state.psImportOpen" class="ps-sub-scrim" t-on-click="closePsImport">
