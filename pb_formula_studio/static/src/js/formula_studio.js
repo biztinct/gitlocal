@@ -231,6 +231,11 @@ export class PbFormulaStudio extends Component {
             mapContextId: null,      // adapter context (e.g. connector id for api)
             mapDismissed: [],        // client-side-dismissed suggestion wire ids
             mapData: null,           // {ok, left, right, wires, left_title, right_title, supports_suggest, contexts, ...}
+            // COLROLES P3 — the employee board's two parent-owned filters. Both live
+            // here rather than in the canvas because the canvas is payroll-agnostic
+            // and must not learn what a "payroll component" is.
+            mapEmpPayroll: false,    // include the pay columns in the LEFT column
+            mapEmpLane: null,        // a role lane label, or null for every lane
             // W65 — mapping templates
             tmplMode: null,          // null | "save" | "apply"
             tmplName: "",            // save: template name
@@ -4448,6 +4453,90 @@ export class PbFormulaStudio extends Component {
         this.state.mapEmpMenu = null;
         this.state.mapEmpMenuFilter = "";
         this.state.mapEmpMenuAll = {};
+        this.state.mapEmpPayroll = false;
+        this.state.mapEmpLane = null;
+    }
+
+    // ==== COLROLES P3 — the people board ====================================
+    /**
+     * The header's counter chips: one per role that this structure actually has.
+     *
+     * Sorted into the same lane order the LEFT column uses, so the chips read as a
+     * table of contents for what is underneath them rather than as an unordered set
+     * of badges. A role with no columns gets no chip — an empty "Bank 0" teaches the
+     * reader to stop reading the row.
+     */
+    get mapEmpChips() {
+        const counts = (this.state.mapData && this.state.mapData.counts) || {};
+        const order = ["identity", "bank", "profile", "contract", "reference", "payroll"];
+        return order
+            .filter((role) => counts[role] && counts[role].total)
+            .map((role) => ({
+                role,
+                label: counts[role].label || this.roleLabel(role),
+                icon: this.roleIcon(role),
+                total: counts[role].total,
+                unmapped: counts[role].unmapped || 0,
+            }));
+    }
+    /** The lane filter is by GROUP LABEL, because that is what the canvas groups on. */
+    toggleMapLane(chip) {
+        if (chip.role === "payroll" && !this.state.mapEmpPayroll) {
+            // Asking to see the payroll lane is asking for the columns in it; a chip
+            // that filtered to a lane the server has not sent would empty the board.
+            this.toggleMapPayroll();
+            return;
+        }
+        this.state.mapEmpLane = this.state.mapEmpLane === chip.label ? null : chip.label;
+    }
+    async toggleMapPayroll() {
+        this.state.mapEmpPayroll = !this.state.mapEmpPayroll;
+        if (!this.state.mapEmpPayroll && this.state.mapEmpLane === this.roleLabel("payroll")) {
+            this.state.mapEmpLane = null;
+        }
+        await this._loadMapping();
+    }
+    clearMapLane() { this.state.mapEmpLane = null; }
+    get mapEmpLaneFilter() {
+        return this.state.mapMode === "employee" ? (this.state.mapEmpLane || "") : "";
+    }
+    /**
+     * What a click on a card that cannot be wired says.
+     *
+     * The alternative — a card that simply does not respond — is the failure mode
+     * this codebase punishes hardest (W40): the reader tries twice, concludes the
+     * board is broken, and never learns that the column is already handled.
+     */
+    mapEmpBlocked(item) {
+        const hint = (item && item.meta && item.meta.badgeHint)
+            || _t("This column already has a destination.");
+        this.notif.add(hint, { type: "info" });
+    }
+    async mapEmpAction(item) {
+        const action = item && item.meta && item.meta.action;
+        if (!action) { return; }
+        const method = action.key === "make_text"
+            ? "employee_mapping_make_text_component"
+            : "employee_mapping_detach_component";
+        this.state.mapBusy = true;
+        let r;
+        try {
+            r = await this.orm.call("pb.formula.studio", method, [item.id]);
+        } catch (e) {
+            r = { ok: false, msg: _t("That change could not be saved.") };
+        } finally {
+            this.state.mapBusy = false;
+        }
+        if (r && r.ok === false) {
+            this.notif.add(r.msg || _t("That change could not be saved."), { type: "warning" });
+            return;
+        }
+        if (r && r.msg) { this.notif.add(r.msg, { type: "success" }); }
+        await this._loadMapping();
+        // The role lens and the problems rail both read these flags — reload the
+        // configuration so the grid does not go on showing the old shape (W153: a
+        // screen that outlives its cause is the thing that stops being read).
+        await this.load(this.state.config.id);
     }
     /**
      * "Open in Mapping Studio" — the overlay graduates to the full surface.
@@ -4503,12 +4592,17 @@ export class PbFormulaStudio extends Component {
         this._loadMapping();
     }
     closeMapping() { this.state.mapOpen = false; }
+    /** Extra positional arguments this adapter's data/suggest RPCs take. */
+    get _mapExtraArgs() {
+        return this.state.mapMode === "employee" ? [!!this.state.mapEmpPayroll] : [];
+    }
     async _loadMapping() {
         this.state.mapBusy = true;
         const cfg = this.state.config.id, ctx = this.state.mapContextId, p = this._mapPrefix;
         try {
             const r = p
-                ? await this.orm.call("pb.formula.studio", `${p}_mapping_data`, [cfg, ctx || false])
+                ? await this.orm.call("pb.formula.studio", `${p}_mapping_data`,
+                    [cfg, ctx || false, ...this._mapExtraArgs])
                 : await this.orm.call("pb.formula.studio", "mapping_canvas_data", [cfg]);
             this.state.mapData = r;
             if (r && r.context_id) this.state.mapContextId = r.context_id;
@@ -4559,15 +4653,36 @@ export class PbFormulaStudio extends Component {
         if (r && r.ok === false) { this.notif.add(r.msg || "Could not connect", { type: "warning" }); return; }
         await this._loadMapping();
     }
+    /**
+     * CR3 — Suggest follows the MODE, like every other verb on this board.
+     *
+     * `mapSuggest` called `mapping_suggest` unconditionally: that is the CYCLE
+     * adapter's method, and pressing Auto-suggest on any other tab would have
+     * regenerated the cycle pair's suggestions and then displayed them over the tab
+     * the user was actually looking at. It never bit anybody only because cycle was
+     * the sole adapter with `supports_suggest: true` — the moment a second one says
+     * yes (this phase, employee mode) the bug becomes visible. The button is still
+     * gated on that flag, so a tab whose server method does not exist cannot reach
+     * here at all (W29 — no dead buttons).
+     *
+     * `mapAcceptAll` needed no change: it accepts through `mapAccept`, which has
+     * always been `_mapPrefix`-aware. The CR3 note read both as hardcoded; only the
+     * first one was.
+     */
     async mapSuggest() {
         this.state.mapBusy = true;
+        const p = this._mapPrefix;
         try {
-            const r = await this.orm.call("pb.formula.studio", "mapping_suggest", [this.state.config.id]);
+            const r = p
+                ? await this.orm.call("pb.formula.studio", `${p}_mapping_suggest`,
+                    [this.state.config.id, ...this._mapExtraArgs])
+                : await this.orm.call("pb.formula.studio", "mapping_suggest", [this.state.config.id]);
             if (r && r.ok) this.state.mapData = r;
             const n = this.mapSuggestedCount;
-            this.notif.add(n ? `${n} suggestion${n === 1 ? "" : "s"} found` : "No new suggestions", { type: "success" });
+            this.notif.add(n ? _t("%s suggestion(s) found", n) : _t("No new suggestions"),
+                { type: "success" });
         } catch (e) {
-            this.notif.add("Suggest failed", { type: "danger" });
+            this.notif.add(_t("Suggest failed"), { type: "danger" });
         } finally {
             this.state.mapBusy = false;
         }
@@ -4576,7 +4691,7 @@ export class PbFormulaStudio extends Component {
         const sugs = this.mapWires.filter(w => w.state === "suggested" && w.confidence >= 0.9);
         for (const w of sugs) await this.mapAccept(w);
         await this._loadMapping();
-        this.notif.add(`Accepted ${sugs.length} high-confidence mapping${sugs.length === 1 ? "" : "s"}`, { type: "success" });
+        this.notif.add(_t("Accepted %s high-confidence mapping(s)", sugs.length), { type: "success" });
     }
     // W62 — transform preview/save (API adapter only). Preview never writes; save
     // is manager-gated + field-whitelisted server-side (never transformation_code).

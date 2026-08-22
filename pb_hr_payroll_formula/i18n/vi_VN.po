@@ -7980,3 +7980,109 @@ msgstr "✓ Tất cả công thức là Hợp lệ và đánh giá correctly!"
 #, python-format
 msgid "Invalid number"
 msgstr "Số không hợp lệ"
+
+# =============================================== COLROLES Phase 3 — a payslip
+# import mapping now has two shapes: an employee/contract field, or a part of
+# the employee's bank account.
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_import_mapping__destination_type
+msgid "Destination"
+msgstr "Nơi lưu"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip_import_mapping__destination_type__field
+msgid "Employee or contract field"
+msgstr "Trường nhân viên hoặc hợp đồng"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip_import_mapping__destination_type__bank_account
+msgid "Bank account"
+msgstr "Tài khoản ngân hàng"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip_import_mapping__destination_type
+msgid ""
+"Where the imported column lands. A field destination copies the value onto "
+"one employee or contract field; a bank destination builds the employee's bank "
+"account from several columns at once."
+msgstr ""
+"Nơi cột được nhập vào sẽ đi tới. Kiểu trường sẽ sao chép giá trị vào một "
+"trường của nhân viên hoặc hợp đồng; kiểu ngân hàng sẽ dựng tài khoản ngân "
+"hàng của nhân viên từ nhiều cột cùng lúc."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_import_mapping__bank_role
+msgid "Bank Detail"
+msgstr "Thông tin ngân hàng"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip_import_mapping__bank_role
+msgid "Which part of the employee's bank account this column carries."
+msgstr "Cột này mang phần nào trong tài khoản ngân hàng của nhân viên."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip_import_mapping__bank_role__acc_number
+msgid "Account number"
+msgstr "Số tài khoản"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip_import_mapping__bank_role__bank_name
+msgid "Bank name"
+msgstr "Tên ngân hàng"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip_import_mapping__bank_role__bank_bic
+msgid "SWIFT / BIC code"
+msgstr "Mã SWIFT / BIC"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip_import_mapping__bank_role__acc_holder_name
+msgid "Account holder name"
+msgstr "Tên chủ tài khoản"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/payslip_import_mapping.py:0
+msgid ""
+"Choose which bank detail this column carries — the account number, the bank "
+"name, the SWIFT/BIC code or the account holder's name."
+msgstr ""
+"Hãy chọn thông tin ngân hàng mà cột này mang — số tài khoản, tên ngân hàng, "
+"mã SWIFT/BIC hay tên chủ tài khoản."
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/payslip_import_mapping.py:0
+msgid ""
+"Choose the employee or contract field this column should be copied onto."
+msgstr ""
+"Hãy chọn trường nhân viên hoặc hợp đồng mà cột này sẽ được sao chép vào."
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/payslip_import_mapping.py:0
+msgid "The chosen field does not belong to the chosen record type."
+msgstr "Trường đã chọn không thuộc loại bản ghi đã chọn."
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/payslip_import_mapping.py:0
+msgid "Bank account · %s"
+msgstr "Tài khoản ngân hàng · %s"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/payslip_import_mapping.py:0
+msgid "not chosen"
+msgstr "chưa chọn"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/payslip_import_mapping.py:0
+msgid "Unmapped"
+msgstr "Chưa ánh xạ"
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payslip_import_mapping_search
+msgid "Field destinations"
+msgstr "Nơi lưu là trường"
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payslip_import_mapping_search
+msgid "Bank destinations"
+msgstr "Nơi lưu là ngân hàng"

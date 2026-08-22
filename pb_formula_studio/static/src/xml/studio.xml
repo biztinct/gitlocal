@@ -1947,6 +1947,29 @@
             </t>
           </div>
 
+          <!-- COLROLES P3 — the lane chips. One per role this structure has, in the
+               same order as the swim-lanes below, each carrying how many of its
+               columns still land nowhere. They are a table of contents AND the
+               filter: pressing one shows that lane alone. The payroll chip is the
+               odd one out — it does not filter, it REVEALS, because the pay columns
+               are not sent to this board until somebody asks for them. -->
+          <div t-if="state.mapMode === 'employee' and state.mapData and state.mapData.ok" class="pm-lanes">
+            <button t-foreach="mapEmpChips" t-as="ch" t-key="ch.role" type="button"
+                    t-attf-class="pm-lane {{ ch.role }} {{ state.mapEmpLane === ch.label ? 'on' : '' }} {{ ch.role === 'payroll' and state.mapEmpPayroll ? 'shown' : '' }}"
+                    t-on-click="() => this.toggleMapLane(ch)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="ch.icon"/><t t-call="pb_formula_studio.RoleIco"/></svg>
+              <span class="l" t-esc="ch.label"/>
+              <span class="n" t-esc="ch.total"/>
+              <span t-if="ch.unmapped" class="u" t-attf-title="{{ ch.unmapped }} not sent anywhere yet"><t t-esc="ch.unmapped"/> unmapped</span>
+            </button>
+            <button t-if="state.mapEmpPayroll" type="button" class="pm-lane ghost on" t-on-click="toggleMapPayroll">
+              Hide payroll components
+            </button>
+            <button t-if="state.mapEmpLane" type="button" class="pm-lane ghost" t-on-click="clearMapLane">
+              Show every lane
+            </button>
+          </div>
+
           <div class="pm-body">
             <div t-if="state.mapBusy and !state.mapData" class="pm-loading">Loading…</div>
 
@@ -1969,12 +1992,16 @@
                            wires="mapWires"
                            leftTitle="state.mapData.left_title" rightTitle="state.mapData.right_title"
                            canEdit="state.mapData.can_edit" busy="state.mapBusy"
+                           groupFilter="mapEmpLaneFilter"
                            onAccept="(w) => this.mapAccept(w)"
                            onReject="(w) => this.mapReject(w)"
                            onDelete="(w) => this.mapDelete(w)"
                            onDraw="(l, r) => this.mapDraw(l, r)"
                            onTransformPreview="(ref, d) => this.mapTransformPreview(ref, d)"
                            onTransformSave="(ref, v) => this.mapTransformSave(ref, v)"
+                           onLeftBlocked="state.mapMode === 'employee' ? ((it) => this.mapEmpBlocked(it)) : undefined"
+                           onLeftAction="state.mapMode === 'employee' ? ((it) => this.mapEmpAction(it)) : undefined"
+                           onClearGroupFilter="() => this.clearMapLane()"
                            onRemoveRight="state.mapMode === 'employee' ? ((id) => this.removeRightField(id)) : undefined"/>
 
             <!-- W65 — mapping template panel (save / apply) -->

@@ -216,7 +216,8 @@
                              onDelete="(w) => this.remove(w)"
                              onDraw="(l, r) => this.draw(l, r)"
                              onTransformPreview="(ref, d) => this.transformPreview(ref, d)"
-                             onTransformSave="(ref, v) => this.transformSave(ref, v)"/>
+                             onTransformSave="(ref, v) => this.transformSave(ref, v)"
+                             onLeftBlocked="(it) => this.leftBlocked(it)"/>
             </div>
           </t>
         </div>

@@ -601,6 +601,20 @@ export class MappingStudio extends Component {
     }
 
     /**
+     * COLROLES P3 — a card the adapter sealed answers here too.
+     *
+     * The employee board marks its contract components non-wirable, and this surface
+     * shows the same cards. Without this the click would be a silent no-op on the
+     * full-screen studio while the overlay explained itself — the same board telling
+     * two different stories, which is worse than either.
+     */
+    leftBlocked(item) {
+        const hint = (item && item.meta && item.meta.badgeHint)
+            || _t("This column already has a destination.");
+        this.notif.add(hint, { type: "info" });
+    }
+
+    /**
      * Which boards can be suggested at all.
      *
      * `api` and `import` compute name matches live on every read; `cycle` has
@@ -626,7 +640,14 @@ export class MappingStudio extends Component {
         this.state.busy = true;
         try {
             if (this.state.data && this.state.data.supports_suggest) {
-                const r = await this.orm.call(MODEL, "mapping_suggest", [this.state.configId]);
+                // CR3, second copy. `mapping_suggest` is the CYCLE adapter's method,
+                // and this branch used to call it for whichever mode happened to
+                // report `supports_suggest`. Cycle was the only one that did, so the
+                // bug was dormant — until the employee board started saying yes too.
+                const p = this.prefix;
+                const r = p
+                    ? await this.orm.call(MODEL, `${p}_mapping_suggest`, [this.state.configId])
+                    : await this.orm.call(MODEL, "mapping_suggest", [this.state.configId]);
                 if (r && r.ok) { this.state.data = r; }
             } else {
                 await this.load();

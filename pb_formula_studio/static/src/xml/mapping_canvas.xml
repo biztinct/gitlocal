@@ -84,7 +84,7 @@
                      `group`, so every existing adapter renders unchanged -->
                 <div t-if="leftGroupHead(lview, it_index)" class="mc-group" t-esc="leftGroupHead(lview, it_index)"/>
                 <div data-side="left" t-att-data-id="it.id"
-                     t-attf-class="mc-item {{ isArmed(it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('left', it.id) }} {{ isFlashing('left', it.id) ? 'flash' : '' }}"
+                     t-attf-class="mc-item {{ isArmed(it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('left', it.id) }} {{ isFlashing('left', it.id) ? 'flash' : '' }} {{ isWirable(it) ? '' : 'sealed' }}"
                      t-on-click="() => this.clickLeft(it.id)"
                      t-on-mouseenter="() => this.enterItem('left', it.id)"
                      t-on-mouseleave="() => this.leaveItem()">
@@ -97,6 +97,10 @@
                            means "read me". -->
                       <span t-if="provChip(it)" t-attf-class="mc-prov {{ provChip(it).tone }}"
                             t-att-title="provChip(it).hint" t-esc="provChip(it).label"/>
+                      <!-- COLROLES P3 — "this card already has a destination".
+                           Same slot, same grammar as the provenance chip. -->
+                      <span t-if="badge(it)" t-attf-class="mc-badge {{ badge(it).tone }}"
+                            t-att-title="badge(it).hint" t-esc="badge(it).label"/>
                     </div>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                     <!-- what the data looks like. A live sample is a value that
@@ -106,6 +110,12 @@
                       <span t-if="it.prov === 'catalog'" class="mc-item-sample__k">e.g.</span><t t-esc="it.sample"/>
                     </div>
                   </div>
+                  <!-- COLROLES P3 — the card's one verb, shown on hover/focus so a
+                       two-hundred-row column is not a wall of buttons. -->
+                  <button t-if="itemAction(it) and props.canEdit" class="mc-item-act" type="button"
+                          t-att-title="itemAction(it).label"
+                          t-on-click="(ev) => this.runItemAction(it, ev)"
+                          t-esc="itemAction(it).label"/>
                   <span class="mc-plug right"/>
                 </div>
               </t>
@@ -147,6 +157,9 @@
             <div class="mc-col-body" t-ref="rbody" t-on-scroll="onColScroll">
               <t t-set="rview" t-value="rightView"/>
               <t t-foreach="rview" t-as="it" t-key="it.id">
+                <!-- opt-in group header, the mirror of the left column's. Only
+                     boards whose right items carry a `group` grow one. -->
+                <div t-if="rightGroupHead(rview, it_index)" class="mc-group" t-esc="rightGroupHead(rview, it_index)"/>
                 <div data-side="right" t-att-data-id="it.id"
                      t-attf-class="mc-item {{ ui.armedLeft != null and props.canEdit ? 'drophint' : '' }} {{ rightHasAccepted(it.id) ? 'accepted' : (isRightWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='right' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('right', it.id) }} {{ isFlashing('right', it.id) ? 'flash' : '' }}"
                      t-on-click="() => this.clickRight(it.id)"

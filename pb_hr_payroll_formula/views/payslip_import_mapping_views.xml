@@ -6,8 +6,19 @@
         <field name="model">hr.payslip.import.mapping</field>
         <field name="arch" type="xml">
             <list string="Employee/Contract Field Mapping" editable="bottom">
-                <field name="target_model_id"/>
-                <field name="target_field_id" string="Field"/>
+                <!-- COLROLES P3 — a mapping now has two shapes. The model/field pair
+                     is no longer required at the database level, so the list has to
+                     say which shape a row is or a bank row reads as a broken one. -->
+                <field name="destination_type"/>
+                <field name="target_model_id"
+                       required="destination_type == 'field'"
+                       readonly="destination_type == 'bank_account'"/>
+                <field name="target_field_id" string="Field"
+                       required="destination_type == 'field'"
+                       readonly="destination_type == 'bank_account'"/>
+                <field name="bank_role" string="Bank Detail"
+                       required="destination_type == 'bank_account'"
+                       readonly="destination_type != 'bank_account'"/>
                 <field name="salary_structure_id" context="{'no_code_display': True}"/>
                 <field name="component_id" string="Component"/>
             </list>
@@ -23,6 +34,10 @@
                 <field name="target_model_id"/>
                 <field name="target_field_id"/>
                 <field name="component_id"/>
+                <filter name="dest_field" string="Field destinations"
+                        domain="[('destination_type', '=', 'field')]"/>
+                <filter name="dest_bank" string="Bank destinations"
+                        domain="[('destination_type', '=', 'bank_account')]"/>
             </search>
         </field>
     </record>
