@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.sql import table_exists
 from markupsafe import Markup, escape
 import json
 import re
@@ -306,7 +307,7 @@ class HrFormulaConfig(models.Model):
 
     use_color_coded_excel_import = fields.Boolean(
         string='Use Color-Coded Excel Import',
-        default=False,
+        default=True,
         help="When enabled, Excel import uses color-coded headers and rows."
     )
 
@@ -860,6 +861,79 @@ class HrFormulaConfig(models.Model):
 
     def action_archive(self):
         self.write({'state': 'archived', 'active': False})
+
+    # ==========================================
+    # DELETE SAFETY
+    # ==========================================
+    # Real payroll history must never be destroyed by removing the config that
+    # produced it. The child FKs are the backstop (payslips / carryover /
+    # proration / retro adjustments / import batches are all ondelete='restrict'),
+    # but a raw restrict raises an opaque Postgres error, so we look first and
+    # report in plain language. Everything NOT listed here is config-scoped
+    # metadata on ondelete='cascade' and is meant to go with the config.
+    # (model, field, singular, plural) - the plural is spelled out rather than
+    # derived, because "import batch" pluralises to "batches", not "batchs".
+    _DELETE_BLOCKER_MODELS = [
+        ('hr.payslip', 'formula_config_id', 'payslip', 'payslips'),
+        ('hr.payroll.import.batch', 'formula_config_id', 'import batch', 'import batches'),
+        ('hr.payroll.cycle.carryover', 'formula_config_id', 'carry-forward record', 'carry-forward records'),
+        ('hr.payroll.proration.line', 'formula_config_id', 'proration record', 'proration records'),
+        ('hr.payroll.retro.adjustment', 'formula_config_id', 'retro adjustment', 'retro adjustments'),
+    ]
+
+    def _delete_blockers(self):
+        """Records that make a hard delete unsafe, newest concern first.
+
+        Returns a list of ``{'model', 'label', 'count'}`` dicts - empty means
+        the config carries no payroll history and can be deleted outright.
+
+        ``table_exists`` is checked per model because the addons tree is SHARED
+        across databases while schemas are created by a per-database upgrade:
+        between an rsync and the `-u` of database N, the model class is in the
+        registry but its table is not in the schema, and an unguarded search
+        would raise UndefinedTable and leave the transaction ABORTED - which
+        would take the whole cockpit board down with it, not just this check.
+        """
+        self.ensure_one()
+        blockers = []
+        for model_name, field_name, singular, plural in self._DELETE_BLOCKER_MODELS:
+            Model = self.env.get(model_name)
+            if Model is None or field_name not in Model._fields:
+                continue
+            if not table_exists(self.env.cr, Model._table):
+                continue
+            count = Model.sudo().with_context(active_test=False).search_count(
+                [(field_name, '=', self.id)])
+            if count:
+                blockers.append({
+                    'model': model_name,
+                    'label': singular if count == 1 else plural,
+                    'count': count,
+                })
+        return blockers
+
+    def _delete_blocker_message(self, blockers):
+        """Human sentence for a blocker list, e.g. '12 payslips and 1 import batch'."""
+        parts = ['%d %s' % (b['count'], b['label']) for b in blockers]
+        if not parts:
+            return ''
+        if len(parts) == 1:
+            return parts[0]
+        return '%s and %s' % (', '.join(parts[:-1]), parts[-1])
+
+    def unlink(self):
+        for config in self:
+            blockers = config._delete_blockers()
+            if blockers:
+                raise UserError(_(
+                    "\"%(name)s\" cannot be deleted because it is used by "
+                    "%(blockers)s.\n\nArchive it instead - the configuration is "
+                    "hidden from everyday use while the payroll history that "
+                    "depends on it stays intact.",
+                    name=config.name or '',
+                    blockers=config._delete_blocker_message(blockers),
+                ))
+        return super().unlink()
 
     # ==========================================
     # FORMULA VALIDATION

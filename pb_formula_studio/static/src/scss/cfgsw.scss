@@ -154,7 +154,11 @@
 
 /* ---- per-card action row ---- */
 .pbfs-cfgsw .cs-card-actions { display: flex; gap: 8px; padding: 0 16px 14px; margin-top: auto; }
-.pbfs-cfgsw .cs-card-actions .pbfs-btn { flex: 1; justify-content: center; }
+.pbfs-cfgsw .cs-card-actions .pbfs-btn { flex: 1; justify-content: center; gap: 5px; }
+.pbfs-cfgsw .cs-card-actions .pbfs-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+/* destructive-but-permitted: only rendered when nothing depends on the config */
+.pbfs-cfgsw .cs-card-actions .pbfs-btn.cs-danger { color: var(--danger, #DC2626); }
+.pbfs-cfgsw .cs-card-actions .pbfs-btn.cs-danger:hover { background: #FEF2F2; border-color: #FECACA; color: #B91C1C; }
 
 /* ---- loading ---- */
 .pbfs-cfgsw .cs-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 70px 20px; color: var(--muted, #6B7280); font-size: 13px; }

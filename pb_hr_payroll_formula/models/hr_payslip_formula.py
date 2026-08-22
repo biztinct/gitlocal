@@ -29,6 +29,7 @@ class HrPayslipFormula(models.Model):
     formula_config_id = fields.Many2one(
         'hr.formula.config',
         string='Formula Configuration',
+        ondelete='restrict',
         help="Formula configuration used for computation"
     )
 

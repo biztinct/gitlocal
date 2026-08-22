@@ -25,7 +25,7 @@ class HrPayrollProrationLine(models.Model):
         'hr.formula.config',
         string='Formula Configuration',
         required=True,
-        ondelete='cascade',
+        ondelete='restrict',
     )
     import_batch_id = fields.Many2one(
         'hr.payroll.import.batch',

@@ -25,7 +25,7 @@ class HrPayrollRetroAdjustment(models.Model):
         'hr.formula.config',
         string='Formula Configuration',
         required=True,
-        ondelete='cascade',
+        ondelete='restrict',
     )
     applied_in_batch_id = fields.Many2one(
         'hr.payroll.import.batch',
