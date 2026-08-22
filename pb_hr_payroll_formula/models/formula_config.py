@@ -311,6 +311,19 @@ class HrFormulaConfig(models.Model):
         help="When enabled, Excel import uses color-coded headers and rows."
     )
 
+    # COLROLES P4 — opt-in: let the roles you assigned drive the payroll export's
+    # leading employee columns instead of the built-in fixed set. Default OFF, and
+    # while it is off the exported workbook is byte-for-byte what it always was.
+    export_identity_columns = fields.Boolean(
+        string='Role-Driven Export Columns',
+        default=False,
+        help="Off (default): the payroll Excel export opens with its standard "
+             "employee columns.\n"
+             "On: it opens with the columns you marked Identity or Employee Profile "
+             "in this structure, in their own order. Nothing else about the export "
+             "changes."
+    )
+
     # ==========================================
     # STATE & VALIDATION
     # ==========================================
@@ -1297,6 +1310,83 @@ class HrFormulaConfig(models.Model):
             'context': {
                 'default_config_id': self.id,
             }
+        }
+
+    # ==========================================
+    # COLUMN ROLES — shared summary (COLROLES P4)
+    # ==========================================
+    # An import that has just filed six of a workbook's columns as people data
+    # should SAY so; the studio, the single-sheet wizard and the multi-sheet
+    # wizard all need the same sentence, so it is written once here.
+    @api.model
+    def role_labels(self):
+        """Lowercase role words for a running sentence ("2 identity · 4 bank")."""
+        return {
+            'payroll': _("payroll"),
+            'identity': _("identity"),
+            'profile': _("employee profile"),
+            'contract': _("contract"),
+            'bank': _("bank"),
+            'reference': _("reference"),
+        }
+
+    @api.model
+    def role_counts_for_rules(self, rules):
+        """Ordered {role: count} over a rule recordset — roles with no column
+        are dropped, and payroll always leads because it is what most of the
+        workbook is."""
+        order = ('payroll', 'identity', 'profile', 'contract', 'bank', 'reference')
+        tally = dict.fromkeys(order, 0)
+        for rule in rules:
+            role = rule.column_role or 'payroll'
+            tally[role] = tally.get(role, 0) + 1
+        return {role: tally[role] for role in order if tally.get(role)}
+
+    @api.model
+    def format_role_summary(self, counts):
+        """"41 payroll · 2 identity · 4 bank columns" — empty when nothing counted."""
+        labels = self.role_labels()
+        parts = ['%s %s' % (n, labels.get(role, role)) for role, n in counts.items() if n]
+        if not parts:
+            return ''
+        return _("%s columns") % ' · '.join(parts)
+
+    def role_column_summary(self):
+        """The sentence for THIS structure, over the columns it holds now."""
+        self.ensure_one()
+        return self.format_role_summary(self.role_counts_for_rules(self.rule_ids))
+
+    #: roles whose columns describe a PERSON rather than their pay — the ones a
+    #: mapping board exists for.
+    PEOPLE_ROLES = ('identity', 'profile', 'contract', 'bank')
+
+    def studio_people_mapping_action(self, rules):
+        """Reopen Formula Studio on the people-mapping board after an import.
+
+        Deliberately narrow. It fires only when the import was launched FROM the
+        studio (context flag `pbfs_studio_import`) AND the import actually produced
+        people columns — a pure-payroll workbook is never bounced to a board it has
+        nothing to put on. Returns None when the studio is not installed, so the
+        formula engine keeps working without it.
+        """
+        self.ensure_one()
+        if not self.env.context.get('pbfs_studio_import'):
+            return None
+        if not rules.filtered(
+                lambda r: (r.column_role or 'payroll') in self.PEOPLE_ROLES):
+            return None
+        action = self.env.ref('pb_formula_studio.action_pb_formula_studio',
+                              raise_if_not_found=False)
+        if not action:
+            return None
+        signal = {'config_id': self.id, 'pbfs_open_people_mapping': True}
+        return {
+            'type': 'ir.actions.client',
+            'tag': action.tag,
+            'name': action.name,
+            'target': 'current',
+            'params': dict(signal),
+            'context': dict(signal),
         }
 
     # ==========================================

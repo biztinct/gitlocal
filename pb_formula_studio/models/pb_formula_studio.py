@@ -693,6 +693,18 @@ class PbFormulaStudio(models.AbstractModel):
             'reference': _("a reference"),
         }.get(role or 'payroll', _("pay"))
 
+    # COLROLES P4 — the same roles as a single WORD, for a "Payroll → Bank" arrow
+    # in the reclassification diff, where a phrase would not fit.
+    @api.model
+    def _role_word(self, role):
+        return {
+            'identity': _("Identity"),
+            'profile': _("Employee profile"),
+            'contract': _("Contract"),
+            'bank': _("Bank"),
+            'reference': _("Reference"),
+        }.get(role or 'payroll', _("Payroll"))
+
     @api.model
     def _can_edit(self):
         """Edit/Delete/PayAI affordances are for Formula Managers/Admins (who hold
@@ -706,17 +718,27 @@ class PbFormulaStudio(models.AbstractModel):
             return True
 
     @api.model
-    def reclassify_roles(self, config_id):
+    def reclassify_roles(self, config_id, dry_run=False, apply_ids=None):
         """Re-run the column-role classifier over one salary structure.
-
-        Backend only for now — nothing in the studio calls this yet; the lens that
-        will is the next phase. It exists here so the classification can be replayed
-        after the lexicons change without an upgrade, and so this phase's result on a
-        live structure can be inspected before anything acts on it.
 
         Rows whose role a person set by hand are read but never written (CR-A1), and
         the return value names every row that moved so the change can be reviewed
         rather than merely trusted.
+
+        COLROLES P4 — the review dialog turned that promise into a surface, so the
+        method grew two optional arguments and NO new behaviour by default:
+
+        * `dry_run=True` computes the diff and writes nothing. That is what the
+          dialog opens with: a reclassification you have not agreed to yet is a
+          proposal, not an act.
+        * `apply_ids` restricts the write to the rows you accepted. `None` (the
+          historical call) still writes them all, so the migration and any existing
+          caller are unaffected.
+
+        Accepted rows keep `column_role_source='auto'` on purpose (locked rule): you
+        agreed with a machine's reading, you did not author a different one. Skipped
+        rows are left exactly as they were — including their source — so skipping
+        never silently freezes a column against a future re-run.
         """
         if not self._can_edit():
             raise AccessError(_("You do not have permission to reclassify columns."))
@@ -757,16 +779,24 @@ class PbFormulaStudio(models.AbstractModel):
                 'code': rule.code,
                 'name': rule.name,
                 'from': rule.column_role,
+                'from_label': self._role_word(rule.column_role),
                 'to': role,
+                'to_label': self._role_word(role),
                 'tier': tier,
                 'reason': reason,
             })
 
-        for entry in changed:
-            self.env['hr.formula.rule'].browse(entry['id']).write({
-                'column_role': entry['to'],
-                'column_role_source': 'auto',
-            })
+        applied = []
+        if not dry_run:
+            wanted = None if apply_ids is None else {int(i) for i in apply_ids}
+            for entry in changed:
+                if wanted is not None and entry['id'] not in wanted:
+                    continue
+                self.env['hr.formula.rule'].browse(entry['id']).write({
+                    'column_role': entry['to'],
+                    'column_role_source': 'auto',
+                })
+                applied.append(entry['id'])
 
         return {
             'ok': True,
@@ -774,6 +804,8 @@ class PbFormulaStudio(models.AbstractModel):
             'config_name': config.name,
             'changed': changed,
             'counts': counts,
+            'dry_run': bool(dry_run),
+            'applied': applied,
         }
 
     @api.model
@@ -7021,7 +7053,8 @@ class PbFormulaStudio(models.AbstractModel):
     # vestigial / only used by the legacy excel_grid_widget, never the cockpit.
     _CFG_FIELDS = (
         'name', 'code', 'country_code', 'structure_id', 'cycle_type', 'connector_id',
-        'use_color_coded_excel_import', 'payroll_journal_id', 'debit_account_id',
+        'use_color_coded_excel_import', 'export_identity_columns',
+        'payroll_journal_id', 'debit_account_id',
         'credit_account_id', 'company_id',
         'use_proration', 'proration_basis', 'proration_component_ids', 'proration_rounding',
         'use_auto_retro', 'retro_component_id',
@@ -7228,7 +7261,12 @@ class PbFormulaStudio(models.AbstractModel):
         c = self.env['hr.formula.config'].browse(int(config_id))
         if not c.exists():
             return {'ok': False}
-        return {'ok': True, 'action': c.action_import_from_excel_multisheet()}
+        action = c.action_import_from_excel_multisheet()
+        # COLROLES P4 — mark the import as having come FROM the studio, so its
+        # completion can hand the user back to the people-mapping board instead of
+        # dropping them on a form they did not ask for.
+        action.setdefault('context', {})['pbfs_studio_import'] = True
+        return {'ok': True, 'action': action}
 
     # ------------------------------------------------------------------
     # Test & Validate workbench

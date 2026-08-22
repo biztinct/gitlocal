@@ -1378,37 +1378,6 @@ class HrPayslipRun(models.Model):
                     return candidate
                 idx += 1
 
-        base_columns = [
-            {
-                'header': 'MSNV',
-                'keys': [('code', 'MSNV'), ('name', 'MSNV')],
-                'lookup': ['MSNV'],
-            },
-            {
-                'header': 'Full name',
-                'keys': [('code', 'FULLNAME'), ('name', 'FULL NAME'), ('name', 'FULLNAME')],
-                'lookup': ['FULLNAME', 'FULL NAME'],
-            },
-            {
-                'header': 'Unit',
-                'keys': [('code', 'UNIT'), ('name', 'UNIT')],
-                'lookup': ['UNIT'],
-            },
-            {
-                'header': 'Type of labor contract',
-                'keys': [('code', 'TYPEOFLABORCONTRACT'), ('name', 'TYPE OF LABOR CONTRACT')],
-                'lookup': ['TYPEOFLABORCONTRACT', 'TYPE OF LABOR CONTRACT'],
-            },
-            {
-                'header': 'Subjects are counted as working overtime',
-                'keys': [
-                    ('code', 'SUBJECTSARECOUNTEDASWORKINGOVERTIME'),
-                    ('name', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'),
-                ],
-                'lookup': ['SUBJECTSARECOUNTEDASWORKINGOVERTIME', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'],
-            },
-        ]
-
         slips_by_config = {}
         for slip in self.slip_ids:
             config = slip.formula_config_id if hasattr(slip, 'formula_config_id') else False
@@ -1424,6 +1393,9 @@ class HrPayslipRun(models.Model):
         for entry in slips_by_config.values():
             config = entry['config']
             slips = entry['slips']
+            # The leading employee columns. Fixed by default; a salary structure
+            # can supply its own set through the hook below.
+            base_columns = self._export_base_columns(config)
             sheet_name = config.display_name if config else 'Payslips'
             worksheet = workbook.add_worksheet(_make_sheet_name(sheet_name, used_sheet_names))
             worksheet.set_column(0, 0, 18)
@@ -1599,6 +1571,21 @@ class HrPayslipRun(models.Model):
                             if hasattr(contract, 'subjects_are_counted_as_working_overtime'):
                                 value = contract.subjects_are_counted_as_working_overtime or ''
 
+                    # Only columns supplied by an override ask for this: people
+                    # columns imported as text land in the visible-string payload,
+                    # never in the input values. The fixed set never sets the flag,
+                    # so the default workbook is untouched.
+                    if base.get('use_string_payload') and value in (None, ''):
+                        for key in base['keys']:
+                            if key in string_values_by_key:
+                                value = string_values_by_key[key]
+                                break
+                        if value in (None, ''):
+                            for key in base['keys']:
+                                if key in values_by_key:
+                                    value = values_by_key[key]
+                                    break
+
                     row_values.append(value)
 
                 for key, _header in component_columns:
@@ -1711,6 +1698,52 @@ class HrPayslipRun(models.Model):
             'url': '/web/content/%s?download=true' % attachment.id,
             'target': 'self',
         }
+
+    def _export_base_columns(self, config):
+        """The leading employee columns of the payroll workbook, for one structure.
+
+        Each entry is ``{'header', 'keys', 'lookup'}`` — `keys` are the
+        ``(code|name, UPPERCASE)`` pairs that tie the column to a formula rule and
+        keep it out of the component columns, `lookup` are the input-value keys the
+        value is read from. An entry may additionally set ``use_string_payload`` to
+        fall back to the payslip's visible-string payload / line totals when neither
+        a field mapping nor an input value produced anything.
+
+        This is a HOOK on purpose: the list below is the historical fixed set and
+        stays the default, so an override that returns it unchanged (or declines to
+        override) produces exactly the workbook this method has always produced.
+        `pb_hr_payroll_formula` overrides it to honour the structure's column roles.
+        """
+        return [
+            {
+                'header': 'MSNV',
+                'keys': [('code', 'MSNV'), ('name', 'MSNV')],
+                'lookup': ['MSNV'],
+            },
+            {
+                'header': 'Full name',
+                'keys': [('code', 'FULLNAME'), ('name', 'FULL NAME'), ('name', 'FULLNAME')],
+                'lookup': ['FULLNAME', 'FULL NAME'],
+            },
+            {
+                'header': 'Unit',
+                'keys': [('code', 'UNIT'), ('name', 'UNIT')],
+                'lookup': ['UNIT'],
+            },
+            {
+                'header': 'Type of labor contract',
+                'keys': [('code', 'TYPEOFLABORCONTRACT'), ('name', 'TYPE OF LABOR CONTRACT')],
+                'lookup': ['TYPEOFLABORCONTRACT', 'TYPE OF LABOR CONTRACT'],
+            },
+            {
+                'header': 'Subjects are counted as working overtime',
+                'keys': [
+                    ('code', 'SUBJECTSARECOUNTEDASWORKINGOVERTIME'),
+                    ('name', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'),
+                ],
+                'lookup': ['SUBJECTSARECOUNTEDASWORKINGOVERTIME', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'],
+            },
+        ]
 
     def export_payslip_lines_xlsx(self):
         self.ensure_one()

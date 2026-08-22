@@ -514,3 +514,74 @@ msgstr "chưa được gửi đi đâu"
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.mapping_canvas
 msgid "Nothing to show on this side."
 msgstr "Không có gì để hiển thị ở cột này."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Nothing accepted — nothing changed."
+msgstr "Chưa chấp nhận mục nào — không có gì thay đổi."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#, python-format
+msgid "%s column(s) refiled"
+msgstr "Đã xếp lại %s cột"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Could not apply the reclassification."
+msgstr "Không thể áp dụng việc phân loại lại."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Review column classification"
+msgstr "Xem lại cách phân loại cột"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Re-reading every column…"
+msgstr "Đang đọc lại từng cột…"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "That structure could not be re-read. Nothing was changed."
+msgstr "Không thể đọc lại cấu trúc này. Không có gì bị thay đổi."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Every column is already filed the way this reads it."
+msgstr "Mọi cột đã được xếp đúng như cách hệ thống hiểu."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid ""
+"Columns you set by hand are never listed here — they stay exactly as you "
+"left them."
+msgstr ""
+"Các cột bạn tự đặt sẽ không bao giờ xuất hiện ở đây — chúng giữ nguyên như "
+"bạn để lại."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Accept all"
+msgstr "Chấp nhận tất cả"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Skip all"
+msgstr "Bỏ qua tất cả"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid ""
+"Accepting keeps these columns machine-classified, so a later re-read can "
+"improve them. Change a role by hand in the component editor to lock it "
+"against that."
+msgstr ""
+"Việc chấp nhận giữ các cột này ở trạng thái do hệ thống phân loại, nên lần "
+"đọc lại sau có thể cải thiện chúng. Hãy đổi vai trò thủ công trong trình "
+"soạn thành phần nếu muốn khoá lại."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Open the payroll export with this structure's own identity columns"
+msgstr "Mở đầu tệp xuất bảng lương bằng các cột định danh của cấu trúc này"

@@ -8086,3 +8086,108 @@ msgstr "Nơi lưu là trường"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payslip_import_mapping_search
 msgid "Bank destinations"
 msgstr "Nơi lưu là ngân hàng"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__export_identity_columns
+msgid "Role-Driven Export Columns"
+msgstr "Cột xuất theo vai trò"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__export_identity_columns
+msgid ""
+"Off (default): the payroll Excel export opens with its standard employee "
+"columns.\n"
+"On: it opens with the columns you marked Identity or Employee Profile in "
+"this structure, in their own order. Nothing else about the export changes."
+msgstr ""
+"Tắt (mặc định): tệp Excel bảng lương mở đầu bằng các cột nhân viên tiêu "
+"chuẩn.\n"
+"Bật: tệp mở đầu bằng các cột bạn đã đánh dấu Định danh hoặc Hồ sơ nhân viên "
+"trong cấu trúc này, theo đúng thứ tự của chúng. Mọi phần khác của tệp xuất "
+"không thay đổi."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__column_role_tier
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__column_role_tier
+msgid "Role Confidence"
+msgstr "Độ tin cậy của vai trò"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_component_preview__column_role_tier__certain
+msgid "Certain"
+msgstr "Chắc chắn"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_component_preview__column_role_tier__likely
+msgid "Likely"
+msgstr "Có khả năng"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_component_preview__column_role_tier__default
+msgid "Fallback"
+msgstr "Mặc định dự phòng"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__role_tier_dot
+msgid ""
+"A dot means this column's role was inferred from a resemblance, not an exact "
+"match — worth a glance before importing."
+msgstr ""
+"Dấu chấm nghĩa là vai trò của cột này được suy đoán từ sự tương đồng, không "
+"phải khớp chính xác — nên xem lại trước khi nhập."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__role_summary_html
+msgid "Column Roles"
+msgstr "Vai trò của cột"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__role_likely_count
+msgid "Inferred Roles"
+msgstr "Vai trò được suy đoán"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+msgid "payroll"
+msgstr "tính lương"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+msgid "identity"
+msgstr "định danh"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+msgid "employee profile"
+msgstr "hồ sơ nhân viên"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+msgid "contract"
+msgstr "hợp đồng"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+msgid "bank"
+msgstr "ngân hàng"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+msgid "reference"
+msgstr "tham chiếu"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "%s columns"
+msgstr "%s cột"
+
+#. module: pb_hr_payroll_formula
+#: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:0
+#, python-format
+msgid ""
+"%s column(s) carry a dot: their role was inferred from a resemblance — worth "
+"a glance before importing."
+msgstr ""
+"%s cột có dấu chấm: vai trò của chúng được suy đoán từ sự tương đồng — nên "
+"xem lại trước khi nhập."
