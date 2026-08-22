@@ -2176,19 +2176,27 @@
           <!-- Component-aware rich content shared by browser preview and PDF report. -->
           <div t-if="state.psRichOpen" class="ps-sub-scrim" t-on-click="closePsRich">
             <div class="ps-rich" t-on-click="(ev) => ev.stopPropagation()">
-              <div class="ps-sub-head"><div><b t-esc="state.psRichTitle"/><small>Insert live payroll components anywhere — including inside table cells. Values update for every employee.</small></div><button class="hs-x" t-on-click="closePsRich"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+              <div class="ps-sub-head"><div><b t-esc="state.psRichTitle"/><small>Insert live employee details and payroll components anywhere — including inside table cells.</small></div><button class="hs-x" t-on-click="closePsRich"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
               <div class="ps-rich-workspace">
                 <aside class="ps-rich-components">
-                  <div class="ps-rich-components-head"><b>Components</b><span>Click or drag to the cursor</span></div>
-                  <div class="ps-rich-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input t-att-value="state.psRichQuery" t-on-input="psRichSearch" placeholder="Search name, code or column…"/></div>
+                  <div class="ps-rich-components-head"><b>Live fields</b><span>Click or drag to the cursor</span></div>
+                  <div class="ps-rich-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input t-att-value="state.psRichQuery" t-on-input="psRichSearch" placeholder="Search employee details or components…"/></div>
                   <div class="ps-rich-component-list">
+                    <div t-if="psRichMetaFields.length" class="ps-rich-palette-title"><b>Employee details</b><span>Employee &amp; payslip data</span></div>
+                    <button t-foreach="psRichMetaFields" t-as="field" t-key="field.key" class="ps-rich-component ps-rich-meta-field" draggable="true" t-on-dragstart="(ev) => this.psRichMetaDragStart(field, ev)" t-on-mousedown="psRichRememberSelection" t-on-click="(ev) => this.psRichInsertMeta(field, ev)" t-att-title="'Insert live ' + field.name">
+                      <span class="ps-rich-component-col" t-esc="field.badge"/>
+                      <span class="ps-rich-component-copy"><b t-esc="field.name"/><small t-esc="field.source"/></span>
+                      <span t-if="psRichMetaIsUsed(field)" class="ps-rich-used">Used</span>
+                      <span t-else="" class="ps-rich-add">＋</span>
+                    </button>
+                    <div t-if="psRichComponents.length" class="ps-rich-palette-title ps-rich-payroll-title"><b>Payroll components</b><span>Calculated values</span></div>
                     <button t-foreach="psRichComponents" t-as="c" t-key="c.id" class="ps-rich-component" draggable="true" t-on-dragstart="(ev) => this.psRichComponentDragStart(c, ev)" t-on-mousedown="psRichRememberSelection" t-on-click="(ev) => this.psRichInsertComponent(c, ev)" t-att-title="'Insert ' + c.name">
                       <span class="ps-rich-component-col" t-esc="c.col"/>
                       <span class="ps-rich-component-copy"><b t-esc="c.name"/><small><t t-esc="c.group"/> · <t t-esc="psVal(c)"/></small></span>
                       <span t-if="psRichIsUsed(c)" class="ps-rich-used">Used</span>
                       <span t-else="" class="ps-rich-add">＋</span>
                     </button>
-                    <div t-if="!psRichComponents.length" class="ps-rich-no-components">No components match your search.</div>
+                    <div t-if="!psRichMetaFields.length and !psRichComponents.length" class="ps-rich-no-components">No live fields match your search.</div>
                   </div>
                 </aside>
                 <div class="ps-rich-compose">

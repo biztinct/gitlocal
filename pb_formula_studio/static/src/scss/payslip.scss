@@ -210,8 +210,14 @@
 .pbfs-ps .ps-rich-search svg { width: 14px; color: #94A3B8; }
 .pbfs-ps .ps-rich-search input { width: 100%; height: 32px; border: 0; outline: 0; background: transparent; color: #334155; font-size: 11.5px; }
 .pbfs-ps .ps-rich-component-list { flex: 1; min-height: 0; overflow: auto; padding: 0 7px 10px; }
+.pbfs-ps .ps-rich-palette-title { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 5px 8px 4px; color: #0369A1; }
+.pbfs-ps .ps-rich-palette-title b { font-size: 10px; text-transform: uppercase; letter-spacing: .045em; }
+.pbfs-ps .ps-rich-palette-title span { color: #94A3B8; font-size: 8.5px; }
+.pbfs-ps .ps-rich-payroll-title { margin-top: 7px; padding-top: 10px; border-top: 1px solid #E2E8F0; color: #5B4AA8; }
 .pbfs-ps .ps-rich-component { width: 100%; display: flex; align-items: center; gap: 8px; margin: 2px 0; padding: 7px 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: #334155; text-align: left; cursor: grab; }
 .pbfs-ps .ps-rich-component:hover { border-color: #DDD6FE; background: #F5F3FF; }
+.pbfs-ps .ps-rich-meta-field:hover { border-color: #BAE6FD; background: #F0F9FF; }
+.pbfs-ps .ps-rich-meta-field .ps-rich-component-col { min-width: 25px; width: auto; padding-right: 4px; padding-left: 4px; background: #E0F2FE; color: #0369A1; }
 .pbfs-ps .ps-rich-component:active { cursor: grabbing; }
 .pbfs-ps .ps-rich-component-col { flex: 0 0 25px; padding: 3px 2px; border-radius: 5px; background: #EDE9FE; color: #5B4AA8; font-size: 9px; font-weight: 800; text-align: center; }
 .pbfs-ps .ps-rich-component-copy { min-width: 0; flex: 1; }
@@ -274,6 +280,8 @@
 .pbfs-ps .ps-meta-token { display: inline-flex; align-items: center; gap: 5px; max-width: calc(100% - 4px); margin: 1px 2px; padding: 2px 6px 2px 4px; border: 1px solid #7DD3FC; border-radius: 5px; background: #F0F9FF; color: #0369A1; font-size: .9em; font-weight: 700; white-space: nowrap; }
 .pbfs-ps .ps-meta-token small { padding: 1px 4px; border-radius: 3px; background: #E0F2FE; color: #075985; font-size: 7.5px; font-weight: 900; text-transform: uppercase; letter-spacing: .035em; }
 .pbfs-ps .ps-meta-token > span { overflow: hidden; text-overflow: ellipsis; }
+.pbfs-ps .ps-meta-token button { flex: 0 0 18px; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: #0284C7; font-size: 15px; line-height: 16px; cursor: pointer; }
+.pbfs-ps .ps-meta-token button:hover { background: #E0F2FE; color: #0369A1; }
 
 .pbfs-ps .pb-ps-component { vertical-align: baseline; }
 .pbfs-ps .pb-ps-component-value, .pbfs-ps .pb-ps-component-amount { font-weight: 800; font-variant-numeric: tabular-nums; }
