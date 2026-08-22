@@ -471,6 +471,7 @@ export class PbFormulaStudio extends Component {
         this.depCanvasRef = useRef("depCanvas");
         this._rawNeedsSeed = false;
         this._psRichNeedsSeed = false;
+        this._psRichNativePointerDown = (ev) => this._psRichRemoveTokenFromEvent(ev);
         this._liveTimer = null;
         this._offerTimer = null;   // W98 — debounced offer recompute
         this._offerToken = 0;      // monotonic supersede token (C8)
@@ -4801,13 +4802,24 @@ export class PbFormulaStudio extends Component {
         const seedEditor = (attempt = 0) => {
             if (!this.state.psRichOpen || this.state.psRichTarget !== richTarget) return;
             const editor = this._psRichEditor();
-            if (editor) editor.innerHTML = draft;
+            if (editor) {
+                editor.innerHTML = draft;
+                // The document body is deliberately outside OWL's child-node
+                // reconciliation. Bind token removal at that same imperative
+                // boundary: Chromium can retarget button events inside a
+                // contenteditable=false island before delegated OWL handlers
+                // see them, while the native pointer event remains reliable.
+                editor.removeEventListener("pointerdown", this._psRichNativePointerDown);
+                editor.addEventListener("pointerdown", this._psRichNativePointerDown);
+            }
             else if (attempt < 5) setTimeout(() => seedEditor(attempt + 1), 16);
         };
         setTimeout(seedEditor, 0);
     }
     closePsRich() {
         if (this.state.psRichBusy) return;
+        const editor = this._psRichEditor();
+        if (editor) editor.removeEventListener("pointerdown", this._psRichNativePointerDown);
         this._psRichSelectCell(null);
         this.state.psRichOpen = false;
     }
