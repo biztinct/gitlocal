@@ -471,7 +471,7 @@ export class PbFormulaStudio extends Component {
         this.depCanvasRef = useRef("depCanvas");
         this._rawNeedsSeed = false;
         this._psRichNeedsSeed = false;
-        this._psRichNativePointerDown = (ev) => this._psRichRemoveTokenFromEvent(ev);
+        this._psRichNativeRemoveClick = (ev) => this._psRichRemoveTokenFromEvent(ev);
         this._liveTimer = null;
         this._offerTimer = null;   // W98 — debounced offer recompute
         this._offerToken = 0;      // monotonic supersede token (C8)
@@ -574,6 +574,7 @@ export class PbFormulaStudio extends Component {
                     this._psRichRange = null;
                     this._psRichCellEl = null;
                 }
+                if (richEditor) this._psRichBindTokenControls(richEditor);
                 this._psRichNeedsSeed = false;
             }
             requestAnimationFrame(() => { this.applyZoom(); this.applyInlineFit(); });
@@ -4805,12 +4806,10 @@ export class PbFormulaStudio extends Component {
             if (editor) {
                 editor.innerHTML = draft;
                 // The document body is deliberately outside OWL's child-node
-                // reconciliation. Bind token removal at that same imperative
-                // boundary: Chromium can retarget button events inside a
-                // contenteditable=false island before delegated OWL handlers
-                // see them, while the native pointer event remains reliable.
-                editor.removeEventListener("pointerdown", this._psRichNativePointerDown);
-                editor.addEventListener("pointerdown", this._psRichNativePointerDown);
+                // reconciliation. Its injected controls therefore bind at the
+                // same imperative boundary instead of relying on framework
+                // delegation through a contenteditable island.
+                this._psRichBindTokenControls(editor);
             }
             else if (attempt < 5) setTimeout(() => seedEditor(attempt + 1), 16);
         };
@@ -4818,8 +4817,6 @@ export class PbFormulaStudio extends Component {
     }
     closePsRich() {
         if (this.state.psRichBusy) return;
-        const editor = this._psRichEditor();
-        if (editor) editor.removeEventListener("pointerdown", this._psRichNativePointerDown);
         this._psRichSelectCell(null);
         this.state.psRichOpen = false;
     }
@@ -4886,6 +4883,13 @@ export class PbFormulaStudio extends Component {
     psRichSearch(ev) { this.state.psRichQuery = ev.target.value || ""; }
     psRichSetMode(ev) { this.state.psRichMode = ev.target.value || "both"; }
     psRichIsUsed(component) { return this.state.psRichUsedIds.includes(component.id); }
+    _psRichBindTokenControls(editor) {
+        if (!editor) return;
+        for (const remove of editor.querySelectorAll("[data-ps-remove-component]")) {
+            remove.removeEventListener("click", this._psRichNativeRemoveClick);
+            remove.addEventListener("click", this._psRichNativeRemoveClick);
+        }
+    }
     _psRichRefreshUsed() {
         const editor = this._psRichEditor();
         if (!editor) return;
@@ -4897,6 +4901,7 @@ export class PbFormulaStudio extends Component {
         this.state.psRichDraft = editor.innerHTML;
         this._psRichNeedsSeed = true;
         this.state.psRichUsedIds = [...new Set(ids)];
+        this._psRichBindTokenControls(editor);
     }
     _psRichCellFromRange(range) {
         const editor = this._psRichEditor();
@@ -5147,10 +5152,8 @@ export class PbFormulaStudio extends Component {
         return true;
     }
     psRichEditorPointerDown(ev) {
-        // Buttons inside a contenteditable table can be consumed by the
-        // browser's selection machinery before click. Remove on pointer-down,
-        // which is also early enough to stop the caret entering the token.
-        this._psRichRemoveTokenFromEvent(ev);
+        const remove = ev.target && ev.target.closest && ev.target.closest("[data-ps-remove-component]");
+        if (remove) ev.preventDefault();
     }
     psRichEditorClick(ev) {
         if (this._psRichRemoveTokenFromEvent(ev)) return;
