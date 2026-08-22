@@ -39,3 +39,6 @@ from . import test_rule_composer
 # table (`test_column_role_classifier.py`) is deliberately NOT imported here: it runs
 # under a bare python3 and needs no database.
 from . import test_column_roles
+# COLROLES P3 — bank destinations, the mapping's two shapes, the input exclusion.
+# The pure sanitizer table (`test_bank_account_util.py`) is likewise NOT imported.
+from . import test_bank_destinations

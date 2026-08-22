@@ -10,6 +10,11 @@ from ..formula_engine.column_manager import ColumnManager
 # exist in three and five copies respectively inside this file, drifting apart by a
 # word or two each time somebody added a spelling. `column_role_classifier` is now
 # the definition; the names below are the same strings in the same order.
+from .bank_account_util import (
+    acc_numbers_match,
+    sanitize_acc_number,
+    sanitize_bank_text,
+)
 from .column_role_classifier import (
     EMPLOYEE_CODE_MARKERS,
     EMPLOYEE_CODE_HEADER_CANDIDATES,
@@ -906,6 +911,16 @@ class HrPayrollImportBatch(models.Model):
                     raw_data = line.get_raw_data()
                     self._update_employee_from_raw_data(employee, raw_data, line=line)
 
+                    # Step 1b: Bank destinations (COLROLES P3). Deliberately its own
+                    # try/except: an unparseable bank cell is a detail of one row, and
+                    # failing the whole line over it would throw away the payslip too.
+                    try:
+                        self._sync_employee_bank_account(employee, raw_data, line=line)
+                    except Exception as bank_error:      # noqa: BLE001 — see above
+                        _logger.exception(
+                            "Bank sync failed for line %s (employee %s): %s",
+                            line.id, employee.id, bank_error)
+
                     # Step 2: Ensure contract exists
                     contract = self._get_latest_contract(employee)
                     if not contract and self.auto_create_contracts:
@@ -1088,6 +1103,7 @@ class HrPayrollImportBatch(models.Model):
     def _get_mapped_value_for_field(self, raw_data, model_name, field_name):
         mapping = self.env['hr.payslip.import.mapping'].sudo().search([
             ('salary_structure_id', '=', self.formula_config_id.id),
+            ('destination_type', '=', 'field'),
             ('target_model_id.model', '=', model_name),
             ('target_field_id.name', '=', field_name),
         ], limit=1)
@@ -1171,10 +1187,35 @@ class HrPayrollImportBatch(models.Model):
         return str(value)
 
     def _get_model_mappings(self, model_name):
+        # COLROLES P3 — `destination_type` is stated rather than implied. A bank row
+        # has no target model, so it could not match this domain anyway; saying so
+        # explicitly is what makes every consumer of this method (there are five)
+        # safe to read without re-deriving that fact. `_coerce_mapped_value`'s
+        # many2one path CREATES the record it cannot find, so a bank row reaching it
+        # would silently mint a res.partner named after an account number.
         return self.env['hr.payslip.import.mapping'].sudo().search([
             ('salary_structure_id', '=', self.formula_config_id.id),
+            ('destination_type', '=', 'field'),
             ('target_model_id.model', '=', model_name),
         ])
+
+    def _get_bank_mappings(self):
+        """The config's bank destinations, keyed by `bank_role`.
+
+        Several columns may claim the same role in a badly-built structure; the first
+        by id wins and the rest are ignored rather than fought over — there is no
+        sensible way to merge two account numbers, and refusing the whole import over
+        it would punish the wrong person.
+        """
+        mappings = self.env['hr.payslip.import.mapping'].sudo().search([
+            ('salary_structure_id', '=', self.formula_config_id.id),
+            ('destination_type', '=', 'bank_account'),
+        ], order='id asc')
+        by_role = {}
+        for mapping in mappings:
+            if mapping.bank_role and mapping.component_id and mapping.bank_role not in by_role:
+                by_role[mapping.bank_role] = mapping
+        return by_role
 
     def _get_mappings_by_field(self, model_name, mappings=None):
         mappings = mappings or self._get_model_mappings(model_name)
@@ -1725,6 +1766,10 @@ class HrPayrollImportBatch(models.Model):
 
     def _get_mapping_updates(self, record, raw_data, mappings=None):
         mappings = mappings or self._get_model_mappings(record._name)
+        # Belt and braces (COLROLES P3, test 6): callers may pass a recordset they
+        # assembled themselves, and a bank row here would look up a field that is not
+        # there. One line, and the guarantee holds no matter who calls.
+        mappings = mappings.filtered(lambda m: m.destination_type == 'field')
         updates = {}
         for mapping in mappings:
             field = mapping.target_field_id
@@ -1766,6 +1811,154 @@ class HrPayrollImportBatch(models.Model):
                 contracts[:1].id if contracts else False,
             )
         return contracts[:1] if contracts else False
+
+    # ==================================================================
+    # COLROLES P3 — bank destinations
+    #
+    # Three or four spreadsheet columns ("Số tài khoản", "Ngân hàng", "Chủ tài
+    # khoản", a SWIFT code) describe ONE thing: where this person's salary is paid.
+    # A field mapping cannot express that — there is no scalar to point at — so a
+    # bank mapping names a `bank_role` and this code assembles the parts.
+    #
+    # Idempotence is structural rather than remembered: the account NUMBER is the
+    # key, so a second import of the same file finds the record it created the first
+    # time and writes the same values into it. Nothing here ever deletes or replaces
+    # an account; the worst case for a re-run is a no-op.
+    # ==================================================================
+    def _sanitize_acc_number(self, raw, line=None):
+        """`bank_account_util.sanitize_acc_number`, plus the line-level warning.
+
+        Damage is reported and then dropped. Guessing at a mangled account number is
+        the one mistake in this file that pays somebody else's salary into the wrong
+        bank, so a damaged value is worth a loud log and no record at all."""
+        acc_number, damaged = sanitize_acc_number(raw)
+        if damaged:
+            _logger.warning(
+                "Bank sync: batch=%s line=%s account number damaged by the "
+                "spreadsheet (%r) — enter it as text in the source file. "
+                "No bank account was created for this row.",
+                self.name, line.id if line else False, raw,
+            )
+        return acc_number
+
+    def _get_employee_bank_partner(self, employee):
+        """The partner a `res.partner.bank` hangs off. On this platform an employee's
+        contact is `work_contact_id`, and an employee without one cannot own a bank
+        account at all — so one is created, exactly as the native inverse on
+        `work_email`/`mobile_phone` does when it is first written."""
+        partner = employee.sudo().work_contact_id
+        if partner:
+            return partner
+        partner = self.env['res.partner'].sudo().create({
+            'name': employee.name or employee.employee_id or _("Employee"),
+            'company_id': (employee.company_id or self.company_id).id,
+            'type': 'private',
+            'email': employee.work_email or False,
+        })
+        employee.sudo().work_contact_id = partner.id
+        return partner
+
+    def _resolve_bank(self, bank_name, bank_bic):
+        """A `res.bank` for the given name/BIC, created if genuinely new.
+
+        Name first (that is what a spreadsheet carries), BIC second, create last.
+        `=ilike` rather than `=` because "vietcombank" and "Vietcombank" are one bank
+        and a payroll database with both in it is a database nobody trusts."""
+        Bank = self.env['res.bank'].sudo()
+        if bank_name:
+            existing = Bank.search([('name', '=ilike', bank_name)], limit=1)
+            if existing:
+                if bank_bic and not existing.bic:
+                    existing.bic = bank_bic
+                return existing
+        if bank_bic:
+            existing = Bank.search([('bic', '=ilike', bank_bic)], limit=1)
+            if existing:
+                return existing
+        if not bank_name and not bank_bic:
+            return self.env['res.bank']
+        vals = {'name': bank_name or bank_bic}
+        if bank_bic:
+            vals['bic'] = bank_bic
+        return Bank.create(vals)
+
+    def _link_employee_bank_account(self, employee, bank_account):
+        """Attach the account to the employee without ever displacing one.
+
+        Odoo 19 keeps employee bank accounts in a many2many (`bank_account_ids`) with
+        a computed primary, where earlier versions had a single `bank_account_id`.
+        Both spellings are handled because this addon tree is also read by older
+        deployments — and in both cases the rule is the same: ADD, never replace. If
+        somebody has already chosen where this person is paid, an import does not get
+        to overrule them."""
+        employee = employee.sudo()
+        if 'bank_account_ids' in employee._fields:
+            if bank_account.id not in employee.bank_account_ids.ids:
+                employee.bank_account_ids = [(4, bank_account.id)]
+            return
+        if 'bank_account_id' in employee._fields and not employee.bank_account_id:
+            employee.bank_account_id = bank_account.id
+
+    def _sync_employee_bank_account(self, employee, raw_data, line=None):
+        """Create or update the employee's bank account from this row's bank columns.
+
+        Returns the `res.partner.bank` touched, or an empty recordset when there was
+        nothing to do. A row with a bank NAME but no account number is not a bank
+        account — creating one would produce a record that cannot be paid into — so
+        it is deliberately a no-op (test 5).
+        """
+        if not employee:
+            return self.env['res.partner.bank']
+        bank_mappings = self._get_bank_mappings()
+        if not bank_mappings:
+            return self.env['res.partner.bank']
+
+        values = {}
+        for role, mapping in bank_mappings.items():
+            raw, has_value = self._get_rule_raw_value(
+                raw_data, mapping.component_id, allow_column_letter=False)
+            if not has_value:
+                continue
+            values[role] = raw
+
+        acc_number = self._sanitize_acc_number(values.get('acc_number'), line=line)
+        if not acc_number:
+            return self.env['res.partner.bank']
+
+        bank_name = sanitize_bank_text(values.get('bank_name'))
+        bank_bic = sanitize_bank_text(values.get('bank_bic'))
+        holder = sanitize_bank_text(values.get('acc_holder_name'))
+
+        partner = self._get_employee_bank_partner(employee)
+        PartnerBank = self.env['res.partner.bank'].sudo()
+        # Compare sanitized-to-sanitized: rows written before this code existed may
+        # still carry the spaces and dashes a human typed (`acc_numbers_match`).
+        existing = PartnerBank.search([('partner_id', '=', partner.id)])
+        account = existing.filtered(
+            lambda a: acc_numbers_match(a.acc_number, acc_number))[:1]
+
+        bank = self._resolve_bank(bank_name, bank_bic)
+
+        if account:
+            updates = {}
+            if bank and account.bank_id != bank:
+                updates['bank_id'] = bank.id
+            if holder and account.acc_holder_name != holder:
+                updates['acc_holder_name'] = holder
+            if updates:
+                account.write(updates)
+        else:
+            vals = {'acc_number': acc_number, 'partner_id': partner.id}
+            if bank:
+                vals['bank_id'] = bank.id
+            if holder:
+                vals['acc_holder_name'] = holder
+            if 'company_id' in PartnerBank._fields:
+                vals['company_id'] = (employee.company_id or self.company_id).id
+            account = PartnerBank.create(vals)
+
+        self._link_employee_bank_account(employee, account)
+        return account
 
     def _update_employee_from_raw_data(self, employee, raw_data, line=None):
         """Update employee fields from raw import data."""
@@ -2402,8 +2595,13 @@ class HrPayrollImportBatch(models.Model):
         if config:
             rule_ids = config.rule_ids.ids
             if rule_ids:
+                # Field destinations only (COLROLES P3). `has_mapping` below suppresses
+                # the column-letter fallback, so a bank-mapped rule counted here would
+                # quietly lose its ability to resolve by column letter — a mapping that
+                # writes nowhere near hr.employee must not change how the column reads.
                 mappings = self.env['hr.payslip.import.mapping'].sudo().search([
                     ('salary_structure_id', '=', config.id),
+                    ('destination_type', '=', 'field'),
                     ('component_id', 'in', rule_ids),
                 ])
                 mapping_by_rule = {m.component_id.id: m for m in mappings if m.component_id}
@@ -2452,9 +2650,56 @@ class HrPayrollImportBatch(models.Model):
                             mapping.target_rule_id, transformed
                         )
 
+        # ------------------------------------------------------------------
+        # COLROLES P3 — people data stops pretending to be an input.
+        #
+        # An imported structure carries the employee's name, bank account and joining
+        # date alongside the pay components, and until now every one of them was
+        # loaded into `input_values` and handed to the formula engine, where it sat
+        # unread. The exclusion below drops a column from the engine's inputs ONLY
+        # when all three of these hold:
+        #
+        #   1. its role is not payroll — a person (or the classifier) has said it is
+        #      identity/profile/contract/bank/reference data;
+        #   2. no other column's formula names it — `formula_dependencies` is a
+        #      comma-joined list (CR2) holding BOTH codes and COLUMN LETTERS, because
+        #      an Excel formula may say `=C3` where a person would say `=DOJ`. Both
+        #      spellings are checked; a coincidental letter match only ever keeps a
+        #      column in, which is the safe direction;
+        #   3. `appears_on_payslip` is False — a payslip LINE is created from
+        #      `computed_values.get(code, 0)`, and only for rules that print.
+        #
+        # Neutrality proof (CR-A7): (2) says nothing computes from it and (3) says
+        # nothing prints it, so its presence in `input_values` cannot change a single
+        # number or line. A legacy all-payroll configuration fails (1) on every rule
+        # and is therefore byte-identical. Text-component sync is untouched — it reads
+        # raw_data through `_get_rule_raw_value`, never `input_values`.
+        # ------------------------------------------------------------------
+        referenced_codes = set()
+        for rule in config.rule_ids:
+            for dep in (rule.formula_dependencies or '').split(','):
+                dep = dep.strip().upper()
+                if dep:
+                    referenced_codes.add(dep)
+
+        def is_excluded_people_column(rule):
+            if (rule.column_role or 'payroll') == 'payroll':
+                return False
+            if rule.appears_on_payslip:
+                return False
+            names = {(rule.code or '').strip().upper(),
+                     (rule.column_letter or '').strip().upper(),
+                     (rule.original_column_letter or '').strip().upper()}
+            names.discard('')
+            return not (names & referenced_codes)
+
         # Then, do direct mapping for input rules based on data_source_field
         raw_input_codes = set()
+        excluded_people_codes = []
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'input'):
+            if is_excluded_people_column(rule):
+                excluded_people_codes.append(rule.code)
+                continue
             if rule.code not in input_values:
                 # Try to find value from raw data
                 value = None
@@ -2572,6 +2817,16 @@ class HrPayrollImportBatch(models.Model):
                         contract_component_amounts.get(self._normalize_header_key(rule.code or ''), None),
                         input_values.get(rule.code),
                     )
+
+        if excluded_people_codes and _logger.isEnabledFor(logging.INFO):
+            # Logged once per line rather than per column: the point is to be able to
+            # answer "why is FULLNAME not in the trace?" without reading this file.
+            _logger.info(
+                "Input exclusion: batch=%s config=%s dropped %d people/reference "
+                "columns (unreferenced and not on the payslip): %s",
+                self.name, config.id, len(excluded_people_codes),
+                ', '.join(c for c in excluded_people_codes if c),
+            )
 
         # Add constant values
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):

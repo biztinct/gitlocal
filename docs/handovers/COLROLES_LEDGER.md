@@ -108,3 +108,68 @@ appends gotchas here (CR-numbered).
   invisible in the grid even under Everything. The grid's footer pill ("N columns hidden" +
   "Show everything") is the ONLY affordance that says so; if Phase 3/4 adds another grid entry
   point, it needs the same tally or columns will appear to have been deleted.
+- CR15 (P3): **Odoo 19 `hr.employee` has NO `bank_account_id` m2o.** It has `bank_account_ids`
+  (m2m to res.partner.bank, `relation='employee_bank_account_rel'`) plus a COMPUTED
+  `primary_bank_account_id` ordered by the `salary_distribution` JSON. The m2o survives only in
+  `junk/hr/` (the Odoo-16 tree) and in `om_hr_payroll/models/hr_zoho.py`. The handover's "set
+  `employee.bank_account_id` only if falsy" is therefore expressed as
+  `_link_employee_bank_account`: it handles BOTH spellings and, on the m2m, only ever ADDS — an
+  import never displaces the account somebody already chose to be paid into. NOTE the m2m's domain
+  is `partner_id == work_contact_id`, so the partner the bank row hangs off MUST be the employee's
+  `work_contact_id` (created if absent, as the native `work_email` inverse does) or the account will
+  not be selectable in the UI afterwards.
+- CR16 (P3 ruling): the handover's sanitizer table reads `1.23456789012e+11 → None(warn)`, but as a
+  Python float literal that is `123456789012.0` — integer-valued, exactly representable and
+  `'%d'`-formattable, so the table as written contradicts its own "float+is_integer → '%d'" rule.
+  Implemented rule: an integer-valued float **below 2**53** is formatted (the ordinary "Excel typed
+  the cell as a number" case — the digits are real); scientific notation is refused when it arrives
+  as a **string** (`'1.23456789012E+11'`), which is what a spreadsheet actually hands over once the
+  cell is displayed that way and the trailing digits are genuinely gone; an integer-valued float at
+  or above 2**53 is refused because `%d` would print digits the float does not carry. Non-integer
+  floats are always refused. Strings are never int-cast (leading zeros survive) and are accepted
+  only if what remains after stripping separators is alphanumeric — IBANs carry letters.
+- CR17 (P3): `_get_model_mappings` filters on `target_model_id.model`, so bank rows (no target
+  model) could never leak through it — but `_transform_data_to_formula_inputs` builds
+  `mapping_by_rule` from a search by **component only**, and `has_mapping` there SUPPRESSES the
+  column-letter fallback. A bank-mapped rule would silently have lost its ability to resolve by
+  column letter. Every `hr.payslip.import.mapping` query needs `destination_type='field'`, not just
+  the model-scoped one — audit by grepping the MODEL NAME, not `_get_model_mappings`.
+- CR18 (P3): `om_hr_payroll`'s `hr.contract.create` seeds **one empty `hr.contract.advantage` line
+  per template on every contract**, so "do advantage lines exist for this code" is true for every
+  template that has ever existed and can gate nothing. The "Detach component" refusal therefore
+  tests for a line carrying a VALUE (`amount != 0 OR text_value set`).
+- CR19 (P3): `hr.formula.config.country_code` is `required=True` with no default → a bare
+  `create({'name': …})` dies on a NOT NULL constraint at INSERT time. It bit both the live
+  validation script and the first CI run. Every fixture that builds a config must pass a country.
+- CR20 (P3): a detached `odoo-bin … --stop-after-init` run binds 8069 while the service is stopped
+  and serves the live hosts from the throwaway process — and it then **hangs in
+  `Initiating shutdown` for as long as a browser tab is holding a websocket to it** (the log says it
+  is going down, `ps` still shows the pid at ~3% CPU, and nginx returns intermittent 502s). `--no-http`
+  did NOT prevent this on Odoo 19 with this conf; the open Chrome-MCP tab reconnecting to
+  `/websocket` is what pins it. Ritual: park the validation tabs on `about:blank` before an
+  upgrade/test run, then `systemctl stop <unit>` and confirm zero `odoo-bin` pids **by PID**
+  (never `pkill -f`) before `service odoo-server start`. The test RESULTS are in
+  `/var/log/odoo/odoo-server.log`, not the `/tmp` sentinel — grep `odoo.tests.result`.
+- CR21 (P3): `MappingCanvas` gained its first PARENT-OWNED display filter (`groupFilter`, over the
+  generic `group` key). Two rules bind any future one: (a) apply it inside `_passes`, NEVER by
+  trimming `props.leftItems` before they arrive — an item missing from the list entirely counts as
+  `gone` and paints as a broken wire, where a filtered one docks on the column edge and is counted;
+  (b) it needs a clear-callback (`onClearGroupFilter`), because the column's own "clear" verb and
+  the dock chips must be able to clear a filter the canvas does not own. Focus/arming relocate in
+  `onWillUpdateProps` — CR9's family.
+- CR22 (P3): `.pm-title` had `flex: 1; min-width: 0`, so the mapping overlay's heading collapsed to
+  one word per line the moment the header grew a fifth button — and that fifth button ("Accept all
+  ≥90%") only appears once suggestions exist, i.e. in the one state nobody had screenshotted. Fixed
+  with a width floor, an ellipsised subtitle and `flex-wrap` on the actions. Lesson: screenshot a
+  header in its FULLEST state, not its resting one.
+- CR23 (P3): CR3 was **two** copies, not one — `mapSuggest` (formula_studio.js) and `suggest()`
+  (mapping_studio.js) both hardcoded `mapping_suggest`. `mapAcceptAll`/`acceptAll` needed no change:
+  they accept through `mapAccept`/`_createArgs`, which were always `_mapPrefix`-aware, so the
+  handover's reading of BOTH as hardcoded was half right. Only the employee adapter has a
+  `<prefix>_mapping_suggest`; api/import/scheme keep `supports_suggest: false`, so their button
+  never renders (W29) and the prefixed name is never called.
+- CR24 (P3): `_mc_item` is shared by the CYCLE board and the employee board, and the cycle board's
+  swim-lanes are payslip SECTIONS. Role lanes are therefore opt-in (`group_by_role=True`) rather
+  than a change to the item shape — and they must be, because `_group_for` matches substrings
+  (CR10) and a `BASIC` component grouping as a Deduction is a trap the role lanes have no reason to
+  inherit.

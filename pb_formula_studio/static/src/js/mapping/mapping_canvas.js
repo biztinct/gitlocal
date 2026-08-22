@@ -54,6 +54,22 @@ export class MappingCanvas extends Component {
         onTransformPreview: { type: Function, optional: true },  // (ref, draft) → Promise
         onTransformSave: { type: Function, optional: true },     // (ref, vals) → Promise
         onRemoveRight: { type: Function, optional: true },       // (rightId) — remove an UNWIRED right item
+        // COLROLES P3 — three additions, all generic and all opt-in, so every board
+        // that does not pass them renders exactly as it did.
+        //
+        // `groupFilter` is a PARENT-OWNED display filter over the left column's
+        // `group` key. It deliberately runs through `_passes` rather than trimming
+        // `props.leftItems` before they arrive: an end hidden by a filter docks on
+        // the column edge and is counted, where an item missing from the list
+        // entirely counts as `gone` and reads as a broken wire (C5's whole lesson).
+        groupFilter: { type: String, optional: true },
+        // (item) — a card the adapter marked `meta.wirable === false` was clicked.
+        onLeftBlocked: { type: Function, optional: true },
+        // (item) — the card's `meta.action` was pressed.
+        onLeftAction: { type: Function, optional: true },
+        // () — the column's "clear" verb must be able to clear a filter it does not
+        // own, or "clear" stops meaning clear (W153).
+        onClearGroupFilter: { type: Function, optional: true },
         // C5 — one-shot orders from the host's story bar. `{token, kind}`; the
         // token is what makes a repeated click repeat the effect. Optional, so
         // the Formula Studio overlay never has to know it exists.
@@ -139,6 +155,14 @@ export class MappingCanvas extends Component {
                 this.resetQuery("right");
                 this.ui.selWire = null;
                 this.ui.reveal = null;
+            }
+            // COLROLES P3, CR9's family — a parent-owned display filter changes what
+            // is about to render, and focus/arming resolved against the OLD list are
+            // then pointing at a card that stops existing this frame. Relocate them
+            // here, before the render, exactly as GridStudio does for the lens.
+            if (next.groupFilter !== this.props.groupFilter) {
+                this.ui.armedLeft = null;
+                if (this.ui.focusSide === "left") { this.ui.focusId = null; }
             }
             this._runCommand(next.command);
         });
@@ -357,6 +381,9 @@ export class MappingCanvas extends Component {
     setFilter(side, v) { this.ui.f[side] = this.ui.f[side] === v ? "all" : v; }
     clearFilters(side) {
         this.clearSearch(side); this.ui.f[side] = "all";
+        if (side === "left" && this.props.groupFilter && this.props.onClearGroupFilter) {
+            this.props.onClearGroupFilter();
+        }
         // A reveal bar is a claim about a filter. Drop the half of the claim
         // this clear just made false, and the whole bar when nothing is left
         // for it to say — a warning that outlives its cause is the thing that
@@ -367,7 +394,10 @@ export class MappingCanvas extends Component {
             this.ui.reveal = sides.length ? { ...r, sides } : null;
         }
     }
-    hasFilter(side) { return this.ui.f[side] !== "all" || !!this.ui.qa[side]; }
+    hasFilter(side) {
+        if (side === "left" && this.props.groupFilter) { return true; }
+        return this.ui.f[side] !== "all" || !!this.ui.qa[side];
+    }
 
     /** Which left ids carry a suggestion — computed once per wires array. */
     _sugSets() {
@@ -388,6 +418,13 @@ export class MappingCanvas extends Component {
 
     _passes(side, it) {
         this._sugSets();
+        // COLROLES P3 — the host's lane filter. Left column only: the right column's
+        // groups are destinations, and hiding one would hide the very card the
+        // filtered left cards need to be wired to.
+        if (side === "left" && this.props.groupFilter
+                && (it.group || "") !== this.props.groupFilter) {
+            return false;
+        }
         const f = this.ui.f[side];
         if (f !== "all") {
             const acc = side === "left" ? this._accL : this._accR;
@@ -715,6 +752,40 @@ export class MappingCanvas extends Component {
         const prev = i > 0 ? (items[i - 1].group || "") : "";
         return g === prev ? "" : g;
     }
+    /**
+     * The same for the RIGHT column — COLROLES P3.
+     *
+     * It exists because the employee board's right column stopped being one list.
+     * The four bank cards are not fields of anything; they are the parts of a record
+     * this board assembles, and printing them among two hundred field names without
+     * a heading is exactly the "Unassigned looks like Employees" failure the left
+     * grouping was built to prevent.
+     */
+    rightGroupHead(items, i) {
+        const g = (items[i] || {}).group || "";
+        if (!g) { return ""; }
+        const prev = i > 0 ? (items[i - 1].group || "") : "";
+        return g === prev ? "" : g;
+    }
+
+    // ---- per-item badges and actions (COLROLES P3) ---------------------
+    /** `{label, tone, hint}` for a card the adapter has annotated, else null. */
+    badge(it) {
+        const m = it && it.meta;
+        if (!m || !m.badge) { return null; }
+        return { label: m.badge, tone: m.badgeTone || "", hint: m.badgeHint || "" };
+    }
+    /** A card is wirable unless the adapter says otherwise (absent ⇒ true). */
+    isWirable(it) {
+        return !(it && it.meta && it.meta.wirable === false);
+    }
+    itemAction(it) {
+        return (this.props.onLeftAction && it && it.meta && it.meta.action) || null;
+    }
+    runItemAction(it, ev) {
+        if (ev) { ev.stopPropagation(); }
+        if (this.props.onLeftAction) { this.props.onLeftAction(it); }
+    }
 
     // ---- wire lookups -------------------------------------------------
     wiresForLeft(id) { return this.props.wires.filter(w => w.leftId === id); }
@@ -726,8 +797,17 @@ export class MappingCanvas extends Component {
 
     // ---- draw interaction (click-arm-left → click-right) --------------
     clickLeft(id) {
-        if (!this.props.canEdit) { this.ui.focusSide = "left"; this.ui.focusId = id; return; }
         this.ui.focusSide = "left"; this.ui.focusId = id;
+        if (!this.props.canEdit) { return; }
+        // COLROLES P3 — a card the adapter marked non-wirable ANSWERS rather than
+        // doing nothing. Arming it would let the next right-click draw a wire the
+        // server is going to refuse, which is a worse lie than the refusal.
+        const it = this.props.leftItems.find((x) => String(x.id) === String(id));
+        if (it && !this.isWirable(it)) {
+            this.ui.armedLeft = null;
+            if (this.props.onLeftBlocked) { this.props.onLeftBlocked(it); }
+            return;
+        }
         this.ui.armedLeft = (this.ui.armedLeft === id) ? null : id;
     }
     clickRight(id) {

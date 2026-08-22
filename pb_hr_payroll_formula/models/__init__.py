@@ -4,6 +4,9 @@
 # is loadable as `odoo.addons.pb_hr_payroll_formula.models.column_role_classifier`
 # from wizards, the import batch, the migration and the studio RPC alike.
 from . import column_role_classifier
+# COLROLES P3 — same shape as the classifier: plain Python, no model, so the batch
+# and the pure test table share one definition of "what is this account number".
+from . import bank_account_util
 from . import formula_config
 from . import formula_config_tests
 from . import formula_rule

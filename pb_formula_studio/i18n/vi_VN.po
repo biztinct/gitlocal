@@ -226,11 +226,11 @@ msgstr "%s (%s) là dữ liệu ngân hàng nhưng không có nơi lưu"
 #. module: pb_formula_studio
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 msgid ""
-"This column holds bank details but is not mapped to a field, so importing it "
-"stores nothing."
+"This column holds bank details but is not sent to the employee's bank account "
+"or to a field, so importing it stores nothing."
 msgstr ""
-"Cột này chứa thông tin ngân hàng nhưng chưa được ánh xạ tới trường nào, nên "
-"nhập dữ liệu sẽ không lưu được gì."
+"Cột này chứa thông tin ngân hàng nhưng chưa được gửi tới tài khoản ngân hàng "
+"của nhân viên hay tới một trường nào, nên nhập dữ liệu sẽ không lưu được gì."
 
 #. module: pb_formula_studio
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
@@ -301,3 +301,211 @@ msgstr "một tham chiếu"
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 msgid "pay"
 msgstr "khoản lương"
+
+# =============================================== COLROLES Phase 3 — the people
+# mapping board: bank destinations, swim-lanes, badges and suggestions.
+
+# ------------------------------------------------------------ the bank lane
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Bank account"
+msgstr "Tài khoản ngân hàng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Account number"
+msgstr "Số tài khoản"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Creates or updates the employee's bank account"
+msgstr "Tạo mới hoặc cập nhật tài khoản ngân hàng của nhân viên"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Bank name"
+msgstr "Tên ngân hàng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Names the bank on that account"
+msgstr "Ghi tên ngân hàng cho tài khoản đó"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "SWIFT / BIC code"
+msgstr "Mã SWIFT / BIC"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Identifies the bank when the name is ambiguous"
+msgstr "Xác định ngân hàng khi tên gọi chưa rõ ràng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Account holder name"
+msgstr "Tên chủ tài khoản"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Who the account is in the name of"
+msgstr "Tài khoản đứng tên ai"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Employee & contract fields"
+msgstr "Trường nhân viên & hợp đồng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Employee, contract & bank"
+msgstr "Nhân viên, hợp đồng & ngân hàng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Send people data where it belongs"
+msgstr "Đưa dữ liệu nhân sự về đúng nơi lưu trữ"
+
+# --------------------------------------------------------- component badges
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Text component"
+msgstr "Thành phần dạng chữ"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This column is stored as text on the contract, so it is kept there rather "
+"than copied onto a field."
+msgstr ""
+"Cột này được lưu dưới dạng chữ trên hợp đồng, nên nó nằm ở đó chứ không sao "
+"chép sang một trường khác."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Contract component"
+msgstr "Thành phần hợp đồng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Synced to the contract automatically."
+msgstr "Được đồng bộ sang hợp đồng tự động."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Make text component"
+msgstr "Chuyển thành thành phần dạng chữ"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Detach component"
+msgstr "Gỡ khỏi hợp đồng"
+
+# ------------------------------------------------------- refusals & results
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This column is kept on the contract, so it does not need a field. Detach it "
+"first if you want to map it somewhere else."
+msgstr ""
+"Cột này được giữ trên hợp đồng nên không cần một trường riêng. Hãy gỡ nó ra "
+"trước nếu bạn muốn ánh xạ sang nơi khác."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "That column no longer exists."
+msgstr "Cột này không còn tồn tại."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"Only an imported column can be kept on the contract — this one is calculated."
+msgstr ""
+"Chỉ cột được nhập vào mới có thể giữ trên hợp đồng — cột này là cột tính toán."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s is now kept on the contract as text."
+msgstr "%s hiện được giữ trên hợp đồng dưới dạng chữ."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s is no longer kept on the contract."
+msgstr "%s không còn được giữ trên hợp đồng."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"%(count)s contracts already carry a value for %(code)s. Clear those first, or "
+"leave this column on the contract."
+msgstr ""
+"Đã có %(count)s hợp đồng mang giá trị cho %(code)s. Hãy xoá các giá trị đó "
+"trước, hoặc cứ để cột này trên hợp đồng."
+
+# --------------------------------------------------------- suggestion reasons
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "The column name says this is the %s."
+msgstr "Tên cột cho thấy đây là %s."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Columns named like this usually go to \"%s\"."
+msgstr "Các cột có tên như thế này thường được đưa tới \"%s\"."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "The column name resembles this field (%d%%)."
+msgstr "Tên cột gần giống trường này (%d%%)."
+
+# ------------------------------------------------------------- the client side
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "This column already has a destination."
+msgstr "Cột này đã có nơi lưu trữ."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "That change could not be saved."
+msgstr "Không lưu được thay đổi này."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "%s suggestion(s) found"
+msgstr "Tìm thấy %s gợi ý"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "No new suggestions"
+msgstr "Không có gợi ý mới"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Suggest failed"
+msgstr "Không tạo được gợi ý"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Accepted %s high-confidence mapping(s)"
+msgstr "Đã chấp nhận %s ánh xạ có độ tin cậy cao"
+
+# ----------------------------------------------------------- the lane chips
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "unmapped"
+msgstr "chưa ánh xạ"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Hide payroll components"
+msgstr "Ẩn các thành phần lương"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Show every lane"
+msgstr "Hiện tất cả các nhóm"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "not sent anywhere yet"
+msgstr "chưa được gửi đi đâu"

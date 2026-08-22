@@ -3411,9 +3411,22 @@ class PbFormulaStudio(models.AbstractModel):
                 if code:
                     cols.add(code)
             refs_by_rule[r.id] = cols
-        # components this structure already routes somewhere on import
-        mapped_rule_ids = set(self.env['hr.payslip.import.mapping'].search(
-            [('salary_structure_id', '=', config.id)]).mapped('component_id').ids)
+        # Components this structure already routes somewhere on import.
+        #
+        # COLROLES P3 — split by DESTINATION. Phase 2 asked "is this column mapped at
+        # all", which was the only question available then; now that a column can be
+        # wired to a bank account, that check would call a bank column "handled"
+        # because somebody mapped it onto `hr.employee.job_title`, and call an
+        # identity column handled because it feeds the bank lane. A destination that
+        # cannot store the thing is not a destination.
+        _mappings = self.env['hr.payslip.import.mapping'].search(
+            [('salary_structure_id', '=', config.id)])
+        field_mapped_rule_ids = set(_mappings.filtered(
+            lambda m: m.destination_type == 'field'
+            and m.target_model_id and m.target_field_id).mapped('component_id').ids)
+        bank_mapped_rule_ids = set(_mappings.filtered(
+            lambda m: m.destination_type == 'bank_account'
+            and m.bank_role).mapped('component_id').ids)
 
         # (a) nothing says who the row belongs to
         if any(r.column_type == 'input' for r in rules) and 'identity' not in roles.values():
@@ -3445,17 +3458,23 @@ class PbFormulaStudio(models.AbstractModel):
                         "formula is.")),
                      rule=r)
 
-            # (c) a bank column that lands nowhere
-            if role == 'bank' and r.id not in mapped_rule_ids:
+            # (c) a bank column that lands nowhere. A bank column mapped onto an
+            # ordinary field (say `hr.employee.bank_name`) still counts as handled —
+            # the value IS stored — so both destinations clear this warning.
+            if role == 'bank' and r.id not in bank_mapped_rule_ids \
+                    and r.id not in field_mapped_rule_ids:
                 _add('bankunmapped', 'warning',
                      _("%s (%s) is bank data with nowhere to go") % (r.name or '', r.column_letter),
-                     _("This column holds bank details but is not mapped to a field, "
-                       "so importing it stores nothing."),
+                     _("This column holds bank details but is not sent to the "
+                       "employee's bank account or to a field, so importing it "
+                       "stores nothing."),
                      rule=r)
 
-            # (d) people data imported into thin air
+            # (d) people data imported into thin air. Only a FIELD destination can
+            # store an employee's name or joining date — the bank lane holds four
+            # slots and none of them is where a date of birth goes.
             if (role in ('identity', 'profile', 'contract')
-                    and not r.is_contract_component and r.id not in mapped_rule_ids):
+                    and not r.is_contract_component and r.id not in field_mapped_rule_ids):
                 # An identity column is not "dropped" — it is what finds the
                 # employee — so it gets its own, truthful sentence.
                 _add('idunmapped', 'hint',
@@ -3899,15 +3918,27 @@ class PbFormulaStudio(models.AbstractModel):
             return empty, empty
         return (config, sibling) if ct == 'mid_cycle' else (sibling, config)
 
-    def _mc_item(self, rule):
-        """One MappingCanvas item — payroll-agnostic {id, label, sublabel, meta}."""
-        return {
+    def _mc_item(self, rule, group_by_role=False):
+        """One MappingCanvas item — payroll-agnostic {id, label, sublabel, meta}.
+
+        COLROLES P3: `group_by_role` swaps the item's swim-lane from the payslip
+        section (Earnings / Deductions / …) to the column's ROLE. It is a parameter
+        rather than a change of behaviour because the CYCLE board is grouped by
+        section on purpose and must stay that way — and because `_group_for` matches
+        substrings (CR10), which is a trap the role lanes have no reason to inherit.
+        """
+        item = {
             'id': rule.id,
             'label': (rule.salary_rule_id.name if rule.salary_rule_id else False) or rule.name or rule.code or '(unnamed)',
             'sublabel': rule.code or '',
             'meta': {'col': rule.column_letter or '', 'type': rule.column_type or '',
                      'group': _group_for(rule)},
         }
+        if group_by_role:
+            role = rule.column_role or 'payroll'
+            item['group'] = self._role_lane_label(role)
+            item['meta']['role'] = role
+        return item
 
     @api.model
     def mapping_canvas_data(self, config_id=None):
@@ -4941,15 +4972,70 @@ class PbFormulaStudio(models.AbstractModel):
     _EC_MODEL_LABEL = {'hr.contract': 'Contract', 'hr.employee': 'Employee'}
     _EC_CURATED = {
         'hr.contract': ['wage', 'wage_type', 'hourly_wage', 'date_start', 'date_end', 'trial_date_end', 'notes'],
-        'hr.employee': ['barcode', 'identification_id', 'passport_id', 'registration_number', 'job_title',
+        # CR7 — `employee_id` is the payroll CODE on hr.employee (a Char, not a
+        # relation). It is the single most-mapped destination on a real structure and
+        # its absence from the curated set is why "Employee Code" had to be searched
+        # for by hand every time.
+        'hr.employee': ['employee_id', 'barcode', 'identification_id', 'passport_id',
+                        'registration_number', 'job_title',
                         'work_email', 'work_phone', 'mobile_phone', 'marital', 'children', 'km_home_work',
                         'account_number', 'bank_name'],
     }
+
+    # ------------------------------------------------------------------
+    # COLROLES P3 — the BANK LANE.
+    #
+    # Four synthetic right-hand cards that are not fields of anything. They stand for
+    # the parts of a `res.partner.bank`, which the import batch assembles from several
+    # columns at once (`_sync_employee_bank_account`). Their ids are prefixed `b:` so
+    # `employee_mapping_create` can tell them apart from a real `f:model:field` spec
+    # by inspection, without a second argument that could go missing.
+    # ------------------------------------------------------------------
+    _BANK_LANE_ROLES = ('acc_number', 'bank_name', 'bank_bic', 'acc_holder_name')
+
+    @api.model
+    def _role_lane_label(self, role):
+        """Swim-lane heading for a column role. Title-case: it heads a group of rows,
+        where `_role_label` reads inside a sentence."""
+        return {
+            'payroll': _("Payroll"),
+            'identity': _("Identity"),
+            'profile': _("Employee profile"),
+            'contract': _("Contract"),
+            'bank': _("Bank"),
+            'reference': _("Reference"),
+        }.get(role or 'payroll', _("Payroll"))
+
+    @api.model
+    def _bank_lane_items(self):
+        labels = {
+            'acc_number': (_("Account number"),
+                           _("Creates or updates the employee's bank account")),
+            'bank_name': (_("Bank name"),
+                          _("Names the bank on that account")),
+            'bank_bic': (_("SWIFT / BIC code"),
+                         _("Identifies the bank when the name is ambiguous")),
+            'acc_holder_name': (_("Account holder name"),
+                                _("Who the account is in the name of")),
+        }
+        group = _("Bank account")
+        items = []
+        for role in self._BANK_LANE_ROLES:
+            label, sub = labels[role]
+            items.append({
+                'id': 'b:%s' % role,
+                'label': label,
+                'sublabel': sub,
+                'group': group,
+                'meta': {'bank_role': role, 'kind': 'bank'},
+            })
+        return items
 
     @api.model
     def _ec_field_item(self, fld):
         return {'id': 'f:%s:%s' % (fld.model, fld.name),
                 'label': fld.field_description or fld.name, 'sublabel': self._EC_MODEL_LABEL.get(fld.model, fld.model),
+                'group': _("Employee & contract fields"),
                 'meta': {'model': fld.model, 'field': fld.name, 'ttype': fld.ttype}}
 
     @api.model
@@ -4969,21 +5055,82 @@ class PbFormulaStudio(models.AbstractModel):
                 items.append(self._ec_field_item(f))
         return items
 
+    # LEFT swim-lane order. Identity first because it is what finds the row at all;
+    # payroll LAST because on this board it is the exception rather than the subject
+    # (and is hidden entirely until somebody asks for it).
+    _EC_ROLE_ORDER = ('identity', 'bank', 'profile', 'contract', 'reference', 'payroll')
+
     @api.model
-    def employee_mapping_data(self, config_id=None, context_id=None):
+    def _ec_left_items(self, config, include_payroll=False):
+        """The config's columns as LEFT cards, in role lanes.
+
+        Payroll components are EXCLUDED by default. That is the whole point of the
+        board: a VPTQ structure has seventy pay columns and six people columns, and
+        the six are what anybody opens this surface to wire. The seventy are one chip
+        away, never deleted (W40 — nothing is silently unavailable).
+
+        Non-wirable cards (contract components) still appear. They are the answer to
+        "why can I not map this?", and a card that is simply missing asks that
+        question forever.
+        """
+        order = {role: n for n, role in enumerate(self._EC_ROLE_ORDER)}
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        items = []
+        for rule in rules:
+            role = rule.column_role or 'payroll'
+            if role == 'payroll' and not include_payroll:
+                continue
+            item = self._mc_item(rule, group_by_role=True)
+            meta = item['meta']
+            if rule.is_text_component:
+                meta['badge'] = _("Text component")
+                meta['badgeTone'] = 'text'
+                meta['badgeHint'] = _(
+                    "This column is stored as text on the contract, so it is kept "
+                    "there rather than copied onto a field.")
+                meta['wirable'] = False
+                meta['action'] = {'key': 'detach', 'label': _("Detach component")}
+            elif rule.is_contract_component:
+                meta['badge'] = _("Contract component")
+                meta['badgeTone'] = 'contract'
+                meta['badgeHint'] = _("Synced to the contract automatically.")
+                meta['wirable'] = False
+                meta['action'] = {'key': 'detach', 'label': _("Detach component")}
+            elif role in ('contract', 'reference'):
+                # The offer this board can make about a column nobody has a field for:
+                # keep it on the contract as text instead of dropping it.
+                meta['action'] = {'key': 'make_text', 'label': _("Make text component")}
+            items.append((order.get(role, 99), rule.sequence or 0, rule.id, item))
+        items.sort(key=lambda t: (t[0], t[1], t[2]))
+        return [t[3] for t in items]
+
+    @api.model
+    def _ec_wire_right_id(self, mapping):
+        """The RIGHT card id a persisted mapping points at, or None if the row is
+        incomplete (a half-built mapping must not draw a wire to nowhere)."""
+        if mapping.destination_type == 'bank_account':
+            return ('b:%s' % mapping.bank_role) if mapping.bank_role else None
+        if mapping.target_model_id and mapping.target_field_id:
+            return 'f:%s:%s' % (mapping.target_model_id.model, mapping.target_field_id.name)
+        return None
+
+    @api.model
+    def employee_mapping_data(self, config_id=None, context_id=None, include_payroll=False):
         config = self._pick_config(config_id)
         if not config:
             return {'ok': False, 'reason': 'no_config'}
         q = context_id.strip().lower() if isinstance(context_id, str) else ''
-        left = [self._mc_item(r) for r in config.rule_ids.sorted(key=lambda r: r.sequence)]
-        right = self._ec_right_items(q)
+        left = self._ec_left_items(config, include_payroll=include_payroll)
+        right = self._bank_lane_items() + self._ec_right_items(q)
         present = {i['id'] for i in right}
         Mapping = self.env['hr.payslip.import.mapping'].sudo()
         wires = []
         for m in Mapping.search([('salary_structure_id', '=', config.id)]):
-            if not (m.component_id and m.target_model_id and m.target_field_id):
+            if not m.component_id:
                 continue
-            rid = 'f:%s:%s' % (m.target_model_id.model, m.target_field_id.name)
+            rid = self._ec_wire_right_id(m)
+            if not rid:
+                continue
             wires.append({'id': 'em%s' % m.id, 'kind': 'mapping', 'ref': m.id,
                           'leftId': m.component_id.id, 'rightId': rid, 'state': 'accepted'})
             # a wired field must appear in RIGHT even when not in the curated/search set
@@ -4995,11 +5142,37 @@ class PbFormulaStudio(models.AbstractModel):
                     present.add(rid)
         return {
             'ok': True, 'left': left, 'right': right, 'wires': wires,
-            'left_title': config.name, 'right_title': 'Employee / contract fields',
-            'subtitle': _("Copy component results onto employee & contract fields"),
-            'supports_suggest': False, 'contexts': [], 'context_id': False,
+            'left_title': config.name, 'right_title': _("Employee, contract & bank"),
+            'subtitle': _("Send people data where it belongs"),
+            'supports_suggest': True, 'contexts': [], 'context_id': False,
+            'include_payroll': bool(include_payroll),
+            'counts': self._ec_role_counts(config, wires),
+            'lanes': [self._role_lane_label(r) for r in self._EC_ROLE_ORDER],
             'can_edit': self._can_edit(),
         }
+
+    @api.model
+    def _ec_role_counts(self, config, wires):
+        """Per-role {total, unmapped} for the header chips.
+
+        Counted over ALL of the config's columns, not over the cards currently on the
+        board: the payroll tally has to be truthful while payroll is hidden, or the
+        chip that reveals it cannot say how much it is about to reveal.
+
+        A CONTRACT COMPONENT is never "unmapped" — it already has a destination, and
+        counting it as outstanding work would make the chips permanently red on a
+        structure that is completely correct.
+        """
+        wired = {w['leftId'] for w in wires}
+        counts = {}
+        for rule in config.rule_ids:
+            role = rule.column_role or 'payroll'
+            bucket = counts.setdefault(role, {'total': 0, 'unmapped': 0,
+                                              'label': self._role_lane_label(role)})
+            bucket['total'] += 1
+            if rule.id not in wired and not rule.is_contract_component:
+                bucket['unmapped'] += 1
+        return counts
 
     @api.model
     def ec_search_fields(self, query, config_id=None):
@@ -5030,23 +5203,115 @@ class PbFormulaStudio(models.AbstractModel):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
         config = self._pick_config(config_id)
-        parts = (target_spec or '').split(':')
-        if not config or len(parts) != 3 or parts[0] != 'f':
+        spec = target_spec or ''
+        if not config:
+            return {'ok': False}
+        comp = self.env['hr.formula.rule'].browse(int(component_id))
+        if not comp.exists():
+            return {'ok': False}
+        # A contract component already has a destination and is drawn non-wirable;
+        # this is the server saying the same thing, because a client is a suggestion
+        # and a constraint has to live where the write happens.
+        if comp.is_contract_component or comp.is_text_component:
+            return {'ok': False, 'msg': _(
+                "This column is kept on the contract, so it does not need a field. "
+                "Detach it first if you want to map it somewhere else.")}
+        Mapping = self.env['hr.payslip.import.mapping'].sudo()
+
+        if spec.startswith('b:'):
+            bank_role = spec[2:]
+            if bank_role not in self._BANK_LANE_ROLES:
+                return {'ok': False}
+            # 1:1 on both sides within this config — drop any existing on either end
+            Mapping.search(['&', ('salary_structure_id', '=', config.id),
+                            '|', ('component_id', '=', comp.id),
+                            '&', ('destination_type', '=', 'bank_account'),
+                            ('bank_role', '=', bank_role)]).unlink()
+            Mapping.create({'salary_structure_id': config.id, 'component_id': comp.id,
+                            'destination_type': 'bank_account', 'bank_role': bank_role})
+            return {'ok': True}
+
+        parts = spec.split(':')
+        if len(parts) != 3 or parts[0] != 'f':
             return {'ok': False}
         model, fname = parts[1], parts[2]
-        comp = self.env['hr.formula.rule'].browse(int(component_id))
         mdl = self.env['ir.model'].sudo().search([('model', '=', model)], limit=1)
         fld = self.env['ir.model.fields'].sudo().search([('model', '=', model), ('name', '=', fname)], limit=1)
-        if not (comp.exists() and mdl and fld):
+        if not (mdl and fld):
             return {'ok': False}
-        Mapping = self.env['hr.payslip.import.mapping'].sudo()
         # 1:1 on both sides within this config — drop any existing on either end
         Mapping.search(['&', ('salary_structure_id', '=', config.id),
                         '|', ('component_id', '=', comp.id),
                         '&', ('target_model_id', '=', mdl.id), ('target_field_id', '=', fld.id)]).unlink()
         Mapping.create({'salary_structure_id': config.id, 'component_id': comp.id,
+                        'destination_type': 'field',
                         'target_model_id': mdl.id, 'target_field_id': fld.id})
         return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # COLROLES P3 — turning a stranded column into a contract component.
+    #
+    # The commonest thing on this board is a column with no field to go to: a grade,
+    # a shift code, a note the payroll office types every month. Before this, the
+    # only honest answer was "it is read and then dropped". Now there is a second
+    # one: keep it ON THE CONTRACT as text, where it is visible, versioned and
+    # exportable, without inventing a custom field for it.
+    # ------------------------------------------------------------------
+    @api.model
+    def employee_mapping_make_text_component(self, rule_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'msg': _("That column no longer exists.")}
+        if rule.column_type != 'input':
+            return {'ok': False, 'msg': _(
+                "Only an imported column can be kept on the contract — this one is "
+                "calculated.")}
+        # An existing mapping would mean the value lands in two places, which is two
+        # sources of truth for one fact. The wire goes.
+        self.env['hr.payslip.import.mapping'].sudo().search([
+            ('salary_structure_id', '=', rule.config_id.id),
+            ('component_id', '=', rule.id)]).unlink()
+        rule.write({
+            'is_contract_component': True,
+            'is_text_component': True,
+            'column_role': 'contract',
+            'column_role_source': 'user',
+        })
+        return {'ok': True, 'msg': _("%s is now kept on the contract as text.") % (
+            rule.name or rule.code or '')}
+
+    @api.model
+    def employee_mapping_detach_component(self, rule_id):
+        """The reverse. Refused once contracts actually carry values for this code —
+        clearing the flags would leave those advantage lines orphaned, pointing at a
+        template nothing maintains any more."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'msg': _("That column no longer exists.")}
+        code = (rule.code or '').strip()
+        if code:
+            Template = self.env['hr.contract.advantage.template'].sudo()
+            templates = Template.search([('code', '=', code)])
+            # NOT `search_count` on the lines: `hr.contract.create` seeds one empty
+            # advantage line per template on EVERY contract, so the mere existence of
+            # lines proves nothing and would refuse every detach ever attempted. What
+            # blocks a detach is a line somebody's data is actually IN.
+            filled = self.env['hr.contract.advantage'].sudo().search_count([
+                ('advantage_template_id', 'in', templates.ids),
+                '|', ('amount', '!=', 0.0), ('text_value', '!=', False),
+            ]) if templates else 0
+            if filled:
+                return {'ok': False, 'msg': _(
+                    "%(count)s contracts already carry a value for %(code)s. Clear "
+                    "those first, or leave this column on the contract."
+                ) % {'count': filled, 'code': code}}
+        rule.write({'is_contract_component': False, 'is_text_component': False})
+        return {'ok': True, 'msg': _("%s is no longer kept on the contract.") % (
+            rule.name or code or '')}
 
     @api.model
     def employee_mapping_delete(self, mapping_id):
@@ -5056,6 +5321,227 @@ class PbFormulaStudio(models.AbstractModel):
         if m.exists():
             m.unlink()
         return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # COLROLES P3 — suggestions for the people board.
+    #
+    # Two different machines, because the two halves of the board are different
+    # problems. A BANK column is a closed vocabulary — there are exactly four things
+    # it can be, and the classifier's own lexicon already knows the words for them,
+    # in English and Vietnamese. An identity/profile/contract column is an open one:
+    # the target is any of hundreds of fields, and the only honest tool is a label
+    # comparison whose score is shown to the reader rather than hidden behind a
+    # verdict.
+    #
+    # Nothing is written. A suggestion is a drawn wire with a confidence on it, and
+    # accepting it goes through `employee_mapping_create` like a hand-drawn one —
+    # which is what makes "Accept all ≥90%" safe to press.
+    # ------------------------------------------------------------------
+
+    # Words that place a bank column into one of the four lanes. Ordered: the more
+    # specific tests run first, because "tên chủ tài khoản" (account holder name)
+    # contains "tài khoản" (account) and would otherwise be read as the number.
+    _BANK_SUGGEST_TOKENS = (
+        ('acc_holder_name', ('account holder', 'holder name', 'beneficiary name',
+                             'beneficiary', 'chu tai khoan', 'ten chu tai khoan',
+                             'account name', 'name on account')),
+        ('bank_bic', ('swift', 'bic', 'swift code', 'bank code', 'ifsc', 'iban code',
+                      'ma ngan hang', 'ma swift')),
+        ('acc_number', ('account number', 'account no', 'acc no', 'acct no', 'a c no',
+                        'bank account', 'bank account no', 'bank account number',
+                        'so tai khoan', 'stk', 'tai khoan ngan hang', 'so tk',
+                        'account', 'iban')),
+        ('bank_name', ('bank name', 'name of bank', 'bank', 'ngan hang',
+                       'ten ngan hang', 'chi nhanh', 'branch', 'branch name')),
+    )
+
+    # Explicit destinations for the handful of columns EVERY structure has. A label
+    # comparison gets "Employee Code" → `employee_id` wrong often enough to matter
+    # (there are a dozen fields with "code" or "employee" in their label), and this
+    # is the one place where naming the answer beats scoring it. Every entry is
+    # verified against `ir.model.fields` before it is offered, so a hint for a field
+    # some module has not installed simply does not appear.
+    _EC_SUGGEST_HINTS = (
+        ('identity', ('employee code', 'emp code', 'employee id', 'staff code',
+                      'staff id', 'msnv', 'ma nv', 'ma nhan vien', 'ma so nhan vien',
+                      'payroll id', 'personnel number'), 'hr.employee', 'employee_id'),
+        ('identity', ('employee name', 'full name', 'fullname', 'staff name',
+                      'ho ten', 'ho va ten', 'ten nhan vien'), 'hr.employee', 'name'),
+        ('identity', ('id no', 'id number', 'identity card', 'identification',
+                      'identification no', 'national id', 'citizen id', 'cmnd',
+                      'cccd', 'so cmnd', 'so cccd'), 'hr.employee', 'identification_id'),
+        ('identity', ('passport', 'passport no', 'passport number', 'ho chieu'),
+         'hr.employee', 'passport_id'),
+        ('identity', ('badge id', 'badge number', 'barcode'), 'hr.employee', 'barcode'),
+        ('profile', ('tax code', 'tax id', 'tax number', 'ma so thue'),
+         'hr.employee', 'identification_id'),
+        ('profile', ('work email', 'email', 'email address'), 'hr.employee', 'work_email'),
+        ('profile', ('phone', 'phone number', 'mobile', 'mobile number',
+                     'so dien thoai', 'dien thoai'), 'hr.employee', 'mobile_phone'),
+        ('profile', ('job title', 'job position', 'position', 'designation',
+                     'chuc vu', 'chuc danh'), 'hr.employee', 'job_title'),
+        ('profile', ('marital status', 'marital', 'tinh trang hon nhan'),
+         'hr.employee', 'marital'),
+        ('contract', ('date of joining', 'joining date', 'join date', 'doj',
+                      'hire date', 'date of hire', 'start date', 'contract start',
+                      'ngay vao lam', 'ngay vao cong ty', 'ngay bat dau'),
+         'hr.contract', 'date_start'),
+        ('contract', ('end date', 'contract end', 'last working day', 'leaving date',
+                      'termination date', 'ngay ket thuc', 'ngay nghi viec'),
+         'hr.contract', 'date_end'),
+        ('contract', ('probation', 'probation end', 'probation end date',
+                      'ngay thu viec', 'thoi gian thu viec'),
+         'hr.contract', 'trial_date_end'),
+        ('contract', ('wage', 'basic salary', 'contract salary', 'luong co ban',
+                      'luong hop dong'), 'hr.contract', 'wage'),
+    )
+
+    @api.model
+    def _ec_suggest_bank_role(self, crc, header):
+        """Which bank lane a header belongs in, or None. `(role, exact)` — `exact`
+        distinguishes a whole-header match from a contained one, and that is the
+        difference between the 0.95 and the 0.75 tier."""
+        key = crc.strip_accents(crc.normalize_header(header))
+        if not key:
+            return None, False
+        for role, tokens in self._BANK_SUGGEST_TOKENS:
+            for token in tokens:
+                if key == crc.strip_accents(token):
+                    return role, True
+        for role, tokens in self._BANK_SUGGEST_TOKENS:
+            for token in tokens:
+                if crc.strip_accents(token) in key:
+                    return role, False
+        return None, False
+
+    @api.model
+    def _ec_hint_target(self, crc, role, header, available):
+        """A curated destination for this header, if one is both listed and real."""
+        key = crc.strip_accents(crc.normalize_header(header))
+        if not key:
+            return None, False
+        for hint_role, tokens, model, fname in self._EC_SUGGEST_HINTS:
+            if hint_role != role:
+                continue
+            spec = 'f:%s:%s' % (model, fname)
+            if spec not in available:
+                continue
+            for token in tokens:
+                token_key = crc.strip_accents(token)
+                if key == token_key:
+                    return spec, True
+                if len(token_key) >= 5 and token_key in key:
+                    return spec, False
+        return None, False
+
+    @api.model
+    def employee_mapping_suggest(self, config_id=None, include_payroll=False):
+        """Propose destinations for the unwired people columns of one structure."""
+        import difflib
+        from odoo.addons.pb_hr_payroll_formula.models import column_role_classifier as crc
+
+        data = self.employee_mapping_data(config_id, include_payroll=include_payroll)
+        if not data.get('ok'):
+            return data
+
+        config = self._pick_config(config_id)
+        # The candidate pool is everything the RIGHT column could hold, not just what
+        # it is showing: a suggestion is allowed to introduce a field the user has not
+        # searched for, provided the card is appended so the wire has something to
+        # land on.
+        pool = {}
+        for model in ('hr.employee', 'hr.contract'):
+            for item in self.ec_model_fields(model).get('fields', []):
+                pool[item['id']] = item
+        for item in data['right']:
+            pool.setdefault(item['id'], item)
+
+        on_board = {i['id'] for i in data['right']}
+        taken_right = {w['rightId'] for w in data['wires']}
+        wired_left = {w['leftId'] for w in data['wires']}
+
+        # Pre-normalise every candidate label once; this loop is O(left × fields) and
+        # `ir.model.fields` on hr.employee alone is several hundred rows.
+        norm_labels = {}
+        for spec, item in pool.items():
+            if not spec.startswith('f:'):
+                continue
+            norm_labels[spec] = crc.strip_accents(crc.normalize_header(item['label']))
+
+        rules_by_id = {r.id: r for r in config.rule_ids}
+        matcher = difflib.SequenceMatcher()
+        suggestions = []
+        for item in data['left']:
+            if item['id'] in wired_left:
+                continue
+            rule = rules_by_id.get(item['id'])
+            if not rule or rule.is_contract_component or rule.is_text_component:
+                continue
+            role = (rule.column_role or 'payroll')
+            if role == 'payroll':
+                continue
+            header = rule.name or rule.data_source_field or rule.code or ''
+
+            target, confidence, reason = None, 0.0, ''
+            if role == 'bank':
+                bank_role, exact = self._ec_suggest_bank_role(crc, header)
+                if bank_role:
+                    target = 'b:%s' % bank_role
+                    confidence = 0.95 if exact else 0.75
+                    reason = _("The column name says this is the %s.") % (
+                        dict(self.env['hr.payslip.import.mapping']
+                             ._fields['bank_role'].selection).get(bank_role, bank_role).lower())
+            else:
+                hint, exact = self._ec_hint_target(crc, role, header, pool)
+                if hint:
+                    target = hint
+                    confidence = 0.95 if exact else 0.75
+                    # Named, not scored: the sentence says WHY, and "usually" is the
+                    # honest word for a curated table of conventions.
+                    reason = _("Columns named like this usually go to \"%s\".") % \
+                        pool[hint]['label']
+                else:
+                    # Nothing curated matches — fall back to comparing the column's
+                    # name with every field label, and SHOW the score. Capped at 0.85
+                    # so a label coincidence can never reach the accept-all threshold:
+                    # that button is for answers somebody could have looked up, not
+                    # for the machine's best guess.
+                    key = crc.strip_accents(crc.normalize_header(header))
+                    if len(key) >= 4:
+                        matcher.set_seq2(key)
+                        best, best_ratio = None, 0.0
+                        for spec, label in norm_labels.items():
+                            if not label or len(label) < 3:
+                                continue
+                            matcher.set_seq1(label)
+                            if matcher.real_quick_ratio() < 0.62 or matcher.quick_ratio() < 0.62:
+                                continue
+                            ratio = matcher.ratio()
+                            if ratio > best_ratio:
+                                best, best_ratio = spec, ratio
+                        if best and best_ratio >= 0.62:
+                            target = best
+                            confidence = round(min(0.85, best_ratio), 4)
+                            reason = _("The column name resembles this field (%d%%).") % \
+                                round(best_ratio * 100)
+
+            if not target or target in taken_right:
+                continue
+            taken_right.add(target)
+            if target not in on_board and target in pool:
+                data['right'].append(pool[target])
+                on_board.add(target)
+            suggestions.append({
+                'id': 'es%s' % item['id'],
+                'kind': 'suggestion', 'ref': False,
+                'leftId': item['id'], 'rightId': target,
+                'state': 'suggested',
+                'confidence': confidence,
+                'reason': reason,
+            })
+
+        data['wires'] = data['wires'] + suggestions
+        return data
 
     # ------------------------------------------------------------------
     # B1 — Execution replay (step through a payslip's computation)

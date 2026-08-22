@@ -17,11 +17,18 @@
 @keyframes pbfs-map-in { from { transform: translateY(12px) scale(.99); opacity: .6; } to { transform: none; opacity: 1; } }
 
 .pbfs-map .pm-head { display: flex; align-items: center; gap: 14px; padding: 15px 20px; border-bottom: 1px solid var(--line, #E8E9F3); }
-.pbfs-map .pm-title { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+/* `min-width: 0` alone let the title column be squeezed to the width of its
+   longest WORD once the header grew a fifth button ("Accept all ≥90%" appears
+   only when there are suggestions, so it looked fine right up until it did not)
+   — the product name then printed one word per line. A floor plus ellipsis is
+   the honest trade: the heading keeps its shape and the sentence truncates. */
+.pbfs-map .pm-title { display: flex; align-items: center; gap: 12px; flex: 1 1 240px; min-width: 210px; }
+.pbfs-map .pm-title > div { min-width: 0; }
+.pbfs-map .pm-title small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pbfs-map .pm-title > svg { width: 24px; height: 24px; color: var(--i, #5A4BB0); flex: none; }
 .pbfs-map .pm-title b { font-size: 15px; font-weight: 800; color: var(--ink, #1E1B2E); display: block; }
 .pbfs-map .pm-title small { font-size: 12px; color: var(--muted, #6B7280); }
-.pbfs-map .pm-head-actions { display: flex; align-items: center; gap: 10px; }
+.pbfs-map .pm-head-actions { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
 .pbfs-map .pm-stat { font-size: 12.5px; color: var(--muted, #6B7280); }
 .pbfs-map .pm-stat b { color: var(--ink, #1E1B2E); }
 .pbfs-map .hs-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 5px; border-radius: 7px; }
@@ -32,6 +39,24 @@
 .pbfs-map .pm-tab { border: 0; background: transparent; font-family: inherit; font-size: 12.5px; font-weight: 700; color: var(--muted, #6B7280); padding: 8px 14px 10px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .pbfs-map .pm-tab:hover { color: var(--i, #5A4BB0); }
 .pbfs-map .pm-tab.on { color: var(--i, #5A4BB0); border-bottom-color: var(--i, #5A4BB0); }
+/* ---- COLROLES P3: the lane chips ----
+   A table of contents for the swim-lanes below, doubling as their filter. The
+   unmapped tally is the only warm colour in the strip, so "there is work left
+   here" is legible in one pass across six chips. Every colour is an existing
+   variable — the board has one vocabulary and this row joins it. */
+.pbfs-map .pm-lanes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 9px 18px; border-bottom: 1px solid var(--line, #E8E9F3); background: #fff; }
+.pbfs-map .pm-lane { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line, #E8E9F3); background: #fff; border-radius: 999px; padding: 4px 11px 4px 8px; font-family: inherit; font-size: 12px; font-weight: 700; color: var(--muted, #6B7280); cursor: pointer; transition: border-color .12s, color .12s, background .12s; }
+.pbfs-map .pm-lane:hover { border-color: var(--i-border, #CBC2EE); color: var(--i, #5A4BB0); }
+.pbfs-map .pm-lane.on { border-color: var(--i, #5A4BB0); color: var(--i600, #4A3D96); background: var(--i-soft, #EDEAF8); }
+.pbfs-map .pm-lane svg { width: 13px; height: 13px; flex: none; }
+.pbfs-map .pm-lane .l { color: var(--ink, #1E1B2E); }
+.pbfs-map .pm-lane.on .l { color: inherit; }
+.pbfs-map .pm-lane .n { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; font-weight: 800; }
+.pbfs-map .pm-lane .u { font-size: 10.5px; font-weight: 800; color: var(--amber, #B7791F); background: var(--amber-soft, #FEF3C7); border-radius: 999px; padding: 0 6px; }
+.pbfs-map .pm-lane.ghost { border-style: dashed; }
+.pbfs-map .pm-lane.payroll { opacity: .8; }
+.pbfs-map .pm-lane.payroll.shown { opacity: 1; }
+
 .pbfs-map .pm-body { flex: 1; position: relative; overflow: hidden; background: #FAFAFE; }
 .pbfs-map .pm-loading { padding: 40px; text-align: center; color: var(--muted, #6B7280); font-size: 13px; }
 
@@ -177,6 +202,38 @@
 .mapping-canvas .mc-prov.calc  { background: var(--i-wash, #F1F5F9);  color: var(--i-deep, #241F52); border-color: var(--i-border, #CBC2EE); }
 .mapping-canvas .mc-prov.warn  { background: var(--i-amber-wash, #FEF3C7); color: var(--i-amber-ink, #D97706); border-color: var(--i-amber-line, #FEF3C7); }
 .mapping-canvas .mc-prov.odoo  { background: var(--i-wash, #F1F5F9);  color: var(--i-slate, #64748B); border-color: var(--i-wash2, #F1F5F9); }
+/* ---- COLROLES P3: "this card already has a destination" ----
+   Same slot and same grammar as `.mc-prov`, a different sentence. Two tones:
+   `contract` for an amount component the contract syncs by itself, `text` for
+   one explicitly kept as text. Both read as SEALED rather than as a warning —
+   nothing is wrong with these columns, they are simply not this board's to
+   wire, and colouring them amber would send people looking for a fault. */
+.mapping-canvas .mc-badge {
+    flex: none; font-size: 9px; font-weight: 800; letter-spacing: .05em;
+    text-transform: uppercase; padding: 1px 6px; border-radius: 999px;
+    border: 1px solid transparent; line-height: 1.5; cursor: help;
+}
+.mapping-canvas .mc-badge.contract { background: var(--mc-rose-wash, #FEE2E2); color: var(--mc-rose-ink, #B91C1C); border-color: var(--mc-rose-wash, #FEE2E2); }
+.mapping-canvas .mc-badge.text     { background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); border-color: var(--i-border, #CBC2EE); }
+/* A sealed card takes no wire. Its plug is hollow, which is the board's own way
+   of saying "nothing connects here" without greying the row out (W40 — a row
+   nobody can read is not an explanation). */
+.mapping-canvas .mc-item.sealed { background: repeating-linear-gradient(135deg, transparent 0 7px, rgba(100,116,139,.045) 7px 14px); }
+.mapping-canvas .mc-item.sealed .mc-plug { background: #fff; box-shadow: 0 0 0 1px #CBD5E1; }
+.mapping-canvas .mc-item.sealed:hover { border-color: var(--line, #E8E9F3); }
+/* The card's one verb. Hidden until the row is hovered or focused: two hundred
+   permanently-visible buttons is the clutter this whole programme is removing. */
+.mapping-canvas .mc-item-act {
+    flex: none; opacity: 0; pointer-events: none;
+    border: 1px solid var(--i-border, #CBC2EE); background: #fff;
+    color: var(--i600, #4A3D96); border-radius: 7px; padding: 3px 8px;
+    font-family: inherit; font-size: 10.5px; font-weight: 800; cursor: pointer;
+    white-space: nowrap; transition: opacity .12s;
+}
+.mapping-canvas .mc-item:hover .mc-item-act,
+.mapping-canvas .mc-item.focus .mc-item-act { opacity: 1; pointer-events: auto; }
+.mapping-canvas .mc-item-act:hover { background: var(--i-soft, #EDEAF8); }
+
 .mapping-canvas .mc-item-sub { font-size: 11px; color: var(--muted, #6B7280); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
 .mapping-canvas .mc-col.right .mc-item-sub { flex-direction: row-reverse; }
 .mapping-canvas .mc-col-tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5px; font-weight: 800; background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); padding: 1px 5px; border-radius: 5px; }
