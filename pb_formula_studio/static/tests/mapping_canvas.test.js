@@ -14,7 +14,7 @@
  * screenshot.
  */
 import { describe, expect, test } from "@odoo/hoot";
-import { animationFrame } from "@odoo/hoot-mock";
+import { advanceTime, animationFrame } from "@odoo/hoot-mock";
 import { mountWithCleanup } from "@web/../tests/web_test_helpers";
 // `mountWithCleanup` starts the real service stack, and on a database with mail
 // installed that stack reaches for `discuss.channel` before our component ever
@@ -497,4 +497,249 @@ test("the collision window shrank with the pill it describes", () => {
     const near = [{ id: "a", hx: 0, hy: 100 }, { id: "b", hx: 30, hy: 104 }];
     spreadHubs(near);
     expect(near[1].hy - near[0].hy >= 28).toBe(true);
+});
+
+// ==================================================== MAPFIX Phase D
+// Three defects the owner reported against the LIVE Phase-B board. The two
+// crashes are keyboard-shaped and the third is a layout one, so all three are
+// invisible to an RPC probe and two of them are invisible to a screenshot.
+
+/** The employee board's shape: cards that carry verbs, and a draw callback. */
+function actProps(over = {}) {
+    const left = items(6, "L").map((it, i) => ({
+        ...it,
+        // real ids on the employee board are hr.formula.rule INTEGERS — which is
+        // the whole of D1: an integer where an `f:model:field` spec belongs.
+        id: 100 + i,
+        meta: {
+            ...it.meta,
+            actions: [
+                { key: "to_field", label: "Send to a field instead…", hint: "Pick a field." },
+                { key: "make_text", label: "Make text", hint: "Keep it on the contract." },
+                { key: "detach", label: "Detach component", hint: "Stop keeping it." },
+            ],
+        },
+    }));
+    const right = [
+        { id: "f:hr.employee:employee_status", label: "Employee Status", sublabel: "Employee", meta: {} },
+        { id: "f:hr.employee:name", label: "Employee Name", sublabel: "Employee", meta: {} },
+        { id: "f:hr.contract:wage", label: "Wage", sublabel: "Contract", meta: {} },
+    ];
+    return props({ leftItems: left, rightItems: right, wires: [], ...over });
+}
+
+function keyEvent(key) {
+    let prevented = 0, stopped = 0;
+    return {
+        key,
+        target: { tagName: "DIV" },
+        preventDefault() { prevented++; },
+        stopPropagation() { stopped++; },
+        get prevented() { return prevented; },
+        get stopped() { return stopped; },
+    };
+}
+
+// ---------------------------------------------------------------- D1
+test("D1 — Enter never sends a LEFT id to the right-hand handler", async () => {
+    // The crash, reduced. `ui.focusId` is ONE value shared by both columns.
+    // "Send to a field instead…" sets `focusSide = 'right'` and focuses the right
+    // search box while `focusId` still holds the left card's INTEGER id; the old
+    // `case "Enter"` read it raw and called `clickRight(123)`, which sent
+    // `target_spec: 123` and raised `'int' object has no attribute 'startswith'`
+    // on the server.
+    const drawn = [];
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: actProps({ onDraw: (l, r) => drawn.push([l, r]) }),
+    });
+    canvas.ui.armedLeft = 100;
+    canvas.ui.focusSide = "right";
+    canvas.ui.focusId = 100;                 // a LEFT id, on the RIGHT side
+
+    canvas.onKeydown(keyEvent("Enter"));
+    await animationFrame();
+
+    // nothing was drawn at all — and in particular nothing carrying a left id
+    expect(drawn.length).toBe(0);
+    for (const [, rightId] of drawn) { expect(typeof rightId).toBe("string"); }
+    expect(canvas.ui.armedLeft).toBe(100);   // still armed; the gesture is intact
+});
+
+test("D1 — the arm command drops the stale focus it would otherwise inherit", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: actProps() });
+    canvas.ui.focusSide = "left";
+    canvas.ui.focusId = 103;
+    canvas._runCommand({ token: 1, kind: "armLeft", leftId: 101 });
+    await animationFrame();
+    expect(canvas.ui.armedLeft).toBe(101);
+    expect(canvas.ui.focusSide).toBe("right");
+    expect(canvas.ui.focusId).toBe(null);
+});
+
+test("D1 — after typing, Enter wires to the focused RIGHT card", async () => {
+    // The flow has to still complete from the keyboard: type, see the top hit
+    // take the focus ring, press Enter, get that wire.
+    const drawn = [];
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: actProps({ onDraw: (l, r) => drawn.push([l, r]) }),
+    });
+    canvas.ui.armedLeft = 100;
+    canvas._runCommand({ token: 2, kind: "armLeft", leftId: 100 });
+    await animationFrame();
+
+    canvas.onSearch("right", { target: { value: "status" } });
+    await advanceTime(200);                          // the 120ms search debounce
+    await animationFrame();
+    expect(canvas.ui.focusSide).toBe("right");
+    expect(canvas.ui.focusId).toBe("f:hr.employee:employee_status");
+
+    canvas.onKeydown(keyEvent("Enter"));
+    await animationFrame();
+    expect(drawn).toEqual([[100, "f:hr.employee:employee_status"]]);
+});
+
+test("D1 — Enter on the left column still arms, exactly as before", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: actProps() });
+    canvas.ui.focusSide = "left";
+    canvas.ui.focusId = 102;
+    canvas.onKeydown(keyEvent("Enter"));
+    await animationFrame();
+    expect(canvas.ui.armedLeft).toBe(102);
+});
+
+// ---------------------------------------------------------------- D2
+test("D2 — Escape disarms from inside the search box", async () => {
+    // `onSearchKey` used to `stopPropagation()` unconditionally, so Escape could
+    // never reach the canvas handler that clears `armedLeft` — in the one flow
+    // whose banner promises "Esc to cancel", because that verb focuses this box.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: actProps() });
+    canvas.ui.armedLeft = 100;
+    const ev = keyEvent("Escape");
+    canvas.onSearchKey("right", ev);
+    expect(canvas.ui.armedLeft).toBe(null);
+    expect(ev.stopped).toBe(1);
+});
+
+test("D2 — Escape disarms from a card and from the board background too", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: actProps() });
+    canvas.ui.armedLeft = 101;
+    canvas.onKeydown(keyEvent("Escape"));
+    expect(canvas.ui.armedLeft).toBe(null);
+
+    canvas.ui.armedLeft = 101;
+    canvas.ui.reveal = { id: "w1", sides: ["left"] };
+    canvas.onKeydown(keyEvent("Escape"));
+    expect(canvas.ui.armedLeft).toBe(null);
+    expect(canvas.ui.reveal).toBe(null);
+});
+
+test("D2 — Escape with nothing armed still clears the search text", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: actProps() });
+    canvas.ui.q.right = "stat";
+    canvas.ui.qa.right = "stat";
+    canvas.onSearchKey("right", keyEvent("Escape"));
+    expect(canvas.ui.q.right).toBe("");
+    expect(canvas.ui.qa.right).toBe("");
+});
+
+test("D2 — an armed component outranks the search box, and only one thing happens", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: actProps() });
+    canvas.ui.armedLeft = 100;
+    canvas.ui.q.right = "stat";
+    canvas.ui.qa.right = "stat";
+    canvas.onSearchKey("right", keyEvent("Escape"));
+    expect(canvas.ui.armedLeft).toBe(null);
+    expect(canvas.ui.q.right).toBe("stat");     // the search survives the cancel
+    canvas.onSearchKey("right", keyEvent("Escape"));
+    expect(canvas.ui.q.right).toBe("");         // …and the next press clears it
+});
+
+test("D2 — Escape closes the card menu before anything else", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: actProps() });
+    canvas.ui.armedLeft = 100;
+    canvas.ui.menu = { id: 100, label: "L", acts: [], x: 0, y: 0, flip: false };
+    canvas.onKeydown(keyEvent("Escape"));
+    expect(canvas.ui.menu).toBe(null);
+    expect(canvas.ui.armedLeft).toBe(100);      // still armed — one key, one effect
+});
+
+// ---------------------------------------------------------------- D3
+test("D3 — the action trigger never covers the card's name or code", async () => {
+    // MF13/CR22's third act. Three pills IN the flow crushed the name; the same
+    // three floated OVER the card covered it. One fixed-width button does
+    // neither, and a bounding box is the only thing that can prove it.
+    // `itemActions` is gated on `onLeftAction` — a board with no action callback
+    // grows no trigger at all, which is the pre-existing contract.
+    await mountWithCleanup(MappingCanvas, { props: actProps({ onLeftAction: () => {} }) });
+    await animationFrame();
+    const card = document.querySelector(".mc-col.left .mc-item");
+    const more = card.querySelector(".mc-item-more");
+    const label = card.querySelector(".mc-item-label");
+    const sub = card.querySelector(".mc-item-sub");
+    expect(more).not.toBe(null);
+
+    // the revealed state, reached the way the keyboard reaches it — the same CSS
+    // rule hover uses. Nothing may move, and nothing may overlay the text.
+    card.classList.add("focus");
+    await animationFrame();
+    const b = more.getBoundingClientRect();
+    for (const el of [label, sub]) {
+        const t = el.getBoundingClientRect();
+        expect(t.width > 0).toBe(true);                 // the text has room
+        expect(b.left >= t.right - 0.5).toBe(true);     // …and nothing sits on it
+    }
+    expect(Math.round(b.width)).toBe(22);               // fixed, never negotiable
+    expect(more.getAttribute("aria-haspopup")).toBe("menu");
+    expect((more.getAttribute("aria-label") || "").length > 0).toBe(true);
+});
+
+test("D3 — the trigger opens one menu carrying every verb, keyboard-reachable", async () => {
+    const acted = [];
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: actProps({ onLeftAction: (it, act) => acted.push([it.id, act.key]) }),
+    });
+    await animationFrame();
+    const card = document.querySelector(".mc-col.left .mc-item");
+    const more = card.querySelector(".mc-item-more");
+    more.click();
+    await animationFrame();
+
+    const rows = document.querySelectorAll(".mc-menu .mc-menu__i");
+    expect(rows.length).toBe(3);
+    expect(rows[0].getAttribute("role")).toBe("menuitem");
+    expect(document.querySelector(".mc-menu").getAttribute("role")).toBe("menu");
+    expect(more.getAttribute("aria-expanded")).toBe("true");
+
+    rows[0].click();
+    await animationFrame();
+    expect(acted).toEqual([[100, "to_field"]]);
+    expect(canvas.ui.menu).toBe(null);
+});
+
+// ---------------------------------------------------------------- D4/D5
+test("D4/D5 — a card's note is rendered when the adapter sends one, and only then", async () => {
+    const right = [
+        { id: "f:hr.employee:marital", label: "Marital Status", sublabel: "Employee",
+          meta: { note: { text: "Married (married), Single (single)",
+                          title: "The file must contain one of these values",
+                          tone: "" } } },
+        { id: "f:hr.employee:name", label: "Employee Name", sublabel: "Employee", meta: {} },
+    ];
+    await mountWithCleanup(MappingCanvas, { props: actProps({ rightItems: right }) });
+    await animationFrame();
+    const notes = document.querySelectorAll(".mc-col.right .mc-item-note");
+    expect(notes.length).toBe(1);
+    expect(notes[0].textContent).toInclude("(married)");
+    expect(notes[0].getAttribute("title")).toInclude("must contain");
+});
+
+test("D4/D5 — a caution note is toned differently from an ordinary one", async () => {
+    const right = [
+        { id: "f:hr.employee:x", label: "X", sublabel: "Employee",
+          meta: { note: { text: "Must already exist — will not be created",
+                          title: "…", tone: "warn" } } },
+    ];
+    await mountWithCleanup(MappingCanvas, { props: actProps({ rightItems: right }) });
+    await animationFrame();
+    expect(document.querySelector(".mc-col.right .mc-item-note").classList.contains("warn")).toBe(true);
 });

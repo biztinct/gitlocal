@@ -837,3 +837,100 @@ msgstr "Áp dụng cho"
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
 msgid "Cancel"
 msgstr "Huỷ"
+
+#. module: pb_formula_studio
+#. MAPFIX Phase D — mapping canvas
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"That connection could not be made — one of its ends was not recognised. Pick "
+"a card from the list and try again."
+msgstr ""
+"Không thể tạo kết nối này — một đầu của nó không được nhận diện. Hãy chọn một "
+"thẻ trong danh sách rồi thử lại."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"The file must contain one of these values (the code in brackets is what is "
+"stored): %s"
+msgstr ""
+"Tệp phải chứa một trong các giá trị sau (mã trong ngoặc là giá trị được lưu): "
+"%s"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%(n)s values — %(head)s, …"
+msgstr "%(n)s giá trị — %(head)s, …"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Creates the %s if it does not exist yet"
+msgstr "Tự tạo %s nếu chưa có"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"Values are matched on the name. Anything the file names and Payobook does not "
+"have yet is created during the import."
+msgstr ""
+"Giá trị được đối chiếu theo tên. Bất kỳ tên nào có trong tệp mà Payobook chưa "
+"có sẽ được tạo trong lúc nhập."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Must already exist — will not be created"
+msgstr "Phải có sẵn — sẽ không được tạo mới"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"Matched on %(key)s. A %(what)s the file names and Payobook does not have is "
+"left unset rather than invented."
+msgstr ""
+"Đối chiếu theo %(key)s. Nếu %(what)s có trong tệp mà Payobook không có thì ô "
+"đó được bỏ trống chứ không tự bịa ra."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Cannot be matched from a spreadsheet"
+msgstr "Không thể đối chiếu từ bảng tính"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This record has no name to match a cell against, so the column would be read "
+"and then dropped."
+msgstr ""
+"Bản ghi này không có tên để đối chiếu với ô dữ liệu, nên cột sẽ được đọc rồi "
+"bỏ qua."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"Pick an employee or contract field for this column. What the contract already "
+"holds is kept as history."
+msgstr ""
+"Chọn một trường nhân viên hoặc hợp đồng cho cột này. Dữ liệu hợp đồng đang có "
+"vẫn được giữ làm lịch sử."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"Keep it on the contract as a number that the payroll calculation can read."
+msgstr "Giữ trên hợp đồng dưới dạng số để phần tính lương đọc được."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Keep it on the contract as text — a grade, a shift code, a note."
+msgstr "Giữ trên hợp đồng dưới dạng văn bản — bậc, mã ca, hoặc ghi chú."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Stop keeping this column on the contract at all."
+msgstr "Ngừng giữ cột này trên hợp đồng."
+
+#. module: pb_formula_studio
+#. MAPFIX Phase D — the card's action menu (mapping_canvas.js)
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+msgid "Actions for %s"
+msgstr "Thao tác cho %s"
