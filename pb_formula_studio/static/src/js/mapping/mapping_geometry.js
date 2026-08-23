@@ -88,8 +88,16 @@ export function clampY(y, top, bottom) {
  * into a smear that says nothing. So parked endpoints on the same edge of the
  * same column collapse into a single counted chip — "▲ 3 above" — which is a
  * sentence rather than a texture, and is clickable.
+ *
+ * MAPFIX F1 — TWO inputs now, and the split is the phase's whole distinction.
+ * `geom` is the wires that ARE drawn, parked on an edge because their card is
+ * scrolled past. `suppressed` is the wires that are not drawn at all because a
+ * filter excludes an end; they have no curve, no arrowhead and no hub — only a
+ * direction — and they belong in the chip anyway, because "3 hidden by filter
+ * above" is the sentence that stops a suppressed wire from being a lost one.
+ * A caller that passes only `geom` behaves exactly as it did.
  */
-export function aggregateDocks(geom) {
+export function aggregateDocks(geom, suppressed = []) {
     const by = new Map();
     const push = (side, dir, g) => {
         if (!dir) { return; }
@@ -107,6 +115,13 @@ export function aggregateDocks(geom) {
     for (const g of geom) {
         push("left", g.dockL, g);
         push("right", g.dockR, g);
+    }
+    for (const s of suppressed) {
+        // only the END the filter hides gets a chip. The other end of a
+        // suppressed wire is on screen and perfectly visible; claiming it is
+        // parked would be the counter lying in the other direction.
+        if (s.hiddenL) { push("left", s.dockL, s); }
+        if (s.hiddenR) { push("right", s.dockR, s); }
     }
     // `amber` is ALL of them, not ANY of them. A chip over 51 parked wires of
     // which one is a suggestion used to read "51 suggested below", which is a
@@ -131,6 +146,40 @@ export function itemMatches(item, query) {
         if (h && String(h).toLowerCase().includes(q)) { return true; }
     }
     return false;
+}
+
+/**
+ * Insert a card at the END OF ITS OWN LANE — MAPFIX F2.
+ *
+ * The twin of the server's `_ec_place_in_lane` (`pb_formula_studio.py`), and it
+ * lives here for the reason everything else here does: it is arithmetic over an
+ * ordered list, its mistakes are invisible on a screenshot, and it had to be
+ * callable from a unit test without mounting a two-thousand-line studio.
+ *
+ * The rule is "before the first card of a LATER lane". Two consequences, both
+ * wanted: a card whose lane is already on the board joins the bottom of it and
+ * grows no heading, and a card whose lane is NOT on the board lands between two
+ * others — where the canvas emits a heading for it automatically, because it
+ * emits one whenever `group` changes between consecutive rows.
+ *
+ * An item with no `lane_order` sorts last, so an adapter that never learned
+ * about lanes appends exactly as it always did.
+ */
+export const LANE_LAST = 99;
+
+export function laneOrderOf(item) {
+    const lo = ((item && item.meta) || {}).lane_order;
+    return typeof lo === "number" ? lo : LANE_LAST;
+}
+
+export function placeInLane(items, item) {
+    const lo = laneOrderOf(item);
+    let at = items.length;
+    for (let n = 0; n < items.length; n++) {
+        if (laneOrderOf(items[n]) > lo) { at = n; break; }
+    }
+    items.splice(at, 0, item);
+    return items;
 }
 
 /**

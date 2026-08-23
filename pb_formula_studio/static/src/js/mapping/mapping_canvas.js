@@ -97,6 +97,11 @@ export class MappingCanvas extends Component {
             geom: [],             // [{...wire, d, head, hx, hy, dockL, dockR}]
             docks: [],            // aggregated parked endpoints, per column edge
             gone: 0,              // wires whose card is not in the list AT ALL
+            // MAPFIX F1 — wires an ACTIVE FILTER excludes. They are not drawn at
+            // all (a filter is the reader saying "show me only these"), but they
+            // are still counted and still dockable, so nothing is lost silently.
+            supp: [],             // [{...wire, hiddenL, hiddenR, dirL, dirR}]
+            hid: { left: 0, right: 0 },   // what `hiddenWires(side)` reports
             pulse: false,         // the story bar's "flash every wire"
             // C5 — per-column search + filter. Column state, not host state:
             // the overlay host gets it for free and cannot forget to pass it.
@@ -268,6 +273,40 @@ export class MappingCanvas extends Component {
         return mine < first ? -1 : 1;
     }
 
+    /**
+     * ============ MAPFIX F1 — scrolled out of view ≠ filtered out of the set ===
+     *
+     * The ONE predicate. "Is this wire drawn" and "how many are hidden" are the
+     * same question asked twice, and until this existed they were answered by two
+     * different pieces of arithmetic that could — and did — disagree: the counter
+     * said "3 wires hidden by this filter" while three arrows hung off the top and
+     * bottom edges of the canvas pointing at cards the filter had removed.
+     *
+     * The distinction it draws is the whole of F1:
+     *
+     *   * an endpoint merely SCROLLED past is still in the list, still in the
+     *     DOM and still has a rect. `clampY` parks it on the column edge and the
+     *     dock chip says "8 mapped above" — that affordance is RIGHT and is
+     *     untouched (CR21);
+     *   * an endpoint a FILTER excludes is the reader having said "show me only
+     *     these". Docking its wire on the edge draws an arrow that points at
+     *     nothing, in a column that has been narrowed on purpose. So the wire is
+     *     not drawn at all — and it is counted, by this same function, one line
+     *     away from the decision not to draw it.
+     *
+     * `false` for an id that is not in the list at all: that is `gone`, a
+     * different thing with a different counter, decided before this is asked.
+     */
+    isFilteredOut(side, id) {
+        if (!this.hasFilter(side)) { return false; }
+        const { L, R } = this._indexes();
+        const idx = side === "left" ? L : R;
+        const at = idx.get(String(id));
+        if (at === undefined) { return false; }
+        const items = side === "left" ? this.props.leftItems : this.props.rightItems;
+        return !this._passes(side, items[at]);
+    }
+
     _recompute() {
         this._recomputes++;
         const t0 = performance.now();
@@ -277,10 +316,19 @@ export class MappingCanvas extends Component {
         if (rb.width < 20 || rb.height < 20) { return; }   // mid-transition host
         const L = this._measure(this.lbodyRef.el, rb, "left");
         const R = this._measure(this.rbodyRef.el, rb, "right");
-        if (!L || !R) { this.ui.geom = []; this.ui.docks = []; return; }
+        // MAPFIX F1 — `supp`/`hid` are cleared with the geometry. A count of
+        // "16 wires hidden by this filter" sitting over a board that is drawing
+        // nothing at all is the counter lying again, one state further out.
+        if (!L || !R) {
+            this.ui.geom = []; this.ui.docks = [];
+            this.ui.supp = []; this.ui.hid = { left: 0, right: 0 };
+            return;
+        }
         const { L: iL, R: iR } = this._indexes();
 
         const geom = [];
+        const supp = [];                      // MAPFIX F1 — filtered out, not drawn
+        const hid = { left: 0, right: 0 };
         let gone = 0;
         const sx = L.edge + 4, tx = R.edge - 4;
         for (const w of this.props.wires) {
@@ -291,6 +339,22 @@ export class MappingCanvas extends Component {
             // never swallowed the way `continue` used to swallow it.
             if ((!hasL && !iL.has(lk)) || (!hasR && !iR.has(rk))) {
                 gone++;
+                continue;
+            }
+            // MAPFIX F1 — either end excluded by an active filter and the wire is
+            // not drawn. The counters below are read off THIS decision, so the
+            // canvas and the column header cannot say different things.
+            const fL = this.isFilteredOut("left", lk);
+            const fR = this.isFilteredOut("right", rk);
+            if (fL || fR) {
+                if (fL) { hid.left++; }
+                if (fR) { hid.right++; }
+                const dirL = fL ? this._hiddenDir(iL, lk, L.firstVisibleId) : 0;
+                const dirR = fR ? this._hiddenDir(iR, rk, R.firstVisibleId) : 0;
+                supp.push({
+                    ...w, hiddenL: fL, hiddenR: fR, dockL: dirL, dockR: dirR,
+                    rawL: dirL < 0 ? -1e6 : 1e6, rawR: dirR < 0 ? -1e6 : 1e6,
+                });
                 continue;
             }
             let y1, dockL, rawL;
@@ -324,13 +388,17 @@ export class MappingCanvas extends Component {
         }
         spreadHubs(geom);
 
-        const docks = aggregateDocks(geom).map((d) => {
+        // MAPFIX F1 — the chips still speak for the wires that are not drawn.
+        // Suppressing the ARROW is the fix; suppressing the fact would be W40's
+        // "silently unavailable", and the chip is also the only way back to a
+        // wire the filter is hiding (`clickDock` → `jumpTo` clears it).
+        const byId = new Map([...geom, ...supp].map((g) => [g.id, g]));
+        const docks = aggregateDocks(geom, supp).map((d) => {
             const col = d.side === "left" ? L : R;
             // nearest first, so the first click lands on the endpoint just past
             // the edge rather than on whichever wire happened to be listed first
             const key = d.side === "left" ? "rawL" : "rawR";
             const edgeY = d.dir < 0 ? col.bandTop : col.bandBot;
-            const byId = new Map(geom.map((g) => [g.id, g]));
             d.ids.sort((a, b) => Math.abs(byId.get(a)[key] - edgeY)
                                - Math.abs(byId.get(b)[key] - edgeY));
             return { ...d, x: col.edge, y: d.dir < 0 ? col.bandTop : col.bandBot };
@@ -343,13 +411,22 @@ export class MappingCanvas extends Component {
         // a human could see has actually moved.
         const sig = geom.map((g) => `${g.id}~${g.d}~${g.hy.toFixed(1)}~${g.dockL}${g.dockR}~${g.state}`).join("|")
             + "#" + docks.map((d) => `${d.key}:${d.count}:${d.filtered}`).join(",")
-            + "#" + gone;
+            + "#" + gone + "#" + supp.map((s) => s.id).join(",")
+            + "#" + hid.left + "/" + hid.right;
         this._cost = performance.now() - t0;
         if (sig === this._sig) { return; }
         this._sig = sig;
         this.ui.geom = geom;
         this.ui.docks = docks;
         this.ui.gone = gone;
+        this.ui.supp = supp;
+        this.ui.hid = hid;
+        // A wire that has just been suppressed cannot stay SELECTED: `w` walks
+        // `ui.geom` and every hub reads it, so a selection pointing into `supp`
+        // is a selection nothing on screen can show or clear (F1 test 5).
+        if (this.ui.selWire != null && supp.some((s) => s.id === this.ui.selWire)) {
+            this.ui.selWire = null;
+        }
     }
 
     /** WP-6 — what a recompute costs, for anyone profiling from the console. */
@@ -552,9 +629,18 @@ export class MappingCanvas extends Component {
         const shown = side === "left" ? this.leftView.length : this.rightView.length;
         return `${shown} of ${all}`;
     }
-    /** How many wires this column's filter is currently hiding an end of. */
+    /**
+     * How many wires this column's filter is currently hiding an end of.
+     *
+     * MAPFIX F1 — read off the SAME pass that decided not to draw them, rather
+     * than recounted over `ui.geom`. It used to count geometry entries carrying
+     * `hiddenL`/`hiddenR`, which was a second piece of arithmetic over a second
+     * set: the wires were drawn AND counted, and once they stop being drawn a
+     * recount over the drawn ones would report zero while the arrows' absence
+     * went unexplained. One decision, one number.
+     */
     hiddenWires(side) {
-        return this.ui.geom.filter((g) => (side === "left" ? g.hiddenL : g.hiddenR)).length;
+        return (this.ui.hid && this.ui.hid[side]) || 0;
     }
     searchPlaceholder(side) {
         const n = side === "left" ? this.props.leftItems.length : this.props.rightItems.length;
@@ -827,7 +913,12 @@ export class MappingCanvas extends Component {
         if (!d.ids.length) { return; }
         const i = (this._dockCursor[d.key] || 0) % d.ids.length;
         this._dockCursor[d.key] = i + 1;
-        const g = this.ui.geom.find((x) => x.id === d.ids[i]);
+        // MAPFIX F1 — a chip may name a wire that is NOT drawn (its end is behind
+        // a filter). That is precisely the wire whose chip is worth pressing, so
+        // the lookup spans both sets; `jumpTo` then clears the filter and the wire
+        // reappears with the card it points at.
+        const g = this.ui.geom.find((x) => x.id === d.ids[i])
+               || this.ui.supp.find((x) => x.id === d.ids[i]);
         if (g) { this.jumpTo(d.side, g); }
     }
 

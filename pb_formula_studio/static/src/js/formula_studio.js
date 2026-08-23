@@ -8,6 +8,7 @@ import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { loadPDFJSAssets } from "@web/core/utils/pdfjs";
 import { GridStudio } from "./grid/grid_studio";
 import { MappingCanvas } from "./mapping/mapping_canvas";
+import { placeInLane } from "./mapping/mapping_geometry";
 import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
@@ -4409,14 +4410,37 @@ export class PbFormulaStudio extends Component {
             this.state.mapEmpHidden = [...(this.state.mapEmpHidden || []), id];
         }
     }
+    /**
+     * MAPFIX F2 — a field added mid-session lands in its LANE, not at the end.
+     *
+     * `_ec_place_in_lane` (pb_formula_studio.py) fixed the SERVER's append in
+     * Phase E, and the E2 invariant was written about
+     * `employee_mapping_data(...)['right']` — which is what it was written about,
+     * and not what the canvas finally renders. The client concatenated its
+     * session extras after the whole catalogue whatever lane they belonged to, so
+     * pinning "Employee Type" from the search box drew a second "Personal"
+     * heading under "Other contract fields" and the lane headers stopped telling
+     * the truth for as long as the session lasted (MF36 (b)).
+     *
+     * This is the same insertion rule, expressed once here: before the first card
+     * of a LATER lane, i.e. at the end of its own lane. A lane that is not on the
+     * board at all gets its heading for free — the canvas emits one whenever
+     * `group` changes between consecutive rows, which is exactly what an insert
+     * between two other lanes causes.
+     *
+     * The rule itself is `placeInLane` in `mapping/mapping_geometry.js` — the
+     * pure kernel, where it can be unit-tested without mounting this component.
+     */
     get mapEmpRight() {
         const base = (this.state.mapData && this.state.mapData.right) || [];
         const hidden = new Set(this.state.mapEmpHidden || []);
         const seen = new Set(base.map(i => i.id));
-        return [
-            ...base.filter(i => !hidden.has(i.id)),
-            ...((this.state.mapEmpExtras || []).filter(i => !seen.has(i.id) && !hidden.has(i.id))),
-        ];
+        const out = base.filter(i => !hidden.has(i.id));
+        for (const extra of (this.state.mapEmpExtras || [])) {
+            if (seen.has(extra.id) || hidden.has(extra.id)) { continue; }
+            placeInLane(out, extra);
+        }
+        return out;
     }
     // the canvas' RIGHT items: employee tab merges the pinned extras
     get mapRightItems() {
