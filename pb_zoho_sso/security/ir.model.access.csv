@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_zoho_sso_identity_system,Zoho SSO identities,model_pb_zoho_sso_identity,base.group_system,1,1,1,1
+access_pb_zoho_sso_transaction_system,Zoho SSO transactions,model_pb_zoho_sso_transaction,base.group_system,1,0,0,1
+access_pb_zoho_sso_audit_system,Zoho SSO audit,model_pb_zoho_sso_audit,base.group_system,1,0,0,0
