@@ -192,8 +192,27 @@
                          is what the file has to contain), or whether a many2one
                          creates what it cannot find. Rendered only for cards that
                          carry a note, so every other board is unchanged. -->
-                    <div t-if="note(it)" t-attf-class="mc-item-note {{ note(it).tone }}"
-                         t-att-title="note(it).title" t-esc="note(it).text"/>
+                    <!-- MAPFIX E1 — and when the card had to CUT the list, the
+                         note is the way to open it. The tooltip was the only
+                         place the rest of the values existed: slow, unselectable,
+                         cut off by the viewport, and absent on touch. Only a
+                         truncated note becomes a button — the adapter sends
+                         `values` only when it hid something, so an affordance
+                         that would do nothing never appears. -->
+                    <t t-if="note(it)">
+                      <button t-if="noteValues(it)" type="button"
+                              t-attf-class="mc-item-note act {{ note(it).tone }} {{ isNoteOpen(it) ? 'on' : '' }}"
+                              t-att-title="note(it).title"
+                              t-att-aria-label="noteMenuLabel(it)"
+                              aria-haspopup="dialog"
+                              t-att-aria-expanded="isNoteOpen(it) ? 'true' : 'false'"
+                              t-on-click="(ev) => this.toggleNoteMenu(it, ev)">
+                        <span class="mc-item-note__t"><t t-esc="note(it).text"/><span
+                              class="mc-item-note__x" t-out="ic('chevronDown', 11)"/></span>
+                      </button>
+                      <div t-else="" t-attf-class="mc-item-note {{ note(it).tone }}"
+                           t-att-title="note(it).title" t-esc="note(it).text"/>
+                    </t>
                   </div>
                   <button t-if="props.onRemoveRight and !isRightWired(it.id)" class="mc-item-x" title="Remove field"
                           t-on-click="(ev) => this.removeRight(it.id, ev)" t-out="ic('x', 12)"/>
@@ -384,21 +403,38 @@
            OUTSIDE `.mc-board` for the transform popover's reason: the board
            clips, and a menu cut in half by a column edge is worse than none.
            Three verbs with room for a sentence each, instead of three pills
-           painted across the name they belong to. -->
+           painted across the name they belong to.
+
+           MAPFIX E1 — and the right column's VALUE LIST, which is this same
+           popover with a different body. One implementation, one placement
+           routine, one scrim, one Escape rung. -->
       <t t-if="ui.menu">
         <div class="mc-menu-scrim" t-on-click="() => this.closeItemMenu(true)"/>
-        <div t-attf-class="mc-menu {{ ui.menu.flip ? 'flip' : '' }}" t-ref="menu"
-             role="menu" t-att-aria-label="ui.menu.label"
+        <div t-attf-class="mc-menu {{ ui.menu.flip ? 'flip' : '' }} {{ ui.menu.kind === 'values' ? 'vals' : '' }}"
+             t-ref="menu"
+             t-att-role="ui.menu.kind === 'values' ? 'dialog' : 'menu'"
+             t-att-aria-label="ui.menu.label"
              t-attf-style="left:{{ ui.menu.x }}px;top:{{ ui.menu.y }}px"
              t-on-keydown="onMenuKeydown"
              t-on-click="(ev) => ev.stopPropagation()">
           <div class="mc-menu__h" t-esc="ui.menu.label"/>
-          <button t-foreach="ui.menu.acts" t-as="act" t-key="act.key"
-                  class="mc-menu__i" type="button" role="menuitem"
-                  t-on-click="() => this.runMenuAction(act)">
-            <span class="mc-menu__l" t-esc="act.label"/>
-            <span t-if="act.hint" class="mc-menu__s" t-esc="act.hint"/>
-          </button>
+          <t t-if="ui.menu.kind === 'values'">
+            <div class="mc-menu__vals" tabindex="-1">
+              <div t-foreach="ui.menu.values" t-as="v" t-key="v.key" class="mc-menu__v">
+                <span class="mc-menu__vl" t-esc="v.label"/>
+                <span t-if="v.key !== v.label" class="mc-menu__vk" t-esc="v.key"/>
+              </div>
+            </div>
+            <div class="mc-menu__f" t-esc="valuesFooter()"/>
+          </t>
+          <t t-else="">
+            <button t-foreach="ui.menu.acts" t-as="act" t-key="act.key"
+                    class="mc-menu__i" type="button" role="menuitem"
+                    t-on-click="() => this.runMenuAction(act)">
+              <span class="mc-menu__l" t-esc="act.label"/>
+              <span t-if="act.hint" class="mc-menu__s" t-esc="act.hint"/>
+            </button>
+          </t>
         </div>
       </t>
 

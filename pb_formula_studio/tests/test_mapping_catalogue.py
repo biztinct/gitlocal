@@ -60,16 +60,17 @@ class TestMappingCatalogue(TransactionCase):
         # the field whose absence started this: you could not map a name.
         self.assertIn(self._spec('hr.employee', 'name'), ids)
         # MF-B1 — the four mirror many2one fields the batch has always supported.
-        # MF11: on Odoo 19 the hr.employee copies of three of them are NOT stored,
-        # so the STORED destination is the contract's. The catalogue must offer
-        # whichever of the two actually holds the value, and never neither.
+        # MF11: on Odoo 19 the hr.employee copies of three of them are NOT stored;
+        # MAPFIX E2 explains why (they are delegated to hr.version) and offers them
+        # anyway, because delegated is writable. The catalogue must offer whichever
+        # of the two records the reader looks on, and never neither.
         for fname in ('job_id', 'department_id', 'resource_calendar_id', 'company_id'):
             offered = [m for m in ('hr.employee', 'hr.contract')
                        if self._spec(m, fname) in ids]
             self.assertTrue(offered,
                             "%s is not offered as a destination on either model" % fname)
             for model in offered:
-                self.assertTrue(self.env[model]._fields[fname].store)
+                self.assertTrue(self.Studio._ec_is_mappable(model, fname))
         # at least one many2one really did widen the set
         self.assertIn(self._spec('hr.employee', 'parent_id'), ids)
         # …and the technical noise is not offered at all
@@ -78,15 +79,23 @@ class TestMappingCatalogue(TransactionCase):
             self.assertNotIn(self._spec('hr.employee', fname), ids,
                              "%s leaked into the catalogue" % fname)
 
-        # every returned field is stored, writable and of an allowed type
+        # every returned field is WRITABLE and of an allowed type.
+        #
+        # MAPFIX E2 — this used to assert `field.store`, which was the predicate
+        # of the day and was wrong: Odoo 19 delegates hr.employee's HR data to
+        # hr.version (`_inherits`), so `employee_type`, `marital`, `sex`,
+        # `passport_id` and forty more are RELATED, non-stored — and every one of
+        # them takes a write. What a destination has to be able to do is RECEIVE a
+        # value; where the row physically lands is the ORM's business.
         for it in items:
             model, fname = it['meta']['model'], it['meta']['field']
             field = self.env[model]._fields[fname]
-            self.assertTrue(field.store, "%s.%s is not stored" % (model, fname))
             self.assertFalse(field.readonly, "%s.%s is readonly" % (model, fname))
             self.assertIn(field.type, self.Studio._EC_TTYPES)
-            # an unstored compute with no inverse has nowhere to put the value
-            self.assertTrue(field.store or field.inverse,
+            # a stored column, a related write-through, an explicit inverse or a
+            # delegate — anything else is a compute with nowhere to put the value
+            self.assertTrue(field.store or field.inverse or field.related
+                            or getattr(field, 'inherited', False),
                             "%s.%s cannot receive a write" % (model, fname))
 
         # the catalogue is a real widening, not a re-shuffle of the old 22

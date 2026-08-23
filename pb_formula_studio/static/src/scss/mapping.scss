@@ -309,6 +309,66 @@
 }
 .mapping-canvas .mc-item-note.warn { color: var(--i-amber-ink, #D97706); }
 
+/* MAPFIX E1 — a note that had to CUT the list becomes the way to open it.
+   It stays exactly where the inert note was: its own block under the sublabel,
+   never a second thing on the name's line. MF13/CR22/MF26 is about affordances
+   that SHARE a line with the text and reserve unpredictable width; this one
+   reserves none, because it is the text. The chevron sits inside the clamped
+   box after the last word, so it cannot push the card wider either. */
+.mapping-canvas .mc-item-note.act {
+    display: block; width: 100%; margin-top: 3px; padding: 0;
+    border: 0; background: none; font: inherit; font-size: 10.5px;
+    line-height: 1.35; text-align: inherit; cursor: pointer;
+    color: var(--i600, #4A3D96);
+}
+.mapping-canvas .mc-item-note.act .mc-item-note__t {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-decoration: underline; text-decoration-style: dotted;
+    text-underline-offset: 2px; text-decoration-color: var(--i-border, #CBC2EE);
+}
+.mapping-canvas .mc-item-note.act .mc-item-note__x {
+    display: inline-block; vertical-align: -2px; margin-left: 3px; opacity: .8;
+}
+.mapping-canvas .mc-item-note.act .mc-item-note__x svg { width: 11px; height: 11px; }
+.mapping-canvas .mc-item-note.act:hover .mc-item-note__t,
+.mapping-canvas .mc-item-note.act.on .mc-item-note__t {
+    text-decoration-color: currentColor;
+}
+.mapping-canvas .mc-item-note.act:focus-visible {
+    outline: 2px solid var(--i, #5A4BB0); outline-offset: 2px; border-radius: 5px;
+}
+.mapping-canvas .mc-item-note.act.warn { color: var(--i-amber-ink, #D97706); }
+
+/* The value list, inside the SAME popover the card menu uses (`.mc-menu`). It
+   scrolls on its own so a 120-row selection never makes the popover taller than
+   the board — the board is what `_placeMenu` measures against, and a popover that
+   outgrows it is the MF27 defect coming back. */
+.mapping-canvas .mc-menu.vals { width: 288px; }
+.mapping-canvas .mc-menu__vals {
+    max-height: 244px; overflow-y: auto; padding: 1px 2px 3px;
+}
+.mapping-canvas .mc-menu__vals:focus-visible { outline: none; }
+.mapping-canvas .mc-menu__v {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 4px 7px; border-radius: 7px;
+}
+.mapping-canvas .mc-menu__v:nth-child(odd) { background: var(--i-wash, #F1F5F9); }
+.mapping-canvas .mc-menu__vl {
+    flex: 1; min-width: 0; font-size: 12px; color: var(--ink, #1E1B2E);
+    overflow-wrap: anywhere;
+}
+.mapping-canvas .mc-menu__vk {
+    flex: none; max-width: 46%; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px; font-weight: 700; color: var(--i600, #4A3D96);
+    background: var(--i-soft, #EDEAF8); padding: 1px 5px; border-radius: 5px;
+    overflow-wrap: anywhere;
+}
+.mapping-canvas .mc-menu__f {
+    font-size: 10px; line-height: 1.4; color: var(--muted, #6B7280);
+    padding: 6px 9px 4px; border-top: 1px solid var(--line, #E8E9F3); margin-top: 3px;
+}
+
 .mapping-canvas .mc-item-sub { font-size: 11px; color: var(--muted, #6B7280); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
 .mapping-canvas .mc-col.right .mc-item-sub { flex-direction: row-reverse; }
 .mapping-canvas .mc-col-tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5px; font-weight: 800; background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); padding: 1px 5px; border-radius: 5px; }

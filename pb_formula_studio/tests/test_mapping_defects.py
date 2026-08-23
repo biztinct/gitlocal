@@ -132,8 +132,20 @@ class TestMappingDefects(TransactionCase):
             note = card['meta'].get('note')
             self.assertTrue(note, "%s says nothing about its values" % card['id'])
             blob = '%s %s' % (note['text'], note['title'])
+            # MAPFIX E1 — the tooltip is no longer the only place the values are.
+            # A truncated note carries the structured list the popover opens, and
+            # both it and the tooltip are capped at `_EC_SEL_VALUES_MAX`, because
+            # one field with 430 timezones would otherwise be 26 KB of payload for
+            # one card out of 240. What is promised is that every value the card
+            # SHOWS is printed with its stored code, and that the cap is said out
+            # loud rather than silently swallowing the tail.
+            values = note.get('values') or []
+            printed = blob + ' ' + ' '.join(v['key'] for v in values)
+            if len(keys) > self.Studio._EC_SEL_VALUES_MAX:
+                self.assertEqual(note.get('total'), len(keys))
+                keys = keys[:self.Studio._EC_SEL_VALUES_MAX]
             for key in keys:
-                self.assertIn(key, blob,
+                self.assertIn(key, printed,
                               "%s: the stored value %r is nowhere on the card"
                               % (card['id'], key))
             self.assertNotIn('Odoo', blob)

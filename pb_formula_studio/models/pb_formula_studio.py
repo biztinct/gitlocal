@@ -5078,6 +5078,14 @@ class PbFormulaStudio(models.AbstractModel):
         'kanban_state', 'legend_blocked', 'legend_done', 'legend_normal',
         'image_1920', 'image_1024', 'image_512', 'image_256', 'image_128',
         'avatar_1920', 'avatar_1024', 'avatar_512', 'avatar_256', 'avatar_128',
+        # MAPFIX E2 — hr.version plumbing. Odoo 19 delegates hr.employee's HR
+        # data to a VERSION record (`_inherits`), which the predicate below now
+        # follows; these four are the delegation's own machinery rather than
+        # anything a spreadsheet describes. `version_id` points at the delegate
+        # (re-pointing it from an import would move an employee's whole history
+        # onto another record), `date_version` dates it, and the two
+        # `last_modified_*` are write stamps in the family of `write_uid`.
+        'version_id', 'date_version', 'last_modified_date', 'last_modified_uid',
     )
     _EC_DENY_PREFIXES = ('message_', 'activity_', 'access_', 'rating_',
                          'website_message_')
@@ -5210,19 +5218,35 @@ class PbFormulaStudio(models.AbstractModel):
         field = Model._fields.get(fname)
         if field is None:
             return False
-        if not field.store or field.readonly:
+        if field.readonly:
             return False
         if field.type not in self._EC_TTYPES:
             return False
-        # A COMPUTE is fine as long as the value is persisted and the field is not
-        # readonly — that is Odoo's own "editable computed field", and it is what
-        # `hr.contract.department_id`, `job_id`, `resource_calendar_id` and
-        # `company_id` are (computed from the employee, stored, writable). Excluding
-        # them would have removed the four most-wanted destinations on the whole
-        # board (MF11). What genuinely cannot be mapped is an UNSTORED compute with
-        # no inverse, which has nowhere to put the value; `store` above already
-        # excludes it, and this line says so out loud rather than by implication.
-        if field.compute and not field.store and not field.inverse:
+        # ------------------------------------------------------------------
+        # MAPFIX E2 — the question is WRITABLE, not STORED.
+        #
+        # This test used to read `not field.store or field.readonly`, and the
+        # `store` half was wrong on Odoo 19. `hr.employee` delegates its HR data
+        # to `hr.version` (`_inherits = {'hr.version': 'version_id'}`), so
+        # `employee_type`, `marital`, `sex`, `passport_id`, `identification_id`,
+        # `ssnid`, `job_title`, the whole private address — 45 fields on
+        # hr.employee and 3 more on hr.contract — are RELATED, non-stored fields.
+        # Every one of them is perfectly writable: a write propagates to the
+        # delegate. `store` refused all of them, which is why the six-value
+        # Employee Type selection the owner was looking at was nowhere on the
+        # board (and why MF11's "department is on the contract only" reading was
+        # a symptom of this, not the disease).
+        #
+        # A COMPUTE is fine as long as something knows where to put the value.
+        # For a STORED one that is the column itself — Odoo's ordinary editable
+        # computed field, which is what `hr.contract.department_id`, `job_id`,
+        # `resource_calendar_id` and `company_id` are (MF11). For an UNSTORED one
+        # it is `related` (the ORM writes through `_inverse_related`), an
+        # explicit `inverse`, or `_inherits` delegation. Anything else is a
+        # compute with nowhere to write, which is what the old `store` test was
+        # really trying to say — so that is what this says now.
+        if not field.store and not (
+                getattr(field, 'inherited', False) or field.related or field.inverse):
             return False
         if fname in self._EC_DENY_NAMES:
             return False
@@ -5249,6 +5273,15 @@ class PbFormulaStudio(models.AbstractModel):
     # ------------------------------------------------------------------
     _EC_SEL_INLINE_MAX = 4        # values a card may list in full
     _EC_SEL_INLINE_CHARS = 44     # …and the width that listing may take
+    # MAPFIX E1 — how many values a TRUNCATED note carries as structured data for
+    # the popover (and names in its tooltip). The cap exists because one field can
+    # dwarf a whole board: `hr.employee.tz` has **597** timezones on this build,
+    # which is ~30 KB of payload and a 30 KB `title=` attribute for ONE card out
+    # of 236 (MF34 has the measured figures). 120 is past
+    # the point where anybody reads a list rather than searching it, and the
+    # popover says out loud when it is showing a subset rather than pretending the
+    # rest do not exist.
+    _EC_SEL_VALUES_MAX = 120
 
     @api.model
     def _ec_selection_note(self, field):
@@ -5277,21 +5310,42 @@ class PbFormulaStudio(models.AbstractModel):
                 pairs.append((str(entry[0]), str(entry[0])))
         if not pairs:
             return None
-        # The FULL list always goes in the tooltip, keys included: the key is what
-        # the spreadsheet must literally contain.
+        shown = pairs[:self._EC_SEL_VALUES_MAX]
+        # The list goes in the tooltip, keys included: the key is what the
+        # spreadsheet must literally contain. Capped for the same reason the
+        # structured list is (`_EC_SEL_VALUES_MAX`) — a tooltip nobody can read to
+        # the end is not a smaller problem than a payload nobody wanted to send.
         full = ", ".join(
             ("%s (%s)" % (label, key)) if label != key else key
-            for key, label in pairs)
+            for key, label in shown)
+        if len(shown) < len(pairs):
+            full = _("%(list)s … and %(n)s more") % {
+                'list': full, 'n': len(pairs) - len(shown)}
         title = _("The file must contain one of these values (the code in "
                   "brackets is what is stored): %s") % full
-        inline = ", ".join(
-            ("%s (%s)" % (label, key)) if label != key else key
-            for key, label in pairs)
-        if len(pairs) <= self._EC_SEL_INLINE_MAX and len(inline) <= self._EC_SEL_INLINE_CHARS:
-            return {'text': inline, 'title': title, 'tone': ''}
+        # The count is tested BEFORE the string is built: `tz` has 597 values and
+        # joining them to discover they are too many is 30 KB of work per card.
+        if len(pairs) <= self._EC_SEL_INLINE_MAX:
+            inline = ", ".join(
+                ("%s (%s)" % (label, key)) if label != key else key
+                for key, label in pairs)
+            if len(inline) <= self._EC_SEL_INLINE_CHARS:
+                # Nothing was hidden, so there is nothing to open: no `values`, and
+                # the board renders inert text rather than an affordance that does
+                # nothing (MAPFIX E1).
+                return {'text': inline, 'title': title, 'tone': ''}
         head = ", ".join(label for _key, label in pairs[:3])
+        # MAPFIX E1 — a truncated note is OPENABLE, and this is what it opens into.
+        # The tooltip was the only place the rest of the list existed: slow to
+        # appear, impossible to select, cut off by the viewport and absent
+        # altogether on a touch screen. `values` is sent ONLY when the inline text
+        # actually hid something, which is what makes "clickable" and "truncated"
+        # the same condition on both sides of the wire.
         return {'text': _("%(n)s values — %(head)s, …") % {
-            'n': len(pairs), 'head': head}, 'title': title, 'tone': ''}
+                    'n': len(pairs), 'head': head},
+                'title': title, 'tone': '',
+                'values': [{'key': key, 'label': label} for key, label in shown],
+                'total': len(pairs)}
 
     @api.model
     def _ec_m2o_note(self, field):
@@ -5344,17 +5398,60 @@ class PbFormulaStudio(models.AbstractModel):
         return notes
 
     @api.model
-    def _ec_field_item(self, fld, lane=None, lane_order=99, notes=None):
-        lane = lane or self._EC_FALLBACK_LANE.get(fld.model, 'other_employee')
+    def _ec_unmappable_note(self, fld):
+        """The note on a card that is only here because something is WIRED to it.
+
+        MAPFIX E2 (3). Losing the card would hide a live mapping, which is the
+        worse failure — but rendering it as an ordinary destination is a lie: the
+        catalogue refuses this field, so the import will read the column and put
+        the value nowhere. Same `warn` tone as `_ec_m2o_note`'s refusals, because
+        it is the same kind of news.
+        """
+        return {
+            'text': _("This destination cannot be written — re-point this column"),
+            'title': _("A column is mapped here, but %(label)s is not a field an "
+                       "import can write. The value would be read and then "
+                       "dropped. Send the column somewhere else, or remove the "
+                       "mapping.") % {'label': fld.field_description or fld.name},
+            'tone': 'warn',
+        }
+
+    @api.model
+    def _ec_field_item(self, fld, lane=None, lane_order=None, notes=None):
+        """ONE right-hand card, built ONE way.
+
+        MAPFIX E2 (2) — there used to be two construction sites and they
+        disagreed. The catalogue path passed a lane, a lane order and a per-model
+        note map; the keep-a-wired-field-visible path inside
+        `employee_mapping_data` passed NOTHING, so such a card landed in the
+        fallback lane by accident rather than by decision and its note lookup went
+        through `_ec_notes_for`, which gates on `_ec_is_mappable` — so a wired
+        field the catalogue refuses rendered as a card with no note at all. The
+        invariant this method now carries, and which `test_02` asserts over the
+        whole board: *every card rendered on the right has the same metadata it
+        would have had if it had come from the catalogue.*
+        """
+        if lane is None or lane_order is None:
+            pos_of, order_of = self._ec_lane_index()
+            hit = pos_of.get((fld.model, fld.name))
+            if hit:
+                lane_order, lane = hit[0], hit[1]
+            else:
+                lane = self._EC_FALLBACK_LANE.get(fld.model, 'other_employee')
+                lane_order = order_of.get(lane, 99)
         meta = {'model': fld.model, 'field': fld.name, 'ttype': fld.ttype,
                 'lane': lane, 'lane_order': lane_order}
-        # `notes` is passed in by every caller that renders more than one card;
-        # a lone card (the wired-but-off-catalogue append) builds its own.
-        if notes is None and fld.ttype in ('selection', 'many2one'):
-            notes = self._ec_notes_for(fld.model)
-        note = (notes or {}).get(fld.name)
-        if note:
-            meta['note'] = note
+        if not self._ec_is_mappable(fld.model, fld.name):
+            meta['note'] = self._ec_unmappable_note(fld)
+            meta['mappable'] = False
+        else:
+            # `notes` is passed in by every caller that renders more than one card;
+            # a lone card (the wired-but-off-catalogue append) builds its own.
+            if notes is None and fld.ttype in ('selection', 'many2one'):
+                notes = self._ec_notes_for(fld.model)
+            note = (notes or {}).get(fld.name)
+            if note:
+                meta['note'] = note
         return {'id': 'f:%s:%s' % (fld.model, fld.name),
                 'label': fld.field_description or fld.name,
                 'sublabel': self._EC_MODEL_LABEL.get(fld.model, fld.model),
@@ -5374,6 +5471,24 @@ class PbFormulaStudio(models.AbstractModel):
         return pos_of, order_of
 
     @api.model
+    def _ec_catalogue_domain(self, model):
+        """The CHEAP first pass over `ir.model.fields` — and nothing more.
+
+        MAPFIX E2 (4). This domain used to carry `store = True` and
+        `readonly = False` as well, which made `ir.model.fields` a second, quieter
+        copy of the inclusion rule — and the two copies can disagree, because
+        `ir.model.fields.readonly` is a stored snapshot of a registry attribute
+        that a later `_inherit` can change without the row being rewritten. Worse,
+        a field excluded HERE never reached `_ec_is_mappable` at all, so widening
+        the predicate would have changed nothing.
+        One rule, in one place: this narrows the search to field types a
+        spreadsheet cell can describe, and `_ec_is_mappable` (registry truth)
+        decides. 330 rows on hr.employee and 106 on hr.contract — a dict lookup
+        each, once per board.
+        """
+        return [('model', '=', model), ('ttype', 'in', list(self._EC_TTYPES))]
+
+    @api.model
     def _ec_right_items(self, q=''):
         """The whole catalogue, in lane order; curated names first inside a lane,
         then alphabetically by label.
@@ -5386,8 +5501,7 @@ class PbFormulaStudio(models.AbstractModel):
         pos_of, order_of = self._ec_lane_index()
         rows = []
         for model in ('hr.employee', 'hr.contract'):
-            dom = [('model', '=', model), ('store', '=', True),
-                   ('readonly', '=', False), ('ttype', 'in', list(self._EC_TTYPES))]
+            dom = self._ec_catalogue_domain(model)
             # MAPFIX D4 — once per MODEL, then read out of the dict per card.
             notes = self._ec_notes_for(model)
             for f in IMF.search(dom):
@@ -5527,6 +5641,27 @@ class PbFormulaStudio(models.AbstractModel):
         return None
 
     @api.model
+    def _ec_place_in_lane(self, items, item):
+        """Insert a card at the END OF ITS OWN LANE rather than at the end of the
+        column.
+
+        MAPFIX E2 (2). A card appended after the last lane draws a second group
+        header for a heading the reader has already scrolled past — the canvas
+        emits one whenever the group CHANGES between consecutive rows, so an
+        Identity card tacked on below "Other contract fields" grows an "Identity"
+        heading of its own at the bottom of the board. Now that the appended card
+        knows its lane, it can be put where that lane is.
+        """
+        lo = (item.get('meta') or {}).get('lane_order', 99)
+        at = len(items)
+        for n, other in enumerate(items):
+            if ((other.get('meta') or {}).get('lane_order', 99) or 0) > lo:
+                at = n
+                break
+        items.insert(at, item)
+        return items
+
+    @api.model
     def employee_mapping_data(self, config_id=None, context_id=None, include_payroll=False):
         config = self._pick_config(config_id)
         if not config:
@@ -5545,12 +5680,19 @@ class PbFormulaStudio(models.AbstractModel):
                 continue
             wires.append({'id': 'em%s' % m.id, 'kind': 'mapping', 'ref': m.id,
                           'leftId': m.component_id.id, 'rightId': rid, 'state': 'accepted'})
-            # a wired field must appear in RIGHT even when not in the curated/search set
+            # A wired field must appear in RIGHT even when the catalogue did not
+            # offer it — a search may have filtered it out, or the catalogue may
+            # refuse the destination outright. MAPFIX E2: this goes through the
+            # SAME `_ec_field_item` as the catalogue, which now resolves the lane
+            # and the note itself, so the appended card is indistinguishable from
+            # a catalogue one except in the ONE way that matters — an unwritable
+            # destination says so, in the caution tone, instead of rendering as a
+            # perfectly ordinary field with nothing to say for itself.
             if rid not in present:
                 fld = self.env['ir.model.fields'].sudo().search(
                     [('model', '=', m.target_model_id.model), ('name', '=', m.target_field_id.name)], limit=1)
                 if fld:
-                    right.append(self._ec_field_item(fld))
+                    self._ec_place_in_lane(right, self._ec_field_item(fld))
                     present.add(rid)
         return {
             'ok': True, 'left': left, 'right': right, 'wires': wires,
@@ -5613,8 +5755,7 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'fields': []}
         IMF = self.env['ir.model.fields'].sudo()
         pos_of, order_of = self._ec_lane_index()
-        dom = [('model', '=', model), ('store', '=', True), ('readonly', '=', False),
-               ('ttype', 'in', list(self._EC_TTYPES))]
+        dom = self._ec_catalogue_domain(model)      # MAPFIX E2 — one rule, one place
         items = []
         notes = self._ec_notes_for(model)      # MAPFIX D4 — once, not per field
         for f in IMF.search(dom, order='field_description'):
