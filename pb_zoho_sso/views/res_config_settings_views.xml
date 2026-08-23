@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_pb_zoho_sso" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pb.zoho.sso</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="priority" eval="110"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='companies']" position="after">
+                <div id="pb_zoho_sso_settings">
+                    <block title="Zoho single sign-on" name="pb_zoho_sso">
+                        <setting id="pb_zoho_sso_enabled_setting"
+                                 string="Allow users to sign in through Zoho People"
+                                 help="Uses Zoho Authorization Code flow with PKCE and maps the verified Zoho identity to an existing Payobook user.">
+                            <field name="pb_zoho_sso_enabled"/>
+                        </setting>
+                        <setting string="Zoho OAuth client" invisible="not pb_zoho_sso_enabled">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="pb_zoho_sso_client_id" class="col-lg-3 o_light_label"/>
+                                    <field name="pb_zoho_sso_client_id" class="oe_inline" placeholder="1000.XXXXXXXX"/>
+                                </div>
+                                <div class="row mt16">
+                                    <label for="pb_zoho_sso_client_secret" class="col-lg-3 o_light_label"/>
+                                    <field name="pb_zoho_sso_client_secret" class="oe_inline" password="True"/>
+                                </div>
+                                <div class="row mt16">
+                                    <label for="pb_zoho_sso_accounts_url" class="col-lg-3 o_light_label"/>
+                                    <field name="pb_zoho_sso_accounts_url" class="oe_inline"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Account linking" invisible="not pb_zoho_sso_enabled"
+                                 help="Manual approval is always available under Settings → Zoho SSO.">
+                            <field name="pb_zoho_sso_auto_link_email"/>
+                            <div class="content-group mt16" invisible="not pb_zoho_sso_auto_link_email">
+                                <label for="pb_zoho_sso_allowed_domains" class="o_light_label"/>
+                                <field name="pb_zoho_sso_allowed_domains" placeholder="yourcompany.com,yourcompany.com.au"/>
+                            </div>
+                        </setting>
+                        <setting string="Zoho People button" invisible="not pb_zoho_sso_enabled"
+                                 help="Copy this URL into the Zoho People button. The destination is resolved inside Payobook, never from an external URL.">
+                            <div class="content-group">
+                                <label for="pb_zoho_sso_default_target" class="o_light_label"/>
+                                <field name="pb_zoho_sso_default_target"/>
+                                <label for="pb_zoho_sso_button_url" class="o_light_label mt16"/>
+                                <field name="pb_zoho_sso_button_url" readonly="1" class="w-100"/>
+                            </div>
+                        </setting>
+                        <setting string="Zoho API Console" invisible="not pb_zoho_sso_enabled"
+                                 help="Register this exact redirect URI on a Server-based Application. Do not add wildcards.">
+                            <div class="content-group">
+                                <label for="pb_zoho_sso_callback_url" class="o_light_label"/>
+                                <field name="pb_zoho_sso_callback_url" readonly="1" class="w-100"/>
+                                <label for="pb_zoho_sso_scope" class="o_light_label mt16"/>
+                                <field name="pb_zoho_sso_scope" readonly="1"/>
+                            </div>
+                        </setting>
+                    </block>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
