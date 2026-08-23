@@ -24,7 +24,7 @@
           session / crash) and non-blocking loading UX
         - Searchable grid apps menu
     ''',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Biztinct',
@@ -88,6 +88,20 @@
             'biz_theme/static/src/webclient/apps_menu_patch.js',
             'biz_theme/static/src/webclient/apps_menu.xml',
             'biz_theme/static/src/webclient/apps_menu.scss',
+        ],
+        # Portal / website / login run the same error service but a different
+        # bundle, and without these three files they fall back to the STOCK
+        # dialog — vendor-branded title, ungated "See technical details"
+        # traceback. The error-dialog module imports only from
+        # web/static/src/core/**, which web.assets_frontend already carries, so
+        # nothing backend-only is dragged along.
+        'web.assets_frontend': [
+            'biz_theme/static/src/scss/biz_error_dialogs.scss',
+            'biz_theme/static/src/js/biz_error_dialogs.js',
+            'biz_theme/static/src/xml/biz_error_dialogs.xml',
+        ],
+        'web.assets_unit_tests': [
+            'biz_theme/static/tests/**/*',
         ],
     },
     'installable': True,

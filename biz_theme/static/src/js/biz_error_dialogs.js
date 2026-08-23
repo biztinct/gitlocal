@@ -15,6 +15,12 @@
  *
  * Uncaught traceback dialogs (web.ErrorDialog / RPCErrorDialog) are restyled
  * by biz_error_dialogs.scss — the stack stays behind "technical details".
+ *
+ * Shipped into BOTH web.assets_backend and web.assets_frontend: portal, website
+ * and login pages run the same error service and, without this file, fall back
+ * to the stock dialog — which carries a vendor-branded title and an ungated
+ * traceback expander. Every import below resolves to web/static/src/core/**,
+ * which the frontend bundle already contains.
  */
 
 import { browser } from "@web/core/browser/browser";
@@ -30,8 +36,24 @@ import {
     RPCErrorDialog,
     ClientErrorDialog,
     NetworkErrorDialog,
+    WarningDialog,
+    RedirectWarningDialog,
 } from "@web/core/errors/error_dialogs";
 import { Component, useState } from "@odoo/owl";
+
+// ---------------------------------------------------------------------------
+// Brand scrub. The server labels generic failures with its own vendor name in
+// PLAIN (untranslated) literals — odoo/http.py, web/controllers/export.py,
+// error_service.js's third-party-script traceback — and the core dialog classes
+// re-mint them client-side ("Odoo Error", "Odoo Warning", "Odoo Server Error").
+// None of those are reachable by a translation seam, so they are stripped at
+// the component level here, language-independently. Brand-neutral by design so
+// the reusable base stays portable.
+//
+// Declared ABOVE the dialog class because BizErrorDialog now sanitises on every
+// path — not just in the two fallback handlers at the bottom of this file.
+// ---------------------------------------------------------------------------
+export const stripOdoo = (s) => (typeof s === "string" ? s.replace(/\bOdoo\s+/g, "").trim() : s);
 
 const VARIANTS = {
     access: {
@@ -62,7 +84,10 @@ const VARIANTS = {
     crash: {
         icon: "wrench",
         title: _t("Something went wrong on our side"),
-        hint: _t("This wasn't you. Try again — if it keeps happening, copy the details and share them with support."),
+        // No "copy the details" here: that button is now developer-mode only,
+        // so promising it to an end user would be an instruction they cannot
+        // follow.
+        hint: _t("This wasn't you. Try again — if it keeps happening, let your administrator know so support can look into it."),
     },
 };
 
@@ -116,10 +141,15 @@ export class BizErrorDialog extends Component {
     setup() {
         this.state = useState({ showDetails: false, copied: false });
         const { data, message } = this.props;
-        this.message =
+        // Sanitise HERE, not in the handlers: the registry-routed path (every
+        // named exception in EXCEPTION_VARIANT, which is how a plain UserError
+        // arrives) never passes through bizRpcFallbackHandler/bizDefaultHandler,
+        // so a message carrying the vendor name used to reach the user raw.
+        this.message = stripOdoo(
             (data && data.arguments && data.arguments.length && data.arguments[0]) ||
-            message ||
-            "";
+                message ||
+                ""
+        );
         this.variant = this.inferVariant();
         this.meta = VARIANTS[this.variant];
         this.groups = this.variant === "access" ? parseAccessGroups(this.message) : [];
@@ -139,11 +169,14 @@ export class BizErrorDialog extends Component {
     }
 
     get technicalDetails() {
+        // `traceback` is where error_service parks its untranslated
+        // "…cannot be accessed by the Odoo framework…" sentence for a
+        // third-party script error; scrub every part, not just the message.
         const parts = [
-            this.props.name,
+            stripOdoo(this.props.name),
             this.message,
             this.props.exceptionName,
-            this.props.traceback,
+            stripOdoo(this.props.traceback),
         ].filter(Boolean);
         return parts.join("\n\n");
     }
@@ -154,8 +187,9 @@ export class BizErrorDialog extends Component {
     }
 
     get showTechnicalDetails() {
-        // Raw payloads are never surfaced to end users — "Copy details" still
-        // captures them for support. Developers see the expander in debug mode.
+        // Raw payloads are never surfaced to end users — not on screen and not
+        // via the clipboard ("Copy details" is gated on THIS getter too, not on
+        // hasDetails). Developers keep the expander in debug mode.
         return this.hasDetails && Boolean(window.odoo && window.odoo.debug);
     }
 
@@ -205,11 +239,9 @@ errorDialogRegistry.add("504", BizErrorDialog, { force: true });
 // ErrorDialog family, whose titles are the literal English SOURCE strings
 // "Odoo Error / Odoo Server Error / Odoo Client Error / Odoo Network Error".
 // web_debranding cannot reach these — source-language terms aren't in the
-// translation catalog, so `_t()` returns them verbatim. Strip the "Odoo" brand
-// at the component level here (language-independent), consistent with the calm
-// titles above. Brand-neutral by design so the reusable base stays portable.
+// translation catalog, so `_t()` returns them verbatim. `stripOdoo` (top of
+// file) cleans them at the component level, language-independently.
 // ---------------------------------------------------------------------------
-const stripOdoo = (s) => (typeof s === "string" ? s.replace(/\bOdoo\s+/g, "").trim() : s);
 
 // The template renders the INSTANCE `this.title` (the static class titles are
 // getters we can't reassign). Normalize it in setup — covers the static
@@ -228,6 +260,32 @@ patch(RPCErrorDialog.prototype, {
     inferTitle() {
         super.inferTitle(...arguments);
         this.title = stripOdoo(this.title);
+    },
+});
+
+// ...and WarningDialog, which the registry no longer routes to (BizErrorDialog
+// took its exception names over with {force: true}) but which is still
+// instantiated DIRECTLY, bypassing the registry entirely, at
+// web/static/src/model/relational_model/relational_model.js — with no `title`
+// prop, so inferTitle() falls through to the literal "Odoo Warning".
+patch(WarningDialog.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this.title = stripOdoo(this.title);
+        this.message = stripOdoo(this.message);
+    },
+});
+
+// ...and RedirectWarningDialog, which is NOT taken over: it carries an extra
+// action button (`onClick` → action service) that BizErrorDialog has no slot
+// for, and on the frontend bundle there is no action service to give it. Left
+// registered, title/message scrubbed. Its template shows no traceback, so
+// there is nothing technical to suppress.
+patch(RedirectWarningDialog.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this.title = stripOdoo(this.title);
+        this.message = stripOdoo(this.message);
     },
 });
 

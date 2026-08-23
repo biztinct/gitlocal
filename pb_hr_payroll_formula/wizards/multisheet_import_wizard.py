@@ -128,7 +128,9 @@ class MultiSheetImportWizard(models.TransientModel):
     # ==========================================
     primary_key_column = fields.Char(
         string='Primary Key Column',
-        help="Column header used to match rows across worksheets (e.g., 'Employee ID')"
+        help="Column header used to match rows across worksheets (e.g., 'Employee ID'). "
+             "Required before columns can be selected — it is what joins an employee's "
+             "rows together across the workbook."
     )
 
     primary_key_column_letter = fields.Char(

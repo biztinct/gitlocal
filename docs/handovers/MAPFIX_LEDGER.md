@@ -1,5 +1,12 @@
 # MAPFIX — Readable codes, complete mapping, silent errors: conventions + gotcha ledger
 
+**STATUS: PROGRAMME COMPLETE — Phases A, B and C designed, built, deployed and live on
+abm · acme · payobook · payobook_template (2026-08-23).** Final module versions:
+pb_hr_payroll_formula **19.0.1.71.0** · pb_formula_studio **19.0.1.117.0** ·
+biz_theme **19.0.1.4.0** · om_hr_payroll 19.0.1.0.2 (never touched — CR1). Commits: Phase A
+`f658974f`, Phase B `470590bd`, Phase C = the commit that carries this line (a hash cannot name
+itself; it is quoted in the Phase C report) — **none pushed**.
+
 Follow-on programme to COLROLES (see `docs/handovers/COLROLES_LEDGER.md` — its standing rules and
 gotchas CR1–CR33 STILL BIND; this file adds MF-numbered entries). Phases: A codes+rename,
 B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + Primary Key guard.
@@ -155,6 +162,20 @@ B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + 
   kept as history (MF-B3). Reconciliation ships as a footer bar + dialog; the problems rail's
   `idunmapped`/`bankunmapped` now read the SAME `_ec_unresolved` set (abm: board 5, rail 5).
   Live tests on abm: 18/18 (12 new + the 6 COLROLES role tests).
+- **Phase C — DONE, live on abm · acme · payobook · payobook_template (2026-08-23).**
+  Versions: biz_theme **19.0.1.4.0** · pb_hr_payroll_formula **19.0.1.71.0**.
+  MF-C1: `stripOdoo` moved to the top of `biz_error_dialogs.js` and applied inside
+  `BizErrorDialog` itself (message getter + every part of `technicalDetails`), so the
+  registry-routed `UserError` path is sanitised too; "Copy details" re-gated from `hasDetails`
+  to `showTechnicalDetails`; `WarningDialog.prototype` and `RedirectWarningDialog.prototype`
+  patched (title + message) — RedirectWarning kept its own class so its action button survives;
+  the error JS/XML/SCSS now also ship into **`web.assets_frontend`** (portal/website/login).
+  MF-C2: `required="state == 'select_sheets'"` on the multisheet wizard's Primary Key field
+  (state-conditional — see MF19), plus a "(required)" placeholder/bullet and a fuller `help`.
+  The server-side raise was NOT removed and still fires for RPC callers.
+  Regression guard: 5 hoot tests in `biz_theme/static/tests/biz_error_dialogs.test.js`
+  (`web.assets_unit_tests`), 5/5 green live at `/web/tests?filter=biz_error_dialogs`.
+  Live tests on abm: 10/10 numbered cases.
 
 ## Gotchas discovered (append per phase, MF-numbered)
 
@@ -267,3 +288,46 @@ B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + 
   `sudo -u postgres`** — `psql -U odoo` fails peer authentication as `ubuntu` and bare `psql` fails
   with `role "ubuntu" does not exist`. A CR6 verification that silently errors is a CR6
   verification that did not happen.
+- MF18 (C): **on the frontend a named server exception never reaches a dialog at all.** Portal
+  and website populate the `error_notifications` registry with every one of them
+  (`AccessError`, `UserError`, `ValidationError`, `MissingError`, `SessionExpired`, `504`…), and
+  `rpcErrorHandler` checks that registry FIRST — so a live `UserError` on `/my` is a toast, not a
+  dialog, whatever the `error_dialogs` registry says. On top of that,
+  `swallowAllVisitorErrors` (`error_handlers.js`, **sequence 0**) discards every error when
+  `!user.isInternalUser && !odoo.debug && !session.test_mode` — a public visitor sees nothing at
+  all. So the handover's gap 1 is real but narrower than it reads: the stock, ungated traceback
+  dialog was reachable on frontend pages only for **unnamed** failures (client-side JS crashes,
+  raw 500s with no `exceptionName`) and only for **internal users or debug sessions**. That is
+  exactly what the new `web.assets_frontend` entry now covers — verified both ways on `/my`.
+  Lesson: before shipping a component into a second bundle, check which *handler* actually runs
+  there; the registry being right proves nothing on its own.
+- MF19 (C): **a parent `<div invisible="…">` does NOT make its fields invisible for validation.**
+  `record._isInvisible(fieldName)` (`web/static/src/model/relational_model/record.js:782-785`)
+  evaluates the FIELD's own `invisible` modifier and nothing else, and `_checkValidity` skips a
+  field only on that basis. A plain `required="1"` on a field parked inside a step-gated div is
+  therefore enforced on EVERY step of the wizard — including the ones where the field is not
+  rendered, which dead-ends Back and Next. The Primary Key guard is written
+  `required="state == 'select_sheets'"` for that reason; the handover's "the web client skips
+  required-validation there" was wrong, and the state-conditional fallback it offered is the only
+  correct form.
+- MF20 (C): **a visibility gate has to be checked against every string that names the thing it
+  hides.** Gating "Copy details" on developer mode left the crash variant still saying "if it
+  keeps happening, copy the details and share them with support" — an instruction the user now
+  has no button for. `VARIANTS.crash.hint` was rewritten with the gate, not after it.
+- MF21 (C): **biz_debrand's `_t` patch masks whether your own patch works.** `_t("Odoo Warning")`
+  already comes back as "Payobook Warning" on every DB where `biz_debrand` is installed, so both
+  the patched and unpatched `WarningDialog` render a clean title and the live check proves
+  nothing. Probe with a LITERAL the translation seam cannot see — mounting the dialog with
+  `{title: "Odoo Warning", message: "Odoo Server Error: probe"}` returned "Warning" /
+  "Server Error: probe", which is the only evidence that the component-level scrub is live.
+  (The scrub still earns its place: it is what makes `biz_theme` correct as a standalone base
+  with no brand overlay, and it is the only thing that reaches the untranslated literals —
+  `odoo/http.py`'s "Odoo Server Error" and `error_service.js`'s third-party-script traceback.)
+- MF22 (C, environment): the required-field toast ("Missing required fields") is rendered in the
+  main notification container, which a **full-screen wizard dialog covers** — the only visible
+  signal of the block is the red field label. Adequate here, but a required guard inside a
+  fullscreen modal must never depend on the toast being seen.
+- MF23 (C, testing): the multisheet wizard refuses a plain workbook —
+  "Could not detect header rows from color-coded Excel file". Any end-to-end fixture for it has
+  to carry the CR-A4 colour convention; `ABM/ABM Template.xlsx` in the repo is a known-good one
+  (99 components, single sheet `SEVL`, PK header "Employee Code").

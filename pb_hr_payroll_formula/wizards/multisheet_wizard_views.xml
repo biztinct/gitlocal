@@ -70,8 +70,16 @@
                     <!-- Step 2: Select Worksheets -->
                     <div invisible="state != 'select_sheets'">
                         <group string="Primary Key">
+                            <!-- MAPFIX C — guarded at the field so the user is
+                                 never sent to the server-side raise. The
+                                 modifier is state-conditional on purpose: the
+                                 surrounding div's `invisible` is NOT propagated
+                                 to the field (record._isInvisible reads the
+                                 FIELD's own modifier), so a plain required="1"
+                                 would block Back/Next on every later step. -->
                             <field name="primary_key_column"
-                                   placeholder="e.g., Employee ID"/>
+                                   required="state == 'select_sheets'"
+                                   placeholder="e.g., Employee ID (required)"/>
                         </group>
                         <separator string="Available Worksheets"/>
                         <field name="available_sheet_ids" nolabel="1">
@@ -95,7 +103,7 @@
                             <ul class="mb-0">
                                 <li><strong>Include:</strong> Select worksheets to process</li>
                                 <li><strong>Main Sheet:</strong> Designate ONE sheet as the primary payroll structure</li>
-                                <li><strong>Primary Key Column:</strong> Type the column name used as the employee identifier (case-insensitive match)</li>
+                                <li><strong>Primary Key Column (required):</strong> Type the column name used as the employee identifier (case-insensitive match)</li>
                                 <li><strong>Header Row:</strong> Adjust if auto-detection was incorrect</li>
                                 <li><strong>Refs Others:</strong> Indicates this sheet has formulas that reference other sheets</li>
                                 <li><strong>Depends On:</strong> Shows which worksheets this sheet references in its formulas</li>
