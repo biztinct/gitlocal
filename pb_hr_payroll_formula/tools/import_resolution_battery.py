@@ -69,7 +69,39 @@ def install_odoo_shim():
         sys.modules[k] = m
 
 
+def install_markupsafe_shim():
+    """The wizard imports `markupsafe` for its preview HTML. It ships with Odoo but
+    not with a bare interpreter, and without it this battery cannot import the file
+    it exists to test — so a faithful-enough stand-in is provided rather than making
+    the gate depend on the developer's site-packages."""
+    try:
+        import markupsafe  # noqa: F401
+        return
+    except ImportError:
+        pass
+    ms = types.ModuleType('markupsafe')
+
+    class Markup(str):
+        def __add__(self, other):
+            return Markup(str.__add__(self, other))
+
+        def __mod__(self, other):
+            return Markup(str.__mod__(self, other))
+
+        def join(self, seq):
+            return Markup(str.join(self, seq))
+
+        def format(self, *a, **k):
+            return Markup(str.format(self, *a, **k))
+
+    ms.Markup = Markup
+    ms.escape = lambda s: Markup(_html.escape(str(s)))
+    ms.escape_silent = ms.escape
+    sys.modules['markupsafe'] = ms
+
+
 install_odoo_shim()
+install_markupsafe_shim()
 logging.disable(logging.CRITICAL)
 
 # We only want the two methods' logic, not Odoo model machinery. Extract the
@@ -93,11 +125,31 @@ def load_module(path, name, inject=None):
     fe.if_chain = _ic
     sys.modules['fakepkg'] = pkg
     sys.modules['fakepkg.formula_engine'] = fe
+    # The wizard also reaches sideways into `..models` for the plain-Python
+    # classifier and the shared code generator. Both are stdlib-only, so they are
+    # loaded from source rather than stubbed — the code generator in particular is
+    # exactly what the code-generation cases below are testing.
+    models_pkg = types.ModuleType('fakepkg.models')
+    models_pkg.__path__ = []
+    models_dir = os.path.join(MODULE, 'models')
+    import importlib.util as _ilu
+    for mod_name in ('column_role_classifier', 'component_code'):
+        mod_path = os.path.join(models_dir, mod_name + '.py')
+        mod_src = open(mod_path, encoding='utf-8').read().replace(
+            'from .column_role_classifier import', 'from column_role_classifier import')
+        mod = types.ModuleType(mod_name)
+        mod.__dict__['__name__'] = mod_name
+        sys.modules[mod_name] = mod
+        exec(compile(mod_src, mod_path, 'exec'), mod.__dict__)
+        setattr(models_pkg, mod_name, mod)
+        sys.modules['fakepkg.models.' + mod_name] = mod
+    sys.modules['fakepkg.models'] = models_pkg
     src = open(path, encoding='utf-8').read()
     src = src.replace('from ..formula_engine import excel_semantics',
                       'from fakepkg.formula_engine import excel_semantics')
     src = src.replace('from ..formula_engine import if_chain',
                       'from fakepkg.formula_engine import if_chain')
+    src = src.replace('from ..models import', 'from fakepkg.models import')
     g = {'__name__': name, '__package__': 'fakepkg'}
     exec(compile(src, path, 'exec'), g)
     return g

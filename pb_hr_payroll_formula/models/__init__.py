@@ -7,6 +7,10 @@ from . import column_role_classifier
 # COLROLES P3 — same shape as the classifier: plain Python, no model, so the batch
 # and the pure test table share one definition of "what is this account number".
 from . import bank_account_util
+# MAPFIX A — the one code generator, plain Python for the same reason: the import
+# wizards, the Excel connector, the studio, the upgrade migration and the bare
+# `python3` batteries all have to agree on what a column is called.
+from . import component_code
 from . import formula_config
 from . import formula_config_tests
 from . import formula_rule

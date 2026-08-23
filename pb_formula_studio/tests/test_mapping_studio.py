@@ -49,8 +49,11 @@ class TestMappingStudio(TransactionCase):
             'country_code': 'VN', 'state': 'active',
         })
         for i, code in enumerate(codes):
+            # MAPFIX A: hr.formula.rule.code is shape-constrained (uppercase
+            # alphanumeric). The fixture spells its columns in lowercase for
+            # readability; the model is handed the code it will actually enforce.
             self.env['hr.formula.rule'].create({
-                'config_id': cfg.id, 'name': code.title(), 'code': code,
+                'config_id': cfg.id, 'name': code.title(), 'code': code.upper(),
                 'column_type': 'input', 'sequence': (i + 1) * 10,
             })
         return cfg
@@ -146,8 +149,8 @@ class TestMappingStudio(TransactionCase):
         self._store(conn, 'employee', {'basic': 1, 'bonus': 2})
         quiet = self._config('IG-C2 resolver quiet', ['basic'])
         loud = self._config('IG-C2 resolver loud', ['basic', 'bonus'])
-        for path, rule in (('f:basic', loud.rule_ids.filtered(lambda r: r.code == 'basic')),
-                           ('f:bonus', loud.rule_ids.filtered(lambda r: r.code == 'bonus'))):
+        for path, rule in (('f:basic', loud.rule_ids.filtered(lambda r: r.code == 'BASIC')),
+                           ('f:bonus', loud.rule_ids.filtered(lambda r: r.code == 'BONUS'))):
             self.Studio.api_mapping_create(loud.id, conn.id, path, rule.id)
 
         d = self.Studio.mapping_pickers({'connector_id': conn.id})
@@ -183,8 +186,8 @@ class TestMappingStudio(TransactionCase):
         self._store(conn, 'employee', {'employee_id': 'E1', 'basic': 100})
         self._store(conn, 'leave', {'leave_days': 3, 'leave_type': 'AL'})
 
-        basic = cfg.rule_ids.filtered(lambda r: r.code == 'basic')
-        leavedays = cfg.rule_ids.filtered(lambda r: r.code == 'leavedays')
+        basic = cfg.rule_ids.filtered(lambda r: r.code == 'BASIC')
+        leavedays = cfg.rule_ids.filtered(lambda r: r.code == 'LEAVEDAYS')
 
         # a mapping drawn BEFORE feeds existed — no endpoint_id
         legacy = self.FM.create({
@@ -383,13 +386,13 @@ class TestMappingStudio(TransactionCase):
         conn = self._connector('IG-C2 template')
         cfg = self._config('IG-C2 template scheme', ['basic', 'bonus'])
         self._store(conn, 'employee', {'basic': 1, 'bonus': 2})
-        basic = cfg.rule_ids.filtered(lambda r: r.code == 'basic')
+        basic = cfg.rule_ids.filtered(lambda r: r.code == 'BASIC')
 
         tpl = self.env['hr.formula.mapping.template'].create({
             'name': 'IG-C2 vendor', 'adapter': 'api',
             'line_ids': [
-                (0, 0, {'source_key': 'basic', 'target_code': 'basic'}),
-                (0, 0, {'source_key': 'bonus', 'target_code': 'bonus'}),
+                (0, 0, {'source_key': 'basic', 'target_code': 'BASIC'}),
+                (0, 0, {'source_key': 'bonus', 'target_code': 'BONUS'}),
                 (0, 0, {'source_key': 'nowhere', 'target_code': 'nosuchcode'}),
             ],
         })
@@ -405,8 +408,8 @@ class TestMappingStudio(TransactionCase):
         for key in ('applied', 'skipped_existing', 'unmatched_sources',
                     'unmatched_targets'):
             self.assertIn(key, res)
-        self.assertEqual([a['target'] for a in res['applied']], ['bonus'])
-        self.assertEqual([s['target'] for s in res['skipped_existing']], ['basic'])
+        self.assertEqual([a['target'] for a in res['applied']], ['BONUS'])
+        self.assertEqual([s['target'] for s in res['skipped_existing']], ['BASIC'])
         self.assertIn('nowhere', res['unmatched_sources'])
         self.assertIn('nosuchcode', res['unmatched_targets'])
         # the hand-drawn transform survived untouched

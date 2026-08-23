@@ -10,6 +10,7 @@ from odoo.exceptions import UserError
 import logging
 
 from ..models import column_role_classifier
+from ..models import component_code
 
 _logger = logging.getLogger(__name__)
 
@@ -198,14 +199,25 @@ class FormulaImportWizard(models.TransientModel):
         )
 
         created_rules = self.env['hr.formula.rule']
+        # A code arriving inside an uploaded JSON structure is a stranger's string:
+        # it may carry underscores, spaces or 40 characters of accent-stripped
+        # Vietnamese. Normalize it the same way every other import path does — a
+        # code that already conforms is passed through untouched.
+        seen_codes = set(self.config_id.rule_ids.mapped('code'))
+        letters = {r.column_letter for r in self.config_id.rule_ids if r.column_letter}
 
         for rule_data in rules_data:
             max_sequence += 10
 
+            code = component_code.normalize_code(
+                rule_data.get('code') or '',
+                label=rule_data.get('name') or ('Imported %s' % max_sequence),
+                existing_codes=seen_codes, reserved=letters)
+            seen_codes.add(code)
             values = {
                 'config_id': self.config_id.id,
                 'name': rule_data.get('name', 'Imported Rule'),
-                'code': rule_data.get('code', f'IMPORT_{max_sequence}'),
+                'code': code,
                 'sequence': max_sequence,
                 'column_type': rule_data.get('column_type', 'formula'),
                 'excel_formula': rule_data.get('excel_formula', ''),
@@ -1879,24 +1891,12 @@ class FormulaImportWizard(models.TransientModel):
         return empty_columns
 
     def _generate_code_from_label(self, label, existing_codes):
-        """Create a short unique code (3-10 chars) derived from the label."""
-        import re
+        """Create a readable, converter-safe code derived from the label.
 
-        base = re.sub(r'[^A-Za-z0-9]', '', label).upper()
-        if not base:
-            base = 'COL'
-
-        if len(base) < 3:
-            base = (base + 'XXX')[:3]
-        if len(base) > 10:
-            base = base[:10]
-
-        code = base
-        suffix = 1
-        while code in existing_codes:
-            # ensure total length <=10 when adding suffix
-            trimmed = base[: max(1, 10 - len(str(suffix)))]
-            code = f"{trimmed}{suffix}"
-            suffix += 1
-
-        return code
+        Delegates to the single shared generator. The previous implementation
+        stripped non-ASCII characters (deleting accented Vietnamese letters rather
+        than folding them) and de-duplicated with DIGIT suffixes that truncated the
+        base — ``EMPCODE`` and ``EMPCODE1`` are then mutual substrings AND the digit
+        ate a letter of the name.
+        """
+        return component_code.build_component_code(label, existing_codes=existing_codes)

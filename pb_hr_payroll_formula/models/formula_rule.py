@@ -7,6 +7,7 @@ import re
 import logging
 
 from ..formula_engine import excel_semantics
+from . import component_code
 
 _logger = logging.getLogger(__name__)
 
@@ -1539,6 +1540,224 @@ class HrFormulaRule(models.Model):
                         % (letter, existing_name, current_name)
                     )
                 seen[letter] = rule
+
+    @api.constrains('code')
+    def _check_code_shape(self):
+        """Codes must be plain uppercase identifiers.
+
+        SHAPE ONLY — deliberately NOT non-substring. The Excel->Python converter's
+        code pass is greedy (maximal munch), so ``SI`` and ``SIEMP`` both resolve;
+        the underscore is the actual breaker, because ``[A-Z][A-Z0-9]{1,}`` excludes
+        it and the raw token then reaches the eval as a NameError that reads 0.
+        A non-substring constraint would reject perfectly safe sets and contradict
+        the empirically-verified rule in FORMULA_ENGINE_CONVENTIONS C13.
+        """
+        for record in self:
+            code = record.code or ''
+            if not code:
+                continue
+            if not component_code.is_valid_code(code):
+                raise ValidationError(_(
+                    "Component code '%(code)s' cannot be used. Use capital letters and "
+                    "digits only, starting with a letter — no spaces, no underscores "
+                    "(they stop the formula converter from resolving the reference, "
+                    "which silently turns it into a zero).",
+                    code=code,
+                ))
+
+    # ==========================================
+    # CODE RENAME ENGINE
+    # ==========================================
+    # Lives here, not in the studio, for two reasons: the upgrade migration runs
+    # before pb_formula_studio is necessarily loaded and must be self-sufficient,
+    # and one implementation cannot drift from another.
+    #
+    # WHAT IS DELIBERATELY NOT REWRITTEN — these are historical records of what was
+    # computed under the OLD code, and rewriting them would make the archive lie:
+    #   * ``hr.payslip.line.code`` on payslips already generated
+    #   * ``hr.payslip.formula_input_values`` / ``formula_computed_values`` JSON
+    #   * ``hr.formula.rule.version.snapshot_json``
+    # Library mapping templates (``hr.formula.mapping.template.line``) are also left
+    # alone: they are not scoped to a configuration, so a code there may belong to a
+    # different structure entirely.
+
+    #: Config-scoped places a component code is stored as a STRING rather than a FK.
+    #: (model, code field, path from the record to its config_id)
+    _CODE_STRING_SITES = (
+        ('hr.formula.sample.input.line', 'column_code', 'sample_id.config_id'),
+        ('hr.formula.test.result', 'rule_code', 'config_id'),
+        ('hr.formula.budget.line', 'code', 'budget_id.config_id'),
+        ('hr.formula.simulation', 'headline_code', 'config_id'),
+        ('hr.formula.period.comparison', 'headline_code', 'config_id'),
+        ('hr.formula.shadow.discrepancy', 'component_code', 'run_id.config_id'),
+        ('hr.formula.shadow.cluster', 'component_code', 'run_id.config_id'),
+    )
+
+    def _advantage_template_for(self, code):
+        """The contract-component template carrying ``code``, if the payroll base is
+        installed. Matched by STRING (``payroll_import_batch._get_or_create_advantage_template``
+        searches on ``code``), which is exactly why a rename that forgets it mints a
+        SECOND template and leaves every existing contract line on the old one."""
+        if not code or 'hr.contract.advantage.template' not in self.env:
+            return None
+        return self.env['hr.contract.advantage.template'].sudo().search(
+            [('code', '=', code)], limit=1)
+
+    def _rename_code(self, new_code, siblings_renamed=()):
+        """Rename this component's code, orphan-safely, in one transaction.
+
+        ``siblings_renamed`` are the ids of rules in OTHER configurations that carry
+        the same old code and are being renamed to the same new code as part of this
+        operation. Contract-component templates are global and matched by string, so
+        a code shared by two structures may only move if every one of them moves —
+        otherwise the structures left behind read their contract amounts as 0.
+
+        Returns ``{'ok': bool, 'msg': str, ...}``; never raises for a business
+        refusal, so a caller can report and carry on.
+        """
+        self.ensure_one()
+        old = (self.code or '').strip()
+        new = (new_code or '').strip().upper()
+
+        if not new:
+            return {'ok': False, 'msg': _("The code cannot be empty.")}
+        if not component_code.is_valid_code(new):
+            return {'ok': False, 'msg': _("Use letters and digits only, starting with a letter "
+                                          "(no spaces or underscores).")}
+        if new == old:
+            return {'ok': False, 'msg': _("That is already the code.")}
+
+        config = self.config_id
+        clash = config.rule_ids.filtered(
+            lambda x: x.id != self.id and (x.code or '').upper() == new)
+        if clash:
+            return {'ok': False, 'msg': _("Another component (%s) already uses that code.")
+                    % (clash[0].column_letter or clash[0].name or clash[0].id)}
+
+        letters = {r.column_letter for r in config.rule_ids if r.column_letter}
+        if new in letters:
+            return {'ok': False, 'msg': _("'%s' is a column letter in this structure — a code "
+                                          "that looks like a letter is read as one.") % new}
+
+        # --- contract component template: the biggest orphan risk -------------
+        old_tmpl = self._advantage_template_for(old)
+        new_tmpl = self._advantage_template_for(new)
+        if old_tmpl and new_tmpl and old_tmpl.id != new_tmpl.id:
+            return {'ok': False, 'msg': _(
+                "A contract component already exists under the code '%(new)s' (%(new_name)s). "
+                "Renaming '%(old)s' (%(old_name)s) onto it would merge two different "
+                "components and silently re-file everything already recorded against them.",
+                new=new, new_name=new_tmpl.name or new,
+                old=old, old_name=old_tmpl.name or old)}
+
+        if old_tmpl:
+            others = self.search([('code', '=', old), ('id', '!=', self.id),
+                                  ('id', 'not in', list(siblings_renamed))])
+            if others:
+                names = ', '.join(sorted({o.config_id.display_name for o in others}))
+                return {'ok': False, 'msg': _(
+                    "'%(old)s' is also used by %(where)s, and the contract component of that "
+                    "name is shared between them. Renaming it here alone would leave those "
+                    "structures reading 0. Rename it in every structure at once, or leave it "
+                    "as it is.", old=old, where=names)}
+
+        # --- formulas that name the old code as a bare token -------------------
+        # Formulas normally reference COLUMN LETTERS, so this is usually a no-op.
+        # Skipped when the old code coincides with a column letter used here: `=GM`
+        # is then a letter reference and rewriting it would corrupt the formula.
+        rewritten = []
+        if old and old not in letters:
+            pat = re.compile(r'(?<![A-Za-z0-9_])%s(?![A-Za-z0-9_])' % re.escape(old))
+            for r in config.rule_ids:
+                if r.id == self.id or r.column_type != 'formula' or not r.excel_formula:
+                    continue
+                if pat.search(r.excel_formula):
+                    r.with_context(formula_version_reason='rename').write(
+                        {'excel_formula': pat.sub(new, r.excel_formula)})
+                    rewritten.append(r.column_letter or r.code)
+
+        # --- code-keyed sample vectors ----------------------------------------
+        migrated_samples = 0
+        if old:
+            for sample in config.sample_data_ids:
+                touched, svals = False, {}
+                for fname in ('input_values_json', 'expected_values_json', 'computed_values_json'):
+                    raw = getattr(sample, fname, False)
+                    if not raw:
+                        continue
+                    try:
+                        data = json.loads(raw)
+                    except Exception:
+                        continue
+                    if isinstance(data, dict) and old in data and new not in data:
+                        data[new] = data.pop(old)
+                        svals[fname] = json.dumps(data)
+                        touched = True
+                if 'boundary_key' in sample._fields and sample.boundary_key:
+                    key = sample.boundary_key
+                    if key == old or key.startswith('%s=' % old):
+                        svals['boundary_key'] = new + key[len(old):]
+                        touched = True
+                if touched:
+                    sample.write(svals)
+                    migrated_samples += 1
+
+        # --- other config-scoped code strings ----------------------------------
+        side_effects = {}
+        for model_name, field_name, path in self._CODE_STRING_SITES:
+            if model_name not in self.env:
+                continue
+            Model = self.env[model_name].sudo()
+            domain = [(field_name, '=', old), ('%s.id' % path, '=', config.id)]
+            try:
+                records = Model.search(domain)
+            except Exception:          # pragma: no cover - schema drift on old DBs
+                _logger.warning("Code rename: could not scan %s.%s", model_name, field_name)
+                continue
+            if records:
+                records.write({field_name: new})
+                side_effects[model_name] = len(records)
+
+        # --- the salary rule the payslip line points at -------------------------
+        renamed_salary_rule = False
+        if old and 'hr.salary.rule' in self.env:
+            SalaryRule = self.env['hr.salary.rule'].sudo()
+            linked = self.salary_rule_id
+            if linked and (linked.code or '') == old:
+                linked.code = new
+                renamed_salary_rule = True
+            elif not linked:
+                # Only when nothing else in the database still answers to that code:
+                # an unlinked salary rule shared with another structure is not ours
+                # to move. Leaving it costs a duplicate stub, never an amount.
+                shared = self.search_count([('code', '=', old), ('id', '!=', self.id),
+                                            ('id', 'not in', list(siblings_renamed))])
+                if not shared:
+                    company = config.company_id or self.env.company
+                    found = SalaryRule.search([('code', '=', old),
+                                               ('company_id', '=', company.id)], limit=1)
+                    if found and not self.search_count([('salary_rule_id', '=', found.id),
+                                                        ('id', '!=', self.id)]):
+                        found.code = new
+                        renamed_salary_rule = True
+
+        # --- the template itself, last, so a refusal above costs nothing --------
+        renamed_template = False
+        if old_tmpl and not new_tmpl:
+            old_tmpl.code = new
+            renamed_template = True
+
+        self.with_context(formula_version_reason='rename').write({'code': new})
+        return {
+            'ok': True,
+            'msg': _("Renamed %(old)s → %(new)s", old=old or '(blank)', new=new),
+            'old_code': old, 'new_code': new,
+            'rewritten': rewritten,
+            'migrated_samples': migrated_samples,
+            'renamed_template': renamed_template,
+            'renamed_salary_rule': renamed_salary_rule,
+            'side_effects': side_effects,
+        }
 
     # ==========================================
     # EVALUATION
