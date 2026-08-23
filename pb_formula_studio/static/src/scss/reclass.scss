@@ -207,6 +207,74 @@
     }
 }
 
+// MAPFIX B3 — the reconciliation dialog reuses the review shell above and adds
+// three things the classification diff never needed: sample VALUES (the reader
+// decides against the data, not against a header), a per-row amount/text choice,
+// and a wider first column because a code and a column letter share the line.
+.pbfs .pbfs-rcl.rcn {
+    max-width: 780px;
+
+    .rcn-row {
+        grid-template-columns: 20px minmax(160px, 1.2fr) minmax(140px, 1.3fr) 150px;
+        cursor: default;
+    }
+
+    .rcn-samples {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        min-width: 0;
+
+        code {
+            font-size: 10.5px;
+            padding: 1px 6px;
+            border-radius: 5px;
+            background: #f1f5f9;
+            color: #475569;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .rcn-nosample {
+        font-size: 11.5px;
+        font-style: italic;
+        color: #9096a8;
+    }
+
+    .rcn-choice {
+        display: flex;
+        justify-content: flex-end;
+        gap: 5px;
+    }
+
+    .rcn-type {
+        border: 1px solid #e3e6f0;
+        background: #fff;
+        color: #6b7280;
+        border-radius: 999px;
+        padding: 3px 11px;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &.on {
+            border-color: #cbc2ee;
+            background: #edeaf8;
+            color: #4a3d96;
+        }
+    }
+
+    .rcn-ref {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #9096a8;
+    }
+}
+
 // COLROLES P4 — the Advanced settings block grew a second toggle. `.ce-tog` is
 // inline-flex, so two of them share a line and the labels collide; they get a
 // stacking wrapper of their own rather than a change to the shared class (which

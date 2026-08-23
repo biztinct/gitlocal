@@ -2068,6 +2068,7 @@
                            leftTitle="state.mapData.left_title" rightTitle="state.mapData.right_title"
                            canEdit="state.mapData.can_edit" busy="state.mapBusy"
                            groupFilter="mapEmpLaneFilter"
+                           command="state.mapCommand or undefined"
                            onAccept="(w) => this.mapAccept(w)"
                            onReject="(w) => this.mapReject(w)"
                            onDelete="(w) => this.mapDelete(w)"
@@ -2075,7 +2076,7 @@
                            onTransformPreview="(ref, d) => this.mapTransformPreview(ref, d)"
                            onTransformSave="(ref, v) => this.mapTransformSave(ref, v)"
                            onLeftBlocked="state.mapMode === 'employee' ? ((it) => this.mapEmpBlocked(it)) : undefined"
-                           onLeftAction="state.mapMode === 'employee' ? ((it) => this.mapEmpAction(it)) : undefined"
+                           onLeftAction="state.mapMode === 'employee' ? ((it, act) => this.mapEmpAction(it, act)) : undefined"
                            onClearGroupFilter="() => this.clearMapLane()"
                            onRemoveRight="state.mapMode === 'employee' ? ((id) => this.removeRightField(id)) : undefined"/>
 
@@ -2123,6 +2124,96 @@
                 </t>
               </div>
             </t>
+          </div>
+
+          <!-- MAPFIX B3 — the footer bar. A column with no wire and no badge reads
+               as "not finished yet" for a day and as "fine" thereafter; this is the
+               line that refuses to let that happen. When there is nothing left it
+               says so quietly rather than disappearing — an absent affordance is
+               indistinguishable from a broken one. -->
+          <div t-if="state.mapMode === 'employee' and state.mapData and state.mapData.ok" class="pm-foot">
+            <t t-if="mapUnresolvedCount">
+              <span class="pm-foot-say">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+                <t t-esc="mapUnresolvedCount"/> column<t t-if="mapUnresolvedCount !== 1">s</t> land nowhere — imported, read once and dropped.
+              </span>
+              <button class="pbfs-btn primary sm" t-att-disabled="!state.mapData.can_edit or state.mapBusy" t-on-click="openReconcile">
+                Resolve remaining <t t-esc="mapUnresolvedCount"/> column<t t-if="mapUnresolvedCount !== 1">s</t>
+              </button>
+            </t>
+            <span t-else="" class="pm-foot-say ok">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+              Every column has a destination.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAPFIX B3 — reconciliation. Same shell as the classification review: this
+           is the studio's established "you are about to change something, read it
+           first" shape, and this is exactly that. Every row arrives ticked (MF-B4);
+           unticking one files it as a reference — imported, stored, written
+           nowhere — which is a decision rather than a silence. -->
+      <div t-if="state.rcnOpen" class="pbfs-rcl-scrim" t-on-click="closeReconcile">
+        <div class="pbfs-rcl rcn" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="rcl-head">
+            <div class="rcl-title">
+              <h3>Resolve the remaining columns</h3>
+              <span t-esc="state.config.name"/>
+            </div>
+            <button class="pbfs-btn ghost sm" t-on-click="closeReconcile" aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div t-if="state.rcnBusy and !state.rcnRows" class="rcl-note">Reading every column…</div>
+          <t t-elif="!rcnRows.length">
+            <div class="rcl-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+              <b>Every column has a destination.</b>
+              <span>Nothing is imported and then dropped in this structure.</span>
+            </div>
+          </t>
+          <t t-else="">
+            <div class="rcl-note">
+              <t t-esc="rcnRows.length"/> column<t t-if="rcnRows.length !== 1">s</t> are imported and then dropped.
+              Ticked columns are kept on the contract; untick one to leave it imported and deliberately used nowhere.
+            </div>
+            <div class="rcl-bulk">
+              <button class="pbfs-btn ghost sm" t-on-click="() => this.setRcnAll(true)">Keep all</button>
+              <button class="pbfs-btn ghost sm" t-on-click="() => this.setRcnAll(false)">Leave all as reference</button>
+              <span class="rcl-count"><t t-esc="rcnTicked.length"/> of <t t-esc="rcnRows.length"/> kept</span>
+            </div>
+            <div class="rcl-rows">
+              <div t-foreach="rcnRows" t-as="row" t-key="row.id" t-attf-class="rcl-row rcn-row {{ row.tick ? '' : 'skipped' }}">
+                <input type="checkbox" t-att-checked="row.tick" t-on-change="() => this.toggleRcnRow(row)"/>
+                <div class="rcl-col">
+                  <b t-esc="row.name || row.code"/>
+                  <span class="rcl-code mono"><t t-if="row.col"><t t-esc="row.col"/> · </t><t t-esc="row.code"/></span>
+                </div>
+                <div class="rcn-samples">
+                  <span t-if="!row.samples.length" class="rcn-nosample">no sample values</span>
+                  <code t-foreach="row.samples" t-as="s" t-key="s_index" t-esc="s"/>
+                </div>
+                <div class="rcn-choice">
+                  <t t-if="row.tick">
+                    <button t-attf-class="rcn-type {{ row.value_type === 'amount' ? 'on' : '' }}" t-on-click="() => this.setRcnType(row, 'amount')">Amount</button>
+                    <button t-attf-class="rcn-type {{ row.value_type === 'text' ? 'on' : '' }}" t-on-click="() => this.setRcnType(row, 'text')">Text</button>
+                  </t>
+                  <span t-else="" class="rcn-ref">Reference only</span>
+                </div>
+              </div>
+            </div>
+          </t>
+
+          <div class="rcl-actions">
+            <p class="rcl-fine">A column another column's formula reads is never listed here — it already has somewhere to be. Neither is one that prints on the payslip.</p>
+            <div class="rcl-btns">
+              <button class="pbfs-btn ghost" t-on-click="closeReconcile">Cancel</button>
+              <button t-if="rcnRows.length" class="pbfs-btn primary" t-att-disabled="state.rcnBusy" t-on-click="applyReconcile">
+                Apply to <t t-esc="rcnRows.length"/> column<t t-if="rcnRows.length !== 1">s</t>
+              </button>
+            </div>
           </div>
         </div>
       </div>
