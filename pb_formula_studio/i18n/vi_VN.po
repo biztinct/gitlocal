@@ -958,6 +958,16 @@ msgstr ""
 "sang nơi khác, hoặc xoá ánh xạ."
 
 #. module: pb_formula_studio
+#. MAPFIX Phase F3 — the create RPC refuses a destination that cannot be written
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"%(label)s is not a field an import can write — the value would be read and "
+"then dropped. Pick a different destination."
+msgstr ""
+"%(label)s không phải là trường mà lần nhập có thể ghi vào — giá trị sẽ được "
+"đọc rồi bị bỏ đi. Hãy chọn một đích khác."
+
+#. module: pb_formula_studio
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 msgid "Show all %(n)s values for %(label)s"
 msgstr "Xem toàn bộ %(n)s giá trị của %(label)s"

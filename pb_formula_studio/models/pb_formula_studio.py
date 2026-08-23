@@ -5398,6 +5398,20 @@ class PbFormulaStudio(models.AbstractModel):
         return notes
 
     @api.model
+    def _ec_unwritable_msg(self, label):
+        """ONE sentence for "this destination cannot receive a value".
+
+        MAPFIX F3. The board already had this sentence, in `_ec_unmappable_note`'s
+        tooltip, and the create guard needs to say the same thing — so it is said
+        in one place and quoted twice rather than typed twice. A second refusal
+        vocabulary is how a product ends up telling a user two different stories
+        about one fact.
+        """
+        return _("%(label)s is not a field an import can write — the value would "
+                 "be read and then dropped. Pick a different destination."
+                 ) % {'label': label}
+
+    @api.model
     def _ec_unmappable_note(self, fld):
         """The note on a card that is only here because something is WIRED to it.
 
@@ -5834,6 +5848,28 @@ class PbFormulaStudio(models.AbstractModel):
         fld = self.env['ir.model.fields'].sudo().search([('model', '=', model), ('name', '=', fname)], limit=1)
         if not (mdl and fld):
             return {'ok': False, 'msg': self._ec_bad_spec_msg()}
+        # ------------------------------------------------------------------
+        # MAPFIX F3 — the catalogue's predicate, applied where the WRITE happens.
+        #
+        # The board refuses to OFFER a destination that fails `_ec_is_mappable`,
+        # and until now that was the only place it was asked: the RPC accepted
+        # anything `hr.payslip.import.mapping`'s own domain accepted, so a stale
+        # board, the search box or a direct call could still mint a wire whose
+        # import reads a column and puts the value nowhere. The rule now lives on
+        # both sides of the browser boundary — same predicate, same sentence.
+        #
+        # CREATE only, never READ. Rows written before this guard may point at
+        # fields the predicate now refuses; `employee_mapping_data` still loads
+        # them, still draws their wire and still marks the card `warn`
+        # (`_ec_unmappable_note`). Refusing to LOAD them would hide a live mapping,
+        # which is the worse failure and the opposite of what this is for.
+        #
+        # Bank (`b:`) specs never reach here: they are not fields of anything and
+        # have returned above.
+        # ------------------------------------------------------------------
+        if not self._ec_is_mappable(model, fname):
+            return {'ok': False,
+                    'msg': self._ec_unwritable_msg(fld.field_description or fname)}
         # MAPFIX B2 — wiring a contract component to a native field DEMOTES it.
         # Nothing about the advantage template or its lines is touched: the value
         # simply stops being written there on the next run (MF-B3).

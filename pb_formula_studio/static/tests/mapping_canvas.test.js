@@ -27,9 +27,12 @@ import {
     clampY,
     hubPoint,
     itemMatches,
+    laneOrderOf,
+    placeInLane,
     spreadHubs,
     wireGeometry,
     HEAD,
+    LANE_LAST,
 } from "@pb_formula_studio/js/mapping/mapping_geometry";
 
 describe.current.tags("desktop");
@@ -962,4 +965,295 @@ test("E1 — the value list answers the scrolling keys itself", async () => {
     expect(box.scrollTop).toBe(0);
     // and it says it is showing a subset rather than dropping the tail silently
     expect(document.querySelector(".mc-menu__f").textContent).toInclude("200");
+});
+
+// ==================================================================== MAPFIX F
+//
+// F1 — *scrolled out of view* ≠ *filtered out of the set*.
+//
+// CR21 made lane filtering a canvas prop applied inside `_passes` rather than a
+// trim of the item array, precisely so a wire whose end is filtered DOCKS on the
+// column edge instead of counting as `gone`. That is right for SCROLLING — "↑ 8
+// mapped above" is how a two-hundred-row board admits a connection exists just
+// off screen — and wrong for FILTERING, where the reader has said "show me only
+// these" and the docked wires became arrows hanging off the top and bottom edges
+// pointing at nothing.
+//
+// Every test below is about the seam between those two: one predicate
+// (`isFilteredOut`) decides whether a wire is drawn AND how many are counted, so
+// the canvas and the column header cannot disagree — which, before this, they
+// could.
+
+/** Three lanes, three wires, one wire per lane, both columns grouped. */
+function laneProps(over = {}) {
+    return {
+        leftItems: [
+            { id: "L0", label: "Bank Name", sublabel: "col A", group: "Bank", meta: {} },
+            { id: "L1", label: "Employee Code", sublabel: "col B", group: "Identity", meta: {} },
+            { id: "L2", label: "Department", sublabel: "col C", group: "Employee profile", meta: {} },
+        ],
+        rightItems: [
+            { id: "R0", label: "Bank name", sublabel: "Bank", group: "Bank account", meta: { lane_order: 5 } },
+            { id: "R1", label: "Employee Code", sublabel: "Employee", group: "Identity", meta: { lane_order: 0 } },
+            { id: "R2", label: "Department", sublabel: "Contract", group: "Job & organisation", meta: { lane_order: 3 } },
+        ],
+        wires: [
+            { id: "w0", leftId: "L0", rightId: "R0", state: "accepted" },
+            { id: "w1", leftId: "L1", rightId: "R1", state: "accepted" },
+            { id: "w2", leftId: "L2", rightId: "R2", state: "accepted" },
+        ],
+        leftTitle: "FROM — lanes", rightTitle: "TO — lanes", canEdit: true,
+        ...over,
+    };
+}
+
+/** Change filter state the way the UI does, then let the board settle. */
+async function refilter(canvas, over = {}) {
+    if (over.q) { Object.assign(canvas.ui.q, over.q); }
+    if (over.qa) { Object.assign(canvas.ui.qa, over.qa); }
+    if (over.f) { Object.assign(canvas.ui.f, over.f); }
+    await animationFrame();
+    await animationFrame();
+    canvas._recompute();
+}
+
+const wireIds = (canvas) => canvas.ui.geom.map((g) => g.id).sort();
+
+test("F1 — a lane pill draws only its own wires, and hangs nothing off the edges", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: laneProps({ groupFilter: "Bank" }),
+    });
+    await animationFrame();
+    canvas._recompute();
+
+    // the owner's screenshot, as an assertion: one lane, one wire, no others
+    expect(wireIds(canvas)).toEqual(["w0"]);
+    for (const g of canvas.ui.geom) {
+        expect(g.hiddenL).toBe(false);
+        expect(g.hiddenR).toBe(false);
+    }
+    // …and the two that are gone are counted, not lost
+    expect(canvas.hiddenWires("left")).toBe(2);
+    expect(canvas.ui.supp.map((s) => s.id).sort()).toEqual(["w1", "w2"]);
+    expect(canvas.ui.gone).toBe(0);       // filtered is not `gone`
+});
+
+test("F1 — with no filter the geometry is exactly what it always was", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: laneProps() });
+    await animationFrame();
+    canvas._recompute();
+    expect(wireIds(canvas)).toEqual(["w0", "w1", "w2"]);
+    expect(canvas.ui.supp).toEqual([]);
+    expect(canvas.hiddenWires("left")).toBe(0);
+    expect(canvas.hiddenWires("right")).toBe(0);
+});
+
+test("F1 — an end that is only SCROLLED past still docks: the affordance CR21 built", async () => {
+    // The distinction, asserted on its own. No filter is active, so nothing may
+    // be suppressed — the card is in the list, in the DOM, and simply above the
+    // visible band, which is the one case the dock chip was invented for.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    await animationFrame();
+    const lbody = document.querySelector(".mc-col.left .mc-col-body");
+    // an explicit box, so the assertion is about the clamp and not about
+    // whatever height the test fixture happened to give the column (W127)
+    lbody.style.cssText = "height:90px;max-height:90px;overflow:auto;flex:none;";
+    await animationFrame();
+    expect(lbody.scrollHeight > lbody.clientHeight + 300).toBe(true);
+    lbody.scrollTop = 600;                 // L0 is now well above the band
+    canvas._recompute();
+
+    const w1 = canvas.ui.geom.find((g) => g.id === "w1");
+    expect(w1).not.toBe(undefined);        // drawn — NOT suppressed
+    expect(w1.hiddenL).toBe(false);        // scrolled, not filtered
+    expect(w1.dockL).toBe(-1);             // parked on the top edge
+    expect(canvas.hiddenWires("left")).toBe(0);
+    expect(canvas.ui.supp.length).toBe(0);
+    // and it says so in the chip, in the "mapped above" vocabulary
+    const up = canvas.ui.docks.find((d) => d.side === "left" && d.dir === -1);
+    expect(up.count >= 1).toBe(true);
+    expect(up.filtered).toBe(0);
+    expect(canvas.dockLabel(up)).toInclude("above");
+    expect(canvas.dockLabel(up)).not.toInclude("hidden by filter");
+});
+
+test("F1 — the counter equals the suppression, for every kind of filter", async () => {
+    // Four filters, one equality. `hiddenWires` is read off the SAME pass that
+    // decided not to draw them, so this cannot drift — which is the whole point
+    // of the change, the old counter being a second piece of arithmetic.
+    const total = 3;
+
+    // (a) the Mapped/Unmapped toggle — every left card is wired, so "Unmapped"
+    //     empties the column and every wire goes with it
+    let canvas = await mountWithCleanup(MappingCanvas, { props: laneProps() });
+    await animationFrame();
+    await refilter(canvas, { f: { left: "unmapped" } });
+    expect(canvas.ui.geom.length).toBe(0);
+    expect(canvas.hiddenWires("left")).toBe(3);
+    expect(canvas.hiddenWires("left")).toBe(total - canvas.ui.geom.length);
+
+    // (b) a search term
+    canvas = await mountWithCleanup(MappingCanvas, { props: laneProps() });
+    await animationFrame();
+    await refilter(canvas, { q: { left: "Bank" }, qa: { left: "Bank" } });
+    expect(wireIds(canvas)).toEqual(["w0"]);
+    expect(canvas.hiddenWires("left")).toBe(total - canvas.ui.geom.length);
+
+    // (c) a search on the RIGHT column — the other end counts too
+    canvas = await mountWithCleanup(MappingCanvas, { props: laneProps() });
+    await animationFrame();
+    await refilter(canvas, { q: { right: "Department" }, qa: { right: "Department" } });
+    expect(wireIds(canvas)).toEqual(["w2"]);
+    expect(canvas.hiddenWires("right")).toBe(total - canvas.ui.geom.length);
+    expect(canvas.hiddenWires("left")).toBe(0);   // the left filter hid nothing
+
+    // (d) all three at once, on the column that has all three
+    canvas = await mountWithCleanup(MappingCanvas, {
+        props: laneProps({ groupFilter: "Bank" }),
+    });
+    await animationFrame();
+    await refilter(canvas, { f: { left: "mapped" }, q: { left: "Bank" },
+                             qa: { left: "Bank" } });
+    expect(wireIds(canvas)).toEqual(["w0"]);
+    expect(canvas.hiddenWires("left")).toBe(total - canvas.ui.geom.length);
+});
+
+test("F1 — clear restores every wire", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: laneProps() });
+    await animationFrame();
+    await refilter(canvas, { f: { left: "unmapped" }, q: { left: "zzz" },
+                             qa: { left: "zzz" } });
+    expect(canvas.ui.geom.length).toBe(0);
+
+    canvas.clearFilters("left");
+    await animationFrame();
+    await animationFrame();
+    canvas._recompute();
+
+    expect(wireIds(canvas)).toEqual(["w0", "w1", "w2"]);
+    expect(canvas.hiddenWires("left")).toBe(0);
+    expect(canvas.ui.supp).toEqual([]);
+});
+
+test("F1 — clear also clears the lane filter the canvas does not own", async () => {
+    // CR21 (b). The pill lives on the host; `clear` has to be able to release it
+    // or "clear" stops meaning clear — and with F1 that matters more, because the
+    // pill is now the reason wires are missing rather than merely docked.
+    let cleared = 0;
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: laneProps({ groupFilter: "Bank", onClearGroupFilter: () => { cleared++; } }),
+    });
+    await animationFrame();
+    expect(canvas.hasFilter("left")).toBe(true);
+    canvas.clearFilters("left");
+    expect(cleared).toBe(1);
+});
+
+test("F1 — a suppressed wire can never be selected, by key or by hand", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: laneProps() });
+    await animationFrame();
+    canvas._recompute();
+
+    // select a wire, then filter its end away: the selection cannot survive into
+    // a wire that nothing on screen can show, hover or clear
+    canvas.ui.selWire = "w2";
+    await refilter(canvas, { q: { left: "Bank" }, qa: { left: "Bank" } });
+    expect(canvas.ui.selWire).toBe(null);
+
+    // `w` walks `ui.geom`, which is now the DRAWN wires and only those
+    const seen = new Set();
+    for (let i = 0; i < 6; i++) {
+        canvas.onKeydown({ key: "w", shiftKey: false, preventDefault() {},
+                           stopPropagation() {}, target: { tagName: "DIV" } });
+        seen.add(canvas.ui.selWire);
+    }
+    expect([...seen].sort()).toEqual(["w0"]);
+    expect(seen.has("w1")).toBe(false);
+    expect(seen.has("w2")).toBe(false);
+});
+
+test("F1 — the chip still speaks for a wire that is no longer drawn", async () => {
+    // Suppressing the ARROW is the fix; suppressing the FACT would be W40's
+    // "silently unavailable". The chip counts it, names the filter as the cause,
+    // and pressing it clears that filter and brings the wire back.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: laneProps() });
+    await animationFrame();
+    await refilter(canvas, { q: { left: "Bank" }, qa: { left: "Bank" } });
+
+    const chips = canvas.ui.docks.filter((d) => d.side === "left");
+    expect(chips.length > 0).toBe(true);
+    const filtered = chips.reduce((n, d) => n + d.filtered, 0);
+    expect(filtered).toBe(2);
+    const chip = chips.find((d) => d.filtered === d.count);
+    expect(canvas.dockLabel(chip)).toInclude("hidden by filter");
+
+    canvas.clickDock(chip);                       // the way back
+    await animationFrame();
+    await animationFrame();
+    canvas._recompute();
+    expect(canvas.ui.qa.left).toBe("");
+    expect(wireIds(canvas)).toEqual(["w0", "w1", "w2"]);
+});
+
+test("F1 — aggregateDocks keeps its old contract when nothing is suppressed", () => {
+    // The second argument is optional on purpose: every other board that calls
+    // this — and the four tests above that predate F1 — must be unaffected.
+    const geom = [{ id: "a", dockL: -1, dockR: 0, state: "accepted" }];
+    expect(aggregateDocks(geom)).toEqual(aggregateDocks(geom, []));
+    const both = aggregateDocks(geom, [
+        { id: "s", dockL: -1, dockR: 0, hiddenL: true, hiddenR: false, state: "accepted" },
+    ]);
+    const up = both.find((d) => d.side === "left" && d.dir === -1);
+    expect(up.count).toBe(2);
+    expect(up.filtered).toBe(1);      // one of the two is behind a filter
+    expect(up.ids).toEqual(["a", "s"]);
+});
+
+// ---------------------------------------------------------------------- F2
+test("F2 — a field added mid-session lands in its lane, not at the end", () => {
+    // MF32's client-side twin (MF36 (b)). The server places its own appends by
+    // lane; the CLIENT concatenated session extras after the whole catalogue, so
+    // pinning an Identity field from the search box drew a second "Identity"
+    // heading under "Other contract fields".
+    const board = [
+        { id: "f:hr.employee:name", meta: { lane: "identity", lane_order: 0 } },
+        { id: "f:hr.employee:employee_id", meta: { lane: "identity", lane_order: 0 } },
+        { id: "f:hr.employee:birthday", meta: { lane: "personal", lane_order: 1 } },
+        { id: "b:acc_number", meta: { lane: "bank", lane_order: 5 } },
+        { id: "f:hr.contract:notes", meta: { lane: "other_contract", lane_order: 7 } },
+    ];
+    const extra = { id: "f:hr.employee:barcode", meta: { lane: "identity", lane_order: 0 } };
+    const out = placeInLane([...board], extra);
+    // end of ITS lane — after the last Identity card, before Personal
+    expect(out.map((i) => i.id)).toEqual([
+        "f:hr.employee:name", "f:hr.employee:employee_id",
+        "f:hr.employee:barcode", "f:hr.employee:birthday",
+        "b:acc_number", "f:hr.contract:notes",
+    ]);
+});
+
+test("F2 — a lane that is not on the board yet gets its own place, in order", () => {
+    // …and therefore its own heading: the canvas emits one whenever `group`
+    // changes between consecutive rows, so landing between two other lanes is
+    // exactly what makes the heading appear.
+    const board = [
+        { id: "a", group: "Identity", meta: { lane: "identity", lane_order: 0 } },
+        { id: "b", group: "Other contract fields", meta: { lane: "other_contract", lane_order: 7 } },
+    ];
+    const extra = { id: "c", group: "Contract terms", meta: { lane: "contract_terms", lane_order: 4 } };
+    const out = placeInLane([...board], extra);
+    expect(out.map((i) => i.id)).toEqual(["a", "c", "b"]);
+    // the canvas would now draw three headings, one per lane, in this order
+    expect(out.map((i, n) => MappingCanvas.prototype.rightGroupHead.call(null, out, n)))
+        .toEqual(["Identity", "Contract terms", "Other contract fields"]);
+});
+
+test("F2 — an item with no lane metadata still appends, exactly as it always did", () => {
+    const board = [{ id: "a", meta: { lane_order: 0 } },
+                   { id: "b", meta: { lane_order: 7 } }];
+    expect(placeInLane([...board], { id: "z" }).map((i) => i.id))
+        .toEqual(["a", "b", "z"]);
+    expect(placeInLane([...board], { id: "z", meta: {} }).map((i) => i.id))
+        .toEqual(["a", "b", "z"]);
+    expect(laneOrderOf({ id: "z" })).toBe(LANE_LAST);
 });

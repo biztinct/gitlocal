@@ -1,17 +1,19 @@
 # MAPFIX — Readable codes, complete mapping, silent errors: conventions + gotcha ledger
 
-**STATUS: PROGRAMME COMPLETE — Phases A, B, C, D and E designed, built, deployed and live on
+**STATUS: PROGRAMME COMPLETE — Phases A, B, C, D, E and F designed, built, deployed and live on
 abm · acme · payobook · payobook_template (2026-08-23).** Final module versions:
-pb_hr_payroll_formula **19.0.1.72.0** · pb_formula_studio **19.0.1.124.0** ·
+pb_hr_payroll_formula **19.0.1.72.0** · pb_formula_studio **19.0.1.126.0** ·
 biz_theme **19.0.1.4.0** · om_hr_payroll 19.0.1.0.2 (never touched — CR1). Commits: Phase A
-`f658974f`, Phase B `470590bd`, Phase C `6f6066e1`, Phase D `c79c15a8`, Phase E = the commit that
-carries this line (a hash cannot name itself; it is quoted in the Phase E report) — **none pushed**.
+`f658974f`, Phase B `470590bd`, Phase C `6f6066e1`, Phase D `c79c15a8`, Phase E `15071c57`,
+Phase F = the commit that carries this line (a hash cannot name itself; it is quoted in the Phase F
+report). **Pushed through `15071c57` (Phase E); Phase F is NOT pushed.**
 
 Follow-on programme to COLROLES (see `docs/handovers/COLROLES_LEDGER.md` — its standing rules and
 gotchas CR1–CR33 STILL BIND; this file adds MF-numbered entries). Phases: A codes+rename,
 B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + Primary Key guard,
 D the five defects the owner reported against the live Phase-B board, E the two defects
-reported against the live Phase-D board.
+reported against the live Phase-D board, F the filtered-wire defect reported against the live
+Phase-E board plus the two follow-ups E deferred (MF36).
 
 ## Standing rules (inherited from COLROLES — re-read that ledger, these are the critical few)
 
@@ -19,8 +21,15 @@ reported against the live Phase-D board.
 - **Deploy ritual**: rsync → `sudo chmod -R a+rX` the synced dirs (**CR6** — `rsync -a` preserves Mac
   0600 modes; the odoo user then cannot read `__manifest__.py`, the upgrade logs "not installable,
   skipped" and **odoo-bin still exits 0**) → stop → detached `systemd-run` unit looping
-  `-u <mods>` over **abm acme payobook payobook_template** with EXIT sentinel → start → **verify
-  `ir_module_module.latest_version` in psql on all 4** before believing the deploy.
+  **`sudo -u odoo /odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf -d <db> -u <mods>
+  --stop-after-init`** over **abm acme payobook payobook_template** with EXIT sentinel → start →
+  **verify `ir_module_module.latest_version` in psql on all 4** (with `sudo -u postgres`, MF17)
+  before believing the deploy.
+  **The `sudo -u odoo` is not optional (MF35, corrected here in Phase F):** `systemd-run` runs the
+  unit as ROOT, odoo-bin then fails peer auth with `FATAL: role "root" does not exist` on every DB
+  in about ninety seconds, and the loop still writes `EXIT[db]=1`. The service itself runs as `odoo`
+  (`/etc/init.d/odoo-server`, `USER=odoo`). This ritual as written is the one Phase F used, green
+  on all four databases first try.
 - **CR20**: a browser tab holding a websocket hangs a detached `odoo-bin` in "Initiating shutdown";
   park validation tabs on `about:blank` first, confirm zero pids BY PID. Test output goes to
   `/var/log/odoo/odoo-server.log` (grep -a), not the /tmp sentinel.
@@ -220,6 +229,35 @@ reported against the live Phase-D board.
   Tests: 6 new Python (`TestMappingSelectionValues`) = 27/27 green on abm; hoot **48/48** green at
   `/web/tests?filter=mapping_canvas` (7 new). abm left exactly as found — 20 mappings, ids
   `1,2,30,31,32,33,36,37,38,50…60`, no `hr.formula.rule` writes; nothing was created or deleted.
+- **Phase F — DONE, live on abm · acme · payobook · payobook_template (2026-08-23).**
+  Version: pb_formula_studio **19.0.1.126.0** (pb_hr_payroll_formula and biz_theme untouched).
+  **F1** — *scrolled out of view ≠ filtered out of the set*. `isFilteredOut(side, id)` is now the
+  ONE predicate: the geometry loop skips a wire either of whose ends it excludes, and
+  `hiddenWires(side)` is read off that same pass instead of recounting over `ui.geom`. A wire whose
+  end is merely SCROLLED past is untouched — it still clamps to the band edge and still aggregates
+  into a "N mapped above/below" chip (CR21). A suppressed wire keeps its chip
+  (`aggregateDocks(geom, suppressed)`), so it is counted and still reachable — `clickDock` looks in
+  both sets and `jumpTo` clears the filter — but it is not DRAWN. A selection that lands on a
+  suppressed wire is dropped, so `w`-walking and `selWire` can never point at an invisible wire.
+  Live on abm: Bank lane pill → **1 wire drawn, 16 counted, 1 + 16 = 17** (the unfiltered total),
+  chips read "5 hidden by filter above" + "11 hidden by filter below"; same numbers for a search
+  term, for Unmapped (0 + 17), and for lane + Mapped + search combined; `clear` restores all 17 and
+  the chips revert to the "mapped below" vocabulary.
+  **F2** — `placeInLane` (`mapping_geometry.js`, the pure kernel) is the client twin of
+  `_ec_place_in_lane`; `mapEmpRight` inserts each session extra at the end of its own lane instead
+  of concatenating them after the catalogue (MF36 (b)). See **MF40** — the UI cannot currently reach
+  this path, so the fix is latent and was validated by driving `addEmpField` on the live board.
+  **F3** — `employee_mapping_create` applies `_ec_is_mappable` before writing, refusing with
+  `_ec_unwritable_msg` — the same sentence `_ec_unmappable_note` puts in its tooltip, built in one
+  place. CREATE only: a pre-existing row pointing at a refused field still loads, still draws its
+  wire and still renders `warn`. `b:` bank specs return before the guard and never meet it.
+  Tests: 5 new Python (`TestMappingCreateGuard`) — **63/63 green on abm**, 0 failed, 0 errors;
+  hoot **60/60** green at `/web/tests?filter=mapping_canvas` (12 new: 9 F1 + 3 F2).
+  Board unchanged: 236 right cards, 76 notes, 17 wires, 0 console errors, 0 bounding-box overlaps
+  over 255 cards / 139 element pairs at 1440 **and** at 1024.
+  abm left exactly as found — `hr_payslip_import_mapping` diffed byte-for-byte before and after
+  (20 rows, ids `1,2,30,31,32,33,36,37,38,50…60`), and `hr_formula_rule` for config 14 diffed too
+  (99 rows, no demotion). Nothing was created, deleted or moved.
 
 ## Gotchas discovered (append per phase, MF-numbered)
 
@@ -479,7 +517,8 @@ reported against the live Phase-D board.
   (`/etc/init.d/odoo-server`, `USER=odoo`); the runner script needs `sudo -u odoo` in front of
   `odoo-bin`. CR6's lesson with the sign flipped: a RED sentinel is not proof of a broken build
   either — read the log before believing either colour.
-- MF36 (E, scope — two follow-ups deliberately NOT taken): (a) **`employee_mapping_create` does not
+- MF36 (E, scope — two follow-ups deliberately NOT taken; **both CLOSED in Phase F**, (a) as F3 and
+  (b) as F2 — see MF40 for what (b) turned out to be worth): (a) **`employee_mapping_create` does not
   apply `_ec_is_mappable`.** E2(3) makes an unwritable destination SAY so; it does not stop a user
   wiring more columns to it, because the mapping model's own domain accepts any non-readonly field
   and the handover asked only that the card be marked. There is one live instance:
@@ -503,3 +542,42 @@ reported against the live Phase-D board.
   by moving row 85 back to `hr.employee.employee_id` under id 1 with its original timestamps; no
   `hr.formula.rule` was touched. And the safe way to probe a write-capable gesture is to leave
   nothing armed — a failed guard then moves a focus ring instead of writing a row.
+- MF38 (F): **"is this end hidden" was being asked of the DOM, and the DOM cannot tell you WHY.**
+  `hiddenL` was `!L.map.has(id)` — the card has no measurable rect — which is true both when a
+  filter excluded it and when the props say it is there but it has not rendered or is mid-transition.
+  Two different facts under one flag, and the canvas then treated them identically: it docked the
+  wire on the column edge. That is right for the second (transient, and the dock is the honest
+  fallback) and wrong for the first, which is the owner's hanging arrows. `isFilteredOut` asks the
+  FILTER STATE — `hasFilter(side)` then `_passes(side, item)`, the same call `leftView`/`rightView`
+  make — so "filtered" is decided by the thing that does the filtering. The dock branch survives
+  underneath it, untouched, for the case it was actually written for. **When a flag can be true for
+  two reasons and you only handle one of them, the flag is the bug, not the handler.**
+- MF39 (F): **the reveal bar is now effectively unreachable, on purpose.** `ui.reveal` and
+  `revealText` exist so that double-clicking a wire whose end is behind a filter SAYS so instead of
+  silently clearing the reader's search (C7). With F1 a filtered wire has no path, no hub and no
+  hit-area, so nothing can double-click it; `centreBoth` is reachable only from `selWire`, which can
+  no longer hold a suppressed wire. The machinery was deliberately KEPT — it still fires for the
+  transient `hiddenL` case above, its four hoot tests still pass, and deleting live-tested UI to
+  chase dead code is how a phase acquires a regression it did not need. The way back to a hidden
+  wire is now the dock chip, which was always the more direct verb (it clears the filter rather than
+  explaining it).
+- MF40 (F, scope): **F2 fixes a path the UI cannot currently reach — and that is worth knowing
+  before somebody "verifies" it and concludes it does not work.** `mapEmpExtras` only ever receives
+  an id that is NOT already in `mapData.right` (`mapEmpRight` filters on `seen`). Since Phase E the
+  right column is the WHOLE catalogue (236 on abm — `employee_mapping_data` is called with
+  `context_id` false, so `_ec_right_column('')` filters nothing), and both pickers —
+  `ec_search_fields` and `ec_model_fields` — are strict subsets of that same catalogue. So every
+  field a user can pin is already on the board and no extra is ever appended. The defect MF36 (b)
+  described is real in the code and latent in the product; it becomes live the moment anything
+  narrows the served catalogue (a `context_id` search, a lazy right column, a per-user field
+  allow-list). Validated by calling `addEmpField` on the live board with a card the catalogue does
+  not carry: it landed at index 5, the end of the Identity lane, and the board kept exactly eight
+  lane headings instead of growing a ninth at the bottom.
+- MF41 (F, testing): **two Chrome-MCP facts that make a live check look broken when it is fine.**
+  (a) the hoot runner renders inside `document.querySelector("hoot-container").shadowRoot`, so
+  `document.body.innerText` is the EMPTY STRING and `document.title` is `""` — a probe that polls
+  either sees nothing forever and reads as a hung suite while the screenshot shows 60/60 green. Read
+  the shadow root, or read the screenshot. (b) the studio component IS reachable from a probe:
+  `odoo.__WOWL_DEBUG__.root` plus a walk over `__owl__.children` finds `PbFormulaStudio`, which is
+  how a client-only path (F2's `addEmpField`) can be exercised live without an RPC — and, per MF37,
+  the DATABASE diff is still what proves nothing was written.
