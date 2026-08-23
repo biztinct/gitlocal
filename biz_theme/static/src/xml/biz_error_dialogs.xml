@@ -54,7 +54,10 @@
                 </div>
             </div>
             <t t-set-slot="footer">
-                <button t-if="hasDetails" class="btn biz-err__copy" t-on-click="copyDetails">
+                <!-- developer-mode only: gated on showTechnicalDetails, NOT on
+                     hasDetails — an end user must have no route to the raw
+                     payload, clipboard included -->
+                <button t-if="showTechnicalDetails" class="btn biz-err__copy" t-on-click="copyDetails">
                     <t t-esc="state.copied ? 'Copied ✓' : 'Copy details'"/>
                 </button>
                 <button class="btn btn-primary biz-err__primary" t-on-click="onPrimaryClick" t-esc="primaryLabel"/>
