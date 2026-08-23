@@ -934,3 +934,40 @@ msgstr "Ngừng giữ cột này trên hợp đồng."
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 msgid "Actions for %s"
 msgstr "Thao tác cho %s"
+
+#. module: pb_formula_studio
+#. MAPFIX Phase E — the value list and the unwritable-destination warning
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%(list)s … and %(n)s more"
+msgstr "%(list)s … và %(n)s giá trị nữa"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "This destination cannot be written — re-point this column"
+msgstr "Không thể ghi vào đích này — hãy trỏ cột này sang chỗ khác"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"A column is mapped here, but %(label)s is not a field an import can write. "
+"The value would be read and then dropped. Send the column somewhere else, or "
+"remove the mapping."
+msgstr ""
+"Có một cột đang được ánh xạ tới đây, nhưng %(label)s không phải là trường mà "
+"lần nhập có thể ghi vào. Giá trị sẽ được đọc rồi bị bỏ đi. Hãy trỏ cột này "
+"sang nơi khác, hoặc xoá ánh xạ."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+msgid "Show all %(n)s values for %(label)s"
+msgstr "Xem toàn bộ %(n)s giá trị của %(label)s"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+msgid "The code beside a value is what the file must contain."
+msgstr "Mã bên cạnh mỗi giá trị chính là nội dung tệp phải chứa."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+msgid "%(hint)s Showing the first %(shown)s of %(total)s."
+msgstr "%(hint)s Đang hiển thị %(shown)s giá trị đầu trong tổng số %(total)s."

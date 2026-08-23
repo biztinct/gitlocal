@@ -105,7 +105,12 @@ export class MappingCanvas extends Component {
             f: { left: "all", right: "all" },
             hoverCol: "",                    // which column "/" would focus
             // MAPFIX D3 — the card's action MENU. One open at a time, anchored to
-            // the trigger that opened it: `{id, label, acts, x, y, flip}`.
+            // the trigger that opened it:
+            // `{id, kind, side, trigger, label, acts, values, total, x, y, flip}`.
+            // MAPFIX E1 — `kind` is why there is still only one of these. The
+            // right column's value list is the SAME popover with a different body
+            // and a different trigger to hand focus back to; a second
+            // implementation would be a second set of placement bugs (MF27).
             menu: null,
             // W62 — transform popover (API wires only)
             tfOpen: null,         // open wire id, or null
@@ -908,6 +913,66 @@ export class MappingCanvas extends Component {
         if (!n || !n.text) { return null; }
         return { text: n.text, title: n.title || n.text, tone: n.tone || "" };
     }
+    /**
+     * The full list behind a TRUNCATED note — MAPFIX E1.
+     *
+     * The adapter sends `values` only when the inline text actually hid
+     * something, so "has values" and "is truncated" are the same condition on
+     * both sides of the wire, and a note that already shows everything stays
+     * inert text. An affordance that opens a list of what you are already
+     * reading is worse than none.
+     */
+    noteValues(it) {
+        const n = it && it.meta && it.meta.note;
+        const v = n && n.values;
+        return Array.isArray(v) && v.length ? v : null;
+    }
+    noteMenuLabel(it) {
+        const n = (it && it.meta && it.meta.note) || {};
+        return _t("Show all %(n)s values for %(label)s",
+                  { n: n.total || (n.values || []).length, label: (it && it.label) || "" });
+    }
+    /**
+     * The one sentence under the value list. ONE `_t` call rather than a
+     * template with numbers interpolated between text nodes — a translator
+     * handed "Showing the first" and "of" as separate strings cannot put them
+     * back together in a language that orders them differently.
+     */
+    valuesFooter() {
+        const m = this.ui.menu || {};
+        const shown = (m.values || []).length;
+        const hint = _t("The code beside a value is what the file must contain.");
+        if ((m.total || shown) > shown) {
+            return _t("%(hint)s Showing the first %(shown)s of %(total)s.",
+                      { hint, shown, total: m.total });
+        }
+        return hint;
+    }
+    isNoteOpen(it) {
+        return !!(this.ui.menu && this.ui.menu.kind === "values"
+                  && it && String(this.ui.menu.id) === String(it.id));
+    }
+    /**
+     * Open the value list in the popover Phase D already built.
+     *
+     * The `stopPropagation` is the whole test case. This note lives INSIDE a
+     * card whose `t-on-click` is `clickRight(it.id)`, and `clickRight` draws a
+     * wire whenever a left card is armed — so without it, reading what a
+     * destination accepts would MAP a column to it. Reading is not writing, and
+     * on this board the two are one pixel apart.
+     */
+    toggleNoteMenu(it, ev) {
+        if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+        if (this.isNoteOpen(it)) { this.closeItemMenu(); return; }
+        const values = this.noteValues(it);
+        if (!values) { return; }
+        const n = it.meta.note;
+        this._openMenu(ev, {
+            id: it.id, kind: "values", side: "right", trigger: ".mc-item-note",
+            label: it.label || "", acts: [], values,
+            total: n.total || values.length,
+        });
+    }
 
     // ---- MAPFIX D3 — the card's actions, in a menu ----------------------
     /**
@@ -936,13 +1001,28 @@ export class MappingCanvas extends Component {
         return _t("Actions for %s", (it && it.label) || "");
     }
     isMenuOpen(it) {
-        return !!(this.ui.menu && it && String(this.ui.menu.id) === String(it.id));
+        return !!(this.ui.menu && (this.ui.menu.kind || "actions") === "actions"
+                  && it && String(this.ui.menu.id) === String(it.id));
     }
     toggleItemMenu(it, ev) {
         if (ev) { ev.stopPropagation(); ev.preventDefault(); }
         if (this.isMenuOpen(it)) { this.closeItemMenu(); return; }
         const acts = this.itemActions(it);
         if (!acts.length) { return; }
+        this._openMenu(ev, { id: it.id, kind: "actions", side: "left",
+                             trigger: ".mc-item-more", label: it.label || "", acts });
+    }
+    /**
+     * ONE popover, two payloads — MAPFIX E1.
+     *
+     * The value list does not get a second popover implementation. It gets THIS
+     * one: the same `ui.menu` state, the same scrim, the same anchoring and the
+     * same measure-then-place (MF27), differing only in what the body renders
+     * and which trigger focus goes back to. A second implementation would be a
+     * second set of placement bugs, and the first set took a live screenshot to
+     * find.
+     */
+    _openMenu(ev, spec) {
         const root = this.rootRef.el;
         const btn = ev && ev.currentTarget;
         const W = 264;
@@ -954,7 +1034,8 @@ export class MappingCanvas extends Component {
                        right: r.right - rb.left };
         }
         this.ui.menu = {
-            id: it.id, label: it.label || "", acts, anchor,
+            kind: "actions", side: "left", trigger: ".mc-item-more", acts: [],
+            ...spec, anchor,
             x: Math.max(8, anchor.right - W), y: anchor.bottom + 6, flip: false,
         };
         // The final placement needs the menu's REAL height, and a hint of three
@@ -980,30 +1061,51 @@ export class MappingCanvas extends Component {
         this.ui.menu = { ...this.ui.menu, flip,
                          x: Math.max(8, Math.min(rb.width - w - 8, a.right - w)), y };
         // A menu that opens with focus left behind is a menu the keyboard cannot
-        // use — and this affordance had to be keyboard-reachable by design.
-        const first = el.querySelector(".mc-menu__i");
+        // use — and this affordance had to be keyboard-reachable by design. The
+        // value list has no rows to focus, so the scroller itself takes it: that
+        // is what makes Page-Down and Escape work from inside the popover.
+        const first = el.querySelector(".mc-menu__i") || el.querySelector(".mc-menu__vals");
         if (first) { first.focus(); }
     }
     closeItemMenu(restoreFocus = false) {
-        const id = this.ui.menu && this.ui.menu.id;
+        const menu = this.ui.menu;
         this.ui.menu = null;
-        if (!restoreFocus || id == null) { return; }
+        if (!restoreFocus || !menu || menu.id == null) { return; }
         requestAnimationFrame(() => {
-            const body = this.lbodyRef.el;
-            const card = this._itemEl(body, id);
-            const btn = card && card.querySelector(".mc-item-more");
+            const body = menu.side === "right" ? this.rbodyRef.el : this.lbodyRef.el;
+            const card = this._itemEl(body, menu.id);
+            const btn = card && card.querySelector(menu.trigger || ".mc-item-more");
             if (btn) { btn.focus(); }
         });
     }
     runMenuAction(act) {
         const menu = this.ui.menu;
-        if (!menu) { return; }
+        // A value row is not a verb. Nothing in the template calls this for the
+        // value list, and this line is what keeps that true if something later does.
+        if (!menu || menu.kind === "values") { return; }
         const it = this.props.leftItems.find((x) => String(x.id) === String(menu.id));
         this.closeItemMenu();
         if (it && this.props.onLeftAction) { this.props.onLeftAction(it, act); }
     }
     /** ↑/↓ walk the rows, Home/End jump; Escape is handled by `_escape`. */
     onMenuKeydown(ev) {
+        // MAPFIX E1 — the VALUE list has no rows to walk, it has a scroller. Give
+        // it the keys a scroller is expected to answer, and stop them there: the
+        // board's own handler `preventDefault`s ArrowUp/Down (to move the focus
+        // ring), so without this a 120-value list could not be read with the
+        // keyboard at all while the ring wandered behind an open dialog.
+        if (this.ui.menu && this.ui.menu.kind === "values") {
+            const box = this.menuRef.el && this.menuRef.el.querySelector(".mc-menu__vals");
+            if (!box) { return; }
+            const step = { ArrowDown: 40, ArrowUp: -40,
+                           PageDown: box.clientHeight - 24, PageUp: -(box.clientHeight - 24) };
+            if (ev.key in step) { box.scrollTop += step[ev.key]; }
+            else if (ev.key === "Home") { box.scrollTop = 0; }
+            else if (ev.key === "End") { box.scrollTop = box.scrollHeight; }
+            else { return; }
+            ev.preventDefault(); ev.stopPropagation();
+            return;
+        }
         if (!/^(ArrowDown|ArrowUp|Home|End)$/.test(ev.key)) { return; }
         const rows = Array.from(
             (this.menuRef.el && this.menuRef.el.querySelectorAll(".mc-menu__i")) || []);
@@ -1199,6 +1301,35 @@ export class MappingCanvas extends Component {
         // cursor is. It used to be two `case "Escape"` branches buried below,
         // both of them unreachable from the search box.
         if (ev.key === "Escape") { this._escape(ev, null); return; }
+        // MAPFIX E1 — a key that belongs to a CONTROL belongs to that control.
+        //
+        // This handler is bound to the board ROOT, so every keystroke inside it
+        // arrives here — including Enter on a focused BUTTON. Enter on a button
+        // fires the button's own click, and it ALSO reached `case "Enter"` below,
+        // which acts on whichever card the focus ring is on: it armed a column,
+        // and with a column already armed it DREW A WIRE. So a keyboard reader
+        // opening a value list to check a code would have mapped something on the
+        // way in — the same defect E1 guards against on the mouse side, one input
+        // device over. Found live, on the ⋮ trigger's twin (MF33).
+        //
+        // Two rungs, because one was not enough. An OPEN popover owns every key
+        // it receives — `.mc-menu__vals` is a scrolling DIV, which the tag test
+        // below cannot see, so Enter inside the value list still reached
+        // `case "Enter"` and drew the wire the popover exists to avoid; and the
+        // board's own ArrowUp/Down `preventDefault` stopped the list scrolling at
+        // all. Escape is answered ABOVE this, so the ladder still closes it.
+        //
+        // INPUT is deliberately NOT in the tag list: "type in the search box,
+        // press Enter to wire the top hit" is a gesture the board promises, and
+        // `_relocateFocus` exists to keep it honest (MF25).
+        if (this.ui.menu && ev.target && ev.target.closest
+                && ev.target.closest(".mc-menu")) {
+            return;
+        }
+        if ((ev.key === "Enter" || ev.key === " ")
+                && /^(BUTTON|A)$/.test(ev.target.tagName)) {
+            return;
+        }
         if (ev.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName)) {
             const ref = (this.ui.hoverCol === "right" ? this.rqRef : this.lqRef).el;
             if (ref) { ev.preventDefault(); ref.focus(); ref.select(); return; }

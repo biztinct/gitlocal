@@ -1,16 +1,17 @@
 # MAPFIX — Readable codes, complete mapping, silent errors: conventions + gotcha ledger
 
-**STATUS: PROGRAMME COMPLETE — Phases A, B, C and D designed, built, deployed and live on
+**STATUS: PROGRAMME COMPLETE — Phases A, B, C, D and E designed, built, deployed and live on
 abm · acme · payobook · payobook_template (2026-08-23).** Final module versions:
-pb_hr_payroll_formula **19.0.1.72.0** · pb_formula_studio **19.0.1.121.0** ·
+pb_hr_payroll_formula **19.0.1.72.0** · pb_formula_studio **19.0.1.124.0** ·
 biz_theme **19.0.1.4.0** · om_hr_payroll 19.0.1.0.2 (never touched — CR1). Commits: Phase A
-`f658974f`, Phase B `470590bd`, Phase C `6f6066e1`, Phase D = the commit that carries this line
-(a hash cannot name itself; it is quoted in the Phase D report) — **none pushed**.
+`f658974f`, Phase B `470590bd`, Phase C `6f6066e1`, Phase D `c79c15a8`, Phase E = the commit that
+carries this line (a hash cannot name itself; it is quoted in the Phase E report) — **none pushed**.
 
 Follow-on programme to COLROLES (see `docs/handovers/COLROLES_LEDGER.md` — its standing rules and
 gotchas CR1–CR33 STILL BIND; this file adds MF-numbered entries). Phases: A codes+rename,
 B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + Primary Key guard,
-D the five defects the owner reported against the live Phase-B board.
+D the five defects the owner reported against the live Phase-B board, E the two defects
+reported against the live Phase-D board.
 
 ## Standing rules (inherited from COLROLES — re-read that ledger, these are the critical few)
 
@@ -200,6 +201,25 @@ D the five defects the owner reported against the live Phase-B board.
   Tests: 9 new Python (`TestMappingDefects`) + 12 Phase-B = 21/21 green on abm; hoot 41/41 green at
   `/web/tests?filter=mapping_canvas` (15 of them new). abm left exactly as found (10 mappings, ids
   `1,2,30,31,32,33,35,36,37,38`; rule 662 `DESIGNATION` restored to contract/text/auto).
+- **Phase E — DONE, live on abm · acme · payobook · payobook_template (2026-08-23).**
+  Version: pb_formula_studio **19.0.1.124.0** (pb_hr_payroll_formula and biz_theme untouched).
+  **E1** — a note that had to CUT its value list is now the way to open it. The Phase-D `⋮` popover
+  gained a `kind`; `_openMenu`/`_placeMenu`/the scrim/the Escape rung are shared, so there is still
+  ONE popover implementation and one MF27 measure-then-place. `_ec_selection_note` emits
+  `values: [{key,label}]` + `total` **only when the inline text hid something**, which makes
+  "truncated" and "clickable" the same condition on both sides of the wire; a complete note stays a
+  `<div>` with no button semantics.
+  **E2** — `_ec_is_mappable` asked STORED where it meant WRITABLE (MF30). Catalogue **193 → 236**
+  cards; the two card-construction sites are one (`_ec_field_item` resolves lane, lane_order and
+  note itself), the appended card is spliced at the end of its own lane (MF32), and a wire to a
+  destination the catalogue refuses is kept but marked `warn` (`_ec_unmappable_note`).
+  abm board: 236 right cards, 76 notes (30 selection + 46 m2o), 22 of them openable carrying 215
+  value rows; whole-board RPC **131 ms / 101 KB** (Phase D: 132 ms / 69 KB — 10.8 KB of the growth
+  is the structured value lists, the rest is the 43 extra cards). 0 bounding-box overlaps over 255
+  cards / 947 element pairs at 1440 **and** at 1024, hover/focus states included.
+  Tests: 6 new Python (`TestMappingSelectionValues`) = 27/27 green on abm; hoot **48/48** green at
+  `/web/tests?filter=mapping_canvas` (7 new). abm left exactly as found — 20 mappings, ids
+  `1,2,30,31,32,33,36,37,38,50…60`, no `hr.formula.rule` writes; nothing was created or deleted.
 
 ## Gotchas discovered (append per phase, MF-numbered)
 
@@ -404,3 +424,82 @@ D the five defects the owner reported against the live Phase-B board.
   it handles all three, applies `selection_add`, and returns translated labels. One card out of 193
   is exactly the size of defect a screenshot does not catch and a count does (24 selection fields,
   23 notes).
+- MF30 (E): **on Odoo 19 `hr.employee` is a DELEGATE — `_inherits = {'hr.version': 'version_id'}`
+  (`hr/models/hr_employee.py:43`).** `employee_type`, `marital`, `sex`, `passport_id`,
+  `identification_id`, `ssnid`, `job_title`, `wage`, the six private-address fields, the contract
+  dates and 30 more are therefore RELATED, **non-stored** fields on hr.employee — and every one of
+  them takes a write, because the ORM writes through to the version row. `_ec_is_mappable`'s
+  `not field.store` clause refused all of them, which is the whole of E2: the six-value Employee
+  Type selection the owner photographed off the form was simply not in the catalogue, and never
+  could be. **MF11 was a symptom of this, not the disease** — "department_id is not stored on
+  hr.employee" is true because it is delegated, not because it is uncomputable.
+  The rule is now `readonly ⇒ no`, then `store OR inherited OR related OR inverse` — i.e. *can this
+  receive a value*, which is the only question a mapping destination has to answer; where the row
+  physically lands is the ORM's business. Live effect on abm: **hr.employee 133 → 173 (+40),
+  hr.contract 56 → 59 (+3, `permit_no`/`visa_no`/`visa_expire`, delegated the other way from
+  `employee_id`), bank 4 unchanged — 193 → 236 cards. Nothing was LOST** (0 fields left the
+  catalogue), so the change is purely additive. Four hr.version plumbing names were denied in the
+  same breath (`version_id`, `date_version`, `last_modified_date`, `last_modified_uid`); three of
+  them would otherwise have been gained, and `version_id` is registry-readonly and was never
+  offered. When a predicate names a STORAGE property, ask whether the behaviour you want is
+  actually storage.
+- MF31 (E): **the `ir.model.fields` domain was a second, quieter copy of the inclusion rule — and a
+  copy that could not be widened.** `_ec_right_items` and `ec_model_fields` both carried
+  `('store','=',True), ('readonly','=',False)` in the SQL, so a field excluded there never reached
+  `_ec_is_mappable` at all and fixing the predicate would have changed nothing. Worse, the two
+  disagree: `ir.model.fields` is a stored snapshot and the registry is live (the abm counts differ
+  by one field in each model, in opposite directions). The domain is now `_ec_catalogue_domain` —
+  model + ttype, a cheap first pass over 330/106 rows — and the registry decides. One rule, one
+  place; a duplicated predicate is a predicate that will be half-fixed.
+- MF32 (E): **`right.append(...)` put a card in a lane it does not belong to, and grew a second
+  group heading for it.** The canvas emits a group header whenever `group` CHANGES between
+  consecutive rows, so a wired Identity field tacked on below "Other contract fields" drew its own
+  "Identity" heading at the very bottom of the board. `_ec_place_in_lane` inserts by `lane_order`
+  instead. Any future "…but keep this one visible" append has the same shape: give the card its
+  metadata AND put it where that metadata says it goes, or the metadata is decoration.
+- MF33 (E): **a root-level `keydown` handler steals Enter from every button inside it.**
+  `MappingCanvas.onKeydown` is bound to the board root, so Enter on a focused `<button>` fired the
+  button's own click AND fell through to `case "Enter"`, which acts on the focus ring — it armed a
+  column, and with a column already armed it **drew a wire**. So the keyboard route into the new
+  value list mapped something on the way in: E1's own trap, one input device over, and the `⋮`
+  trigger (D3) had been carrying it silently since Phase D. Found only by pressing the key on the
+  live board — the mouse path was clean and every unit test passed. `onKeydown` now returns early
+  for Enter/Space whose `target` is a `BUTTON` or `A`. **`INPUT` is deliberately not in that list**:
+  "type in the search box, press Enter to wire the top hit" is a promise the board makes and MF25's
+  `_relocateFocus` exists to keep it.
+- MF34 (E): **one field can be bigger than the whole board.** `hr.employee.tz` has **597**
+  timezones; sending them all as structured values is ~30 KB of payload and a 30 KB `title=`
+  attribute for ONE card out of 236 — and the pre-existing tooltip would have carried them too, the
+  moment the predicate let `tz` into the catalogue. `_EC_SEL_VALUES_MAX = 120` caps both the list
+  and the tooltip, and the popover SAYS it is showing a subset ("Showing the first 120 of 597")
+  rather than quietly dropping the tail. Structured values cost 10.8 KB of abm's 94 KB payload.
+- MF35 (E, environment): **the ledger's `systemd-run` deploy ritual runs the unit as ROOT**, and
+  odoo-bin then fails peer auth with `FATAL: role "root" does not exist` — on all four DBs, in
+  about ninety seconds, with the loop still writing `EXIT[db]=1`. The service itself runs as `odoo`
+  (`/etc/init.d/odoo-server`, `USER=odoo`); the runner script needs `sudo -u odoo` in front of
+  `odoo-bin`. CR6's lesson with the sign flipped: a RED sentinel is not proof of a broken build
+  either — read the log before believing either colour.
+- MF36 (E, scope — two follow-ups deliberately NOT taken): (a) **`employee_mapping_create` does not
+  apply `_ec_is_mappable`.** E2(3) makes an unwritable destination SAY so; it does not stop a user
+  wiring more columns to it, because the mapping model's own domain accepts any non-readonly field
+  and the handover asked only that the card be marked. There is one live instance:
+  **`payobook` mapping 16 → `hr.contract.active`** (deny-listed as record plumbing), which now
+  renders as a `warn` card on that database — the feature has a real subject, not just a test.
+  (b) **the CLIENT still appends session extras at the end of the right column.** `_ec_place_in_lane`
+  fixes the server's append (MF32), but `mapEmpRight` (`formula_studio.js`) concatenates the
+  "Add a field to map…" extras after the whole catalogue regardless of `lane_order`, so a pinned
+  extra still draws a duplicate group heading at the bottom. The E2 invariant is true of
+  `employee_mapping_data(...)['right']`, which is what it was written about; it is not yet true of
+  what the canvas finally renders. Both are one-line-ish and both are owner decisions, not defects
+  this phase was asked to fix.
+- MF37 (E, testing): **you cannot observe Odoo's RPCs by patching `window.fetch` from a Chrome-MCP
+  probe.** The web client captures `browser.fetch` at module load, so a hook installed afterwards
+  sees NOTHING — and "zero RPCs" then reads as proof when it is only proof that the hook is blind.
+  It cost a real write on abm: a probe that clicked a right-hand CARD (to set `focusSide`) while a
+  left column was armed did exactly what the board promises — it re-pointed `Employee Code` from
+  `hr.employee.employee_id` to `hr.contract.state`, deleting mapping 1 and minting 85, while the
+  hook reported an empty call list. **The oracle for "did the board write anything" is the DATABASE**
+  (`select count(*), string_agg(id) from hr_payslip_import_mapping`), taken before and after. Restored
+  by moving row 85 back to `hr.employee.employee_id` under id 1 with its original timestamps; no
+  `hr.formula.rule` was touched. And the safe way to probe a write-capable gesture is to leave
+  nothing armed — a failed guard then moves a focus ring instead of writing a row.

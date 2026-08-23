@@ -743,3 +743,223 @@ test("D4/D5 — a caution note is toned differently from an ordinary one", async
     await animationFrame();
     expect(document.querySelector(".mc-col.right .mc-item-note").classList.contains("warn")).toBe(true);
 });
+
+// ==================================================== MAPFIX Phase E
+// The `Status` card read "4 values — New, Running, Expired, …" and the rest of
+// the list existed only in a `title` tooltip: slow to appear, impossible to
+// select, cut off by the viewport and absent altogether on a touch screen. The
+// note is now the way to open it — in the SAME popover the card menu uses, which
+// is what keeps MF27's measure-then-place fix a single implementation.
+
+/** A right column with one truncated note and one complete one. */
+function noteProps(over = {}) {
+    const right = [
+        {
+            id: "f:hr.contract:state", label: "Status", sublabel: "Contract",
+            meta: {
+                ttype: "selection", lane: "contract_terms", lane_order: 4,
+                note: {
+                    text: "4 values — New, Running, Expired, …",
+                    title: "The file must contain one of these values",
+                    tone: "",
+                    total: 4,
+                    values: [
+                        { key: "draft", label: "New" },
+                        { key: "open", label: "Running" },
+                        { key: "close", label: "Expired" },
+                        { key: "cancel", label: "Cancelled" },
+                    ],
+                },
+            },
+        },
+        {
+            id: "f:hr.employee:sex", label: "Gender", sublabel: "Employee",
+            meta: {
+                ttype: "selection", lane: "personal", lane_order: 1,
+                note: { text: "male, female", title: "Two values", tone: "" },
+            },
+        },
+    ];
+    return actProps({ rightItems: right, ...over });
+}
+
+// ---------------------------------------------------------------- E1, test 5
+test("E1 — opening the value list does NOT wire the column it sits in", async () => {
+    // The obvious way to ship this as a bug. The note lives INSIDE a card whose
+    // `t-on-click` is `clickRight(it.id)`, and `clickRight` draws a wire whenever
+    // a left card is armed. Without `stopPropagation`, READING what a destination
+    // accepts would MAP a column to it.
+    const drawn = [];
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: noteProps({ onDraw: (l, r) => drawn.push([l, r]) }),
+    });
+    await animationFrame();
+    canvas.ui.armedLeft = 100;                       // a column is armed, mid-gesture
+
+    const note = document.querySelector(".mc-col.right .mc-item-note.act");
+    expect(note).not.toBe(null);
+    note.click();
+    await animationFrame();
+    await animationFrame();
+
+    expect(drawn).toEqual([]);                       // nothing was mapped
+    expect(canvas.ui.armedLeft).toBe(100);           // …and the gesture survives
+    expect(canvas.ui.menu.kind).toBe("values");
+    expect(canvas.ui.focusId).toBe(null);            // the card was not even selected
+});
+
+// ---------------------------------------------------------------- E1, test 6
+test("E1 — the popover prints every value with its stored code", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: noteProps() });
+    await animationFrame();
+    document.querySelector(".mc-col.right .mc-item-note.act").click();
+    await animationFrame();
+    await animationFrame();
+
+    const pop = document.querySelector(".mc-menu.vals");
+    expect(pop).not.toBe(null);
+    expect(pop.getAttribute("role")).toBe("dialog");
+    const rows = pop.querySelectorAll(".mc-menu__v");
+    expect(rows.length).toBe(4);                     // EVERY value, not the head
+    expect(rows[0].querySelector(".mc-menu__vl").textContent).toBe("New");
+    expect(rows[0].querySelector(".mc-menu__vk").textContent).toBe("draft");
+    expect(rows[3].querySelector(".mc-menu__vk").textContent).toBe("cancel");
+    // …and the list scrolls inside the popover rather than growing the card
+    const vals = pop.querySelector(".mc-menu__vals");
+    expect(getComputedStyle(vals).overflowY).toBe("auto");
+    expect(document.querySelector(".mc-col.right .mc-item-note.act")
+        .getAttribute("aria-expanded")).toBe("true");
+});
+
+test("E1 — Escape closes the value list and does not disarm the component", async () => {
+    // D2's precedence, unchanged: the innermost dismissable goes first. One key,
+    // one effect — a reader who opened a list to check a code must not lose the
+    // gesture they were in the middle of by closing it.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: noteProps() });
+    await animationFrame();
+    const trigger = document.querySelector(".mc-col.right .mc-item-note.act");
+    trigger.click();
+    await animationFrame();
+    await animationFrame();
+    canvas.ui.armedLeft = 100;
+
+    canvas.onKeydown(keyEvent("Escape"));
+    expect(canvas.ui.menu).toBe(null);
+    expect(canvas.ui.armedLeft).toBe(100);
+    await animationFrame();
+    await animationFrame();
+    expect(document.activeElement).toBe(trigger);    // focus comes back to it
+});
+
+// ---------------------------------------------------------------- E1, test 7
+test("E1 — a note that already shows everything is inert text", async () => {
+    // An affordance that opens a list of what you are already reading is worse
+    // than none. `values` is the adapter's "this was truncated" signal, and it is
+    // the only thing that turns the note into a button.
+    await mountWithCleanup(MappingCanvas, { props: noteProps() });
+    await animationFrame();
+    const notes = document.querySelectorAll(".mc-col.right .mc-item-note");
+    expect(notes.length).toBe(2);
+    const [truncated, complete] = notes;
+    expect(truncated.tagName).toBe("BUTTON");
+    expect(truncated.getAttribute("aria-haspopup")).toBe("dialog");
+    expect((truncated.getAttribute("aria-label") || "").length > 0).toBe(true);
+    expect(complete.tagName).toBe("DIV");
+    expect(complete.getAttribute("aria-haspopup")).toBe(null);
+    expect(complete.getAttribute("aria-expanded")).toBe(null);
+    expect(complete.hasAttribute("tabindex")).toBe(false);
+});
+
+// ---------------------------------------------------------------- E1, test 8
+test("E1 — the new affordance still leaves the name and the code legible", async () => {
+    // MF13/CR22/MF26, fourth act. Two affordances have already wrecked this card
+    // by sharing a line with its text. This one is the text — its own block under
+    // the sublabel — and a bounding box is the only thing that can prove it.
+    await mountWithCleanup(MappingCanvas, { props: noteProps() });
+    await animationFrame();
+    for (const card of document.querySelectorAll(".mc-col.right .mc-item")) {
+        const label = card.querySelector(".mc-item-label");
+        const sub = card.querySelector(".mc-item-sub");
+        const note = card.querySelector(".mc-item-note");
+        const lb = label.getBoundingClientRect();
+        const sb = sub.getBoundingClientRect();
+        const nb = note.getBoundingClientRect();
+        expect(lb.width > 0).toBe(true);
+        expect(sb.width > 0).toBe(true);
+        // three stacked blocks, in order, never on top of one another
+        expect(sb.top >= lb.bottom - 0.5).toBe(true);
+        expect(nb.top >= sb.bottom - 0.5).toBe(true);
+        // and the note never makes the card wider than the column
+        expect(nb.right <= card.getBoundingClientRect().right + 0.5).toBe(true);
+    }
+});
+
+test("E1 — Enter on the note opens the list and does not wire anything", async () => {
+    // Found LIVE, and it is E1's trap arriving by keyboard instead of by mouse.
+    // `onKeydown` is bound to the board root, so Enter on a focused button both
+    // fired the button's click AND fell through to `case "Enter"`, which acts on
+    // the focus ring — arming a column, or drawing a wire when one was armed.
+    const drawn = [];
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: noteProps({ onDraw: (l, r) => drawn.push([l, r]) }),
+    });
+    await animationFrame();
+    canvas.ui.armedLeft = 100;
+    canvas.ui.focusSide = "right";
+    canvas.ui.focusId = "f:hr.contract:state";
+
+    // driven through the REAL button, because the bug was that the real button's
+    // keydown reached the board — a fabricated `{tagName}` would pass either way.
+    const note = document.querySelector(".mc-col.right .mc-item-note.act");
+    note.focus();
+    note.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    note.click();                           // what the browser does next
+    await animationFrame();
+    await animationFrame();
+    expect(drawn).toEqual([]);              // nothing was mapped
+    expect(canvas.ui.armedLeft).toBe(100);  // and the gesture is intact
+    expect(canvas.ui.menu.kind).toBe("values");
+
+    // …nor from INSIDE the open popover, whose scroller is a DIV the tag test
+    // cannot see. This is the leak the first cut of the guard still had.
+    const vals = document.querySelector(".mc-menu__vals");
+    vals.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await animationFrame();
+    expect(drawn).toEqual([]);
+
+    // …while Enter from the search box still completes the wire it promises (MF25)
+    canvas.closeItemMenu();
+    await animationFrame();
+    const fromSearch = keyEvent("Enter");
+    fromSearch.target = { tagName: "INPUT" };
+    canvas.onKeydown(fromSearch);
+    expect(drawn).toEqual([[100, "f:hr.contract:state"]]);
+});
+
+test("E1 — the value list answers the scrolling keys itself", async () => {
+    // The board `preventDefault`s ArrowUp/Down to move its focus ring, so without
+    // a branch of its own a 120-row list could not be read with the keyboard at
+    // all — while the ring wandered behind an open dialog.
+    const many = Array.from({ length: 60 }, (_, i) => ({ key: `k${i}`, label: `Value ${i}` }));
+    const right = [{
+        id: "f:hr.employee:tz", label: "Timezone", sublabel: "Employee",
+        meta: { ttype: "selection", lane: "personal", lane_order: 1,
+                note: { text: "60 values — a, b, c, …", title: "t", tone: "",
+                        total: 200, values: many } },
+    }];
+    const canvas = await mountWithCleanup(MappingCanvas, { props: noteProps({ rightItems: right }) });
+    await animationFrame();
+    document.querySelector(".mc-col.right .mc-item-note.act").click();
+    await animationFrame();
+    await animationFrame();
+
+    const box = document.querySelector(".mc-menu__vals");
+    expect(box.scrollHeight > box.clientHeight).toBe(true);   // it really does scroll
+    const before = box.scrollTop;
+    canvas.onMenuKeydown({ key: "End", preventDefault() {}, stopPropagation() {} });
+    expect(box.scrollTop > before).toBe(true);
+    canvas.onMenuKeydown({ key: "Home", preventDefault() {}, stopPropagation() {} });
+    expect(box.scrollTop).toBe(0);
+    // and it says it is showing a subset rather than dropping the tail silently
+    expect(document.querySelector(".mc-menu__f").textContent).toInclude("200");
+});
