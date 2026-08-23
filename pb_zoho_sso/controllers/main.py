@@ -142,6 +142,7 @@ class PayobookZohoSsoController(http.Controller):
         response = request.redirect(
             f"{config['accounts_url']}/oauth/v2/auth?{urlencode(params)}",
             303,
+            local=False,
         )
         response.set_cookie(
             _COOKIE_PREFIX + state[:12],
