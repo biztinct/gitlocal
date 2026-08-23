@@ -53,6 +53,12 @@ B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + 
 - MF-C2 **Primary Key**: guard at the field (`required` on the Select Worksheets step) so the user
   never reaches the server raise. Note the raise was never removed — `git log -S` shows it was ADDED
   in 31936f64; the field has never had `required` in this repo's history.
+- MF-A3 **CLOSED 2026-08-23 — legacy short-but-lossy codes stay as they are.** Phase A's
+  "already conforms" skip left codes like `MCLNGHL` (from `Mức lương HĐLĐ`, accents deleted rather
+  than folded) untouched, where the new generator would say `MUCLUONGHDLD`. The owner was asked and
+  chose to LEAVE THEM: they are short and they work, re-deriving means more churn on live data for
+  cosmetic gain, and the skip is load-bearing — it is what protects `BASIC`, which
+  `_get_formula_input_values` reads by name. **Do not write a follow-up migration for these.**
 
 ## Verified facts (do not re-derive)
 
@@ -139,6 +145,16 @@ B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + 
   5 `hr.contract.advantage.template` codes moved alongside; 0 refused, 0 withdrawn, 0 orphans.
   Compute neutrality: 0 cell diffs over 19 real payslips + a synthetic fingerprint of all 19
   configurations. Live tests on abm: 32/32.
+- **Phase B — DONE, live on abm · acme · payobook · payobook_template (2026-08-23).**
+  Versions: pb_hr_payroll_formula **19.0.1.70.0** · pb_formula_studio **19.0.1.117.0**.
+  Catalogue: `_EC_CURATED`'s 15 employee + 7 contract hand-typed names replaced by a generated
+  catalogue — **193 destinations on abm** (134 hr.employee + 55 hr.contract + 4 bank cards), in
+  eight lanes: Identity 3 · Personal 8 · Contact 5 · Job & organisation 7 · Contract terms 7 ·
+  Bank account 4 · Other employee fields 114 · Other contract fields 45.
+  Contract-component cards are wirable and re-routable; existing `hr.contract.advantage` data is
+  kept as history (MF-B3). Reconciliation ships as a footer bar + dialog; the problems rail's
+  `idunmapped`/`bankunmapped` now read the SAME `_ec_unresolved` set (abm: board 5, rail 5).
+  Live tests on abm: 18/18 (12 new + the 6 COLROLES role tests).
 
 ## Gotchas discovered (append per phase, MF-numbered)
 
@@ -203,3 +219,51 @@ B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + 
   (`NEW_1`). All three now route through `component_code.normalize_code`, which passes a conforming
   code through UNCHANGED. When adding a constraint, grep for who WRITES the field, not just who
   reads it.
+- MF11 (B): **on Odoo 19 `hr.employee.department_id`, `job_id` and `resource_calendar_id` are NOT
+  STORED.** The stored copies live on `hr.contract`, where they are declared
+  `compute='_compute_employee_contract', store=True, readonly=False`
+  (`hr_contract/models/hr_contract.py:28,30,37,51`). Two consequences, both of which broke a first
+  cut of this phase:
+  (a) a `store=True` catalogue rule offers Department **on the contract only** — so a lane may not
+  be tied to one model. `_EC_LANES` therefore reads `(key, ((model, names), …))` and
+  "Job & organisation" draws from both, because the reader looks for "Department" under that
+  heading whichever record holds it;
+  (b) **"a compute without an inverse is not writable" is FALSE for a stored compute.** That rule
+  belongs to UNSTORED computes; a stored one with `readonly=False` is Odoo's ordinary editable
+  computed field, and excluding it removed the four most-wanted destinations on the board. The
+  guard is now `field.compute and not field.store and not field.inverse` — which `store=True`
+  already covers, and is kept only so the reasoning is visible in the code.
+- MF12 (B): **an asset-bundle rebuild is triggered by the module UPGRADE, not by the file's
+  mtime.** A `.scss` copied into `/odoo/odoo-server/addons/` AFTER the `-u` had already run served
+  the OLD compiled bundle indefinitely: `getComputedStyle(...).position` still read `static` after
+  a hard reload with `ignoreCache`, while the OWL templates (which shipped in the same `-u`) were
+  current — so the markup was new and its CSS was not, which is the single most confusing shape a
+  stale deploy can take. Either re-run `-u` after any late asset edit, or purge with
+  `env['ir.attachment'].search([('url','=like','/web/assets/%')]).unlink()` per database. The
+  browser cache is never the culprit; the attachment is.
+- MF13 (B): **CR22's lesson, repeated verbatim.** A card grew from one hover verb to three; three
+  buttons IN THE FLOW reserve their width even at `opacity: 0`, and `.mc-item-label > span` has
+  `min-width: 0` — so every left card rendered its name as a **single character** while looking
+  perfectly fine in the DOM. Neither a unit test nor an RPC probe can see it; only a screenshot
+  can. `.mc-item-acts` is now `position: absolute` over the right of the card behind a short white
+  fade. Any future per-card affordance must come out of the flow the same way.
+- MF14 (B): **a payroll column that prints on the payslip HAS a destination.** The handover's
+  unresolved rule excluded only formula-fed payroll columns, which on a VPTQ-shaped structure would
+  have listed dozens of pay columns in a dialog whose rows are **pre-ticked to become contract
+  components** — a destructive default dressed as tidiness. `_ec_unresolved` therefore also treats
+  `column_role == 'payroll' and appears_on_payslip` as resolved (the payslip line IS where the
+  value lands). Documented deviation; abm's count is 5, all of them people columns.
+- MF15 (B): **promoting to an AMOUNT component makes the card vanish.** CR-A2 gives an amount
+  component role `payroll`, and the people board hides the payroll lane until asked — so the card
+  the user just acted on disappears from under the pointer (W40). Both promotion paths
+  (`mapEmpAction`, `applyReconcile`) now switch `mapEmpPayroll` on before reloading. Any future
+  verb that can change a column's ROLE has to ask whether the new role is one this board shows.
+- MF16 (B): **`employee_mapping_create` returning a `msg` on SUCCESS was a new shape.** `mapDraw`
+  only ever read `msg` on `ok === false`, so the demotion sentence — the entire reassurance that
+  contract history survives a re-route — was computed, returned and thrown away. Live-verified
+  after the fix ("Department now goes to Department instead of the contract."). When a generic
+  dispatcher gains a success payload, grep for every caller of that dispatcher, not of the RPC.
+- MF17 (B, environment): the apex/abm **`psql` invocation in the deploy ritual needs
+  `sudo -u postgres`** — `psql -U odoo` fails peer authentication as `ubuntu` and bare `psql` fails
+  with `role "ubuntu" does not exist`. A CR6 verification that silently errors is a CR6
+  verification that did not happen.

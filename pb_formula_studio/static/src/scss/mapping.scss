@@ -58,6 +58,21 @@
 .pbfs-map .pm-lane.payroll.shown { opacity: 1; }
 
 .pbfs-map .pm-body { flex: 1; position: relative; overflow: hidden; background: #FAFAFE; }
+
+/* MAPFIX B3 — the footer bar. It NEVER disappears on the employee board: when
+   there is nothing left to resolve it says so, because a bar that vanishes once
+   the work is done cannot be distinguished from one that never rendered. */
+.pbfs-map .pm-foot {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 18px; border-top: 1px solid var(--line, #E8E9F3); background: #fff;
+}
+.pbfs-map .pm-foot-say {
+    display: inline-flex; align-items: center; gap: 7px; min-width: 0;
+    font-size: 12.5px; font-weight: 600; color: var(--amber, #B7791F);
+}
+.pbfs-map .pm-foot-say.ok { color: #047857; }
+.pbfs-map .pm-foot-say svg { width: 15px; height: 15px; flex: none; }
+.pbfs-map .pm-foot .pbfs-btn { margin-left: auto; }
 .pbfs-map .pm-loading { padding: 40px; text-align: center; color: var(--muted, #6B7280); font-size: 13px; }
 
 .pbfs-map .pm-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 9px; padding: 60px 30px; color: var(--muted, #6B7280); }
@@ -233,6 +248,22 @@
 .mapping-canvas .mc-item:hover .mc-item-act,
 .mapping-canvas .mc-item.focus .mc-item-act { opacity: 1; pointer-events: auto; }
 .mapping-canvas .mc-item-act:hover { background: var(--i-soft, #EDEAF8); }
+/* MAPFIX B2 — a card offers up to three verbs now, and three buttons IN THE FLOW
+   take enough width to squeeze the name down to its first letter even while they
+   are invisible (CR22's lesson, in its exact original form: the layout is only
+   wrong in the state nobody screenshots). So the group is lifted OUT of the flow
+   and floated over the right of the card on hover, behind a short white fade so it
+   reads over whatever it covers. `right` clears the plug. */
+.mapping-canvas .mc-item-acts {
+    position: absolute; right: 26px; top: 50%; transform: translateY(-50%);
+    z-index: 2; display: flex; flex-wrap: wrap; justify-content: flex-end;
+    gap: 4px; max-width: calc(100% - 52px); padding: 2px 0 2px 28px;
+    border-radius: 9px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0, #fff 28px);
+    opacity: 0; pointer-events: none; transition: opacity .12s;
+}
+.mapping-canvas .mc-item:hover .mc-item-acts,
+.mapping-canvas .mc-item.focus .mc-item-acts { opacity: 1; pointer-events: auto; }
 
 .mapping-canvas .mc-item-sub { font-size: 11px; color: var(--muted, #6B7280); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
 .mapping-canvas .mc-col.right .mc-item-sub { flex-direction: row-reverse; }

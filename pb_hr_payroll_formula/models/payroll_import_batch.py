@@ -1136,8 +1136,29 @@ class HrPayrollImportBatch(models.Model):
             if not relation:
                 return None
             target = self.env[relation]
-            existing = target.search([('name', '=ilike', name_value)], limit=1)
+            # MAPFIX B1 — the studio can now wire a column onto ANY many2one, not
+            # just the four this path was written for, and `name` is not universal
+            # (res.partner.bank has none; `display_name` is its account number).
+            # Searching a field that does not exist raises, and CREATING one would
+            # be worse: a record with a column of a spreadsheet in a field nobody
+            # asked about. So: resolve by whatever the comodel calls its name, and
+            # when there is nothing to resolve BY, refuse loudly and store nothing.
+            key = 'name' if 'name' in target._fields else (
+                target._rec_name if target._rec_name in target._fields else None)
+            if not key:
+                _logger.warning(
+                    "Mapped field %s.%s points at %s, which has no name field to "
+                    "match %r against — the column was not stored.",
+                    record._name, field.name, relation, name_value)
+                return None
+            existing = target.search([(key, '=ilike', name_value)], limit=1)
             if not existing:
+                if key != 'name':
+                    _logger.warning(
+                        "No %s matches %r for %s.%s, and %s records are not created "
+                        "from an import — the column was not stored.",
+                        relation, name_value, record._name, field.name, relation)
+                    return None
                 vals = {'name': name_value}
                 if 'company_id' in target._fields and self.company_id:
                     vals['company_id'] = self.company_id.id

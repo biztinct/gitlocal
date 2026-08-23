@@ -358,6 +358,19 @@ export class MappingCanvas extends Component {
             this.ui.f.right = "suggested";
             this.ui.q.left = ""; this.ui.qa.left = "";
             this.ui.q.right = ""; this.ui.qa.right = "";
+        } else if (cmd.kind === "armLeft" && cmd.leftId != null) {
+            // MAPFIX B2 — "Send to a field instead…" is not a write. It is a
+            // request to DRAW, so it arms the card the host names and puts the
+            // cursor where the answer is: the right column's search box. Doing the
+            // write on the card's behalf would pick the destination for the user,
+            // which is the one thing this verb must not do.
+            this.ui.armedLeft = cmd.leftId;
+            this.ui.focusSide = "right";
+            this.ui.selWire = null;
+            requestAnimationFrame(() => {
+                const el = this.rqRef.el;
+                if (el) { el.focus(); el.select(); }
+            });
         }
     }
 
@@ -782,9 +795,23 @@ export class MappingCanvas extends Component {
     itemAction(it) {
         return (this.props.onLeftAction && it && it.meta && it.meta.action) || null;
     }
-    runItemAction(it, ev) {
+    /**
+     * The verbs a card offers — MAPFIX B2.
+     *
+     * Phase 3 gave a card ONE verb, because a card had one thing it could become.
+     * A column now has three or four possible destinations and the board's job is
+     * to make each of them a click rather than a piece of knowledge, so the adapter
+     * sends a list. `meta.action` is still honoured on its own: the Mapping Studio
+     * and every other adapter that predates this renders exactly as it did.
+     */
+    itemActions(it) {
+        if (!this.props.onLeftAction || !it || !it.meta) { return []; }
+        if (Array.isArray(it.meta.actions)) { return it.meta.actions; }
+        return it.meta.action ? [it.meta.action] : [];
+    }
+    runItemAction(it, act, ev) {
         if (ev) { ev.stopPropagation(); }
-        if (this.props.onLeftAction) { this.props.onLeftAction(it); }
+        if (this.props.onLeftAction) { this.props.onLeftAction(it, act); }
     }
 
     // ---- wire lookups -------------------------------------------------

@@ -110,12 +110,17 @@
                       <span t-if="it.prov === 'catalog'" class="mc-item-sample__k">e.g.</span><t t-esc="it.sample"/>
                     </div>
                   </div>
-                  <!-- COLROLES P3 — the card's one verb, shown on hover/focus so a
-                       two-hundred-row column is not a wall of buttons. -->
-                  <button t-if="itemAction(it) and props.canEdit" class="mc-item-act" type="button"
-                          t-att-title="itemAction(it).label"
-                          t-on-click="(ev) => this.runItemAction(it, ev)"
-                          t-esc="itemAction(it).label"/>
+                  <!-- COLROLES P3 / MAPFIX B2 — the card's verbs, shown on
+                       hover/focus so a two-hundred-row column is not a wall of
+                       buttons. A card offers what it can BECOME; the wire it can be
+                       given is drawn, not listed. -->
+                  <div t-if="props.canEdit and itemActions(it).length" class="mc-item-acts">
+                    <button t-foreach="itemActions(it)" t-as="act" t-key="act.key"
+                            class="mc-item-act" type="button"
+                            t-att-title="act.hint or act.label"
+                            t-on-click="(ev) => this.runItemAction(it, act, ev)"
+                            t-esc="act.label"/>
+                  </div>
                   <span class="mc-plug right"/>
                 </div>
               </t>

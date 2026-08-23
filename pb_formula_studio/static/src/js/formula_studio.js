@@ -241,6 +241,12 @@ export class PbFormulaStudio extends Component {
             // and must not learn what a "payroll component" is.
             mapEmpPayroll: false,    // include the pay columns in the LEFT column
             mapEmpLane: null,        // a role lane label, or null for every lane
+            // MAPFIX B2/B3 — one-shot orders for the canvas, and the reconciliation
+            // step. `mapCommand` carries a token so the same order can be repeated.
+            mapCommand: null,        // {token, kind, leftId}
+            rcnOpen: false,
+            rcnBusy: false,
+            rcnRows: null,           // [{id,name,code,col,samples,value_type,tick}] or null
             // W65 — mapping templates
             tmplMode: null,          // null | "save" | "apply"
             tmplName: "",            // save: template name
@@ -4524,16 +4530,40 @@ export class PbFormulaStudio extends Component {
             || _t("This column already has a destination.");
         this.notif.add(hint, { type: "info" });
     }
-    async mapEmpAction(item) {
-        const action = item && item.meta && item.meta.action;
+    /**
+     * A verb pressed on a left card — MAPFIX B2.
+     *
+     * Four verbs, three of which are a write and one of which is not: "Send to a
+     * field instead…" arms the card and hands the board back to the user, because
+     * choosing the destination is the whole decision and doing it for them would
+     * make the verb a guess. The write verbs all reload the board AND the
+     * configuration, since the role lens and the problems rail read these flags.
+     */
+    async mapEmpAction(item, action) {
+        action = action || (item && item.meta && item.meta.action);
         if (!action) { return; }
-        const method = action.key === "make_text"
-            ? "employee_mapping_make_text_component"
-            : "employee_mapping_detach_component";
+        if (action.key === "to_field") {
+            this.state.mapCommand = { token: Date.now(), kind: "armLeft", leftId: item.id };
+            this.notif.add(
+                _t("Pick the field on the right. What the contract already holds is kept as history."),
+                { type: "info" });
+            return;
+        }
+        let method = "employee_mapping_detach_component";
+        let args = [item.id];
+        if (action.key === "make_text" || action.key === "make_amount") {
+            method = "employee_mapping_make_component";
+            args = [item.id, action.key === "make_text" ? "text" : "amount"];
+            // CR-A2 puts an AMOUNT component in the payroll lane, and this board
+            // hides that lane until asked. Without this the card the user just
+            // acted on vanishes from under the pointer — W40's exact failure, and
+            // the message alone does not undo it.
+            if (action.key === "make_amount") { this.state.mapEmpPayroll = true; }
+        }
         this.state.mapBusy = true;
         let r;
         try {
-            r = await this.orm.call("pb.formula.studio", method, [item.id]);
+            r = await this.orm.call("pb.formula.studio", method, args);
         } catch (e) {
             r = { ok: false, msg: _t("That change could not be saved.") };
         } finally {
@@ -4550,6 +4580,82 @@ export class PbFormulaStudio extends Component {
         // screen that outlives its cause is the thing that stops being read).
         await this.load(this.state.config.id);
     }
+
+    // ==== MAPFIX B3 — the reconciliation step ===============================
+    /**
+     * "Resolve remaining N columns".
+     *
+     * The board can leave a column with no wire and no badge indefinitely, and that
+     * state reads as "not finished yet" for a day and as "fine" thereafter. This is
+     * the surface that refuses to let it: every column with no destination is
+     * listed, pre-ticked to become a contract component, and the person may untick
+     * any of them to say "imported, deliberately used nowhere" (role `reference`).
+     * Nothing is silently unresolved after it closes.
+     */
+    get mapUnresolvedCount() {
+        const d = this.state.mapData;
+        return (d && d.ok && this.state.mapMode === "employee" && d.unresolved) || 0;
+    }
+    get rcnRows() { return this.state.rcnRows || []; }
+    get rcnTicked() { return this.rcnRows.filter((r) => r.tick); }
+    async openReconcile() {
+        if (!this.state.config) { return; }
+        this.state.rcnOpen = true;
+        this.state.rcnRows = null;
+        this.state.rcnBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio",
+                "employee_mapping_unresolved", [this.state.config.id]);
+            this.state.rcnRows = ((r && r.rows) || []).map((x) => ({ ...x, tick: true }));
+        } catch (e) {
+            this.state.rcnRows = [];
+            this.notif.add(_t("Those columns could not be read."), { type: "warning" });
+        } finally {
+            this.state.rcnBusy = false;
+        }
+    }
+    closeReconcile() { this.state.rcnOpen = false; }
+    toggleRcnRow(row) { row.tick = !row.tick; }
+    setRcnAll(v) { for (const r of this.rcnRows) { r.tick = v; } }
+    setRcnType(row, t) { row.value_type = t; }
+    async applyReconcile() {
+        if (!this.state.config || !this.rcnRows.length) { return; }
+        const decisions = this.rcnRows.map((r) => ({
+            id: r.id, component: !!r.tick, value_type: r.value_type || "amount",
+        }));
+        // An amount component lands in the payroll lane (CR-A2), which this board
+        // hides by default — reveal it, or the columns just resolved would read as
+        // having disappeared rather than as having been dealt with.
+        if (decisions.some((d) => d.component && d.value_type === "amount")) {
+            this.state.mapEmpPayroll = true;
+        }
+        this.state.rcnBusy = true;
+        let r;
+        try {
+            r = await this.orm.call("pb.formula.studio",
+                "employee_mapping_resolve_remaining",
+                [this.state.config.id, decisions, this.state.mapEmpPayroll]);
+        } catch (e) {
+            r = { ok: false, msg: _t("Those columns could not be saved.") };
+        } finally {
+            this.state.rcnBusy = false;
+        }
+        if (!r || r.ok === false) {
+            this.notif.add((r && r.msg) || _t("Those columns could not be saved."),
+                { type: "warning" });
+            return;
+        }
+        // The RPC hands back the refreshed board, so the footer count and the lane
+        // chips move in the same frame the dialog closes in.
+        this.state.mapData = r;
+        this.state.rcnOpen = false;
+        const a = r.applied || {};
+        this.notif.add(
+            _t("%s kept on the contract, %s left as reference.",
+               a.components || 0, a.reference || 0), { type: "success" });
+        await this.load(this.state.config.id);
+    }
+
     /**
      * "Open in Mapping Studio" — the overlay graduates to the full surface.
      *
@@ -4717,7 +4823,14 @@ export class PbFormulaStudio extends Component {
                 [this.state.config.id, this.state.mapContextId, leftId, rightId])
             : await this.orm.call("pb.formula.studio", "mapping_create", [this.state.config.id, leftId, rightId]);
         if (r && r.ok === false) { this.notif.add(r.msg || "Could not connect", { type: "warning" }); return; }
+        // MAPFIX B2 — a successful wire may have CHANGED something else: drawing
+        // onto a contract component demotes it, and the sentence that says what
+        // happened to the values already on the contract is the whole reassurance
+        // (MF-B3). Silence here would make a re-route feel like data loss.
+        if (r && r.msg) { this.notif.add(r.msg, { type: "success" }); }
         await this._loadMapping();
+        // the badge, the lens and the problems rail all read the component flags
+        if (r && r.msg && this.state.config) { await this.load(this.state.config.id); }
     }
     /**
      * CR3 — Suggest follows the MODE, like every other verb on this board.

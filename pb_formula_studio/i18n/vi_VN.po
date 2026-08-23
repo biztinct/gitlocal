@@ -585,3 +585,255 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
 msgid "Open the payroll export with this structure's own identity columns"
 msgstr "Mở đầu tệp xuất bảng lương bằng các cột định danh của cấu trúc này"
+
+# ============================================================ MAPFIX Phase B
+# The field catalogue's lane headings, the re-routing verbs and their
+# consequences, and the reconciliation step.
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Personal"
+msgstr "Cá nhân"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Contact"
+msgstr "Liên hệ"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Job & organisation"
+msgstr "Công việc & tổ chức"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Contract terms"
+msgstr "Điều khoản hợp đồng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Other employee fields"
+msgstr "Các trường nhân viên khác"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Other contract fields"
+msgstr "Các trường hợp đồng khác"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Other fields"
+msgstr "Các trường khác"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"Kept on the contract as text. Wire it to a field if you would rather it went "
+"there — what the contract already holds is kept as history."
+msgstr ""
+"Được giữ trên hợp đồng dưới dạng văn bản. Hãy nối cột này tới một trường nếu "
+"bạn muốn giá trị đi tới đó — những gì hợp đồng đang lưu vẫn được giữ làm lịch "
+"sử."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"Kept on the contract as an amount. Wire it to a field if you would rather it "
+"went there — what the contract already holds is kept as history."
+msgstr ""
+"Được giữ trên hợp đồng dưới dạng số tiền. Hãy nối cột này tới một trường nếu "
+"bạn muốn giá trị đi tới đó — những gì hợp đồng đang lưu vẫn được giữ làm lịch "
+"sử."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Send to a field instead…"
+msgstr "Gửi tới một trường thay thế…"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Make amount"
+msgstr "Chuyển thành số tiền"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Make text"
+msgstr "Chuyển thành văn bản"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Make amount component"
+msgstr "Tạo thành phần số tiền trên hợp đồng"
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#, python-format
+msgid ""
+"Existing contract values for this component are kept as history; new imports "
+"will write to %(dest)s instead."
+msgstr ""
+"Các giá trị hiện có trên hợp đồng của thành phần này được giữ làm lịch sử; "
+"các lần nhập sau sẽ ghi vào %(dest)s."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#, python-format
+msgid "%(name)s now goes to %(dest)s instead of the contract."
+msgstr "%(name)s nay đi tới %(dest)s thay vì hợp đồng."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#, python-format
+msgid ""
+"%(count)s contracts already carry a value for %(code)s. Wire this column to "
+"a field instead — what the contracts hold is kept as history — or leave it "
+"on the contract."
+msgstr ""
+"%(count)s hợp đồng đã có giá trị cho %(code)s. Hãy nối cột này tới một trường "
+"thay thế — những gì hợp đồng đang lưu vẫn được giữ làm lịch sử — hoặc cứ để "
+"nó trên hợp đồng."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#, python-format
+msgid "%s is now kept on the contract as an amount."
+msgstr "%s nay được giữ trên hợp đồng dưới dạng số tiền."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Unknown component type."
+msgstr "Loại thành phần không xác định."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Unknown component type. Nothing was changed."
+msgstr "Loại thành phần không xác định. Không có gì được thay đổi."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "That list could not be read. Nothing was changed."
+msgstr "Không đọc được danh sách này. Không có gì được thay đổi."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid ""
+"This list is out of date — one of these columns already has a destination. "
+"Nothing was changed; reopen it to see where things stand."
+msgstr ""
+"Danh sách này đã cũ — một trong các cột đó đã có đích đến. Không có gì được "
+"thay đổi; hãy mở lại để xem tình trạng hiện tại."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid ""
+"Pick the field on the right. What the contract already holds is kept as "
+"history."
+msgstr ""
+"Hãy chọn trường ở cột bên phải. Những gì hợp đồng đang lưu vẫn được giữ làm "
+"lịch sử."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Those columns could not be read."
+msgstr "Không đọc được các cột đó."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Those columns could not be saved."
+msgstr "Không lưu được các cột đó."
+
+#. module: pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#, python-format
+msgid "%s kept on the contract, %s left as reference."
+msgstr "%s cột được giữ trên hợp đồng, %s cột để làm tham chiếu."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "land nowhere — imported, read once and dropped."
+msgstr "không đi tới đâu — được nhập, đọc một lần rồi bỏ."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Resolve remaining"
+msgstr "Xử lý nốt"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Every column has a destination."
+msgstr "Mọi cột đều có đích đến."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Resolve the remaining columns"
+msgstr "Xử lý các cột còn lại"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Reading every column…"
+msgstr "Đang đọc từng cột…"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Nothing is imported and then dropped in this structure."
+msgstr "Trong cấu trúc này không có cột nào được nhập rồi bị bỏ."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid ""
+"are imported and then dropped.\n"
+"              Ticked columns are kept on the contract; untick one to leave it "
+"imported and deliberately used nowhere."
+msgstr ""
+"được nhập rồi bị bỏ.\n"
+"              Các cột được tích sẽ được giữ trên hợp đồng; bỏ tích một cột để "
+"nó được nhập nhưng chủ ý không dùng ở đâu cả."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Keep all"
+msgstr "Giữ tất cả"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Leave all as reference"
+msgstr "Để tất cả làm tham chiếu"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "no sample values"
+msgstr "không có giá trị mẫu"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Text"
+msgstr "Văn bản"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Reference only"
+msgstr "Chỉ để tham chiếu"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid ""
+"A column another column's formula reads is never listed here — it already "
+"has somewhere to be. Neither is one that prints on the payslip."
+msgstr ""
+"Cột nào đang được công thức của cột khác đọc thì không bao giờ xuất hiện ở "
+"đây — nó đã có chỗ để đi. Cột được in trên phiếu lương cũng vậy."
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Apply to"
+msgstr "Áp dụng cho"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.studio
+msgid "Cancel"
+msgstr "Huỷ"

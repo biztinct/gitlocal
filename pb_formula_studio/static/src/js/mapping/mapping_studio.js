@@ -603,10 +603,12 @@ export class MappingStudio extends Component {
     /**
      * COLROLES P3 — a card the adapter sealed answers here too.
      *
-     * The employee board marks its contract components non-wirable, and this surface
-     * shows the same cards. Without this the click would be a silent no-op on the
-     * full-screen studio while the overlay explained itself — the same board telling
-     * two different stories, which is worse than either.
+     * MAPFIX B2 emptied this of its original occupant: the employee board no longer
+     * seals its contract components, because colour coding is a suggestion and a
+     * person is allowed to re-route one. The handler stays because sealing is a
+     * generic capability of the canvas — any adapter may still use it, and a click
+     * that is a silent no-op on the full-screen studio while the overlay explains
+     * itself is the same board telling two different stories.
      */
     leftBlocked(item) {
         const hint = (item && item.meta && item.meta.badgeHint)
