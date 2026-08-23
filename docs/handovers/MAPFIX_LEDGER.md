@@ -1,0 +1,205 @@
+# MAPFIX — Readable codes, complete mapping, silent errors: conventions + gotcha ledger
+
+Follow-on programme to COLROLES (see `docs/handovers/COLROLES_LEDGER.md` — its standing rules and
+gotchas CR1–CR33 STILL BIND; this file adds MF-numbered entries). Phases: A codes+rename,
+B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + Primary Key guard.
+
+## Standing rules (inherited from COLROLES — re-read that ledger, these are the critical few)
+
+- **White-label absolute**: no user-visible string may contain "Odoo".
+- **Deploy ritual**: rsync → `sudo chmod -R a+rX` the synced dirs (**CR6** — `rsync -a` preserves Mac
+  0600 modes; the odoo user then cannot read `__manifest__.py`, the upgrade logs "not installable,
+  skipped" and **odoo-bin still exits 0**) → stop → detached `systemd-run` unit looping
+  `-u <mods>` over **abm acme payobook payobook_template** with EXIT sentinel → start → **verify
+  `ir_module_module.latest_version` in psql on all 4** before believing the deploy.
+- **CR20**: a browser tab holding a websocket hangs a detached `odoo-bin` in "Initiating shutdown";
+  park validation tabs on `about:blank` first, confirm zero pids BY PID. Test output goes to
+  `/var/log/odoo/odoo-server.log` (grep -a), not the /tmp sentinel.
+- **CR33**: the documented apex password no longer authenticates over RPC — drive live checks
+  through the browser session.
+- Live role/mapping validation must use **abm** (payobook's role-bearing configs are company 2 and
+  invisible to the apex admin session).
+- Migrations: `migrations/<version>/post-<sentence_slug>.py`, WHY/WHAT-IS-NOT-TOUCHED docstring,
+  `table_exists` guard, idempotent, log per-DB counts.
+- Commit per phase, explicit staging, **do not push**.
+- Versions at programme start: pb_hr_payroll_formula **19.0.1.68.0** · pb_formula_studio
+  **19.0.1.114.0** · biz_theme **19.0.1.3.0** · om_hr_payroll 19.0.1.0.2 (leave untouched — CR1).
+
+## Owner decisions (locked)
+
+- MF-A1 **Code style**: readable words, **≤12 chars**, accent-folded, noise words dropped
+  ("Constant"), acronyms + trailing numbers preserved. Examples the owner approved:
+  `Chi trả phép năm chưa sử dụng` → `CHIPHEPNAM`; `Tỷ lệ % tạm ứng thưởng HQCV` → `TYLETUHQCV`;
+  `Constant SI-HI-IU Total 10.5%` → `SIHIIUTOT105`; `Employee Status` → `EMPSTATUS`.
+- MF-A2 **Existing codes: auto-rename everything now** on all 4 DBs via migration — atomic and
+  orphan-safe (rules + `hr.contract.advantage.template.code` + `hr.salary.rule.code` together),
+  with a verified before/after per DB. Owner accepted the risk; the implementation must earn it.
+- MF-B1 **Field catalogue**: generated, not hand-curated — every writable stored field on
+  hr.employee/hr.contract **including many2one**, grouped into lanes, technical fields denied,
+  search retained for the tail.
+- MF-B2 **Colour coding is a suggestion, not a verdict**: a contract-component card must be
+  re-routable to a native Employee/Contract/Bank field (which demotes it from being a component),
+  and a plain column must be promotable to an amount OR text component.
+- MF-B3 **Re-routing a component that already has contract data: ALLOW and KEEP the history.**
+  The component stops being written to; existing `hr.contract.advantage` lines and their
+  `hr.contract.advantage.change` audit rows stay as historical record. Nothing is destroyed.
+  (This SUPERSEDES the Phase-3 "detach refusal" behaviour for the re-route path.)
+- MF-B4 **Reconciliation step**: before finishing, list every column with no native mapping and no
+  component; pre-tick all as "become a contract component"; the user may untick individual rows to
+  leave them imported-but-unused (role `reference`). Nothing is left silently unresolved.
+- MF-C1 **Error technical details: hidden from users, still available in developer mode.** Suppress
+  wherever a normal user can see them — including the portal/website/login bundles, which today get
+  the stock dialog entirely.
+- MF-C2 **Primary Key**: guard at the field (`required` on the Select Worksheets step) so the user
+  never reaches the server raise. Note the raise was never removed — `git log -S` shows it was ADDED
+  in 31936f64; the field has never had `required` in this repo's history.
+
+## Verified facts (do not re-derive)
+
+- **Root cause of long/ugly codes**: `re.sub(r'[^A-Za-z0-9]', '', label)` is ASCII-only, so accented
+  Vietnamese letters are DELETED, not folded — `Chi trả phép năm chưa sử dụng` → `CHITRPHPNMCHASDNG`
+  (lossy AND long). `strip_accents()` already exists at
+  `pb_hr_payroll_formula/models/column_role_classifier.py:207-214` (handles `đ`, which NFD does not
+  decompose) — reuse it.
+- **The converter contract, precisely** (`docs/FORMULA_ENGINE_CONVENTIONS.md` C5 vs C13 — they
+  CONTRADICT; C13 is correct and empirically verified):
+  - **HARD**: codes must be underscore-free. `[A-Z]+` / `[A-Z][A-Z0-9]{1,}` exclude `_`, so
+    `SI_EMP` survives raw into the eval → NameError → 0.
+  - **NOT a correctness issue**: substring collisions. `_convert_excel_to_python`
+    (`pb_hr_payroll_formula/models/formula_rule.py:871-884`) uses a greedy `[A-Z][A-Z0-9]{1,}` and a
+    `(?<!')` lookbehind, so `SI`/`SIEMP` both resolve. Non-substring is cosmetic. **Phase A should
+    correct C5 in the conventions doc** rather than perpetuate the contradiction.
+  - **Real floors**: ≥6 normalized chars to stay in the fuzzy header-match fallback
+    (`payroll_import_batch.py:2478`, `:2509`); ≥3 for `_compute_dependencies`' `code_refs`
+    (`formula_rule.py:1247`); ≥2 for the converter's code pass. A code must NOT equal any
+    `column_letter` in its config or `rename_component` skips the formula rewrite
+    (`pb_formula_studio.py:3879`) and the letter pass hijacks it.
+- **Generators** (four): live import = `multisheet_import_wizard._generate_code` (:3264-3294,
+  cap 40) → `_dedupe_code_c5` (:3296-3347, letter suffixes, always terminates);
+  `formula_import_wizard._generate_code_from_label` (:1881-1902, cap 10, DIGIT suffixes that
+  truncate the base); `excel_connector._generate_code_from_header` (:944-981) still emits
+  **underscores** (legacy fallback, only when no `code_generator` is injected);
+  `_gen_rate_table_code` (`pb_formula_studio.py:3593-3605`, shares the rule-code namespace).
+- **`rename_component`** (`pb_formula_studio.py:3833-3918`) rewrites referencing formulas +
+  sample-data JSON + writes a version row. **Gaps it must gain in Phase A**:
+  `hr.contract.advantage.template.code` (**the biggest orphan risk** — matched by STRING at
+  `payroll_import_batch.py:3083-3108`; renaming without it silently mints a second template and
+  every existing contract line stays on the old one → amounts read 0), `hr.salary.rule.code`,
+  `hr.formula.budget.line.code`, boundary/shadow/simulation code strings, and a batch mode.
+- **`hr.formula.rule.code` has NO shape constraint** (only `unique(code, config_id)`,
+  `formula_rule.py:1508-1513`). The reusable validator is
+  `formula_config_template._assert_codes_convertible` (`formula_config_template.py:185-212`).
+  **Live C5 violators that must be fixed before any constraint is added**:
+  `pb_formula_studio.py:6904-6907` (`add_component` mints `NEW_1`) and demo data
+  `pb_hr_payroll_formula/data/demo_formula_config.xml:80,91,102,113` (`SI_EMP`, `TOTAL_DED`).
+- **Short codes change behaviour elsewhere**: `_group_for` (`pb_formula_studio.py:78-92`) matches
+  `SI`/`HI`/`UI`/`TAX`/`DED` as SUBSTRINGS of the code — a short code containing `SI` lands in
+  Deductions (the CR10 trap, flagged at `pb_formula_studio.py:3959-3960`). Same for
+  `_is_employee_code_rule` (`payroll_import_batch.py:2981-3016`) and
+  `column_role_classifier._marker_hit` (:298-303).
+- **Regression gates (MANDATORY after any code/converter change)**:
+  `python3 pb_hr_payroll_formula/tools/excel_semantics_battery.py` (70+ cases, exit 0 = green) and
+  `python3 pb_hr_payroll_formula/tools/import_resolution_battery.py`.
+- **Mapping catalogue today**: `_EC_CURATED` (`pb_formula_studio.py:5005-5015`) = 15 employee + 7
+  contract hand-typed fields; `name` absent. `_EC_TTYPES` (:5003) has **no `many2one`**, so
+  department/job/calendar/company cannot be wired — even though `_coerce_mapped_value`
+  (`payroll_import_batch.py:1109-1170` pre-P1) does m2o search-by-name-else-create and
+  `_sync_employee_contract_mirror_fields` mirrors exactly those four m2o fields. Search exists:
+  `ec_search_fields` (:5210), `ec_model_fields` (:5221), right items `_ec_right_items` (:5074).
+  Bank lane roles `_BANK_LANE_ROLES` (:5026), `b:` id prefix.
+- **Error dialogs**: `biz_theme/static/src/js/biz_error_dialogs.js` — `BizErrorDialog` (:108),
+  variant map (:69-79), registry force-override (:196-200), `technicalDetails` getter (:141-149),
+  `showTechnicalDetails` already gated on `window.odoo.debug` (:151-160), `stripOdoo` (:212) applied
+  ONLY in `bizRpcFallbackHandler` (:278-279) / `bizDefaultHandler` (:302-303) — **not** on the
+  registry-routed UserError path that produced the owner's screenshot. Template
+  `biz_theme/static/src/xml/biz_error_dialogs.xml:45-54`; "Copy details" (:56-59) gated on
+  `hasDetails`, NOT on `showTechnicalDetails`.
+  **Coverage gaps**: biz_theme registers error assets in `web.assets_backend` ONLY
+  (`biz_theme/__manifest__.py:73-75`) → portal/website/login get stock "Odoo Error" + traceback;
+  `RedirectWarningDialog` not overridden; `WarningDialog` used directly at
+  `web/static/src/model/relational_model/relational_model.js:719`; `error_service.js:117` has a
+  hardcoded "…Odoo framework…" string no seam reaches.
+  `"Odoo Server Error"` origin: a plain (untranslated) literal in core `odoo/http.py` plus vendored
+  copies at `web/controllers/export.py:639,687`, `web/controllers/report.py:147`,
+  `report_xml/controllers/report.py:92`; re-generated client-side at
+  `web/static/src/core/errors/error_dialogs.js:120-130`. Reaches the dialog via `rpc.js:59-65` and
+  is baked into the traceback string at `error_utils.js:123`.
+  biz_debrand's JS seam (loaded in BOTH bundles) is
+  `biz_debrand/static/src/js/biz_debrand_runtime.js` (`__manifest__.py:34-41`).
+- **Primary Key**: raise at `multisheet_import_wizard.py:544-545` in `action_process_sheets` (:524),
+  triggered by the "Select Columns" button (`multisheet_wizard_views.xml:391-394`); field rendered
+  at `:71-74` inside `<div invisible="state != 'select_sheets'">` with **no** `required`; field def
+  `:128-131`; the only onchange (:173-182) is a propagator that returns early when empty.
+
+## Phase status
+
+- **Phase A — DONE, live on abm · acme · payobook · payobook_template (2026-08-23).**
+  Versions: pb_hr_payroll_formula **19.0.1.69.0** · pb_formula_studio **19.0.1.115.0**.
+  Renames: abm 64/99, payobook 152/1360, acme & payobook_template 0 (no structures).
+  5 `hr.contract.advantage.template` codes moved alongside; 0 refused, 0 withdrawn, 0 orphans.
+  Compute neutrality: 0 cell diffs over 19 real payslips + a synthetic fingerprint of all 19
+  configurations. Live tests on abm: 32/32.
+
+## Gotchas discovered (append per phase, MF-numbered)
+
+- MF1 (A): **`hr.contract.advantage.template` is GLOBAL and shared across structures.** On
+  `payobook` every one of the 26 templates is used by rules in BOTH config 5 (VPTQ End Cycle) and
+  config 6 (VPTQ Mid Cycle). A template can only carry one code, so a code with a template may
+  move only if EVERY rule carrying it moves to the SAME new name — otherwise the structures left
+  behind read 0. `_rename_code` therefore refuses a lone rename when siblings exist
+  (`siblings_renamed=` is the escape the migration uses), and the migration runs a reconciliation
+  pass that withdraws the whole group if the proposals disagree or if any member was skipped.
+  Convergence is explicitly allowed: the second sibling finds the old-code template gone and one
+  under the new code, which is a no-op, not a collision.
+- MF2 (A): **the "already conforms" skip is load-bearing, not just an idempotency trick.**
+  `hr_payslip_formula._get_formula_input_values` hard-codes `{'BASIC'|'WAGE'|'BASE': 'wage'}` and
+  the `WD_`/`HOURS` code prefixes. `BASIC` exists on 13 payobook configs; renaming it to
+  `BASICSALARY` would have silently detached the wage. Skipping every code that is already
+  `^[A-Z][A-Z0-9]*$` and ≤12 protects it for free. The cost: lossy-but-short legacy codes
+  (`MCLNGHL` for "Mức lương HĐLĐ") are left alone. **Owner decision pending** — a follow-up pass
+  could rename by readability rather than by shape, but it needs that hard-coded map fixed first.
+- MF3 (A): **substring avoidance must exclude column letters.** `_dedupe_code_c5` treats a
+  collision as "exact OR substring". Feed it the config's column letters and every real code
+  "collides" with column `A`. `reserved` is therefore tested for EQUALITY only
+  (`component_code._collision_tests`).
+- MF4 (A): **de-duplication has to respect the length cap.** `SIHIIUTOT105` + `A` is 13 characters.
+  `dedupe_code_c5(..., max_len=12)` trims the base to make room. Before bolting a letter on,
+  `build_component_code` retries the candidate WITH its leading noise word restored — which is what
+  distinguishes "Constant SI-HI-IU Total 10.5%" (`CONSIHIIU105`) from "SI-HI-IU Total 10.5%"
+  (`SIHIIUTOT105`) readably instead of as `SIHIIUTOT10A`.
+- MF5 (A): **`total` must NOT be dropped as a leading noise word.** The handover's suggested
+  NOISE_WORDS list contains it; dropping it turned "Total Deduction" into `DEDUCTION`, sitting next
+  to "Other Deduction". `LEADING_NOISE` is a deliberately narrower subset
+  (`constant/const/column/col` + VN fillers). And a leading noise word is only dropped while a real
+  WORD token still follows — otherwise `COL2024` became `C2024`.
+- MF6 (A): **`_group_for` drift is real and was accepted.** Renaming changes which lexicon
+  substrings a code contains, so 9 abm and 16 payobook columns move outline bucket (e.g.
+  `TOTALCOSTTOEMPLOYER`→`TOTACOSTTOER` leaves Totals for Earnings). Matching the lexicon against
+  the accent-folded NAME as well would fix it on abm (0 changes today, drift 9→1) but re-buckets
+  **95** payobook columns immediately, because folded Vietnamese is full of `HI`/`SI`/`TAX`
+  substrings ("Chi…" contains "HI"). CR10 stands: `_group_for` was left alone. Every caller is
+  display-time (studio outline, explain trace, suggested payslip section) — nothing persists a
+  grouping, so no live payslip was re-sectioned.
+- MF7 (A): **`import_resolution_battery.py` could not run at all on a bare interpreter.** The
+  wizard imports `markupsafe` (ships with Odoo, not with system python3, and PEP-668 blocks
+  `pip install`), and the battery's shim only rewrote `..formula_engine` imports, not `..models`.
+  Both are now shimmed inside the battery. A "mandatory gate" that nobody can execute is not a
+  gate — check that the batteries actually RUN before trusting a green.
+- MF8 (A): **`hr.payslip.line` is not a free-form row.** It refuses a create with no `contract_id`
+  (om_hr_payroll), and the table has NOT NULL on `category_id` and `salary_rule_id`. Any fixture
+  that fabricates payslip history needs all three; three test runs were burned discovering them one
+  at a time.
+- MF9 (A, environment): CR20's shutdown hang fires even with **both browser tabs parked on
+  `about:blank`** — the detached `odoo-bin` sat at ~4% CPU for 10+ minutes after
+  `odoo.tests.result` had already been written. Read the RESULT out of
+  `/var/log/odoo/odoo-server.log` and stop the unit; do not wait for the sentinel. And check for
+  zero pids BEFORE launching the next unit — two `odoo-bin` processes upgrading the same database
+  concurrently is a much worse problem than a slow shutdown.
+- MF10 (A): three live paths copied a code in from outside without normalising it, and the new
+  shape constraint would have raised on all of them:
+  `hr_payroll_structure_formula.action_create_formula_config` (copies `hr.salary.rule.code`
+  verbatim — those genuinely are `SI_EMP`, `BASIC_SALARY`), `formula_import_wizard._import_from_json`
+  (`IMPORT_%d` fallback plus any code inside the uploaded file), and `pb_formula_studio.add_component`
+  (`NEW_1`). All three now route through `component_code.normalize_code`, which passes a conforming
+  code through UNCHANGED. When adding a constraint, grep for who WRITES the field, not just who
+  reads it.

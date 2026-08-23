@@ -40,7 +40,7 @@ class TestPayslipTemplateImport(TransactionCase):
         cls.basic = rule('Basic salary', 'BASIC', 10)
         cls.tax = rule('Personal income tax', 'PIT', 20)
         cls.bonus = rule('Recognition bonus', 'BONUS', 30, cls.earnings)
-        cls.leave = rule('Paid leave unused', 'LEAVE_UNUSED', 40)
+        cls.leave = rule('Paid leave unused', 'LEAVEUNUSED', 40)
 
     def _extracted(self):
         def cell(value, confidence=.95):

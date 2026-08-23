@@ -20,6 +20,7 @@ from odoo.exceptions import UserError, ValidationError
 
 from ..formula_engine import excel_semantics
 from ..models import column_role_classifier
+from ..models import component_code
 
 _logger = logging.getLogger(__name__)
 
@@ -3261,89 +3262,35 @@ class MultiSheetImportWizard(models.TransientModel):
             'context': self.env.context,
         }
 
-    def _generate_code(self, header: str, existing_codes: set) -> str:
-        """Generate a code from a header value that obeys the C5 converter
-        contract: **underscore-free** and **not a substring** of (nor a
-        superstring of) any other code — otherwise the Excel→Python converter
-        mangles references to 0 (see docs/FORMULA_ENGINE_CONVENTIONS.md C5).
+    def _generate_code(self, header: str, existing_codes: set, reserved=()) -> str:
+        """Generate a readable, converter-safe code for a spreadsheet header.
 
-        The previous implementation emitted ``FORMULA_COL`` / ``COL_12`` and
-        de-duplicated with ``_1`` suffixes — every one an underscore, and the
-        suffixes (``BASIC`` / ``BASIC_1``) were mutual substrings. Both broke
-        the converter silently.
+        Delegates to the single shared generator (``models/component_code.py``) so
+        every import path — this wizard, the single-sheet wizard, the Excel
+        connector, the studio's "add component" — names a column the same way.
+        Before MAPFIX this stripped non-ASCII characters, which DELETED accented
+        Vietnamese letters instead of folding them: "Chi trả phép năm chưa sử dụng"
+        became CHITRPHPNMCHASDNG — lossy and seventeen characters long.
         """
         header_str = str(header).strip()
 
-        # Formula-looking headers (a stray formula cell used as a header)
+        # A stray formula cell used as a header carries no name worth reading.
         if (header_str.startswith('=')
                 or 'values.get' in header_str
                 or 'VLOOKUP' in header_str.upper()
                 or 'SUMIF' in header_str.upper()):
-            base_code = 'FORMULACOL'
+            header_str = 'FORMULACOL'
         elif header_str.isdigit():
-            base_code = 'COL' + header_str
-        else:
-            base_code = re.sub(r'[^A-Za-z0-9]', '', header_str).upper()
-            if not base_code:
-                base_code = 'UNNAMED'
-            if base_code[0].isdigit():
-                base_code = 'C' + base_code  # a code must not start with a digit
-            if len(base_code) > 40:
-                base_code = base_code[:40]
+            header_str = 'COL' + header_str
 
-        return self._dedupe_code_c5(base_code, existing_codes)
+        return component_code.build_component_code(
+            header_str, existing_codes=existing_codes, reserved=reserved)
 
     @staticmethod
     def _dedupe_code_c5(base, existing_codes):
-        """Return a code derived from ``base`` that is safe under the C5
-        converter contract.
-
-        The HARD guarantee is **underscore-free and unique** (not equal to any
-        existing code). Underscores are what actually break the Excel→Python
-        converter; substring codes are matched greedily (maximal munch), so
-        ``AMOUNT``/``AMOUNTX``/``SI``/``SIEMP`` all resolve correctly —
-        empirically verified. So substring-avoidance is a *cosmetic preference*
-        here, not a correctness requirement, and is applied only when a short
-        letter suffix can achieve it (it is mathematically impossible when the
-        base equals an existing code — every superstring contains it).
-
-        Dedup suffixes are LETTERS so the result stays underscore- and
-        digit-free. This always terminates.
-        """
-        import string
-
-        def is_exact(cand):
-            return cand in existing_codes
-
-        def is_substring(cand):
-            return any(cand != e and (cand in e or e in cand)
-                       for e in existing_codes if e)
-
-        if not is_exact(base) and not is_substring(base):
-            return base
-
-        # Candidate suffixes: '', A..Z, then AA..ZZ. Prefer a candidate that is
-        # both unique AND non-substring; otherwise take the first merely-unique
-        # one (guaranteed underscore-free).
-        suffixes = [''] + list(string.ascii_uppercase) + [
-            a + b for a in string.ascii_uppercase for b in string.ascii_uppercase]
-        first_unique = None
-        for suffix in suffixes:
-            cand = base + suffix
-            if is_exact(cand):
-                continue
-            if first_unique is None:
-                first_unique = cand
-            if not is_substring(cand):
-                return cand
-        if first_unique is not None:
-            return first_unique
-
-        # Pathological exhaustion — guaranteed-unique, still underscore-free.
-        cand = base
-        while cand in existing_codes:
-            cand += 'X'
-        return cand
+        """Kept as the historical entry point; the implementation now lives in
+        ``models/component_code.dedupe_code_c5`` so there is exactly one."""
+        return component_code.dedupe_code_c5(base, existing_codes)
 
 
 class MultiSheetSheetLine(models.TransientModel):

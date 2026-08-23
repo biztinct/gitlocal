@@ -109,11 +109,45 @@ via the `write()` override (`formula_rule.py:1157-1194`). Contract for any new f
 
 ## C5 — Formula code & converter contract
 
-`hr.formula.rule` codes must be **underscore-free and non-substring of each other** or the
-Excel→Python converter mangles references to 0. Validate any generated/renamed code through the
-existing rename path (`rename_component`, `pb_formula_studio.py:2432`) which rewrites referencing
-formulas atomically. Validate engine behaviour via `_evaluate_rules_with_dependencies`, **not**
-`evaluate_all` directly.
+> **Corrected by MAPFIX A.** This section previously said codes must be "underscore-free **and
+> non-substring** of each other", which contradicts C13 below and is empirically wrong. C13 is
+> right; what follows is the verified contract. There is now exactly one generator
+> (`pb_hr_payroll_formula/models/component_code.py`) and every path uses it.
+
+**HARD rules — a code that breaks one of these computes the wrong number:**
+
+- **Underscore-free**, no spaces, uppercase alphanumeric, first character a letter:
+  `^[A-Z][A-Z0-9]*$`, enforced by `@api.constrains('code')` on `hr.formula.rule`. The converter's
+  code pass matches `[A-Z][A-Z0-9]{1,}`, which excludes `_`, so `SI_EMP` survives raw into the eval
+  → `NameError` → silent 0.
+- **Never equal to a `column_letter` used in the same config.** `rename_component` skips its
+  formula rewrite when the old code coincides with a letter (`=GM` is then a letter reference), and
+  the converter's letter pass hijacks the token.
+
+**PREFERENCES — cosmetic, never worth breaking a name for:**
+
+- **Substring collisions are SAFE.** `_convert_excel_to_python` (`formula_rule.py:871-884`) is
+  greedy/maximal-munch with a `(?<!')` lookbehind, so `SI`/`SIEMP` and `AMOUNT`/`AMOUNTX` all
+  resolve. Non-substring is taken only when a short LETTER suffix achieves it. The constraint
+  deliberately does NOT enforce it.
+- **Readable and ≤ 12 characters** (MF-A1): accent-folded (`strip_accents`, which handles `đ`),
+  noise words dropped from the FRONT only, acronyms and numbers kept whole.
+
+**FLOORS:**
+
+- **≥ 6 normalized characters** keeps a code inside the importer's fuzzy header-match fallback
+  (`payroll_import_batch.py:2478`, `:2509`). Below that, exact and normalized matching still work —
+  it is a degradation, not a break — so a label with fewer letters than six is left short rather
+  than padded with filler.
+- **≥ 3 characters** keeps it visible to `_compute_dependencies`' `code_refs`
+  (`formula_rule.py:1247`); **≥ 2** for the converter's code pass.
+
+Generate every code through `component_code.build_component_code(label, existing_codes, reserved)`
+(or `normalize_code` when carrying a code in from elsewhere). Rename through
+`hr.formula.rule._rename_code`, which moves the matching `hr.contract.advantage.template` — global
+and matched by STRING — in the same transaction; `pb_formula_studio.rename_component` and
+`rename_components` both delegate to it. Validate engine behaviour via
+`_evaluate_rules_with_dependencies`, **not** `evaluate_all` directly.
 
 ## C6 — Import wizard: mixin only, capture in context
 

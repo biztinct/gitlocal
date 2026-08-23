@@ -42,3 +42,7 @@ from . import test_column_roles
 # COLROLES P3 — bank destinations, the mapping's two shapes, the input exclusion.
 # The pure sanitizer table (`test_bank_account_util.py`) is likewise NOT imported.
 from . import test_bank_destinations
+# MAPFIX A — orphan-safe code rename. The pure generator table
+# (`test_component_code.py`) is deliberately NOT imported here: it runs under a bare
+# python3 and needs no database.
+from . import test_code_rename

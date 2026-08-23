@@ -4,6 +4,8 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import logging
 
+from . import component_code
+
 _logger = logging.getLogger(__name__)
 
 
@@ -89,13 +91,20 @@ class HrPayrollStructureFormula(models.Model):
             'state': 'draft',
         })
 
-        # Import rules from structure
+        # Import rules from structure. A salary rule's code is NOT bound by the
+        # formula converter's contract and routinely carries underscores
+        # (SI_EMP, BASIC_SALARY) — copying it in verbatim used to mint components
+        # the converter cannot resolve, which read as silent zeros.
+        seen_codes = set()
         for salary_rule in self.rule_ids:
+            code = component_code.normalize_code(
+                salary_rule.code, label=salary_rule.name, existing_codes=seen_codes)
+            seen_codes.add(code)
             self.env['hr.formula.rule'].create({
                 'config_id': config.id,
                 'salary_rule_id': salary_rule.id,
                 'name': salary_rule.name,
-                'code': salary_rule.code,
+                'code': code,
                 'sequence': salary_rule.sequence,
                 'category_id': salary_rule.category_id.id,
                 'column_type': 'formula',

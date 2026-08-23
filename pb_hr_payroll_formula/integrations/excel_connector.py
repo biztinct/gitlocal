@@ -947,9 +947,13 @@ class ExcelConnector(BaseHRConnector):
         existing_codes: set
     ) -> str:
         """
-        Generate a unique code from a header value.
+        Generate a readable, converter-safe code from a header value.
 
-        Handles numeric headers (0, 1, 2) and special characters.
+        This is the legacy fallback used only when no ``code_generator`` is injected,
+        and until MAPFIX it emitted UNDERSCORES (``COL_3``, ``BASIC_1``) — a live
+        breach of the converter contract, because the code pass matches
+        ``[A-Z][A-Z0-9]{1,}`` and a token carrying ``_`` reaches the eval raw and
+        reads as zero. It now delegates to the one shared generator.
 
         Args:
             header: Header value
@@ -958,27 +962,14 @@ class ExcelConnector(BaseHRConnector):
         Returns:
             Generated unique code
         """
-        import re
+        from ..models import component_code
 
         header_str = str(header).strip()
-
-        # Handle pure numeric headers
         if header_str.isdigit():
-            base_code = f'COL_{header_str}'
-        else:
-            # Clean special characters, convert to uppercase
-            base_code = re.sub(r'[^A-Za-z0-9]', '', header_str).upper()
-            if not base_code:
-                base_code = 'UNNAMED'
+            header_str = 'COL' + header_str
 
-        # Ensure unique
-        code = base_code
-        suffix = 1
-        while code in existing_codes:
-            code = f"{base_code}_{suffix}"
-            suffix += 1
-
-        return code
+        return component_code.build_component_code(
+            header_str, existing_codes=existing_codes)
 
     def analyze_cross_sheet_formulas(
         self,

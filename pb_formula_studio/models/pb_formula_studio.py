@@ -17,6 +17,8 @@ except Exception:  # pragma: no cover
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
+# MAPFIX A — one code generator for every path that names a column.
+from odoo.addons.pb_hr_payroll_formula.models import component_code as component_code_mod
 
 _logger = logging.getLogger(__name__)
 
@@ -3832,16 +3834,19 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def rename_component(self, rule_id, new_code):
-        """Rename a component's CODE, rewriting any formula that references the
-        old code as a bare token — in one transaction.
+        """Rename a component's CODE — permission check here, mechanics in the model.
+
+        The engine is `hr.formula.rule._rename_code` (MAPFIX A), which lives in
+        pb_hr_payroll_formula so the upgrade migration can use the same code path
+        and the two cannot drift. It moves everything that answered to the old
+        name — the matching contract component template above all, which is global
+        and matched by STRING — and leaves payslip history alone.
 
         Asymmetry (surfaced in the UI): formulas reference other components by
         their COLUMN LETTER, not their code, so renaming a code is normally
-        metadata-only and every formula keeps evaluating identically. We still
-        scan for the old code appearing as a whole-word token (some imported
-        formulas carry code refs that the converter resolves) and rewrite those
-        too, so the rename is safe in every case. Renaming column *letters* is
-        deliberately not offered — letters are positional identity.
+        metadata-only and every formula keeps evaluating identically. Renaming
+        column *letters* is deliberately not offered — letters are positional
+        identity.
         """
         Rule = self.env['hr.formula.rule']
         rule = Rule.browse(int(rule_id))
@@ -3850,72 +3855,107 @@ class PbFormulaStudio(models.AbstractModel):
         if not self._can_edit():
             return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
 
-        old = (rule.code or '').strip()
-        new = (new_code or '').strip().upper()
-        if not new:
-            return {'ok': False, 'msg': _("The code cannot be empty.")}
-        # Formula-converter contract: codes must be plain identifiers, no
-        # underscores/spaces (they mangle the Excel→Python conversion).
-        if not re.match(r'^[A-Z][A-Z0-9]*$', new):
-            return {'ok': False, 'msg': _("Use letters and digits only, starting with a letter "
-                                          "(no spaces or underscores).")}
-        if new == old:
-            return {'ok': False, 'msg': _("That is already the code.")}
-        config = rule.config_id
-        clash = config.rule_ids.filtered(lambda x: x.id != rule.id and (x.code or '').upper() == new)
-        if clash:
-            return {'ok': False, 'msg': _("Another component (%s) already uses that code.") % clash[0].column_letter}
+        return rule._rename_code(new_code)
 
-        # Rewrite formulas that mention the old code as a whole word. In
-        # practice formulas reference components by COLUMN LETTER, never by
-        # code (verified across real configs), so this is normally a no-op —
-        # a metadata-only rename. It is a safety net for imported formulas that
-        # carry genuine code refs. We deliberately skip it when the old code
-        # coincides with a column letter used in the config: a bare token like
-        # `=GM` is then a letter reference, not a code reference, and rewriting
-        # it would corrupt the formula. In that (rare) case the rename stays
-        # metadata-only — formulas keep evaluating identically either way.
-        rewritten = []
-        config_letters = {r.column_letter for r in config.rule_ids if r.column_letter}
-        if old and old not in config_letters:
-            pat = re.compile(r'(?<![A-Za-z0-9_])%s(?![A-Za-z0-9_])' % re.escape(old))
-            for r in config.rule_ids:
-                if r.id == rule.id or r.column_type != 'formula' or not r.excel_formula:
-                    continue
-                if pat.search(r.excel_formula):
-                    r.with_context(formula_version_reason='rename').write(
-                        {'excel_formula': pat.sub(new, r.excel_formula)})
-                    rewritten.append(r.column_letter or r.code)
+    @api.model
+    def rename_components(self, config_id, pairs):
+        """Rename a whole set of component codes at once — all or nothing.
 
-        # Migrate code-keyed data so the rename is behaviour-preserving. Sample
-        # test data stores input/expected/computed vectors keyed by CODE — for an
-        # INPUT component the code is the dictionary key the engine reads, so
-        # without this the renamed input would read as missing (→ 0) and cascade.
-        migrated_samples = 0
-        if old:
-            for s in config.sample_data_ids:
-                touched = False
-                svals = {}
-                for fname in ('input_values_json', 'expected_values_json', 'computed_values_json'):
-                    raw = getattr(s, fname, False)
-                    if not raw:
-                        continue
-                    try:
-                        d = json.loads(raw)
-                    except Exception:
-                        continue
-                    if isinstance(d, dict) and old in d and new not in d:
-                        d[new] = d.pop(old)
-                        svals[fname] = json.dumps(d)
-                        touched = True
-                if touched:
-                    s.write(svals)
-                    migrated_samples += 1
+        ``pairs`` is ``[{'rule_id': int, 'new_code': str}, …]``. The ENTIRE set is
+        validated before a single character is written: shape, uniqueness against
+        the codes that will remain, collision with a column letter, and two pairs
+        aiming at one code. A batch that is wrong anywhere writes nothing, so a
+        half-renamed structure — the state that actually breaks formulas — cannot
+        exist.
+        """
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            return {'ok': False, 'msg': _("Configuration not found.")}
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
 
-        rule.with_context(formula_version_reason='rename').write({'code': new})
-        return {'ok': True, 'msg': _("Renamed %s → %s") % (old or '(blank)', new),
-                'rewritten': rewritten, 'new_code': new,
-                'migrated_samples': migrated_samples}
+        pairs = [p for p in (pairs or []) if p and p.get('rule_id')]
+        if not pairs:
+            return {'ok': False, 'msg': _("Nothing to rename.")}
+
+        rules_by_id = {r.id: r for r in config.rule_ids}
+        letters = {r.column_letter for r in config.rule_ids if r.column_letter}
+        planned, errors, seen_targets = [], [], {}
+
+        for pair in pairs:
+            rid = int(pair.get('rule_id'))
+            new = (pair.get('new_code') or '').strip().upper()
+            rule = rules_by_id.get(rid)
+            if not rule:
+                errors.append(_("Component %s is not part of this structure.") % rid)
+                continue
+            label = rule.column_letter or rule.name or str(rid)
+            if not component_code_mod.is_valid_code(new):
+                errors.append(_("%(where)s: '%(code)s' — use letters and digits only, "
+                                "starting with a letter.", where=label, code=new or '(blank)'))
+                continue
+            if new in letters:
+                errors.append(_("%(where)s: '%(code)s' is a column letter in this structure.",
+                                where=label, code=new))
+                continue
+            if new in seen_targets:
+                errors.append(_("%(a)s and %(b)s both want the code '%(code)s'.",
+                                a=seen_targets[new], b=label, code=new))
+                continue
+            seen_targets[new] = label
+            if new != (rule.code or '').upper():
+                planned.append((rule, new))
+
+        renaming_ids = {r.id for r, _n in planned}
+        keeping = {(r.code or '').upper() for r in config.rule_ids if r.id not in renaming_ids}
+        for rule, new in planned:
+            if new in keeping:
+                errors.append(_("%(where)s: '%(code)s' is already used by a component that is "
+                                "not being renamed.", where=rule.column_letter or rule.name,
+                                code=new))
+
+        if errors:
+            return {'ok': False, 'msg': _("Nothing was renamed — %s") % ' '.join(errors),
+                    'errors': errors}
+
+        # Order the set so a component never has to take a code another component
+        # in the same batch is still holding (A→B, B→C runs B first). A true CYCLE
+        # cannot be ordered and is refused rather than parked on temporary codes,
+        # which would make every orphan-safe lookup in `_rename_code` read the
+        # parking name instead of the real one.
+        held = {(r.code or '').upper(): r.id for r, _n in planned}
+        remaining, ordered = list(planned), []
+        while remaining:
+            free = [p for p in remaining
+                    if held.get(p[1]) is None or held.get(p[1]) == p[0].id]
+            if not free:
+                cycle = ', '.join(sorted(p[0].column_letter or p[0].name for p in remaining))
+                return {'ok': False, 'msg': _(
+                    "These components are trading codes with each other (%s). Rename them "
+                    "one at a time, or to names nobody is using yet.") % cycle}
+            for pair in free:
+                ordered.append(pair)
+                held.pop((pair[0].code or '').upper(), None)
+                remaining.remove(pair)
+
+        results, failures = [], []
+        for rule, new in ordered:
+            outcome = rule._rename_code(new)
+            if outcome.get('ok'):
+                results.append({'rule_id': rule.id, 'old_code': outcome.get('old_code'),
+                                'new_code': new})
+            else:
+                failures.append({'rule_id': rule.id, 'msg': outcome.get('msg')})
+
+        if failures:
+            # Refusals inside `_rename_code` are orphan guards (a shared contract
+            # component, a template already under that name). All-or-nothing means
+            # the whole batch comes back rather than leaving half of it applied.
+            raise UserError(_("Nothing was renamed. %s") % ' '.join(
+                f.get('msg') or '' for f in failures))
+
+        return {'ok': True, 'renamed': len(results), 'results': results,
+                'msg': _("Renamed %s components.") % len(results)}
 
     # ------------------------------------------------------------------
     # F10 — Unified Mapping Canvas (adapter 1: mid→end cycle mapping)
@@ -6899,13 +6939,14 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False}
         vals = vals or {}
         # unique code per config (the model enforces uniqueness; a 2nd plain
-        # 'NEW' would otherwise raise) + next free column letter.
+        # 'NEW' would otherwise raise) + next free column letter. This used to mint
+        # `NEW_1` — an UNDERSCORE, i.e. a code the formula converter cannot resolve,
+        # created by the studio's own "add component" button.
         existing_codes = set(config.rule_ids.mapped('code'))
-        base = (vals.get('code') or 'NEW').upper().replace(' ', '_') or 'NEW'
-        code, n = base, 1
-        while code in existing_codes:
-            n += 1
-            code = '%s_%s' % (base, n)
+        letters = {r.column_letter for r in config.rule_ids if r.column_letter}
+        code = component_code_mod.build_component_code(
+            vals.get('code') or vals.get('name') or 'New Component',
+            existing_codes=existing_codes, reserved=letters)
         # F111: no explicit letter — create() freezes the next permanent letter
         # (max+1, never reused). sequence lands at the end of the grid...
         Rule = self.env['hr.formula.rule']
@@ -8487,10 +8528,10 @@ class PbFormulaStudio(models.AbstractModel):
         ('TRANSPORT', 'Transport Allowance', 'constant', '', 500000.0),
         ('MEAL', 'Meal Allowance', 'constant', '', 730000.0),
         ('GROSS', 'Gross Salary', 'formula', '=A1+B1+C1+D1', 0.0),
-        ('SI_EMP', 'Social Insurance (Employee)', 'formula', '=A1*0.08', 0.0),
-        ('HI_EMP', 'Health Insurance (Employee)', 'formula', '=A1*0.015', 0.0),
-        ('UI_EMP', 'Unemployment Insurance (Employee)', 'formula', '=A1*0.01', 0.0),
-        ('TOTAL_DED', 'Total Deductions', 'formula', '=F1+G1+H1', 0.0),
+        ('SIEMP', 'Social Insurance (Employee)', 'formula', '=A1*0.08', 0.0),
+        ('HIEMP', 'Health Insurance (Employee)', 'formula', '=A1*0.015', 0.0),
+        ('UIEMP', 'Unemployment Insurance (Employee)', 'formula', '=A1*0.01', 0.0),
+        ('TOTALDED', 'Total Deductions', 'formula', '=F1+G1+H1', 0.0),
         ('NET', 'Net Salary', 'formula', '=E1-I1', 0.0),
     ]
 
@@ -8505,10 +8546,12 @@ class PbFormulaStudio(models.AbstractModel):
         return s
 
     # Built-in starter entries. The legacy 'vn_standard' set predates the F113
-    # converter contract (its codes SI_EMP/TOTAL_DED carry underscores but are
-    # only ever referenced by column letter, so they are safe) — it is kept as
-    # code, byte-identical, and is NOT a registry record. All richer, contract-
-    # clean country packs come from hr.formula.config.template (F113).
+    # converter contract; its codes carried underscores (SI_EMP, TOTAL_DED) and
+    # survived only because nothing referenced them by name. MAPFIX A closed that
+    # — the shape constraint on hr.formula.rule would now refuse them outright, so
+    # the set ships as SIEMP/HIEMP/UIEMP/TOTALDED. It is kept as code, NOT a
+    # registry record. All richer country packs come from
+    # hr.formula.config.template (F113).
     _BUILTIN_TEMPLATES = [
         {'key': 'vn_standard', 'name': 'Vietnam Standard', 'country': 'VN',
          'flag': '🇻🇳', 'version': 'legacy', 'builtin': True, 'certified': False,
