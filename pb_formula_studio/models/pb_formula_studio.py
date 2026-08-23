@@ -4560,12 +4560,18 @@ class PbFormulaStudio(models.AbstractModel):
         """
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
-        src = source_field[2:] if (source_field or '').startswith('f:') else source_field
+        # MAPFIX D1 — the same wrong-type guard as `employee_mapping_create`. This
+        # board's left ids are strings and its right ids are integers, so a
+        # client-side mix-up sends each of them where the other belongs; `int()`
+        # on `'f:account_number'` is a ValueError dialog, and `.startswith` on an
+        # integer an AttributeError. Both are refusals, not crashes.
+        src = self._ec_spec(source_field)
+        src = src[2:] if src.startswith('f:') else src
         FM = self.env['hr.integration.field.mapping']
-        rule = self.env['hr.formula.rule'].browse(int(target_rule_id))
-        conn = self.env['hr.integration.connector'].browse(int(connector_id))
-        if not (rule.exists() and conn.exists()):
-            return {'ok': False}
+        rule = self.env['hr.formula.rule'].browse(self._as_id(target_rule_id))
+        conn = self.env['hr.integration.connector'].browse(self._as_id(connector_id))
+        if not (src and rule.exists() and conn.exists()):
+            return {'ok': False, 'msg': self._ec_bad_spec_msg()}
         vals = {'connector_id': conn.id, 'source_field': src,
                 'target_rule_id': rule.id,
                 'source_field_label': (src or '').replace('_', ' ').title()}
@@ -4595,7 +4601,7 @@ class PbFormulaStudio(models.AbstractModel):
     def api_mapping_delete(self, mapping_id):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
-        m = self.env['hr.integration.field.mapping'].browse(int(mapping_id))
+        m = self.env['hr.integration.field.mapping'].browse(self._as_id(mapping_id))
         if m.exists():
             m.unlink()
         return {'ok': True}
@@ -4937,10 +4943,12 @@ class PbFormulaStudio(models.AbstractModel):
     def import_mapping_create(self, config_id, batch_id, column, target_rule_id):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
-        col = column[2:] if (column or '').startswith('c:') else column
-        rule = self.env['hr.formula.rule'].browse(int(target_rule_id))
+        # MAPFIX D1 — wrong-type in, refusal out (see `employee_mapping_create`).
+        col = self._ec_spec(column)
+        col = col[2:] if col.startswith('c:') else col
+        rule = self.env['hr.formula.rule'].browse(self._as_id(target_rule_id))
         if not rule.exists():
-            return {'ok': False}
+            return {'ok': False, 'msg': self._ec_bad_spec_msg()}
         rule.write({'data_source_field': col})
         return {'ok': True}
 
@@ -4948,7 +4956,7 @@ class PbFormulaStudio(models.AbstractModel):
     def import_mapping_delete(self, rule_id):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
-        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        rule = self.env['hr.formula.rule'].browse(self._as_id(rule_id))
         if rule.exists():
             rule.write({'data_source_field': False})
         return {'ok': True}
@@ -5005,10 +5013,11 @@ class PbFormulaStudio(models.AbstractModel):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
         Assign = self.env['hr.formula.scheme.assignment']
-        dept = self.env['hr.department'].browse(int(department_id))
-        cfg = self.env['hr.formula.config'].browse(int(target_config_id))
+        # MAPFIX D1 — both ends are ids from the browser; a mix-up is a refusal.
+        dept = self.env['hr.department'].browse(self._as_id(department_id))
+        cfg = self.env['hr.formula.config'].browse(self._as_id(target_config_id))
         if not (dept.exists() and cfg.exists()):
-            return {'ok': False}
+            return {'ok': False, 'msg': self._ec_bad_spec_msg()}
         # one scheme per department: drop this department's other assignments
         Assign.search([('department_id', '=', dept.id)]).unlink()
         Assign.create({'department_id': dept.id, 'config_id': cfg.id})
@@ -5018,7 +5027,7 @@ class PbFormulaStudio(models.AbstractModel):
     def scheme_mapping_delete(self, assignment_id):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
-        a = self.env['hr.formula.scheme.assignment'].browse(int(assignment_id))
+        a = self.env['hr.formula.scheme.assignment'].browse(self._as_id(assignment_id))
         if a.exists():
             a.unlink()
         return {'ok': True}
@@ -5219,15 +5228,138 @@ class PbFormulaStudio(models.AbstractModel):
             return False
         return not any(fname.startswith(p) for p in self._EC_DENY_PREFIXES)
 
+    # ------------------------------------------------------------------
+    # MAPFIX D4/D5 — what a destination will ACCEPT, said on the card.
+    #
+    # A card that reads "Marital Status · Employee" tells a person nothing about
+    # whether their spreadsheet will fit it. Two field types can answer that
+    # before the import runs rather than after:
+    #
+    #   * a SELECTION stores a key and displays a label, and
+    #     `_coerce_mapped_value` validates the cell against the KEYS and stores
+    #     None on a miss — silently. A reader who has only ever seen "Married"
+    #     cannot know the file has to say `married`, so the card prints both;
+    #   * a MANY2ONE either creates the record it cannot find or refuses to, and
+    #     which of the two it does is `m2o_creates_missing` — the import batch's
+    #     own predicate, imported rather than re-typed (MAPFIX D5).
+    #
+    # Both are built ONCE PER MODEL per call (`_ec_notes_for`) and then read out
+    # of a dict, because this runs for 193 cards and a registry walk per card is
+    # the difference between a board and a wait.
+    # ------------------------------------------------------------------
+    _EC_SEL_INLINE_MAX = 4        # values a card may list in full
+    _EC_SEL_INLINE_CHARS = 44     # …and the width that listing may take
+
     @api.model
-    def _ec_field_item(self, fld, lane=None, lane_order=99):
+    def _ec_selection_note(self, field):
+        """`{text, title}` naming a selection field's permitted values, or None."""
+        # `_description_selection` is the ORM's OWN resolver — the one `fields_get`
+        # calls. It handles all three spellings of `selection=` (a literal list, a
+        # callable, and the name of a method as a STRING) and applies
+        # `selection_add` and the translations. Reading `field.selection` by hand
+        # got `hr.employee.certificate` wrong on the live board: its selection is a
+        # method NAME, and iterating a string yields characters, so the card said
+        # nothing at all (MF24).
+        try:
+            sel = field._description_selection(self.env)
+        except Exception:       # a selection that needs a record we do not have
+            try:
+                sel = field.selection
+                if callable(sel):
+                    sel = sel(self.env[field.model_name])
+            except Exception:
+                return None
+        pairs = []
+        for entry in (sel or []):
+            if isinstance(entry, (list, tuple)) and len(entry) >= 2:
+                pairs.append((str(entry[0]), str(entry[1])))
+            elif isinstance(entry, (list, tuple)) and entry:
+                pairs.append((str(entry[0]), str(entry[0])))
+        if not pairs:
+            return None
+        # The FULL list always goes in the tooltip, keys included: the key is what
+        # the spreadsheet must literally contain.
+        full = ", ".join(
+            ("%s (%s)" % (label, key)) if label != key else key
+            for key, label in pairs)
+        title = _("The file must contain one of these values (the code in "
+                  "brackets is what is stored): %s") % full
+        inline = ", ".join(
+            ("%s (%s)" % (label, key)) if label != key else key
+            for key, label in pairs)
+        if len(pairs) <= self._EC_SEL_INLINE_MAX and len(inline) <= self._EC_SEL_INLINE_CHARS:
+            return {'text': inline, 'title': title, 'tone': ''}
+        head = ", ".join(label for _key, label in pairs[:3])
+        return {'text': _("%(n)s values — %(head)s, …") % {
+            'n': len(pairs), 'head': head}, 'title': title, 'tone': ''}
+
+    @api.model
+    def _ec_m2o_note(self, field):
+        """`{text, title, tone}` saying whether an unseen value is created."""
+        from odoo.addons.pb_hr_payroll_formula.models.payroll_import_batch import (
+            m2o_creates_missing, m2o_resolution_key)
+        comodel_name = field.comodel_name
+        comodel = self.env.get(comodel_name)
+        if comodel is None:
+            return None
+        what = (self.env['ir.model'].sudo()._get(comodel_name).name
+                or comodel_name).lower()
+        if m2o_creates_missing(comodel):
+            return {'text': _("Creates the %s if it does not exist yet") % what,
+                    'title': _("Values are matched on the name. Anything the "
+                               "file names and Payobook does not have yet is "
+                               "created during the import."),
+                    'tone': ''}
+        key = m2o_resolution_key(comodel)
+        if key:
+            return {'text': _("Must already exist — will not be created"),
+                    'title': _("Matched on %(key)s. A %(what)s the file names "
+                               "and Payobook does not have is left unset rather "
+                               "than invented.") % {'key': key, 'what': what},
+                    'tone': 'warn'}
+        return {'text': _("Cannot be matched from a spreadsheet"),
+                'title': _("This record has no name to match a cell against, so "
+                           "the column would be read and then dropped."),
+                'tone': 'warn'}
+
+    @api.model
+    def _ec_notes_for(self, model):
+        """`{field name: note}` for one model — ONE registry walk per model, not
+        one per card (the 193-card board is why this is not inline)."""
+        Model = self.env.get(model)
+        if Model is None:
+            return {}
+        notes = {}
+        for fname, field in Model._fields.items():
+            if not self._ec_is_mappable(model, fname):
+                continue
+            if field.type == 'selection':
+                note = self._ec_selection_note(field)
+            elif field.type == 'many2one':
+                note = self._ec_m2o_note(field)
+            else:
+                continue
+            if note:
+                notes[fname] = note
+        return notes
+
+    @api.model
+    def _ec_field_item(self, fld, lane=None, lane_order=99, notes=None):
         lane = lane or self._EC_FALLBACK_LANE.get(fld.model, 'other_employee')
+        meta = {'model': fld.model, 'field': fld.name, 'ttype': fld.ttype,
+                'lane': lane, 'lane_order': lane_order}
+        # `notes` is passed in by every caller that renders more than one card;
+        # a lone card (the wired-but-off-catalogue append) builds its own.
+        if notes is None and fld.ttype in ('selection', 'many2one'):
+            notes = self._ec_notes_for(fld.model)
+        note = (notes or {}).get(fld.name)
+        if note:
+            meta['note'] = note
         return {'id': 'f:%s:%s' % (fld.model, fld.name),
                 'label': fld.field_description or fld.name,
                 'sublabel': self._EC_MODEL_LABEL.get(fld.model, fld.model),
                 'group': self._ec_lane_label(lane),
-                'meta': {'model': fld.model, 'field': fld.name, 'ttype': fld.ttype,
-                         'lane': lane, 'lane_order': lane_order}}
+                'meta': meta}
 
     @api.model
     def _ec_lane_index(self):
@@ -5256,6 +5388,8 @@ class PbFormulaStudio(models.AbstractModel):
         for model in ('hr.employee', 'hr.contract'):
             dom = [('model', '=', model), ('store', '=', True),
                    ('readonly', '=', False), ('ttype', 'in', list(self._EC_TTYPES))]
+            # MAPFIX D4 — once per MODEL, then read out of the dict per card.
+            notes = self._ec_notes_for(model)
             for f in IMF.search(dom):
                 if not self._ec_is_mappable(model, f.name):
                     continue
@@ -5268,7 +5402,8 @@ class PbFormulaStudio(models.AbstractModel):
                 else:
                     key = self._EC_FALLBACK_LANE[model]
                     n, pos = order_of[key], 10 ** 6
-                rows.append((n, pos, label.lower(), self._ec_field_item(f, key, n)))
+                rows.append((n, pos, label.lower(),
+                             self._ec_field_item(f, key, n, notes)))
         rows.sort(key=lambda t: (t[0], t[1], t[2]))
         return [t[3] for t in rows]
 
@@ -5350,18 +5485,35 @@ class PbFormulaStudio(models.AbstractModel):
             # A calculated or constant column is produced, not imported: it has
             # nothing to send anywhere and no contract to be kept on.
             return []
+        # MAPFIX D3 — every verb carries a HINT now. The card no longer prints the
+        # verbs across its own name; they live in a menu, and a menu row has the
+        # width to say what it does instead of leaving the label to imply it.
         acts = []
         if is_component:
             acts.append({'key': 'to_field',
-                         'label': _("Send to a field instead…")})
+                         'label': _("Send to a field instead…"),
+                         'hint': _("Pick an employee or contract field for this "
+                                   "column. What the contract already holds is "
+                                   "kept as history.")})
             if rule.is_text_component:
-                acts.append({'key': 'make_amount', 'label': _("Make amount")})
+                acts.append({'key': 'make_amount', 'label': _("Make amount"),
+                             'hint': _("Keep it on the contract as a number that "
+                                       "the payroll calculation can read.")})
             else:
-                acts.append({'key': 'make_text', 'label': _("Make text")})
-            acts.append({'key': 'detach', 'label': _("Detach component")})
+                acts.append({'key': 'make_text', 'label': _("Make text"),
+                             'hint': _("Keep it on the contract as text — a "
+                                       "grade, a shift code, a note.")})
+            acts.append({'key': 'detach', 'label': _("Detach component"),
+                         'hint': _("Stop keeping this column on the contract at "
+                                   "all.")})
         else:
-            acts.append({'key': 'make_amount', 'label': _("Make amount component")})
-            acts.append({'key': 'make_text', 'label': _("Make text component")})
+            acts.append({'key': 'make_amount',
+                         'label': _("Make amount component"),
+                         'hint': _("Keep it on the contract as a number that the "
+                                   "payroll calculation can read.")})
+            acts.append({'key': 'make_text', 'label': _("Make text component"),
+                         'hint': _("Keep it on the contract as text — a grade, a "
+                                   "shift code, a note.")})
         return acts
 
     @api.model
@@ -5464,23 +5616,56 @@ class PbFormulaStudio(models.AbstractModel):
         dom = [('model', '=', model), ('store', '=', True), ('readonly', '=', False),
                ('ttype', 'in', list(self._EC_TTYPES))]
         items = []
+        notes = self._ec_notes_for(model)      # MAPFIX D4 — once, not per field
         for f in IMF.search(dom, order='field_description'):
             if not self._ec_is_mappable(model, f.name):
                 continue
             hit = pos_of.get((model, f.name))
             key = hit[1] if hit else self._EC_FALLBACK_LANE[model]
-            items.append(self._ec_field_item(f, key, order_of.get(key, 99)))
+            items.append(self._ec_field_item(f, key, order_of.get(key, 99), notes))
         return {'ok': True, 'fields': items}
 
     @api.model
+    def _ec_spec(self, target_spec):
+        """A right-hand card id, as a STRING, whatever arrived.
+
+        MAPFIX D1. Every id this board mints is a string (`f:model:field`,
+        `b:role`), so anything else is a client-side mix-up rather than a
+        destination — and `str()` turns it into one that simply matches nothing,
+        instead of a crash three lines later. Booleans and `None` become '' so the
+        existing "nothing was chosen" path still fires.
+        """
+        if target_spec in (None, False, True):
+            return ''
+        if isinstance(target_spec, str):
+            return target_spec.strip()
+        return str(target_spec)
+
+    @api.model
+    def _ec_bad_spec_msg(self):
+        """One sentence for every unusable destination, so a refusal reads the
+        same wherever it is raised."""
+        return _("That connection could not be made — one of its ends was not "
+                 "recognised. Pick a card from the list and try again.")
+
+    @api.model
     def employee_mapping_create(self, config_id, context_id, component_id, target_spec):
+        """Wire one column to one destination.
+
+        MAPFIX D1 — `target_spec` is whatever the browser sent, and the browser is
+        allowed to be wrong. It used to be read as `target_spec or ''`, which
+        catches a falsy value and not a wrong TYPE: an integer left-hand id
+        survived that guard untouched and `123.startswith('b:')` was an
+        AttributeError on the user's screen. A malformed spec is a refusal, not a
+        traceback — the caller already renders `msg`, and the board stays usable.
+        """
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
         config = self._pick_config(config_id)
-        spec = target_spec or ''
+        spec = self._ec_spec(target_spec)
         if not config:
             return {'ok': False}
-        comp = self.env['hr.formula.rule'].browse(int(component_id))
+        comp = self.env['hr.formula.rule'].browse(self._as_id(component_id))
         if not comp.exists():
             return {'ok': False}
         Mapping = self.env['hr.payslip.import.mapping'].sudo()
@@ -5488,7 +5673,7 @@ class PbFormulaStudio(models.AbstractModel):
         if spec.startswith('b:'):
             bank_role = spec[2:]
             if bank_role not in self._BANK_LANE_ROLES:
-                return {'ok': False}
+                return {'ok': False, 'msg': self._ec_bad_spec_msg()}
             dest = dict(Mapping._fields['bank_role'].selection).get(bank_role, bank_role)
             note = self._ec_demote_component(comp, 'bank', dest)
             # 1:1 on both sides within this config — drop any existing on either end
@@ -5502,12 +5687,12 @@ class PbFormulaStudio(models.AbstractModel):
 
         parts = spec.split(':')
         if len(parts) != 3 or parts[0] != 'f':
-            return {'ok': False}
+            return {'ok': False, 'msg': self._ec_bad_spec_msg()}
         model, fname = parts[1], parts[2]
         mdl = self.env['ir.model'].sudo().search([('model', '=', model)], limit=1)
         fld = self.env['ir.model.fields'].sudo().search([('model', '=', model), ('name', '=', fname)], limit=1)
         if not (mdl and fld):
-            return {'ok': False}
+            return {'ok': False, 'msg': self._ec_bad_spec_msg()}
         # MAPFIX B2 — wiring a contract component to a native field DEMOTES it.
         # Nothing about the advantage template or its lines is touched: the value
         # simply stops being written there on the next run (MF-B3).
@@ -5598,7 +5783,7 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': _("Unknown component type.")}
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
-        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        rule = self.env['hr.formula.rule'].browse(self._as_id(rule_id))
         if not rule.exists():
             return {'ok': False, 'msg': _("That column no longer exists.")}
         if rule.column_type != 'input':
@@ -5635,7 +5820,7 @@ class PbFormulaStudio(models.AbstractModel):
         template nothing maintains any more."""
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
-        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        rule = self.env['hr.formula.rule'].browse(self._as_id(rule_id))
         if not rule.exists():
             return {'ok': False, 'msg': _("That column no longer exists.")}
         code = (rule.code or '').strip()
@@ -5668,7 +5853,7 @@ class PbFormulaStudio(models.AbstractModel):
     def employee_mapping_delete(self, mapping_id):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
-        m = self.env['hr.payslip.import.mapping'].sudo().browse(int(mapping_id))
+        m = self.env['hr.payslip.import.mapping'].sudo().browse(self._as_id(mapping_id))
         if m.exists():
             m.unlink()
         return {'ok': True}

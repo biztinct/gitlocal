@@ -1,15 +1,16 @@
 # MAPFIX — Readable codes, complete mapping, silent errors: conventions + gotcha ledger
 
-**STATUS: PROGRAMME COMPLETE — Phases A, B and C designed, built, deployed and live on
+**STATUS: PROGRAMME COMPLETE — Phases A, B, C and D designed, built, deployed and live on
 abm · acme · payobook · payobook_template (2026-08-23).** Final module versions:
-pb_hr_payroll_formula **19.0.1.71.0** · pb_formula_studio **19.0.1.117.0** ·
+pb_hr_payroll_formula **19.0.1.72.0** · pb_formula_studio **19.0.1.121.0** ·
 biz_theme **19.0.1.4.0** · om_hr_payroll 19.0.1.0.2 (never touched — CR1). Commits: Phase A
-`f658974f`, Phase B `470590bd`, Phase C = the commit that carries this line (a hash cannot name
-itself; it is quoted in the Phase C report) — **none pushed**.
+`f658974f`, Phase B `470590bd`, Phase C `6f6066e1`, Phase D = the commit that carries this line
+(a hash cannot name itself; it is quoted in the Phase D report) — **none pushed**.
 
 Follow-on programme to COLROLES (see `docs/handovers/COLROLES_LEDGER.md` — its standing rules and
 gotchas CR1–CR33 STILL BIND; this file adds MF-numbered entries). Phases: A codes+rename,
-B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + Primary Key guard.
+B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + Primary Key guard,
+D the five defects the owner reported against the live Phase-B board.
 
 ## Standing rules (inherited from COLROLES — re-read that ledger, these are the critical few)
 
@@ -176,6 +177,29 @@ B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + 
   Regression guard: 5 hoot tests in `biz_theme/static/tests/biz_error_dialogs.test.js`
   (`web.assets_unit_tests`), 5/5 green live at `/web/tests?filter=biz_error_dialogs`.
   Live tests on abm: 10/10 numbered cases.
+- **Phase D — DONE, live on abm · acme · payobook · payobook_template (2026-08-23).**
+  Versions: pb_hr_payroll_formula **19.0.1.72.0** · pb_formula_studio **19.0.1.121.0**.
+  Five owner-reported defects against the live Phase-B board:
+  **D1** (crash `'int' object has no attribute 'startswith'`) fixed at BOTH ends — the canvas'
+  `case "Enter"` now resolves through the focused side's list instead of reading the shared
+  `ui.focusId` raw, and `employee_mapping_create` coerces with `_ec_spec()` and refuses cleanly;
+  the same wrong-type guard was applied to `api_/import_/scheme_mapping_create` and every
+  `_mapping_delete` in the family (`self._as_id`).
+  **D2** — Escape now runs through ONE ladder (`_escape`): menu → transform popover → armed
+  component → search text → selected wire; `onSearchKey`'s unconditional `stopPropagation` is gone,
+  so the banner's "Esc to cancel" is true from the search box, a card and the board background.
+  **D3** — the three hover pills became ONE fixed-width (22px) in-flow `⋮` trigger plus an anchored
+  popover menu with a sentence per verb; name and code are legible in every state (0 overlaps over
+  19 cards at 1440 and at 1024).
+  **D4** — selection destinations print their permitted values with the STORED code
+  (`≤4 short values` inline, otherwise `N values — a, b, …` + full list in the tooltip).
+  **D5** — many2one behaviour UNCHANGED; the card now says "Creates the … if it does not exist yet"
+  or "Must already exist — will not be created", derived from `m2o_creates_missing()`, the import
+  batch's own predicate.
+  abm board: 193 right cards, 56 notes (24 selection + 32 m2o), whole-board RPC 132 ms / 69 KB.
+  Tests: 9 new Python (`TestMappingDefects`) + 12 Phase-B = 21/21 green on abm; hoot 41/41 green at
+  `/web/tests?filter=mapping_canvas` (15 of them new). abm left exactly as found (10 mappings, ids
+  `1,2,30,31,32,33,35,36,37,38`; rule 662 `DESIGNATION` restored to contract/text/auto).
 
 ## Gotchas discovered (append per phase, MF-numbered)
 
@@ -331,3 +355,52 @@ B mapping catalogue + re-routing + reconciliation, C error-dialog suppression + 
   "Could not detect header rows from color-coded Excel file". Any end-to-end fixture for it has
   to carry the CR-A4 colour convention; `ABM/ABM Template.xlsx` in the repo is a known-good one
   (99 components, single sheet `SEVL`, PK header "Employee Code").
+- MF24 (D): **`x or ''` is a FALSY guard, not a TYPE guard, and the difference is a crash.**
+  `employee_mapping_create` read `spec = target_spec or ''` and then called `spec.startswith('b:')`.
+  `123 or ''` is `123`, so the guard let an integer through untouched and the user got
+  `'int' object has no attribute 'startswith'` — from a line written to make exactly that
+  impossible. The client had sent it because `ui.focusId` is ONE value shared by both columns
+  (see MF25). Every RPC in the family had the same shape somewhere: `.startswith` on a value that
+  might not be a string (`api_`, `import_`) or `int()` on one that might not be a number (`scheme_`,
+  every `_delete`). When an id crosses a browser boundary, coerce it; a `msg` refusal is always
+  better than a traceback on a screen whose job is to be friendly.
+- MF25 (D): **one focus value for two columns is a bug waiting for a keystroke.** The arrow keys
+  had always resolved `ui.focusId` through the focused side's list (`findIndex`, falling back to
+  index 0), so the mismatch was invisible; `case "Enter"` read it raw, and "Send to a field
+  instead…" is the one verb that flips `focusSide` to `right` while `focusId` still holds a LEFT id.
+  The fix resolves through the list like its neighbours — and STRICTLY, with no index-0 fallback:
+  moving a focus ring onto the first row is harmless, drawing a WIRE to it because nothing was
+  focused is a write nobody asked for. `_relocateFocus` (called when a search applies) is what
+  keeps the gesture usable: it puts a visible focus on the top hit, so "type, press Enter" still
+  completes and the card it acted on is the card that was highlighted.
+- MF26 (D): **CR22/MF13, third act — and the lesson is now general.** Three verbs IN the flow
+  crushed the card's name to one character (MF13); the same three lifted OUT of the flow covered
+  the name and code instead (this phase's D3). Both are one failure: *an affordance whose width
+  depends on how many verbs there happen to be cannot share a line with the text.* The answer is a
+  trigger of a CONSTANT width, in the flow, where `min-width: 0` ellipsises the label beside it and
+  a bounding-box assertion can prove no overlap in any state — and the verbs move into a menu,
+  which has room to say what each one does. Deliberately visible at rest (dimmed): hover-only
+  discovery has now proved fragile twice, and touch has no hover at all.
+- MF27 (D): **a popover cannot be positioned from an ESTIMATED height.** The first cut placed the
+  menu with `16 + 46 × rows`; the rendered menu with its hint sentences is ~215px, so it was clipped
+  by the mapping overlay's own footer bar — visible only in a screenshot, and only for a card low in
+  the column. Render, MEASURE, then correct: `_placeMenu` runs in a DOUBLE `requestAnimationFrame`
+  (OWL patches on the first one) and flips or floors the menu against the board's real box. The same
+  double-rAF is what makes focus land on the first row — a single one fires before the patch and
+  `menuRef.el` is still null, which is why the first live check found the menu open with focus left
+  behind.
+- MF28 (D, testing): **a test that names a field asserts a property of the DATABASE.**
+  `test_04` was written against `hr.employee.marital` — which on this Vietnamese build is **not
+  stored** (`vietnam_marital_status` is), so the catalogue correctly omits it and the test failed on
+  a working build. MF11's family. It now iterates every selection card the catalogue offers and
+  checks the RULE (every stored key is printed somewhere on the card). Same trap in the hoot suite:
+  `.mc-item-more` renders only when the adapter passes `onLeftAction`, because `itemActions()` is
+  gated on it — a mount without that prop legitimately has no trigger to measure.
+- MF29 (D): **read a selection with the ORM's own resolver, not by hand.** `field.selection` has
+  three spellings — a literal list, a callable, and the NAME of a method as a string — and
+  `hr.employee.certificate` uses the third. Iterating a string yields characters, every entry failed
+  the `isinstance(entry, (list, tuple))` test, and the card silently said nothing at all while 23
+  other selection cards were correct. `field._description_selection(env)` is what `fields_get` calls:
+  it handles all three, applies `selection_add`, and returns translated labels. One card out of 193
+  is exactly the size of defect a screenshot does not catch and a count does (24 selection fields,
+  23 notes).

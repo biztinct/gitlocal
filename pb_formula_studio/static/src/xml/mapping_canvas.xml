@@ -110,17 +110,22 @@
                       <span t-if="it.prov === 'catalog'" class="mc-item-sample__k">e.g.</span><t t-esc="it.sample"/>
                     </div>
                   </div>
-                  <!-- COLROLES P3 / MAPFIX B2 — the card's verbs, shown on
-                       hover/focus so a two-hundred-row column is not a wall of
-                       buttons. A card offers what it can BECOME; the wire it can be
-                       given is drawn, not listed. -->
-                  <div t-if="props.canEdit and itemActions(it).length" class="mc-item-acts">
-                    <button t-foreach="itemActions(it)" t-as="act" t-key="act.key"
-                            class="mc-item-act" type="button"
-                            t-att-title="act.hint or act.label"
-                            t-on-click="(ev) => this.runItemAction(it, act, ev)"
-                            t-esc="act.label"/>
-                  </div>
+                  <!-- MAPFIX D3 — ONE trigger, of a fixed width, IN the flow.
+                       Phase B's three pills reserved unpredictable width at
+                       `opacity: 0` and collapsed the name (MF13); floated out of
+                       the flow to stop that, they covered the name and the code
+                       instead. A single 22px button is measurable, never moves,
+                       and leaves the label to ellipsise beside it — so the name
+                       and the code are readable in every state. The verbs live in
+                       the menu it opens. -->
+                  <button t-if="props.canEdit and itemActions(it).length" type="button"
+                          t-att-title="itemActionsLabel(it)"
+                          t-att-aria-label="itemActionsLabel(it)"
+                          aria-haspopup="menu"
+                          t-att-aria-expanded="isMenuOpen(it) ? 'true' : 'false'"
+                          t-attf-class="mc-item-more {{ isMenuOpen(it) ? 'on' : '' }}"
+                          t-on-click="(ev) => this.toggleItemMenu(it, ev)"
+                          t-out="ic('moreVertical', 15)"/>
                   <span class="mc-plug right"/>
                 </div>
               </t>
@@ -182,6 +187,13 @@
                   <div class="mc-item-main">
                     <div class="mc-item-label" t-esc="it.label"/>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                    <!-- MAPFIX D4/D5 — what this destination will ACCEPT. A
+                         selection's permitted values (with the stored code, which
+                         is what the file has to contain), or whether a many2one
+                         creates what it cannot find. Rendered only for cards that
+                         carry a note, so every other board is unchanged. -->
+                    <div t-if="note(it)" t-attf-class="mc-item-note {{ note(it).tone }}"
+                         t-att-title="note(it).title" t-esc="note(it).text"/>
                   </div>
                   <button t-if="props.onRemoveRight and !isRightWired(it.id)" class="mc-item-x" title="Remove field"
                           t-on-click="(ev) => this.removeRight(it.id, ev)" t-out="ic('x', 12)"/>
@@ -365,6 +377,28 @@
               </button>
             </div>
           </t>
+        </div>
+      </t>
+
+      <!-- MAPFIX D3 — the card's action menu.
+           OUTSIDE `.mc-board` for the transform popover's reason: the board
+           clips, and a menu cut in half by a column edge is worse than none.
+           Three verbs with room for a sentence each, instead of three pills
+           painted across the name they belong to. -->
+      <t t-if="ui.menu">
+        <div class="mc-menu-scrim" t-on-click="() => this.closeItemMenu(true)"/>
+        <div t-attf-class="mc-menu {{ ui.menu.flip ? 'flip' : '' }}" t-ref="menu"
+             role="menu" t-att-aria-label="ui.menu.label"
+             t-attf-style="left:{{ ui.menu.x }}px;top:{{ ui.menu.y }}px"
+             t-on-keydown="onMenuKeydown"
+             t-on-click="(ev) => ev.stopPropagation()">
+          <div class="mc-menu__h" t-esc="ui.menu.label"/>
+          <button t-foreach="ui.menu.acts" t-as="act" t-key="act.key"
+                  class="mc-menu__i" type="button" role="menuitem"
+                  t-on-click="() => this.runMenuAction(act)">
+            <span class="mc-menu__l" t-esc="act.label"/>
+            <span t-if="act.hint" class="mc-menu__s" t-esc="act.hint"/>
+          </button>
         </div>
       </t>
 

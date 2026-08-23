@@ -236,34 +236,78 @@
 .mapping-canvas .mc-item.sealed { background: repeating-linear-gradient(135deg, transparent 0 7px, rgba(100,116,139,.045) 7px 14px); }
 .mapping-canvas .mc-item.sealed .mc-plug { background: #fff; box-shadow: 0 0 0 1px #CBD5E1; }
 .mapping-canvas .mc-item.sealed:hover { border-color: var(--line, #E8E9F3); }
-/* The card's one verb. Hidden until the row is hovered or focused: two hundred
-   permanently-visible buttons is the clutter this whole programme is removing. */
-.mapping-canvas .mc-item-act {
-    flex: none; opacity: 0; pointer-events: none;
-    border: 1px solid var(--i-border, #CBC2EE); background: #fff;
-    color: var(--i600, #4A3D96); border-radius: 7px; padding: 3px 8px;
-    font-family: inherit; font-size: 10.5px; font-weight: 800; cursor: pointer;
-    white-space: nowrap; transition: opacity .12s;
+/* ---- MAPFIX D3 — one trigger, one menu ----
+   The history is worth keeping in front of the next reader. Phase B put three
+   verbs on the card. IN the flow they reserved their width at `opacity: 0` and
+   crushed the name to a single character (MF13/CR22). Lifted OUT of the flow to
+   fix that, they covered the name and the code whenever the row was hovered,
+   which is the defect Phase D was called on. Both are the same failure: an
+   affordance whose width depends on how many verbs there happen to be cannot
+   share a line with the text.
+   So: ONE button, a FIXED 22px, in the flow, where `.mc-item-main`'s
+   `flex: 1; min-width: 0` simply ellipsises the label beside it. Nothing moves
+   on hover, nothing overlaps in any state, and a bounding-box assertion can
+   prove it. It is visible at rest (dimmed) because hover-only discovery has now
+   proved fragile twice and because a touch device has no hover at all. */
+.mapping-canvas .mc-item-more {
+    flex: none; width: 22px; height: 22px; padding: 0; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid transparent; background: transparent;
+    color: var(--i-slate, #64748B); opacity: .45; cursor: pointer;
+    transition: opacity .12s, background .12s, border-color .12s, color .12s;
 }
-.mapping-canvas .mc-item:hover .mc-item-act,
-.mapping-canvas .mc-item.focus .mc-item-act { opacity: 1; pointer-events: auto; }
-.mapping-canvas .mc-item-act:hover { background: var(--i-soft, #EDEAF8); }
-/* MAPFIX B2 — a card offers up to three verbs now, and three buttons IN THE FLOW
-   take enough width to squeeze the name down to its first letter even while they
-   are invisible (CR22's lesson, in its exact original form: the layout is only
-   wrong in the state nobody screenshots). So the group is lifted OUT of the flow
-   and floated over the right of the card on hover, behind a short white fade so it
-   reads over whatever it covers. `right` clears the plug. */
-.mapping-canvas .mc-item-acts {
-    position: absolute; right: 26px; top: 50%; transform: translateY(-50%);
-    z-index: 2; display: flex; flex-wrap: wrap; justify-content: flex-end;
-    gap: 4px; max-width: calc(100% - 52px); padding: 2px 0 2px 28px;
-    border-radius: 9px;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0, #fff 28px);
-    opacity: 0; pointer-events: none; transition: opacity .12s;
+.mapping-canvas .mc-item-more svg { width: 15px; height: 15px; }
+.mapping-canvas .mc-item:hover .mc-item-more,
+.mapping-canvas .mc-item.focus .mc-item-more,
+.mapping-canvas .mc-item-more:focus-visible,
+.mapping-canvas .mc-item-more.on {
+    opacity: 1; color: var(--i600, #4A3D96);
+    border-color: var(--i-border, #CBC2EE); background: #fff;
 }
-.mapping-canvas .mc-item:hover .mc-item-acts,
-.mapping-canvas .mc-item.focus .mc-item-acts { opacity: 1; pointer-events: auto; }
+.mapping-canvas .mc-item-more:hover { background: var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-item-more.on { background: var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-item-more:focus-visible { outline: 2px solid var(--i, #5A4BB0); outline-offset: 1px; }
+.mapping-canvas .mc-item.armed .mc-item-more { color: #fff; opacity: .8; border-color: rgba(255,255,255,.5); background: transparent; }
+
+/* The menu. Same scrim/popover idiom as the transform editor (`.mc-tf-pop`), same
+   tokens, positioned by the component against the board's own box. A row has room
+   for the verb AND what it does, which three pills on a 300px card never had. */
+.mapping-canvas .mc-menu-scrim { position: absolute; inset: 0; z-index: 40; }
+.mapping-canvas .mc-menu {
+    position: absolute; z-index: 41; width: 264px;
+    background: #fff; border: 1px solid var(--i-border, #CBC2EE);
+    border-radius: 12px; box-shadow: 0 14px 34px rgba(15, 12, 40, .18);
+    padding: 5px; overflow: hidden;
+    animation: mc-menu-in .12s ease;
+}
+.mapping-canvas .mc-menu__h {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--muted, #6B7280);
+    padding: 6px 9px 5px; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mapping-canvas .mc-menu__i {
+    display: block; width: 100%; text-align: left; border: 0; background: none;
+    border-radius: 8px; padding: 7px 9px; cursor: pointer; font-family: inherit;
+}
+.mapping-canvas .mc-menu__i:hover, .mapping-canvas .mc-menu__i:focus-visible {
+    background: var(--i-soft, #EDEAF8); outline: none;
+}
+.mapping-canvas .mc-menu__i:focus-visible { box-shadow: inset 0 0 0 2px var(--i, #5A4BB0); }
+.mapping-canvas .mc-menu__l { display: block; font-size: 12.5px; font-weight: 700; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-menu__s { display: block; font-size: 10.5px; line-height: 1.35; color: var(--muted, #6B7280); margin-top: 2px; }
+@keyframes mc-menu-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* MAPFIX D4/D5 — what a destination will accept. A footnote under the sublabel,
+   never a second label: it wraps to at most two lines and then ellipsises, so a
+   selection with twenty values cannot make one card taller than the column. */
+.mapping-canvas .mc-item-note {
+    font-size: 10.5px; line-height: 1.35; color: var(--i-slate, #64748B);
+    margin-top: 3px; cursor: help;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.mapping-canvas .mc-item-note.warn { color: var(--i-amber-ink, #D97706); }
 
 .mapping-canvas .mc-item-sub { font-size: 11px; color: var(--muted, #6B7280); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
 .mapping-canvas .mc-col.right .mc-item-sub { flex-direction: row-reverse; }

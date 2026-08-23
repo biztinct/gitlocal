@@ -34,6 +34,37 @@ def json_serializer(obj):
     raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
 
+# ---------------------------------------------------------------------------
+# MAPFIX D5 — the ONE predicate for "what happens to a many2one column".
+#
+# `_coerce_mapped_value` resolves a many2one by NAME and creates the record when
+# it finds nothing — but only when the comodel actually has a `name` field. When
+# its identity lives somewhere else (`res.partner.bank`, whose `_rec_name` is the
+# account number) it deliberately refuses and stores nothing: minting a bank
+# account out of a spreadsheet cell nobody has checked is the one outcome an
+# import must not produce.
+#
+# That behaviour is correct and stays. What was missing is that a person wiring
+# the column could not see it BEFORE the import ran. The studio's right-hand card
+# now says which of the two will happen — and it says so by calling these
+# functions, not by re-typing the rule. Two copies of a predicate are two answers
+# the day one of them is edited.
+# ---------------------------------------------------------------------------
+def m2o_resolution_key(comodel):
+    """Which field of `comodel` an imported cell is matched against, or None when
+    there is nothing to match by at all."""
+    if 'name' in comodel._fields:
+        return 'name'
+    rec_name = comodel._rec_name
+    return rec_name if rec_name and rec_name in comodel._fields else None
+
+
+def m2o_creates_missing(comodel):
+    """True when an unseen value CREATES a record of `comodel`; False when the
+    value must already exist (or cannot be resolved at all)."""
+    return m2o_resolution_key(comodel) == 'name'
+
+
 class HrPayrollImportBatch(models.Model):
     """
     Batch processing model for payroll import from Excel/connectors.
@@ -1143,8 +1174,10 @@ class HrPayrollImportBatch(models.Model):
             # be worse: a record with a column of a spreadsheet in a field nobody
             # asked about. So: resolve by whatever the comodel calls its name, and
             # when there is nothing to resolve BY, refuse loudly and store nothing.
-            key = 'name' if 'name' in target._fields else (
-                target._rec_name if target._rec_name in target._fields else None)
+            # MAPFIX D5 — the predicate is `m2o_resolution_key`, and the studio's
+            # card calls the SAME function, so the promise on screen and the
+            # behaviour here cannot drift apart.
+            key = m2o_resolution_key(target)
             if not key:
                 _logger.warning(
                     "Mapped field %s.%s points at %s, which has no name field to "
@@ -1153,7 +1186,7 @@ class HrPayrollImportBatch(models.Model):
                 return None
             existing = target.search([(key, '=ilike', name_value)], limit=1)
             if not existing:
-                if key != 'name':
+                if not m2o_creates_missing(target):
                     _logger.warning(
                         "No %s matches %r for %s.%s, and %s records are not created "
                         "from an import — the column was not stored.",

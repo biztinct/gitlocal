@@ -28,6 +28,7 @@
 // does arithmetic that could be done there.
 import { Component, useState, useRef, onMounted, onWillUnmount, onPatched,
          onWillUpdateProps, useExternalListener } from "@odoo/owl";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { aggregateDocks, clampY, itemMatches, spreadHubs, wireGeometry }
     from "./mapping_geometry";
@@ -103,6 +104,9 @@ export class MappingCanvas extends Component {
             qa: { left: "", right: "" },     // what is applied (120ms behind)
             f: { left: "all", right: "all" },
             hoverCol: "",                    // which column "/" would focus
+            // MAPFIX D3 — the card's action MENU. One open at a time, anchored to
+            // the trigger that opened it: `{id, label, acts, x, y, flip}`.
+            menu: null,
             // W62 — transform popover (API wires only)
             tfOpen: null,         // open wire id, or null
             tfPy: false,          // the open wire is a read-only python transform
@@ -115,6 +119,7 @@ export class MappingCanvas extends Component {
         this.rbodyRef = useRef("rbody");
         this.lqRef = useRef("lq");
         this.rqRef = useRef("rq");
+        this.menuRef = useRef("menu");
         this._raf = null;
         this._recomputes = 0;     // T1 — what the coalescing test asserts
         this._cost = 0;           // ms of the last recompute (WP-6 reporting)
@@ -366,6 +371,10 @@ export class MappingCanvas extends Component {
             // which is the one thing this verb must not do.
             this.ui.armedLeft = cmd.leftId;
             this.ui.focusSide = "right";
+            // MAPFIX D1 — `focusId` is shared by both columns, and it is a LEFT id
+            // at this exact moment. Dropping it is what stops the next Enter from
+            // resolving to a card on the other side of the board.
+            this.ui.focusId = null;
             this.ui.selWire = null;
             requestAnimationFrame(() => {
                 const el = this.rqRef.el;
@@ -382,14 +391,87 @@ export class MappingCanvas extends Component {
     onSearch(side, ev) {
         this.ui.q[side] = ev.target.value || "";
         if (this._qt[side]) { clearTimeout(this._qt[side]); }
-        this._qt[side] = setTimeout(() => { this.ui.qa[side] = this.ui.q[side]; }, 120);
+        this._qt[side] = setTimeout(() => {
+            this.ui.qa[side] = this.ui.q[side];
+            // Typing in a column's search box IS working in that column, so the
+            // focus ring belongs there. Without this, typing in the right box
+            // while `focusSide` was still "left" left Enter acting on a left card
+            // the reader was not looking at — the same class of mismatch as D1,
+            // one step further back.
+            this.ui.focusSide = side;
+            // MAPFIX D1 — keep the focus ring on a card that is still on screen.
+            // Enter acts on the focused card of the focused side, so a focus left
+            // pointing at a row the search has just hidden would make Enter act on
+            // the top hit with nothing on screen saying so. Relocating here paints
+            // the card Enter is about to use, which is the honest version of the
+            // "type, then press Enter" gesture the search box invites.
+            this._relocateFocus(side);
+        }, 120);
+    }
+    _relocateFocus(side) {
+        if (this.ui.focusSide !== side) { return; }
+        const view = side === "left" ? this.leftView : this.rightView;
+        const still = view.some((i) => String(i.id) === String(this.ui.focusId));
+        if (still) { return; }
+        this.ui.focusId = view.length ? view[0].id : null;
     }
     clearSearch(side) {
         if (this._qt[side]) { clearTimeout(this._qt[side]); }
         this.ui.q[side] = ""; this.ui.qa[side] = "";
     }
     onSearchKey(side, ev) {
-        if (ev.key === "Escape") { ev.stopPropagation(); this.clearSearch(side); }
+        // MAPFIX D2 — this used to be `stopPropagation(); clearSearch(side)`
+        // unconditionally, so Escape inside a search box could never reach the
+        // canvas handler that disarms a component. "Send to a field instead…"
+        // puts the cursor in this very box and the banner promises "Esc to
+        // cancel" — the one flow in which the promise was impossible to keep.
+        // The ladder in `_escape` decides; the search is one of its rungs.
+        if (ev.key === "Escape") { this._escape(ev, side); }
+    }
+    /**
+     * What Escape means, in one place, in priority order.
+     *
+     * It has to be one place because Escape arrives from four DOM nodes (the two
+     * search inputs, the menu, the canvas root) and "the banner says Esc cancels"
+     * is a promise about the KEY, not about where the cursor happens to be.
+     *
+     *   1. an open card menu closes (and hands focus back to its trigger);
+     *   2. an open transform popover closes;
+     *   3. an ARMED component disarms — this is the promise on the banner, and
+     *      it outranks the search box because the banner is what is on screen;
+     *   4. a search box with text in it clears;
+     *   5. a selected wire deselects, with its reveal bar.
+     *
+     * Returns true when it consumed the key, so the caller can stop it there
+     * rather than letting a second handler act on the same press.
+     */
+    _escape(ev, side = null) {
+        let done = true;
+        if (this.ui.menu) {
+            this.closeItemMenu(true);
+        } else if (this.ui.tfOpen) {
+            this.closeTransform();
+        } else if (this.ui.armedLeft != null) {
+            // the wire preview, the drop hints and the banner are all rendered
+            // off `armedLeft`; the reveal bar is a claim about a filter that the
+            // cancelled gesture no longer needs.
+            this.ui.armedLeft = null;
+            this.ui.reveal = null;
+        } else if (side && (this.ui.q[side] || this.ui.qa[side])) {
+            this.clearSearch(side);
+        } else if (!side && (this.ui.q.left || this.ui.q.right)) {
+            // Escape from a card or the board background still clears a search —
+            // there is exactly one column filtered in practice, and clearing it
+            // is what the reader expects the key to do once nothing is armed.
+            this.clearSearch(this.ui.q.right ? "right" : "left");
+        } else if (this.ui.selWire) {
+            this.ui.selWire = null;
+            this.ui.reveal = null;
+        } else {
+            done = false;
+        }
+        if (done && ev) { ev.preventDefault(); ev.stopPropagation(); }
+        return done;
     }
     setFilter(side, v) { this.ui.f[side] = this.ui.f[side] === v ? "all" : v; }
     clearFilters(side) {
@@ -813,6 +895,127 @@ export class MappingCanvas extends Component {
         if (ev) { ev.stopPropagation(); }
         if (this.props.onLeftAction) { this.props.onLeftAction(it, act); }
     }
+    /**
+     * A note the adapter attached to a card — MAPFIX D4/D5.
+     *
+     * Generic on purpose: the canvas knows nothing about selections or many2one
+     * fields, only that a card may carry one short sentence about what it will
+     * ACCEPT, a longer one for its tooltip, and a tone. Every board that sends
+     * none renders exactly as it did.
+     */
+    note(it) {
+        const n = it && it.meta && it.meta.note;
+        if (!n || !n.text) { return null; }
+        return { text: n.text, title: n.title || n.text, tone: n.tone || "" };
+    }
+
+    // ---- MAPFIX D3 — the card's actions, in a menu ----------------------
+    /**
+     * Why a MENU and not three pills on the card.
+     *
+     * Phase B put three verbs on a ~300px card. In the flow they reserved their
+     * width even at `opacity: 0` and squeezed the name to one character (MF13);
+     * lifted out of the flow they stopped doing that and started COVERING the
+     * name and code instead, which is the defect this phase was called on. Both
+     * failures are the same failure: an affordance whose width depends on how
+     * many verbs there happen to be cannot share a line with the text.
+     *
+     * So the card carries ONE trigger of a FIXED width, in the flow, where it can
+     * be measured and where the label simply ellipsises beside it — the name and
+     * the code are legible in every state, hover included, which is the only
+     * thing that can be asserted from a bounding box. The trigger is always
+     * present (dimmed at rest): hover-only discovery has now proved fragile
+     * twice, and a permanently-visible 14px glyph is a fraction of the clutter
+     * three labelled pills were.
+     *
+     * The menu itself hangs OUTSIDE `.mc-board`, like the transform popover and
+     * for the same reason — the board clips, and a menu cut in half is worse
+     * than no menu.
+     */
+    itemActionsLabel(it) {
+        return _t("Actions for %s", (it && it.label) || "");
+    }
+    isMenuOpen(it) {
+        return !!(this.ui.menu && it && String(this.ui.menu.id) === String(it.id));
+    }
+    toggleItemMenu(it, ev) {
+        if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+        if (this.isMenuOpen(it)) { this.closeItemMenu(); return; }
+        const acts = this.itemActions(it);
+        if (!acts.length) { return; }
+        const root = this.rootRef.el;
+        const btn = ev && ev.currentTarget;
+        const W = 264;
+        let anchor = { top: 12, bottom: 12, right: W + 12 };
+        if (root && btn) {
+            const rb = root.getBoundingClientRect();
+            const r = btn.getBoundingClientRect();
+            anchor = { top: r.top - rb.top, bottom: r.bottom - rb.top,
+                       right: r.right - rb.left };
+        }
+        this.ui.menu = {
+            id: it.id, label: it.label || "", acts, anchor,
+            x: Math.max(8, anchor.right - W), y: anchor.bottom + 6, flip: false,
+        };
+        // The final placement needs the menu's REAL height, and a hint of three
+        // sentences is a third taller than an estimate says. So: render, measure,
+        // then correct — two frames, because OWL patches on the first one.
+        requestAnimationFrame(() => requestAnimationFrame(() => this._placeMenu()));
+    }
+    /** Measure the rendered menu, keep it inside the board, focus its first row. */
+    _placeMenu() {
+        const el = this.menuRef.el, root = this.rootRef.el;
+        if (!el || !root || !this.ui.menu) { return; }
+        const a = this.ui.menu.anchor;
+        const rb = root.getBoundingClientRect();
+        const h = el.offsetHeight, w = el.offsetWidth;
+        let y = a.bottom + 6, flip = false;
+        if (y + h > rb.height - 8) {
+            // above the trigger if there is room there, otherwise as low as the
+            // board allows — never off the bottom, and never clipped by the
+            // overlay's own footer bar.
+            flip = a.top - h - 6 >= 8;
+            y = flip ? a.top - h - 6 : Math.max(8, rb.height - 8 - h);
+        }
+        this.ui.menu = { ...this.ui.menu, flip,
+                         x: Math.max(8, Math.min(rb.width - w - 8, a.right - w)), y };
+        // A menu that opens with focus left behind is a menu the keyboard cannot
+        // use — and this affordance had to be keyboard-reachable by design.
+        const first = el.querySelector(".mc-menu__i");
+        if (first) { first.focus(); }
+    }
+    closeItemMenu(restoreFocus = false) {
+        const id = this.ui.menu && this.ui.menu.id;
+        this.ui.menu = null;
+        if (!restoreFocus || id == null) { return; }
+        requestAnimationFrame(() => {
+            const body = this.lbodyRef.el;
+            const card = this._itemEl(body, id);
+            const btn = card && card.querySelector(".mc-item-more");
+            if (btn) { btn.focus(); }
+        });
+    }
+    runMenuAction(act) {
+        const menu = this.ui.menu;
+        if (!menu) { return; }
+        const it = this.props.leftItems.find((x) => String(x.id) === String(menu.id));
+        this.closeItemMenu();
+        if (it && this.props.onLeftAction) { this.props.onLeftAction(it, act); }
+    }
+    /** ↑/↓ walk the rows, Home/End jump; Escape is handled by `_escape`. */
+    onMenuKeydown(ev) {
+        if (!/^(ArrowDown|ArrowUp|Home|End)$/.test(ev.key)) { return; }
+        const rows = Array.from(
+            (this.menuRef.el && this.menuRef.el.querySelectorAll(".mc-menu__i")) || []);
+        if (!rows.length) { return; }
+        ev.preventDefault(); ev.stopPropagation();
+        const at = rows.indexOf(document.activeElement);
+        let next = 0;
+        if (ev.key === "ArrowDown") { next = (at + 1 + rows.length) % rows.length; }
+        else if (ev.key === "ArrowUp") { next = (at - 1 + rows.length) % rows.length; }
+        else if (ev.key === "End") { next = rows.length - 1; }
+        rows[next].focus();
+    }
 
     // ---- wire lookups -------------------------------------------------
     wiresForLeft(id) { return this.props.wires.filter(w => w.leftId === id); }
@@ -992,6 +1195,10 @@ export class MappingCanvas extends Component {
     // layer: `w` walks the wires, ←/→ jump to that wire's two ends, `/` puts
     // the cursor in the search box of the column under the pointer.
     onKeydown(ev) {
+        // MAPFIX D2 — Escape is answered FIRST and by one ladder, wherever the
+        // cursor is. It used to be two `case "Escape"` branches buried below,
+        // both of them unreachable from the search box.
+        if (ev.key === "Escape") { this._escape(ev, null); return; }
         if (ev.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName)) {
             const ref = (this.ui.hoverCol === "right" ? this.rqRef : this.lqRef).el;
             if (ref) { ev.preventDefault(); ref.focus(); ref.select(); return; }
@@ -1014,10 +1221,6 @@ export class MappingCanvas extends Component {
             if (g && (ev.key === "t" || ev.key === "T") && g.transform) {
                 ev.preventDefault(); ev.stopPropagation();
                 this.openTransform(g); return;
-            }
-            if (ev.key === "Escape") {
-                this.ui.selWire = null; this.ui.reveal = null;
-                ev.stopPropagation(); return;
             }
         }
         if (ev.key === "w" || ev.key === "W") {
@@ -1044,12 +1247,39 @@ export class MappingCanvas extends Component {
                 { const l2 = this.ui.focusSide === "left" ? this.leftView : this.rightView;
                   this.ui.focusId = (l2[0] || {}).id ?? null; }
                 break;
-            case "Enter":
+            // MAPFIX D1 — the CRASH.
+            //
+            // `ui.focusId` is ONE value shared by both columns. The arrow keys
+            // above always resolved it through the focused side's list (falling
+            // back to index 0); Enter read it RAW. So with `focusSide === "right"`
+            // — which "Send to a field instead…" sets, before putting the cursor
+            // in the right column's search box — and `focusId` still holding a
+            // LEFT id, Enter called `clickRight(<hr.formula.rule id>)` and sent an
+            // integer where the server expects an `f:model:field` spec. It crashed
+            // on `.startswith` (the server end is fixed too, defence in depth).
+            //
+            // Resolving through the list is the whole fix and it is the smaller
+            // one: splitting focus into `focusLeftId`/`focusRightId` would touch
+            // the template, `_relocateForLens`, both `onWillUpdateProps` branches
+            // and every reader of `ui.focusId`, to remove a mismatch that cannot
+            // survive this line anyway. `list` is the arrow keys' own, so Enter can
+            // now only ever act on a card of the focused side that is on screen —
+            // the same card the template is painting `.focus`.
+            case "Enter": {
                 ev.preventDefault();
-                if (this.ui.focusSide === "left") this.clickLeft(this.ui.focusId);
-                else this.clickRight(this.ui.focusId);
+                // Resolved STRICTLY — no fall back to index 0 the way the arrows
+                // do. Moving a focus ring onto the first row is harmless; drawing
+                // a wire to the first row because nothing was focused is a write
+                // the reader never asked for. Nothing focused ⇒ Enter does
+                // nothing, and `_relocateFocus` is what puts a real focus on the
+                // top search hit so the gesture still completes.
+                const at = list.findIndex((i) => String(i.id) === String(this.ui.focusId));
+                if (at === -1) { break; }
+                const it = list[at];
+                if (this.ui.focusSide === "left") { this.clickLeft(it.id); }
+                else { this.clickRight(it.id); }
                 break;
-            case "Escape": this.ui.armedLeft = null; break;
+            }
             default: return;
         }
         ev.stopPropagation();
