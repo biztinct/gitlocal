@@ -504,6 +504,24 @@ Example: value * 1.1 if value > 1000 else value
     # SOURCE FIELD DISCOVERY (T4.3)
     # ==========================================
     @api.model
+    def _computed_output_keys(self, connector):
+        """The keys this connector's own transformation rules produce.
+
+        These are not vendor fields: nothing external delivers them, Payobook
+        computes them from what the feed returns. That distinction is the whole
+        reason the "Derived here" lane exists, and the reason `expected_missing`
+        must never be set on one.
+        """
+        Rule = self.env.get('hr.api.transformation.rule')
+        if Rule is None or not connector:
+            return set()
+        try:
+            rules = Rule.sudo().search([('connector_id', '=', connector.id)])
+        except Exception:       # noqa: BLE001 — a lane must never break a board
+            return set()
+        return {r.output_key for r in rules if r.output_key}
+
+    @api.model
     def get_available_source_fields(self, connector_id, data_type=None,
                                     endpoint_id=None):
         """What this connector can offer as a source field, and where it is
@@ -628,6 +646,31 @@ Example: value * 1.1 if value > 1000 else value
                 item.get('feed_type') and item['feed_type'] in synced_types)
             merged[path] = item
         merged.update(live)
+
+        # ------------------------------------------------------------------
+        # SOURCING S5 — "Derived here", and the end of a false amber chip.
+        #
+        # A POST-PASS over the merged result, deliberately, rather than a
+        # reordering of the layers: it wins whichever layer produced the row, so a
+        # computed key keeps its identity the moment the live layer starts
+        # answering for it. Before this, `merged.update(live)` stamped
+        # `provenance='live'` over every key the feed had delivered, and a rule
+        # output's "computed" chip vanished on the first sync — the board forgot
+        # what it had just told the user.
+        #
+        # `expected_missing` is forced False for the same reason it should never
+        # have been True: the amber "not sent — this feed did not carry this
+        # field" is a claim about the VENDOR, and it is simply false about a key
+        # Payobook computes itself. It was telling the owner something untrue
+        # about their own data.
+        # ------------------------------------------------------------------
+        for path, item in merged.items():
+            if path in self._computed_output_keys(connector):
+                item['provenance'] = 'computed'
+                item['catalog_kind'] = 'computed'
+                item['group'] = _("Derived here")
+                item['expected_missing'] = False
+
         if merged:
             return sorted(merged.values(), key=lambda f: f['path'])
 

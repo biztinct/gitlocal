@@ -366,6 +366,147 @@ class PbFormulaStudio(models.AbstractModel):
         'calculated': "Calculated", 'constant': "Fixed value", 'none': "No source",
     }
 
+    #: SOURCING S5 — cards a board shows but will not let you wire.
+    #: `column_type` is the authority: a formula or a constant is PRODUCED by this
+    #: scheme, not imported into it, so there is no source to attach. They used to
+    #: be filtered out silently, which left the reader wondering where their
+    #: component had gone; now they are visible, badged and sealed.
+    #: SOURCING S5 — a sealed card is refused by the SERVER, not merely
+    #: un-offered by the board. MAPFIX F3's precedent: hiding an affordance is not
+    #: a gate. A stale bundle, a tampered client or a direct RPC must all get the
+    #: same answer as the board would give.
+    @api.model
+    def _lineage_by_output_key(self, connector, config):
+        """How each computed key is worked out, keyed by the key itself.
+
+        `reads` is the UNCAPPED list S2 split out of `_trace_cells` — the cap of
+        four was a property of a narrow proof rail, not of the rule, and lineage
+        has to know all of them.
+
+        `feeds` is what S2's repair made answerable: every abm rule output now has
+        exactly one live consumer, where before the programme it had none and the
+        board could not have said so.
+
+        The rule NAME goes into the reads/feeds text and the card's own label, not
+        into a tooltip: `itemMatches` searches label/sublabel/sample/meta.col/group,
+        so tooltip-only text is unsearchable on a board with hundreds of cards.
+        """
+        Rule = self.env.get('hr.api.transformation.rule')
+        if Rule is None or not connector:
+            return {}
+        try:
+            rules = Rule.sudo().search([('connector_id', '=', connector.id)])
+        except Exception:       # noqa: BLE001 — lineage must never break a board
+            return {}
+        Mapping = self.env['hr.integration.field.mapping'].sudo()
+        out = {}
+        for rule in rules:
+            if not rule.output_key:
+                continue
+            feeds = []
+            for m in Mapping.search([('connector_id', '=', connector.id),
+                                     ('source_field', '=', rule.output_key)]):
+                if m.target_rule_id:
+                    feeds.append('%s (%s)' % (m.target_rule_id.name or '',
+                                              m.target_rule_id.code or ''))
+            # Components bound to this rule output by name (S3 bindings).
+            for r in config.rule_ids:
+                if r.source_binding == 'rule' and \
+                        (r.source_binding_key or '') == rule.output_key:
+                    label = '%s (%s)' % (r.name or '', r.code or '')
+                    if label not in feeds:
+                        feeds.append(label)
+            try:
+                reads = list(rule._consumed_field_names())
+            except Exception:   # noqa: BLE001
+                reads = []
+            out[rule.output_key] = {
+                'rule_id': rule.id,
+                'summary': rule.plain_summary or '',
+                'reads': reads,
+                'fallback': self._lineage_fallback_text(rule),
+                'feeds': feeds,
+            }
+        return out
+
+    @api.model
+    def _lineage_fallback_text(self, rule):
+        """What the rule produces when nothing matches — in words, not a field name."""
+        default = getattr(rule, 'default_value', None)
+        if default in (None, False, ''):
+            return _("Nothing is written for that employee.")
+        return _("It writes %s.") % default
+
+    @api.model
+    def _mc_refuse_sealed(self, rule):
+        if rule.exists() and rule.column_type != 'input':
+            return {'ok': False, 'msg': _(
+                "“%s” is calculated — it needs no source. This column is produced "
+                "by the scheme, not imported into it.")
+                % (rule.code or rule.name or '')}
+        return None
+
+    @api.model
+    def _mc_legal_output_key(self, rule):
+        """A component code, made legal as a transformation-rule output key.
+
+        The contract (S2, `OUTPUT_KEY_RE`) is capitals and digits starting with a
+        letter — no underscores, because the Excel->Python converter's code pass
+        excludes `_` and an underscored name survives raw into the eval, raises
+        NameError and silently reads 0. MAPFIX Phase A already made component codes
+        conform, so this is normally a no-op; it exists for the legacy codes that
+        predate it.
+        """
+        key = re.sub(r'[^A-Za-z0-9]', '', (rule.code or rule.name or '')).upper()
+        if not key or not key[0].isalpha():
+            key = 'RULE%s' % key
+        return key[:40]
+
+    @api.model
+    def _mc_right_item(self, rule, declared, note=''):
+        wirable = rule.column_type == 'input'
+        item = {'id': rule.id, 'label': (rule.name or rule.code),
+                'sublabel': rule.code or '',
+                'srcKind': declared['kind'], 'srcNote': note,
+                'meta': {'col': rule.column_letter or '', 'type': rule.column_type}}
+        # SOURCING S5 — an input with nothing feeding it can start a rule from
+        # here. The key is sanitised through the SAME contract S2 put on
+        # `output_key`, so the composer never opens on a key its own constraint
+        # is about to refuse — an underscore in the pre-fill would have made the
+        # affordance a dead end.
+        if wirable and declared['kind'] == 'none':
+            item['meta']['createRule'] = {
+                'label': _("Create a rule for this"),
+                'hint': _("Open the rule composer with “%s” as the output key.")
+                        % self._mc_legal_output_key(rule),
+                'output_key': self._mc_legal_output_key(rule),
+                'component_id': rule.id,
+            }
+        if not wirable:
+            item['meta'].update({
+                'wirable': False,
+                'badge': _("Calculated"),
+                'badgeTone': 'calc',
+                # Wording borrowed from the employee tab, which has said this for
+                # a year: a produced column is "produced, not imported".
+                'badgeHint': _("Calculated — needs no source. This column is "
+                               "produced by the scheme, not imported into it."),
+            })
+        return item
+
+    @api.model
+    def _mc_right_column(self, config, actuals, emp_dest, wirable_only=False):
+        """Every component a mapping board should show, in display order."""
+        rules = config.rule_ids if not wirable_only else config.rule_ids.filtered(
+            lambda r: r.column_type == 'input')
+        rules = rules.sorted(key=lambda r: r.sequence)
+        out = []
+        for r in rules:
+            declared = self._declared_source(r, emp_dest)
+            out.append(self._mc_right_item(
+                r, declared, self._source_note(r, actuals, emp_dest)))
+        return out
+
     @api.model
     def _source_note(self, rule, actuals, emp_dest_rule_ids):
         """The one-line note a mapping board shows against a component.
@@ -4530,35 +4671,33 @@ class PbFormulaStudio(models.AbstractModel):
         # promoted to a top-level key rather than buried in `meta` because the
         # canvas renders a chip from it on every row, and `meta` is the bag of
         # things only the transform popover reads.
+        # SOURCING S5 — lineage for the keys this connector COMPUTES. Built once
+        # for the whole board and attached to the cards it belongs to; a vendor
+        # field gets no `lineage` key and therefore grows no affordance.
+        lineage_by_key = self._lineage_by_output_key(conn, config)
         left = [{'id': 'f:' + f['path'], 'label': f.get('label') or f['path'],
                  'sublabel': f['path'],
                  'sample': self._sample_text(f.get('sample')),
-                 'group': ep_group,
+                 # A computed key is grouped under its own heading rather than
+                 # under the vendor feed's — it did not come from the vendor.
+                 'group': (_("Derived here") if f.get('provenance') == 'computed'
+                           else ep_group),
                  'prov': f.get('provenance') or 'live',
                  'provKind': f.get('catalog_kind') or '',
                  'drift': bool(f.get('expected_missing')),
                  'note': f.get('notes') or '',
+                 'lineage': lineage_by_key.get(f['path']),
                  'meta': {'type': f.get('type') or '', 'sample': f.get('sample')}}
                 for f in fields_]
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
             .sorted(key=lambda r: r.sequence)
-        # SOURCING S4 — the right column gains a chip. It reuses the SAME item keys
-        # the LEFT column already carries (`prov` / `provKind` / `note`), so the
-        # canvas renders it with no client change: a component that is already fed
-        # from somewhere else stops being an anonymous target.
+        # SOURCING S4 — the right column gains a chip (`srcKind`, NOT `prov`:
+        # `prov` already means "where this CARD came from", a different axis).
+        # SOURCING S5 — and it now shows CALCULATED components too, sealed rather
+        # than filtered out, so a reader stops wondering where they went.
         _acts, _run = self._source_actuals(config)
         _emp = self._source_employee_dest_ids(config)
-        _decl = {r.id: self._declared_source(r, _emp) for r in input_rules}
-        right = [{'id': r.id, 'label': (r.name or r.code), 'sublabel': r.code or '',
-                  # SOURCING S4 — `srcKind`, NOT `prov`. `prov` already means
-                  # "where this CARD came from" (vendor catalogue, live sync,
-                  # Payobook's own field) — a different axis from "what feeds this
-                  # component". Overloading it would have made one chip answer two
-                  # questions, which is the confusion this programme exists to end.
-                  'srcKind': _decl[r.id]['kind'],
-                  'srcNote': self._source_note(r, _acts, _emp),
-                  'meta': {'col': r.column_letter or '', 'type': 'input'}}
-                 for r in input_rules]
+        right = self._mc_right_column(config, _acts, _emp)
         # accepted wires = persisted field mappings on this connector → these inputs
         wires = []
         mapped_paths, mapped_rules = set(), set()
@@ -4732,6 +4871,9 @@ class PbFormulaStudio(models.AbstractModel):
         conn = self.env['hr.integration.connector'].browse(self._as_id(connector_id))
         if not (src and rule.exists() and conn.exists()):
             return {'ok': False, 'msg': self._ec_bad_spec_msg()}
+        sealed = self._mc_refuse_sealed(rule)
+        if sealed:
+            return sealed
         vals = {'connector_id': conn.id, 'source_field': src,
                 'target_rule_id': rule.id,
                 'source_field_label': (src or '').replace('_', ' ').title()}
@@ -5056,11 +5198,7 @@ class PbFormulaStudio(models.AbstractModel):
             .sorted(key=lambda r: r.sequence)
         _acts, _run = self._source_actuals(config)
         _emp = self._source_employee_dest_ids(config)
-        _decl = {r.id: self._declared_source(r, _emp) for r in input_rules}
-        right = [{'id': r.id, 'label': (r.name or r.code), 'sublabel': r.code or '',
-                  'srcKind': _decl[r.id]['kind'],
-                  'srcNote': self._source_note(r, _acts, _emp),
-                  'meta': {'col': r.column_letter or '', 'type': 'input'}} for r in input_rules]
+        right = self._mc_right_column(config, _acts, _emp)
         col_set = set(cols)
         wires, mapped_rules = [], set()
         for r in input_rules:
@@ -5114,6 +5252,9 @@ class PbFormulaStudio(models.AbstractModel):
         rule = self.env['hr.formula.rule'].browse(self._as_id(target_rule_id))
         if not rule.exists():
             return {'ok': False, 'msg': self._ec_bad_spec_msg()}
+        sealed = self._mc_refuse_sealed(rule)
+        if sealed:
+            return sealed
         rule.write({'data_source_field': col})
         return {'ok': True}
 

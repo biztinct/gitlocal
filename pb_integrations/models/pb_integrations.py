@@ -20,7 +20,7 @@ ledger is exactly as empty as the list would have been (W12).
 import json
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.tools.sql import column_exists
 
 _logger = logging.getLogger(__name__)
@@ -171,6 +171,10 @@ class PbIntegrations(models.AbstractModel):
             'types': [{'name': TYPE_LABEL.get(k, k), 'type': k, 'count': v}
                       for k, v in sorted(types.items(), key=lambda x: -x[1])],
             'connectors': rows,
+            # SOURCING S5 — four things worth telling somebody about, counted once
+            # for the whole board. Each is a COUNT plus the drill-down that finds
+            # the rows, so a hint is actionable rather than an anxiety.
+            'hints': self._sourcing_hints(),
             'total': len(rows), 'shown': len(rows),
             # Did anybody actually COUNT the feeds? `has_feeds` above is False
             # on a database whose upgrade has not run here yet, and every feed
@@ -421,10 +425,23 @@ class PbIntegrations(models.AbstractModel):
                     {'label': 'Data type', 'value': _sel(M, 'source_data_type', r.source_data_type)},
                     {'label': 'Sample value', 'value': r.source_sample_value or ''},
                 ]),
+                # SOURCING S5 — "Produced by". When the source key is one this
+                # connector COMPUTES rather than one the vendor sends, say which
+                # rule makes it; the field path alone gives no hint.
+                self._section('Produced by', [
+                    {'label': 'Rule', 'value': (self._mapping_producer(r).name
+                                                if self._mapping_producer(r) else '')},
+                ]),
                 self._section('Target', [
                     {'label': 'Formula rule', 'value': r.target_rule_id.name or ''},
                     {'label': 'Code', 'value': r.target_rule_code or ''},
                     {'label': 'Column', 'value': r.target_column_letter or ''},
+                    # SOURCING S2 — a mapping that remembers a component it no
+                    # longer points at used to look identical to one that never
+                    # had one. `_section` drops the row when it is False.
+                    {'label': 'Lost its component',
+                     'value': (_("Yes — remembers “%s”") % (r.target_rule_code or '')
+                               if r.is_severed else '')},
                 ]),
                 self._section('Transform', [
                     {'label': 'Type', 'value': _sel(M, 'transformation_type', r.transformation_type)},
@@ -576,6 +593,9 @@ class PbIntegrations(models.AbstractModel):
                     r.name or '—',
                     r.output_key or '—',
                     summary,
+                    # SOURCING S5 — a rule that feeds nothing is now visible in
+                    # the LIST, without opening a single row.
+                    str(len(self._rule_consumers(r))),
                     r.connector_id.name or '—',
                 ],
                 # An error outranks "off": a rule that is on and failing is the
@@ -599,10 +619,146 @@ class PbIntegrations(models.AbstractModel):
             'columns': [{'label': 'Rule', 'wide': True},
                         {'label': 'Output key'},
                         {'label': 'What it does', 'wide': True},
+                        {'label': 'Feeds'},
                         {'label': 'Connector'}],
             'facets': self._facets(rows, [('connector', 'Connector'), ('state', 'State')]),
             'rows': rows, 'total': total, 'shown': len(rows),
         }
+
+    # ==================================================================
+    # SOURCING S5 — the cockpit closes the loop.
+    #
+    # A rule that computes a key nobody reads is invisible until something says
+    # so, and a mapping that lost its component looks identical to one that never
+    # had one. These three helpers are what let a list answer "is this wired to
+    # anything?" without opening every row.
+    # ==================================================================
+    # ==================================================================
+    # SOURCING S5 — health hints.
+    #
+    # Four questions the product could not answer before this programme:
+    # does anything read what this rule computes; did a mapping quietly lose the
+    # component it fed; is there an input with no source at all; and did a source
+    # somebody deliberately chose produce nothing on the last run.
+    #
+    # Each returns a count and a `kind` the cockpit can drill into. Silence is the
+    # normal state: a hint with a zero count is dropped rather than rendered as a
+    # reassuring green nothing.
+    # ==================================================================
+    @api.model
+    def _sourcing_hints(self):
+        hints = []
+
+        def add(kind, count, label, detail):
+            if count:
+                hints.append({'kind': kind, 'count': count,
+                              'label': label, 'detail': detail})
+
+        # 1 — a rule computes a key and nothing reads it.
+        Rule = self.env.get('hr.api.transformation.rule')
+        if Rule is not None:
+            orphans = [r for r in self._safe(
+                lambda: Rule.sudo().with_context(active_test=False).search([]),
+                default=[]) if r.output_key and not self._rule_consumers(r)]
+            add('rule_unconsumed', len(orphans),
+                _("Rule outputs nothing reads"),
+                _("These rules compute a value that no pay component takes: %s")
+                % ', '.join(r.output_key for r in orphans[:12]))
+
+        # 2 — a mapping that remembers a component it no longer points at.
+        Mapping = self.env.get('hr.integration.field.mapping')
+        if Mapping is not None and 'is_severed' in Mapping._fields:
+            n = self._safe(lambda: Mapping.sudo().search_count(
+                [('is_severed', '=', True)]), default=0)
+            add('mapping_severed', n,
+                _("Mappings that lost their component"),
+                _("Each remembers the component it used to feed. Reconnect puts "
+                  "them back."))
+
+        # 3 — an input with no source at all.
+        FRule = self.env.get('hr.formula.rule')
+        if FRule is not None and 'source_binding' in FRule._fields:
+            n = self._safe(lambda: FRule.sudo().search_count([
+                ('column_type', '=', 'input'),
+                ('source_binding', '=', False),
+                ('data_source_field', '=', False),
+                ('is_contract_component', '=', False),
+            ]), default=0)
+            add('input_unsourced', n,
+                _("Inputs with no source chosen"),
+                _("These components are matched by name when a run imports them, "
+                  "which works until a column is renamed."))
+
+        # 4 — a source somebody CHOSE that produced nothing on the last run.
+        Payslip = self.env.get('hr.payslip')
+        if Payslip is not None and FRule is not None \
+                and 'formula_input_sources' in Payslip._fields:
+            n = self._safe(self._sourcing_empty_bound_count, default=0)
+            add('bound_empty', n,
+                _("Chosen sources that produced nothing"),
+                _("The last run found nothing under the key these components are "
+                  "set to read, so they fell back or used their default."))
+        return hints
+
+    @api.model
+    def _sourcing_empty_bound_count(self):
+        """Components whose bound source was empty on the most recent run.
+
+        Reads ONE payslip per configuration — the newest carrying a provenance
+        blob — rather than scanning a payslip table that is 28,000 rows deep on a
+        live tenant. `via` is what S3 wrote for exactly this question.
+        """
+        import json as _json
+        Payslip = self.env['hr.payslip'].sudo()
+        seen = set()
+        total = 0
+        for slip in Payslip.search([('formula_input_sources', '!=', False)],
+                                   order='date_to desc, id desc', limit=400):
+            cfg = slip.formula_config_id.id
+            if not cfg or cfg in seen:
+                continue
+            seen.add(cfg)
+            try:
+                blob = _json.loads(slip.formula_input_sources or '{}')
+            except (TypeError, ValueError):
+                continue
+            if not isinstance(blob, dict):
+                continue
+            total += sum(1 for e in blob.values()
+                         if isinstance(e, dict)
+                         and e.get('via') in ('fallback', 'binding_empty'))
+        return total
+
+    @api.model
+    def _rule_consumers(self, rule):
+        """Components that read this rule's output — mappings and S3 bindings."""
+        if not rule.output_key:
+            return []
+        out = []
+        Mapping = self.env['hr.integration.field.mapping'].sudo()
+        for m in Mapping.search([('connector_id', '=', rule.connector_id.id),
+                                 ('source_field', '=', rule.output_key)]):
+            if m.target_rule_id:
+                out.append('%s (%s)' % (m.target_rule_id.name or '',
+                                        m.target_rule_id.code or ''))
+        Rule = self.env.get('hr.formula.rule')
+        if Rule is not None and 'source_binding' in Rule._fields:
+            for r in Rule.sudo().search([('source_binding', '=', 'rule'),
+                                         ('source_binding_key', '=', rule.output_key)]):
+                label = '%s (%s)' % (r.name or '', r.code or '')
+                if label not in out:
+                    out.append(label)
+        return out
+
+    @api.model
+    def _mapping_producer(self, mapping):
+        """The transformation rule that produces this mapping's source key, if any."""
+        Rule = self.env.get('hr.api.transformation.rule')
+        if Rule is None or not mapping.source_field:
+            return None
+        found = Rule.sudo().search([('connector_id', '=', mapping.connector_id.id),
+                                    ('output_key', '=', mapping.source_field)], limit=1)
+        return found or None
 
     @api.model
     def _detail_rule(self, r):
@@ -617,6 +773,14 @@ class PbIntegrations(models.AbstractModel):
                     {'label': 'Kind', 'value': _sel(R, 'rule_type', r.rule_type)},
                     {'label': 'Reads', 'value': _sel(R, 'source_data_type', r.source_data_type)},
                     {'label': 'Description', 'value': r.description or '', 'wrap': True},
+                ]),
+                # SOURCING S5 — the reverse link. A rule that feeds nothing said
+                # nothing about it before; now it says so in as many words.
+                self._section('Feeds these components', [
+                    {'label': 'Components',
+                     'value': ', '.join(self._rule_consumers(r))
+                              or _("Nothing reads this rule's output."),
+                     'wrap': True},
                 ]),
                 self._section('Aggregate', [
                     {'label': 'Field', 'value': r.aggregate_field or ''},

@@ -313,6 +313,29 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   Add `sudo service odoo-server restart` after any Python change, and remember MF12's companion
   remedy for assets: `delete from ir_attachment where url like '/web/assets/%'` then restart.
 
+- **S18 (S5, design): the mapping canvas's RIGHT column needs every chip added twice — this is S16
+  again, and it will happen a third time.** The sealed-card badge was added beside the left column's
+  `badge(it)` call and rendered on nothing, exactly as the source chip did in S4. `mapping_canvas.xml`
+  has two item blocks (`:92` left, `:193` right) and they do not share a label sub-template. **Any
+  future chip must be added to BOTH, or the right column silently omits it** — and the omission looks
+  like a data problem, not a template one, because every server payload and client helper checks out.
+  The durable fix is a shared label sub-template; not done here because S5 is the last phase and the
+  change would touch every card on both boards.
+
+- **S19 (S5, environment): `pb_integrations` does not import `_`.** `from odoo import api, fields,
+  models` — no translation function, because nothing in the module had ever translated a string. New
+  user-facing text there raises `NameError: name '_' is not defined` at CALL time, not import time, so
+  it deploys clean, upgrades green, and only fails when somebody opens the board. Import `_`
+  explicitly when adding the first translated string to a module.
+
+- **S20 (S5, testing): a board method that takes a connector will silently use the WRONG one.**
+  `api_mapping_data(config_id)` falls back to a default connector when the config has none — and per
+  S3 **no config on any live database has `connector_id` set**, so every test and every board that
+  omits it lands on connector 1. On abm the transformation rules live on connector **3**; the first
+  lineage test therefore reported "0 computed fields, 0 lineage cards" against fully working code.
+  **When a fact is per-connector, name the connector in the test; a plausible empty result is the
+  most expensive kind.**
+
 ## Owner decisions (locked)
 
 *(none yet beyond the seven in the brief — recorded here as they are made)*
@@ -405,4 +428,18 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   server-side cost 49.6 ms for 99 rules. **Zero writes proven**: payobook `hr_formula_rule` checksum
   `eb80d6757a8f4a79a9f57e3b5ba13512` identical before and after, all counts unchanged; abm unchanged
   (bound=0, severed=0, wired=33). Gotchas **S14**, **S15**, **S16**, **S17**.
-- **S5 — Lineage in place, sealed components, cockpit.** NOT STARTED.
+- **S5 — Lineage in place, sealed components, cockpit. DONE + live on abm · acme · payobook ·
+  payobook_template (2026-08-25).** pb_formula_studio **19.0.1.128.0** · pb_hr_payroll_formula
+  **19.0.1.78.0** · pb_integrations **19.0.1.12.0**. Shipped: the "Derived here" post-pass (computed
+  provenance survives a sync; `expected_missing` never set on a computed key — the amber "not sent"
+  lie is gone); lineage as a THIRD payload on the shared popover (summary · Reads · If nothing
+  matches · Feeds · Open rule); calculated components shown and sealed on both boards (45 badged on
+  abm) with the refusal enforced in `clickRight`, on the Enter path through it, AND server-side in
+  both create RPCs; inline "Create a rule for this" with a converter-legal pre-filled key; cockpit
+  "Feeds these components" / "Produced by" / "Lost its component" / a Feeds count column; four health
+  hints on `get_board`; and **S15 fixed under the owner's ruling — the header reserves space for the
+  what-if button and the code is never truncated.**
+  **Measured: 0 overlaps at 1440 AND 1024 across rail, grid and board, and 0 codes truncated** — the
+  pre-existing 3/2 from S4 are now 0/0. **S11 acceptance PASSED: the orphan-rule hint surfaces 14 of
+  payobook's 14 rules** (and correctly 0 on abm, where S2 wired all 8). Zero writes: payobook rule
+  checksum `eb80d6757a8f4a79a9f57e3b5ba13512` unchanged. Gotchas **S18**, **S19**, **S20**.

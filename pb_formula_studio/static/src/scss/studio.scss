@@ -1380,14 +1380,14 @@
        measuring bounding boxes rather than by looking. */
     .g2-hrow th { position: relative; }
     .g2-src { position: absolute; right: 5px; bottom: 4px; display: grid; place-items: center; color: #94A3B8; }
-    /* NOT fixed here, deliberately — see ledger S15. Measuring this header for
-       S4 surfaced a PRE-EXISTING collision: `.g2-code` runs about 5px under
-       `.g2-addsc` (the what-if button, absolute top-right). It cannot be fixed
-       with a max-width on the code, because max-width resolves against the CELL
-       while the code starts after the column letter — the honest fix is to
-       reserve right padding on the header, which changes the layout of every
-       column and risks truncating exactly the <=12-char codes MAPFIX Phase A
-       created. Reported rather than force-fixed inside a phase about chips. */
+    /* S15, fixed under the owner's ruling: RESERVE SPACE, NEVER TRUNCATE THE CODE.
+       MAPFIX Phase A exists to make these codes readable at <=12 characters, so
+       hiding them again behind an ellipsis would undo that programme. If the
+       what-if button and the code cannot both fit, the BUTTON yields — the header
+       reserves room for it on the right and the code keeps the full remaining
+       width, uncapped and un-ellipsised. */
+    .g2-hrow th { padding-right: 34px; }
+    .g2-hrow th .g2-code { max-width: none; overflow: visible; text-overflow: clip; }
     .g2-src svg { width: 11px; height: 11px; }
     .g2-src.s-excel { color: var(--green); }
     .g2-src.s-feed { color: var(--cyan); }

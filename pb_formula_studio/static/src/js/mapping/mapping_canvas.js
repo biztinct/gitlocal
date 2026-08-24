@@ -66,6 +66,8 @@ export class MappingCanvas extends Component {
         groupFilter: { type: String, optional: true },
         // (item) — a card the adapter marked `meta.wirable === false` was clicked.
         onLeftBlocked: { type: Function, optional: true },
+        onRightBlocked: { type: Function, optional: true },
+        onLineage: { type: Function, optional: true },
         // (item) — the card's `meta.action` was pressed.
         onLeftAction: { type: Function, optional: true },
         // () — the column's "clear" verb must be able to clear a filter it does not
@@ -1125,6 +1127,28 @@ export class MappingCanvas extends Component {
                              trigger: ".mc-item-more", label: it.label || "", acts });
     }
     /**
+     * SOURCING S5 — lineage, as a THIRD payload through the same popover.
+     *
+     * Not a fourth implementation: MAPFIX E1 put the second payload through this
+     * state, scrim, anchoring and measure-then-place, and a second implementation
+     * is a second set of placement bugs. The body is taller than an action list,
+     * so MF27's double-rAF placement is doing real work here.
+     */
+    isLineageOpen(it) {
+        return !!(this.ui.menu && this.ui.menu.kind === "lineage"
+                  && it && String(this.ui.menu.id) === String(it.id));
+    }
+    hasLineage(it) { return !!(it && it.lineage); }
+    openLineage(it, ev) {
+        if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+        if (this.isLineageOpen(it)) { this.closeItemMenu(); return; }
+        if (!this.hasLineage(it)) { return; }
+        this._openMenu(ev, { id: it.id, kind: "lineage", side: "left",
+                             trigger: ".mc-item-lineage",
+                             label: it.label || "", lineage: it.lineage });
+    }
+
+    /**
      * ONE popover, two payloads — MAPFIX E1.
      *
      * The value list does not get a second popover implementation. It gets THIS
@@ -1256,6 +1280,19 @@ export class MappingCanvas extends Component {
     }
     clickRight(id) {
         this.ui.focusSide = "right"; this.ui.focusId = id;
+        // SOURCING S5 — the same non-wirable refusal `clickLeft` has had since
+        // COLROLES P3, which the RIGHT column never got. Calculated components now
+        // appear here (sealed rather than filtered away), so without this a wire
+        // could still be drawn onto one: the board would draw it, the server would
+        // refuse it, and the user would be left holding a lie. Enter routes through
+        // this same method (MAPFIX D1 resolves the item then delegates), so the
+        // keyboard path is covered by the one check rather than a second copy.
+        const it = this.props.rightItems.find((x) => String(x.id) === String(id));
+        if (it && !this.isWirable(it)) {
+            this.ui.armedLeft = null;
+            if (this.props.onRightBlocked) { this.props.onRightBlocked(it); }
+            return;
+        }
         if (this.ui.armedLeft != null && this.props.canEdit && this.props.onDraw) {
             this.props.onDraw(this.ui.armedLeft, id);
             this.ui.armedLeft = null;

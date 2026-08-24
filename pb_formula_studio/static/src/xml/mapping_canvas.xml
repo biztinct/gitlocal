@@ -101,6 +101,14 @@
                            Same slot, same grammar as the provenance chip. -->
                       <span t-if="badge(it)" t-attf-class="mc-badge {{ badge(it).tone }}"
                             t-att-title="badge(it).hint" t-esc="badge(it).label"/>
+                      <!-- SOURCING S5 — lineage, in place. Only a card that HAS
+                           lineage (a rule output) grows the affordance, so every
+                           other board is unchanged. -->
+                      <button t-if="hasLineage(it)" class="mc-item-lineage" type="button"
+                              t-att-title="'How ' + it.label + ' is worked out'"
+                              t-on-click="(ev) => this.openLineage(it, ev)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 7.2 15.6 11M8.5 16.8 15.6 13"/></svg>
+                      </button>
                     </div>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                     <!-- what the data looks like. A live sample is a value that
@@ -194,6 +202,11 @@
                       <span t-esc="it.label"/>
                       <span t-if="srcChip(it)" t-attf-class="mc-src s-{{ srcChip(it).kind }}"
                             t-att-title="srcChip(it).hint" t-esc="srcChip(it).label"/>
+                      <!-- SOURCING S5 — the sealed badge. Same trap as S16: this
+                           column has its OWN label block, so a badge rendered only
+                           beside the left column's shows on nothing over here. -->
+                      <span t-if="badge(it)" t-attf-class="mc-badge {{ badge(it).tone }}"
+                            t-att-title="badge(it).hint" t-esc="badge(it).label"/>
                     </div>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                     <!-- MAPFIX D4/D5 — what this destination will ACCEPT. A
@@ -427,7 +440,22 @@
              t-on-keydown="onMenuKeydown"
              t-on-click="(ev) => ev.stopPropagation()">
           <div class="mc-menu__h" t-esc="ui.menu.label"/>
-          <t t-if="ui.menu.kind === 'values'">
+          <t t-if="ui.menu.kind === 'lineage'">
+            <div class="mc-lin">
+              <div t-if="ui.menu.lineage.summary" class="mc-lin__sum" t-esc="ui.menu.lineage.summary"/>
+              <div class="mc-lin__sec">Reads</div>
+              <div t-if="!ui.menu.lineage.reads.length" class="mc-lin__none">Nothing — it is the same for everyone.</div>
+              <div t-foreach="ui.menu.lineage.reads" t-as="p" t-key="p" class="mc-lin__row" t-esc="p"/>
+              <div class="mc-lin__sec">If nothing matches</div>
+              <div class="mc-lin__row prose" t-esc="ui.menu.lineage.fallback"/>
+              <div class="mc-lin__sec">Feeds</div>
+              <div t-if="!ui.menu.lineage.feeds.length" class="mc-lin__none">Nothing yet — no component reads this.</div>
+              <div t-foreach="ui.menu.lineage.feeds" t-as="f" t-key="f" class="mc-lin__row" t-esc="f"/>
+              <button t-if="ui.menu.lineage.rule_id and props.onLineage" class="mc-lin__open" type="button"
+                      t-on-click="() => this.props.onLineage(ui.menu.lineage.rule_id)">Open rule</button>
+            </div>
+          </t>
+          <t t-elif="ui.menu.kind === 'values'">
             <div class="mc-menu__vals" tabindex="-1">
               <div t-foreach="ui.menu.values" t-as="v" t-key="v.key" class="mc-menu__v">
                 <span class="mc-menu__vl" t-esc="v.label"/>
