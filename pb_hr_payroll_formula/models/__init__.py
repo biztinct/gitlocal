@@ -11,6 +11,11 @@ from . import bank_account_util
 # wizards, the Excel connector, the studio, the upgrade migration and the bare
 # `python3` batteries all have to agree on what a column is called.
 from . import component_code
+# SOURCING S1 — the source vocabulary and the single translation of the resolver's
+# internal words into it. Plain Python for the same reason as the three above: the
+# resolver, the payslip recompute and the bare `python3` battery must agree on what
+# "where did this number come from" is allowed to say.
+from . import input_provenance
 from . import formula_config
 from . import formula_config_tests
 from . import formula_rule

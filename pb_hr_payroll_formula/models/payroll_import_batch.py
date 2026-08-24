@@ -15,6 +15,7 @@ from .bank_account_util import (
     sanitize_acc_number,
     sanitize_bank_text,
 )
+from . import input_provenance
 from .column_role_classifier import (
     EMPLOYEE_CODE_MARKERS,
     EMPLOYEE_CODE_HEADER_CANDIDATES,
@@ -2134,10 +2135,12 @@ class HrPayrollImportBatch(models.Model):
         raw_data = line.get_raw_data()
 
         # Transform raw data using field mappings
+        input_sources = {}
         input_values = self._transform_data_to_formula_inputs(
             raw_data,
             contract=contract,
             employee=employee,
+            provenance=input_sources,
         )
 
         # Create payslip
@@ -2154,6 +2157,10 @@ class HrPayrollImportBatch(models.Model):
             'calculation_method': 'formula',
             'formula_config_id': self.formula_config_id.id,
             'formula_input_values': json.dumps(input_values),
+            # SOURCING S1 — written in the same create as its sibling. Two writes
+            # would leave a window where a payslip has values and no provenance,
+            # which is the state S4 must be able to read as "predates the feature".
+            'formula_input_sources': json.dumps(input_sources),
         }
         if 'journal_id' in self.env['hr.payslip']._fields:
             payslip_vals['journal_id'] = self._get_payroll_journal().id
@@ -2495,9 +2502,28 @@ class HrPayrollImportBatch(models.Model):
             self.formula_config_id.structure_id.rule_ids = [(4, new_rule.id)]
         return new_rule
 
-    def _transform_data_to_formula_inputs(self, raw_data, contract=None, employee=None):
-        """Transform raw Excel data to formula input values using field mappings"""
+    def _transform_data_to_formula_inputs(self, raw_data, contract=None, employee=None,
+                                          provenance=None):
+        """Transform raw Excel data to formula input values using field mappings
+
+        SOURCING S1 — ``provenance`` is an optional caller-supplied dict. When given,
+        it is filled with one `input_provenance.entry` per code in the returned
+        `input_values`, recording WHERE that number came from and WHY that source
+        won. It is an OUT-PARAMETER and the return value is unchanged, so every
+        existing caller keeps today's signature, today's return and today's numbers.
+
+        This function already knew all of it. `resolved_source` has been computed on
+        every branch for as long as the branches have existed, and
+        `lookup_raw_value_with_key` has always handed back the header that matched —
+        both were logged for two hardcoded component names and then dropped. Nothing
+        new is computed here; something that was already computed stops being thrown
+        away.
+        """
         input_values = {}
+        # `provenance is None` must stay distinguishable from an empty dict: the
+        # former means "the caller does not want this", the latter "nothing resolved
+        # yet". Writing into a local and copying out at the end would lose that.
+        prov = provenance if provenance is not None else None
         config = self.formula_config_id
         employee = employee or (contract.employee_id if contract else None)
         employee_code_markers = EMPLOYEE_CODE_MARKERS
@@ -2703,6 +2729,9 @@ class HrPayrollImportBatch(models.Model):
                         input_values[mapping.target_rule_id.code] = normalize_input_value(
                             mapping.target_rule_id, transformed
                         )
+                        if prov is not None:
+                            prov[mapping.target_rule_id.code] = input_provenance.entry(
+                                'feed', key=mapping.source_field, via='connector_mapping')
 
         # ------------------------------------------------------------------
         # COLROLES P3 — people data stops pretending to be an input.
@@ -2803,9 +2832,12 @@ class HrPayrollImportBatch(models.Model):
                     value, candidate_key = lookup_raw_value_with_key(candidates)
                     if candidate_key is not None:
                         explicit_header_found = True
-                        if is_collaborate:
-                            matched_key = candidate_key
-                            matched_group = 'candidates'
+                        # SOURCING S1 — capture unconditionally. The key was already
+                        # returned on every path; it was merely discarded unless the
+                        # component happened to be the one hardcoded below. Capturing
+                        # it cannot affect `value`, which is the neutrality argument.
+                        matched_key = candidate_key
+                        matched_group = 'candidates'
                 if value is None and column_candidates and not explicit_header_found:
                     rule_code_key = self._normalize_header_key(rule.code) if rule.code else ''
                     component_amount = contract_component_amounts.get(rule_code_key)
@@ -2816,7 +2848,7 @@ class HrPayrollImportBatch(models.Model):
                     )
                     if not skip_column_fallback:
                         value, column_key = lookup_raw_value_with_key(column_candidates)
-                        if is_collaborate and column_key is not None:
+                        if column_key is not None:
                             matched_key = column_key
                             matched_group = 'column_candidates'
 
@@ -2843,6 +2875,31 @@ class HrPayrollImportBatch(models.Model):
                         else:
                             resolved_source = 'default'
                             input_values[rule.code] = rule.default_value
+
+                # SOURCING S1 — one entry, built from what the branches above already
+                # decided. `via` is finer-grained than `resolved_source`: a header
+                # match and a column-letter match are both 'raw', and telling them
+                # apart is exactly the difference between "you configured this" and
+                # "the spreadsheet happened to line up".
+                if prov is not None:
+                    if resolved_source == 'raw':
+                        via = ('column_letter' if matched_group == 'column_candidates'
+                               else 'header')
+                    else:
+                        via = {
+                            'mapped': 'employee_mapping',
+                            'contract_component': 'contract',
+                            'contract_component_default': 'contract_default',
+                            'default': 'default',
+                        }.get(resolved_source, 'default')
+                    prov[rule.code] = input_provenance.entry(
+                        # `origin` is 'excel' for every batch until S3 gives a run a
+                        # second source; the argument is passed explicitly so S3 adds
+                        # a caller rather than a signature.
+                        input_provenance.provenance_token(resolved_source, origin='excel'),
+                        key=matched_key if resolved_source == 'raw' else None,
+                        via=via,
+                    )
 
                 if self._normalize_header_key(rule.code) == 'laborcontractsalary':
                     _logger.info(
@@ -2885,20 +2942,56 @@ class HrPayrollImportBatch(models.Model):
         # Add constant values
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):
             input_values[rule.code] = rule.constant_value
+            if prov is not None:
+                prov[rule.code] = input_provenance.entry('constant', via='constant')
+
+        # ------------------------------------------------------------------
+        # SOURCING S1 — adjustments are recorded, not hidden.
+        #
+        # Proration, retro and mid-cycle carryover MUTATE `input_values` after every
+        # component has been resolved. A chip reading "Spreadsheet · 'OT Hours'" for
+        # a number proration later rewrote would be a lie of exactly the kind this
+        # programme exists to remove — so each adjustment is diffed and the codes it
+        # touched are stamped. The entry still says where the value came FROM; `adj`
+        # says what happened to it afterwards. A code an adjustment CREATED had no
+        # source at all, and says so.
+        # ------------------------------------------------------------------
+        def _run_adjustment(name, fn):
+            if prov is None:
+                fn()
+                return
+            before = dict(input_values)
+            fn()
+            for code, new_value in input_values.items():
+                if code not in before:
+                    # The adjustment INVENTED this code — it has no import source at
+                    # all, and `via` names the adjustment that produced it.
+                    prov[code] = input_provenance.entry(
+                        'calculated', via=name, adj=[name])
+                elif before[code] != new_value:
+                    existing = prov.get(code) or input_provenance.entry('none')
+                    prov[code] = input_provenance.entry(
+                        existing['src'], key=existing.get('key'), via=existing['via'],
+                        fell_back=existing.get('fell_back', False),
+                        ignored=existing.get('ignored'),
+                        adj=list(existing.get('adj') or []) + [name],
+                    )
 
         if config.use_proration and employee:
-            self._apply_proration(
+            _run_adjustment('proration', lambda: self._apply_proration(
                 input_values,
                 employee,
                 contract,
                 raw_input_codes=raw_input_codes,
-            )
+            ))
 
         if config.use_auto_retro and employee:
-            self._apply_retro_adjustments(input_values, employee, contract)
+            _run_adjustment('retro', lambda: self._apply_retro_adjustments(
+                input_values, employee, contract))
 
         if config.cycle_type == 'end_cycle':
-            self._apply_mid_cycle_carryover(input_values, employee)
+            _run_adjustment('carryover', lambda: self._apply_mid_cycle_carryover(
+                input_values, employee))
 
         return input_values
 

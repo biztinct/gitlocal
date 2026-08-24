@@ -12,7 +12,7 @@ leak into the workforce module; the coupling lives here.
 One OT source per config (C18.3): this bridge feeds OT from APPROVED requests; it
 never also reads the legacy Zoho OT worked-day lines.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

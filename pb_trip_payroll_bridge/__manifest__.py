@@ -13,7 +13,7 @@ Channel exclusivity (safety rail 1): PERDIEM counts a trip's per-diem only when
 its policy channel is 'payroll' — a trip paid via the expense channel contributes
 0, so per-diem is never paid through both channels.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
