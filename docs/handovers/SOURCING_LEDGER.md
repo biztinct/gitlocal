@@ -221,6 +221,37 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   tree, not just the one you are editing — and make the test exercise the real entry point, because a
   unit test of the inner function passes happily while the outer one is broken.**
 
+- **S9 (S2, design): an explicit connector mapping BEATS a name-matched header — the guard that looks
+  like it says otherwise is in the wrong scope to.** The S2 spec claimed the
+  `if rule.code not in input_values` guard (`payroll_import_batch.py:2801`) means "a mapping can only
+  fill a gap, never overwrite a header". Backwards: the mapping block (`:2737`) runs BEFORE the input
+  loop and assigns unconditionally, so the loop's guard SKIPS a code the mapping already filled. The
+  precedence is mapping > header, which is the correct way round (it is the owner's "per-component
+  binding decides") but was **unobservable for as long as the gate was shut**, so nobody had ever seen
+  it. Caught by a live gate test asserting the opposite and failing. Two consequences: the precedence
+  is now stated in the code, and because a mapping can DISPLACE a value that genuinely arrived, the
+  displaced value is recorded as `ignored` in provenance rather than dropped — the owner's rule is
+  that the unused side is reported. **When a gate has never opened, the behaviour behind it is a
+  guess until you run it; assert the precedence you believe in and let the test disagree.**
+
+- **S10 (S2, environment): reconnecting a `renamed` mapping legitimately CHANGES `target_rule_code`,
+  and that is the remembering compute working, not failing.** After the repair, 9 of abm's 15 rows
+  show a changed code (`DATEOFJOINING` → `DATEOFJOININ`, `NUMBEROFDEPENDENTS` → `NOOFDEPENDEN`, …) —
+  exactly the 9 whose verdict was `renamed`. The memory is only authoritative while there is no FK;
+  the moment one exists the field tracks the live code again, which is the whole point. The 6 `exact`
+  rows are unchanged because their remembered code already equalled the live one. **A before/after
+  diff of this column is expected to be non-empty after a repair, and empty after a mere recompute.**
+
+- **S11 (S2, finding): payobook's 14 transformation rules feed NOTHING, and 4 of them cannot work at
+  all.** After repairing all 8 severed mappings there, every one of its rule `output_key`s still has
+  zero consumers — its severed mappings were vendor identity fields (`employee_id`, `full_name`,
+  `email`, …), not rule outputs. Separately, four keys violate the converter contract with
+  underscores: `NUM_TAX_DEPENDENTS`, `TOTAL_LEAVE_DAYS`, `TENURE_YEARS`, `NET_SALARY` — an underscored
+  key survives raw into the eval, raises `NameError` and silently reads 0. Left exactly as they are
+  per owner ruling O-5 (the constraint governs create/write, never load), and reported here so the
+  S5 health hint "rule output consumed by nobody" has a known first customer. abm is the opposite:
+  all 8 of its rule outputs now have exactly one live consumer.
+
 ## Owner decisions (locked)
 
 *(none yet beyond the seven in the brief — recorded here as they are made)*
@@ -265,7 +296,24 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   sheet-prefixed headers such as `Bảng lương tạm ứng kỳ 1|Họ và tên` → `HVTN`) — the fact the product
   could not previously state, discarded 709 times per run. Gotchas: **S7**, **S8**. Databases left as
   found (`with_sources=0` after rollback; severed still 15 on abm / 8 on payobook).
-- **S2 — Severed mappings, lineage data, widened gate.** NOT STARTED.
+- **S2 — Severed mappings, lineage data, widened gate. DONE + live on abm · acme · payobook ·
+  payobook_template (2026-08-24).** pb_hr_payroll_formula **19.0.1.75.0** · pb_integrations
+  **19.0.1.11.0**. Shipped: explicit `ondelete='set null'`; `target_rule_code` and
+  `target_column_letter` as REMEMBERING stored computes; stored `is_severed`; `_severed_verdicts()`
+  (writes nothing) + `action_repair_severed()` with the four-tier ladder; `legacy_component_code` in
+  `component_code.py`; uncapped `_consumed_field_names()` + stored `consumed_field_paths`;
+  `@api.constrains('output_key')` (create/write only, O-5) with `OUTPUT_KEY_RE` as the single
+  definition the composer imports; the `NUM_DEPENDENTS` placeholder and help corrected; the widened
+  connector gate.
+  **Repair: 23 of 23 applied, 0 still severed** — abm 15 (6 `exact`, 9 `renamed`, scope `company`;
+  all 8 rule outputs now have exactly one live consumer), payobook 8 (7 `exact`, 1 `renamed`, scope
+  **`cross_company`** — connector in company 1, components in company 2, codes matching exactly).
+  Pre-repair snapshots at `/tmp/s2_pre_{abm,payobook}.txt` on the server.
+  **A full upgrade-time recompute of the new computes was a byte-identical no-op on both databases**
+  (the ordering proof). **Neutrality: the post-repair payobook recompute is byte-identical to the
+  pre-S1 baseline** (`b1dcd785739e1c0f49d304ee5428229a`) — repairing the wires changed no payslip
+  number, because all 6 payobook batches are `source_type='excel'` and the gate does not open for
+  them. Gotchas **S9**, **S10**, **S11**.
 - **S3 — One run, two sources.** NOT STARTED.
 - **S4 — Every screen says where a value comes from.** NOT STARTED.
 - **S5 — Lineage in place, sealed components, cockpit.** NOT STARTED.

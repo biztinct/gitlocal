@@ -2719,19 +2719,57 @@ class HrPayrollImportBatch(models.Model):
 
         # First, try using connector field mappings if available (F114/D114.2:
         # only confirmed 'active' mappings — never 'suggested' template guesses)
-        if self.source_type == 'connector' and config.connector_id:
+        # SOURCING S2 — the gate opens for the data-store path too.
+        #
+        # It was written for `source_type == 'connector'`, but there is no
+        # `action_load_from_connector` in this codebase: the cockpit routes a
+        # connector batch to `action_load_from_data_store`, which refuses anything
+        # that is not `api_data_store` (:521-522). So the branch below has never
+        # executed in production and every wire drawn on the API mapping board was
+        # decorative. The connector is reachable via `config.connector_id` on both
+        # paths, which is what makes widening it correct rather than merely possible.
+        #
+        # Safe by data as well as by argument: there is no `api_data_store` batch on
+        # any of the four databases (all 6 live batches are `excel`), so this changes
+        # nothing that exists today.
+        #
+        # PRECEDENCE, stated exactly, because it is the opposite of what the guard
+        # further down looks like it says. This block runs BEFORE the input loop and
+        # assigns unconditionally; the loop's `if rule.code not in input_values`
+        # then SKIPS a code a mapping already filled. So **an explicit mapping beats
+        # a name-matched header**, and the header fills the gaps — not the reverse.
+        # That is the right way round (it is the owner's "per-component binding
+        # decides"), but it was never observable before this gate opened, so it is
+        # written down here rather than left to be re-derived.
+        #
+        # Because a mapping can now displace a value that genuinely arrived, the
+        # displaced one is RECORDED (`ignored`) rather than dropped — the owner's
+        # rule is that the unused side is reported, never silently discarded.
+        if self.source_type in ('connector', 'api_data_store') and config.connector_id:
             connector = config.connector_id.sudo()
             for mapping in connector._sync_mapping_ids():
                 if mapping.target_rule_id and mapping.source_field:
                     source_value = raw_data.get(mapping.source_field)
                     if source_value is not None:
                         transformed = mapping.transform_value(source_value, raw_data)
-                        input_values[mapping.target_rule_id.code] = normalize_input_value(
-                            mapping.target_rule_id, transformed
+                        target = mapping.target_rule_id
+                        input_values[target.code] = normalize_input_value(
+                            target, transformed
                         )
                         if prov is not None:
-                            prov[mapping.target_rule_id.code] = input_provenance.entry(
-                                'feed', key=mapping.source_field, via='connector_mapping')
+                            # Did a header for this same component also arrive? If so
+                            # the mapping has just displaced it, and the displaced
+                            # value is reported rather than dropped.
+                            ignored = None
+                            own_keys = [k for k in (target.name, target.code) if k]
+                            if own_keys:
+                                other_value, other_key = lookup_raw_value_with_key(own_keys)
+                                if other_value is not None and other_key != mapping.source_field:
+                                    ignored = input_provenance.ignored_side(
+                                        'feed', other_key, other_value)
+                            prov[target.code] = input_provenance.entry(
+                                'feed', key=mapping.source_field,
+                                via='connector_mapping', ignored=ignored)
 
         # ------------------------------------------------------------------
         # COLROLES P3 — people data stops pretending to be an input.
