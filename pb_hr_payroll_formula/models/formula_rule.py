@@ -159,6 +159,117 @@ class HrFormulaRule(models.Model):
              "Used when data_source is 'integration' to identify which field to fetch."
     )
 
+    # ==================================================================
+    # SOURCING S3 — the binding: which source feeds this component, and under
+    # which key. The explicit answer to a question that until now could only be
+    # INFERRED from an overloaded Char that carried spreadsheet headers, feed
+    # keys, sheet-prefixed names and column letters indiscriminately.
+    #
+    # TWO CHARS, NEVER A FOREIGN KEY. A spreadsheet header and a feed key have no
+    # record to point at; and a `rule` binding pointed at
+    # `hr.api.transformation.rule` would rebuild the exact failure S2 spent a
+    # phase repairing — `ondelete='set null'` forgetting 23 wires in silence. A
+    # rule's durable identity is already its `output_key`. Storing the text cannot
+    # be nulled by a cascade, so "the thing I name is gone" becomes a computed
+    # OBSERVATION (`binding_dangling`) rather than data loss.
+    #
+    # Empty means "match by name, as before" — the unbound ladder is untouched and
+    # is still how every component in every existing database resolves.
+    # ==================================================================
+    source_binding = fields.Selection([
+        ('excel', 'Spreadsheet column'),
+        ('feed', 'Connected system key'),
+        ('rule', 'Rule output'),
+    ], string='Source',
+       help="Where this component's value is taken from when a run imports it. "
+            "Leave it empty to let the system match the component by name, "
+            "which is what happens today.")
+
+    source_binding_key = fields.Char(
+        string='Source key',
+        help="The column header, feed key or rule output name this component reads.")
+
+    source_binding_origin = fields.Selection([
+        ('user', 'Chosen by hand'),
+        ('board', 'Drawn on a mapping board'),
+        ('import', 'Set during import'),
+        ('migration', 'Inferred on upgrade'),
+    ], string='How the source was set',
+       help="Whether a person chose this source or the system inferred it.")
+
+    source_binding_date = fields.Datetime(string='Source set on', readonly=True)
+    source_binding_uid = fields.Many2one(
+        'res.users', string='Source set by', readonly=True, ondelete='set null')
+
+    binding_dangling = fields.Boolean(
+        compute='_compute_binding_dangling',
+        string='Source no longer exists',
+        help="This component names a source that nothing currently provides.")
+
+    @api.depends('source_binding', 'source_binding_key', 'config_id.connector_id')
+    def _compute_binding_dangling(self):
+        """Does anything currently answer to the name this component is bound to?
+
+        Deliberately NOT stored: it is a statement about the world outside this
+        record (a rule that may be archived tomorrow, a catalogue that changes on
+        every sync), and a stored copy would be wrong between syncs — which is the
+        whole disease this programme is treating.
+
+        `excel` is advisory only. A spreadsheet column exists when a spreadsheet is
+        uploaded; calling a binding "dangling" because no file happens to be loaded
+        right now would be a false alarm on every fresh scheme.
+        """
+        Rule = self.env.get('hr.api.transformation.rule')
+        for rule in self:
+            kind, key = rule.source_binding, (rule.source_binding_key or '').strip()
+            if not kind or not key or kind == 'excel':
+                rule.binding_dangling = False
+                continue
+            connector = rule.config_id.connector_id
+            if not connector:
+                rule.binding_dangling = False
+                continue
+            if kind == 'rule':
+                rule.binding_dangling = not (Rule is not None and Rule.sudo().search_count([
+                    ('connector_id', '=', connector.id), ('output_key', '=', key)]))
+            else:
+                # `get_available_source_fields` is the catalogue the mapping board
+                # itself draws from, so a binding is judged against exactly what a
+                # user would have been offered. An EMPTY catalogue means the
+                # connector has never synced — that is "unknown", not "dangling",
+                # and must not raise a false alarm.
+                try:
+                    paths = {f.get('path') for f in (
+                        self.env['hr.integration.field.mapping'].sudo()
+                        .get_available_source_fields(connector.id) or [])}
+                except Exception:       # noqa: BLE001 — a chip must never break a form
+                    paths = set()
+                rule.binding_dangling = bool(paths) and key not in paths
+
+    @api.constrains('source_binding', 'source_binding_key', 'column_type')
+    def _check_source_binding(self):
+        for rule in self:
+            if rule.source_binding and not (rule.source_binding_key or '').strip():
+                raise ValidationError(_(
+                    "Choose which key “%s” reads, or clear its source.")
+                    % (rule.code or rule.name or ''))
+            if rule.source_binding and rule.column_type != 'input':
+                raise ValidationError(_(
+                    "“%s” is calculated — it needs no source.")
+                    % (rule.code or rule.name or ''))
+
+    def set_source_binding(self, kind, key, origin='user'):
+        """The one way a binding is written, so the stamp cannot be forgotten."""
+        for rule in self:
+            rule.write({
+                'source_binding': kind or False,
+                'source_binding_key': (key or '').strip() or False,
+                'source_binding_origin': origin if kind else False,
+                'source_binding_date': fields.Datetime.now() if kind else False,
+                'source_binding_uid': self.env.user.id if kind else False,
+            })
+        return True
+
     source_sheet_name = fields.Char(
         string='Source Sheet',
         help="Name of the worksheet this component was imported from (for multi-sheet Excel files)"

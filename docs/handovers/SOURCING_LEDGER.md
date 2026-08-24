@@ -252,6 +252,27 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   S5 health hint "rule output consumed by nobody" has a known first customer. abm is the opposite:
   all 8 of its rule outputs now have exactly one live consumer.
 
+- **S12 (S3, finding): `data_source_field` is EMPTY on every rule on every live database.** The Char
+  that the studio's Import-columns tab writes (`import_mapping_create` →
+  `rule.write({'data_source_field': col})`) has never been used on abm or payobook: 0 of 54 abm input
+  rules and 0 of 315 payobook input rules carry a value. Every component on both databases resolves
+  purely by header/column-letter matching — which is exactly what S1 measured from the other side
+  (376 `header` + 333 `column_letter` = the 709 spreadsheet-sourced components). Consequences: the S3
+  migration correctly bound NOTHING (it logged `no candidate rules` on all four); the "legacy
+  highest-priority candidate" is theoretical rather than load-bearing on live data; and **the binding
+  introduced by S3 is the first explicit statement of source that these databases have ever held.**
+  It also means the neutrality gate is doubly satisfied — with nothing bound, the bound branch is
+  unreachable, which is what the counter measured.
+
+- **S13 (S3, design): when a binding falls back, search the other side by the BOUND KEY first, not
+  only by the component's own name.** The first cut searched the other blob with the component's
+  natural candidates (name, code, column letter) and missed a feed carrying the value under the bound
+  key itself — `BONUSPAY` bound to the spreadsheet column `Bonus Col`, empty in the file, present in
+  the feed as `Bonus Col`, was reported as `binding_empty` while 750 sat one key away. The same column
+  is very often called the same thing in both sources, so the bound key is the single most likely name
+  on EITHER side. Now `[bound_key] + candidates + column_candidates`. **A fallback that cannot find
+  the obvious is worse than no fallback: it reports "nothing arrived" with authority.**
+
 ## Owner decisions (locked)
 
 *(none yet beyond the seven in the brief — recorded here as they are made)*
@@ -314,6 +335,20 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   pre-S1 baseline** (`b1dcd785739e1c0f49d304ee5428229a`) — repairing the wires changed no payslip
   number, because all 6 payobook batches are `source_type='excel'` and the gate does not open for
   them. Gotchas **S9**, **S10**, **S11**.
-- **S3 — One run, two sources.** NOT STARTED.
+- **S3 — One run, two sources. DONE + live on abm · acme · payobook · payobook_template
+  (2026-08-25).** pb_hr_payroll_formula **19.0.1.77.0**. Shipped: `source_binding` +
+  `source_binding_key` + origin/date/uid stamp and `set_source_binding()` on `hr.formula.rule`
+  (two Chars, never an FK); non-stored `binding_dangling`; a constraint refusing a half-set binding
+  and a binding on a calculated component; `raw_data_topup_json` + `source_origin` + `get_topup_data()`
+  on the import line; `lookup_in_with_key(data, candidates)` (the existing ladder, parameterised);
+  the bound branch with binding-wins / fallback+`fell_back` / `ignored` (reusing S2's
+  `ignored_side`); `_identity_from_file_row` / `_identity_from_store_row` as pure moves;
+  `_merge_topup_rows` + `action_top_up_from_data_store` (merges, never unlinks);
+  the `19.0.1.77.0` provable-only back-fill migration.
+  **Neutrality, both forms: byte-identical to the pre-S1 baseline
+  (`b1dcd785739e1c0f49d304ee5428229a`) AND `_sourcing_bound_branch_entered == 0`** — the new path was
+  never reached, not merely in agreement. 15/15 tests, including a dual-source run on
+  payobook_template where the feed binding won over a spreadsheet value and recorded it as `ignored`.
+  Gotchas **S12**, **S13**.
 - **S4 — Every screen says where a value comes from.** NOT STARTED.
 - **S5 — Lineage in place, sealed components, cockpit.** NOT STARTED.
