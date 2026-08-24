@@ -6,6 +6,8 @@ from odoo.exceptions import UserError, ValidationError
 import json
 import logging
 
+from . import input_provenance
+
 _logger = logging.getLogger(__name__)
 
 
@@ -42,6 +44,21 @@ class HrPayslipFormula(models.Model):
     formula_input_values = fields.Text(
         string='Input Values (JSON)',
         help="Input values used for formula computation"
+    )
+
+    # SOURCING S1 — the sibling of the blob above: for each input code, WHERE its
+    # value came from on the run that produced this payslip. Text-holding-JSON and
+    # not `fields.Json`, deliberately: it is always read together with
+    # `formula_input_values`, which is Text, and two fields that are always read
+    # together must not need two different accessors.
+    #
+    # Absent or empty means "this payslip predates the feature" — which is a
+    # different statement from "this component has no source", and no reader may
+    # collapse the two.
+    formula_input_sources = fields.Text(
+        string='Input Sources (JSON)',
+        readonly=True,
+        help="Where each input value came from on the run that produced this payslip."
     )
 
     formula_computed_values = fields.Text(
@@ -104,8 +121,13 @@ class HrPayslipFormula(models.Model):
                 ) % config.name)
 
             # Get input values
-            input_values = payslip._get_formula_input_values(config)
+            # SOURCING S1 — provenance is filled in the same pass and written beside
+            # the values, never derived afterwards: re-deriving would have to guess
+            # which branch won, which is the whole class of bug this replaces.
+            input_sources = {}
+            input_values = payslip._get_formula_input_values(config, provenance=input_sources)
             payslip.formula_input_values = json.dumps(input_values, indent=2)
+            payslip.formula_input_sources = json.dumps(input_sources, indent=2)
 
             # Get rules in order (display) but compute using dependency sorting
             rules = config.rule_ids.sorted(key=lambda r: r.sequence)
@@ -315,12 +337,21 @@ class HrPayslipFormula(models.Model):
         # 5. Any active config for this company.
         return Config.search(company_domain + [('state', '=', 'active')], limit=1)
 
-    def _get_formula_input_values(self, config):
+    def _get_formula_input_values(self, config, provenance=None):
         """
         Get input values for formula computation from various sources:
         - Contract data (wage, allowances)
         - Worked days
         - External integration (Zoho, etc.)
+
+        SOURCING S1: ``provenance`` is an optional caller-supplied dict, filled with
+        one `input_provenance.entry` per code. It is an OUT-PARAMETER rather than a
+        second return value so that every existing caller — and any out-of-tree one
+        — keeps today's signature and today's return exactly.
+
+        This is the batch-free producer: the path taken when a payslip has no import
+        line, so there is no spreadsheet and no feed to attribute anything to. Its
+        sources are the contract, the worked-days lines, or nothing at all.
         """
         self.ensure_one()
         values = {}
@@ -330,6 +361,7 @@ class HrPayslipFormula(models.Model):
 
         for rule in input_rules:
             value = rule.default_value
+            src, key, via = 'none', None, 'default'
 
             # Try to get from contract
             if self.contract_id:
@@ -340,7 +372,13 @@ class HrPayslipFormula(models.Model):
                 }
                 contract_field = contract_mapping.get(rule.code.upper())
                 if contract_field and hasattr(self.contract_id, contract_field):
-                    value = getattr(self.contract_id, contract_field) or value
+                    # Split out of the original one-liner so provenance can see WHICH
+                    # branch of the `or` won. The resulting `value` is identical:
+                    # `raw or value` is exactly what was here before.
+                    raw_contract = getattr(self.contract_id, contract_field)
+                    if raw_contract:
+                        src, key, via = 'employee_field', contract_field, 'contract_field'
+                    value = raw_contract or value
 
             # Try to get from worked days
             if rule.code.startswith('WD_') or rule.code.startswith('HOURS'):
@@ -353,6 +391,7 @@ class HrPayslipFormula(models.Model):
                         value = worked_day.number_of_hours
                     else:
                         value = worked_day.number_of_days
+                    src, key, via = 'employee_field', wd_code, 'worked_days'
 
             # Try to get from integration connector (only confirmed 'active'
             # mappings are load-bearing — F114/D114.2)
@@ -366,7 +405,14 @@ class HrPayslipFormula(models.Model):
                     pass
 
             values[rule.code] = value
+            if provenance is not None:
+                provenance[rule.code] = input_provenance.entry(src, key=key, via=via)
 
+        # NOTE constants are deliberately NOT added here. On this path they never
+        # enter `input_values` (the rule evaluator reads `constant_value` directly),
+        # and the invariant this blob is verified against is that its key set EQUALS
+        # `input_values`' key set — an invariant worth more than the extra entry,
+        # because S4 derives "Fixed value" from the component's own type anyway.
         return values
 
     def _create_payslip_lines_from_formulas(self, rules, computed_values):
@@ -466,12 +512,15 @@ class HrPayslipFormula(models.Model):
             input_values = None
             if import_line and import_line.batch_id:
                 batch = import_line.batch_id
+                input_sources = {}
                 input_values = batch._transform_data_to_formula_inputs(
                     import_line.get_raw_data(),
                     contract=payslip.contract_id,
                     employee=payslip.employee_id,
+                    provenance=input_sources,
                 )
                 payslip.formula_input_values = json.dumps(input_values)
+                payslip.formula_input_sources = json.dumps(input_sources)
                 payslip.line_ids.unlink()
                 batch._compute_and_create_payslip_lines(payslip, input_values)
             else:

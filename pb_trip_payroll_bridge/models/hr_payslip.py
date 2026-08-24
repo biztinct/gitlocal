@@ -1,6 +1,7 @@
 # Part of Payobook. See LICENSE file for full copyright and licensing details.
 
 from odoo import models
+from odoo.addons.pb_hr_payroll_formula.models import input_provenance
 
 # Trip input codes. Underscore-free and pairwise non-substring (C5 / C18.2
 # registry). TRIPDAYS = in-period approved trip-day count; PERDIEM = Σ rate ×
@@ -11,15 +12,20 @@ TRIP_INPUT_CODES = {'TRIPDAYS', 'PERDIEM'}
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
-    def _get_formula_input_values(self, config):
+    def _get_formula_input_values(self, config, provenance=None):
         """Inject approved business-trip data as formula inputs.
 
         Same mechanism as the OT bridge (C18.2): override, super(), and add ONLY
         the trip codes this config declares as input rules. Trip data comes
         SOLELY from APPROVED trips; PERDIEM honours channel exclusivity (rail 1)
         — a trip whose policy channel is 'expense' contributes 0 to PERDIEM.
+
+        SOURCING S1 — ``provenance`` is accepted and PROPAGATED, for the reason
+        spelled out in the OT bridge: an override that drops the keyword makes the
+        base producer unreachable with it and leaves the codes it adds with no
+        recorded origin.
         """
-        values = super()._get_formula_input_values(config)
+        values = super()._get_formula_input_values(config, provenance=provenance)
         self.ensure_one()
 
         wanted = {r.code for r in config.rule_ids
@@ -56,7 +62,13 @@ class HrPayslip(models.Model):
 
         if 'TRIPDAYS' in wanted:
             values['TRIPDAYS'] = trip_days
+            if provenance is not None:
+                provenance['TRIPDAYS'] = input_provenance.entry(
+                    'employee_field', key='trip_days', via='business_trip')
         if 'PERDIEM' in wanted:
             values['PERDIEM'] = per_diem
+            if provenance is not None:
+                provenance['PERDIEM'] = input_provenance.entry(
+                    'employee_field', key='per_diem_rate', via='business_trip')
 
         return values

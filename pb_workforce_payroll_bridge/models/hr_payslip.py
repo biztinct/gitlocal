@@ -1,6 +1,7 @@
 # Part of Payobook. See LICENSE file for full copyright and licensing details.
 
 from odoo import models
+from odoo.addons.pb_hr_payroll_formula.models import input_provenance
 
 # OT input code → hr.overtime.request.overtime_type. Codes are underscore-free
 # and pairwise non-substring (C5 / C18.2 registry). 'extended' is intentionally
@@ -24,7 +25,7 @@ BONUS_INPUT_CODE = 'BONHRS'
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
-    def _get_formula_input_values(self, config):
+    def _get_formula_input_values(self, config, provenance=None):
         """Inject approved overtime hours as formula inputs.
 
         The base worked-days branch strips only the WD_/HOURS_ prefixes
@@ -32,8 +33,15 @@ class HrPayslip(models.Model):
         never ride it — we override, call super(), and add ONLY the OT codes
         that this config actually declares as input rules (C18.2). OT hours come
         SOLELY from APPROVED requests (C18.3 — one OT source; never the Zoho path).
+
+        SOURCING S1 — ``provenance`` is accepted and PROPAGATED. This override sits
+        above the base producer in the MRO, so a signature that did not take the
+        keyword would make the base one unreachable with it: every code this bridge
+        adds would be a value with no recorded origin, and the caller would get a
+        TypeError before it ever found out. Any future override of this method must
+        take and forward the keyword for the same reason.
         """
-        values = super()._get_formula_input_values(config)
+        values = super()._get_formula_input_values(config, provenance=provenance)
         self.ensure_one()
 
         input_codes = {r.code for r in config.rule_ids if r.column_type == 'input'}
@@ -56,6 +64,9 @@ class HrPayslip(models.Model):
                 ('overtime_type', '=', OT_INPUT_MAP[code]),
             ])
             values[code] = sum(r.approved_hours or 0.0 for r in recs)
+            if provenance is not None:
+                provenance[code] = input_provenance.entry(
+                    'employee_field', key=OT_INPUT_MAP[code], via='overtime_request')
 
         # BONHRS — the Bonus-Hours overflow stream (all types), approved only.
         # Same sudo posture + period windowing as OTHRS* (rail 2: this is a
@@ -68,5 +79,8 @@ class HrPayslip(models.Model):
                 ('state', '=', 'approved'),
             ])
             values[BONUS_INPUT_CODE] = sum(r.bonus_hours or 0.0 for r in recs)
+            if provenance is not None:
+                provenance[BONUS_INPUT_CODE] = input_provenance.entry(
+                    'employee_field', key='bonus_hours', via='overtime_request')
 
         return values
