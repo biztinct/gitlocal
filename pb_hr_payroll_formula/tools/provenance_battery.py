@@ -118,6 +118,64 @@ try:
 except (TypeError, ValueError) as exc:      # noqa: BLE001 — that is the assertion
     FAILURES.append("entries are not JSON-serialisable: %s" % exc)
 
+# ---------------------------------------------------------------- test S2.3
+# The pre-MAPFIX generator, inverted. These are the fifteen real abm labels; the
+# remembered codes are what is actually stored on the live mapping rows.
+# `component_code` uses a package-relative import, so a bare interpreter cannot
+# load it by path alone. Register a synthetic package and load both modules into
+# it — the same shim shape `import_resolution_battery` uses, and the reason MF7
+# exists: a gate nobody can execute is not a gate.
+def _load_component_code():
+    import importlib.util
+    import types
+    models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'models')
+    pkg = types.ModuleType('pbcc')
+    pkg.__path__ = [models_dir]
+    sys.modules['pbcc'] = pkg
+    for name in ('column_role_classifier', 'component_code'):
+        spec = importlib.util.spec_from_file_location(
+            'pbcc.%s' % name, os.path.join(models_dir, '%s.py' % name))
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules['pbcc.%s' % name] = mod
+        spec.loader.exec_module(mod)
+    return sys.modules['pbcc.component_code']
+
+
+cc = _load_component_code()
+
+LEGACY_PAIRS = [
+    ('Employee Code', 'EMPLOYEECODE'),
+    ('Date of Joining', 'DATEOFJOINING'),
+    ('Employee Name', 'EMPLOYEENAME'),
+    ('Employee Status', 'EMPLOYEESTATUS'),
+    ('Location', 'LOCATION'),
+    ('Number of Dependents', 'NUMBEROFDEPENDENTS'),
+    ('Standard Working Hour', 'STANDARDWORKINGHOUR'),
+    ('Actual Working Hours excluding paid leave', 'ACTUALWORKINGHOURSEXCLUDINGPAIDLEAVE'),
+    ('Actual Working Hours including Paid leave', 'ACTUALWORKINGHOURSINCLUDINGPAIDLEAVE'),
+    ('OT 1.5 Hours', 'OT15HOURS'),
+    ('OT 2 Hours', 'OT2HOURS'),
+    ('OT 3 Hours', 'OT3HOURS'),
+    ('OT Night shift  week day', 'OTNIGHTSHIFTWEEKDAY'),
+    ('OT Night shift weekend day', 'OTNIGHTSHIFTWEEKENDDAY'),
+    ('OT Ngiht shift Holiday', 'OTNGIHTSHIFTHOLIDAY'),
+]
+for label, remembered in LEGACY_PAIRS:
+    check("legacy inversion: %s" % label, cc.legacy_component_code(label), remembered)
+
+check("legacy handles empty", cc.legacy_component_code(''), '')
+check("legacy handles None", cc.legacy_component_code(None), '')
+
+# The forward direction is the one that must NEVER be used for repair (ledger S3).
+# Pinned as a test so the collision is a documented fact rather than a memory.
+fwd = {}
+for label, remembered in LEGACY_PAIRS:
+    fwd.setdefault(cc.build_component_code(remembered), []).append(remembered)
+collisions = {k: v for k, v in fwd.items() if len(v) > 1}
+check_true("forward mapping DOES collide (why S3 rejects it)", len(collisions) >= 2)
+check_true("forward mapping loses NUMBEROFDEPENDENTS",
+           cc.build_component_code('NUMBEROFDEPENDENTS') != 'NOOFDEPENDEN')
+
 # ---------------------------------------------------------------- report
 if FAILURES:
     print("PROVENANCE BATTERY: %d FAILURE(S)\n" % len(FAILURES))

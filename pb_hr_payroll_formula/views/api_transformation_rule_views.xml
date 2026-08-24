@@ -56,7 +56,7 @@
                     <group>
                         <group string="Rule Configuration">
                             <field name="connector_id"/>
-                            <field name="output_key" placeholder="e.g., NUM_DEPENDENTS"/>
+                            <field name="output_key" placeholder="e.g. NODEPENDENTS"/>
                             <field name="builder_mode"/>
                             <field name="plain_summary" readonly="1"/>
                             <field name="rule_type"/>

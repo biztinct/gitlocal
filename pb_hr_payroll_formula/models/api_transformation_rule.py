@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import re
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
 from odoo.tools.sql import table_exists
 
@@ -13,6 +14,17 @@ from .api_data_store import DATA_TYPES
 from .integration_endpoint import CONNECTOR_TYPES
 from ..formula_engine import rule_formula
 from ..formula_engine.excel_semantics import coerce_number
+
+#: The converter contract, as a pattern. THE definition — `pb_integrations`'
+#: rule composer imports this rather than keeping a second copy, because two
+#: regexes that are supposed to agree are two regexes that will one day differ
+#: (MF31: a duplicated predicate is a predicate that will be half-fixed).
+#:
+#: Capitals and digits, starting with a letter. Underscores are the hard half:
+#: the Excel->Python converter's code pass matches `[A-Z][A-Z0-9]{1,}`, which
+#: EXCLUDES `_`, so `NUM_DEPENDENTS` survives raw into the eval, raises NameError
+#: and silently computes 0.
+OUTPUT_KEY_RE = re.compile(r'^[A-Z][A-Z0-9]*$')
 
 _logger = logging.getLogger(__name__)
 
@@ -309,8 +321,20 @@ class HrApiTransformationRule(models.Model):
     )
     output_key = fields.Char(
         string='Output Key', required=True,
-        help="Key name written to computed_data, e.g., 'NUM_DEPENDENTS'. "
+        # MAPFIX/SOURCING: the suggestion here used to be `NUM_DEPENDENTS`, which
+        # the converter contract forbids — an underscored key survives raw into the
+        # evaluation, raises NameError and silently reads 0. Suggesting a shape the
+        # constraint below refuses is worse than suggesting nothing.
+        help="Key name written to computed_data, e.g. 'NODEPENDENTS'. "
+             "Capital letters and digits only, starting with a letter — a name "
+             "with underscores or spaces cannot be read by a formula. "
              "This becomes available for field mapping.",
+    )
+
+    consumed_field_paths = fields.Json(
+        compute='_compute_consumed_field_paths', store=True,
+        string='Reads these fields',
+        help="Every field this rule reads, for lineage.",
     )
     description = fields.Text(
         string='Description',
@@ -855,10 +879,45 @@ class HrApiTransformationRule(models.Model):
             trace['result'] = result
         return result
 
-    def _trace_cells(self, row):
-        """The handful of fields this rule actually mentions, for the proof
-        rail. A record can be a hundred keys wide and the rail is a column —
-        showing everything would bury the two the reader is checking."""
+    @api.constrains('output_key')
+    def _check_output_key(self):
+        """The converter contract, enforced on the way IN.
+
+        Deliberately scoped to create and to writes that touch `output_key`
+        (owner ruling O-5, same shape as MAPFIX F3: the guard governs create,
+        never read). Four rules on the live payobook database predate this —
+        `NUM_TAX_DEPENDENTS`, `TOTAL_LEAVE_DAYS`, `TENURE_YEARS`, `NET_SALARY` —
+        and they must keep loading, keep displaying, and keep saving their other
+        fields. They are reported, not renamed and not blocked. Odoo fires a
+        constrains on write only when a depended field is in the values, which is
+        exactly that behaviour.
+        """
+        for rule in self:
+            key = (rule.output_key or '').strip()
+            if not key:
+                raise ValidationError(_(
+                    "Give the rule an output key — that is the name a pay "
+                    "component will read it by."))
+            if '_' in key:
+                raise ValidationError(_(
+                    "“%(given)s” contains an underscore. Formulas cannot read an "
+                    "underscored name — try “%(fixed)s”.",
+                    given=key, fixed=key.replace('_', '')))
+            if not OUTPUT_KEY_RE.match(key):
+                raise ValidationError(_(
+                    "“%(given)s” has to be capital letters and digits, starting "
+                    "with a letter — try “%(fixed)s”.",
+                    given=key,
+                    fixed=re.sub(r'[^A-Za-z0-9]', '', key).upper() or 'RULEKEY'))
+
+    def _consumed_field_names(self):
+        """EVERY field path this rule reads, in mention order, deduplicated.
+
+        SOURCING S2 — split out of `_trace_cells`, which had the display cap of 4
+        living inside a data function. The cap is a property of a narrow proof rail,
+        not of the rule: lineage has to know all of them. No row is needed, so this
+        is answerable about a rule that has never run.
+        """
         names = []
         for condition in ((self.filter_conditions or {}).get('rows') or []):
             if condition.get('field'):
@@ -869,8 +928,25 @@ class HrApiTransformationRule(models.Model):
         if self.builder_mode == 'excel' and self.excel_formula:
             try:
                 names.extend(rule_formula.compile_rule_formula(self.excel_formula)[1])
-            except Exception:       # noqa: BLE001 — the rail still shows rows
+            except Exception:       # noqa: BLE001 — a broken draft must still save
                 pass
+        out, seen = [], set()
+        for name in names:
+            if name and name not in seen:
+                seen.add(name)
+                out.append(name)
+        return out
+
+    @api.depends('filter_conditions', 'value_steps', 'builder_mode', 'excel_formula')
+    def _compute_consumed_field_paths(self):
+        for rule in self:
+            rule.consumed_field_paths = rule._consumed_field_names()
+
+    def _trace_cells(self, row):
+        """The handful of fields this rule actually mentions, for the proof
+        rail. A record can be a hundred keys wide and the rail is a column —
+        showing everything would bury the two the reader is checking."""
+        names = self._consumed_field_names()
         cells, seen = [], set()
         for name in names:
             if name in seen:

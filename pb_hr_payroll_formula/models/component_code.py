@@ -339,3 +339,30 @@ def build_component_code(label, existing_codes=(), reserved=()):
         return secondary
 
     return dedupe_code_c5(primary, existing_codes, max_len=MAX_LEN, reserved=reserved)
+
+
+#: The cap the pre-MAPFIX live generator applied (`multisheet_import_wizard`).
+LEGACY_MAX_LEN = 40
+
+
+def legacy_component_code(label):
+    """The code the PRE-MAPFIX generator would have produced from ``label``.
+
+    This is deliberately the OLD, lossy rule — ``re.sub(r'[^A-Za-z0-9]', '', label)``,
+    ASCII-only, so accented characters are DELETED rather than folded — reproduced
+    here so it can be INVERTED. SOURCING S2 uses it to answer "which of these live
+    components used to be called ``ACTUALWORKINGHOURSINCLUDINGPAIDLEAVE``?" by
+    recomputing what each candidate's label used to generate and comparing.
+
+    Inverting the transform is the only safe direction. Re-applying the *new*
+    generator to an old code cannot work: the old code has no word boundaries left,
+    so ``NUMBEROFDEPENDENTS`` yields ``NUMBEROFDEPE`` while the live code is
+    ``NOOFDEPENDEN`` — and worse, it COLLIDES, mapping both
+    ``ACTUALWORKINGHOURS*INCLUDING*PAIDLEAVE`` and ``*EXCLUDING*`` onto
+    ``ACTUALWORKIN``. Wiring "hours including paid leave" into "hours excluding paid
+    leave" is a wrong payslip. See ledger S3.
+
+    Kept next to ``build_component_code`` on purpose: the two are a matched pair, and
+    a reader who changes one must see the other.
+    """
+    return re.sub(r'[^A-Za-z0-9]', '', label or '').upper()[:LEGACY_MAX_LEN]

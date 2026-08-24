@@ -3,8 +3,10 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.sql import table_exists
+import json
 import logging
 
+from . import component_code
 from .integration_endpoint import SOURCE_DATA_TYPES
 
 _logger = logging.getLogger(__name__)
@@ -83,20 +85,80 @@ class HrIntegrationFieldMapping(models.Model):
         'hr.formula.rule',
         string='Target Formula Rule',
         domain="[('column_type', '=', 'input')]",
+        # EXPLICIT, and it is the CORRECT behaviour: deleting a pay component must
+        # not delete the vendor's mapping row. What was wrong was never `set null`
+        # itself — it was that severing happened in SILENCE. `is_severed` and
+        # `action_repair_severed` below are the actual fix.
+        ondelete='set null',
         help="Formula rule to receive this value"
     )
 
+    # ------------------------------------------------------------------
+    # SOURCING S2 — the two fields below REMEMBER.
+    #
+    # Both were stored RELATED fields. A stored related blanks when its FK blanks,
+    # and the only reason 23 remembered codes survived on the live databases is
+    # that `ON DELETE SET NULL` fires in SQL and never triggers an ORM recompute.
+    # That is luck, not design, and the next ORM write to `target_rule_id` would
+    # have spent it — including the repair below, which writes exactly that field
+    # and depends on exactly this value. So they became computes that copy from the
+    # FK when there is one and KEEP their stored value when there is not, which also
+    # makes a full recompute a no-op.
+    #
+    # A stored related is not a memory; it is a cache that happens not to have been
+    # invalidated yet.
+    # ------------------------------------------------------------------
     target_column_letter = fields.Char(
-        related='target_rule_id.column_letter',
+        compute='_compute_target_column_letter', store=True, readonly=True,
         string='Target Column',
-        store=True
     )
 
     target_rule_code = fields.Char(
-        related='target_rule_id.code',
+        compute='_compute_target_rule_code', store=True, readonly=True,
         string='Target Code',
-        store=True
     )
+
+    is_severed = fields.Boolean(
+        compute='_compute_is_severed', store=True,
+        string='Lost its component',
+        help="This mapping remembers the component it fed, but the link is gone. "
+             "Use Reconnect to point it back.",
+    )
+
+    def _stored_char(self, fname):
+        """The value currently in the COLUMN, read straight from SQL.
+
+        Reading a stored computed field from inside its own compute is a recursion,
+        not a read — the ORM would ask the compute for the value the compute is
+        trying to preserve. These computes exist precisely to keep what is already
+        there, so they have to look at the row rather than at the field.
+        """
+        ids = [m.id for m in self if isinstance(m.id, int)]
+        if not ids:
+            return {}
+        self.env.cr.execute(
+            'SELECT id, %s FROM hr_integration_field_mapping WHERE id IN %%s'
+            % fname, (tuple(ids),))
+        return dict(self.env.cr.fetchall())
+
+    @api.depends('target_rule_id', 'target_rule_id.code')
+    def _compute_target_rule_code(self):
+        stored = self._stored_char('target_rule_code')
+        for mapping in self:
+            live = mapping.target_rule_id.code if mapping.target_rule_id else False
+            mapping.target_rule_code = live or stored.get(mapping.id) or False
+
+    @api.depends('target_rule_id', 'target_rule_id.column_letter')
+    def _compute_target_column_letter(self):
+        stored = self._stored_char('target_column_letter')
+        for mapping in self:
+            live = mapping.target_rule_id.column_letter if mapping.target_rule_id else False
+            mapping.target_column_letter = live or stored.get(mapping.id) or False
+
+    @api.depends('target_rule_id', 'target_rule_code')
+    def _compute_is_severed(self):
+        for mapping in self:
+            mapping.is_severed = bool(mapping.target_rule_code) and not mapping.target_rule_id
 
     # ==========================================
     # TRANSFORMATION
@@ -808,6 +870,129 @@ Example: value * 1.1 if value > 1000 else value
                 'error': error,
             })
         return results
+
+    # ==================================================================
+    # SOURCING S2 — reconnecting a mapping that lost its component
+    # ==================================================================
+    def _repair_candidates(self):
+        """Input rules this mapping could plausibly have pointed at, narrowest
+        scope first. The scope that yields a unique hit wins; a wider scope is only
+        consulted because the narrower one found nothing.
+
+        Scope 1 (`connector`) is the correct link and is what new data will use.
+        It is EMPTY on every live database today — no `hr.formula.config` has
+        `connector_id` set — which is why scopes 2 and 3 exist at all. Scope 3 is
+        reported as `cross_company` rather than silently accepted: on payobook the
+        connector is company 1 and the components live in company 2, and a human
+        should see that even though the codes match exactly.
+        """
+        self.ensure_one()
+        Config = self.env['hr.formula.config'].sudo()
+        connector = self.connector_id
+        scopes = []
+        by_connector = Config.search([('connector_id', '=', connector.id)])
+        if by_connector:
+            scopes.append(('connector', by_connector))
+        if connector.company_id:
+            by_company = Config.search([('company_id', '=', connector.company_id.id)])
+            if by_company:
+                scopes.append(('company', by_company))
+        scopes.append(('cross_company', Config.search([])))
+        seen = set()
+        out = []
+        for name, configs in scopes:
+            if configs.ids and tuple(sorted(configs.ids)) in seen:
+                continue
+            seen.add(tuple(sorted(configs.ids)))
+            rules = configs.rule_ids.filtered(lambda r: r.column_type == 'input')
+            if rules:
+                out.append((name, rules))
+        return out
+
+    def _severed_verdicts(self):
+        """What repairing this selection WOULD do. Writes nothing.
+
+        Four tiers, in this order, each requiring a UNIQUE hit:
+          0 `exact`        — a candidate whose code is the remembered code
+          1 `renamed`      — the rename ledger (`hr.formula.rule.version`,
+                             reason='rename') maps the remembered code to a rule id
+          2 `legacy_label` — a candidate whose label, run through the PRE-MAPFIX
+                             generator, reproduces the remembered code
+          3 `no_match` / `ambiguous` — write nothing, say which
+
+        The ORDER is load-bearing and must not be rearranged. Tier 2 is the loose
+        one: on payobook, inverting labels offers NINE candidates for `EMPCODE` and
+        FIFTEEN for `BASICSALARY` across its 18 configs. Tiers 0 and 1 resolve all
+        23 live cases on their own, so tier 2 never runs there — but if it ran
+        first it would have made three wrong wires, and a wrong wire is a wrong
+        payslip. Ambiguity is always a refusal, never a pick.
+        """
+        Version = self.env['hr.formula.rule.version'].sudo()
+        verdicts = []
+        for mapping in self:
+            code = (mapping.target_rule_code or '').strip()
+            row = {'id': mapping.id, 'connector': mapping.connector_id.name or '',
+                   'source_field': mapping.source_field or '', 'code': code,
+                   'verdict': 'no_match', 'scope': '', 'rule_id': False,
+                   'rule_code': '', 'detail': ''}
+            if not mapping.is_severed or not code:
+                row['verdict'] = 'not_severed'
+                verdicts.append(row)
+                continue
+
+            for scope_name, rules in mapping._repair_candidates():
+                # --- tier 0: exact
+                hits = rules.filtered(lambda r: (r.code or '') == code)
+                tier = 'exact'
+                # --- tier 1: the rename ledger
+                if not hits:
+                    renamed_ids = set()
+                    for ver in Version.search([('reason', '=', 'rename')]):
+                        try:
+                            snap = json.loads(ver.snapshot_json or '{}')
+                        except (TypeError, ValueError):
+                            continue
+                        if (snap.get('code') or '') == code and ver.rule_id:
+                            renamed_ids.add(ver.rule_id.id)
+                    if renamed_ids:
+                        hits = rules.filtered(lambda r: r.id in renamed_ids)
+                        tier = 'renamed'
+                # --- tier 2: invert the pre-MAPFIX generator
+                if not hits:
+                    hits = rules.filtered(
+                        lambda r: component_code.legacy_component_code(r.name) == code)
+                    tier = 'legacy_label'
+                if not hits:
+                    continue
+                if len(hits) > 1:
+                    row.update(verdict='ambiguous', scope=scope_name,
+                               detail='%s candidates: %s' % (
+                                   len(hits), ', '.join(sorted(h.code or '?' for h in hits)[:5])))
+                    break
+                row.update(verdict=tier, scope=scope_name, rule_id=hits.id,
+                           rule_code=hits.code or '', detail=hits.name or '')
+                break
+            verdicts.append(row)
+        return verdicts
+
+    def action_repair_severed(self):
+        """Point severed mappings back at their component, and report every verdict.
+
+        Only `exact`, `renamed` and `legacy_label` are applied. `ambiguous` and
+        `no_match` are left exactly as they are — the remembered code stays, the
+        mapping stays severed, and a human gets told. Never a silent guess.
+        """
+        verdicts = self._severed_verdicts()
+        applied = 0
+        for row in verdicts:
+            if row['verdict'] in ('exact', 'renamed', 'legacy_label') and row['rule_id']:
+                self.browse(row['id']).sudo().target_rule_id = row['rule_id']
+                applied += 1
+        _logger.info("Severed mapping repair: %s applied of %s examined; verdicts=%s",
+                     applied, len(verdicts),
+                     {v['verdict']: sum(1 for x in verdicts if x['verdict'] == v['verdict'])
+                      for v in verdicts})
+        return {'applied': applied, 'verdicts': verdicts}
 
     def action_test_against_employee(self):
         """Open the Test dialog pre-filled with this mapping's connector."""

@@ -52,7 +52,12 @@ _logger = logging.getLogger(__name__)
 # converter rewrite the shorter inside the longer and compute 0 — the single
 # worst class of formula bug, and the reason this is a REFUSAL rather than a
 # warning (`hr.formula.config.template._assert_codes_convertible`, same rule).
-_KEY_RE = re.compile(r'^[A-Z][A-Z0-9]*$')
+# SOURCING S2 — one definition of the converter contract, imported rather than
+# repeated. The model now enforces the same pattern as a constraint, so a key
+# that gets past this lane (backend form, shell, import) is still refused.
+from odoo.addons.pb_hr_payroll_formula.models.api_transformation_rule import (
+    OUTPUT_KEY_RE as _KEY_RE,
+)
 
 # How many stored rows the proof rail runs against. A rail is a column, not a
 # report: past a couple of dozen the answer is a narrower filter, not a longer
