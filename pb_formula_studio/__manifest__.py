@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.126.0',
+    'version': '19.0.1.127.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -52,6 +52,10 @@
             'pb_formula_studio/static/src/scss/shortcuts.scss',
             'pb_formula_studio/static/src/scss/snippet.scss',
             'pb_formula_studio/static/src/scss/reclass.scss',
+            # SOURCING S4 — the shared source vocabulary. Listed before its
+            # consumers (the studio, the grid) so the bundle order matches the
+            # dependency order.
+            'pb_formula_studio/static/src/js/source_vocab.js',
             'pb_formula_studio/static/src/js/grid/formula_bar.js',
             'pb_formula_studio/static/src/js/grid/cell_autocomplete.js',
             'pb_formula_studio/static/src/js/grid/find_replace.js',

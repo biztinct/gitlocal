@@ -972,6 +972,10 @@
                 <span t-if="roleOf(c) !== 'payroll'" t-attf-class="ol-role r-{{ roleOf(c) }}" t-att-title="roleLabel(roleOf(c))">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="roleIcon(roleOf(c))"/><t t-call="pb_formula_studio.RoleIco"/></svg>
                 </span>
+                <span t-attf-class="ol-src s-{{ srcOf(c) }} {{ srcDisagrees(c) ? 'src-diff' : '' }}"
+                      t-att-title="srcSentence(c)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcOf(c))"/><t t-call="pb_formula_studio.SrcIco"/></svg>
+                </span>
                 <span class="ol-nm" t-esc="c.name"/>
                 <span t-if="!c.is_valid" class="ol-err" title="Has errors"/>
                 <span class="ol-val" t-esc="previewVal(c.col)"/>
@@ -1035,7 +1039,22 @@
                     </t>
                     <span t-else="" class="code-tag pbfs-code-edit" t-att-title="state.canEdit ? 'Rename code — references stay intact automatically' : ''" t-on-click="tryRename"><t t-esc="selected.code"/></span>
                   </h2>
-                  <div class="sub" t-esc="'Column ' + selected.col + ' · ' + (selected.type === 'input' ? 'Input value' : selected.type === 'constant' ? 'Fixed constant' : 'Calculated formula') + (selected.category ? ' · ' + selected.category : '')"/>
+                  <div class="sub">
+                    <t t-esc="'Column ' + selected.col + ' · ' + (selected.type === 'input' ? 'Input value' : selected.type === 'constant' ? 'Fixed constant' : 'Calculated formula') + (selected.category ? ' · ' + selected.category : '')"/>
+                    <!-- SOURCING S4 — the subtitle stops describing only the shape of
+                         the column and starts saying where its number comes from.
+                         Shown only for components that are FED: the type label two
+                         segments earlier already says "Calculated formula" / "Fixed
+                         constant", and repeating "Calculated" after it is noise in
+                         the one place the reader is trying to learn something new. -->
+                    <t t-if="srcIsFed(selected)">
+                    <span class="sub-sep">·</span>
+                    <span t-attf-class="sub-src s-{{ srcOf(selected) }} {{ srcDisagrees(selected) ? 'src-diff' : '' }}">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcOf(selected))"/><t t-call="pb_formula_studio.SrcIco"/></svg>
+                      <t t-esc="srcSentence(selected)"/>
+                    </span>
+                    </t>
+                  </div>
                 </div>
                 <div class="ed-hero-side">
                   <div t-if="selected.is_valid" class="valid-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Valid</div>
@@ -1204,6 +1223,46 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
                     <span t-esc="state.editError"/>
                   </div>
+                  <!-- SOURCING S4 — where this value comes from, at the TOP of the
+                       editor a user actually opens. (There are two editor bodies in
+                       this template; the inline one below is the one the Edit button
+                       opens, and putting the block only in the other one meant it
+                       rendered for nobody — ledger S14.)
+                       Two rows, never merged: what the component is SET to read, and
+                       what the last run actually used. -->
+                  <div class="ce-sec ce-src" t-if="selected">
+                    <div class="ce-sec-h">Where this value comes from</div>
+                    <div class="ce-srcrow">
+                      <span class="ce-srclbl">Set to read</span>
+                      <span t-attf-class="ce-srcchip s-{{ srcDeclared(selected).kind }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcDeclared(selected).kind)"/><t t-call="pb_formula_studio.SrcIco"/></svg>
+                        <t t-esc="srcLabel(srcDeclared(selected).kind)"/>
+                      </span>
+                      <span t-if="srcDeclared(selected).key" class="ce-srckey" t-esc="srcDeclared(selected).key"/>
+                    </div>
+                    <div class="ce-srcrow">
+                      <span class="ce-srclbl">Last run used</span>
+                      <t t-if="srcActual(selected)">
+                        <span t-attf-class="ce-srcchip s-{{ srcActual(selected).kind }} {{ srcDisagrees(selected) ? 'src-diff' : '' }}">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcActual(selected).kind)"/><t t-call="pb_formula_studio.SrcIco"/></svg>
+                          <t t-esc="srcLabel(srcActual(selected).kind)"/>
+                        </span>
+                        <span t-if="srcActual(selected).key" class="ce-srckey" t-esc="srcActual(selected).key"/>
+                        <span t-if="srcActual(selected).run" class="ce-srcrun" t-esc="srcActual(selected).run"/>
+                      </t>
+                      <span t-else="" class="ce-srcnone">This scheme has not been run yet</span>
+                    </div>
+                    <div t-if="srcActual(selected) and srcActual(selected).fell_back" class="ce-srcnote">
+                      Fell back to <t t-esc="srcLabel(srcActual(selected).kind)"/>
+                    </div>
+                    <div t-if="srcActual(selected) and srcActual(selected).ignored" class="ce-srcnote">
+                      Also arrived from <t t-esc="srcLabel(srcActual(selected).ignored.src)"/> — not used
+                    </div>
+                    <div t-if="srcDisagrees(selected)" class="ce-srcnote warn">
+                      Last run used a different source
+                    </div>
+                  </div>
+
                   <!-- type chooser -->
                   <div class="ce-label">Type</div>
                   <div class="ce-types">
@@ -1350,13 +1409,51 @@
                       </div>
                     </div>
 
+                    <!-- SOURCING S4 — promoted OUT of the collapsed Advanced
+                         accordion, because "where does this number come from" is
+                         the question the owner opens this panel to answer. Two
+                         rows, never merged: what it is SET to read, and what the
+                         last run actually used. -->
+                    <div class="ce-sec ce-src" t-if="selected">
+                      <div class="ce-sec-h">Where this value comes from</div>
+                      <div class="ce-srcrow">
+                        <span class="ce-srclbl">Set to read</span>
+                        <span t-attf-class="ce-srcchip s-{{ srcDeclared(selected).kind }}">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcDeclared(selected).kind)"/><t t-call="pb_formula_studio.SrcIco"/></svg>
+                          <t t-esc="srcLabel(srcDeclared(selected).kind)"/>
+                        </span>
+                        <span t-if="srcDeclared(selected).key" class="ce-srckey" t-esc="srcDeclared(selected).key"/>
+                      </div>
+                      <div class="ce-srcrow">
+                        <span class="ce-srclbl">Last run used</span>
+                        <t t-if="srcActual(selected)">
+                          <span t-attf-class="ce-srcchip s-{{ srcActual(selected).kind }} {{ srcDisagrees(selected) ? 'src-diff' : '' }}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcActual(selected).kind)"/><t t-call="pb_formula_studio.SrcIco"/></svg>
+                            <t t-esc="srcLabel(srcActual(selected).kind)"/>
+                          </span>
+                          <span t-if="srcActual(selected).key" class="ce-srckey" t-esc="srcActual(selected).key"/>
+                          <span t-if="srcActual(selected).run" class="ce-srcrun" t-esc="srcActual(selected).run"/>
+                        </t>
+                        <span t-else="" class="ce-srcnone">This scheme has not been run yet</span>
+                      </div>
+                      <div t-if="srcActual(selected) and srcActual(selected).fell_back" class="ce-srcnote">
+                        Fell back to <t t-esc="srcLabel(srcActual(selected).kind)"/>
+                      </div>
+                      <div t-if="srcActual(selected) and srcActual(selected).ignored" class="ce-srcnote">
+                        Also arrived from <t t-esc="srcLabel(srcActual(selected).ignored.src)"/> — not used
+                      </div>
+                      <div t-if="srcDisagrees(selected)" class="ce-srcnote warn">
+                        Last run used a different source
+                      </div>
+                    </div>
+
                     <div class="ce-sec">
                       <button class="ce-sec-toggle" t-on-click="toggleAdvanced">
                         <svg t-attf-class="chev {{ state.advOpen ? 'open' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                         Advanced
                       </button>
                       <t t-if="state.advOpen">
-                        <div class="ce-sec-h" style="margin-top:14px">Data source</div>
+                        <div class="ce-sec-h" style="margin-top:14px">Manual classification (does not affect import)</div>
                         <div class="ce-grid2">
                           <div class="ce-field"><label>Data source</label>
                             <select class="ce-input" t-on-change="(ev) => this.setDraftField('data_source', ev)">
@@ -4362,6 +4459,22 @@
     <t t-elif="icon === 'briefcase'"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></t>
     <t t-elif="icon === 'bank'"><line x1="3" y1="21" x2="21" y2="21"/><path d="M3 10h18M12 3 21 8H3l9-5z"/><line x1="6" y1="10" x2="6" y2="21"/><line x1="10" y1="10" x2="10" y2="21"/><line x1="14" y1="10" x2="14" y2="21"/><line x1="18" y1="10" x2="18" y2="21"/></t>
     <t t-elif="icon === 'filetext'"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="15" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></t>
+  </t>
+
+  <!-- SOURCING S4 — source glyphs, keyed by srcIcon(kind). Same inner-shapes
+       contract as RoleIco. The SHAPES carry the meaning: grid, cloud, sigma,
+       briefcase, person, equals, padlock and dashed circle are distinguishable at
+       12px without any colour at all, which is what makes the chips readable to a
+       colour-blind user. -->
+  <t t-name="pb_formula_studio.SrcIco">
+    <t t-if="icon === 'sheet'"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></t>
+    <t t-elif="icon === 'cloud'"><path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.2 10.2 3.9 3.9 0 0 0 7 19z"/></t>
+    <t t-elif="icon === 'sigma'"><path d="M18 5H6l6 7-6 7h12"/></t>
+    <t t-elif="icon === 'briefcase'"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></t>
+    <t t-elif="icon === 'person'"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></t>
+    <t t-elif="icon === 'equals'"><path d="M5 9h14M5 15h14"/></t>
+    <t t-elif="icon === 'lock'"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></t>
+    <t t-else=""><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/></t>
   </t>
 
   <!-- Problem-rail glyphs, keyed by probIcon(kind) in formula_studio.js. Same

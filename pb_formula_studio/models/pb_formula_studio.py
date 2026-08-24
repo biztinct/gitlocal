@@ -267,6 +267,139 @@ class PbFormulaStudio(models.AbstractModel):
     # ------------------------------------------------------------------
     # main payload
     # ------------------------------------------------------------------
+    # ==================================================================
+    # SOURCING S4 — where a value comes from, as the UI reads it.
+    #
+    # TWO TRUTHS, NEVER CONFLATED. `declared` is what the configuration says;
+    # `actual` is what the last run actually did and the key it actually matched.
+    # A component whose two disagree is precisely the situation the owner needs to
+    # see, so nothing here smooths that over.
+    #
+    # `data_source` is NOT consulted anywhere in this block. It defaults to
+    # 'excel', so "unknown" and "Excel" are indistinguishable in it; no wire-
+    # creation path maintains it; its vocabulary does not match the resolver's; and
+    # no line of the payroll pipeline reads it. It stays demoted (owner ruling O-3).
+    # ==================================================================
+    #: The eight kinds, and whether a mapping board may draw a wire to one.
+    _SOURCE_WIRABLE = {'excel', 'feed', 'rule'}
+
+    @api.model
+    def _source_employee_dest_ids(self, config):
+        """Rules that read a field off the employee/contract record.
+
+        One query for the whole config. `hr.payslip.import.mapping` is the
+        employee-field board's model — NOT `hr.integration.field.mapping`, which is
+        the vendor feed's. The two were conflated once already (see the resolver's
+        own note at `payroll_import_batch.py:2648-2661`) and the distinction is
+        exactly what tells "Employee record" from "Connected system".
+        """
+        Mapping = self.env.get('hr.payslip.import.mapping')
+        if Mapping is None or not config.rule_ids:
+            return set()
+        try:
+            found = Mapping.sudo().search([('component_id', 'in', config.rule_ids.ids)])
+        except Exception:       # noqa: BLE001 — a chip must never break the studio
+            return set()
+        return {m.component_id.id for m in found if m.component_id}
+
+    @api.model
+    def _source_actuals(self, config):
+        """What the LAST run recorded, indexed by component code.
+
+        Reads exactly ONE payslip — the most recent formula payslip of this config
+        that carries a provenance blob — and indexes it. The alternative, asking per
+        component, is 250 queries to answer one question.
+
+        Returns `({CODE: entry}, run_label)`. An empty dict means this scheme has
+        never been run, which the UI must say in those words: it is a different
+        statement from "this component has no source", and collapsing the two would
+        put "No source" on a component that is simply waiting for its first run.
+        """
+        Payslip = self.env.get('hr.payslip')
+        if Payslip is None:
+            return {}, ''
+        try:
+            slip = Payslip.sudo().search([
+                ('formula_config_id', '=', config.id),
+                ('formula_input_sources', '!=', False),
+            ], order='date_to desc, id desc', limit=1)
+        except Exception:       # noqa: BLE001
+            return {}, ''
+        if not slip:
+            return {}, ''
+        try:
+            blob = json.loads(slip.formula_input_sources or '{}')
+        except (TypeError, ValueError):
+            return {}, ''
+        if not isinstance(blob, dict):
+            return {}, ''
+        return blob, (slip.date_to and slip.date_to.strftime('%B %Y')) or slip.name or ''
+
+    @api.model
+    def _declared_source(self, rule, emp_dest_rule_ids):
+        """What configuration SAYS feeds this component.
+
+        Order matters: a calculated component is calculated whatever else is set on
+        it, and an explicit binding outranks anything inferred from the component's
+        nature. Everything below the binding is a description of what the component
+        IS, not of what anybody chose.
+        """
+        if rule.column_type == 'formula':
+            return {'kind': 'calculated', 'key': '', 'wirable': False}
+        if rule.column_type == 'constant':
+            return {'kind': 'constant', 'key': '', 'wirable': False}
+        if rule.source_binding and (rule.source_binding_key or '').strip():
+            return {'kind': rule.source_binding,
+                    'key': (rule.source_binding_key or '').strip(),
+                    'wirable': True}
+        if rule.is_contract_component:
+            return {'kind': 'contract_component', 'key': '', 'wirable': False}
+        if rule.id in emp_dest_rule_ids:
+            return {'kind': 'employee_field', 'key': '', 'wirable': False}
+        return {'kind': 'none', 'key': '', 'wirable': True}
+
+    #: Board-chip wording. Kept next to the vocabulary it uses so a board can
+    #: never invent a ninth term. Mirrors `srcLabel` in `source_vocab.js`.
+    _SOURCE_LABELS = {
+        'excel': "Spreadsheet", 'feed': "Connected system", 'rule': "Rule output",
+        'contract_component': "Contract component", 'employee_field': "Employee record",
+        'calculated': "Calculated", 'constant': "Fixed value", 'none': "No source",
+    }
+
+    @api.model
+    def _source_note(self, rule, actuals, emp_dest_rule_ids):
+        """The one-line note a mapping board shows against a component.
+
+        Says "already fed by X" so a user drawing a wire can see that this target
+        is not idle. Silent when nothing feeds it — an empty note is the normal
+        case and a board full of chips would say nothing at all.
+        """
+        declared = self._declared_source(rule, emp_dest_rule_ids)
+        kind = declared['kind']
+        if kind == 'none':
+            return ''
+        label = self._SOURCE_LABELS.get(kind, '')
+        if declared['key']:
+            return _("Already fed by %(src)s “%(key)s”",
+                     src=label, key=declared['key'])
+        return _("Already fed by %s") % label
+
+    @api.model
+    def _source_block(self, rule, actuals, actual_run, emp_dest_rule_ids):
+        block = {'declared': self._declared_source(rule, emp_dest_rule_ids)}
+        entry = actuals.get(rule.code or '')
+        if entry and isinstance(entry, dict):
+            block['actual'] = {
+                'kind': entry.get('src') or 'none',
+                'key': entry.get('key') or '',
+                'via': entry.get('via') or '',
+                'fell_back': bool(entry.get('fell_back')),
+                'ignored': entry.get('ignored') or None,
+                'adj': entry.get('adj') or [],
+                'run': actual_run,
+            }
+        return block
+
     @api.model
     def get_studio_data(self, config_id=None):
         config = self._pick_config(config_id)
@@ -294,6 +427,13 @@ class PbFormulaStudio(models.AbstractModel):
             d['count'] += 1
             if n.is_review and not n.resolved:
                 d['review_open'] += 1
+
+        # SOURCING S4 — declared vs actual, computed ONCE for the whole config.
+        # `_source_actuals` reads a single payslip and indexes it; `_declared_source`
+        # is pure per-rule derivation. Doing it here rather than inside the loop is
+        # what keeps a 250-column scheme at one extra query instead of 250.
+        actuals, actual_run = self._source_actuals(config)
+        emp_dest_rule_ids = self._source_employee_dest_ids(config)
 
         components = []
         for r in rules:
@@ -332,6 +472,12 @@ class PbFormulaStudio(models.AbstractModel):
                 'is_contract_component': bool(r.is_contract_component),
                 'is_text_component': bool(r.is_text_component),
                 'is_visible_in_grid': bool(r.is_visible_in_grid),
+                # SOURCING S4 — ONE nested object, not five sibling keys, so every
+                # render site reads one path and an older client degrades to "no
+                # source block" rather than to half a truth. Same contract as
+                # `column_role` above, for the same reason.
+                'source': self._source_block(
+                    r, actuals, actual_run, emp_dest_rule_ids),
             })
 
         samples = [{'id': s.id, 'name': s.name} for s in config.sample_data_ids]
@@ -4396,7 +4542,21 @@ class PbFormulaStudio(models.AbstractModel):
                 for f in fields_]
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
             .sorted(key=lambda r: r.sequence)
+        # SOURCING S4 — the right column gains a chip. It reuses the SAME item keys
+        # the LEFT column already carries (`prov` / `provKind` / `note`), so the
+        # canvas renders it with no client change: a component that is already fed
+        # from somewhere else stops being an anonymous target.
+        _acts, _run = self._source_actuals(config)
+        _emp = self._source_employee_dest_ids(config)
+        _decl = {r.id: self._declared_source(r, _emp) for r in input_rules}
         right = [{'id': r.id, 'label': (r.name or r.code), 'sublabel': r.code or '',
+                  # SOURCING S4 — `srcKind`, NOT `prov`. `prov` already means
+                  # "where this CARD came from" (vendor catalogue, live sync,
+                  # Payobook's own field) — a different axis from "what feeds this
+                  # component". Overloading it would have made one chip answer two
+                  # questions, which is the confusion this programme exists to end.
+                  'srcKind': _decl[r.id]['kind'],
+                  'srcNote': self._source_note(r, _acts, _emp),
                   'meta': {'col': r.column_letter or '', 'type': 'input'}}
                  for r in input_rules]
         # accepted wires = persisted field mappings on this connector → these inputs
@@ -4894,7 +5054,12 @@ class PbFormulaStudio(models.AbstractModel):
         left = [{'id': 'c:' + c, 'label': c, 'sublabel': '', 'meta': {}} for c in cols]
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
             .sorted(key=lambda r: r.sequence)
+        _acts, _run = self._source_actuals(config)
+        _emp = self._source_employee_dest_ids(config)
+        _decl = {r.id: self._declared_source(r, _emp) for r in input_rules}
         right = [{'id': r.id, 'label': (r.name or r.code), 'sublabel': r.code or '',
+                  'srcKind': _decl[r.id]['kind'],
+                  'srcNote': self._source_note(r, _acts, _emp),
                   'meta': {'col': r.column_letter or '', 'type': 'input'}} for r in input_rules]
         col_set = set(cols)
         wires, mapped_rules = [], set()

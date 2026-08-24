@@ -69,6 +69,14 @@
                     t-on-click="(ev) => this.onCellClick(ev, c, 'formula')" t-att-title="c.name">
                   <span class="g2-col" t-esc="c.col"/>
                   <span class="g2-code" t-esc="c.code"/>
+                  <!-- SOURCING S4 — a glyph, never a word: this header already
+                       carries a letter, a code and a scenario button, and MF13's
+                       lesson is that an affordance which reserves width crushes the
+                       label. The sentence lives in the tooltip. -->
+                  <span t-if="srcOf" t-attf-class="g2-src s-{{ srcOf(c) }} {{ srcDisagrees(c) ? 'src-diff' : '' }}"
+                        t-att-title="srcSentence(c)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcOf(c))"/><t t-call="pb_formula_studio.SrcIco"/></svg>
+                  </span>
                   <button t-if="canScenario(c)" class="g2-addsc" title="Branch a what-if scenario"
                           t-on-click="(ev) => this.addScenario(ev, c)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>

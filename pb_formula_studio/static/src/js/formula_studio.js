@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import { Component, useState, useRef, useEffect, useExternalListener, onWillStart, onMounted, onPatched, onWillUnmount, markup } from "@odoo/owl";
+import * as SrcVocab from "./source_vocab";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
@@ -64,6 +65,7 @@ const ROLES = [
     { key: "reference", icon: "filetext" },
 ];
 const OPSYM = { "+": "+", "-": "−", "*": "×", "/": "÷", "^": "^" };
+
 
 // W18 (D-F2) — keyboard-shortcut registry for the shortcuts overlay. The GRID rows
 // are a static table living in this ONE file, right next to `paletteCommands` and
@@ -1439,6 +1441,25 @@ export class PbFormulaStudio extends Component {
     }
     get roleOptions() {
         return ROLES.map(r => ({ ...r, label: this.roleLabel(r.key), hint: this.roleHint(r.key) }));
+    }
+
+    // ==== SOURCING S4 — where a value comes from ==============================
+    // Thin delegates onto `source_vocab`, which the grid component imports too.
+    // The words and the sentence live in exactly one module so five surfaces
+    // cannot paraphrase the same fact five ways.
+    // Namespaced import (`SrcVocab.*`) rather than bare names: a method called
+    // `srcOf` that calls a module function also called `srcOf` is a recursion
+    // waiting for somebody to add a `this.`.
+    srcOf(c) { return SrcVocab.srcOf(c); }
+    srcIcon(kind) { return SrcVocab.srcIcon(kind); }
+    srcLabel(kind) { return SrcVocab.srcLabel(kind); }
+    srcDeclared(c) { return SrcVocab.srcDeclared(c); }
+    srcActual(c) { return SrcVocab.srcActual(c); }
+    srcDisagrees(c) { return SrcVocab.srcDisagrees(c); }
+    srcIsFed(c) { return SrcVocab.srcIsFed(c); }
+    srcSentence(c) { return SrcVocab.srcSentence(c, this.hasAnyRun); }
+    get hasAnyRun() {
+        return (this.state.components || []).some(c => SrcVocab.srcActual(c));
     }
     // The four pay groups — People & Data is rendered separately under the
     // Payroll lens and inline (via visibleGroups) under Everything.

@@ -1288,3 +1288,113 @@
 @media (prefers-reduced-motion: reduce) {
     .pbfs-cmd-scrim, .pbfs-cmd, .pbfs-cmd-card { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
+
+/* ============================================================================
+   SOURCING S4 — where a value comes from.
+
+   Chips clone `.ol-role`'s geometry exactly (18x18 tile, 12px glyph) so the rail
+   keeps one rhythm rather than growing a second, taller row. Icon-only in the
+   rail and the grid: MF13's lesson is that an affordance which reserves WIDTH
+   crushes the label next to it, and these rows already carry a letter, a name, a
+   value and a type. The sentence lives in the tooltip.
+
+   Colour is decoration here. The glyph shapes — grid, cloud, sigma, briefcase,
+   person, equals, padlock, dashed circle — are what distinguish the kinds, so
+   the chips stay readable with no colour perception at all. Flat fills only: the
+   design system has no gradients.
+   ============================================================================ */
+.pbfs {
+    .ol-src {
+        width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center;
+        flex-shrink: 0; background: #F1F3F7; color: #94A3B8;
+    }
+    .ol-src svg { width: 12px; height: 12px; }
+    .ol-src.s-excel              { background: var(--green-soft); color: var(--green); }
+    .ol-src.s-feed               { background: var(--cyan-soft);  color: var(--cyan); }
+    .ol-src.s-rule               { background: var(--i-soft);     color: var(--i600); }
+    .ol-src.s-contract_component { background: var(--amber-soft); color: var(--amber); }
+    .ol-src.s-employee_field     { background: #E8EEF7;           color: #3B5B8C; }
+    .ol-src.s-calculated         { background: var(--i-soft2);    color: var(--i-deep); }
+    .ol-src.s-constant           { background: #EEF1F5;           color: #64748B; }
+    .ol-src.s-none               { background: #F1F3F7;           color: #94A3B8; }
+
+    /* Declared and actual disagree. A ring rather than a colour swap: the chip
+       must keep saying WHICH source it is while also saying "look at me". */
+    .ol-src.src-diff { box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--amber); }
+
+    /* Card hero subtitle */
+    .sub-sep { margin: 0 6px; color: var(--muted); }
+    .sub-src {
+        display: inline-flex; align-items: center; gap: 5px; vertical-align: baseline;
+        font-weight: 650; color: var(--ink);
+    }
+    .sub-src svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .sub-src.s-excel { color: var(--green); }
+    .sub-src.s-feed { color: var(--cyan); }
+    .sub-src.s-rule { color: var(--i600); }
+    .sub-src.s-contract_component { color: var(--amber); }
+    .sub-src.s-employee_field { color: #3B5B8C; }
+    .sub-src.s-calculated { color: var(--i-deep); }
+    .sub-src.s-constant, .sub-src.s-none { color: #64748B; }
+
+    /* Cell Editor — promoted out of Advanced, so it gets room to be a sentence. */
+    .ce-src { padding-bottom: 4px; }
+    .ce-srcrow { display: flex; align-items: center; gap: 9px; margin-top: 8px; flex-wrap: wrap; }
+    .ce-srclbl {
+        font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+        color: var(--muted); width: 96px; flex-shrink: 0;
+    }
+    .ce-srcchip {
+        display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+        font-size: 11.5px; font-weight: 700; background: #F1F3F7; color: #64748B;
+    }
+    .ce-srcchip svg { width: 13px; height: 13px; }
+    .ce-srcchip.s-excel              { background: var(--green-soft); color: var(--green); }
+    .ce-srcchip.s-feed               { background: var(--cyan-soft);  color: var(--cyan); }
+    .ce-srcchip.s-rule               { background: var(--i-soft);     color: var(--i600); }
+    .ce-srcchip.s-contract_component { background: var(--amber-soft); color: var(--amber); }
+    .ce-srcchip.s-employee_field     { background: #E8EEF7;           color: #3B5B8C; }
+    .ce-srcchip.s-calculated         { background: var(--i-soft2);    color: var(--i-deep); }
+    .ce-srcchip.src-diff { box-shadow: 0 0 0 1.5px var(--amber); }
+    .ce-srckey {
+        font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 11.5px;
+        color: var(--ink); background: var(--bg); border: 1px solid var(--line-soft);
+        border-radius: 6px; padding: 2px 7px; max-width: 220px; overflow: hidden;
+        text-overflow: ellipsis; white-space: nowrap;
+    }
+    .ce-srcrun { font-size: 11.5px; color: var(--muted); }
+    .ce-srcnone { font-size: 12px; color: var(--muted); font-style: italic; }
+    .ce-srcnote { margin: 7px 0 0 105px; font-size: 11.5px; color: var(--muted); }
+    .ce-srcnote.warn { color: var(--amber); font-weight: 700; }
+}
+
+/* Grid column header glyph. The header is the tightest space in the product —
+   letter, code and a scenario button already share it — so this is a bare glyph
+   with no tile and no text (CR22: screenshot a header in its FULLEST state).
+   Scoped under `.pbfs` like the rest of the grid rules in grid.scss. */
+.pbfs {
+    /* Pinned to the BOTTOM-RIGHT corner, which is the only free one: the letter
+       and code own the top-left and `.g2-addsc` (the what-if button) is absolute
+       at the top-right. Inline flow put the glyph on a second line where it
+       collided with that button in short-code cells — MF13/CR22, found by
+       measuring bounding boxes rather than by looking. */
+    .g2-hrow th { position: relative; }
+    .g2-src { position: absolute; right: 5px; bottom: 4px; display: grid; place-items: center; color: #94A3B8; }
+    /* NOT fixed here, deliberately — see ledger S15. Measuring this header for
+       S4 surfaced a PRE-EXISTING collision: `.g2-code` runs about 5px under
+       `.g2-addsc` (the what-if button, absolute top-right). It cannot be fixed
+       with a max-width on the code, because max-width resolves against the CELL
+       while the code starts after the column letter — the honest fix is to
+       reserve right padding on the header, which changes the layout of every
+       column and risks truncating exactly the <=12-char codes MAPFIX Phase A
+       created. Reported rather than force-fixed inside a phase about chips. */
+    .g2-src svg { width: 11px; height: 11px; }
+    .g2-src.s-excel { color: var(--green); }
+    .g2-src.s-feed { color: var(--cyan); }
+    .g2-src.s-rule { color: var(--i600); }
+    .g2-src.s-contract_component { color: var(--amber); }
+    .g2-src.s-employee_field { color: #3B5B8C; }
+    .g2-src.s-calculated { color: var(--i-deep); }
+    .g2-src.s-constant, .g2-src.s-none { color: #94A3B8; }
+    .g2-src.src-diff { color: var(--amber); }
+}

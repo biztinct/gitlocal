@@ -185,7 +185,16 @@
                      t-on-mouseleave="() => this.leaveItem()">
                   <span class="mc-plug left"/>
                   <div class="mc-item-main">
-                    <div class="mc-item-label" t-esc="it.label"/>
+                    <!-- SOURCING S4 — "this component is already fed from
+                         somewhere else". The RIGHT column carried no chip at all
+                         before this; note it has its OWN label block, so the chip
+                         has to be added here and not only beside the left column's
+                         provenance chip (ledger S16). -->
+                    <div class="mc-item-label">
+                      <span t-esc="it.label"/>
+                      <span t-if="srcChip(it)" t-attf-class="mc-src s-{{ srcChip(it).kind }}"
+                            t-att-title="srcChip(it).hint" t-esc="srcChip(it).label"/>
+                    </div>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                     <!-- MAPFIX D4/D5 — what this destination will ACCEPT. A
                          selection's permitted values (with the stored code, which

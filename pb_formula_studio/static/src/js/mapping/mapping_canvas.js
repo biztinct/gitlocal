@@ -670,6 +670,27 @@ export class MappingCanvas extends Component {
      * Adapters that predate this send no `prov` at all, and `undefined` falls
      * through to `null` — every other board renders exactly as it did.
      */
+    /**
+     * SOURCING S4 — what already FEEDS this component.
+     *
+     * A separate chip from `provChip`, deliberately, and in the same slot. `prov`
+     * answers "where did this card come from" (the vendor's catalogue, a live
+     * sync, one of Payobook's own fields); this answers "what feeds this
+     * component". They are different questions about different columns, and one
+     * chip trying to answer both is exactly the ambiguity this programme removes.
+     */
+    srcChip(it) {
+        if (!it || !it.srcKind || it.srcKind === "none") { return null; }
+        const labels = {
+            excel: "Spreadsheet", feed: "Connected system", rule: "Rule output",
+            contract_component: "Contract component", employee_field: "Employee record",
+            calculated: "Calculated", constant: "Fixed value",
+        };
+        const label = labels[it.srcKind];
+        if (!label) { return null; }
+        return { label, kind: it.srcKind, hint: it.srcNote || label };
+    }
+
     provChip(it) {
         if (!it || !it.prov) { return null; }
         if (it.drift) {
