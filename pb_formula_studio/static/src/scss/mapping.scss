@@ -722,3 +722,42 @@
 .mapping-canvas .mc-src.s-employee_field     { background: #E8EEF7; color: #3B5B8C; }
 .mapping-canvas .mc-src.s-calculated         { background: #DDD6F2; color: #241F52; }
 .mapping-canvas .mc-src.s-constant           { background: #EEF1F5; color: #64748B; }
+
+
+/* SOURCING S5 — lineage in place, and the sealed-card badge. */
+.mapping-canvas .mc-item-lineage {
+    display: inline-grid; place-items: center; width: 18px; height: 18px; padding: 0;
+    border: 0; border-radius: 5px; background: transparent; color: #94A3B8; cursor: pointer;
+    flex-shrink: 0;
+}
+.mapping-canvas .mc-item-lineage svg { width: 13px; height: 13px; }
+.mapping-canvas .mc-item-lineage:hover { background: #EDEAF8; color: #4A3D96; }
+.mapping-canvas .mc-badge.calc { background: #DDD6F2; color: #241F52; }
+
+.mapping-canvas .mc-lin { padding: 4px 2px 2px; }
+.mapping-canvas .mc-lin__sum {
+    font-size: 12.5px; color: #241F52; line-height: 1.45; padding: 4px 10px 10px;
+}
+.mapping-canvas .mc-lin__sec {
+    font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    color: #94A3B8; padding: 8px 10px 3px;
+}
+.mapping-canvas .mc-lin__row {
+    font-size: 12px; color: #241F52; padding: 3px 10px;
+    font-family: "SFMono-Regular", ui-monospace, monospace;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mapping-canvas .mc-lin__none { font-size: 12px; color: #94A3B8; font-style: italic; padding: 3px 10px; }
+.mapping-canvas .mc-lin__open {
+    margin: 10px 10px 4px; padding: 6px 12px; border-radius: 8px; border: 1px solid #CBC2EE;
+    background: #EDEAF8; color: #4A3D96; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.mapping-canvas .mc-lin__open:hover { background: #DDD6F2; }
+
+/* The fallback is a SENTENCE, not a field path: the monospace ellipsis rule above
+   is right for `Actual_Pay_Hour` and wrong for "Nothing is written for that
+   employee." — which it cut off mid-word on the live board. */
+.mapping-canvas .mc-lin__row.prose {
+    font-family: inherit; white-space: normal; overflow: visible; text-overflow: clip;
+    color: #475569; line-height: 1.4;
+}
