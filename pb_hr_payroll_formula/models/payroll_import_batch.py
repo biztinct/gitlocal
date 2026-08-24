@@ -468,27 +468,8 @@ class HrPayrollImportBatch(models.Model):
                             raw_data[col_letter] = row[col_idx]
 
             # Extract key fields for matching
-            employee_code = self._normalize_code(self._extract_field(raw_data, [
-                'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
-                'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
-                'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
-            ]))
-            mapped_employee_code = self._get_employee_identifier_value(raw_data)
-            if mapped_employee_code not in (None, ''):
-                employee_code = self._normalize_code(mapped_employee_code)
-
-            employee_name = self._extract_field(raw_data, list(EMPLOYEE_NAME_HEADER_CANDIDATES))
-            mapped_employee_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
-            if mapped_employee_name not in (None, ''):
-                employee_name = mapped_employee_name
-
-            employee_email = self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
-            mapped_employee_email = (
-                self._get_mapped_value_for_field(raw_data, 'hr.employee', 'work_email')
-                or self._get_mapped_value_for_field(raw_data, 'hr.employee', 'private_email')
-            )
-            if mapped_employee_email not in (None, ''):
-                employee_email = mapped_employee_email
+            employee_code, employee_name, employee_email = \
+                self._identity_from_file_row(raw_data)
 
             line_vals_list.append({
                 'batch_id': self.id,
@@ -509,6 +490,144 @@ class HrPayrollImportBatch(models.Model):
 
         # Refresh the form to reflect new state and stats
         return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+    # ==================================================================
+    # SOURCING S3 — who a row is about.
+    #
+    # Extracted VERBATIM from the two loaders so the top-up can identify an
+    # employee by exactly the same rules the primary load used, rather than
+    # growing a second copy that drifts (MF31). The two are deliberately NOT
+    # unified: a spreadsheet row is identified with the help of the field
+    # mappings, a feed record falls back to its external id, and that difference
+    # is real rather than accidental.
+    # ==================================================================
+    def _merge_topup_rows(self, rows, kind):
+        """Fold a SECOND source into a run that already has lines. Never unlinks.
+
+        `rows` is `[(raw_data, code, name, email), …]` already identified by the
+        caller with the extractor that matches where the rows came from.
+
+        The primary blob is never touched. That is the point: a top-up cannot
+        regress a run that already worked, and the value a binding chooses NOT to
+        use survives in its own blob for the `ignored` report.
+
+        An employee present in only ONE source still gets a line, flagged — never
+        silently absent, and never a row of zeros pretending to be data.
+        Re-running a top-up REPLACES its blob rather than accumulating, so the
+        merge is keyed rather than appended and running it twice is running it once.
+        """
+        self.ensure_one()
+        Line = self.env['hr.payroll.import.line']
+        existing = self.import_line_ids
+        by_code, by_email, by_name = {}, {}, {}
+        for line in existing:
+            if line.employee_code:
+                by_code.setdefault(self._normalize_code(line.employee_code), line)
+            if line.employee_email:
+                by_email.setdefault((line.employee_email or '').strip().lower(), line)
+            if line.employee_name:
+                by_name.setdefault(self._normalize_header_key(line.employee_name), line)
+
+        matched, created = 0, 0
+        seq = max(existing.mapped('sequence') or [0])
+        new_vals = []
+        for raw_data, code, name, email in rows:
+            line = (by_code.get(self._normalize_code(code or ''))
+                    or by_email.get((email or '').strip().lower())
+                    or by_name.get(self._normalize_header_key(name or '')))
+            blob = json.dumps(raw_data, default=json_serializer)
+            if line:
+                line.write({'raw_data_topup_json': blob, 'source_origin': 'both'})
+                matched += 1
+            else:
+                seq += 1
+                new_vals.append({
+                    'batch_id': self.id, 'sequence': seq,
+                    # No primary data for this person: they exist in the added
+                    # source only, and the blob says so rather than implying zeros.
+                    'raw_data_json': json.dumps({}),
+                    'raw_data_topup_json': blob,
+                    'source_origin': 'topup',
+                    'employee_code': code, 'employee_name': name,
+                    'employee_email': email, 'state': 'draft',
+                })
+                created += 1
+        if new_vals:
+            Line.create(new_vals)
+        self._log("Added a second source (%s): %d employees matched an existing row, "
+                  "%d were only in the added source." % (kind, matched, created))
+        return {'matched': matched, 'created': created, 'kind': kind}
+
+    def action_top_up_from_data_store(self):
+        """Also pull this run's values from the connected system.
+
+        `source_type` is NOT changed — it stays the run's base source. This is the
+        explicit "also pull from…" step, and it merges rather than replacing.
+        """
+        self.ensure_one()
+        if not self.connector_id:
+            raise UserError(_("Choose a connected system for this run first."))
+        if not self.import_line_ids:
+            raise UserError(_("Load this run's main source before adding a second one."))
+        # Same selection the primary data-store loader uses — a top-up must read
+        # the feed the same way a primary load of that feed would, or the two
+        # sources disagree about what the feed even contains.
+        DataStore = self.env['hr.api.data.store']
+        store_records = DataStore.search([
+            ('connector_id', '=', self.connector_id.id),
+            ('state', '=', 'extracted'),
+            ('data_type', 'in', ['salary', 'employee']),
+        ], order='employee_external_id, data_type')
+        if not store_records:
+            raise UserError(_(
+                "There is no pulled data on %s to add. Pull data on the "
+                "connected system first.") % (self.connector_id.name or ''))
+        grouped = {}
+        for rec in store_records:
+            ext_id = rec.employee_external_id or ('_unknown_%s' % rec.id)
+            grouped.setdefault(ext_id, {}).update(rec.get_mappable_data())
+        rows = []
+        for ext_id, data in grouped.items():
+            code, name, email = self._identity_from_store_row(data, ext_id)
+            rows.append((data, code, name, email))
+        self._merge_topup_rows(rows, 'feed')
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+    def _identity_from_file_row(self, raw_data):
+        """Employee code / name / email as the FILE loader has always read them."""
+        employee_code = self._normalize_code(self._extract_field(raw_data, [
+            'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
+            'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
+            'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
+        ]))
+        mapped_employee_code = self._get_employee_identifier_value(raw_data)
+        if mapped_employee_code not in (None, ''):
+            employee_code = self._normalize_code(mapped_employee_code)
+
+        employee_name = self._extract_field(raw_data, list(EMPLOYEE_NAME_HEADER_CANDIDATES))
+        mapped_employee_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
+        if mapped_employee_name not in (None, ''):
+            employee_name = mapped_employee_name
+
+        employee_email = self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
+        mapped_employee_email = (
+            self._get_mapped_value_for_field(raw_data, 'hr.employee', 'work_email')
+            or self._get_mapped_value_for_field(raw_data, 'hr.employee', 'private_email')
+        )
+        if mapped_employee_email not in (None, ''):
+            employee_email = mapped_employee_email
+        return employee_code, employee_name, employee_email
+
+    def _identity_from_store_row(self, raw_data, ext_id=None):
+        """Employee code / name / email as the DATA STORE loader has always read them."""
+        employee_code = self._normalize_code(
+            self._extract_field(raw_data, list(EXTERNAL_CODE_HEADER_CANDIDATES)) or ext_id)
+        employee_name = self._extract_field(raw_data, list(EXTERNAL_NAME_HEADER_CANDIDATES))
+        employee_email = self._extract_field(raw_data, [
+            'email', 'work_email', 'emp_email', 'employee_email',
+            'Email', 'EmailID',
+        ])
+        return employee_code, employee_name, employee_email
 
     def action_load_from_data_store(self):
         """Load data from API Data Store into import lines.
@@ -577,14 +696,8 @@ class HrPayrollImportBatch(models.Model):
             raw_data = emp_data['merged_data']
 
             # Extract key fields for matching
-            employee_code = self._normalize_code(self._extract_field(raw_data, list(EXTERNAL_CODE_HEADER_CANDIDATES)) or ext_id)
-
-            employee_name = self._extract_field(raw_data, list(EXTERNAL_NAME_HEADER_CANDIDATES))
-
-            employee_email = self._extract_field(raw_data, [
-                'email', 'work_email', 'emp_email', 'employee_email',
-                'Email', 'EmailID',
-            ])
+            employee_code, employee_name, employee_email = \
+                self._identity_from_store_row(raw_data, ext_id)
 
             line_vals_list.append({
                 'batch_id': self.id,
@@ -2141,6 +2254,7 @@ class HrPayrollImportBatch(models.Model):
             contract=contract,
             employee=employee,
             provenance=input_sources,
+            topup_data=line.get_topup_data() if line else None,
         )
 
         # Create payslip
@@ -2502,8 +2616,22 @@ class HrPayrollImportBatch(models.Model):
             self.formula_config_id.structure_id.rule_ids = [(4, new_rule.id)]
         return new_rule
 
+    #: SOURCING S3 — the neutrality instrument. Incremented every time the bound
+    #: branch is ENTERED. A single-source run must leave it at zero, which is a
+    #: strictly stronger claim than "the numbers came out the same": it proves the
+    #: new code path was never reached, rather than that it happened to agree.
+    _sourcing_bound_branch_entered = 0
+
+    @api.model
+    def _sourcing_reset_branch_counter(self):
+        HrPayrollImportBatch._sourcing_bound_branch_entered = 0
+
+    @api.model
+    def _sourcing_branch_counter(self):
+        return HrPayrollImportBatch._sourcing_bound_branch_entered
+
     def _transform_data_to_formula_inputs(self, raw_data, contract=None, employee=None,
-                                          provenance=None):
+                                          provenance=None, topup_data=None):
         """Transform raw Excel data to formula input values using field mappings
 
         SOURCING S1 — ``provenance`` is an optional caller-supplied dict. When given,
@@ -2575,16 +2703,24 @@ class HrPayrollImportBatch(models.Model):
                 )
             return None
 
-        def lookup_raw_value_with_key(candidates):
+        def lookup_in_with_key(data, candidates):
+            """The header-matching ladder, over whichever blob it is given.
+
+            SOURCING S3 — this is `lookup_raw_value_with_key`'s body, parameterised
+            by the dict instead of closing over `raw_data`, so the top-up blob is
+            searched by exactly the same rules rather than by a second
+            implementation that would drift. `lookup_raw_value_with_key` below is
+            now a one-line call with `raw_data`, so the unbound path is unchanged.
+            """
             for key in candidates:
-                if key in raw_data:
-                    return raw_data.get(key), key
-            normalized_map = {self._normalize_header_key(k): k for k in raw_data.keys()}
+                if key in data:
+                    return data.get(key), key
+            normalized_map = {self._normalize_header_key(k): k for k in data.keys()}
             for key in candidates:
                 normalized_key = self._normalize_header_key(key)
                 if normalized_key in normalized_map:
                     matched = normalized_map[normalized_key]
-                    return raw_data.get(matched), matched
+                    return data.get(matched), matched
             normalized_candidates = [
                 self._normalize_header_key(key) for key in candidates if key
             ]
@@ -2598,7 +2734,7 @@ class HrPayrollImportBatch(models.Model):
                         matches.append(original_key)
             if len(set(matches)) == 1:
                 matched = matches[0]
-                return raw_data.get(matched), matched
+                return data.get(matched), matched
             if matches:
                 _logger.info(
                     "Input match ambiguous for candidates %s: %s",
@@ -2606,6 +2742,24 @@ class HrPayrollImportBatch(models.Model):
                     sorted(set(matches)),
                 )
             return None, None
+
+        def lookup_raw_value_with_key(candidates):
+            return lookup_in_with_key(raw_data, candidates)
+
+        # SOURCING S3 — which blob is which. A run has at most two sources: the
+        # primary (whatever `source_type` says) and an explicit top-up, which is by
+        # definition the other kind. `rule` bindings read the FEED side, because a
+        # transformation rule's output is delivered in the feed payload.
+        topup = topup_data or {}
+        primary_origin = ('feed' if self.source_type in ('connector', 'api_data_store')
+                          else 'excel')
+        topup_origin = 'excel' if primary_origin == 'feed' else 'feed'
+
+        def blob_for_kind(kind):
+            want = 'feed' if kind == 'rule' else kind
+            if want == primary_origin:
+                return raw_data, primary_origin
+            return topup, topup_origin
 
         def is_employee_code_rule(rule):
             tokens = [
@@ -2830,6 +2984,15 @@ class HrPayrollImportBatch(models.Model):
                 mapped_value = None
                 resolved_source = None
                 matched_key = None
+                # SOURCING S3 — a binding only exists on an input, and only counts
+                # when it names a key. A half-set binding resolves as unbound
+                # rather than as "bound to nothing", so a partially-filled form can
+                # never make a component stop resolving.
+                bound_kind = rule.source_binding or False
+                bound_key = (rule.source_binding_key or '').strip()
+                if bound_kind and not bound_key:
+                    bound_kind = False
+                bound_empty = False
                 matched_group = None
                 is_collaborate = self._normalize_header_key(rule.code or rule.name or '') == 'collaborate'
                 explicit_header_found = False
@@ -2893,6 +3056,64 @@ class HrPayrollImportBatch(models.Model):
                 if isinstance(value, str) and value.strip() == '':
                     value = None
 
+                # ----------------------------------------------------------
+                # SOURCING S3 — the bound branch. ENTERED ONLY IF A BINDING EXISTS.
+                #
+                # It sits in FRONT of the ladder above rather than inside it, and
+                # nothing reaches it unless a person (or the migration, and only
+                # where it could prove the answer) declared where this component
+                # reads from. That guard is the whole neutrality argument: no
+                # component in any existing database has a binding, so on every run
+                # that works today this block is skipped entirely — asserted by
+                # `_sourcing_bound_branch_entered` staying at zero, which is a
+                # stronger claim than the numbers merely agreeing.
+                # ----------------------------------------------------------
+                if bound_kind:
+                    HrPayrollImportBatch._sourcing_bound_branch_entered += 1
+                    side_b, _bo = blob_for_kind(bound_kind)
+                    side_o, other_origin = (
+                        (topup, topup_origin) if side_b is raw_data
+                        else (raw_data, primary_origin))
+                    v_b, k_b = lookup_in_with_key(side_b, [bound_key])
+                    # The other side is searched by the BOUND KEY FIRST, then by the
+                    # component's natural candidates. Both matter, and the bound key
+                    # matters most: the same column is very often called the same
+                    # thing in both sources ("Bonus Col" in the file and in the
+                    # feed), and searching only by name/code/letter would miss it
+                    # and report "nothing arrived" while the value sat one key away.
+                    v_o, k_o = lookup_in_with_key(
+                        side_o, [bound_key] + candidates + column_candidates) \
+                        if side_o else (None, None)
+                    if isinstance(v_b, str) and v_b.strip() == '':
+                        v_b = None
+                    if isinstance(v_o, str) and v_o.strip() == '':
+                        v_o = None
+                    if v_b is not None:
+                        input_values[rule.code] = normalize_input_value(rule, v_b)
+                        raw_input_codes.add(rule.code)
+                        if prov is not None:
+                            prov[rule.code] = input_provenance.entry(
+                                bound_kind, key=k_b, via='binding',
+                                # Both sides carried it: the binding wins and the
+                                # loser is REPORTED. Reusing S2's `ignored_side`
+                                # rather than writing a second one.
+                                ignored=(input_provenance.ignored_side(
+                                    other_origin, k_o, v_o) if v_o is not None else None))
+                        continue
+                    if v_o is not None:
+                        # Owner decision 3 — fall back, but say so.
+                        input_values[rule.code] = normalize_input_value(rule, v_o)
+                        raw_input_codes.add(rule.code)
+                        if prov is not None:
+                            prov[rule.code] = input_provenance.entry(
+                                other_origin, key=k_o, via='fallback', fell_back=True)
+                        continue
+                    # Neither side had it. Fall through to the untouched tail below
+                    # so the value is exactly what an unbound component would get;
+                    # only the explanation differs.
+                    value = None
+                    bound_empty = True
+
                 if value is not None:
                     resolved_source = 'raw'
                     input_values[rule.code] = normalize_input_value(rule, value)
@@ -2930,6 +3151,13 @@ class HrPayrollImportBatch(models.Model):
                             'contract_component_default': 'contract_default',
                             'default': 'default',
                         }.get(resolved_source, 'default')
+                        # A bound component whose source carried nothing lands on
+                        # exactly the value an unbound one would have — the only
+                        # difference is that it can SAY the bound source was empty,
+                        # which is what the "produced nothing last run" health hint
+                        # in S5 reads.
+                        if bound_empty and resolved_source == 'default':
+                            via = 'binding_empty'
                     prov[rule.code] = input_provenance.entry(
                         # `origin` is 'excel' for every batch until S3 gives a run a
                         # second source; the argument is passed explicitly so S3 adds

@@ -518,6 +518,7 @@ class HrPayslipFormula(models.Model):
                     contract=payslip.contract_id,
                     employee=payslip.employee_id,
                     provenance=input_sources,
+                    topup_data=import_line.get_topup_data(),
                 )
                 payslip.formula_input_values = json.dumps(input_values)
                 payslip.formula_input_sources = json.dumps(input_sources)

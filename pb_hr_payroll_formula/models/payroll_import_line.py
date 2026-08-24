@@ -33,6 +33,28 @@ class HrPayrollImportLine(models.Model):
         help="Original row data from Excel as JSON"
     )
 
+    # ------------------------------------------------------------------
+    # SOURCING S3 — the second source lives in its OWN blob.
+    #
+    # TWO BLOBS, not one merged blob with a per-key origin map. The reason is not
+    # tidiness, it is provability: on a single-source run `raw_data_json` stays
+    # BIT-IDENTICAL to what the loader has always written and this one stays `{}`,
+    # so neutrality is a property of the shape rather than a claim to be tested.
+    # A top-up therefore cannot regress a run that already worked, and the value a
+    # binding chose NOT to use survives for the `ignored` report — which
+    # last-writer-wins merging into a single dict would have destroyed.
+    # ------------------------------------------------------------------
+    raw_data_topup_json = fields.Text(
+        string='Added Source Data (JSON)', default='{}',
+        help="Row data contributed by a second source pulled into this run.")
+
+    source_origin = fields.Selection([
+        ('primary', 'From the primary source only'),
+        ('topup', 'From the added source only'),
+        ('both', 'From both sources'),
+    ], string='Fed by', default='primary', index=True,
+       help="Which of this run's sources carried data for this employee.")
+
     # Matching fields (extracted from raw data for employee matching)
     employee_code = fields.Char(
         string='Employee Code',
@@ -124,6 +146,21 @@ class HrPayrollImportLine(models.Model):
         if self.raw_data_json:
             try:
                 return json.loads(self.raw_data_json)
+            except json.JSONDecodeError:
+                return {}
+        return {}
+
+    def get_topup_data(self):
+        """The second source's row for this employee, or {} when there isn't one.
+
+        Mirrors `get_raw_data` exactly, including its swallow-and-return-{} on bad
+        JSON: a corrupt blob must degrade to "this source contributed nothing",
+        never take a payroll run down.
+        """
+        self.ensure_one()
+        if self.raw_data_topup_json:
+            try:
+                return json.loads(self.raw_data_topup_json)
             except json.JSONDecodeError:
                 return {}
         return {}
