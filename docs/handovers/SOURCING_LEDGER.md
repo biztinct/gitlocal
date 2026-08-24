@@ -273,6 +273,46 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   on EITHER side. Now `[bound_key] + candidates + column_candidates`. **A fallback that cannot find
   the obvious is worse than no fallback: it reports "nothing arrived" with authority.**
 
+- **S14 (S4, design): there are TWO component editors in `studio.xml`, and the one with the Advanced
+  accordion is not the one the Edit button opens.** The Cell Editor block was added beside the
+  `Advanced` accordion (`studio.xml:~1411`) exactly as the design said — and rendered for nobody. The
+  panel the Edit button actually opens is the inline editor at `:1221` (`.ce-body`, type-switched
+  bodies for formula/input/constant), which has no `.ce-sec` at all. Diagnosed by querying the live
+  DOM for `.ce-sec-h` and getting an EMPTY list — i.e. the *pre-existing* Advanced heading was missing
+  too, which is what proved the whole block was in the wrong editor rather than the new markup being
+  broken. **When a UI addition does not appear, first check that the surrounding, already-working
+  markup is there; if it is not, you are editing the wrong template.**
+
+- **S15 (S4, found not fixed): the grid header has a PRE-EXISTING overlap — `.g2-code` runs ~5px under
+  `.g2-addsc`.** Surfaced by S4's bounding-box measurement, not introduced by it (the source glyph
+  contributes ZERO overlaps at 1440 and 1024 once pinned to the free bottom-right corner). It cannot be
+  fixed with a `max-width` on the code: `max-width` resolves against the CELL while the code starts
+  after the column letter, so the code still reaches the button — and on a non-replaced INLINE element
+  it does nothing at all until `display:inline-block` is added, which is a second trap in the same
+  fix. The honest repair is to reserve right padding on the header, which changes every column's
+  layout and risks truncating exactly the ≤12-char codes MAPFIX Phase A created. **Reported for an
+  owner decision rather than force-fixed inside a phase about chips.**
+
+- **S16 (S4, design): the mapping canvas has two item templates, and the right column has its own.**
+  `mapping_canvas.xml:92` (left) renders `<span t-esc="it.label"/>` plus chips; `:193` (right)
+  rendered `<div class="mc-item-label" t-esc="it.label"/>` — a bare text node with no chip slot at
+  all. A chip added only next to the left column's `provChip` therefore rendered nothing on the right,
+  while every server payload and every client helper checked out. **Also: `prov` was the wrong field
+  to reuse.** It means "where did this CARD come from" (vendor catalogue / live sync / Payobook's own
+  field) and `provChip` only understands `catalog`/`odoo`/`mapping`, so arbitrary source kinds
+  silently returned null. Source is a SECOND axis and now has its own `srcKind` + `srcChip` +
+  `.mc-src`. **Two questions about one card need two chips; overloading the first one answers
+  neither.**
+
+- **S17 (S4, environment): `odoo-bin -u` in a detached unit does NOT reload the running service's
+  Python.** The upgrade process is a separate process: it updates the database and rebuilds the asset
+  bundles, and the already-running `odoo-server` keeps its previously imported modules in memory. A
+  model change therefore deploys, upgrades green, and still serves the OLD payload — observed as a
+  board returning `prov`/`provKind` (a superseded key set) while a shell on the same server returned
+  the new `srcKind`. **A shell and a browser disagreeing about the same method is the signature.**
+  Add `sudo service odoo-server restart` after any Python change, and remember MF12's companion
+  remedy for assets: `delete from ir_attachment where url like '/web/assets/%'` then restart.
+
 ## Owner decisions (locked)
 
 *(none yet beyond the seven in the brief — recorded here as they are made)*
@@ -350,5 +390,19 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   never reached, not merely in agreement. 15/15 tests, including a dual-source run on
   payobook_template where the feed binding won over a spreadsheet value and recorded it as `ignored`.
   Gotchas **S12**, **S13**.
-- **S4 — Every screen says where a value comes from.** NOT STARTED.
+- **S4 — Every screen says where a value comes from. DONE + live on abm · acme · payobook ·
+  payobook_template (2026-08-25).** pb_formula_studio **19.0.1.127.0**. Shipped: `source` block on the
+  studio serializer (`declared` + `actual`, computed once per config — one payslip read, not one per
+  component); `_declared_source` / `_source_actuals` / `_source_employee_dest_ids` / `_source_note`;
+  the shared `source_vocab.js` (8 kinds, labels, one `srcSentence`) imported by the studio AND the
+  grid so five surfaces cannot paraphrase one fact; `SrcIco` glyphs; chips on the components rail,
+  the card hero subtitle, the Cell Editor (a new "Where this value comes from" section, with the
+  legacy block relabelled "Manual classification (does not affect import)"), the grid column header,
+  and the right column of both mapping boards via a new `srcKind`/`srcChip`/`.mc-src` axis.
+  **Measured: 0 bounding-box overlaps from the new chips at 1440 AND 1024** (rail 78/78 rows, board
+  41 chips, grid glyph pinned bottom-right); 3 pre-existing grid-header overlaps found and reported
+  (**S15**). **Payload +5.2%** (6.5 KB on 126.4 KB for 86 components; +3.9 KB on 74.8 KB for 53),
+  server-side cost 49.6 ms for 99 rules. **Zero writes proven**: payobook `hr_formula_rule` checksum
+  `eb80d6757a8f4a79a9f57e3b5ba13512` identical before and after, all counts unchanged; abm unchanged
+  (bound=0, severed=0, wired=33). Gotchas **S14**, **S15**, **S16**, **S17**.
 - **S5 — Lineage in place, sealed components, cockpit.** NOT STARTED.

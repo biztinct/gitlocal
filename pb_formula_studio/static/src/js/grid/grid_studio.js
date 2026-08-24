@@ -3,6 +3,8 @@ import { Component, useState, useRef, onMounted, onPatched, onWillUnmount, onWil
 import { FormulaBar } from "./formula_bar";
 import { CellAutocomplete } from "./cell_autocomplete";
 import { _t } from "@web/core/l10n/translation";
+// SOURCING S4 — the same vocabulary the rail and the cards use.
+import * as SrcVocab from "../source_vocab";
 
 // Property rows are a fixed vocabulary — index math stays trivial.
 const ROWS = ["name", "category", "type", "formula", "value", "status"];
@@ -441,6 +443,11 @@ export class GridStudio extends Component {
     isFocusedCell(colId, row) { return this.ui.focus.colId === colId && this.ui.focus.row === row; }
     inSelection(c) { return this.ui.selection.includes(c.id); }
     isEditingCell(c, row) { return !!this.ui.editing && this.ui.editing.colId === c.id && this.ui.editing.row === row; }
+    srcOf(c) { return SrcVocab.srcOf(c); }
+    srcIcon(kind) { return SrcVocab.srcIcon(kind); }
+    srcDisagrees(c) { return SrcVocab.srcDisagrees(c); }
+    srcSentence(c) { return SrcVocab.srcSentence(c, true); }
+
     headClass(c) {
         const cls = ["g2-chead"];
         const dep = this.depClass(c);
