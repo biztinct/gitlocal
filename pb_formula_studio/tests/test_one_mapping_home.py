@@ -146,13 +146,22 @@ class TestOneMappingHome(TransactionCase):
                       # "X → Y" sentence because this board has THREE lanes:
                       # the arrow form would have to pick two of them and
                       # would name the wrong pair whichever two it picked.
-                      'Transformations'):
+                      'Transformations',
+                      # J5 — the seventh tab, FIRST, and the cold-start
+                      # default. A plain noun for the same reason
+                      # "Transformations" is one: this board has five lanes and
+                      # an "X → Y" label would have to pick two of them.
+                      'Journey'):
             self.assertIn('_t("%s")' % label, modes,
                           "the tab labels are J-D2's, exactly")
         # the ids are the RPC prefixes and the deep-link vocabulary — untouched
+        # except by ADDITION. J5 prepends `journey`; every id that was here
+        # before is still here, still spelled the same, still in the same
+        # relative order, which is what keeps every deep link landing where it
+        # always did.
         self.assertEqual(re.findall(r'\{ id: "(\w+)"', modes),
-                         ['api', 'transform', 'import', 'employee', 'scheme',
-                          'cycle'])
+                         ['journey', 'api', 'transform', 'import', 'employee',
+                          'scheme', 'cycle'])
         # …and nothing a user reads on this surface says "Studio"
         for label in re.findall(r'label: _t\("([^"]+)"\)', modes):
             self.assertNotIn('Studio', label)

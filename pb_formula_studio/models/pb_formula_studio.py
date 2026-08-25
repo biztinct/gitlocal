@@ -5689,6 +5689,828 @@ class PbFormulaStudio(models.AbstractModel):
                        'fed': len({w['rightId'] for w in wires})},
         }
 
+    # ==================================================================
+    # JOURNEY J5 — the Journey. Five lanes, one read, no writes.
+    #
+    #     Systems ─▶ Feeds & files ─▶ Transformations ─▶ Scheme ─▶ Pay run
+    #
+    # The programme's showpiece, and the only screen that answers the owner's
+    # original question in one glance: where does a pay value come from. Every
+    # number on it is a count this database can defend — there are no invented
+    # percentages, no liveness bars and no charts (pb_explorer owns analytics).
+    #
+    # It composes; it does not define. The conflict detector is J3's
+    # `_source_conflicts`, the unread-output predicate is J4's `_tf_consumers`
+    # (which is `pb.integrations._rule_consumers`), the component picture is the
+    # `_declared_source` family, the primary connector is `config.connector_id`.
+    # A second opinion about any of those would be a second thing to keep in
+    # step, and this programme has spent five phases removing exactly that.
+    # ==================================================================
+
+    #: The ONE via -> bucket mapping, written once, server-side (J5's contract).
+    #:
+    #: `via` answers "why THIS source won" and there are eighteen of them
+    #: (`input_provenance.VIAS`). The pay-run lane needs three-and-a-bit families
+    #: rather than eighteen columns, and the danger of a families map is that it
+    #: goes stale in SILENCE: a nineteenth `via` lands, nothing crashes, and its
+    #: values are quietly counted as something they are not. So this dict is
+    #: EXHAUSTIVE over the vocabulary and `test_journey_view` fails loudly the
+    #: moment the two disagree in either direction.
+    #:
+    #: The families, and why each row sits where it does:
+    #:
+    #:   `wired`   — the configured path delivered. A binding, a header/letter
+    #:               match, a connector mapping, a worked-days line, or one of
+    #:               the two approved-workflow streams. Somebody wired it and it
+    #:               answered.
+    #:   `fallback`— a lower rung answered because the rung above it was empty.
+    #:               `fallback` and `binding_empty` say so in their own names;
+    #:               `employee_mapping`, `contract` and `contract_field` are
+    #:               J-D4's read-back half — the row that writes the record on
+    #:               import is read BACK when the file or feed leaves the value
+    #:               empty, which is the definition of a fallback.
+    #:   `default` — nothing fed it. A constant is in here on purpose: it is the
+    #:               same number for everyone and no source produced it.
+    #:   `computed`— the FOURTH bucket, and a deviation from the handover's
+    #:               three, taken deliberately. Proration, retro and carryover
+    #:               appear as a `via` only when the adjustment INVENTED the code
+    #:               (`payroll_import_batch._run_adjustment`), and such a value
+    #:               carries `src='calculated'`. It was not wired, it did not
+    #:               fall back, and it is not a default — filing it under any of
+    #:               the three would be the invented number this phase exists to
+    #:               refuse. A fourth honest column costs less than a wrong one.
+    _JOURNEY_VIA_BUCKETS = {
+        'binding': 'wired',
+        'header': 'wired',
+        'column_letter': 'wired',
+        'connector_mapping': 'wired',
+        'worked_days': 'wired',
+        'overtime_request': 'wired',
+        'business_trip': 'wired',
+        'binding_empty': 'fallback',
+        'fallback': 'fallback',
+        'employee_mapping': 'fallback',
+        'contract': 'fallback',
+        'contract_field': 'fallback',
+        'contract_default': 'default',
+        'constant': 'default',
+        'default': 'default',
+        'proration': 'computed',
+        'retro': 'computed',
+        'carryover': 'computed',
+    }
+
+    #: Buckets in display order. Named here so the board cannot invent a fifth.
+    _JOURNEY_BUCKETS = ('wired', 'fallback', 'computed', 'default')
+
+    #: How many payslips of a run the aggregate will read. A processed VN batch
+    #: is tens of thousands of rows and each carries a JSON blob; reading all of
+    #: them to print six numbers would make the landing tab the slowest screen in
+    #: the product. When the cap bites the payload SAYS so (`sampled`), and the
+    #: board prints "from the first N of M payslips" rather than a bare number —
+    #: an honest scope is a smaller claim than a silent estimate.
+    _JOURNEY_SLIP_CAP = 2000
+
+    @api.model
+    def _journey_bucket_for_via(self, via):
+        """One `via` -> one family. Unknown degrades to `default` and LOGS.
+
+        Never raises: this runs inside a landing page, and a vocabulary that
+        gained a word must not be the thing that takes the screen down. The
+        Python test is what makes the degradation loud where it matters — at
+        the point a developer adds the nineteenth `via`, not at the point a
+        user opens a tab.
+        """
+        bucket = self._JOURNEY_VIA_BUCKETS.get(via or 'default')
+        if bucket is None:
+            _logger.warning(
+                "J5: no bucket for provenance via %r — counted as 'default'. "
+                "Add it to _JOURNEY_VIA_BUCKETS.", via)
+            return 'default'
+        return bucket
+
+    @api.model
+    def _journey_aggregate(self, blobs):
+        """Aggregate provenance blobs by `src` and by `via`-family.
+
+        `blobs` is an iterable of JSON STRINGS — the raw
+        `hr.payslip.formula_input_sources` column, passed in rather than read
+        here so the Python tests can exercise the arithmetic on fixtures with
+        no payslip table involved (the handover's "fixture-based tests for the
+        aggregate path").
+
+        Counts VALUES, not payslips: one payslip with 99 components contributes
+        99. `slips` counts the payslips that carried a readable blob, which is
+        the denominator the board prints beside it. A blob that will not parse
+        is skipped and counted in `unreadable` rather than being allowed to
+        look like a payslip with no values.
+        """
+        by_src = defaultdict(int)
+        by_bucket = defaultdict(int)
+        fell_back = 0
+        values = 0
+        slips = 0
+        unreadable = 0
+        for raw in blobs:
+            # An EMPTY column is not an empty payslip. `raw or '{}'` was the
+            # first spelling and it quietly turned "this payslip recorded no
+            # provenance at all" into "this payslip resolved nothing", which are
+            # different facts: the first is a run that predates the provenance
+            # writer, the second is a run that went badly. Counting the first as
+            # the second would put a payslip in the denominator that has nothing
+            # to say about the numerator.
+            if not raw:
+                unreadable += 1
+                continue
+            try:
+                blob = json.loads(raw)
+            except (TypeError, ValueError):
+                unreadable += 1
+                continue
+            if not isinstance(blob, dict):
+                unreadable += 1
+                continue
+            slips += 1
+            for entry in blob.values():
+                if not isinstance(entry, dict):
+                    continue
+                values += 1
+                by_src[entry.get('src') or 'none'] += 1
+                by_bucket[self._journey_bucket_for_via(entry.get('via'))] += 1
+                if entry.get('fell_back'):
+                    fell_back += 1
+        return {
+            'slips': slips,
+            'values': values,
+            'unreadable': unreadable,
+            'fell_back': fell_back,
+            'by_src': dict(by_src),
+            'by_bucket': {b: by_bucket.get(b, 0) for b in self._JOURNEY_BUCKETS},
+        }
+
+    @api.model
+    def _journey_iso(self, value):
+        """A datetime as an ISO string, or ''. The CLIENT formats the age.
+
+        `MappingStudio.since()` already turns one of these into "synced 3d ago"
+        and has since Cycle 5; a second age formatter on the server would be a
+        second opinion about what "recently" means, told in a different
+        timezone. `_import_sample_meta`'s `read_on` is the deliberate exception
+        — a file's read date is a provenance line, not an age.
+        """
+        return fields.Datetime.to_string(value) if value else ''
+
+    @api.model
+    def _journey_people_mappings(self, config):
+        """The Employee & contract rows for this scheme, split by what they DO.
+
+        J3 S1 settled that these rows are two-way — the same row writes the
+        record on import and is read BACK when the file or feed leaves the value
+        empty — with ONE exception, and the exception is load-bearing here:
+        a `bank_account` row is the import half only, because
+        `get_mapped_input_value` reads employee and contract FIELDS back and
+        never bank parts. So a bank row is not fallback-capable, and counting it
+        as one would put a number on the header sentence that the resolver would
+        never honour.
+
+        Returns `(total_rows, {rule_id, ...} read-back-capable, bank_rows)`.
+        """
+        Mapping = self.env.get('hr.payslip.import.mapping')
+        if Mapping is None or not config.rule_ids:
+            return 0, set(), 0
+        try:
+            rows = Mapping.sudo().search(
+                [('salary_structure_id', '=', config.id)])
+        except Exception:       # noqa: BLE001 — a lane must never break the tab
+            return 0, set(), 0
+        read_back, bank = set(), 0
+        for row in rows:
+            if row.destination_type == 'bank_account':
+                bank += 1
+                continue
+            if row.component_id:
+                read_back.add(row.component_id.id)
+        return len(rows), read_back, bank
+
+    @api.model
+    def _journey_scheme_lane(self, config, emp_dest, wire_dests):
+        """The component picture, every number defended by a direct count.
+
+        One pass over `config.rule_ids`, asking `_declared_source` the same
+        question the mapping boards ask it — so the Journey's "42 wired" and the
+        API board's forty-two source chips are the same forty-two components,
+        not two independently-derived numbers that will drift apart by Tuesday.
+        """
+        counts = {'total': 0, 'inputs': 0, 'wired': 0, 'constant': 0,
+                  'calculated': 0, 'unfed': 0, 'contract': 0, 'people': 0}
+        wired_ids = set()
+        for rule in config.rule_ids:
+            counts['total'] += 1
+            declared = self._declared_source(rule, emp_dest, wire_dests)
+            kind = declared['kind']
+            if rule.column_type == 'input':
+                counts['inputs'] += 1
+            if kind in ('excel', 'feed', 'rule'):
+                counts['wired'] += 1
+                wired_ids.add(rule.id)
+            elif kind == 'calculated':
+                counts['calculated'] += 1
+            elif kind == 'constant':
+                counts['constant'] += 1
+            elif kind == 'contract_component':
+                counts['contract'] += 1
+            elif kind == 'employee_field':
+                counts['people'] += 1
+            else:
+                counts['unfed'] += 1
+        return counts, wired_ids
+
+    @api.model
+    def journey_data(self, config_id=None):
+        """The whole Journey, in ONE read.
+
+        Read-only, top to bottom. Nothing in this method or anything it calls
+        writes a row, and that is the phase's signature proof rather than a
+        remark: the MF37 diff around an entire live validation session of this
+        tab is empty, with no restore step.
+
+        The payload is five LANES of nodes plus the EDGES between them. Nodes
+        are uniform (`id`, `kind`, `label`, `sub`, `tone`, `chip`, `door`,
+        `ghost`) so the board renders them with one template and cannot grow a
+        per-lane dialect; edges carry `from`, `to`, `kind` and `count`, and the
+        board draws a wire only where an edge exists — which is what makes the
+        picture a claim about the database rather than a diagram.
+
+        Every lane has a designed GHOST with a working door, because a scheme
+        with nothing configured is the novice's first screen and an empty
+        five-lane grid would read as a broken feature rather than as an
+        invitation.
+        """
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'reason': 'no_config'}
+
+        Conn = self.env['hr.integration.connector']
+        FM = self.env.get('hr.integration.field.mapping')
+        connectors = Conn.search([], order='name')
+
+        # ---- the primary connector (J-D5, and MJ22's other half) -------------
+        # `config.connector_id` and NOTHING ELSE. `_api_active_connector`'s
+        # most-mappings heuristic answers a different question (which connector
+        # do this scheme's wires point at) and is documented picking the wrong
+        # one on abm; the runtime gate in `payroll_import_batch` reads the FIELD.
+        # A lane marked "primary" that the runtime disagrees with would be the
+        # worst thing this tab could say, because it would be believed.
+        primary = config.connector_id if config.connector_id else Conn.browse()
+
+        # ---- what wires exist, once, for the whole board ---------------------
+        emp_total, read_back_ids, bank_rows = self._journey_people_mappings(config)
+        emp_dest = self._source_employee_dest_ids(config)
+        wire_dests = self._source_wire_dests(config)
+        conflicts = self._source_conflicts(config)
+        scheme_counts, wired_ids = self._journey_scheme_lane(
+            config, emp_dest, wire_dests)
+
+        input_ids = set(config.rule_ids.filtered(
+            lambda r: r.column_type == 'input').ids)
+
+        # per-connector and per-endpoint counts of LIVE wires into this scheme
+        wires_by_conn = defaultdict(int)
+        wires_by_ep = defaultdict(int)
+        if FM is not None and config.rule_ids:
+            try:
+                for m in FM.sudo().with_context(active_test=False).search(
+                        [('target_rule_id', 'in', list(input_ids))]):
+                    wires_by_conn[m.connector_id.id] += 1
+                    if m.endpoint_id:
+                        wires_by_ep[m.endpoint_id.id] += 1
+            except Exception as e:      # noqa: BLE001
+                _logger.warning("J5: wire census failed: %s: %s",
+                                type(e).__name__, e)
+
+        # ---- severed wires, and the honest scope of that claim ---------------
+        # `is_severed` is `target_rule_code AND NOT target_rule_id` — a severed
+        # wire has NO target, so it cannot be found by searching for this
+        # config's rules and "severed wires of this scheme" is not a question
+        # the schema can answer. What it CAN answer is "severed wires on the
+        # connection this scheme reads", so that is what is counted and that is
+        # what the node says. Attributing an orphaned `target_rule_code` to a
+        # config by string-matching would be exactly the undefendable number
+        # scope 5 forbids.
+        severed_conn_ids = set(wires_by_conn)
+        if primary:
+            severed_conn_ids.add(primary.id)
+        severed_n = 0
+        if FM is not None and severed_conn_ids:
+            try:
+                severed_n = FM.sudo().with_context(active_test=False).search_count(
+                    [('connector_id', 'in', list(severed_conn_ids)),
+                     ('is_severed', '=', True)])
+            except Exception as e:      # noqa: BLE001
+                _logger.warning("J5: severed census failed: %s: %s",
+                                type(e).__name__, e)
+
+        systems, feeds, transforms, edges = [], [], [], []
+
+        # ================================================== LANE 1 — systems
+        # ---- the state the live database is actually in ---------------------
+        # NO scheme on any of the four databases has `connector_id` set (the
+        # SOURCING ledger's S20). That is not a cosmetic gap: the resolver's
+        # pre-pass is gated on it —
+        #
+        #     if self.source_type == 'api_data_store' and config.connector_id:
+        #
+        # — so with the field unset, NO feed wire is read on a system run at
+        # all. abm has thirty-three wires drawn into this scheme and every one
+        # of them is inert. Making the one-connector limit visible (scope 3)
+        # therefore has to include the case where the limit has never been
+        # exercised, or the tab would show a confident picture of a pipe that
+        # is not connected at the tap. Every connector is dimmed, each says why,
+        # and the scheme lane raises it as a health node.
+        no_primary = not primary and bool(wires_by_conn)
+        for conn in connectors:
+            is_primary = bool(primary) and conn.id == primary.id
+            # The one-connector limit, made VISIBLE (scope 3). A pay run reads
+            # only the connection its scheme is set to; every other connector's
+            # wires are ignored on a system run. That has always been true and
+            # has never been said anywhere, which is how abm ended up with seven
+            # components wired on a connection nothing reads.
+            dimmed = (bool(primary) and not is_primary) or (
+                no_primary and bool(wires_by_conn.get(conn.id)))
+            node = {
+                'id': 'c:%s' % conn.id, 'kind': 'connector', 'lane': 'systems',
+                'label': conn.name or _("Unnamed connection"),
+                'sub': '',
+                'tone': {'error': 'err', 'connected': 'ok'}.get(
+                    conn.connection_status or '', 'muted'),
+                'primary': is_primary,
+                'dimmed': dimmed,
+                'last_sync': self._journey_iso(conn.last_sync),
+                'status': conn.connection_status or 'disconnected',
+                'wires': wires_by_conn.get(conn.id, 0),
+                'door': {'mode': 'api', 'connector': conn.id},
+            }
+            if is_primary:
+                node['chip'] = {
+                    'label': _("Primary"), 'tone': 'ok',
+                    'hint': _("This is the connection this scheme reads on "
+                              "system runs."),
+                }
+            elif dimmed and primary:
+                node['chip'] = {
+                    'label': _("Not read"), 'tone': 'muted',
+                    'hint': _("A pay run reads only the connection this scheme "
+                              "is set to (%(primary)s). Any wire drawn from "
+                              "%(other)s is ignored on a system run.",
+                              primary=primary.name or _("the primary connection"),
+                              other=conn.name or _("this connection")),
+                }
+            elif dimmed:
+                node['chip'] = {
+                    'label': _("Not read"), 'tone': 'warn',
+                    'hint': _("This scheme has not been told which connection to "
+                              "read, so none of these wires is used on a pay "
+                              "run. Choose the connection on the scheme itself."),
+                }
+            systems.append(node)
+
+        if not systems:
+            systems.append({
+                'id': 'c:none', 'kind': 'connector', 'lane': 'systems',
+                'ghost': True, 'label': _("No system connected"),
+                'sub': _("Connect an HR system and its fields appear here."),
+                'door': {'mode': 'api'},
+            })
+
+        # ---- the stored spreadsheet (J2's sample) ---------------------------
+        sample = self._import_sample_meta(config)
+        if sample:
+            systems.append({
+                'id': 'file', 'kind': 'file', 'lane': 'systems',
+                'label': sample['filename'],
+                'sub': (_("read %s") % sample['read_on']) if sample['read_on'] else '',
+                'columns': sample['columns'],
+                'door': {'mode': 'import'},
+            })
+        else:
+            systems.append({
+                'id': 'file', 'kind': 'file', 'lane': 'systems', 'ghost': True,
+                'label': _("No file read yet"),
+                'sub': _("Drop this month's spreadsheet to see its columns."),
+                'door': {'mode': 'import'},
+            })
+
+        # ---- Payobook records, both ways (J-D4) -----------------------------
+        systems.append({
+            'id': 'records', 'kind': 'records', 'lane': 'systems',
+            'label': _("Payobook records"),
+            'sub': _("Employee · Contract · Bank"),
+            'count': emp_total,
+            'bank': bank_rows,
+            'ghost': not emp_total,
+            'door': {'mode': 'employee'},
+            'countLabel': (_("%s mapped field") if emp_total == 1
+                           else _("%s mapped fields")) % emp_total
+                          if emp_total else _("Nothing mapped yet"),
+        })
+
+        # ============================================ LANE 2 — feeds & files
+        #
+        # The field counts and the drift verdict come from
+        # `get_available_source_fields`, called ONCE PER CONNECTOR and then
+        # bucketed by `feed_type` — which is exactly the axis the catalogue
+        # itself scopes drift on ("Drift is a claim about a feed that ran, and
+        # it may only be made about that feed", `integration_field_mapping.py`
+        # :710-716). Per-ENDPOINT calls would be one data-store search per feed
+        # for a landing page; per-CONNECTOR is one, and the bucketing loses
+        # nothing because a feed's fields are its data type's fields.
+        #
+        # `expected_missing` is a DERIVED flag, not a column — there is no
+        # `hr.integration.endpoint.field.expected_missing` to count, which is
+        # why this route rather than the cheaper-looking one.
+        cat_by_conn = {}
+        for conn in connectors:
+            try:
+                cat_by_conn[conn.id] = self.env['hr.integration.field.mapping'] \
+                    .get_available_source_fields(conn.id, None, None) or []
+            except Exception as e:      # noqa: BLE001
+                _logger.warning(
+                    "J5: source-field discovery failed for connector %s: %s: %s "
+                    "— its feeds render without field counts.",
+                    conn.id, type(e).__name__, e)
+                cat_by_conn[conn.id] = []
+
+        eps = self._api_endpoints(connectors) if connectors else None
+        for ep in (eps or []):
+            conn_id = ep.connector_id.id
+            mine = [f for f in cat_by_conn.get(conn_id, [])
+                    if (f.get('feed_type') or '') == (ep.data_type or '')]
+            n_fields = len(mine)
+            # A feed that has never run cannot be behind: `expected_missing` is
+            # a statement about a sync that HAPPENED. Without this guard a brand
+            # new integration opens covered in amber, which is the false alarm
+            # SOURCING S5 removed from the API board and must not reappear here.
+            drift = (len([f for f in mine if f.get('expected_missing')])
+                     if ep.last_sync else 0)
+            node = {
+                'id': 'e:%s' % ep.id, 'kind': 'endpoint', 'lane': 'feeds',
+                'parent': 'c:%s' % conn_id,
+                'label': ep.name or ep.code or _("Unnamed feed"),
+                'sub': '',
+                'fields': n_fields,
+                'drift': drift,
+                'mapped': ep.mapping_count,
+                'last_sync': self._journey_iso(ep.last_sync),
+                'tone': {'failed': 'err', 'success': 'ok'}.get(
+                    ep.last_sync_status or '', 'muted'),
+                # A feed is dimmed for whichever reason its CONNECTOR is: either
+                # the scheme reads a different connection, or it reads none.
+                # Expressed against the connector rather than re-derived, so the
+                # two can never disagree on screen (a lit feed under a greyed
+                # system is the sort of contradiction a reader stops trusting).
+                'dimmed': (bool(primary) and conn_id != primary.id)
+                          or (no_primary and bool(wires_by_conn.get(conn_id))),
+                'door': {'mode': 'api', 'connector': conn_id, 'endpoint': ep.id,
+                         'focus': ep.name or ep.code or ''},
+            }
+            if drift:
+                node['chip'] = {
+                    'label': (_("%s not sent") % drift), 'tone': 'warn',
+                    'hint': _("The catalogue expects these fields and the last "
+                              "sync did not deliver them. They may have been "
+                              "renamed at the source."),
+                }
+            feeds.append(node)
+            edges.append({'from': 'c:%s' % conn_id, 'to': 'e:%s' % ep.id,
+                          'kind': 'contain', 'count': 0,
+                          'dimmed': node['dimmed']})
+            live = wires_by_ep.get(ep.id, 0)
+            if live:
+                edges.append({'from': 'e:%s' % ep.id, 'to': 'scheme',
+                              'kind': 'feed', 'count': live,
+                              'dimmed': node['dimmed']})
+
+        # ---- one node per sheet of the stored file --------------------------
+        cols = self._import_sample_columns(config)
+        if cols:
+            by_sheet = defaultdict(int)
+            for col in cols:
+                by_sheet[(col.get('sheet') or '').strip()] += 1
+            for sheet, n in sorted(by_sheet.items()):
+                sid = 's:%s' % (sheet or '_')
+                feeds.append({
+                    'id': sid, 'kind': 'sheet', 'lane': 'feeds', 'parent': 'file',
+                    'label': sheet or _("The spreadsheet"),
+                    'sub': (_("%s column") if n == 1 else _("%s columns")) % n,
+                    'columns': n,
+                    'door': {'mode': 'import', 'focus': sheet or ''},
+                })
+                edges.append({'from': 'file', 'to': sid, 'kind': 'contain',
+                              'count': 0})
+            # An excel BINDING is the live wire between a column and a component.
+            bound = len([r for r in config.rule_ids
+                         if r.source_binding == 'excel'
+                         and (r.source_binding_key or '').strip()])
+            if bound:
+                first = 's:%s' % ((sorted(by_sheet) or [''])[0] or '_')
+                edges.append({'from': first, 'to': 'scheme', 'kind': 'excel',
+                              'count': bound})
+        elif not feeds:
+            feeds.append({
+                'id': 'e:none', 'kind': 'endpoint', 'lane': 'feeds', 'ghost': True,
+                'label': _("No feeds or files yet"),
+                'sub': _("A connected system's feeds, and the sheets of an "
+                         "uploaded file, appear here."),
+                'door': {'mode': 'import'},
+            })
+
+        # ========================================= LANE 3 — transformations
+        Rule = self.env.get('hr.api.transformation.rule')
+        # MJ16 — `env.get` is None-or-model and an empty recordset is FALSY, so
+        # the only correct test is `is None`. `if Rule:` would take the empty
+        # branch on every call and this lane would be permanently, silently blank.
+        rule_recs = [] if Rule is None else Rule.browse()
+        if Rule is not None and connectors:
+            try:
+                rule_recs = Rule.with_context(active_test=False).search(
+                    [('connector_id', 'in', connectors.ids)],
+                    order='connector_id, sequence, id')
+            except Exception as e:      # noqa: BLE001
+                _logger.warning("J5: rule census failed: %s: %s",
+                                type(e).__name__, e)
+        unread_n = 0
+        for r in rule_recs:
+            key = (r.output_key or '').strip()
+            # J4's predicate, CALLED — not re-implemented. `_tf_consumers`
+            # delegates to `pb.integrations._rule_consumers`, which is where the
+            # concept was first said out loud. A copy here would pass a grep and
+            # disagree with the Transformations tab on the first edge case.
+            consumers = self._tf_consumers(r) if key else []
+            unread = bool(key) and not consumers
+            if unread:
+                unread_n += 1
+            cid = r.connector_id.id
+            try:
+                n_reads = len(r._consumed_field_names() or [])
+            except Exception:           # noqa: BLE001 — a lane never breaks the tab
+                n_reads = 0
+            node = {
+                'id': 'r:%s' % r.id, 'kind': 'rule', 'lane': 'transforms',
+                'parent': 'c:%s' % cid if cid else '',
+                'label': r.name or key or _("Untitled rule"),
+                'sub': (_("→ %s") % key) if key else '',
+                'key': key,
+                'reads': n_reads,
+                'feeds': len(consumers),
+                'active': bool(r.active),
+                'tone': 'warn' if unread else '',
+                'dimmed': bool(primary) and cid != primary.id,
+                'door': {'mode': 'transform', 'connector': cid,
+                         'focus': key or (r.name or '')},
+            }
+            if unread:
+                node['chip'] = {
+                    'label': _("Unread output"), 'tone': 'warn',
+                    'hint': _("This rule computes “%s” and no pay component "
+                              "takes it. Wire its output to a component, or the "
+                              "work it does is thrown away.") % key,
+                }
+            transforms.append(node)
+            if cid:
+                edges.append({'from': 'c:%s' % cid, 'to': 'r:%s' % r.id,
+                              'kind': 'contain', 'count': 0,
+                              'dimmed': node['dimmed']})
+            # a rule -> scheme edge exists only where a wire or a binding does
+            fed = 0
+            if key and FM is not None:
+                try:
+                    fed = len([
+                        m for m in FM.sudo().with_context(active_test=False).search(
+                            [('connector_id', '=', cid),
+                             ('source_field', '=', key)])
+                        if m.target_rule_id and m.target_rule_id.id in input_ids])
+                except Exception:       # noqa: BLE001
+                    fed = 0
+                fed += len([r2 for r2 in config.rule_ids
+                            if r2.source_binding == 'rule'
+                            and (r2.source_binding_key or '').strip() == key
+                            and r2.id in input_ids])
+            if fed:
+                edges.append({'from': 'r:%s' % r.id, 'to': 'scheme',
+                              'kind': 'rule', 'count': fed,
+                              'dimmed': node['dimmed']})
+
+        if not transforms:
+            transforms.append({
+                'id': 'r:none', 'kind': 'rule', 'lane': 'transforms', 'ghost': True,
+                'label': _("No transformation rules yet"),
+                'sub': _("A rule turns what a system sends — a list of overtime "
+                         "rows, a table of dependants — into one number a pay "
+                         "component can read."),
+                'door': {'mode': 'transform'},
+            })
+
+        # ============================================== LANE 4 — the scheme
+        dangling = len([r for r in config.rule_ids if r.binding_dangling])
+        health = []
+        if no_primary:
+            n_inert = sum(wires_by_conn.values())
+            health.append({
+                'id': 'h:noprimary', 'kind': 'health', 'lane': 'scheme',
+                'tone': 'warn',
+                'label': (_("%s feed wire is not read") if n_inert == 1
+                          else _("%s feed wires are not read")) % n_inert,
+                'sub': _("This scheme names no connection, and a pay run only "
+                         "reads the one it is set to."),
+                'door': {'mode': 'api'},
+            })
+        if conflicts:
+            health.append({
+                'id': 'h:conflict', 'kind': 'health', 'lane': 'scheme',
+                'tone': 'warn',
+                'label': (_("%s component wired twice") if len(conflicts) == 1
+                          else _("%s components wired twice")) % len(conflicts),
+                'sub': _("A pay run reads one of the two. The other is ignored."),
+                'door': {'mode': 'api'},
+            })
+        if dangling:
+            health.append({
+                'id': 'h:dangling', 'kind': 'health', 'lane': 'scheme',
+                'tone': 'warn',
+                'label': (_("%s source no longer exists") if dangling == 1
+                          else _("%s sources no longer exist")) % dangling,
+                'sub': _("These components name a key nothing currently provides."),
+                'door': {'mode': 'api'},
+            })
+        if severed_n:
+            health.append({
+                'id': 'h:severed', 'kind': 'health', 'lane': 'scheme',
+                'tone': 'err',
+                'label': (_("%s severed wire") if severed_n == 1
+                          else _("%s severed wires")) % severed_n,
+                'sub': _("These wires point at a component that is no longer "
+                         "on this scheme."),
+                'door': {'mode': 'api'},
+            })
+
+        fallback_n = len(read_back_ids)
+        scheme_node = {
+            'id': 'scheme', 'kind': 'scheme', 'lane': 'scheme',
+            'label': config.name or _("This scheme"),
+            'sub': (_("%s column") if scheme_counts['total'] == 1
+                    else _("%s columns")) % scheme_counts['total'],
+            'counts': dict(scheme_counts, fallback=fallback_n),
+            'door': {'mode': 'api'},
+        }
+        if not scheme_counts['total']:
+            # A scheme with no columns is the novice's very first screen, and
+            # the component bar has nothing to draw. Rendering the real card
+            # with an empty bar under it says "this is broken"; the ghost says
+            # "this is next", which is the only difference between an empty
+            # state and a dead end. Every other lane already does this.
+            scheme_node['ghost'] = True
+            scheme_node['sub'] = _("No pay components yet — add them on the "
+                                   "scheme, then wire them up here.")
+
+        # ============================================== LANE 5 — the pay run
+        run = self._journey_run_lane(config, emp_total)
+
+        # ---- records <-> scheme, double-headed (J-D4's language) ------------
+        if emp_total:
+            edges.append({'from': 'records', 'to': 'scheme', 'kind': 'records',
+                          'count': emp_total, 'bidi': True})
+
+        header = {
+            'components': scheme_counts['total'],
+            'wired': scheme_counts['wired'],
+            'fallback': fallback_n,
+            'attention': (len(conflicts) + dangling + severed_n
+                          + (1 if no_primary else 0)),
+        }
+        return {
+            'ok': True,
+            'can_edit': self._can_edit(),
+            'config': {'id': config.id, 'name': config.name or '',
+                       'code': config.code or '',
+                       'country': config.country_code or '',
+                       'state': config.state or ''},
+            'header': header,
+            'primary_id': primary.id if primary else 0,
+            'primary_name': (primary.name or '') if primary else '',
+            'lanes': {
+                'systems': systems, 'feeds': feeds, 'transforms': transforms,
+                'scheme': [scheme_node] + health, 'run': run,
+            },
+            'edges': edges,
+            'counts': dict(scheme_counts, fallback=fallback_n,
+                           conflicts=len(conflicts), dangling=dangling,
+                           severed=severed_n, unread=unread_n,
+                           connectors=len(connectors), rules=len(rule_recs)),
+        }
+
+    @api.model
+    def _journey_run_lane(self, config, emp_total):
+        """The last PROCESSED run, summarised from what it STORED.
+
+        Two rules govern every number in here and they are the reason the lane
+        is short:
+
+          * it comes from a `done` batch of THIS scheme, and from the provenance
+            blobs that batch's payslips carry. Not from a draft, not from a
+            batch of another scheme, not from a live recomputation;
+          * **"records updated" is not shown, because nothing stores it.**
+            `action_process` calls `_update_employee_from_raw_data`,
+            `_sync_employee_bank_account`, `_update_contract_from_raw_data` and
+            `_sync_contract_components` for every line and counts none of them
+            — the batch stores only `created_employee_ids`,
+            `created_contract_ids` and `created_payslip_ids`, i.e. records
+            CREATED. So the lane says what was created (defensible) and, for the
+            two-way rows, the mapping-count note the handover names as the
+            fallback. Inventing an "updated" figure from the line count would be
+            exactly the fake liveness scope 5 forbids.
+
+        No run yet -> an honest ghost. "No pay run yet" is a different statement
+        from "nothing feeds this scheme", and the wiring above the ghost is
+        precisely what makes the sentence true.
+        """
+        Batch = self.env.get('hr.payroll.import.batch')
+        batch = None
+        if Batch is not None:
+            try:
+                batch = Batch.sudo().search(
+                    [('formula_config_id', '=', config.id), ('state', '=', 'done')],
+                    order='id desc', limit=1)
+            except Exception as e:      # noqa: BLE001
+                _logger.warning("J5: batch lookup failed: %s: %s",
+                                type(e).__name__, e)
+                batch = None
+        if not batch:
+            return [{
+                'id': 'run', 'kind': 'run', 'lane': 'run', 'ghost': True,
+                'label': _("No pay run yet"),
+                'sub': _("The wiring on the left is what will happen when one "
+                         "is processed."),
+                'door': {'mode': 'import'},
+            }]
+
+        # TWO read-only queries, and neither of them builds a record.
+        #
+        # `batch.import_line_ids.mapped('payslip_id')` is the obvious spelling
+        # and it is the wrong one here: a processed VN batch is tens of
+        # thousands of lines, and that expression instantiates every line AND
+        # every payslip to reach one integer and one Text column. On the
+        # LANDING TAB of the product. So: count in SQL, then read at most
+        # `_JOURNEY_SLIP_CAP` blobs, and let the payload say when it capped.
+        n_slips, blobs = 0, []
+        try:
+            self.env.cr.execute(
+                "SELECT count(DISTINCT payslip_id) FROM hr_payroll_import_line "
+                "WHERE batch_id = %s AND payslip_id IS NOT NULL", (batch.id,))
+            n_slips = self.env.cr.fetchone()[0] or 0
+            if n_slips:
+                self.env.cr.execute(
+                    "SELECT p.formula_input_sources FROM hr_payslip p "
+                    "WHERE p.id IN (SELECT DISTINCT payslip_id "
+                    "               FROM hr_payroll_import_line "
+                    "               WHERE batch_id = %s AND payslip_id IS NOT NULL) "
+                    "  AND p.formula_input_sources IS NOT NULL "
+                    "LIMIT %s", (batch.id, self._JOURNEY_SLIP_CAP))
+                blobs = [row[0] for row in self.env.cr.fetchall()]
+        except Exception as e:          # noqa: BLE001
+            _logger.warning("J5: run aggregate failed for batch %s: %s: %s",
+                            batch.id, type(e).__name__, e)
+        capped = n_slips > self._JOURNEY_SLIP_CAP
+        agg = self._journey_aggregate(blobs)
+
+        node = {
+            'id': 'run', 'kind': 'run', 'lane': 'run',
+            'label': batch.name or _("Last pay run"),
+            'sub': '',
+            'payslips': n_slips,
+            'read': len(blobs),
+            'capped': capped,
+            'lines': batch.total_lines,
+            'matched': batch.matched_employees,
+            'errors': batch.error_lines,
+            'created': {
+                'employees': len(batch.created_employee_ids),
+                'contracts': len(batch.created_contract_ids),
+                'payslips': len(batch.created_payslip_ids),
+            },
+            'agg': agg,
+            'date': self._journey_iso(batch.create_date),
+            'batch_id': batch.id,
+            'door': {'mode': 'import'},
+            # The two-way note, shown INSTEAD of an updated-records count that
+            # this database does not store (see the docstring).
+            'records_note': (
+                _("%s mapped field writes an employee or contract record on "
+                  "import.") if emp_total == 1
+                else _("%s mapped fields write employee and contract records "
+                       "on import.")) % emp_total if emp_total else '',
+        }
+        return [node]
+
     # ------------------------------------------------------------------
     # W62 — transforms on the wire (surface + edit + live-preview the transforms
     # that ALREADY run at sync time). API adapter ONLY — cycle wires carry no

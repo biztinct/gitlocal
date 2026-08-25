@@ -1,0 +1,267 @@
+/**
+ * JOURNEY J5 — the Journey board.
+ *
+ * The same three structural rules `mapping.scss` states for the canvas and
+ * `transform_flow.scss` restates for the rule board, because this is the same
+ * KIND of object and a reader moving between the tabs must not have to relearn
+ * it:
+ *
+ *   1. `.jny-board` CLIPS. A wire may end on a lane's edge; nothing drawn
+ *      between the lanes may reach the bar above them. And the sweep that
+ *      checks this knows about `overflow: clip` and about layers, or it
+ *      invents defects (MJ7).
+ *   2. every colour is a bound `--i*` / `--mc-*` variable with the hex
+ *      fallback the canvas already carries. Nothing is invented here: the
+ *      amber that means "unread output" is the amber one tab over, and the
+ *      rose that means "severed" is the rose the mapping board uses. This tab
+ *      composes five other screens and would be a liar if it recoloured them.
+ *   3. one SVG object per wire.
+ *
+ * No `min(<length>, calc(…))` anywhere: libsass parses that as its own numeric
+ * `min()` and fails the WHOLE backend bundle, which serves the previous
+ * stylesheet under a red banner and makes every screen on the database look
+ * broken rather than just this one (MJ5).
+ */
+.jny {
+    position: absolute; inset: 0; outline: none;
+    display: flex; flex-direction: column; min-height: 0;
+    --mc-amber:      var(--i-amber, #D97706);
+    --mc-amber-line: var(--i-amber-line, #FCD34D);
+    --mc-amber-ink:  var(--i-amber-ink, #B45309);
+    --mc-amber-wash: var(--i-amber-wash, #FEF3C7);
+    --mc-rose:       var(--i-rose, #DC2626);
+    --mc-rose-ink:   var(--i-rose-ink, #B91C1C);
+    --mc-rose-wash:  var(--i-rose-wash, #FEE2E2);
+    --mc-emerald:    var(--i-emerald, #059669);
+    --mc-emerald-ink: var(--i-emerald-ink, #047857);
+    --mc-emerald-wash: var(--i-emerald-wash, #D1FAE5);
+    --mc-slate:      var(--i-slate, #94A3B8);
+    --mc-wash:       var(--i-wash, #F1F5F9);
+    --mc-wash2:      var(--i-wash2, #EEF1F5);
+    /* The gutter a bezier gets to be a curve in. Five lanes leave less room
+       than three, so the runs are shorter by construction; what matters is
+       that they are EQUAL, or the picture reads as five arbitrary gaps. */
+    --jny-gut: 15px;
+}
+
+/* ==== the bar over all five lanes ==================================== */
+.jny .jny-bar {
+    flex: none; display: flex; align-items: center; gap: 12px;
+    padding: 9px 14px; border-bottom: 1px solid var(--line, #E8E9F3);
+    background: #fff;
+}
+.jny .jny-bar__say { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.jny .jny-bar__say > b {
+    font-size: 13.5px; font-weight: 800; color: var(--ink, #1F2233);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.jny .jny-bar__sub {
+    font-size: 11.5px; color: var(--muted, #6B7280); font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.jny .jny-q {
+    display: flex; align-items: center; gap: 6px; flex: none;
+    background: var(--mc-wash); border: 1px solid var(--line, #E8E9F3);
+    border-radius: 999px; padding: 3px 10px; width: 260px; max-width: 30%;
+}
+.jny .jny-q:focus-within { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.jny .jny-q__ic { color: var(--muted, #6B7280); display: flex; }
+.jny .jny-q input {
+    flex: 1; min-width: 0; border: 0; background: transparent; outline: none;
+    font-family: inherit; font-size: 12.5px; color: var(--ink, #1F2233); padding: 2px 0;
+}
+.jny .jny-q__x {
+    border: 0; background: transparent; color: var(--muted, #6B7280); cursor: pointer;
+    display: flex; padding: 2px; border-radius: 999px;
+}
+.jny .jny-q__x:hover { background: var(--mc-wash2); color: var(--ink, #1F2233); }
+
+/* ==== the board ====================================================== */
+.jny .jny-board {
+    position: relative; flex: 1; min-height: 0;
+    overflow: hidden;      /* fallback */
+    overflow: clip;        /* no scroll container, no escape */
+    display: flex; align-items: stretch;
+}
+.jny.is-busy .jny-board { opacity: .55; pointer-events: none; }
+
+.jny .jny-wires {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1;
+}
+
+/* ---- the wires ------------------------------------------------------ */
+.jny .jny-wire__p { fill: none; stroke: var(--i-line, #B9AEE6); stroke-width: 1.8; }
+.jny .jny-wire__h { fill: var(--i-line, #B9AEE6); }
+
+/* A containment edge is a statement about structure, not about data moving:
+   this feed BELONGS to that system. Quieter, and dotted, so the eye reads the
+   data wires first. */
+.jny .jny-wire.contain .jny-wire__p {
+    stroke: var(--mc-slate); stroke-width: 1.3; stroke-dasharray: 2 4; opacity: .8;
+}
+.jny .jny-wire.contain .jny-wire__h { fill: var(--mc-slate); opacity: .8; }
+
+/* J-D4 — the records edge is the only double-headed wire on the board, and it
+   is teal because the Employee & contract tab is. */
+.jny .jny-wire.records .jny-wire__p { stroke: var(--i-teal, #0F766E); stroke-width: 2; }
+.jny .jny-wire.records .jny-wire__h { fill: var(--i-teal, #0F766E); }
+
+/* A wire that JUMPS a lane passes behind the cards between its ends. Dashed
+   and lighter, so that reads as a property of the wire rather than as a wire
+   that broke in the middle. */
+.jny .jny-wire.span .jny-wire__p { stroke-dasharray: 7 5; opacity: .85; }
+
+/* The one-connector limit, drawn. A scheme reads ONE connection on a system
+   run; every wire from any other connection is ignored, and has been for as
+   long as the limit has existed. Saying it in grey is the whole of scope 3. */
+.jny .jny-wire.dim { opacity: .32; }
+.jny .jny-wire.dim .jny-wire__p { stroke: var(--mc-slate); stroke-dasharray: 3 5; }
+.jny .jny-wire.dim .jny-wire__h { fill: var(--mc-slate); }
+
+/* ---- a lane -------------------------------------------------------- */
+.jny .jny-lane {
+    flex: 1 1 0; min-width: 0; z-index: 2;
+    display: flex; flex-direction: column; min-height: 0;
+}
+.jny .jny-lane + .jny-lane { border-left: 1px dashed var(--line, #E8E9F3); }
+
+.jny .jny-lane__h {
+    flex: none; display: flex; align-items: center; gap: 6px;
+    padding: 8px var(--jny-gut) 6px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted, #6B7280);
+}
+.jny .jny-lane__ic { display: flex; color: var(--i, #5A4BB0); }
+.jny .jny-lane__t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jny .jny-lane__n {
+    flex: none; background: var(--mc-wash); border-radius: 999px;
+    padding: 1px 7px; color: var(--ink, #1F2233); letter-spacing: 0;
+}
+
+.jny .jny-lane__b {
+    flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
+    padding: 4px var(--jny-gut) 14px;
+    display: flex; flex-direction: column; gap: 8px;
+}
+
+/* ---- a node ---------------------------------------------------------
+   Every one of these is a `<button>`. It reads and it navigates; there is no
+   gesture on this board that writes, which is what makes the whole live
+   validation session diff empty. */
+.jny .jny-node {
+    flex: none; width: 100%; text-align: left; cursor: pointer;
+    display: flex; align-items: flex-start; gap: 8px;
+    background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 11px;
+    padding: 9px 8px 9px 10px; font-family: inherit; color: var(--ink, #1F2233);
+    transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.jny .jny-node:hover { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
+.jny .jny-node:focus-visible,
+.jny .jny-node.on {
+    outline: none; border-color: var(--i, #5A4BB0);
+    box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8);
+}
+.jny .jny-node__ic { flex: none; display: flex; color: var(--i, #5A4BB0); margin-top: 1px; }
+.jny .jny-node__tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.jny .jny-node__l {
+    font-size: 12.5px; font-weight: 800; line-height: 1.25;
+    overflow: hidden; text-overflow: ellipsis;
+}
+.jny .jny-node__s {
+    font-size: 11px; color: var(--muted, #6B7280); font-weight: 600; line-height: 1.35;
+}
+.jny .jny-node__note {
+    font-size: 10.5px; color: var(--muted, #6B7280); line-height: 1.4;
+}
+.jny .jny-node__go { flex: none; display: flex; color: var(--mc-slate); margin-top: 2px; }
+.jny .jny-node:hover .jny-node__go { color: var(--i, #5A4BB0); }
+.jny .jny-bidi { color: var(--i-teal, #0F766E); font-weight: 900; margin-left: 4px; }
+
+/* the connection a pay run actually reads */
+.jny .jny-node.prim { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
+
+/* and the ones it does not. Never hidden — the point is that they are THERE
+   and ignored, which is the state abm has been in for months. */
+.jny .jny-node.dim { opacity: .58; }
+.jny .jny-node.dim:hover { opacity: 1; }
+
+/* a ghost is an invitation, not an error: nothing is wrong, there is simply
+   nothing here yet, and the card says what to do about it. */
+.jny .jny-node.ghost {
+    background: var(--mc-wash); border-style: dashed; color: var(--muted, #6B7280);
+}
+.jny .jny-node.ghost .jny-node__ic { color: var(--mc-slate); }
+.jny .jny-node.ghost .jny-node__l { font-weight: 700; }
+
+.jny .jny-node.warn { border-color: var(--mc-amber-line); }
+.jny .jny-node.err { border-color: var(--mc-rose); }
+.jny .jny-node.ok .jny-node__ic { color: var(--mc-emerald-ink); }
+
+.jny .jny-none {
+    font-size: 11px; color: var(--muted, #6B7280); padding: 10px 2px; font-weight: 600;
+}
+
+/* ---- chips: the EXISTING vocabulary, never a new severity system ---- */
+.jny .jny-chip {
+    align-self: flex-start; display: inline-flex; align-items: center; gap: 4px;
+    border-radius: 999px; padding: 1px 8px; font-size: 10.5px; font-weight: 800;
+    background: var(--mc-wash); color: var(--muted, #6B7280);
+    border: 1px solid var(--line, #E8E9F3);
+}
+.jny .jny-chip.warn {
+    background: var(--mc-amber-wash); color: var(--mc-amber-ink); border-color: var(--mc-amber-line);
+}
+.jny .jny-chip.err {
+    background: var(--mc-rose-wash); color: var(--mc-rose-ink); border-color: var(--mc-rose);
+}
+.jny .jny-chip.ok {
+    background: var(--mc-emerald-wash); color: var(--mc-emerald-ink); border-color: var(--mc-emerald);
+}
+.jny .jny-bar .jny-chip { flex: none; align-self: center; }
+
+/* ---- the component picture -----------------------------------------
+   Segments of ONE bar, each a count of components over the total. Not a
+   score, not a gauge: arithmetic the reader can check by adding the labels
+   underneath it. This is the only chart-shaped thing on the tab and it is
+   allowed because it is a tally of disjoint named counts that sum to the
+   whole (pb_explorer owns analytics; this is a flow picture). */
+.jny .jny-bars {
+    display: flex; height: 7px; border-radius: 999px; overflow: hidden;
+    background: var(--mc-wash2); margin-top: 3px;
+}
+.jny .jny-bars__seg { display: block; height: 100%; background: var(--i, #5A4BB0); }
+.jny .jny-bars__seg.ok { background: var(--mc-emerald); }
+.jny .jny-bars__seg.calc { background: var(--mc-slate); }
+.jny .jny-bars__seg.info { background: var(--i-teal, #0F766E); }
+.jny .jny-bars__seg.warn { background: var(--mc-amber); }
+
+.jny .jny-keys { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-top: 2px; }
+.jny .jny-key {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10.5px; color: var(--muted, #6B7280); font-weight: 600;
+}
+.jny .jny-key > b { color: var(--ink, #1F2233); font-weight: 800; }
+.jny .jny-key.warn > b { color: var(--mc-amber-ink); }
+.jny .jny-key__d {
+    width: 6px; height: 6px; border-radius: 999px; background: var(--i, #5A4BB0);
+    display: inline-block;
+}
+.jny .jny-key.ok .jny-key__d { background: var(--mc-emerald); }
+.jny .jny-key.calc .jny-key__d { background: var(--mc-slate); }
+.jny .jny-key.info .jny-key__d { background: var(--i-teal, #0F766E); }
+.jny .jny-key.warn .jny-key__d { background: var(--mc-amber); }
+
+/* ---- narrow ---------------------------------------------------------
+   Five lanes at 1024 leave about 185px each. Nothing is hidden and nothing
+   scrolls sideways: the type steps down and the gutter narrows, because a
+   board that scrolls horizontally would move its cards out from under the
+   SVG the wires are drawn on. */
+@media (max-width: 1180px) {
+    .jny { --jny-gut: 10px; }
+    .jny .jny-node { padding: 8px 6px 8px 8px; gap: 6px; border-radius: 9px; }
+    .jny .jny-node__l { font-size: 11.5px; }
+    .jny .jny-node__s { font-size: 10.5px; }
+    .jny .jny-q { width: 180px; }
+}

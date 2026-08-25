@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       JOURNEY J5 — the Journey board.
+
+       Five lanes, one SVG under them, and every card a button. The card is a
+       button because that is the whole interaction: this board reads and it
+       navigates, and a `div` with a click handler would have to re-earn the
+       focus ring, the Space key and the ARIA role one at a time (MJ10).
+
+       The SVG is a child of `.jny-board` and `.jny-board` is ALSO the element
+       the geometry measures against, which is not an accident: a wire's points
+       are pixels relative to some origin, and if the origin is not the element
+       the SVG is stretched over, every wire on the board is offset by whatever
+       chrome sits between the two. One ref, one origin, no arithmetic.
+
+       MJ21: decorative rules use ==== and never dashes. Two consecutive
+       hyphens are illegal inside an XML comment BODY, the parser refuses the
+       whole file, and OWL then reports every t-name in it as a template that
+       does not exist, i.e. a broken comment surfacing as a missing component.
+       ==================================================================== -->
+  <t t-name="pb_formula_studio.JourneyBoard">
+    <div t-attf-class="jny {{ props.busy ? 'is-busy' : '' }}"
+         tabindex="-1" t-on-keydown="onKeydown">
+
+      <!-- ==== the bar over all five lanes ==== -->
+      <div class="jny-bar">
+        <div class="jny-bar__say">
+          <b t-esc="d.config and d.config.name"/>
+          <span class="jny-bar__sub" t-esc="headline"/>
+        </div>
+        <div class="jny-q">
+          <span class="jny-q__ic" t-out="ic('search', 14)"/>
+          <input type="search" t-ref="q" t-on-input="onSearch"
+                 placeholder="Filter the journey…"
+                 aria-label="Filter the journey"/>
+          <button t-if="ui.q" class="jny-q__x" t-on-click="clearSearch"
+                  title="Clear the filter">
+            <t t-out="ic('x', 13)"/>
+          </button>
+        </div>
+        <span t-if="attention" class="jny-chip warn"
+              title="Conflicts, dangling sources and severed wires are marked on the Scheme lane.">
+          <t t-out="ic('alert', 13)"/>
+          <t t-esc="attention"/> need attention
+        </span>
+      </div>
+
+      <!-- ==== the board ====
+           The SVG sits BENEATH the lanes, which is the same layering
+           `mapping.scss` and `transform_flow.scss` use. A wire that spans a
+           lane therefore passes behind the cards between its ends and is drawn
+           dashed and lighter, so "this jumps a lane" reads as a fact about the
+           wire rather than as a wire that broke in the middle. -->
+      <div class="jny-board" t-ref="root">
+
+        <svg class="jny-wires" aria-hidden="true">
+          <g t-foreach="ui.geom" t-as="g" t-key="g.id"
+             t-attf-class="jny-wire {{ g.kind }} {{ g.dimmed ? 'dim' : '' }} {{ g.span > 1 ? 'span' : '' }}">
+            <path class="jny-wire__p" t-att-d="g.d"/>
+            <polygon class="jny-wire__h" t-att-points="g.head"/>
+            <polygon t-if="g.headBack" class="jny-wire__h back" t-att-points="g.headBack"/>
+            <title t-esc="edgeTitle(g)"/>
+          </g>
+        </svg>
+
+        <div class="jny-lane" t-foreach="lanes" t-as="lane" t-key="lane.id">
+          <div class="jny-lane__h">
+            <span class="jny-lane__ic" t-out="ic(lane.icon, 14)"/>
+            <span class="jny-lane__t" t-esc="lane.label"/>
+            <span class="jny-lane__n" t-esc="laneCount(lane.id)"/>
+          </div>
+
+          <div class="jny-lane__b" t-ref="{{ lane.id }}" t-on-scroll="onLaneScroll">
+
+            <button t-foreach="nodesFor(lane.id)" t-as="n" t-key="n.id"
+                    t-att-data-id="n.id" t-att-data-lane="lane.id"
+                    t-att-class="nodeClass(n)"
+                    t-att-title="nodeTitle(n)"
+                    t-on-focus="() => this.onNodeFocus(n)"
+                    t-on-click="(ev) => this.openDoor(n, ev)">
+
+              <span class="jny-node__ic" t-out="ic(nodeIcon(n), 15)"/>
+
+              <span class="jny-node__tx">
+                <span class="jny-node__l">
+                  <t t-esc="n.label"/>
+                  <!-- J-D4: the arrow IS the statement. Same glyph the
+                       Employee &amp; contract tab wears in the MODES strip,
+                       because it is the same fact. -->
+                  <span t-if="n.kind === 'records'" class="jny-bidi">⇆</span>
+                </span>
+                <span class="jny-node__s" t-esc="nodeSub(n)"/>
+
+                <!-- ==== the scheme card carries the component picture ==== -->
+                <t t-if="n.kind === 'scheme'">
+                  <span class="jny-bars">
+                    <span t-foreach="schemeBars" t-as="b" t-key="b.key"
+                          t-attf-class="jny-bars__seg {{ b.tone }}"
+                          t-attf-style="width:{{ b.pct }}%"
+                          t-att-title="b.label + ' — ' + b.n"/>
+                  </span>
+                  <span class="jny-keys">
+                    <span t-foreach="schemeBars" t-as="b" t-key="b.key"
+                          t-attf-class="jny-key {{ b.tone }}">
+                      <i class="jny-key__d"/><b t-esc="b.n"/> <t t-esc="b.label"/>
+                    </span>
+                  </span>
+                  <span t-if="fallbackLine" class="jny-node__note" t-esc="fallbackLine"/>
+                </t>
+
+                <!-- ==== the pay run card ==== -->
+                <t t-if="n.kind === 'run' and !n.ghost">
+                  <span class="jny-node__note" t-esc="runScope"/>
+                  <span class="jny-keys">
+                    <span class="jny-key" t-foreach="runSources" t-as="s" t-key="s.key">
+                      <b t-esc="s.n"/> <t t-esc="s.label"/>
+                    </span>
+                  </span>
+                  <span class="jny-keys">
+                    <span t-foreach="runBuckets" t-as="b" t-key="b.key"
+                          t-attf-class="jny-key {{ b.key === 'fallback' ? 'warn' : '' }}">
+                      <b t-esc="b.n"/> <t t-esc="b.label"/>
+                    </span>
+                  </span>
+                  <span class="jny-keys">
+                    <span t-if="n.created.payslips" class="jny-key">
+                      <b t-esc="n.created.payslips"/> payslips created
+                    </span>
+                    <span t-if="n.created.employees" class="jny-key">
+                      <b t-esc="n.created.employees"/> employees created
+                    </span>
+                    <span t-if="n.created.contracts" class="jny-key">
+                      <b t-esc="n.created.contracts"/> contracts created
+                    </span>
+                  </span>
+                  <span t-if="n.records_note" class="jny-node__note" t-esc="n.records_note"/>
+                </t>
+
+                <!-- ==== the drift note, and every other health pill ==== -->
+                <span t-if="n.chip" t-attf-class="jny-chip {{ n.chip.tone }}"
+                      t-att-title="n.chip.hint">
+                  <t t-esc="n.chip.label"/>
+                </span>
+              </span>
+
+              <span class="jny-node__go" t-out="ic('chevron', 14)"/>
+            </button>
+
+            <div t-if="!nodesFor(lane.id).length" class="jny-none">
+              <t t-if="ui.q">Nothing here matches the filter.</t>
+              <t t-else="">Nothing here yet.</t>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

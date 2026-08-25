@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.139.0',
+    'version': '19.0.1.146.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -42,6 +42,7 @@
             'pb_formula_studio/static/src/scss/mapping.scss',
             'pb_formula_studio/static/src/scss/mapping_studio.scss',
             'pb_formula_studio/static/src/scss/transform_flow.scss',
+            'pb_formula_studio/static/src/scss/journey.scss',
             'pb_formula_studio/static/src/scss/payslip.scss',
             'pb_formula_studio/static/src/scss/replay.scss',
             'pb_formula_studio/static/src/scss/whatif.scss',
@@ -79,6 +80,7 @@
             # JOURNEY J4 — the three-lane board. Before its host, after the
             # kernel it reads: the bundle order matches the import order.
             'pb_formula_studio/static/src/js/mapping/transform_flow_board.js',
+            'pb_formula_studio/static/src/js/mapping/journey_board.js',
             'pb_formula_studio/static/src/js/mapping/mapping_studio.js',
             'pb_formula_studio/static/src/js/payslip_table_tools.js',
             'pb_formula_studio/static/src/js/payslip_image_tools.js',
@@ -89,6 +91,7 @@
             'pb_formula_studio/static/src/xml/command_layer.xml',
             'pb_formula_studio/static/src/xml/mapping_canvas.xml',
             'pb_formula_studio/static/src/xml/transform_flow_board.xml',
+            'pb_formula_studio/static/src/xml/journey_board.xml',
             'pb_formula_studio/static/src/xml/mapping_studio.xml',
             'pb_formula_studio/static/src/xml/studio.xml',
             'pb_formula_studio/static/src/xml/shadow_run.xml',
