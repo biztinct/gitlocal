@@ -90,8 +90,12 @@
               <t t-out="ic('settings',15)"/> Configure connection</button>
             <button t-if="canWrite and d.status === 'connected' and d.type !== 'excel'" class="pbim-btn outline" t-on-click="openSync">
               <t t-out="ic('refresh',15)"/> Guided pull…</button>
-            <button t-if="canWrite" class="pbim-btn outline" t-on-click="() => this.openLink('action_launch_payroll_import')">
-              <t t-out="ic('upload',15)"/> Start payroll import</button>
+            <!-- JOURNEY J2 — one door, and it says which of the two things it
+                 does: load this period's NUMBERS (not set up columns). -->
+            <button t-if="canWrite" class="pbim-btn outline"
+                    title="Load this period's pay data through this connection — upload or pull, review the matches, then commit."
+                    t-on-click="() => this.openLink('action_launch_payroll_import')">
+              <t t-out="ic('upload',15)"/> Load pay data…</button>
             <!-- connector-scoped, no feed: "map something from this system",
                  for the reader who has not decided which feed yet -->
             <button t-if="hasMapping" class="pbim-btn ghost" t-on-click="() => this.openMapping(null)">

@@ -1318,3 +1318,42 @@ test("J1 — one role vocabulary, and every lane the chips order has a glyph", (
     // objects and stringifying one before translations load throws outright
     // ("Cannot translate string"). The label text is pinned in Python instead.
 });
+
+// ==================================== JOURNEY J2 — the on-ramp's card, on the
+// canvas side. The Excel board's new left lane is ordinary `sublabel` + `group`
+// data; what is NOT ordinary is that a person is about to decide which of 99
+// look-alike headings feeds a pay component off the strength of one sample
+// value. So the two canvas behaviours the on-ramp leans on get pinned here,
+// where they are pure and cannot be perturbed by a host (MJ2).
+test("J2 — an 'e.g.' sample line is searchable, so a heading can be found by its value", () => {
+    // The reader's real question is "which column is the one with the big
+    // numbers in it". `itemMatches` already reads `sublabel`; this is the case
+    // that makes the on-ramp's sublabel worth rendering at all.
+    const card = { id: "c:SEVL|Basic Salary", label: "SEVL|Basic Salary",
+                   sublabel: "e.g. 12,500,000", meta: { sheet: "SEVL", letter: "B" } };
+    expect(itemMatches(card, "12,500")).toBe(true);      // by the sample
+    expect(itemMatches(card, "e.g.")).toBe(true);
+    expect(itemMatches(card, "SEVL")).toBe(true);        // by the sheet, via the label
+    expect(itemMatches(card, "basic")).toBe(true);       // by the heading
+    expect(itemMatches(card, "pension")).toBe(false);
+    // a heading whose first row happened to be empty still matches by name
+    const blank = { id: "c:Bonus", label: "Bonus", sublabel: "no value in the first row" };
+    expect(itemMatches(blank, "bonus")).toBe(true);
+});
+
+test("J2 — the dropped-file lane is ONE group, so it draws ONE heading", () => {
+    // The provenance line ("march.xlsx · read …") is the lane's `group`, and the
+    // canvas emits a heading whenever `group` CHANGES between consecutive rows
+    // (MF32). Every card off one file therefore has to carry the identical
+    // string — a per-card variation would grow a heading per column.
+    const lane = "march.xlsx · read 03/2026";
+    const items = [
+        { id: "c:A", label: "Employee Code", sublabel: "e.g. E001", group: lane },
+        { id: "c:B", label: "Basic Salary", sublabel: "e.g. 12,500,000", group: lane },
+        { id: "c:C", label: "Meal", sublabel: "e.g. 730,000", group: lane },
+        { id: "c:D", label: "Grade", sublabel: "", group: "Already used by this scheme" },
+    ];
+    const heads = items.map((it, n) =>
+        MappingCanvas.prototype.leftGroupHead.call(null, items, n));
+    expect(heads).toEqual([lane, "", "", "Already used by this scheme"]);
+});

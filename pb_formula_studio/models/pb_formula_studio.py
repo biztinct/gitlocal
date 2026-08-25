@@ -5412,6 +5412,230 @@ class PbFormulaStudio(models.AbstractModel):
                 pass
         return []
 
+    # ------------------------------------------------------------------
+    # JOURNEY J2 — the Excel on-ramp.
+    #
+    # Everything between here and `import_mapping_data` exists to answer one
+    # question the Spreadsheet board could not: *what are my file's columns?*
+    # Before J2 the only answers were "the keys of a batch somebody already
+    # imported" and "whatever you type", which is why S12 found the board had
+    # never written a value in production — you had to have finished the import
+    # before you could set up the mapping that the import needs.
+    #
+    # The reader below runs the LOADER'S OWN parse (`peek_source_columns` on
+    # `hr.payroll.import.batch`) over an in-memory probe record. No batch row,
+    # no import line, no pay value. What comes back is stored on the scheme so
+    # the answer survives a reload, and the same stored file is what the
+    # "load this file as a pay run" button hands to the guided flow.
+    # ------------------------------------------------------------------
+    _IMPORT_SAMPLE_MAX_COLS = 800
+
+    @api.model
+    def _import_sample_columns(self, config):
+        """The columns read off this scheme's stored file, or `[]`."""
+        if not config or not config.import_sample_columns_json:
+            return []
+        try:
+            cols = json.loads(config.import_sample_columns_json)
+        except Exception:
+            return []
+        return cols if isinstance(cols, list) else []
+
+    @api.model
+    def _import_sample_meta(self, config):
+        """What the board says about where its columns came from.
+
+        `read_on` is formatted server-side because the client would otherwise
+        have to guess the user's timezone and language for a provenance line —
+        and a provenance line that is wrong about WHEN is worse than none.
+        """
+        cols = self._import_sample_columns(config)
+        if not cols:
+            return None
+        when = ''
+        if config.import_sample_date:
+            try:
+                from odoo.tools.misc import format_datetime
+                when = format_datetime(self.env, config.import_sample_date,
+                                       dt_format='short')
+            except Exception:
+                when = fields.Datetime.to_string(config.import_sample_date)
+        name = config.import_sample_filename or _("a spreadsheet")
+        return {
+            'filename': name,
+            'read_on': when,
+            'columns': len(cols),
+            'shown': len([c for c in cols if c.get('preferred')]),
+            'has_file': bool(config.import_sample_file),
+            'line': (_("%(file)s · read %(when)s", file=name, when=when) if when
+                     else name),
+        }
+
+    @api.model
+    def import_mapping_read_headers(self, config_id, file_b64, filename):
+        """Read a spreadsheet's COLUMN HEADINGS onto the board. Not its data.
+
+        The one gesture the Spreadsheet board never had. It stores the file, the
+        columns and the moment it read them on the scheme, and returns the
+        refreshed board — so the left column fills in the same frame the drop
+        finishes in.
+
+        What it deliberately does NOT do: create an import batch, create an
+        import line, match an employee, or write a single pay value. Test 2
+        proves that with a row-count diff, because a promise about what
+        something does not do is only worth the check behind it.
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("Only managers can read a file onto this board.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("Pick a payroll scheme first.")}
+        name = (filename or '').strip() or 'pay-data.xlsx'
+        if not name.lower().endswith(('.xlsx', '.xls', '.csv')):
+            return {'ok': False,
+                    'msg': _("That is not a spreadsheet. Drop an .xlsx, .xls or .csv file.")}
+        try:
+            content = base64.b64decode(file_b64 or '')
+        except (binascii.Error, ValueError):
+            return {'ok': False, 'msg': _("That file could not be read.")}
+        if not content:
+            return {'ok': False, 'msg': _("That file is empty.")}
+        try:
+            cols = self.env['hr.payroll.import.batch'].peek_source_columns(
+                config, content, name)
+        except Exception as e:
+            _logger.warning("J2 header read failed for %s: %s", name, e)
+            return {'ok': False,
+                    'msg': _("The headings could not be read from %(file)s. "
+                             "Check it opens in a spreadsheet and that the first "
+                             "row is the column headings.", file=name)}
+        if not cols:
+            return {'ok': False,
+                    'msg': _("No column headings were found in %(file)s.", file=name)}
+        truncated = len(cols) > self._IMPORT_SAMPLE_MAX_COLS
+        cols = cols[:self._IMPORT_SAMPLE_MAX_COLS]
+        config.sudo().write({
+            'import_sample_file': base64.b64encode(content),
+            'import_sample_filename': name,
+            'import_sample_date': fields.Datetime.now(),
+            'import_sample_columns_json': json.dumps(cols),
+        })
+        data = self.import_mapping_data(config.id, False)
+        data['read'] = {
+            'columns': len(cols),
+            'shown': len([c for c in cols if c.get('preferred')]),
+            'truncated': truncated,
+        }
+        return data
+
+    @api.model
+    def import_mapping_forget_headers(self, config_id):
+        """Drop the stored file and its columns. Wires are untouched.
+
+        A binding is a decision about a column NAME; it does not depend on the
+        file that suggested the name, and deleting the file must not silently
+        unwire a scheme. So this forgets the spreadsheet and leaves every
+        `source_binding` exactly where it was — the columns come back in the
+        "Already used by this scheme" lane, which is where they belong once
+        they have been chosen.
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("Only managers can change this board.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("Pick a payroll scheme first.")}
+        config.sudo().write({
+            'import_sample_file': False,
+            'import_sample_filename': False,
+            'import_sample_date': False,
+            'import_sample_columns_json': False,
+        })
+        return self.import_mapping_data(config.id, False)
+
+    @api.model
+    def import_mapping_template(self, config_id):
+        """Build the workbook whose headings this scheme will match on re-import.
+
+        `ExcelConnector.generate_template` had zero callers for its entire life
+        (S12/J2). This is its caller. The point of a scheme-built template is
+        the round trip: fill it in, drop it back on this board, and every input
+        component finds its column — because the headings were derived from
+        what the resolver looks for, not from a label somebody typed once.
+        """
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("Pick a payroll scheme first.")}
+        try:
+            content, filename = config._build_pay_data_template()
+        except ImportError:
+            return {'ok': False,
+                    'msg': _("Spreadsheets cannot be built on this server.")}
+        except Exception as e:
+            _logger.warning("J2 template build failed for config %s: %s", config.id, e)
+            return {'ok': False, 'msg': _("That template could not be built.")}
+        inputs = config.rule_ids.filtered(lambda r: r.column_type == 'input')
+        return {
+            'ok': True,
+            'file_b64': base64.b64encode(content).decode(),
+            'filename': filename,
+            'mimetype': ('application/vnd.openxmlformats-officedocument'
+                         '.spreadsheetml.sheet'),
+            'columns': len(inputs),
+        }
+
+    @api.model
+    def import_mapping_handoff(self, config_id, file_b64=None, filename=None):
+        """"Load this file as a pay run…" — into the flow that already exists.
+
+        This builds NO import pipeline. It calls `pb.import.wizard.create_and_load`,
+        the same server method the guided wizard's first step calls, which
+        creates the batch, loads the file and matches employees — and stops
+        there. Validating and committing stay where they are: on the batch, in
+        front of a person, one deliberate click each. A mapping board must
+        never be able to pay somebody.
+
+        A fresh upload is read for its headings on the way past, so one gesture
+        updates the board AND starts the run.
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("Only managers can load pay data.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("Pick a payroll scheme first.")}
+        Wizard = self.env.get('pb.import.wizard')
+        if Wizard is None:
+            return {'ok': False,
+                    'msg': _("The guided load is not available on this database.")}
+        name = (filename or '').strip()
+        if file_b64:
+            read = self.import_mapping_read_headers(config.id, file_b64, name)
+            if not read.get('ok'):
+                return read
+            payload, fname = file_b64, config.import_sample_filename
+        elif config.import_sample_file:
+            payload = config.import_sample_file
+            if isinstance(payload, bytes):
+                payload = payload.decode()
+            fname = config.import_sample_filename or 'pay-data.xlsx'
+        else:
+            return {'ok': False,
+                    'msg': _("Drop the file with this period's numbers in it first.")}
+        summary = Wizard.create_and_load({
+            'name': _("%(scheme)s — %(file)s", scheme=config.name, file=fname),
+            'source_type': 'excel',
+            'formula_config_id': config.id,
+            'file_b64': payload,
+            'file_name': fname,
+        })
+        if summary.get('error'):
+            return {'ok': False, 'msg': summary['error'],
+                    'batch_id': summary.get('batch_id')}
+        return {'ok': True, 'batch_id': summary.get('batch_id'),
+                'total_lines': summary.get('total_lines') or 0,
+                'matched': summary.get('matched') or 0,
+                'new': summary.get('new') or 0,
+                'name': summary.get('name') or fname}
+
     @api.model
     def import_mapping_data(self, config_id=None, batch_id=None):
         """The Excel board — which, until S6, could not be opened at all.
@@ -5421,12 +5645,16 @@ class PbFormulaStudio(models.AbstractModel):
         product was a dead end from the first click. And its left column was "the
         keys of one line of one load", which meant the board was only ever usable in
         the minutes after somebody happened to upload a file — which is why, per
-        **S12**, it has never written a value on any of the four databases.
+        **S12**, it had never written a value on any of the four databases.
 
-        Three lanes now, each an honest source of column names, and the board draws
-        itself when all three are empty:
+        **JOURNEY J2 closed that.** The left column now has FOUR lanes, and the
+        first of them is the one that makes the board usable before an import
+        rather than after it:
 
-          * the selected batch's columns (today's behaviour, kept);
+          * **the columns of a file dropped on this board** — read for its
+            headings, never its data, through the loader's own parser, so a
+            column shown here is a key the loader will produce;
+          * the selected batch's columns (the original behaviour, kept);
           * **the keys this scheme is already bound to** — so last month's wires are
             on screen with no file loaded at all;
           * legacy `data_source_field` values, for schemes that predate bindings.
@@ -5449,7 +5677,7 @@ class PbFormulaStudio(models.AbstractModel):
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
             .sorted(key=lambda r: r.sequence)
         cols = self._import_batch_columns(batch) if batch else []
-        left = self._import_left_columns(batch, cols, input_rules)
+        left = self._import_left_columns(batch, cols, input_rules, config=config)
         _acts, _run = self._source_actuals(config)
         _emp = self._source_employee_dest_ids(config)
         _wires = self._source_wire_dests(config)
@@ -5509,25 +5737,55 @@ class PbFormulaStudio(models.AbstractModel):
             'add_label': _("Use “%s” as a spreadsheet column"),
             'contexts': contexts, 'context_id': batch.id if batch else False,
             'can_edit': self._can_edit(),
+            # J2 — the on-ramp's own state. `sample` is null until a file has
+            # been read onto this scheme; `inputs` is what the template and the
+            # coverage line are counted against.
+            'sample': self._import_sample_meta(config),
+            'inputs': len(input_rules),
+            'wired': len(mapped_rules),
+            'config_id': config.id,
         }
 
     @api.model
-    def _import_left_columns(self, batch, cols, input_rules):
-        """The Excel board's left column: three lanes, none of them invented.
+    def _import_left_columns(self, batch, cols, input_rules, config=None):
+        """The Excel board's left column: four lanes, none of them invented.
 
-        Order is deliberate — the file first when there is one, because that is
-        what somebody with a file in front of them is looking for; then what this
-        scheme already reads, which is the only lane a never-uploaded database has.
+        Order is deliberate — the file YOU just dropped first (J2), because
+        somebody who has just handed the board a spreadsheet is looking for its
+        columns and nothing else; then a loaded batch's columns; then what this
+        scheme already reads, which is the only lane a never-uploaded database
+        has; then the legacy Char.
+
+        The dropped-file lane shows ONE card per real column, labelled with the
+        key that will be bound and carrying a sample value from the first row —
+        `e.g. 12,500,000` under `SEVL|Basic Salary` is the difference between
+        recognising your column and hoping. The other spellings of the same
+        column (its bare twin, its letter) are real keys and stay in the stored
+        list, reachable by typing them; they do not each get a card, because
+        four cards for one column is a board nobody can read (see
+        `peek_source_columns`' `preferred`).
         """
         out, seen = [], set()
 
-        def add(key, group):
+        def add(key, group, sublabel='', meta=None):
             key = (key or '').strip()
             if not key or key in seen:
                 return
             seen.add(key)
-            out.append({'id': 'c:' + key, 'label': key, 'sublabel': '',
-                        'group': group, 'meta': {}})
+            out.append({'id': 'c:' + key, 'label': key, 'sublabel': sublabel,
+                        'group': group, 'meta': meta or {}})
+
+        meta = self._import_sample_meta(config) if config else None
+        if meta:
+            lane = meta['line']
+            for col in self._import_sample_columns(config):
+                if not col.get('preferred'):
+                    continue
+                sample = col.get('sample') or ''
+                add(col.get('key'), lane,
+                    sublabel=(_("e.g. %s", sample) if sample else _("no value in the first row")),
+                    meta={'sheet': col.get('sheet') or '',
+                          'letter': col.get('letter') or ''})
 
         file_lane = (batch.name or _("This file")) if batch else _("Uploaded file")
         for c in cols:

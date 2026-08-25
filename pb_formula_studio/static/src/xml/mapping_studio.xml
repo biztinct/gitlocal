@@ -171,6 +171,105 @@
           </button>
         </div>
 
+        <!-- ==== J2: the Excel on-ramp ====
+             The Spreadsheet board could show you the columns of a file you had
+             already imported, or columns you typed from memory. Neither is any
+             use to the person holding this month's spreadsheet, which is why
+             the board had never written a value in production. Two states:
+             nothing read yet (a dropzone that says, twice, that it reads
+             HEADINGS), and a file read (its provenance, and the three things
+             you do next). Both offer the scheme-built template, because "I do
+             not have a file in the right shape" is the other half of the
+             problem. -->
+        <t t-if="isImport and state.data and state.data.ok">
+          <div class="pbms-ramp">
+            <t t-if="!sample">
+              <t t-if="canEdit">
+                <label t-attf-class="pbms-drop {{ state.rampOver ? 'over' : '' }} {{ rampBusy ? 'busy' : '' }}"
+                       t-on-dragover="onRampOver" t-on-dragleave="onRampLeave"
+                       t-on-drop="onRampDrop">
+                  <span class="pbms-drop__ic" t-out="ic('table', 28)"/>
+                  <span class="pbms-drop__tx">
+                    <b>Drop this period's spreadsheet here to see its columns</b>
+                    <span>Payobook reads the column headings and one example value from the first row. It does not import your numbers, and it does not create a pay run.</span>
+                  </span>
+                  <span class="pbms-drop__cta">
+                    <t t-if="state.rampBusy === 'read'">Reading the headings…</t>
+                    <t t-else="">Choose a file…</t>
+                  </span>
+                  <input type="file" accept=".xlsx,.xls,.csv" class="pbms-file"
+                         aria-label="Choose a spreadsheet to read the column headings from"
+                         t-on-change="onRampPick"/>
+                </label>
+              </t>
+              <div t-else="" class="pbms-ramp__ro">
+                <span t-out="ic('table', 15)"/>
+                <span>No spreadsheet has been read onto this scheme yet. A payroll manager can drop one here.</span>
+              </div>
+
+              <div class="pbms-ramp__alt">
+                <span class="pbms-ramp__altq">Nothing in the right shape yet?</span>
+                <button class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="rampBusy ? 'disabled' : false"
+                        title="One column per input component, headed exactly as this scheme reads them"
+                        t-on-click="downloadTemplate">
+                  <t t-out="ic('download', 14)"/>
+                  <t t-if="state.rampBusy === 'template'">Building…</t>
+                  <t t-else="">Download a template built from this scheme</t>
+                </button>
+                <span class="pbms-ramp__or">or type a heading into the left column's search box.</span>
+              </div>
+            </t>
+
+            <t t-else="">
+              <div class="pbms-ramp__bar">
+                <span class="pbms-ramp__ic" t-out="ic('table', 18)"/>
+                <div class="pbms-ramp__tx">
+                  <b t-esc="sample.filename"/>
+                  <span class="s">
+                    <t t-esc="sample.shown"/> column<t t-if="sample.shown !== 1">s</t>
+                    <t t-if="sample.read_on"> · read <t t-esc="sample.read_on"/></t>
+                    · headings only<t t-if="coverage"> · <t t-esc="coverage"/></t>
+                  </span>
+                </div>
+                <div class="pbms-ramp__acts">
+                  <button t-if="canEdit" class="pbim-btn primary pbim-btn-sm"
+                          t-att-disabled="rampBusy ? 'disabled' : false"
+                          title="Creates a pay run from this file and stops at the review step — nothing is committed"
+                          t-on-click="loadAsPayRun">
+                    <t t-out="ic('play', 14)"/>
+                    <t t-if="state.rampBusy === 'handoff'">Loading…</t>
+                    <t t-else="">Load this file as a pay run…</t>
+                  </button>
+                  <label t-if="canEdit" class="pbim-btn outline pbim-btn-sm pbms-ramp__swap"
+                         title="Read a different spreadsheet's headings onto this board">
+                    <t t-out="ic('refresh', 14)"/>
+                    <span>
+                      <t t-if="state.rampBusy === 'read'">Reading…</t>
+                      <t t-else="">Replace file…</t>
+                    </span>
+                    <input type="file" accept=".xlsx,.xls,.csv" class="pbms-file"
+                           aria-label="Read a different spreadsheet's column headings"
+                           t-on-change="onRampPick"/>
+                  </label>
+                  <button class="pbim-btn outline pbim-btn-sm"
+                          t-att-disabled="rampBusy ? 'disabled' : false"
+                          title="One column per input component, headed exactly as this scheme reads them"
+                          t-on-click="downloadTemplate">
+                    <t t-out="ic('download', 14)"/> Template
+                  </button>
+                  <button t-if="canEdit" class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="rampBusy ? 'disabled' : false"
+                          title="Forget the file and its columns. Every wire you drew stays."
+                          t-on-click="forgetFile">
+                    <t t-out="ic('x', 14)"/> Forget
+                  </button>
+                </div>
+              </div>
+            </t>
+          </div>
+        </t>
+
         <!-- ==== J1: the employee &amp; contract toolbar ====
              Two ways to reach a destination among 236, and the payroll reveal.
              They are a ROW of their own rather than five more controls in the

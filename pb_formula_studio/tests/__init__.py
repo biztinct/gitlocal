@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import test_column_roles
+from . import test_excel_onramp
 from . import test_mapping_catalogue
 from . import test_mapping_create_guard
 from . import test_mapping_defects

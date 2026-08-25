@@ -1,6 +1,6 @@
 # JOURNEY — one mapping home, the Excel on-ramp, honest two-way sourcing, the Journey view
 
-**STATUS: IN FLIGHT — designed 2026-08-25. J1 delivered 2026-08-25; J2 next.**
+**STATUS: IN FLIGHT — designed 2026-08-25. J1 and J2 delivered 2026-08-25; J3 next.**
 
 Follow-on programme to SOURCING (see `docs/handovers/SOURCING_LEDGER.md` + `SOURCING_CLOSEOUT.md`)
 and MAPFIX (`docs/handovers/MAPFIX_LEDGER.md`, which itself binds COLROLES CR1–CR33). **All standing
@@ -77,10 +77,14 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   `hr.payslip.formula_input_sources`.
 - WRITEBACK is real: import writes `hr.employee` (`:2131-2215`), `hr.contract` (`:2217-2241`),
   bank (`:2070-2129`), m2o auto-create (`:1310-1315`) — primary blob only, never top-up.
-- Known holes (programme targets): Excel board header source = existing batch only
-  (`_import_batch_columns` `pb_formula_studio.py:5404`, free-typed fallback `:5504-5508` — its
-  docstring says it has never written a value in production); `generate_template`
-  (`integrations/excel_connector.py:575`) has zero callers; `source_type='connector'` has no loader
+- Known holes (programme targets). **The first two were CLOSED by J2** — kept here with their
+  original wording because the next phase's survey will meet the same lines: Excel board header
+  source = existing batch only (`_import_batch_columns` `pb_formula_studio.py:5404`, free-typed
+  fallback `:5504-5508` — its docstring said it had never written a value in production; J2 added
+  a dropped-file lane in front of both and the docstring is now past tense); `generate_template`
+  (`integrations/excel_connector.py:575`) had zero callers **and could not have survived one**
+  (MJ8) — rewritten and called by `hr.formula.config._build_pay_data_template`;
+  `source_type='connector'` has no loader
   (self-documented `payroll_import_batch.py:2874-2887`); per-feed pull skips transformation rules
   (`_execute_for_records` only runs from `action_pull_data` `integration_connector.py:1475` and
   `:1579`); batch-free payslips never read API data (`hr_payslip_formula.py:398-405` TODO/pass);
@@ -121,6 +125,54 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   after (21 rows, ids `1,2,30,31,32,33,36,37,38,50…60,108`), `hr_formula_rule` for config 14
   diffed on both `source_binding*` and `column_role`/`is_contract_component` (99 rows), and
   the one promote→detach probe that DID move two rows was restored and re-diffed clean.
+
+- **J2 — DONE, live on abm · acme · payobook · payobook_template (2026-08-25).**
+  → `JOURNEY_PHASE_J2_HANDOVER.md`.
+  Versions: pb_hr_payroll_formula **19.0.1.80.0** · pb_formula_studio **19.0.1.134.0** ·
+  pb_import **19.0.1.3.0** · pb_import_wizard **19.0.1.1.0** ·
+  pb_import_advanced **19.0.1.11.0** (`biz_theme` untouched; `om_hr_payroll` untouched — CR1).
+  **The Spreadsheet board has written its first value on a live database.** S12's
+  "never written a value" is now false, deliberately and provably: on abm the board
+  bound `BASESALARY` (rule 674) to the key `SEVL|Base Salary`, `origin='board'`, and the
+  binding was then removed to leave abm as found. Its docstring is past tense (test 13).
+  **One parser, two consumers.** `action_load_file`'s branch became
+  `_parse_source_file` + `_raw_data_from_row` (`payroll_import_batch.py`), and
+  `peek_source_columns` runs them over an in-memory `new()` probe carrying a real
+  batch's `default_get` values. So the board's keys are the loader's keys *because
+  there is one function*, not because two agree. Proven live on the real fixture:
+  **360 keys peeked == 360 keys loaded, 0 either way** (and the sample the board
+  printed, `SEVL|Base Salary → e.g. 19,510,000`, is the value the import line holds).
+  abm's config 14 takes the MULTISHEET branch (all 99 rules carry `source_sheet_name`
+  = `SEVL`), so the invariant was exercised on the harder path, not the easy one.
+  **The template generator is alive and has callers.** `generate_template` was
+  rewritten in place (one generator, `excel_connector.py:575`): one column per INPUT
+  component headed by `template_slot_for` (the binding key when there is one, else the
+  name — what the resolver actually matches), the employee-identifier column FIRST on
+  every sheet, one sheet per `source_sheet_name`, and **no data row at all**. Round trip
+  on live config 14: **54/54 input components matched, 0 missing**.
+  **One door.** `hr.payroll.import.batch.action_open_guided_import` is the single
+  router; the scheme stat button, the connector stat button, the "New Import" menu (now
+  a server action, `action_payroll_load_pay_data`) and the connector cockpit all return
+  it, and `pb_import_wizard` now reads `default_formula_config_id` /
+  `default_connector_id` / `default_source_type` off the arrival context so a
+  pre-scoped door stays pre-scoped (verified live: scheme door → `pb_import_wizard`
+  with config 14 selected; connector door → connector 1). Nothing was deleted — the raw
+  batch form survives as "Pay Data Load (advanced form)" and is nobody's destination.
+  Labels: menu `Payroll Import`→**Pay Data**, `Import Batches`→**Past Pay Data Loads**,
+  `New Import`→**Load Pay Data…**, both `Payroll Import` stat buttons→**Load pay data**,
+  and the structure door `Import from Excel`→**Set up columns from Excel** (behaviour
+  untouched — it defines columns, it does not load numbers).
+  Tests: Python **95/95 on abm**, 0 failed, 0 errors (**baseline 76** — see MJ11, the
+  ledger's J1 figure of 74 was stale — plus 19 new `TestExcelOnRamp`); hoot **64**
+  at `/web/tests?filter=mapping_canvas` (baseline 62 + 2). 14/14 numbered cases pass.
+  0 console errors; **0 bounding-box overlaps** over 496 same-layer pairs at 1440 and
+  351 at 1024, with the empty dropzone, a filled lane, a live wire and an open picker
+  layer on screen.
+  abm left exactly as found — `hr_payslip_import_mapping` 21 rows, ids
+  `1,2,30,31,32,33,36,37,38,50…60,108`; `hr_formula_rule` config 14 back to its
+  opening fingerprint `b63d9ac9cfc25d970aac346931de3779` (99 rules, 0 bound);
+  `hr_payroll_import_batch` and `hr_payroll_import_line` back to **0**; 3 employees,
+  0 payslips, unchanged. `action_process` was never called.
 
 ## Gotchas discovered (append per phase, MJ-numbered)
 
@@ -190,3 +242,67 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   each card's rect intersected with the clip box, and only tests pairs sharing a layer:
   0 overlaps at 1440 and at 1024. A layout assertion that cannot tell "covered on purpose"
   from "collided" will fail every honest popover you ever ship.
+
+- MJ8 (J2): **the dead template generator was not merely uncalled — it was
+  UNCALLABLE, and the two facts look identical in `grep`.** `ExcelConnector.generate_template`
+  had zero callers for its whole life (the J2 handover's premise). What the handover could
+  not know, and what no amount of reading the call graph reveals, is that its body read
+  `rule.description` — and `hr.formula.rule` has no `description` field. The first call it
+  ever received, in a test, died with `'hr.formula.rule' object has no attribute
+  'description'`. So "revive the dead generator" was never a matter of adding a caller;
+  the code had never executed once, and the same is true of everything else it asserted
+  about rules. **Dead code does not rot — it was frequently born wrong, and the absence of
+  callers is exactly what let it stay that way.** When a phase plans to revive something
+  with no callers, budget for it being broken rather than stale, and give it a test before
+  giving it a button. (Two more of its assumptions were wrong in the same way: component
+  CODES are not what the resolver tries first, and a multisheet scheme's columns do not
+  live on one sheet. The rewrite fixed all three.)
+- MJ9 (J2): **a workbook with headings and no rows had no SHAPE, and the feature that
+  needed it most was the one this phase shipped.** `_load_multisheet_data` derives its
+  `headers` from the merged data rows, so a template — headings only, deliberately empty
+  (a pre-filled row is a row somebody imports by accident) — parsed to `headers=[]`,
+  `rows=[]`, and the header reader found nothing. The round trip that is the entire point
+  of a scheme-built template could not close. The fix had to preserve the one-parser rule,
+  so it does NOT reimplement the key shape: it seeds a single phantom row keyed on
+  `_SHAPE_PROBE`, runs it through the identical merge, and drops it before returning
+  (`shape_only`). `rows` stays empty, so `action_load_file` still refuses the file with
+  "No data found" and loading is bit-identical; only `headers` — which the loader uses for
+  a log line and, on dict rows, for nothing at all — gains the truth it always should have
+  had. **When you need a derived value that only exists on the data path, put a fake datum
+  through the real path rather than a real datum through a fake one.**
+- MJ10 (J2, testing): **the keyboard found the only defect the screenshots could not.**
+  A `<label>`-wrapped `input[type=file]` is how every file picker in this codebase is
+  styled, and the input is 1px and transparent by necessity. `.pbms-drop` had
+  `:focus-within`; `.pbms-ramp__swap` ("Replace file…") did not — so tabbing onto it gave
+  `boxShadow: "none"` and no ring anywhere on screen. The control was **reachable and
+  invisible**, which is worse than unreachable: the next Enter opens a file dialog the
+  user did not know they were on. Nothing in a mouse-driven session shows this, and a
+  bounding-box sweep cannot: the geometry is perfect. Probe every custom affordance with
+  `el.focus()` + `getComputedStyle`, not just with a click. (MF26's family: an affordance
+  that is not a `<button>` has to re-earn every `<button>` behaviour, one at a time.)
+- MJ11 (J2, testing): **a recorded suite baseline goes stale the moment the tree moves,
+  and a phase that trusts the ledger's number reads a pass as a regression.** The J2
+  handover said abm's Python baseline was 74 (J1's report, and true when written). The
+  last pre-J2 run on abm was **76** — commit `1fb21315` had landed two more tests after
+  J1 reported. Had J2 finished at 93 it would have looked like +19 on 74 and green, while
+  actually having lost two. **Take the baseline yourself, on the machine, immediately
+  before you start** — the ledger figure is a claim about a past tree, not a measurement
+  of this one. (Read it out of the log: `grep "odoo.tests.result" /var/log/odoo/odoo-server.log`
+  carries every historical run with its timestamp, which is how the drift was spotted.)
+- MJ12 (J2, testing): **a bounding-box sweep must exclude SVG internals, or the icons
+  fail it.** MJ7 taught the sweep about `overflow: clip` and layers; the first J2 run still
+  reported 5 "overlaps", every one of them a `<path>` inside a Lucide glyph overlapping its
+  sibling `<path>` — which is what a drawing IS. They are unmistakable in the output only
+  because `String(el.className)` on an SVG node yields `[object SVGAnimatedString]`, so the
+  offenders had no names. `.filter(e => !(e instanceof SVGElement))` took it to 0 at both
+  widths. Same lesson a third time: **a layout assertion that does not know what it is
+  measuring invents defects, and an invented defect costs the same as a real one until you
+  have disproved it.**
+- MJ13 (J2, environment): **Chrome-MCP's viewport emulation can enter a state where every
+  resize silently no-ops.** After a `resize_page` to 1024 that reported success but left
+  `innerWidth` at 1440, subsequent calls returned `Emulating viewport: {…,"width":null}`
+  and `emulate` failed with `Failed to deserialize params.width`. The page was fine; the
+  emulation override was corrupt. **Opening a NEW page re-establishes it** — the 1024
+  sweep ran on a fresh tab. Always assert the width you asked for
+  (`() => ({w: innerWidth})`) before trusting a responsive check; a screenshot at the
+  wrong width is a screenshot of a layout you did not test. (MF41's family.)

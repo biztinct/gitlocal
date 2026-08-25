@@ -26,15 +26,25 @@ SOURCE_LABEL = {
 #
 # The action itself is untouched and still registered: this cycle replaces the
 # DOORS, not the models behind them.
+# JOURNEY J2 — every label here says WHAT MOVES and WHEN you use it.
+# "Multi-sheet Excel" and "Import Formula Config" set a scheme's columns up
+# once; only the hero button loads a period's numbers. Read as a set, the old
+# labels made four one-off setup acts look like four ways to do payroll.
+#
+# The primary tuple is retargeted at `action_payroll_load_pay_data` (the guided
+# flow) rather than the raw batch form. Note it is not RENDERED today — the
+# cockpit's hero CTA is hard-wired to the wizard and `secondaryLaunches` filters
+# `primary` out — so this is correctness for the day something renders it, not
+# a live door. Nothing was removed; see MJ8.
 LAUNCH_CANDIDATES = [
-    ('pb_hr_payroll_formula.action_payroll_import_batch_new',
-     'New Import Batch', 'Upload a file and run map → validate → commit', 'upload', True),
+    ('pb_hr_payroll_formula.action_payroll_load_pay_data',
+     'Load Pay Data', 'This period’s numbers — upload, review matches, commit', 'upload', True),
     ('pb_import_advanced.action_pb_multisheet_wizard',
-     'Multi-sheet Excel', 'Guided multi-tab workbook import', 'table', False),
+     'Set up columns from Excel', 'One-off setup: turn a workbook’s columns into scheme components', 'table', False),
     ('pb_import_advanced.action_pb_employee_wizard',
-     'Import Employees', 'Create employees from file or Zoho', 'users', False),
+     'Import Employees', 'Create employee records from a file or a connected system', 'users', False),
     ('pb_import_advanced.action_pb_formula_wizard',
-     'Import Formula Config', 'Load rules from salary structure or file', 'function', False),
+     'Set up a scheme from a file', 'One-off setup: load rules from a salary structure or file', 'function', False),
 ]
 
 

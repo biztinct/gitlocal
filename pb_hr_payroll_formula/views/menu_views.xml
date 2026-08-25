@@ -54,23 +54,28 @@
               sequence="16"
               groups="pb_hr_payroll_formula.group_formula_manager"/>
 
-    <!-- Payroll Import Submenu -->
+    <!-- Pay Data Submenu.
+         JOURNEY J2 — every label here says what it MOVES and when you use it.
+         "New Import" and "Import Batches" sat side by side saying neither, next
+         to a "Import from Excel" button on the scheme form that sets up columns
+         instead of loading numbers. Doing, and browsing what you have done, are
+         now spelled differently. -->
     <menuitem id="menu_formula_import"
-              name="Payroll Import"
+              name="Pay Data"
               parent="menu_formula_root"
               sequence="20"
               groups="pb_hr_payroll_formula.group_formula_manager"/>
 
     <menuitem id="menu_import_batches"
-              name="Import Batches"
+              name="Past Pay Data Loads"
               parent="menu_formula_import"
               action="action_payroll_import_batch"
               sequence="10"/>
 
     <menuitem id="menu_import_new"
-              name="New Import"
+              name="Load Pay Data…"
               parent="menu_formula_import"
-              action="action_payroll_import_batch_new"
+              action="action_payroll_load_pay_data"
               sequence="20"/>
 
     <!-- Integration Submenu -->
