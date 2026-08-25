@@ -382,6 +382,307 @@
 }
 .pbms-tmpl__res b { color: var(--pbim-text); }
 
+/* ==================================================================== J1 ===
+ *  The employee & contract toolkit, the unresolved footer and the
+ *  reconciliation dialog — everything that arrived when the Formula Studio
+ *  overlay was retired.
+ *
+ *  All of it is scoped `.pbim.pbms .pbms-wrap …` for the reason the top bar
+ *  documents above (W151): `.pbms` is ALSO pb_mission's Mission Control root,
+ *  and a bare `.pbms-foot` at (0,1,0) would be a class name in a namespace two
+ *  modules share. `.pbms-wrap` exists only in this component, so nothing here
+ *  can reach Mission Control and nothing there can reach this.
+ */
+.pbim.pbms .pbms-wrap {
+
+    /* ---- the toolbar row: two ways to reach one of 236 destinations ---- */
+    .pbms-emptools {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        padding: 9px 22px;
+        background: var(--pbim-surface);
+        border-bottom: 1px solid var(--pbim-line);
+    }
+
+    .pbms-empfind {
+        position: relative;
+        display: flex; align-items: center; gap: 7px;
+        flex: 0 1 300px; min-width: 200px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: #fff; padding: 5px 10px;
+    }
+    .pbms-empfind:focus-within {
+        border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+    .pbms-empfind__ic { display: inline-flex; flex: none; color: var(--pbim-muted); }
+    .pbms-empfind input {
+        flex: 1; min-width: 0; border: 0; outline: 0; background: none;
+        font-family: inherit; font-size: 12.5px; color: var(--pbim-text);
+    }
+    .pbms-empfind__menu {
+        position: absolute; top: calc(100% + 5px); left: 0; right: 0; z-index: 42;
+        max-height: 320px; overflow-y: auto;
+        background: #fff; border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh-lg); padding: 5px;
+    }
+    .pbms-empfind__opt {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        width: 100%; border: 0; background: none; border-radius: var(--pbim-r-sm);
+        padding: 7px 9px; font-family: inherit; text-align: left; cursor: pointer;
+    }
+    .pbms-empfind__opt:hover { background: var(--pbim-soft); }
+    .pbms-empfind__opt .lbl {
+        min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--pbim-text);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbms-empfind__opt .sub {
+        flex: none; font-size: 10.5px; font-weight: 800; letter-spacing: .03em;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+
+    /* ---- Employee ▾ / Contract ▾ ---- */
+    .pbms-empbrowse { position: relative; display: flex; align-items: center; gap: 6px; }
+    .pbms-empbtn {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: #fff; border: 1px solid var(--pbim-line); border-radius: 999px;
+        padding: 5px 11px; font-family: inherit; font-size: 12px; font-weight: 700;
+        color: var(--pbim-text); cursor: pointer; transition: .14s;
+    }
+    .pbms-empbtn:hover { border-color: var(--pbim-primary-light); color: var(--pbim-primary-hover); }
+    .pbms-empbtn.on {
+        border-color: var(--pbim-primary); background: var(--pbim-soft);
+        color: var(--pbim-primary-hover);
+    }
+    .pbms-empbtn .chev { display: inline-flex; color: var(--pbim-muted); transform: rotate(90deg); }
+    .pbms-empbtn.on .chev { transform: rotate(-90deg); color: var(--pbim-primary-hover); }
+
+    .pbms-empmenu {
+        position: absolute; z-index: 41; top: calc(100% + 6px); left: 0;
+        width: 340px; max-width: 92vw; max-height: 60vh;
+        display: flex; flex-direction: column;
+        background: #fff; border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh-lg); overflow: hidden;
+    }
+    .pbms-empmenu__h {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 13px 8px;
+    }
+    .pbms-empmenu__h b {
+        font-size: 12px; font-weight: 800; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--pbim-primary-hover);
+    }
+    .pbms-empmenu__h .cnt { font-size: 11px; font-weight: 700; color: var(--pbim-muted); }
+    .pbms-empmenu__q {
+        display: flex; align-items: center; gap: 7px;
+        padding: 0 13px 9px; color: var(--pbim-muted);
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .pbms-empmenu__q input {
+        flex: 1; min-width: 0;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        padding: 6px 9px; font-family: inherit; font-size: 12.5px; color: var(--pbim-text);
+    }
+    .pbms-empmenu__q input:focus {
+        outline: none; border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+    .pbms-empmenu__l { flex: 1; overflow-y: auto; padding: 5px; }
+    .pbms-empmenu__opt {
+        display: flex; align-items: center; gap: 8px; width: 100%;
+        border: 0; background: none; border-radius: var(--pbim-r-sm);
+        padding: 7px 9px; font-family: inherit; text-align: left; cursor: pointer;
+    }
+    .pbms-empmenu__opt:hover { background: var(--pbim-soft); }
+    .pbms-empmenu__opt .lbl {
+        flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--pbim-text);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    /* MF13/MF26 — the tick is a CONSTANT-width slot outside the label's flow
+       pressure: `min-width: 0` above ellipsises the name beside it, and a mark
+       that only sometimes renders must never be what decides the name's width. */
+    .pbms-empmenu__opt .tick { display: inline-flex; flex: none; width: 15px; color: var(--pbim-primary); }
+    .pbms-empmenu__opt.added { background: var(--pbim-soft); }
+    .pbms-empmenu__opt.added .lbl { color: var(--pbim-primary-hover); }
+    .pbms-empmenu__opt.locked { cursor: default; opacity: .55; }
+    .pbms-empmenu__opt.locked:hover { background: none; }
+    .pbms-empmenu__e { padding: 18px 12px; text-align: center; font-size: 12px; color: var(--pbim-muted); }
+
+    /* ---- COLROLES P3: the lane chips ---- */
+    .pbms-lanes {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+        padding: 9px 22px;
+        background: var(--pbim-surface);
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .pbms-lane {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--pbim-line); background: #fff; border-radius: 999px;
+        padding: 4px 11px 4px 8px;
+        font-family: inherit; font-size: 12px; font-weight: 700;
+        color: var(--pbim-muted); cursor: pointer;
+        transition: border-color .12s, color .12s, background .12s;
+    }
+    .pbms-lane:hover { border-color: var(--pbim-primary-light); color: var(--pbim-primary-hover); }
+    .pbms-lane.on {
+        border-color: var(--pbim-primary); color: var(--pbim-primary-hover);
+        background: var(--pbim-soft);
+    }
+    .pbms-lane svg { width: 13px; height: 13px; flex: none; }
+    .pbms-lane .l { color: var(--pbim-text); }
+    .pbms-lane.on .l { color: inherit; }
+    .pbms-lane .n { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; font-weight: 800; }
+    /* the only warm colour in the strip, so "there is work left here" is legible
+       in one pass across six chips */
+    .pbms-lane .u {
+        font-size: 10.5px; font-weight: 800;
+        color: var(--pbim-amber); background: var(--pbim-amber-soft);
+        border-radius: 999px; padding: 0 6px;
+    }
+    .pbms-lane.ghost { border-style: dashed; }
+    .pbms-lane.payroll { opacity: .8; }
+    .pbms-lane.payroll.shown { opacity: 1; }
+
+    /* ---- MAPFIX B3: the footer bar ----
+       It NEVER disappears on the employee board: when there is nothing left to
+       resolve it says so, because a bar that vanishes once the work is done
+       cannot be distinguished from one that never rendered. */
+    .pbms-foot {
+        flex: 0 0 auto;
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 10px 22px;
+        border-top: 1px solid var(--pbim-line);
+        background: var(--pbim-surface);
+    }
+    .pbms-foot__say {
+        display: inline-flex; align-items: center; gap: 7px; min-width: 0;
+        font-size: 12.5px; font-weight: 600; color: var(--pbim-amber);
+    }
+    .pbms-foot__say.ok { color: var(--pbim-green); }
+    .pbms-foot__say svg { flex: none; }
+    .pbms-foot .pbim-btn { margin-left: auto; }
+
+    /* ---- the template panel's SAVE face, and APPLY's per-line result ---- */
+    .pbms-tmpl__save { padding: 0 15px 14px; }
+    .pbms-tmpl__in {
+        width: 100%; border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        padding: 8px 11px; font-family: inherit; font-size: 13px; color: var(--pbim-text);
+    }
+    .pbms-tmpl__in:focus {
+        outline: none; border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+    .pbms-tmpl__acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 11px; }
+    .pbms-tmpl__del {
+        flex: none; display: inline-flex; align-items: center; justify-content: center;
+        border: 0; background: none; color: var(--pbim-slate);
+        padding: 5px; border-radius: var(--pbim-r-sm); cursor: pointer;
+    }
+    .pbms-tmpl__del:hover { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbms-tmpl__resh { font-size: 12.5px; font-weight: 700; color: var(--pbim-text); margin-bottom: 9px; }
+    .pbms-tmpl__ressec { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-bottom: 8px; }
+    .pbms-tmpl__tag {
+        font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em;
+        padding: 2px 7px; border-radius: 6px;
+    }
+    .pbms-tmpl__tag.skip { background: var(--pbim-line-2); color: var(--pbim-slate); }
+    .pbms-tmpl__tag.miss { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbms-tmpl__ressec code {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px;
+        background: #fff; border: 1px solid var(--pbim-line); border-radius: 5px;
+        padding: 1px 6px; color: var(--pbim-text);
+    }
+
+    /* ---- MAPFIX B3: the reconciliation dialog ---- */
+    .pbms-rcn-scrim {
+        position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1600);
+        background: var(--pbim-scrim, rgba(15, 12, 40, .5));
+    }
+    .pbms-rcn {
+        position: fixed; z-index: calc(var(--pbim-z-modal, 1600) + 1);
+        top: 50%; left: 50%; transform: translate(-50%, -50%);
+        /* NOT `min(780px, calc(…))`: the asset pipeline compiles this with
+           libsass, whose OWN `min()` takes numbers and refuses a `calc()`
+           argument — "not a number for `min'", which fails the whole bundle and
+           serves the previous stylesheet with a red banner. Two properties say
+           the same thing and cannot be mistaken for a Sass call. */
+        width: 780px; max-width: calc(100vw - 48px); max-height: 82vh;
+        display: flex; flex-direction: column;
+        background: #fff; border-radius: var(--pbim-r-lg);
+        box-shadow: var(--pbim-sh-lg); overflow: hidden;
+    }
+    .pbms-rcn__h {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        padding: 16px 20px 12px; border-bottom: 1px solid var(--pbim-line);
+    }
+    .pbms-rcn__title { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbms-rcn__title b { font-size: 15.5px; font-weight: 800; color: var(--pbim-text); }
+    .pbms-rcn__title span {
+        font-size: 12px; color: var(--pbim-muted);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbms-rcn__note {
+        padding: 12px 20px; font-size: 12.5px; line-height: 1.55; color: var(--pbim-muted);
+    }
+    .pbms-rcn__bulk {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        padding: 0 20px 10px;
+    }
+    .pbms-rcn__count { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--pbim-text); }
+    .pbms-rcn__rows { flex: 1; min-height: 0; overflow-y: auto; padding: 0 20px 4px; }
+    .pbms-rcn__row {
+        display: grid; align-items: center; gap: 12px;
+        grid-template-columns: 20px minmax(160px, 1.2fr) minmax(140px, 1.3fr) 150px;
+        padding: 9px 10px; border-radius: var(--pbim-r-sm);
+        border: 1px solid transparent;
+    }
+    .pbms-rcn__row:hover { background: var(--pbim-line-2); }
+    .pbms-rcn__row.skipped { opacity: .6; }
+    .pbms-rcn__col { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbms-rcn__col b {
+        font-size: 13px; font-weight: 700; color: var(--pbim-text);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbms-rcn__code {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 10.5px; color: var(--pbim-muted);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbms-rcn__samples { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+    .pbms-rcn__samples code {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 10.5px; padding: 1px 6px; border-radius: 5px;
+        background: var(--pbim-line-2); color: var(--pbim-slate);
+        max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pbms-rcn__nosample { font-size: 11.5px; font-style: italic; color: var(--pbim-muted); }
+    .pbms-rcn__choice { display: flex; justify-content: flex-end; gap: 5px; }
+    .pbms-rcn__type {
+        border: 1px solid var(--pbim-line); background: #fff; color: var(--pbim-muted);
+        border-radius: 999px; padding: 3px 11px;
+        font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+    .pbms-rcn__type.on {
+        border-color: var(--pbim-primary-light); background: var(--pbim-soft);
+        color: var(--pbim-primary-hover);
+    }
+    .pbms-rcn__ref { font-size: 11.5px; font-weight: 600; color: var(--pbim-muted); }
+    .pbms-rcn__empty {
+        display: flex; flex-direction: column; align-items: center; gap: 7px;
+        text-align: center; padding: 34px 24px; color: var(--pbim-muted);
+    }
+    .pbms-rcn__empty-ic { color: var(--pbim-green); }
+    .pbms-rcn__empty b { font-size: 15px; color: var(--pbim-text); }
+    .pbms-rcn__empty span { font-size: 12.5px; }
+    .pbms-rcn__acts {
+        flex: 0 0 auto;
+        display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+        padding: 14px 20px; border-top: 1px solid var(--pbim-line);
+        background: var(--pbim-surface);
+    }
+    .pbms-rcn__fine { margin: 0; font-size: 11.5px; line-height: 1.5; color: var(--pbim-muted); }
+    .pbms-rcn__btns { display: flex; gap: 8px; align-self: flex-end; }
+}
+
 /* ----------------------------------------------------------- narrow view */
 @media (max-width: 900px) {
     .pbms-story { flex-direction: column; }
@@ -391,4 +692,16 @@
     .pbms-link { width: 100%; }
     .pbms-link__svg { display: none; }
     .pbms-menu, .pbms-tmpl { left: 12px; right: 12px; width: auto; }
+
+    /* J1 — the same rule for the toolkit that arrived with the merge: a popover
+       anchored to a control that has wrapped onto its own line must stop being
+       anchored to it. The reconciliation row loses its fixed choice column and
+       stacks, because 150px of Amount/Text beside a sample list is what makes
+       the name column unreadable first. */
+    .pbim.pbms .pbms-wrap {
+        .pbms-empfind { flex: 1 1 100%; }
+        .pbms-empmenu { left: 0; right: 0; width: auto; }
+        .pbms-rcn__row { grid-template-columns: 20px 1fr; row-gap: 6px; }
+        .pbms-rcn__samples, .pbms-rcn__choice { grid-column: 2; justify-content: flex-start; }
+    }
 }

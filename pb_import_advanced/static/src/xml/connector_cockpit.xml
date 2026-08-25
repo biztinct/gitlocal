@@ -95,7 +95,7 @@
             <!-- connector-scoped, no feed: "map something from this system",
                  for the reader who has not decided which feed yet -->
             <button t-if="hasMapping" class="pbim-btn ghost" t-on-click="() => this.openMapping(null)">
-              <t t-out="ic('gitMerge',15)"/> Open Mapping Studio</button>
+              <t t-out="ic('gitMerge',15)"/> Open Mapping</button>
           </div>
         </div>
 

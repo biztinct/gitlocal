@@ -148,9 +148,11 @@ export const CATEGORIES = [
             // what retires Cycle 1's single-card auto-open here: `soleCard`
             // stays exactly as written and the section page comes back on its
             // own, with nothing to remember to undo.
+            // JOURNEY J1 — one board, one name. The tag is unchanged: this card
+            // is asserted by test_settings.py and it opens the same cockpit.
             { id: "mapping", tag: "pb_mapping_studio", icon: "gitMerge",
-              label: _t("Mapping Studio"),
-              sub: _t("Wire any source — API feeds, spreadsheets — onto your payroll schemes.") },
+              label: _t("Mapping"),
+              sub: _t("Wire any source — API feeds, spreadsheets, employee records — onto your payroll schemes.") },
         ],
     },
     {
