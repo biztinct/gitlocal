@@ -124,7 +124,7 @@ class TestOneMappingHome(TransactionCase):
         call = js.split('"employee_mapping_data",', 1)[1].split(');', 1)[0]
         self.assertIn('empPayroll', call)
 
-    def test_the_five_tabs_read_as_the_sentence_not_as_the_adapter_names(self):
+    def test_the_tabs_read_as_the_sentence_not_as_the_adapter_names(self):
         """J-D2's nomenclature, pinned.
 
         These labels are the whole of the overlay's retirement that a user can
@@ -141,12 +141,18 @@ class TestOneMappingHome(TransactionCase):
                       # J3 S1 / J-D4 — the ⇆ is the label now.
                       'Employee & contract \u21c6',
                       'Scheme assignment',
-                      'Mid ↔ End cycle'):
+                      'Mid ↔ End cycle',
+                      # J4 — the sixth tab. A plain noun rather than an
+                      # "X → Y" sentence because this board has THREE lanes:
+                      # the arrow form would have to pick two of them and
+                      # would name the wrong pair whichever two it picked.
+                      'Transformations'):
             self.assertIn('_t("%s")' % label, modes,
                           "the tab labels are J-D2's, exactly")
         # the ids are the RPC prefixes and the deep-link vocabulary — untouched
         self.assertEqual(re.findall(r'\{ id: "(\w+)"', modes),
-                         ['api', 'import', 'employee', 'scheme', 'cycle'])
+                         ['api', 'transform', 'import', 'employee', 'scheme',
+                          'cycle'])
         # …and nothing a user reads on this surface says "Studio"
         for label in re.findall(r'label: _t\("([^"]+)"\)', modes):
             self.assertNotIn('Studio', label)

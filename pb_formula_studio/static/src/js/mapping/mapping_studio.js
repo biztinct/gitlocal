@@ -62,8 +62,18 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { MappingCanvas } from "./mapping_canvas";
+import { TransformFlowBoard } from "./transform_flow_board";
 import { placeInLane } from "./mapping_geometry";
 import { ROLE_LANE_ORDER, roleIcon, roleLabel } from "./mapping_roles";
+// JOURNEY J4 — the Rule Composer is IMPORTED, never re-implemented. J4's brief
+// was to give transformations an address, not a second editor: a board that
+// could author a rule would be a fourth place the same object is described, and
+// the three that already exist are the problem this phase was opened to fix.
+// `pb_integrations` is now a hard dependency of this module (declared in the
+// manifest) — an undeclared cross-module import is a dead import waiting for the
+// first database that installs one module and not the other, and it takes the
+// whole backend bundle with it (the manifest's own `pb_import_kit` note).
+import { RuleComposer } from "@pb_integrations/js/rule_composer";
 
 const MODEL = "pb.formula.studio";
 
@@ -78,6 +88,16 @@ const MODEL = "pb.formula.studio";
 export const MODES = [
     { id: "api", icon: "plug", label: _t("System fields → Scheme"),
       hint: _t("Wire the fields an HR system's API delivers onto a scheme's inputs.") },
+    // JOURNEY J4 — between the API tab and the Spreadsheet tab, because that is
+    // where it belongs in the story: a transformation reads what the system
+    // sent (the tab to its left) and feeds a component (the tab to its right).
+    // MJ19: every string here is ONE literal or is joined with an explicit `+`.
+    // A two-line string with no operator is idiomatic Python and a SyntaxError
+    // in JavaScript, it survives `node --check` run through a pipe, and it takes
+    // the whole backend bundle down with a blank page and no server error.
+    { id: "transform", icon: "sigma", label: _t("Transformations"),
+      hint: _t("See what each transformation rule reads, what it computes, "
+               + "and which components take its answer.") },
     { id: "import", icon: "table", label: _t("Spreadsheet columns → Scheme"),
       hint: _t("Wire the columns of an uploaded file onto a scheme's inputs.") },
     // JOURNEY J3 S1 / J-D4 — the ⇆ is the point. These rows have ALWAYS run both
@@ -97,7 +117,7 @@ const TEMPLATABLE = ["api", "cycle"];
 
 export class MappingStudio extends Component {
     static template = "pb_formula_studio.MappingStudio";
-    static components = { MappingCanvas, HubBackChip };
+    static components = { MappingCanvas, TransformFlowBoard, RuleComposer, HubBackChip };
     static props = ["*"];
 
     setup() {
@@ -117,12 +137,23 @@ export class MappingStudio extends Component {
             config_id: Number(ctx.pb_config) || 0,
         };
         const askedMode = MODES.some((m) => m.id === ctx.pb_mode) ? ctx.pb_mode : "";
+        // a deep link that NAMES a connector has chosen one
+        const linkedConnector = !!this.arrival.connector_id;
 
         this.state = useState({
             loaded: false, busy: false,
             mode: askedMode || "api",
             connectors: [], configs: [], batches: [],
             connectorId: 0, endpointId: 0, configId: 0, batchId: 0,
+            // JOURNEY J4 — was the connector CHOSEN, or merely defaulted to?
+            // The five boards ask different questions of the same list and
+            // their heuristics honestly disagree (abm: the API board's answer
+            // is connector 1, where this scheme's wires point; every
+            // transformation rule on the database is on connector 3). A choice
+            // must survive a tab switch; a guess must not, or the reader lands
+            // on an empty Transformations board over a database with eight
+            // rules in it and concludes the feature is broken.
+            connectorPicked: linkedConnector,
             data: null,
             dismissed: [],
             // SOURCING S6 — columns named by hand on the spreadsheet board
@@ -159,6 +190,13 @@ export class MappingStudio extends Component {
             // single call with one extra argument and cancelling is not a call
             // at all.
             conflict: null, conflictBusy: false,
+            // ---- J4: the Rule Composer, opened IN PLACE.
+            // `null` while it is closed; `{ruleId, connectorId}` while it is
+            // open, with `ruleId: 0` meaning "a new rule". Exactly the shape the
+            // Integrations cockpit uses, because it is the same component and a
+            // second convention for opening it would be a second thing to keep
+            // in step.
+            composer: null,
         });
 
         // J3 S2 — when the conflict dialog appears, focus goes INTO it. Without
@@ -355,6 +393,9 @@ export class MappingStudio extends Component {
             case "api":
                 return { kind: "connector", title: this.connectorName,
                          sub: this.fromSub, icon: "plug" };
+            case "transform":
+                return { kind: "connector", title: this.connectorName,
+                         sub: this.transformSub, icon: "plug" };
             case "import":
                 // J2 — a file dropped on the ramp NAMES the FROM half. Before
                 // it, this said "No import batch": a technical noun for a thing
@@ -381,6 +422,7 @@ export class MappingStudio extends Component {
         const d = this.state.data || {};
         switch (this.state.mode) {
             case "api":
+            case "transform":
             case "import":
                 return { kind: "config", title: this.configName,
                          sub: this.toSub, icon: "calculator" };
@@ -430,8 +472,47 @@ export class MappingStudio extends Component {
     // ================================================================== board
     /** The adapter prefix; `null` means the bespoke cycle adapter. */
     get prefix() {
-        return { api: "api", import: "import", scheme: "scheme",
+        // J4 — `transform` maps to `api` ON PURPOSE and this is the whole of the
+        // phase's write path. A rule's output key is already a legal
+        // `source_field`, so a rule → component edge IS an `api` wire; routing it
+        // through the same prefix means `draw`, `remove` and the J3 conflict
+        // probe all reach the existing adapters with no branch of their own, and
+        // the dialog fires here because it fires for `api`, not because a second
+        // implementation remembered to.
+        return { api: "api", transform: "api", import: "import", scheme: "scheme",
                  employee: "employee" }[this.state.mode] || null;
+    }
+
+    get isTransform() { return this.state.mode === "transform"; }
+
+    /** "8 rules · 1 output unread" — the health counts, in the FROM sub-line. */
+    get transformSub() {
+        const d = this.state.data;
+        if (!d || !d.ok) {
+            // an empty board still owes the header a sentence: a blank sub-line
+            // under a connector name reads as "still loading"
+            return d && d.reason === 'no_rules'
+                ? _t("No transformation rules yet") : "";
+        }
+        const c = d.counts || {};
+        // One msgid per SHAPE, never a sentence assembled from fragments, and
+        // never "8 rule(s)" — the parenthesised plural is a translator's
+        // problem pushed onto the reader (W80, and the rail beside this says
+        // "8 rules" cleanly, so the two would not even have matched).
+        const bits = [c.rules === 1 ? _t("1 rule") : _t("%s rules", c.rules || 0)];
+        if (c.unread) {
+            bits.push(c.unread === 1 ? _t("1 output unread")
+                                     : _t("%s outputs unread", c.unread));
+        }
+        if (c.drift) {
+            bits.push(c.drift === 1 ? _t("1 reads a field not seen")
+                                    : _t("%s read a field not seen", c.drift));
+        }
+        if (c.severed) {
+            bits.push(c.severed === 1 ? _t("1 lost its target")
+                                      : _t("%s lost their target", c.severed));
+        }
+        return bits.join(" · ");
     }
 
     get canEdit() { return !!(this.state.data && this.state.data.can_edit); }
@@ -552,6 +633,14 @@ export class MappingStudio extends Component {
                                             [cfg, this.state.connectorId || false,
                                              this.state.endpointId || false]);
                     break;
+                case "transform":
+                    // an UNCHOSEN connector is re-derived by the adapter, which
+                    // knows which systems actually carry rules
+                    r = await this.orm.call(MODEL, "transform_flow_data",
+                                            [cfg, this.state.connectorPicked
+                                                  ? (this.state.connectorId || false)
+                                                  : false]);
+                    break;
                 case "import":
                     r = await this.orm.call(MODEL, "import_mapping_data",
                                             [cfg, this.state.batchId || false]);
@@ -574,8 +663,19 @@ export class MappingStudio extends Component {
             if (this.state.mode === "import" && r && r.context_id) {
                 this.state.batchId = r.context_id;
             }
-            if (this.state.mode === "api" && r && r.context_id && !this.state.connectorId) {
+            if (this.state.mode === "api" && r && r.context_id
+                && !this.state.connectorId) {
                 this.state.connectorId = r.context_id;
+            }
+            // J4 — ALWAYS, on this board. The adapter may have re-derived the
+            // connector (see `connectorPicked`), and a header that names one
+            // system while the lanes show another is this codebase's worst bug
+            // class (W76.3/W117): it looks right and it is describing the wrong
+            // thing. Adopting it also means the picker opens on the truth.
+            if (this.state.mode === "transform" && r && r.context_id
+                && r.context_id !== this.state.connectorId) {
+                this.state.connectorId = r.context_id;
+                this.state.endpointId = 0;
             }
         } catch (e) {
             console.warn("pb_formula_studio: mapping data failed", e);
@@ -706,6 +806,7 @@ export class MappingStudio extends Component {
             case "connector":
                 if (this.state.connectorId === id) { return; }
                 this.state.connectorId = id;
+                this.state.connectorPicked = true;
                 this.state.endpointId = 0;    // a feed belongs to ONE connector
                 break;
             case "endpoint":
@@ -767,6 +868,12 @@ export class MappingStudio extends Component {
             case "api":
                 return [cfg, this.state.connectorId, leftId, rightId,
                         this.state.endpointId || false];
+            case "transform":
+                // no endpoint: a transformation rule belongs to the CONNECTOR,
+                // not to one of its feeds, and passing whichever feed the API
+                // tab was last left on would stamp a wire with a provenance
+                // nothing on this board ever chose.
+                return [cfg, this.state.connectorId, leftId, rightId, false];
             case "import":
                 return [cfg, this.state.batchId || false, leftId, rightId];
             default:
@@ -1556,7 +1663,19 @@ export class MappingStudio extends Component {
     // ================================================================== empty
     /** The three-step strip only appears when there is nothing wired yet. */
     get firstRun() {
+        // J4 — never on the Transformations board. The three-step strip says
+        // "pick a source, pick a scheme, draw a wire or let us suggest them",
+        // and on this board two of those three are wrong: there are no
+        // suggestions, and the first thing to do with a rule-less connector is
+        // write a rule. The board renders its own empty states instead.
+        if (this.isTransform) { return false; }
         return !!(this.state.data && this.state.data.ok && !this.mappedCount);
+    }
+
+    /** "8 rules" — the rail's own count on the Transformations board. */
+    get ruleCount() {
+        const d = this.state.data;
+        return (d && d.ok && d.counts && d.counts.rules) || 0;
     }
 
     get emptyReason() {
@@ -1567,7 +1686,69 @@ export class MappingStudio extends Component {
             no_connector: _t("No HR system is connected yet — connect one in Integrations."),
             no_batch: _t("No file has been uploaded yet. Import one, then map its columns here."),
             no_pair: _t("This scheme has no mid-cycle/end-cycle twin to carry values into."),
+            // J4 — a connector with no rules is not an error and must not read
+            // as one. It is the normal state of a system nobody has had to
+            // compute anything from yet, and the only useful verb is offered
+            // beside the sentence rather than described in it.
+            no_rules: _t("This system has no transformation rules yet. A rule turns "
+                         + "what the system sends — a list of overtime rows, a table "
+                         + "of dependants — into one number a pay component can read."),
         }[d.reason] || _t("There is nothing to map on this board.");
+    }
+
+    // ==================== J4 — the Rule Composer, opened in place ============
+    //
+    // The component is `pb_integrations`', mounted here unchanged. It owns all
+    // of its own state, talks to its own four `pb.integrations` RPCs and
+    // communicates with a host through exactly two callbacks, which is why it
+    // could move without a wrapper: there was nothing cockpit-shaped in it to
+    // unpick. Its scrim is `position: fixed` at `--pbim-z-modal`, so it is
+    // mounted at the shell root — a sibling of the board, never inside it,
+    // because an ancestor with a `transform` would trap a fixed scrim inside the
+    // board it is supposed to cover.
+
+    /**
+     * The connector list the composer needs — MEMOISED ON ARRAY IDENTITY.
+     *
+     * A getter that builds a fresh array every call hands the child new props on
+     * every single render of this host, and the composer re-renders (losing an
+     * open picker, a half-typed name) for reasons that have nothing to do with
+     * it. The Integrations cockpit learned this and caches the same way.
+     */
+    get composerConnectors() {
+        const src = this.state.connectors;
+        if (this._ccSrc !== src) {
+            this._ccSrc = src;
+            this._ccOut = src.map((c) => ({ id: c.id, name: c.name, icon: c.icon || "plug" }));
+        }
+        return this._ccOut;
+    }
+
+    /** `id` 0 opens it empty — "New transformation rule…". */
+    openComposer(ruleId) {
+        this.state.composer = {
+            ruleId: ruleId || 0,
+            connectorId: this.state.connectorId || 0,
+        };
+    }
+    closeComposer() { this.state.composer = null; }
+
+    /**
+     * A saved rule changes every lane at once — its reads, its summary, its
+     * health — so the board is RE-READ rather than patched. Patching would mean
+     * this host holding a second opinion about what a rule is, which is the
+     * duplication J4 exists to remove.
+     */
+    async onRuleSaved() {
+        this.state.composer = null;
+        await this.load();
+    }
+
+    /** A rule → component edge, cut. `ref` is the mapping id; bindings never get here. */
+    async removeTransformWire(ref) {
+        if (!ref) { return; }
+        await this.orm.call(MODEL, "api_mapping_delete", [ref]);
+        await this.load();
     }
 }
 

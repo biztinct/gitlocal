@@ -11,3 +11,6 @@ from . import test_payslip_template_import
 
 # JOURNEY J3 — two-way ⇆ presentation and the source-conflict guardrail.
 from . import test_journey_guardrails
+
+# JOURNEY J4 — the Transformations tab: fields → rule → output → component.
+from . import test_journey_transformations

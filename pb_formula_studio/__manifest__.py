@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.136.0',
+    'version': '19.0.1.139.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -13,8 +13,16 @@
     # since Cycle 2 and the mapping canvas does now too — a HARD runtime edge
     # that was never declared, so a database without the kit would have loaded a
     # backend bundle with a dead import. Declared (Integrations C5).
+    # pb_integrations (JOURNEY J4): the Mapping home's Transformations tab
+    # opens the RULE COMPOSER in place rather than building a second
+    # authoring surface, and reads `pb.integrations._rule_consumers` as the
+    # ONE definition of "nothing reads this output". Both are hard runtime
+    # edges — an undeclared one is a dead import that takes the whole
+    # backend bundle down on the first database that installs one module and
+    # not the other. There is no cycle: pb_integrations does not depend on
+    # this module.
     'depends': ['web', 'biz_theme', 'pb_hr_payroll_formula', 'pb_hr_payroll_base',
-                'pb_hub', 'pb_import_kit', 'biz_doc_ocr'],
+                'pb_hub', 'pb_import_kit', 'biz_doc_ocr', 'pb_integrations'],
     'data': [
         'views/pb_formula_studio_action.xml',
         'views/pb_mapping_studio_action.xml',
@@ -33,6 +41,7 @@
             'pb_formula_studio/static/src/scss/shadow.scss',
             'pb_formula_studio/static/src/scss/mapping.scss',
             'pb_formula_studio/static/src/scss/mapping_studio.scss',
+            'pb_formula_studio/static/src/scss/transform_flow.scss',
             'pb_formula_studio/static/src/scss/payslip.scss',
             'pb_formula_studio/static/src/scss/replay.scss',
             'pb_formula_studio/static/src/scss/whatif.scss',
@@ -67,6 +76,9 @@
             'pb_formula_studio/static/src/js/mapping/mapping_roles.js',
             'pb_formula_studio/static/src/js/mapping/mapping_geometry.js',
             'pb_formula_studio/static/src/js/mapping/mapping_canvas.js',
+            # JOURNEY J4 — the three-lane board. Before its host, after the
+            # kernel it reads: the bundle order matches the import order.
+            'pb_formula_studio/static/src/js/mapping/transform_flow_board.js',
             'pb_formula_studio/static/src/js/mapping/mapping_studio.js',
             'pb_formula_studio/static/src/js/payslip_table_tools.js',
             'pb_formula_studio/static/src/js/payslip_image_tools.js',
@@ -76,6 +88,7 @@
             'pb_formula_studio/static/src/xml/grid_studio.xml',
             'pb_formula_studio/static/src/xml/command_layer.xml',
             'pb_formula_studio/static/src/xml/mapping_canvas.xml',
+            'pb_formula_studio/static/src/xml/transform_flow_board.xml',
             'pb_formula_studio/static/src/xml/mapping_studio.xml',
             'pb_formula_studio/static/src/xml/studio.xml',
             'pb_formula_studio/static/src/xml/shadow_run.xml',
