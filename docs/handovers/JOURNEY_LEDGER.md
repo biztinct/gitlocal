@@ -174,6 +174,72 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   `hr_payroll_import_batch` and `hr_payroll_import_line` back to **0**; 3 employees,
   0 payslips, unchanged. `action_process` was never called.
 
+- **J3 — DONE, live on abm · acme · payobook · payobook_template (2026-08-25).**
+  → `JOURNEY_PHASE_J3_HANDOVER.md`.
+  Versions: pb_hr_payroll_formula **19.0.1.81.0** · pb_formula_studio **19.0.1.136.0** ·
+  pb_import **19.0.1.4.0** · pb_import_wizard **19.0.1.2.0** (`biz_theme` untouched;
+  `om_hr_payroll` untouched — CR1).
+  **The board now says what the row does, and the guardrail asks before it writes.**
+  S1: the tab is **`Employee & contract ⇆`**, its 18 wires render with a head at BOTH
+  ends (`wireGeometry(..., bidi)` — opt-in, defaulted off, so the four other boards
+  are byte-identical), and every mapped card carries the sentence its row actually
+  performs: `⇆ On import: fills Employee › Employee Id. On pay run: used when the
+  file or feed leaves this empty.` for a `field` row, and `→ On import: builds the
+  bank account.` — **the import half only** — for a `bank_account` row, because
+  `get_mapped_input_value` reads employee/contract fields back and never bank parts.
+  `bidirectional` is read off the PAYLOAD, not off the mode id.
+  S2: drawing a second live source now opens a three-way dialog (replace /
+  keep-as-fallback / cancel) whose every sentence comes from the server, beside the
+  ladder it describes. **Cancel makes no writing RPC at all** — `source_conflict_probe`
+  is a separate read-only adapter, so there is nothing to roll back. Conflict chips
+  (`Wired twice` / `Feed wins` / `Spreadsheet fallback`, full sentence in the tooltip)
+  render on BOTH boards from ONE detector, including for state that predates the
+  guardrail: abm's seven real dual-connector components wear them on load.
+  **S2's empty-feed guard is the load-bearing half** — see below.
+  S3: `action_pull_endpoint` runs the transformation rules, via a
+  `_run_transformation_rules` helper that is now the ONLY `_execute_for_records` call
+  site in the module. S4: the live-payrun `TODO … pass` is closed — a batch-free
+  payslip reads the employee's data-store rows through the SAME `_feed_values_for`
+  the import pre-pass uses, with `via='connector_mapping'` (no new vocabulary needed).
+  S5: `source_type='connector'` is gone from the selection, both resolver gates, the
+  form gate, the search filter, `pb_import`'s label map and `pb_import_wizard`'s source
+  list (where a user could pick it and get a batch nothing could load);
+  `excel_grid_widget.js` deleted.
+  **The empty-feed guard, exactly (J-D5 holds).** BEFORE: the pre-pass did
+  `raw_data.get(source_field)` then `if source_value is not None`. An ABSENT key
+  already fell through; a key PRESENT AND EMPTY did not — it ran the transform,
+  assigned `input_values[code]`, and the loop's `if rule.code not in input_values`
+  skip then locked out every rung below (binding, cross-blob top-up, name ladder,
+  mapped employee field, contract amount). NOW: `_feed_values_for` returns only wires
+  that DELIVERED — key present, transform run, result non-empty by the resolver's own
+  test — so a wire with nothing to say does not assign and the rungs below run exactly
+  as on an Excel run. **This is not a reorder:** when the pre-pass HAS a value it still
+  outranks everything including an explicit binding (`test_02a`, the neutrality proof),
+  and `test_02f` is a source gate asserting pre-pass < loop < bound-branch order is
+  unchanged. What changed is only what counts as *having a value* — and it changed to
+  the definition the bound branch has always used. Without it, J-D3's "keep as
+  fallback" was unimplementable: the fallback could never fire.
+  Tests: Python **246 on abm, 1 failed + 1 error — both PRE-EXISTING and neither
+  J3's** (`TestBankDestinations.test_09_make_text_component`,
+  `TestEndpointFieldCatalogue.test_05c_...`; see MJ14 — the J2 ledger figure of 95 was
+  a different `-u` SCOPE, and the true pre-J3 baseline measured on the machine was
+  **202 with the same two red**). +44 new (`TestJourneyTruth` 25, `TestJourneyGuardrails`
+  19). hoot **68/68 green in 24s** at `?filter=mapping_canvas` (baseline 64 + 4), after
+  a cold-server run showed 63/5 — **MJ2, verbatim, a third time**. All three batteries
+  RUN and pass (MF7): provenance green, excel_semantics 78/78, import_resolution 23/23.
+  15/15 numbered cases pass. 0 console errors; **0 bounding-box overlaps** over 3421
+  same-layer pairs at 1440 and 1032 at 1024, with the conflict dialog open, chips
+  visible and no horizontal body scroll.
+  Migration `19.0.1.81.0/post-a_source_nothing_could_load.py`: **0 rows converted on
+  all four** (abm 0 batches, acme 0, payobook 6 — all `excel`, payobook_template 0).
+  abm left exactly as found — `hr_payslip_import_mapping` 21 rows, ids
+  `1,2,30,31,32,33,36,37,38,50…60,108`; `hr_formula_rule` config 14 fingerprint
+  `b892dfa2f03801824f0cf0d3d639cb12` (99 rules); `hr_integration_field_mapping` 59 rows,
+  fingerprint `f6876d63475c17a1f7e4e8d78e66ddfb`; 0 batches, 0 lines, 3 employees,
+  0 payslips. The cancel-path probe diffed EMPTY; the one keep-as-fallback probe that
+  DID move a row (rule 581 gained an `excel` binding, both its wires intact) was
+  restored and re-diffed clean. `action_process` was never called.
+
 ## Gotchas discovered (append per phase, MJ-numbered)
 
 - MJ1 (J1): **`groupFilter` filters the LEFT column only, and always did.** The handover's
@@ -306,3 +372,79 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   sweep ran on a fresh tab. Always assert the width you asked for
   (`() => ({w: innerWidth})`) before trusting a responsive check; a screenshot at the
   wrong width is a screenshot of a layout you did not test. (MF41's family.)
+- MJ14 (J3, testing): **a suite baseline is a measurement of a SCOPE, not of a tree — and
+  J2's "95" and J3's "202" are both true.** MJ11 said to take the baseline yourself because
+  the tree moves. It moves less than the COMMAND does. `--test-tags /module` runs the tests
+  of modules the same run is UPGRADING, so J2's `-u pb_formula_studio` reported
+  `0 failed of 95` and J3's `-u pb_hr_payroll_formula,pb_formula_studio` reported
+  `1 failed, 1 error of 202` on the identical commit, minutes apart. The 107 extra tests are
+  `pb_hr_payroll_formula`'s, which J1 and J2 never ran — and two of them have been red for
+  some time (`TestBankDestinations.test_09_make_text_component`, a `KeyError: 'wirable'` from
+  SOURCING S6's one-pill rewrite, and
+  `TestEndpointFieldCatalogue.test_05c_rule_outputs_are_catalog_not_live`, `'computed' !=
+  'catalog'`, abm data drift). Neither is J3's and neither was ever hidden — nobody had run
+  them since the code under them changed. **Record the `-u` list beside the number, or the
+  next phase compares two different questions and calls the difference a regression.**
+- MJ15 (J3): **the transform could not tell the resolver that the feed had said nothing,
+  because `default_value` is a Float with a default of 0.0.** The empty-feed guard (S2) was
+  first written the obvious way — run `transform_value` and test the RESULT for emptiness.
+  It did not work, and the reason is a schema detail three files away:
+  `transform_value` short-circuits an empty input to `self.default_value`
+  (`integration_field_mapping.py:382-387`), and that field is
+  `fields.Float(default=0.0)` — **a column with no null**. So a wire that says nothing and a
+  wire that says "when empty, use zero" are the same row, and every empty feed value came
+  back as a perfectly good `0.0` that claimed the component's slot exactly as before. The
+  guard has to ask the SOURCE (`_feed_value_is_empty(raw) and not mapping.default_value`),
+  and a non-zero default is the only "somebody stated this" signal the schema can carry.
+  **When a sentinel has to survive a coercion, check that the type it lands in has room for
+  it.** Four resolver tests failed on this and every one of them looked like the guard was
+  simply not wired in.
+- MJ16 (J3): **`self.env.get('some.model')` returns an EMPTY RECORDSET, which is FALSY —
+  `if Model:` is a bug that reads as a null check.** `_source_conflicts` guards with
+  `if FM is None`, which is right; the first cut of `source_conflict_probe` guarded with
+  `... if FM else []` and therefore took the else branch on *every* call, reporting "no
+  conflict" forever. The dialog would simply never have opened, on a live database, silently
+  and permanently — and the RPC would have returned a well-formed successful payload while
+  doing it. `env.get` is `None`-or-model, and the only correct test is `is None`.
+- MJ17 (J3): **`provenance_token(..., origin='excel')` was hardcoded, with a comment saying
+  it would be fixed "when a run can carry two sources" — and then S3 gave a run two sources
+  and this line did not follow.** A component resolved by the NAME LADDER on an
+  `api_data_store` run reported `src='excel'` about a number that had arrived in the feed:
+  the chip named the wrong source, the lineage pointed at the wrong screen, and every
+  provenance test passed because none of them exercised a feed run through the unbound
+  ladder. `primary_origin` had been computed two hundred lines above for exactly this since
+  S3. **A comment that says "this will need to change when X happens" is a bug with a
+  timer on it; grep for its own words when you ship X.**
+- MJ18 (J3, scope): **there is a SECOND dead file calling the same nonexistent method, and
+  the phase deliberately did not sweep it.** S5 removed `excel_grid_widget.js`, whose
+  `addColumn` called `hr.formula.config.add_rule` (no such method). A folder-wide grep for
+  `add_rule` then failed the broom test on `grid_actions.js` — a different uncalled file,
+  also commented out of the manifest, calling the same nonexistent method in the same way.
+  It is recorded rather than deleted: nothing J3 touched imports it, and MF39's rule is that
+  deleting live-untested code to chase a grep is how a phase acquires a regression it did
+  not need. The broom test now sweeps the manifest's LIVE bundles instead of the folder,
+  which is the assertion that actually matters ("no loaded asset calls a method that does
+  not exist"). **A J4+ broom should take `grid_actions.js` and the rest of the commented-out
+  grid bundle together, as its own scoped decision.**
+
+- MJ19 (J3, environment): **Python's implicit string concatenation is a SYNTAX ERROR in
+  JavaScript, it survives every check that is not a real parse, and it takes the entire
+  backend bundle down.** A two-line `_t("… records — "\n"and read them back …")` in
+  `MODES` — written by hand in the same session as a hundred lines of Python, where that
+  form is correct and idiomatic. The consequences, in the order they were met:
+  every screen on the database rendered as a BLANK BODY (`document.body.innerText === ""`,
+  `readyState: complete`, HTTP 200, no server error, one console line reading
+  `Uncaught SyntaxError: missing ) after argument list`). It is MJ5's shape with a different
+  compiler: one malformed token anywhere in a bundle kills the bundle, so the failure never
+  points at the feature that caused it.
+  **The part worth the entry is how it was nearly missed.** `node --check` was run over all
+  four modified JS files and reported PASS for every one of them — because the shell loop
+  was `if node --check "$f" | head -2; then echo PASS; fi`, and `head` exits 0 whether or not
+  the parse failed. The harness reported on itself, not on the code. The error was finally
+  located by fetching the SERVED bundle
+  (`curl /web/assets/<hash>/web.assets_web.min.js`) and running `node --check` on that, which
+  is also the only check that covers what the minifier does — it joined the two adjacent
+  literals onto one line, turning an ambiguous newline into an unambiguous `"a" "b"`.
+  Lessons: never write a multi-line string in JS without `+`; check the EXIT CODE, not the
+  output, of a validator; and when a page comes back blank with a clean 200, `node --check`
+  the bundle before believing anything about your feature.

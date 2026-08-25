@@ -64,6 +64,11 @@ export class MappingCanvas extends Component {
         // the column edge and is counted, where an item missing from the list
         // entirely counts as `gone` and reads as a broken wire (C5's whole lesson).
         groupFilter: { type: String, optional: true },
+        // JOURNEY J3 S1 — this board's rows run BOTH ways, so its wires grow a
+        // second arrowhead. A capability, not a mode: the adapter that knows its
+        // rows are two-way says so in its payload, and every board that does not
+        // send it renders exactly as it always has.
+        bidirectional: { type: Boolean, optional: true },
         // (item) — a card the adapter marked `meta.wirable === false` was clicked.
         onLeftBlocked: { type: Function, optional: true },
         onRightBlocked: { type: Function, optional: true },
@@ -391,10 +396,10 @@ export class MappingCanvas extends Component {
                 y2 = dockR < 0 ? R.bandTop : R.bandBot;
                 rawR = dockR < 0 ? -1e6 : 1e6;
             }
-            const g = wireGeometry(sx, y1, tx, y2);
+            const g = wireGeometry(sx, y1, tx, y2, !!this.props.bidirectional);
             geom.push({
                 ...w,
-                d: g.d, head: g.head, hx: g.hx, hy: g.hy,
+                d: g.d, head: g.head, headBack: g.headBack, hx: g.hx, hy: g.hy,
                 sx, tx, y1, y2, rawL, rawR,
                 dockL, dockR, hiddenL: !hasL, hiddenR: !hasR,
                 err: !!(w.transform && w.transform.error),
@@ -743,7 +748,39 @@ export class MappingCanvas extends Component {
         if (s) { push(s, `mc-src s-${s.kind}`); }
         const b = this.badge(it);
         if (b) { push(b, `mc-badge ${b.tone || ""}`); }
+        // JOURNEY J3 S2 — the fourth question: is something ELSE also feeding
+        // this? It is deliberately last, so on a card that is already saying
+        // enough the dedupe above wins and the reader is not handed four pills.
+        const c = this.conflictChip(it);
+        if (c) { push(c, "mc-conflict"); }
         return out;
+    }
+
+    /**
+     * "Two live sources point at this component."
+     *
+     * The adapter decides both WHETHER (it holds the ladder) and WHAT IT SAYS
+     * (the sentence differs per board, and depends on which source wins a run).
+     * The canvas only renders it — a client that composed this text would be a
+     * second opinion about precedence, which is exactly the ambiguity J3 removes.
+     */
+    conflictChip(it) {
+        const c = it && it.conflict;
+        if (!c || !c.label) { return null; }
+        return { label: c.label, hint: c.hint || c.label };
+    }
+
+    /**
+     * JOURNEY J3 S1 — which way a mapping row runs, in the adapter's words.
+     *
+     * Rendered on the LEFT card only, and only on a board that sends it. The
+     * right column's `note` channel is a different fact ("what this destination
+     * will ACCEPT", MAPFIX D4/D5) and the two must not share a slot: one is about
+     * the shape of a value, the other about the direction of a row.
+     */
+    dirNote(it) {
+        const m = it && it.meta;
+        return (m && m.directionNote) || null;
     }
 
     provChip(it) {

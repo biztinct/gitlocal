@@ -138,7 +138,8 @@ class TestOneMappingHome(TransactionCase):
         modes = js.split('export const MODES = [', 1)[1].split('\n];', 1)[0]
         for label in ('System fields → Scheme',
                       'Spreadsheet columns → Scheme',
-                      'Employee & contract fields',
+                      # J3 S1 / J-D4 — the ⇆ is the label now.
+                      'Employee & contract \u21c6',
                       'Scheme assignment',
                       'Mid ↔ End cycle'):
             self.assertIn('_t("%s")' % label, modes,

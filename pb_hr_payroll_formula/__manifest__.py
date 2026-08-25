@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.80.0',
+    'version': '19.0.1.81.0',
     'category': 'Human Resources/Payroll',
     'summary': 'State-of-the-art Excel-like formula-based salary calculation engine',
     'description': """
@@ -131,7 +131,6 @@ License: LGPL-3
             # The standard Odoo tree view is used instead for formula configuration
             # To re-enable custom widget, uncomment the following lines:
             #
-            # 'pb_hr_payroll_formula/static/src/js/excel_grid_widget.js',
             # 'pb_hr_payroll_formula/static/src/js/formula_bar.js',
             # 'pb_hr_payroll_formula/static/src/js/column_header.js',
             # 'pb_hr_payroll_formula/static/src/js/cell_editor.js',

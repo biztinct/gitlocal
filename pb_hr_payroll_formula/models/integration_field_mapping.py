@@ -501,6 +501,94 @@ Example: value * 1.1 if value > 1000 else value
         return self.transform_value(value, record)
 
     # ==========================================
+    # JOURNEY J3 — what a feed actually DELIVERED, in one place
+    # ==========================================
+    @api.model
+    def _feed_value_is_empty(self, value):
+        """The resolver's own emptiness test, named and shared.
+
+        `payroll_import_batch._transform_data_to_formula_inputs` has always used
+        exactly this rule on the bound branch — ``None``, or a string that is
+        whitespace once stripped, is *nothing arrived*; everything else, **including
+        ``0`` and ``False``**, is a value somebody sent. Zero is a real number in
+        payroll (zero overtime hours is a fact, not a silence) and treating it as
+        empty would make a feed that correctly reports "none this month" fall
+        through to a stale spreadsheet column. That distinction is the whole reason
+        this is one function rather than an `if` written twice.
+        """
+        if value is None:
+            return True
+        return isinstance(value, str) and value.strip() == ''
+
+    @api.model
+    def _feed_values_for(self, mappings, blob):
+        """What THESE wires deliver out of THIS payload — deliveries only.
+
+        JOURNEY J3 S2/S4. Two callers need the same three steps (find the source
+        key in the blob, run the wire's transform, decide whether anything actually
+        arrived) and had one and a half implementations between them: the import
+        pre-pass did all three without the third, and the live-payrun path did none
+        of them because it was a ``TODO``/``pass``. One function now, so a change to
+        what "the feed delivered X" means cannot land on one path and not the other.
+
+        Returns a list of ``{'mapping', 'rule', 'key', 'value'}``, ONE PER MAPPING
+        THAT PRODUCED SOMETHING. A wire whose source key is absent from the payload,
+        or whose transformed value is empty by :meth:`_feed_value_is_empty`, is
+        simply not in the list — it never had a value to contribute, so it must not
+        be able to claim a component's slot and lock out every rung below it.
+
+        A wire's ``default_value`` (its "when the source is empty, use this") makes
+        an empty source into a delivery — a stated default is an answer. An UNSET
+        one is a silence, and the two are told apart by the only signal the schema
+        offers: the field is a Float defaulting to ``0.0``, so a non-zero default is
+        a statement and zero-or-unset is not. See the note at the guard itself.
+        """
+        out = []
+        payload = blob if isinstance(blob, dict) else {}
+        for mapping in mappings:
+            if not (mapping.target_rule_id and mapping.source_field):
+                continue
+            if mapping.source_field not in payload:
+                continue
+            raw = payload.get(mapping.source_field)
+            # ==============================================================
+            # The emptiness question has to be asked of the SOURCE, not only
+            # of the transformed result — because the transform cannot answer
+            # it. `transform_value` short-circuits an empty input to
+            # `default_value`, and `default_value` is a **Float with a default
+            # of 0.0** (`:211-215`), which has no null: a wire that says
+            # nothing and a wire that says "use zero" are the same row. So an
+            # empty source always came back as `0.0`, which is a perfectly good
+            # number and would claim the component's slot forever.
+            #
+            # A NON-ZERO default is a statement somebody made, and it counts as
+            # a delivery. Zero-or-unset is a silence, and it falls through to
+            # the ladder — which may well land on the component's own default
+            # of 0 anyway, but by a route that can be explained and after every
+            # other source has had its turn. That is the safe direction: the
+            # worst case is a rung being consulted that had nothing to add.
+            # ==============================================================
+            if self._feed_value_is_empty(raw) and not mapping.default_value:
+                continue
+            try:
+                value = mapping.transform_value(raw, payload)
+            except Exception:       # noqa: BLE001
+                # A transform that raises (a required field, a bad expression) is a
+                # wire that delivered nothing on this row. Taking the whole payroll
+                # run down for one component's transform would be a much worse
+                # answer than letting the fallback rungs speak.
+                _logger.warning(
+                    "Feed transform failed for mapping %s (%s -> %s); treating as "
+                    "no value", mapping.id, mapping.source_field,
+                    mapping.target_rule_id.code)
+                continue
+            if self._feed_value_is_empty(value):
+                continue
+            out.append({'mapping': mapping, 'rule': mapping.target_rule_id,
+                        'key': mapping.source_field, 'value': value})
+        return out
+
+    # ==========================================
     # SOURCE FIELD DISCOVERY (T4.3)
     # ==========================================
     @api.model

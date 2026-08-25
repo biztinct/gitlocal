@@ -57,7 +57,7 @@
  */
 import { Component, useState, onWillStart, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
+import { useAutofocus, useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
@@ -80,8 +80,12 @@ export const MODES = [
       hint: _t("Wire the fields an HR system's API delivers onto a scheme's inputs.") },
     { id: "import", icon: "table", label: _t("Spreadsheet columns → Scheme"),
       hint: _t("Wire the columns of an uploaded file onto a scheme's inputs.") },
-    { id: "employee", icon: "users", label: _t("Employee & contract fields"),
-      hint: _t("Copy what a scheme computes back onto employee and contract records.") },
+    // JOURNEY J3 S1 / J-D4 — the ⇆ is the point. These rows have ALWAYS run both
+    // ways (import writes the record, the resolver reads it back when the file or
+    // feed is empty) and the tab has always described only the first half.
+    { id: "employee", icon: "users", label: _t("Employee & contract ⇆"),
+      hint: _t("Copy what a scheme computes onto employee and contract records — "
+               + "and read them back when a pay run finds nothing in the file or feed.") },
     { id: "scheme", icon: "layers", label: _t("Scheme assignment"),
       hint: _t("Say which payroll scheme pays each part of the workforce.") },
     { id: "cycle", icon: "refresh", label: _t("Mid ↔ End cycle"),
@@ -149,7 +153,20 @@ export class MappingStudio extends Component {
             // and a boolean cannot say "again". J1 adds `leftId`, which the
             // "Send to a field instead…" verb uses to arm a card.
             cmd: { token: 0, kind: "" },
+            // ---- J3 S2: the source-conflict choice (owner decision J-D3).
+            // `null` while there is no question to answer. Holds the SERVER's
+            // sentences plus the draw it is about to make, so answering it is a
+            // single call with one extra argument and cancelling is not a call
+            // at all.
+            conflict: null, conflictBusy: false,
         });
+
+        // J3 S2 — when the conflict dialog appears, focus goes INTO it. Without
+        // this the shell keeps focus, Escape reaches nothing and a keyboard user
+        // is looking at a modal they cannot answer or dismiss (MJ10's family: an
+        // affordance that is not a native dialog has to re-earn every native
+        // dialog behaviour, one at a time).
+        useAutofocus({ refName: "cflFocus" });
 
         // A click anywhere else closes an open dropdown. An event handler, not
         // a lifecycle hook — it only writes this component's own state.
@@ -368,8 +385,11 @@ export class MappingStudio extends Component {
                 return { kind: "config", title: this.configName,
                          sub: this.toSub, icon: "calculator" };
             case "employee":
+                // J3 S1 — "written back" was half the story; these rows are read
+                // back too, which is the whole of J-D4.
                 return { kind: "static", title: _t("Employee & contract fields"),
-                         sub: _t("Written back on each payslip"), icon: "users" };
+                         sub: _t("Written on import · read back on a pay run"),
+                         icon: "users" };
             case "scheme":
                 return { kind: "static", title: _t("Payroll schemes"),
                          sub: _t("The scheme that pays each segment"), icon: "layers" };
@@ -415,6 +435,19 @@ export class MappingStudio extends Component {
     }
 
     get canEdit() { return !!(this.state.data && this.state.data.can_edit); }
+
+    /**
+     * JOURNEY J3 S1 — read off the PAYLOAD, never off the mode id.
+     *
+     * `this.state.mode === "employee"` would have been one character shorter and
+     * a lie waiting to happen: the fact that these rows are two-way lives in the
+     * server, beside the resolver that reads them back. An adapter that stopped
+     * being bidirectional would have to remember to edit a client conditional it
+     * has no reason to know about.
+     */
+    get isBidirectional() {
+        return !!(this.state.data && this.state.data.bidirectional);
+    }
 
     get leftItems() {
         const server = (this.state.data && this.state.data.left) || [];
@@ -741,11 +774,71 @@ export class MappingStudio extends Component {
         }
     }
 
+    /**
+     * JOURNEY J3 S2 / owner decision J-D3 — ask BEFORE writing, never after.
+     *
+     * The either-API-or-Excel rule used to be settled by whichever row the
+     * resolver happened to read first, in silence. Now: probe (a read-only RPC),
+     * and if a second live source would exist, put the three-way choice on
+     * screen. **Cancel makes no writing call whatsoever** — the draw simply never
+     * happens — which is why the probe is a separate adapter rather than a flag
+     * on the create. A same-source redraw probes clean and keeps the old silent
+     * swap plus its toast, so nothing that was one gesture became two.
+     */
     async draw(leftId, rightId) {
         const p = this.prefix;
+        if (p === "api" || p === "import") {
+            let probe = null;
+            try {
+                probe = await this.orm.call(MODEL, "source_conflict_probe",
+                                            [this.state.configId, p, rightId, leftId,
+                                             this.state.connectorId || false]);
+            } catch (e) {
+                // A probe that cannot run must not block a draw that would have
+                // worked before this phase existed. It degrades to today's
+                // behaviour, which is the swap toast.
+                console.warn("pb_formula_studio: conflict probe failed", e);
+            }
+            if (probe && probe.conflict) {
+                this.state.conflict = { ...probe.conflict, leftId, rightId };
+                return;
+            }
+        }
+        await this._commitDraw(leftId, rightId, null);
+    }
+
+    /** Answer the dialog. `resolve` is "replace" | "keep"; cancel never gets here. */
+    async resolveConflict(resolve) {
+        const c = this.state.conflict;
+        if (!c || this.state.conflictBusy) { return; }
+        this.state.conflictBusy = true;
+        try {
+            await this._commitDraw(c.leftId, c.rightId, resolve);
+        } finally {
+            this.state.conflictBusy = false;
+            this.state.conflict = null;
+        }
+    }
+
+    /**
+     * Cancel. Deliberately not an RPC and deliberately not a state rollback:
+     * there is nothing to undo, because nothing was sent.
+     */
+    cancelConflict() {
+        if (this.state.conflictBusy) { return; }
+        this.state.conflict = null;
+    }
+
+    async _commitDraw(leftId, rightId, resolve) {
+        const p = this.prefix;
+        const args = this._createArgs(leftId, rightId);
+        if (resolve && (p === "api" || p === "import")) {
+            // `api` takes (cfg, connector, src, rule, endpoint); `import` takes
+            // (cfg, batch, col, rule). `resolve` is the trailing optional in both.
+            args.push(resolve);
+        }
         const r = p
-            ? await this.orm.call(MODEL, `${p}_mapping_create`,
-                                  this._createArgs(leftId, rightId))
+            ? await this.orm.call(MODEL, `${p}_mapping_create`, args)
             : await this.orm.call(MODEL, "mapping_create", [this.state.configId, leftId, rightId]);
         if (r && r.ok === false) {
             this.notif.add(r.msg || _t("Could not connect those two."), { type: "warning" });

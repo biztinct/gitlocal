@@ -410,6 +410,7 @@
                              canEdit="canEdit" busy="state.busy"
                              command="state.cmd"
                              groupFilter="empLaneFilter"
+                             bidirectional="isBidirectional"
                              onAccept="(w) => this.accept(w)"
                              onReject="(w) => this.reject(w)"
                              onDelete="(w) => this.remove(w)"
@@ -533,6 +534,60 @@
                 </div>
               </div>
             </t>
+          </div>
+        </t>
+
+        <!-- ==== JOURNEY J3 S2 — the source-conflict choice (J-D3) ====
+             Two live sources on one component used to be settled silently by the
+             resolver's precedence. It is a QUESTION now, and the answers are the
+             owner's three: replace, keep as fallback, cancel. Every sentence in
+             here comes from the server, beside the ladder it describes — a client
+             that composed this text would be a second opinion about precedence.
+             Cancel writes nothing because nothing has been sent yet. -->
+        <t t-if="state.conflict">
+          <div class="pbms-rcn-scrim" t-on-click="cancelConflict"/>
+          <div class="pbms-cfl" role="dialog" aria-modal="true"
+               aria-labelledby="pbms-cfl-title"
+               t-on-keydown="(ev) => ev.key === 'Escape' &amp;&amp; this.cancelConflict()"
+               t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-cfl__h">
+              <span class="pbms-cfl__ic" t-out="ic('alert', 20)"/>
+              <b id="pbms-cfl-title" t-esc="state.conflict.title"/>
+              <button class="pbms-x" t-on-click="cancelConflict" aria-label="Close">
+                <t t-out="ic('x', 16)"/>
+              </button>
+            </div>
+            <p class="pbms-cfl__body" t-esc="state.conflict.body"/>
+            <div class="pbms-cfl__pair">
+              <div class="pbms-cfl__side now">
+                <span class="pbms-cfl__k">Reads now</span>
+                <b t-esc="state.conflict.existing.label"/>
+                <code t-esc="state.conflict.existing.key"/>
+              </div>
+              <span class="pbms-cfl__arrow" t-out="ic('arrow', 16)"/>
+              <div class="pbms-cfl__side next">
+                <span class="pbms-cfl__k">You are adding</span>
+                <b t-esc="state.conflict.incoming.label"/>
+                <code t-esc="state.conflict.incoming.key"/>
+              </div>
+            </div>
+            <div class="pbms-cfl__opts">
+              <button class="pbms-cfl__opt" t-ref="cflFocus"
+                      t-att-disabled="state.conflictBusy"
+                      t-on-click="() => this.resolveConflict('replace')">
+                <b t-esc="state.conflict.replace_label"/>
+                <span t-esc="state.conflict.replace_note"/>
+              </button>
+              <button class="pbms-cfl__opt keep" t-att-disabled="state.conflictBusy"
+                      t-on-click="() => this.resolveConflict('keep')">
+                <b t-esc="state.conflict.keep_label"/>
+                <span t-esc="state.conflict.keep_note"/>
+              </button>
+            </div>
+            <div class="pbms-cfl__f">
+              <button class="pbim-btn ghost" t-att-disabled="state.conflictBusy"
+                      t-on-click="cancelConflict" t-esc="state.conflict.cancel_label"/>
+            </div>
           </div>
         </t>
 

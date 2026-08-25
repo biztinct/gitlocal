@@ -46,3 +46,7 @@ from . import test_bank_destinations
 # (`test_component_code.py`) is deliberately NOT imported here: it runs under a bare
 # python3 and needs no database.
 from . import test_code_rename
+
+# JOURNEY J3 — the empty-feed guard, per-feed transformation rules, the
+# batch-free API read, and the broom.
+from . import test_journey_truth

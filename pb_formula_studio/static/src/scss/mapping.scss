@@ -622,3 +622,44 @@
     font-family: inherit; white-space: normal; overflow: visible; text-overflow: clip;
     color: #475569; line-height: 1.4;
 }
+
+/* ================================================================= JOURNEY J3
+   Three additions, all opt-in from the adapter's payload, so every board that
+   does not send the keys is byte-identical to what it rendered before.
+   ========================================================================= */
+
+/* S1 — the SECOND arrowhead. A board whose rows genuinely run both ways draws
+   both ends. It inherits `currentColor` and the hover/dim transitions from
+   `.mc-w` exactly as the forward head does (see `.mc-w .mc-head` above), so a
+   focused, dimmed or errored wire keeps ONE appearance rather than growing a
+   head that ignores the state of its own line. */
+.mapping-canvas .mc-head.back { transition: opacity .14s ease; }
+
+/* S1 — the direction sentence, on the LEFT card. It sits in the same footnote
+   register as `.mc-item-note` (which is the right column's different fact) and
+   is deliberately clamped to two lines: a two-clause sentence is the most a card
+   may spend, and beyond that the `title` carries the rest. */
+.mapping-canvas .mc-item-dir {
+    font-size: 10.5px; line-height: 1.35; color: var(--i-slate, #64748B);
+    margin-top: 3px; cursor: help;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.mapping-canvas .mc-item-dir__g {
+    font-weight: 800; margin-right: 4px; color: var(--i600, #4A3D96);
+}
+/* A one-way row must not be able to LOOK two-way at a glance. The glyph already
+   differs (→ vs ⇆); the tone differs too, so the distinction survives a reader
+   who is scanning rather than reading. */
+.mapping-canvas .mc-item-dir.to_record .mc-item-dir__g { color: var(--i-slate, #64748B); }
+
+/* S2 — "something else also feeds this". Amber, because unlike `.mc-badge` this
+   one IS a caution: two live sources means one of them is not being read, and
+   the reader is entitled to find that surprising. */
+.mapping-canvas .mc-conflict {
+    flex: none; font-size: 9px; font-weight: 800; letter-spacing: .04em;
+    padding: 1px 6px; border-radius: 999px; line-height: 1.5; cursor: help;
+    background: var(--i-amber-wash, #FEF3C7); color: var(--i-amber-ink, #B45309);
+    border: 1px solid var(--i-amber-border, #FDE68A);
+    max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}

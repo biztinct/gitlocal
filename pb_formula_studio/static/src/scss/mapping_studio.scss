@@ -711,6 +711,79 @@
         padding: 1px 6px; color: var(--pbim-text);
     }
 
+    /* ---- JOURNEY J3 S2: the source-conflict choice (J-D3) ----
+       Shares the reconciliation dialog's scrim and z-layer on purpose: two
+       modals on one surface that look like two different products is how a
+       board stops feeling like one board. Narrower, because this asks ONE
+       question, and a 780px shell around one question reads as a form.
+       MJ5: two properties, never `min(<len>, calc(...))` — libsass refuses it
+       and fails the whole bundle. */
+    .pbms-cfl {
+        position: fixed; z-index: calc(var(--pbim-z-modal, 1600) + 1);
+        top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 540px; max-width: calc(100vw - 48px); max-height: 86vh;
+        display: flex; flex-direction: column; overflow: auto;
+        background: #fff; border-radius: var(--pbim-r-lg);
+        box-shadow: var(--pbim-sh-lg);
+    }
+    .pbms-cfl__h {
+        display: flex; align-items: center; gap: 10px;
+        padding: 16px 18px 10px; border-bottom: 1px solid var(--pbim-line);
+        b { font-size: 14px; flex: 1; min-width: 0; }
+    }
+    .pbms-cfl__ic { flex: none; color: var(--pbim-amber); display: flex; }
+    .pbms-cfl__body {
+        margin: 0; padding: 14px 18px 4px;
+        font-size: 12.5px; line-height: 1.55; color: var(--pbim-slate);
+    }
+    /* What it reads NOW, and what you are adding. Stated as two named things
+       rather than as prose, because the sentence above already carries the
+       prose and a reader deciding between three buttons needs the nouns. */
+    .pbms-cfl__pair {
+        display: flex; align-items: stretch; gap: 10px; padding: 10px 18px 14px;
+    }
+    .pbms-cfl__side {
+        flex: 1 1 0; min-width: 0; padding: 9px 11px; border-radius: var(--pbim-r);
+        background: var(--pbim-line-2); border: 1px solid var(--pbim-line);
+        display: flex; flex-direction: column; gap: 2px;
+        b { font-size: 12px; }
+        code {
+            font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px;
+            color: var(--pbim-slate); overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+    .pbms-cfl__k {
+        font-size: 9px; font-weight: 800; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--pbim-slate);
+    }
+    .pbms-cfl__arrow {
+        flex: none; align-self: center; color: var(--pbim-slate); display: flex;
+    }
+    .pbms-cfl__opts {
+        display: flex; flex-direction: column; gap: 8px; padding: 4px 18px 14px;
+    }
+    /* Each option carries its CONSEQUENCE, not just its verb. "Replace" and
+       "Keep" are indistinguishable to somebody who does not already know the
+       ladder, and the whole point of this dialog is that they should not have
+       to. */
+    .pbms-cfl__opt {
+        text-align: left; padding: 11px 13px; border-radius: var(--pbim-r);
+        border: 1px solid var(--pbim-line); background: #fff; cursor: pointer;
+        display: flex; flex-direction: column; gap: 3px;
+        transition: border-color .13s ease, background .13s ease;
+        b { font-size: 12.5px; }
+        span { font-size: 11.5px; line-height: 1.45; color: var(--pbim-slate); }
+        &:hover:not(:disabled) { border-color: var(--pbim-primary); background: var(--pbim-line-2); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &:disabled { opacity: .55; cursor: default; }
+    }
+    .pbms-cfl__opt.keep { border-left: 3px solid var(--pbim-amber); }
+    .pbms-cfl__f {
+        display: flex; justify-content: flex-end;
+        padding: 10px 18px 16px; border-top: 1px solid var(--pbim-line);
+    }
+
     /* ---- MAPFIX B3: the reconciliation dialog ---- */
     .pbms-rcn-scrim {
         position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1600);

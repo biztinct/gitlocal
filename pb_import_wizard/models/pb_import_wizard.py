@@ -9,7 +9,6 @@ _logger = logging.getLogger(__name__)
 
 SOURCES = [
     {'id': 'excel', 'label': 'Excel / CSV file'},
-    {'id': 'connector', 'label': 'Connector'},
     {'id': 'api_data_store', 'label': 'API data store'},
     {'id': 'manual', 'label': 'Manual entry'},
 ]
@@ -134,7 +133,7 @@ class PbImportWizard(models.AbstractModel):
 
         err = None
         try:
-            if source in ('connector', 'api_data_store'):
+            if source == 'api_data_store':
                 batch.action_load_from_data_store()
             elif source == 'excel':
                 batch.action_load_file()
