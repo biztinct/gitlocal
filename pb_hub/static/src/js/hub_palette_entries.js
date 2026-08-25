@@ -192,7 +192,7 @@ const ENTRIES = [
     // Integrations Cycle 2. Gated exactly like Integrations: the studio reads
     // and writes the same connectors and field mappings, so an entry offered
     // more widely would be an entry that can only produce an access dialog.
-    { id: "mapping_studio", label: _t("Mapping Studio"), sublabel: _t("Setup"),
+    { id: "mapping_studio", label: _t("Mapping"), sublabel: _t("Setup"),
       icon: "gitMerge", action: { tag: "pb_mapping_studio" },
       groups: [INTEGRATION, MANAGER, SUPER] },
 

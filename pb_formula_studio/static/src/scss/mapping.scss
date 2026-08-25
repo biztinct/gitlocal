@@ -1,84 +1,20 @@
 /* F10 — Unified Mapping Canvas */
 
-/* ---- overlay shell (inherits --i* palette vars from the .pbfs ancestor) ---- */
-.pbfs-map-scrim {
-    position: fixed; inset: 0; z-index: 1200;
-    background: rgba(20, 16, 50, .38);
-    display: flex; align-items: center; justify-content: center;
-    padding: 3vh 3vw;
-}
-.pbfs-map {
-    width: 100%; max-width: 1240px; height: 90vh;
-    background: #fff; border-radius: 18px; overflow: hidden;
-    box-shadow: 0 30px 80px rgba(20, 16, 50, .4);
-    display: flex; flex-direction: column;
-    animation: pbfs-map-in .2s ease;
-}
-@keyframes pbfs-map-in { from { transform: translateY(12px) scale(.99); opacity: .6; } to { transform: none; opacity: 1; } }
-
-.pbfs-map .pm-head { display: flex; align-items: center; gap: 14px; padding: 15px 20px; border-bottom: 1px solid var(--line, #E8E9F3); }
-/* `min-width: 0` alone let the title column be squeezed to the width of its
-   longest WORD once the header grew a fifth button ("Accept all ≥90%" appears
-   only when there are suggestions, so it looked fine right up until it did not)
-   — the product name then printed one word per line. A floor plus ellipsis is
-   the honest trade: the heading keeps its shape and the sentence truncates. */
-.pbfs-map .pm-title { display: flex; align-items: center; gap: 12px; flex: 1 1 240px; min-width: 210px; }
-.pbfs-map .pm-title > div { min-width: 0; }
-.pbfs-map .pm-title small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pbfs-map .pm-title > svg { width: 24px; height: 24px; color: var(--i, #5A4BB0); flex: none; }
-.pbfs-map .pm-title b { font-size: 15px; font-weight: 800; color: var(--ink, #1E1B2E); display: block; }
-.pbfs-map .pm-title small { font-size: 12px; color: var(--muted, #6B7280); }
-.pbfs-map .pm-head-actions { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
-.pbfs-map .pm-stat { font-size: 12.5px; color: var(--muted, #6B7280); }
-.pbfs-map .pm-stat b { color: var(--ink, #1E1B2E); }
-.pbfs-map .hs-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 5px; border-radius: 7px; }
-.pbfs-map .hs-x:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
-.pbfs-map .hs-x svg { width: 18px; height: 18px; }
-.pbfs-map .pm-ctx { border: 1px solid var(--line, #E8E9F3); border-radius: 8px; padding: 6px 9px; font-family: inherit; font-size: 12.5px; color: var(--ink, #1E1B2E); background: #fff; cursor: pointer; max-width: 200px; }
-.pbfs-map .pm-tabs { display: flex; gap: 4px; padding: 8px 18px 0; border-bottom: 1px solid var(--line, #E8E9F3); background: #fff; }
-.pbfs-map .pm-tab { border: 0; background: transparent; font-family: inherit; font-size: 12.5px; font-weight: 700; color: var(--muted, #6B7280); padding: 8px 14px 10px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.pbfs-map .pm-tab:hover { color: var(--i, #5A4BB0); }
-.pbfs-map .pm-tab.on { color: var(--i, #5A4BB0); border-bottom-color: var(--i, #5A4BB0); }
-/* ---- COLROLES P3: the lane chips ----
-   A table of contents for the swim-lanes below, doubling as their filter. The
-   unmapped tally is the only warm colour in the strip, so "there is work left
-   here" is legible in one pass across six chips. Every colour is an existing
-   variable — the board has one vocabulary and this row joins it. */
-.pbfs-map .pm-lanes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 9px 18px; border-bottom: 1px solid var(--line, #E8E9F3); background: #fff; }
-.pbfs-map .pm-lane { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line, #E8E9F3); background: #fff; border-radius: 999px; padding: 4px 11px 4px 8px; font-family: inherit; font-size: 12px; font-weight: 700; color: var(--muted, #6B7280); cursor: pointer; transition: border-color .12s, color .12s, background .12s; }
-.pbfs-map .pm-lane:hover { border-color: var(--i-border, #CBC2EE); color: var(--i, #5A4BB0); }
-.pbfs-map .pm-lane.on { border-color: var(--i, #5A4BB0); color: var(--i600, #4A3D96); background: var(--i-soft, #EDEAF8); }
-.pbfs-map .pm-lane svg { width: 13px; height: 13px; flex: none; }
-.pbfs-map .pm-lane .l { color: var(--ink, #1E1B2E); }
-.pbfs-map .pm-lane.on .l { color: inherit; }
-.pbfs-map .pm-lane .n { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; font-weight: 800; }
-.pbfs-map .pm-lane .u { font-size: 10.5px; font-weight: 800; color: var(--amber, #B7791F); background: var(--amber-soft, #FEF3C7); border-radius: 999px; padding: 0 6px; }
-.pbfs-map .pm-lane.ghost { border-style: dashed; }
-.pbfs-map .pm-lane.payroll { opacity: .8; }
-.pbfs-map .pm-lane.payroll.shown { opacity: 1; }
-
-.pbfs-map .pm-body { flex: 1; position: relative; overflow: hidden; background: #FAFAFE; }
-
-/* MAPFIX B3 — the footer bar. It NEVER disappears on the employee board: when
-   there is nothing left to resolve it says so, because a bar that vanishes once
-   the work is done cannot be distinguished from one that never rendered. */
-.pbfs-map .pm-foot {
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    padding: 10px 18px; border-top: 1px solid var(--line, #E8E9F3); background: #fff;
-}
-.pbfs-map .pm-foot-say {
-    display: inline-flex; align-items: center; gap: 7px; min-width: 0;
-    font-size: 12.5px; font-weight: 600; color: var(--amber, #B7791F);
-}
-.pbfs-map .pm-foot-say.ok { color: #047857; }
-.pbfs-map .pm-foot-say svg { width: 15px; height: 15px; flex: none; }
-.pbfs-map .pm-foot .pbfs-btn { margin-left: auto; }
-.pbfs-map .pm-loading { padding: 40px; text-align: center; color: var(--muted, #6B7280); font-size: 13px; }
-
-.pbfs-map .pm-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 9px; padding: 60px 30px; color: var(--muted, #6B7280); }
-.pbfs-map .pm-empty svg { width: 54px; height: 54px; color: var(--i-soft2, #DDD6F2); margin-bottom: 4px; }
-.pbfs-map .pm-empty b { font-size: 16px; color: var(--ink, #1E1B2E); }
-.pbfs-map .pm-empty span { font-size: 13px; line-height: 1.55; max-width: 460px; }
+/* JOURNEY J1 — the overlay shell that used to head this file is GONE.
+ *
+ * `.pbfs-map*` styled a scrim inside the Formula Studio holding a second copy of
+ * this board's chrome: its own header, its own tab strip, its own lane chips,
+ * its own template panel and its own two field pickers. All of it moved into the
+ * full-screen host (`mapping_studio.scss`, `.pbms-*`) when the two shells were
+ * merged, so the rules went with the markup rather than being left behind to
+ * style nothing — a stylesheet that outlives its DOM is how the next reader
+ * concludes a surface still exists.
+ *
+ * What stays in this file is THE BOARD: `.mapping-canvas` and everything under
+ * it, which is the component both hosts always shared and the one host now
+ * mounts. It binds its palette from `--i*` variables the host supplies, which is
+ * why nothing here needed to change when the host did.
+ */
 
 /* ================================================================ the canvas
  *
@@ -603,97 +539,6 @@
 .mapping-canvas .mc-tf-save:hover { background: var(--i600, #4A3D96); }
 .mapping-canvas .mc-tf-save:disabled { opacity: .6; cursor: default; }
 
-/* ---- W65 mapping template panel ---- */
-.pbfs-map .pm-tmpl-scrim { position: absolute; inset: 0; z-index: 20; background: rgba(20, 16, 50, .12); }
-.pbfs-map .pm-tmpl { position: absolute; z-index: 21; top: 14px; right: 18px; width: 400px; max-width: 92%; max-height: calc(100% - 28px); overflow-y: auto; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 14px; box-shadow: 0 18px 50px rgba(20, 16, 50, .28); padding: 16px; }
-.pbfs-map .pm-tmpl-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.pbfs-map .pm-tmpl-head b { font-size: 14px; font-weight: 800; color: var(--ink, #1E1B2E); }
-.pbfs-map .pm-tmpl-hint { font-size: 12px; color: var(--muted, #6B7280); line-height: 1.5; margin: 0 0 12px; }
-.pbfs-map .pm-tmpl-hint b { color: var(--ink, #1E1B2E); }
-.pbfs-map .pm-tmpl-empty { font-size: 12.5px; color: var(--muted, #6B7280); line-height: 1.5; padding: 14px; background: #FAFAFE; border-radius: 9px; }
-.pbfs-map .pm-tmpl-input { width: 100%; border: 1px solid var(--line, #E8E9F3); border-radius: 9px; padding: 9px 11px; font-family: inherit; font-size: 13px; color: var(--ink, #1E1B2E); margin-bottom: 12px; }
-.pbfs-map .pm-tmpl-input:focus { outline: none; border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
-.pbfs-map .pm-tmpl-actions { display: flex; justify-content: flex-end; gap: 8px; }
-.pbfs-map .pm-tmpl-list { display: flex; flex-direction: column; gap: 7px; }
-.pbfs-map .pm-tmpl-row { display: flex; align-items: center; gap: 9px; border: 1px solid var(--line, #E8E9F3); border-radius: 10px; padding: 9px 11px; }
-.pbfs-map .pm-tmpl-row-main { flex: 1; min-width: 0; }
-.pbfs-map .pm-tmpl-row-main b { display: block; font-size: 13px; font-weight: 700; color: var(--ink, #1E1B2E); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pbfs-map .pm-tmpl-row-main small { font-size: 11px; color: var(--muted, #6B7280); }
-.pbfs-map .pm-tmpl-del { border: 0; background: none; color: #94A3B8; cursor: pointer; padding: 5px; border-radius: 7px; display: grid; place-items: center; flex: none; }
-.pbfs-map .pm-tmpl-del:hover { background: #FEE2E2; color: #B91C1C; }
-.pbfs-map .pm-tmpl-del svg { width: 15px; height: 15px; }
-.pbfs-map .pm-tmpl-result { margin-top: 14px; border-top: 1px solid var(--line, #E8E9F3); padding-top: 12px; }
-.pbfs-map .pm-tmpl-res-head { font-size: 12.5px; font-weight: 700; color: var(--ink, #1E1B2E); margin-bottom: 9px; }
-.pbfs-map .pm-tmpl-res-sec { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-bottom: 8px; }
-.pbfs-map .pm-tmpl-tag { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; padding: 2px 7px; border-radius: 6px; }
-.pbfs-map .pm-tmpl-tag.skip { background: #EEF1F5; color: #64748B; }
-.pbfs-map .pm-tmpl-tag.miss { background: #FEF3C7; color: #B45309; }
-.pbfs-map .pm-tmpl-res-sec code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; background: #FAFAFE; border: 1px solid var(--line, #E8E9F3); border-radius: 5px; padding: 1px 6px; color: var(--ink, #1E1B2E); }
-
-/* Employee/Contract tab — "Add a field" autocomplete (append any writable
-   employee/contract field to the RIGHT column, then wire it). */
-.pbfs-map .pm-empfield { position: relative; }
-.pbfs-map .pm-empfield .pm-ctx { max-width: 240px; cursor: text; }
-.pbfs-map .pm-empfield-menu {
-    position: absolute; top: calc(100% + 4px); right: 0; z-index: 20;
-    width: 300px; max-height: 320px; overflow-y: auto;
-    background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 10px;
-    box-shadow: 0 16px 40px rgba(20, 16, 50, .18); padding: 5px;
-}
-.pbfs-map .pm-empfield-opt {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
-    width: 100%; text-align: left; border: 0; background: none; cursor: pointer;
-    padding: 7px 9px; border-radius: 7px; font-family: inherit;
-}
-.pbfs-map .pm-empfield-opt:hover { background: var(--i-soft, #EDEAF8); }
-.pbfs-map .pm-empfield-opt .lbl { font-size: 12.5px; font-weight: 700; color: var(--ink, #1E1B2E); }
-.pbfs-map .pm-empfield-opt .sub { font-size: 10.5px; font-weight: 700; color: var(--muted, #6B7280); text-transform: uppercase; letter-spacing: .03em; flex: none; }
-
-/* browse-by-model field dropdowns (Employee ▾ / Contract ▾) */
-.pbfs-map .pm-empadd { position: relative; display: flex; align-items: center; gap: 6px; }
-.pbfs-map .pm-empadd-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    border: 1px solid var(--line, #E8E9F3); background: #fff; color: var(--ink, #1E1B2E);
-    border-radius: 8px; padding: 6px 9px; font-family: inherit; font-size: 12.5px; font-weight: 700;
-    cursor: pointer; transition: border-color .13s, background .13s, box-shadow .13s;
-}
-.pbfs-map .pm-empadd-btn svg { width: 15px; height: 15px; flex: none; }
-.pbfs-map .pm-empadd-btn .chev { width: 13px; height: 13px; color: var(--muted, #6B7280); transition: transform .15s; }
-.pbfs-map .pm-empadd-btn:hover { border-color: var(--i-border, #CBC2EE); box-shadow: 0 3px 10px rgba(90, 75, 176, .12); }
-.pbfs-map .pm-empadd-btn.on { border-color: var(--i, #5A4BB0); background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); }
-.pbfs-map .pm-empadd-btn.on .chev { transform: rotate(180deg); color: var(--i600, #4A3D96); }
-
-.pbfs-map .pm-empadd-menu {
-    position: absolute; top: calc(100% + 6px); right: 0; z-index: 40;
-    width: 320px; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 12px;
-    box-shadow: 0 18px 46px rgba(20, 16, 50, .2); overflow: hidden;
-    animation: pmEmpAddIn .14s ease-out;
-}
-@keyframes pmEmpAddIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-.pbfs-map .pm-empadd-head {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
-    padding: 10px 13px 8px; background: var(--i-soft, #EDEAF8); border-bottom: 1px solid var(--line, #E8E9F3);
-}
-.pbfs-map .pm-empadd-head b { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--i600, #4A3D96); }
-.pbfs-map .pm-empadd-head .cnt { font-size: 11px; font-weight: 700; color: var(--muted, #6B7280); }
-.pbfs-map .pm-empadd-filter { display: flex; align-items: center; gap: 7px; padding: 8px 12px; border-bottom: 1px solid var(--line, #E8E9F3); }
-.pbfs-map .pm-empadd-filter svg { width: 14px; height: 14px; color: var(--muted, #6B7280); flex: none; }
-.pbfs-map .pm-empadd-filter input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-family: inherit; font-size: 12.5px; color: var(--ink, #1E1B2E); }
-.pbfs-map .pm-empadd-list { max-height: 300px; overflow-y: auto; padding: 5px; }
-.pbfs-map .pm-empadd-opt {
-    display: flex; align-items: baseline; gap: 9px; width: 100%; text-align: left;
-    border: 0; background: none; cursor: pointer; padding: 7px 9px; border-radius: 7px; font-family: inherit;
-}
-.pbfs-map .pm-empadd-opt:hover { background: var(--i-soft, #EDEAF8); }
-.pbfs-map .pm-empadd-opt .lbl { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--ink, #1E1B2E); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pbfs-map .pm-empadd-opt .sub { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; font-weight: 700; color: var(--muted, #6B7280); flex: none; }
-.pbfs-map .pm-empadd-opt .tick { width: 15px; height: 15px; flex: none; color: var(--i, #5A4BB0); }
-.pbfs-map .pm-empadd-opt.added { background: rgba(90, 75, 176, .06); }
-.pbfs-map .pm-empadd-opt.added .lbl { color: var(--i600, #4A3D96); }
-.pbfs-map .pm-empadd-opt.locked { cursor: default; opacity: .6; }
-.pbfs-map .pm-empadd-opt.locked:hover { background: none; }
-.pbfs-map .pm-empadd-empty { padding: 18px 12px; text-align: center; font-size: 12px; color: var(--muted, #6B7280); }
-.pbfs-map .pm-empadd-scrim { position: fixed; inset: 0; z-index: 30; }
 
 /* remove ✕ on an unwired right card (Employee/Contract tab) */
 .mapping-canvas .mc-item-x {

@@ -242,7 +242,7 @@ export class PbIntegrations extends Component {
             });
         } catch (e) {
             this._opening = false;
-            console.warn("pb_integrations: could not open the Mapping Studio", e);
+            console.warn("pb_integrations: could not open Mapping", e);
         }
     }
 

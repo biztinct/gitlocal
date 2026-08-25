@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.129.0',
+    'version': '19.0.1.131.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -62,6 +62,9 @@
             'pb_formula_studio/static/src/js/grid/grid_studio.js',
             'pb_formula_studio/static/src/js/palette/command_palette.js',
             'pb_formula_studio/static/src/js/hover_card.js',
+            # JOURNEY J1 — the role vocabulary the mapping board's lane chips
+            # and the studio's outline lens now share. Before both.
+            'pb_formula_studio/static/src/js/mapping/mapping_roles.js',
             'pb_formula_studio/static/src/js/mapping/mapping_geometry.js',
             'pb_formula_studio/static/src/js/mapping/mapping_canvas.js',
             'pb_formula_studio/static/src/js/mapping/mapping_studio.js',

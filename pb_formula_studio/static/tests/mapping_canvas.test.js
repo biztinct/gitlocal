@@ -34,6 +34,8 @@ import {
     HEAD,
     LANE_LAST,
 } from "@pb_formula_studio/js/mapping/mapping_geometry";
+import { ROLES, ROLE_LANE_ORDER, roleIcon }
+    from "@pb_formula_studio/js/mapping/mapping_roles";
 
 describe.current.tags("desktop");
 defineMailModels();
@@ -1256,4 +1258,63 @@ test("F2 — an item with no lane metadata still appends, exactly as it always d
     expect(placeInLane([...board], { id: "z", meta: {} }).map((i) => i.id))
         .toEqual(["a", "b", "z"]);
     expect(laneOrderOf({ id: "z" })).toBe(LANE_LAST);
+});
+
+// ======================================================== JOURNEY J1 =======
+/**
+ * The merge, asserted at the only level this bundle can safely reach.
+ *
+ * J1 folded the Formula Studio's mapping overlay into the full-screen host, and
+ * the first cut of these tests imported that host so it could exercise its
+ * getters directly. That import cost five UNRELATED tests — see MJ2: pulling a
+ * cockpit into `web.assets_unit_tests` drags its whole service-shaped import
+ * graph in with it, and every `mountWithCleanup` test in the file then timed out
+ * at 5000ms. The suite went 60/60 → 58/8 without a single line of canvas code
+ * changing.
+ *
+ * So the rule this file already followed is now written down: **this suite tests
+ * the CANVAS and the pure kernel, never a host.** The host's own invariants —
+ * the five tab labels, the employee-only toolkit, the pre-scoped door — are
+ * pinned in `tests/test_one_mapping_home.py`, which reads the source and cannot
+ * be broken by bundle mechanics. What is left here is what genuinely belongs
+ * here: the placement rule the host's right column depends on, and the role
+ * vocabulary the lane chips read.
+ */
+
+test("J1 — a session extra lands in its LANE, which is what keeps the headings honest", () => {
+    // The full-screen host merges its pinned extras through `placeInLane`, so
+    // this is the rule its right column stands on. MF32/MF40: appending instead
+    // grows a SECOND heading for a lane that already has one, and the lane
+    // headers then lie for as long as the session lasts.
+    const board = [
+        { id: "f:hr.employee:barcode", group: "Identity",
+          meta: { lane: "identity", lane_order: 0 } },
+        { id: "f:hr.contract:notes", group: "Other contract fields",
+          meta: { lane: "other_contract", lane_order: 7 } },
+    ];
+    const extra = { id: "f:hr.employee:birthday", group: "Personal",
+                    meta: { lane: "personal", lane_order: 1 } };
+    const out = placeInLane([...board], extra);
+    expect(out.map((i) => i.id)).toEqual([
+        "f:hr.employee:barcode", "f:hr.employee:birthday", "f:hr.contract:notes",
+    ]);
+    // three lanes, three headings, in lane order — and no ninth at the foot
+    expect(out.map((i, n) => MappingCanvas.prototype.rightGroupHead.call(null, out, n)))
+        .toEqual(["Identity", "Personal", "Other contract fields"]);
+});
+
+test("J1 — one role vocabulary, and every lane the chips order has a glyph", () => {
+    // The chips and the studio's outline lens read the SAME list since J1. A role
+    // in one and not the other renders a chip with no icon, which nothing errors
+    // on and no screenshot catches at 13px.
+    expect([...ROLE_LANE_ORDER].sort()).toEqual(ROLES.map((r) => r.key).sort());
+    for (const r of ROLES) {
+        expect(roleIcon(r.key)).toBe(r.icon);
+    }
+    // an unknown role degrades to payroll rather than to undefined
+    expect(roleIcon("nonsense")).toBe("coins");
+    expect(roleIcon(null)).toBe("coins");
+    // Labels are deliberately NOT asserted here: they are module-scope `_t()`
+    // objects and stringifying one before translations load throws outright
+    // ("Cannot translate string"). The label text is pinned in Python instead.
 });

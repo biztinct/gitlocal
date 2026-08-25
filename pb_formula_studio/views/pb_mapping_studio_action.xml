@@ -7,7 +7,11 @@
          NAME, and every breadcrumb that passes through it then reads
          "Unnamed". The name here is what a back chip and a crumb print. -->
     <record id="action_pb_mapping_studio" model="ir.actions.client">
-        <field name="name">Mapping Studio</field>
+        <!-- JOURNEY J1 renames the SURFACE, not the record. The xml id and the
+             tag are load-bearing (two test suites and four doors name them); the
+             `name` is the only part a user reads, so it is the only part that
+             changed. -->
+        <field name="name">Mapping</field>
         <field name="tag">pb_mapping_studio</field>
     </record>
 </odoo>

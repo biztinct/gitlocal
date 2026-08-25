@@ -8,8 +8,6 @@ import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { loadPDFJSAssets } from "@web/core/utils/pdfjs";
 import { GridStudio } from "./grid/grid_studio";
-import { MappingCanvas } from "./mapping/mapping_canvas";
-import { placeInLane } from "./mapping/mapping_geometry";
 import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
@@ -39,11 +37,13 @@ import {
 // the action context and returns null when nobody sent one — so the chip is
 // ABSENT on every other route rather than inert (W5/W29), and nothing else in
 // this file or its templates changes.
-// `openHub` joins them in Integrations Cycle 2: the mapping overlay grows one
-// quiet link OUT to the full-screen Mapping Studio, and a link that hands over
-// a board has to hand over a return door with it (W5).
+// `openHub` joins it in Integrations Cycle 2, and JOURNEY J1 makes it the whole
+// story: the mapping overlay is retired and the Mapping button is a DOOR into
+// the full-screen board, pre-scoped to the scheme on screen. A link that hands
+// over a board hands over a return door with it (W5) — see `openMapping`.
 import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
 import { _t } from "@web/core/l10n/translation";
+import { ROLES, roleMeta, roleIcon, roleLabel, roleHint } from "./mapping/mapping_roles";
 
 // COLROLES P2 — "People & Data" is the fifth outline group, matching PEOPLE_GROUP
 // in pb_formula_studio.py. It is deliberately LAST: the payroll reads top-down and
@@ -52,18 +52,10 @@ const PEOPLE_GROUP = "People & Data";
 const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals", PEOPLE_GROUP];
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669", people: "#64748B" };
 
-// COLROLES P2 — role vocabulary. Order is the picker's order (pay first, then the
-// data that surrounds it); `icon` keys the RoleIco template in studio.xml. Labels
-// and hints are NOT here: _t() at module scope would be evaluated before the
-// translations are loaded, so they are resolved per render in roleLabel/roleHint.
-const ROLES = [
-    { key: "payroll", icon: "coins" },
-    { key: "identity", icon: "idcard" },
-    { key: "profile", icon: "user" },
-    { key: "contract", icon: "briefcase" },
-    { key: "bank", icon: "bank" },
-    { key: "reference", icon: "filetext" },
-];
+// COLROLES P2 — the role vocabulary moved DOWN to `mapping/mapping_roles.js` in
+// JOURNEY J1, because the mapping board's lane chips need it too and they now
+// live in the full-screen host, which has no business importing this module. One
+// list, three readers (this outline, the grid's lens, the chips).
 const OPSYM = { "+": "+", "-": "−", "*": "×", "/": "÷", "^": "^" };
 
 
@@ -152,7 +144,7 @@ export class CfgCombo extends Component {
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { CfgCombo, GridStudio, MappingCanvas, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop };
+    static components = { CfgCombo, GridStudio, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop };
     static props = ["*"];
 
     setup() {
@@ -232,31 +224,15 @@ export class PbFormulaStudio extends Component {
             reclassOpen: false,
             reclassBusy: false,
             reclassData: null,       // {rows:[{id,code,name,from,to,tier,reason,accept}], counts, error}
-            // F10 — mapping canvas (multi-adapter)
-            mapOpen: false,
-            mapBusy: false,
-            mapMode: "cycle",        // cycle | api
-            mapContextId: null,      // adapter context (e.g. connector id for api)
-            mapDismissed: [],        // client-side-dismissed suggestion wire ids
-            mapExtraCols: [],        // SOURCING S6 — spreadsheet columns named by hand
-            mapData: null,           // {ok, left, right, wires, left_title, right_title, supports_suggest, contexts, ...}
-            // COLROLES P3 — the employee board's two parent-owned filters. Both live
-            // here rather than in the canvas because the canvas is payroll-agnostic
-            // and must not learn what a "payroll component" is.
-            mapEmpPayroll: false,    // include the pay columns in the LEFT column
-            mapEmpLane: null,        // a role lane label, or null for every lane
-            // MAPFIX B2/B3 — one-shot orders for the canvas, and the reconciliation
-            // step. `mapCommand` carries a token so the same order can be repeated.
-            mapCommand: null,        // {token, kind, leftId}
-            rcnOpen: false,
-            rcnBusy: false,
-            rcnRows: null,           // [{id,name,code,col,samples,value_type,tick}] or null
-            // W65 — mapping templates
-            tmplMode: null,          // null | "save" | "apply"
-            tmplName: "",            // save: template name
-            tmplList: [],            // apply: visible templates
-            tmplBusy: false,
-            tmplResult: null,        // apply summary {applied, skipped_existing, unmatched_sources, unmatched_targets}
+            // JOURNEY J1 — the mapping OVERLAY is gone. It mounted the same
+            // `MappingCanvas` as the full-screen surface and neither shell was a
+            // superset of the other, so the board a user met depended on the door
+            // they came through. The full-screen host absorbed everything this one
+            // had (the Employee/Contract toolkit, the reconciliation dialog,
+            // template save/delete) and `openMapping` is now a DOOR into it,
+            // pre-scoped to the scheme on screen. Nothing about the mapping board
+            // lives in this component any more — which is why there is no
+            // `map*`/`rcn*`/`tmpl*` state left here.
             // F9 — payslip studio
             psOpen: false,
             psBusy: false,
@@ -1213,7 +1189,7 @@ export class PbFormulaStudio extends Component {
             ] },
             { id: "design", label: "Design", tools: [
                 T("payslip", "Payslip Studio", "Design the payslip layout", "payslip", "indigo", () => this.openPayslip()),
-                T("mapping", "Mapping canvas", "Map cycle carryover, API, import and scheme fields onto your components", "mapping", "pink", () => this.openMapping()),
+                T("mapping", "Mapping", "Open the mapping board on this scheme — spreadsheet columns, system fields, employee and contract records", "mapping", "pink", () => this.openMapping()),
                 T("rates", "Rate tables", "PIT brackets and other rate tables", "rates", "amber", () => this.openRates(), this.state.rateTables.length || null),
                 T("export", "Export workbook", "Download the config as a living Excel file with real formulas", "export", "teal", () => this.exportLivingWorkbook()),
             ] },
@@ -1421,27 +1397,14 @@ export class PbFormulaStudio extends Component {
     // shows the four pay groups and tucks the rest behind one row; 'all' renders
     // People & Data as an ordinary fifth group.
     roleOf(c) { return (c && c.column_role) || "payroll"; }
-    roleMeta(role) { return ROLES.find(r => r.key === (role || "payroll")) || ROLES[0]; }
-    roleIcon(role) { return this.roleMeta(role).icon; }
-    roleLabel(role) {
-        return {
-            payroll: _t("Payroll"), identity: _t("Identity"),
-            profile: _t("Employee profile"), contract: _t("Contract"),
-            bank: _t("Bank"), reference: _t("Reference"),
-        }[role || "payroll"] || _t("Payroll");
-    }
-    roleHint(role) {
-        return {
-            payroll: _t("Feeds the calculation."),
-            identity: _t("Says which employee the row belongs to."),
-            profile: _t("Personal details kept on the employee."),
-            contract: _t("Terms kept on the contract."),
-            bank: _t("Payment details."),
-            reference: _t("A code or note carried along."),
-        }[role || "payroll"] || "";
-    }
+    // Thin delegates onto the shared vocabulary — the templates call these by
+    // name, so the indirection stays even though the data moved.
+    roleMeta(role) { return roleMeta(role); }
+    roleIcon(role) { return roleIcon(role); }
+    roleLabel(role) { return roleLabel(role); }
+    roleHint(role) { return roleHint(role); }
     get roleOptions() {
-        return ROLES.map(r => ({ ...r, label: this.roleLabel(r.key), hint: this.roleHint(r.key) }));
+        return ROLES.map(r => ({ ...r, label: roleLabel(r.key), hint: roleHint(r.key) }));
     }
 
     // ==== SOURCING S4 — where a value comes from ==============================
@@ -4382,408 +4345,6 @@ export class PbFormulaStudio extends Component {
         return u.length ? u.join(", ") : "";
     }
 
-    // ---- Mapping canvas (F10, multi-adapter) ----
-    get mapTabs() {
-        return [
-            { key: "cycle", label: "Cycle carryover" },
-            { key: "api", label: "API fields" },
-            { key: "import", label: "Import columns" },
-            { key: "scheme", label: "Schemes" },
-            { key: "employee", label: "Employee/Contract" },
-        ];
-    }
-    // adapters that share the generic create/delete/draw dispatch; cycle is bespoke
-    get _mapPrefix() { return { api: "api", import: "import", scheme: "scheme", employee: "employee" }[this.state.mapMode] || null; }
-    // Employee/Contract tab: the RIGHT column shows a curated field set; this
-    // autocomplete lets the user pick ANY writable employee/contract field and
-    // append it (mapEmpExtras) so it becomes wireable. Once wired it persists and
-    // the backend returns it in mapData.right on the next load.
-    onMapEmpSearch(ev) {
-        const q = ev.target.value || "";
-        this.state.mapEmpQuery = q;
-        clearTimeout(this._mapEmpTimer);
-        if (q.trim().length < 2) { this.state.mapEmpResults = []; return; }
-        this._mapEmpTimer = setTimeout(async () => {
-            try {
-                const r = await this.orm.call("pb.formula.studio", "ec_search_fields", [q, this.state.config.id]);
-                this.state.mapEmpResults = (r && r.fields) || [];
-            } catch (e) { this.state.mapEmpResults = []; }
-        }, 220);
-    }
-    addEmpField(item) {
-        const base = (this.state.mapData && this.state.mapData.right) || [];
-        const extras = this.state.mapEmpExtras || [];
-        if (!extras.some(x => x.id === item.id) && !base.some(x => x.id === item.id)) {
-            this.state.mapEmpExtras = [...extras, item];
-        }
-        // if it had been session-hidden, un-hide it so the add takes effect
-        this.state.mapEmpHidden = (this.state.mapEmpHidden || []).filter(x => x !== item.id);
-        this.state.mapEmpQuery = "";
-        this.state.mapEmpResults = [];
-    }
-    // Remove an UNWIRED field from the right column (session-scoped, per plan):
-    // a pinned extra is dropped; a curated/base field is hidden until the tab
-    // reloads. Mapped fields never reach here (the ✕/toggle are gated on wires).
-    removeRightField(id) {
-        const extras = this.state.mapEmpExtras || [];
-        if (extras.some(x => x.id === id)) {
-            this.state.mapEmpExtras = extras.filter(x => x.id !== id);
-        } else if (!(this.state.mapEmpHidden || []).includes(id)) {
-            this.state.mapEmpHidden = [...(this.state.mapEmpHidden || []), id];
-        }
-    }
-    /**
-     * MAPFIX F2 — a field added mid-session lands in its LANE, not at the end.
-     *
-     * `_ec_place_in_lane` (pb_formula_studio.py) fixed the SERVER's append in
-     * Phase E, and the E2 invariant was written about
-     * `employee_mapping_data(...)['right']` — which is what it was written about,
-     * and not what the canvas finally renders. The client concatenated its
-     * session extras after the whole catalogue whatever lane they belonged to, so
-     * pinning "Employee Type" from the search box drew a second "Personal"
-     * heading under "Other contract fields" and the lane headers stopped telling
-     * the truth for as long as the session lasted (MF36 (b)).
-     *
-     * This is the same insertion rule, expressed once here: before the first card
-     * of a LATER lane, i.e. at the end of its own lane. A lane that is not on the
-     * board at all gets its heading for free — the canvas emits one whenever
-     * `group` changes between consecutive rows, which is exactly what an insert
-     * between two other lanes causes.
-     *
-     * The rule itself is `placeInLane` in `mapping/mapping_geometry.js` — the
-     * pure kernel, where it can be unit-tested without mounting this component.
-     */
-    get mapEmpRight() {
-        const base = (this.state.mapData && this.state.mapData.right) || [];
-        const hidden = new Set(this.state.mapEmpHidden || []);
-        const seen = new Set(base.map(i => i.id));
-        const out = base.filter(i => !hidden.has(i.id));
-        for (const extra of (this.state.mapEmpExtras || [])) {
-            if (seen.has(extra.id) || hidden.has(extra.id)) { continue; }
-            placeInLane(out, extra);
-        }
-        return out;
-    }
-    // the canvas' RIGHT items: employee tab merges the pinned extras
-    get mapRightItems() {
-        return this.state.mapMode === "employee"
-            ? this.mapEmpRight
-            : ((this.state.mapData && this.state.mapData.right) || []);
-    }
-
-    // ---- SOURCING S6 — the overlay's half of the spreadsheet board -----------
-    /**
-     * The same three additions the full-screen studio got, because the overlay is
-     * the same board and the owner met the defect on both. Columns typed by hand
-     * sit in front of the server's list; a wire makes one permanent (the server
-     * returns it in the "Already used by this scheme" lane), and one that was never
-     * wired does not survive a reload — which is the honest behaviour.
-     */
-    get mapLeftItems() {
-        const server = (this.state.mapData && this.state.mapData.left) || [];
-        const extra = (this.state.mapExtraCols || [])
-            .filter((c) => !server.some((x) => String(x.id) === "c:" + c))
-            .map((c) => ({ id: "c:" + c, label: c, sublabel: "",
-                           group: _t("Added here"), meta: {} }));
-        return extra.length ? extra.concat(server) : server;
-    }
-    get mapCanAddLeft() {
-        const d = this.state.mapData;
-        return !!(d && d.ok && d.can_add && d.can_edit);
-    }
-    get mapAddLeftLabel() {
-        return (this.state.mapData && this.state.mapData.add_label)
-            || _t("Use “%s” as a spreadsheet column");
-    }
-    mapAddLeftColumn(text) {
-        const t = (text || "").trim();
-        const have = this.state.mapExtraCols || [];
-        if (!t || have.includes(t)) { return; }
-        this.state.mapExtraCols = [...have, t];
-    }
-    /**
-     * A sealed component answers on the board too — S5 built the refusal in
-     * `clickRight` and in both create RPCs and then neither host passed the
-     * callback, so the click cleared the armed card and said nothing.
-     */
-    mapRightBlocked(item) {
-        const hint = (item && item.meta && item.meta.badgeHint)
-            || _t("This component is produced by the scheme, not imported into it.");
-        this.notif.add(hint, { type: "info" });
-    }
-    /** "Open rule" from the lineage popover. */
-    mapOpenRule(ruleId) {
-        if (!ruleId) { return; }
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: "hr.api.transformation.rule",
-            res_id: ruleId,
-            views: [[false, "form"]],
-            target: "current",
-        });
-    }
-    // ---- Employee/Contract browse dropdowns (Employee ▾ / Contract ▾) --------
-    // Toggle a per-model popover listing ALL writable scalar fields; lazy-load
-    // once per model into mapEmpMenuAll.
-    async toggleEmpMenu(model) {
-        if (this.state.mapEmpMenu === model) { this.closeEmpMenu(); return; }
-        this.state.mapEmpMenu = model;
-        this.state.mapEmpMenuFilter = "";
-        const cache = this.state.mapEmpMenuAll || {};
-        if (!cache[model]) {
-            try {
-                const r = await this.orm.call("pb.formula.studio", "ec_model_fields", [model]);
-                this.state.mapEmpMenuAll = { ...cache, [model]: (r && r.fields) || [] };
-            } catch (e) { this.state.mapEmpMenuAll = { ...cache, [model]: [] }; }
-        }
-    }
-    closeEmpMenu() { this.state.mapEmpMenu = null; this.state.mapEmpMenuFilter = ""; }
-    onEmpMenuFilter(ev) { this.state.mapEmpMenuFilter = ev.target.value || ""; }
-    get empMenuFields() {
-        const model = this.state.mapEmpMenu;
-        if (!model) return [];
-        const all = (this.state.mapEmpMenuAll || {})[model] || [];
-        const q = (this.state.mapEmpMenuFilter || "").trim().toLowerCase();
-        if (!q) return all;
-        return all.filter(f =>
-            (f.label || "").toLowerCase().includes(q) ||
-            ((f.meta && f.meta.field) || "").toLowerCase().includes(q));
-    }
-    get empMenuLabel() { return this.state.mapEmpMenu === "hr.contract" ? "Contract" : "Employee"; }
-    isFieldAdded(id) { return this.mapRightItems.some(i => i.id === id); }
-    isFieldMapped(id) {
-        const wires = (this.state.mapData && this.state.mapData.wires) || [];
-        return wires.some(w => w.rightId === id && w.state === "accepted");
-    }
-    // Row click in a browse dropdown: toggle add/remove for unmapped fields.
-    pickEmpMenuField(f) {
-        if (this.isFieldMapped(f.id)) return;           // locked — unwire first
-        if (this.isFieldAdded(f.id)) this.removeRightField(f.id);
-        else this.addEmpField(f);
-    }
-    _resetEmpPicker() {
-        this.state.mapEmpQuery = "";
-        this.state.mapEmpResults = [];
-        this.state.mapEmpExtras = [];
-        this.state.mapEmpHidden = [];
-        this.state.mapEmpMenu = null;
-        this.state.mapEmpMenuFilter = "";
-        this.state.mapEmpMenuAll = {};
-        this.state.mapEmpPayroll = false;
-        this.state.mapEmpLane = null;
-    }
-
-    // ==== COLROLES P3 — the people board ====================================
-    /**
-     * The header's counter chips: one per role that this structure actually has.
-     *
-     * Sorted into the same lane order the LEFT column uses, so the chips read as a
-     * table of contents for what is underneath them rather than as an unordered set
-     * of badges. A role with no columns gets no chip — an empty "Bank 0" teaches the
-     * reader to stop reading the row.
-     */
-    get mapEmpChips() {
-        const counts = (this.state.mapData && this.state.mapData.counts) || {};
-        const order = ["identity", "bank", "profile", "contract", "reference", "payroll"];
-        return order
-            .filter((role) => counts[role] && counts[role].total)
-            .map((role) => ({
-                role,
-                label: counts[role].label || this.roleLabel(role),
-                icon: this.roleIcon(role),
-                total: counts[role].total,
-                unmapped: counts[role].unmapped || 0,
-            }));
-    }
-    /** The lane filter is by GROUP LABEL, because that is what the canvas groups on. */
-    toggleMapLane(chip) {
-        if (chip.role === "payroll" && !this.state.mapEmpPayroll) {
-            // Asking to see the payroll lane is asking for the columns in it; a chip
-            // that filtered to a lane the server has not sent would empty the board.
-            this.toggleMapPayroll();
-            return;
-        }
-        this.state.mapEmpLane = this.state.mapEmpLane === chip.label ? null : chip.label;
-    }
-    async toggleMapPayroll() {
-        this.state.mapEmpPayroll = !this.state.mapEmpPayroll;
-        if (!this.state.mapEmpPayroll && this.state.mapEmpLane === this.roleLabel("payroll")) {
-            this.state.mapEmpLane = null;
-        }
-        await this._loadMapping();
-    }
-    clearMapLane() { this.state.mapEmpLane = null; }
-    get mapEmpLaneFilter() {
-        return this.state.mapMode === "employee" ? (this.state.mapEmpLane || "") : "";
-    }
-    /**
-     * What a click on a card that cannot be wired says.
-     *
-     * The alternative — a card that simply does not respond — is the failure mode
-     * this codebase punishes hardest (W40): the reader tries twice, concludes the
-     * board is broken, and never learns that the column is already handled.
-     */
-    mapEmpBlocked(item) {
-        const hint = (item && item.meta && item.meta.badgeHint)
-            || _t("This column already has a destination.");
-        this.notif.add(hint, { type: "info" });
-    }
-    /**
-     * A verb pressed on a left card — MAPFIX B2.
-     *
-     * Four verbs, three of which are a write and one of which is not: "Send to a
-     * field instead…" arms the card and hands the board back to the user, because
-     * choosing the destination is the whole decision and doing it for them would
-     * make the verb a guess. The write verbs all reload the board AND the
-     * configuration, since the role lens and the problems rail read these flags.
-     */
-    async mapEmpAction(item, action) {
-        action = action || (item && item.meta && item.meta.action);
-        if (!action) { return; }
-        if (action.key === "to_field") {
-            this.state.mapCommand = { token: Date.now(), kind: "armLeft", leftId: item.id };
-            this.notif.add(
-                _t("Pick the field on the right. What the contract already holds is kept as history."),
-                { type: "info" });
-            return;
-        }
-        let method = "employee_mapping_detach_component";
-        let args = [item.id];
-        if (action.key === "make_text" || action.key === "make_amount") {
-            method = "employee_mapping_make_component";
-            args = [item.id, action.key === "make_text" ? "text" : "amount"];
-            // CR-A2 puts an AMOUNT component in the payroll lane, and this board
-            // hides that lane until asked. Without this the card the user just
-            // acted on vanishes from under the pointer — W40's exact failure, and
-            // the message alone does not undo it.
-            if (action.key === "make_amount") { this.state.mapEmpPayroll = true; }
-        }
-        this.state.mapBusy = true;
-        let r;
-        try {
-            r = await this.orm.call("pb.formula.studio", method, args);
-        } catch (e) {
-            r = { ok: false, msg: _t("That change could not be saved.") };
-        } finally {
-            this.state.mapBusy = false;
-        }
-        if (r && r.ok === false) {
-            this.notif.add(r.msg || _t("That change could not be saved."), { type: "warning" });
-            return;
-        }
-        if (r && r.msg) { this.notif.add(r.msg, { type: "success" }); }
-        await this._loadMapping();
-        // The role lens and the problems rail both read these flags — reload the
-        // configuration so the grid does not go on showing the old shape (W153: a
-        // screen that outlives its cause is the thing that stops being read).
-        await this.load(this.state.config.id);
-    }
-
-    // ==== MAPFIX B3 — the reconciliation step ===============================
-    /**
-     * "Resolve remaining N columns".
-     *
-     * The board can leave a column with no wire and no badge indefinitely, and that
-     * state reads as "not finished yet" for a day and as "fine" thereafter. This is
-     * the surface that refuses to let it: every column with no destination is
-     * listed, pre-ticked to become a contract component, and the person may untick
-     * any of them to say "imported, deliberately used nowhere" (role `reference`).
-     * Nothing is silently unresolved after it closes.
-     */
-    get mapUnresolvedCount() {
-        const d = this.state.mapData;
-        return (d && d.ok && this.state.mapMode === "employee" && d.unresolved) || 0;
-    }
-    get rcnRows() { return this.state.rcnRows || []; }
-    get rcnTicked() { return this.rcnRows.filter((r) => r.tick); }
-    async openReconcile() {
-        if (!this.state.config) { return; }
-        this.state.rcnOpen = true;
-        this.state.rcnRows = null;
-        this.state.rcnBusy = true;
-        try {
-            const r = await this.orm.call("pb.formula.studio",
-                "employee_mapping_unresolved", [this.state.config.id]);
-            this.state.rcnRows = ((r && r.rows) || []).map((x) => ({ ...x, tick: true }));
-        } catch (e) {
-            this.state.rcnRows = [];
-            this.notif.add(_t("Those columns could not be read."), { type: "warning" });
-        } finally {
-            this.state.rcnBusy = false;
-        }
-    }
-    closeReconcile() { this.state.rcnOpen = false; }
-    toggleRcnRow(row) { row.tick = !row.tick; }
-    setRcnAll(v) { for (const r of this.rcnRows) { r.tick = v; } }
-    setRcnType(row, t) { row.value_type = t; }
-    async applyReconcile() {
-        if (!this.state.config || !this.rcnRows.length) { return; }
-        const decisions = this.rcnRows.map((r) => ({
-            id: r.id, component: !!r.tick, value_type: r.value_type || "amount",
-        }));
-        // An amount component lands in the payroll lane (CR-A2), which this board
-        // hides by default — reveal it, or the columns just resolved would read as
-        // having disappeared rather than as having been dealt with.
-        if (decisions.some((d) => d.component && d.value_type === "amount")) {
-            this.state.mapEmpPayroll = true;
-        }
-        this.state.rcnBusy = true;
-        let r;
-        try {
-            r = await this.orm.call("pb.formula.studio",
-                "employee_mapping_resolve_remaining",
-                [this.state.config.id, decisions, this.state.mapEmpPayroll]);
-        } catch (e) {
-            r = { ok: false, msg: _t("Those columns could not be saved.") };
-        } finally {
-            this.state.rcnBusy = false;
-        }
-        if (!r || r.ok === false) {
-            this.notif.add((r && r.msg) || _t("Those columns could not be saved."),
-                { type: "warning" });
-            return;
-        }
-        // The RPC hands back the refreshed board, so the footer count and the lane
-        // chips move in the same frame the dialog closes in.
-        this.state.mapData = r;
-        this.state.rcnOpen = false;
-        const a = r.applied || {};
-        this.notif.add(
-            _t("%s kept on the contract, %s left as reference.",
-               a.components || 0, a.reference || 0), { type: "success" });
-        await this.load(this.state.config.id);
-    }
-
-    /**
-     * "Open in Mapping Studio" — the overlay graduates to the full surface.
-     *
-     * The overlay stays exactly as it is (every scheme-centric flow reaches
-     * mapping from inside a configuration, and taking that away would be a
-     * regression dressed as a redesign). This is a one-way link that carries
-     * what the overlay already knows — the configuration, the mode, and the
-     * connector the API tab is on — so the studio opens on the same board
-     * rather than on its own defaults. The registry probe is the same W29
-     * rule everything else uses: no dead buttons.
-     */
-    get hasMappingStudio() {
-        return registry.category("actions").contains("pb_mapping_studio");
-    }
-    openMappingStudio() {
-        const ctx = {
-            pb_config: this.state.config && this.state.config.id,
-            pb_mode: this.state.mapMode || "api",
-        };
-        if (this.state.mapMode === "api" && this.state.mapContextId) {
-            ctx.pb_connector = this.state.mapContextId;
-        }
-        openHub(this.action, {
-            tag: "pb_mapping_studio",
-            context: ctx,
-            back: { label: _t("Formula Studio"),
-                    xmlid: "pb_formula_studio.action_pb_formula_studio" },
-        });
-    }
-
     /**
      * COLROLES P4 — reclassification, as a proposal rather than an act.
      *
@@ -4838,200 +4399,39 @@ export class PbFormulaStudio extends Component {
         }
     }
 
-    openMapping(mode) {
-        this.state.mapMode = mode || this.state.mapMode || "cycle";
-        this.state.mapOpen = true;
-        this.state.mapData = null;
-        this.state.mapContextId = null;
-        this.state.mapDismissed = [];
-        this.state.mapExtraCols = [];
-        this._resetEmpPicker();
-        this._loadMapping();
-    }
-    setMapMode(mode) {
-        if (this.state.mapMode === mode) return;
-        this.state.mapMode = mode;
-        this.state.mapData = null;
-        this.state.mapContextId = null;
-        this.state.mapDismissed = [];
-        this.state.mapExtraCols = [];
-        this._resetEmpPicker();
-        this._loadMapping();
-    }
-    setMapContext(ev) {
-        this.state.mapContextId = parseInt(ev.target.value, 10);
-        this.state.mapDismissed = [];
-        this.state.mapExtraCols = [];
-        this._loadMapping();
-    }
-    closeMapping() { this.state.mapOpen = false; }
-    /** Extra positional arguments this adapter's data/suggest RPCs take. */
-    get _mapExtraArgs() {
-        return this.state.mapMode === "employee" ? [!!this.state.mapEmpPayroll] : [];
-    }
-    async _loadMapping() {
-        this.state.mapBusy = true;
-        const cfg = this.state.config.id, ctx = this.state.mapContextId, p = this._mapPrefix;
-        try {
-            const r = p
-                ? await this.orm.call("pb.formula.studio", `${p}_mapping_data`,
-                    [cfg, ctx || false, ...this._mapExtraArgs])
-                : await this.orm.call("pb.formula.studio", "mapping_canvas_data", [cfg]);
-            this.state.mapData = r;
-            if (r && r.context_id) this.state.mapContextId = r.context_id;
-        } catch (e) {
-            this.state.mapData = { ok: false, reason: "error" };
-        } finally {
-            this.state.mapBusy = false;
-        }
-    }
-    // wires passed to the canvas (drop client-side-dismissed api suggestions)
-    get mapWires() {
-        const w = (this.state.mapData && this.state.mapData.wires) || [];
-        const d = this.state.mapDismissed || [];
-        return d.length ? w.filter(x => !d.includes(x.id)) : w;
-    }
-    get mapAcceptedCount() { return this.mapWires.filter(x => x.state === "accepted").length; }
-    get mapSuggestedCount() { return this.mapWires.filter(x => x.state === "suggested").length; }
-    async mapAccept(wire) {
-        const p = this._mapPrefix;
-        if (p) {
-            await this.orm.call("pb.formula.studio", `${p}_mapping_create`,
-                [this.state.config.id, this.state.mapContextId, wire.source || wire.leftId, wire.rightId]);
-        } else {
-            await this.orm.call("pb.formula.studio", "mapping_accept", [wire.ref]);
-        }
-        await this._loadMapping();
-    }
-    async mapReject(wire) {
-        if (this._mapPrefix) {
-            // api/import suggestions are computed live, not persisted — dismiss client-side
-            this.state.mapDismissed = [...(this.state.mapDismissed || []), wire.id];
-            return;
-        }
-        await this.orm.call("pb.formula.studio", "mapping_reject", [wire.ref]);
-        await this._loadMapping();
-    }
-    async mapDelete(wire) {
-        const p = this._mapPrefix;
-        await this.orm.call("pb.formula.studio", p ? `${p}_mapping_delete` : "mapping_delete", [wire.ref]);
-        await this._loadMapping();
-    }
-    async mapDraw(leftId, rightId) {
-        const p = this._mapPrefix;
-        const r = p
-            ? await this.orm.call("pb.formula.studio", `${p}_mapping_create`,
-                [this.state.config.id, this.state.mapContextId, leftId, rightId])
-            : await this.orm.call("pb.formula.studio", "mapping_create", [this.state.config.id, leftId, rightId]);
-        if (r && r.ok === false) { this.notif.add(r.msg || "Could not connect", { type: "warning" }); return; }
-        // SOURCING S6 — the wire may have re-pointed a component from one source to
-        // the other. One deliberate act, and it says what it replaced.
-        if (r && r.replaced && r.replaced.msg) { this.notif.add(r.replaced.msg, { type: "info" }); }
-        // MAPFIX B2 — a successful wire may have CHANGED something else: drawing
-        // onto a contract component demotes it, and the sentence that says what
-        // happened to the values already on the contract is the whole reassurance
-        // (MF-B3). Silence here would make a re-route feel like data loss.
-        if (r && r.msg) { this.notif.add(r.msg, { type: "success" }); }
-        await this._loadMapping();
-        // the badge, the lens and the problems rail all read the component flags
-        if (r && r.msg && this.state.config) { await this.load(this.state.config.id); }
-    }
     /**
-     * CR3 — Suggest follows the MODE, like every other verb on this board.
+     * JOURNEY J1 — "Mapping" is a PLACE, and this is the door into it.
      *
-     * `mapSuggest` called `mapping_suggest` unconditionally: that is the CYCLE
-     * adapter's method, and pressing Auto-suggest on any other tab would have
-     * regenerated the cycle pair's suggestions and then displayed them over the tab
-     * the user was actually looking at. It never bit anybody only because cycle was
-     * the sole adapter with `supports_suggest: true` — the moment a second one says
-     * yes (this phase, employee mode) the bug becomes visible. The button is still
-     * gated on that flag, so a tab whose server method does not exist cannot reach
-     * here at all (W29 — no dead buttons).
+     * Until J1 this opened a scrim over the Formula Studio holding a second copy
+     * of the mapping board's shell, and a separate "Open in Mapping Studio" link
+     * inside that scrim graduated you to the full-screen one. Two shells, two
+     * halves of one feature, and an escape hatch between them that read as an
+     * admission. There is one board now, and pressing Mapping goes to it.
      *
-     * `mapAcceptAll` needed no change: it accepts through `mapAccept`, which has
-     * always been `_mapPrefix`-aware. The CR3 note read both as hardcoded; only the
-     * first one was.
+     * It arrives PRE-SCOPED. The scheme on screen is the scheme the board opens
+     * on (`pb_config`), so the FROM…TO sentence names it without the user
+     * picking it out of a list they have no reason to read — this is the whole
+     * difference between a link and a door (W5). The mode is carried too, and
+     * defaults to the people board: from inside a scheme, "where does this data
+     * go" is the question that brought you here.
+     *
+     * The back chip carries `config_id`, so the way back lands on the same
+     * scheme rather than on the configuration picker. A door that returns you
+     * somewhere else is a door people stop walking through.
      */
-    async mapSuggest() {
-        this.state.mapBusy = true;
-        const p = this._mapPrefix;
-        try {
-            const r = p
-                ? await this.orm.call("pb.formula.studio", `${p}_mapping_suggest`,
-                    [this.state.config.id, ...this._mapExtraArgs])
-                : await this.orm.call("pb.formula.studio", "mapping_suggest", [this.state.config.id]);
-            if (r && r.ok) this.state.mapData = r;
-            const n = this.mapSuggestedCount;
-            this.notif.add(n ? _t("%s suggestion(s) found", n) : _t("No new suggestions"),
-                { type: "success" });
-        } catch (e) {
-            this.notif.add(_t("Suggest failed"), { type: "danger" });
-        } finally {
-            this.state.mapBusy = false;
-        }
-    }
-    async mapAcceptAll() {
-        const sugs = this.mapWires.filter(w => w.state === "suggested" && w.confidence >= 0.9);
-        for (const w of sugs) await this.mapAccept(w);
-        await this._loadMapping();
-        this.notif.add(_t("Accepted %s high-confidence mapping(s)", sugs.length), { type: "success" });
-    }
-    // W62 — transform preview/save (API adapter only). Preview never writes; save
-    // is manager-gated + field-whitelisted server-side (never transformation_code).
-    async mapTransformPreview(ref, draft) {
-        try { return await this.orm.call("pb.formula.studio", "api_transform_preview", [ref, draft]); }
-        catch (e) { return { ok: false, error: "Preview failed" }; }
-    }
-    async mapTransformSave(ref, vals) {
-        const r = await this.orm.call("pb.formula.studio", "api_transform_save", [ref, vals]);
-        if (r && r.ok) { await this._loadMapping(); }
-        else if (r && r.msg) { this.notif.add(r.msg, { type: "warning" }); }
-        return r;
-    }
-    // W65 — mapping templates (save a board / apply across configs). Both api + cycle.
-    get mapTemplatable() { return ["api", "cycle"].includes(this.state.mapMode); }
-    openTmplSave() { this.state.tmplMode = "save"; this.state.tmplName = ""; this.state.tmplResult = null; }
-    async openTmplApply() {
-        this.state.tmplMode = "apply";
-        this.state.tmplResult = null;
-        this.state.tmplBusy = true;
-        try {
-            const r = await this.orm.call("pb.formula.studio", "mapping_template_list", [this.state.mapMode]);
-            this.state.tmplList = (r && r.templates) || [];
-        } catch (e) { this.state.tmplList = []; }
-        finally { this.state.tmplBusy = false; }
-    }
-    closeTmpl() { this.state.tmplMode = null; this.state.tmplResult = null; }
-    onTmplName(ev) { this.state.tmplName = ev.target.value; }
-    onTmplKey(ev) { if (ev.key === "Enter") this.saveTmpl(); }
-    async saveTmpl() {
-        const name = (this.state.tmplName || "").trim();
-        if (!name) { this.notif.add("Give the template a name", { type: "warning" }); return; }
-        this.state.tmplBusy = true;
-        try {
-            const r = await this.orm.call("pb.formula.studio", "mapping_template_save",
-                [this.state.config.id, this.state.mapMode, name]);
-            if (r && r.ok) {
-                this.notif.add(`Saved "${name}" (${r.line_count} wire${r.line_count === 1 ? "" : "s"})`, { type: "success" });
-                this.closeTmpl();
-            } else { this.notif.add((r && r.msg) || "Could not save template", { type: "warning" }); }
-        } finally { this.state.tmplBusy = false; }
-    }
-    async applyTmpl(id) {
-        this.state.tmplBusy = true;
-        try {
-            const r = await this.orm.call("pb.formula.studio", "mapping_template_apply",
-                [id, this.state.config.id, this.state.mapContextId || false]);
-            if (r && r.ok) {
-                this.state.tmplResult = r;
-                await this._loadMapping();
-            } else { this.notif.add((r && r.msg) || "Could not apply template", { type: "warning" }); }
-        } finally { this.state.tmplBusy = false; }
-    }
-    async deleteTmpl(id) {
-        const r = await this.orm.call("pb.formula.studio", "mapping_template_delete", [id]);
-        if (r && r.ok === false) { this.notif.add(r.msg || "Could not delete", { type: "warning" }); return; }
-        await this.openTmplApply();   // refresh the list in place
+    openMapping(mode) {
+        const cfg = this.state.config && this.state.config.id;
+        const ctx = { pb_mode: mode || "employee" };
+        if (cfg) { ctx.pb_config = cfg; }
+        openHub(this.action, {
+            tag: "pb_mapping_studio",
+            context: ctx,
+            back: {
+                label: _t("Formula Studio"),
+                xmlid: "pb_formula_studio.action_pb_formula_studio",
+                context: cfg ? { config_id: cfg } : {},
+            },
+        });
     }
 
     // ---- Payslip Studio (F9) ----

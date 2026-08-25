@@ -32,6 +32,28 @@
  *   * it does not offer python transforms. The whitelist lives on the server
  *     and `api_transform_save` refuses everything outside it (W12) — there is
  *     no client path to a code-authoring surface, and there must not be.
+ *
+ * ---------------------------------------------------------------------------
+ * JOURNEY J1 — this is now the ONLY shell.
+ *
+ * Until J1 the same `MappingCanvas` was mounted by two hosts: this one, and a
+ * scrim inside the Formula Studio called "Mapping canvas". They shared ~85% of
+ * their surface and NEITHER was a superset — the overlay owned the whole
+ * Employee/Contract toolkit (lane chips, the two field pickers, the payroll
+ * reveal, the reconciliation dialog, template SAVE and DELETE), this one owned
+ * the sentence header, the pickers, the suggestion story and the deep-link
+ * protocol. A user who found one of them met half a product, and which half
+ * depended on which door they came through.
+ *
+ * So the overlay's payload moved HERE and the overlay was retired. Two rules
+ * governed the move and are worth keeping:
+ *
+ *   * the behaviours themselves were already in `MappingCanvas` — remove-right,
+ *     the `⋮` verbs, the group filter. The overlay's advantage was that it
+ *     PASSED those props. Most of J1 is therefore wiring, not logic;
+ *   * anything the overlay implemented in its own markup (the reconciliation
+ *     dialog, the template save panel) MOVED — it was not copied. `grep` finds
+ *     one implementation of each, and it is in this file.
  */
 import { Component, useState, onWillStart, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
@@ -40,6 +62,8 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { MappingCanvas } from "./mapping_canvas";
+import { placeInLane } from "./mapping_geometry";
+import { ROLE_LANE_ORDER, roleIcon, roleLabel } from "./mapping_roles";
 
 const MODEL = "pb.formula.studio";
 
@@ -103,11 +127,24 @@ export class MappingStudio extends Component {
             picker: "", pquery: "",
             // what the arrival context asked for and could not have
             fellBack: [],
-            // template panel
-            tmplOpen: false, tmplBusy: false, tmplList: [], tmplResult: null,
+            // ---- J1: the employee-board toolkit, ported off the retired overlay
+            // Both filters live in the HOST, not in the canvas: the canvas is
+            // payroll-agnostic and must not learn what a "payroll component" is.
+            empPayroll: false,      // include the pay columns in the LEFT column
+            empLane: null,          // a role lane LABEL, or null for every lane
+            empQuery: "", empResults: [],       // "Add a field to map…"
+            empExtras: [], empHidden: [],       // session-scoped right-column edits
+            empMenu: null, empMenuFilter: "", empMenuAll: {},   // Employee ▾ / Contract ▾
+            // ---- J1: reconciliation (MAPFIX B3), moved here whole
+            rcnOpen: false, rcnBusy: false, rcnRows: null,
+            // template panel. `tmplMode` replaced the old `tmplOpen` boolean when
+            // SAVE arrived from the overlay: the panel now has two faces.
+            tmplMode: "", tmplBusy: false, tmplList: [], tmplResult: null,
+            tmplName: "",
             // C5 — one-shot orders for the board. The TOKEN is the point: a
             // second click on "15 mapped" has to flash the wires a second time,
-            // and a boolean cannot say "again".
+            // and a boolean cannot say "again". J1 adds `leftId`, which the
+            // "Send to a field instead…" verb uses to arm a card.
             cmd: { token: 0, kind: "" },
         });
 
@@ -385,7 +422,36 @@ export class MappingStudio extends Component {
                            group: _t("Added here"), meta: {} }));
         return extra.length ? extra.concat(server) : server;
     }
-    get rightItems() { return (this.state.data && this.state.data.right) || []; }
+    /**
+     * The right column — plus, on the employee board, this session's edits.
+     *
+     * MAPFIX F2/MF40: an extra is spliced INTO ITS LANE, never appended after the
+     * whole catalogue. The canvas emits a group header whenever `group` changes
+     * between consecutive rows, so a pinned Identity field tacked on below "Other
+     * contract fields" grows a second "Identity" heading at the bottom of the
+     * board and the lane headers stop telling the truth for as long as the
+     * session lasts. `placeInLane` (the pure kernel in `mapping_geometry.js`) is
+     * the client twin of the server's `_ec_place_in_lane` — one rule, expressed
+     * once per side of the wire.
+     *
+     * MF40 also says this path is LATENT on a full catalogue: since Phase E the
+     * server sends all 236 cards and both pickers are strict subsets of them, so
+     * every field a user can pin is already on the board and nothing is ever
+     * appended. It becomes live the moment anything narrows the served catalogue.
+     * Keep it correct anyway — the pickers are the reason it exists.
+     */
+    get rightItems() {
+        const base = (this.state.data && this.state.data.right) || [];
+        if (this.state.mode !== "employee") { return base; }
+        const hidden = new Set(this.state.empHidden);
+        const seen = new Set(base.map((i) => i.id));
+        const out = base.filter((i) => !hidden.has(i.id));
+        for (const extra of this.state.empExtras) {
+            if (seen.has(extra.id) || hidden.has(extra.id)) { continue; }
+            placeInLane(out, extra);
+        }
+        return out;
+    }
 
     /** Only the spreadsheet board takes a column as typed. */
     get canAddLeft() {
@@ -451,7 +517,11 @@ export class MappingStudio extends Component {
                                             [cfg, this.state.batchId || false]);
                     break;
                 case "employee":
-                    r = await this.orm.call(MODEL, "employee_mapping_data", [cfg, false]);
+                    // J1 — the third argument is `include_payroll`. The Studio
+                    // used to hard-code `false`, so the payroll lane was
+                    // unreachable here and the reveal chip had nothing to reveal.
+                    r = await this.orm.call(MODEL, "employee_mapping_data",
+                                            [cfg, false, !!this.state.empPayroll]);
                     break;
                 case "scheme":
                     r = await this.orm.call(MODEL, "scheme_mapping_data", [cfg, false]);
@@ -481,8 +551,25 @@ export class MappingStudio extends Component {
         this.state.mode = id;
         this.state.data = null;
         this.state.extraCols = [];
-        this.state.tmplOpen = false;
+        this.state.tmplMode = "";
+        this._resetEmpToolkit();
         await this.load();
+    }
+
+    /**
+     * Everything the employee board remembers is per-BOARD, not per-session.
+     *
+     * A pinned field, a lane filter and the payroll reveal all describe one
+     * scheme's people mapping; carrying them onto the API board would filter a
+     * column list by a lane that board does not have. Called on every mode
+     * switch and on every scheme change.
+     */
+    _resetEmpToolkit() {
+        Object.assign(this.state, {
+            empQuery: "", empResults: [], empExtras: [], empHidden: [],
+            empMenu: null, empMenuFilter: "", empMenuAll: {},
+            empPayroll: false, empLane: null,
+        });
     }
 
     togglePicker(which, ev) {
@@ -588,6 +675,9 @@ export class MappingStudio extends Component {
             case "config":
                 if (this.state.configId === id) { return; }
                 this.state.configId = id;
+                // a lane filter and a pinned field belong to the scheme they
+                // were chosen on — see `_resetEmpToolkit`
+                this._resetEmpToolkit();
                 break;
             case "batch":
                 if (this.state.batchId === id) { return; }
@@ -765,11 +855,299 @@ export class MappingStudio extends Component {
         return r;
     }
 
+    // ============================ J1 — the employee & contract toolkit =========
+    //
+    // Everything between here and the template panel arrived from the retired
+    // overlay. The BEHAVIOURS all live in `MappingCanvas` already; what the
+    // overlay had and this host did not was the toolbar around them and the
+    // props that switch them on. Read the section as "what the employee board
+    // needs that the other four do not".
+
+    get isEmp() { return this.state.mode === "employee"; }
+
+    /**
+     * The lane chips: one per role this structure actually has.
+     *
+     * Sorted into the same lane order the LEFT column uses, so the row reads as a
+     * table of contents for what is underneath it rather than as an unordered set
+     * of badges. A role with no columns gets no chip — an empty "Bank 0" teaches
+     * the reader to stop reading the row.
+     */
+    get empChips() {
+        const counts = (this.state.data && this.state.data.counts) || {};
+        return ROLE_LANE_ORDER
+            .filter((role) => counts[role] && counts[role].total)
+            .map((role) => ({
+                role,
+                label: counts[role].label || roleLabel(role),
+                icon: roleIcon(role),
+                total: counts[role].total,
+                unmapped: counts[role].unmapped || 0,
+            }));
+    }
+
+    /** The lane filter is by GROUP LABEL, because that is what the canvas groups on. */
+    toggleEmpLane(chip) {
+        if (chip.role === "payroll" && !this.state.empPayroll) {
+            // Asking to see the payroll lane is asking for the columns in it; a
+            // chip that filtered to a lane the server has not sent would empty
+            // the board.
+            this.toggleEmpPayroll();
+            return;
+        }
+        this.state.empLane = this.state.empLane === chip.label ? null : chip.label;
+    }
+
+    async toggleEmpPayroll() {
+        this.state.empPayroll = !this.state.empPayroll;
+        if (!this.state.empPayroll && this.state.empLane === roleLabel("payroll")) {
+            this.state.empLane = null;
+        }
+        await this.load();
+    }
+
+    clearEmpLane() { this.state.empLane = null; }
+
+    get empLaneFilter() { return this.isEmp ? (this.state.empLane || "") : ""; }
+
+    // ---- "Add a field to map…" ------------------------------------------------
+    // The right column is the whole catalogue, which is 236 cards on abm; this is
+    // how you reach one by name instead of by scrolling. A field pinned here is
+    // session-scoped until a wire makes it permanent — the server then returns it
+    // in `right` on the next load, which is what makes the affordance honest.
+    onEmpSearch(ev) {
+        const q = ev.target.value || "";
+        this.state.empQuery = q;
+        clearTimeout(this._empTimer);
+        if (q.trim().length < 2) { this.state.empResults = []; return; }
+        this._empTimer = setTimeout(async () => {
+            try {
+                const r = await this.orm.call(MODEL, "ec_search_fields",
+                                              [q, this.state.configId || false]);
+                this.state.empResults = (r && r.fields) || [];
+            } catch (e) {
+                this.state.empResults = [];
+            }
+        }, 220);
+    }
+
+    addEmpField(item) {
+        const base = (this.state.data && this.state.data.right) || [];
+        if (!this.state.empExtras.some((x) => x.id === item.id)
+            && !base.some((x) => x.id === item.id)) {
+            this.state.empExtras = [...this.state.empExtras, item];
+        }
+        // if it had been session-hidden, un-hide it so the add takes effect
+        this.state.empHidden = this.state.empHidden.filter((x) => x !== item.id);
+        this.state.empQuery = "";
+        this.state.empResults = [];
+    }
+
+    /**
+     * Remove an UNWIRED field from the right column — session-scoped.
+     *
+     * A pinned extra is dropped; a catalogue field is hidden until the board
+     * reloads. Nothing is written: a MAPPED field never reaches here, because the
+     * canvas gates its ✕ on the card having no wire.
+     */
+    removeRightField(id) {
+        if (this.state.empExtras.some((x) => x.id === id)) {
+            this.state.empExtras = this.state.empExtras.filter((x) => x.id !== id);
+        } else if (!this.state.empHidden.includes(id)) {
+            this.state.empHidden = [...this.state.empHidden, id];
+        }
+    }
+
+    // ---- Employee ▾ / Contract ▾ ----------------------------------------------
+    // The other way in: browse one model's whole catalogue rather than search it.
+    // Lazy-loaded once per model, then filtered in the client.
+    async toggleEmpMenu(model) {
+        if (this.state.empMenu === model) { this.closeEmpMenu(); return; }
+        this.state.empMenu = model;
+        this.state.empMenuFilter = "";
+        if (!this.state.empMenuAll[model]) {
+            let fields = [];
+            try {
+                const r = await this.orm.call(MODEL, "ec_model_fields", [model]);
+                fields = (r && r.fields) || [];
+            } catch (e) {
+                fields = [];
+            }
+            this.state.empMenuAll = { ...this.state.empMenuAll, [model]: fields };
+        }
+    }
+    closeEmpMenu() { this.state.empMenu = null; this.state.empMenuFilter = ""; }
+    onEmpMenuFilter(ev) { this.state.empMenuFilter = ev.target.value || ""; }
+
+    get empMenuFields() {
+        const model = this.state.empMenu;
+        if (!model) { return []; }
+        const all = this.state.empMenuAll[model] || [];
+        const q = (this.state.empMenuFilter || "").trim().toLowerCase();
+        if (!q) { return all; }
+        return all.filter((f) =>
+            (f.label || "").toLowerCase().includes(q)
+            || ((f.meta && f.meta.field) || "").toLowerCase().includes(q));
+    }
+    get empMenuLabel() {
+        return this.state.empMenu === "hr.contract" ? _t("Contract") : _t("Employee");
+    }
+
+    isFieldAdded(id) { return this.rightItems.some((i) => i.id === id); }
+    isFieldMapped(id) {
+        return this.wires.some((w) => w.rightId === id && w.state === "accepted");
+    }
+    /** Row click in a browse dropdown: toggle add/remove for unmapped fields. */
+    pickEmpMenuField(f) {
+        if (this.isFieldMapped(f.id)) { return; }      // locked — unwire first
+        if (this.isFieldAdded(f.id)) { this.removeRightField(f.id); }
+        else { this.addEmpField(f); }
+    }
+
+    // ---- the card verbs (MAPFIX B2) -------------------------------------------
+    /**
+     * A verb pressed on a left card.
+     *
+     * Four verbs, three of which are a write and one of which is not: "Send to a
+     * field instead…" ARMS the card and hands the board back to the user, because
+     * choosing the destination is the whole decision and doing it for them would
+     * make the verb a guess.
+     *
+     * The overlay reloaded the Formula Studio's configuration afterwards, because
+     * its role lens and problems rail read these flags. There is no grid on this
+     * surface, so the board reload is the whole of it here — the Formula Studio
+     * re-reads the configuration when the user navigates back to it.
+     */
+    async empAction(item, action) {
+        action = action || (item && item.meta && item.meta.action);
+        if (!action) { return; }
+        if (action.key === "to_field") {
+            this.state.cmd = { token: this.state.cmd.token + 1,
+                               kind: "armLeft", leftId: item.id };
+            this.notif.add(
+                _t("Pick the field on the right. What the contract already holds is kept as history."),
+                { type: "info" });
+            return;
+        }
+        let method = "employee_mapping_detach_component";
+        let args = [item.id];
+        if (action.key === "make_text" || action.key === "make_amount") {
+            method = "employee_mapping_make_component";
+            args = [item.id, action.key === "make_text" ? "text" : "amount"];
+            // MF15 — CR-A2 puts an AMOUNT component in the payroll lane, and this
+            // board hides that lane until asked. Without this the card the user
+            // just acted on vanishes from under the pointer (W40's exact failure),
+            // and the success message alone does not undo it.
+            if (action.key === "make_amount") { this.state.empPayroll = true; }
+        }
+        this.state.busy = true;
+        let r;
+        try {
+            r = await this.orm.call(MODEL, method, args);
+        } catch (e) {
+            r = { ok: false, msg: _t("That change could not be saved.") };
+        } finally {
+            this.state.busy = false;
+        }
+        if (r && r.ok === false) {
+            this.notif.add(r.msg || _t("That change could not be saved."),
+                           { type: "warning" });
+            return;
+        }
+        if (r && r.msg) { this.notif.add(r.msg, { type: "success" }); }
+        await this.load();
+    }
+
+    // ---- reconciliation (MAPFIX B3) -------------------------------------------
+    /**
+     * "Resolve remaining N columns".
+     *
+     * The board can leave a column with no wire and no badge indefinitely, and
+     * that state reads as "not finished yet" for a day and as "fine" thereafter.
+     * This is the surface that refuses to let it: every column with no destination
+     * is listed, pre-ticked to become a contract component, and the person may
+     * untick any of them to say "imported, deliberately used nowhere" (role
+     * `reference`). Nothing is silently unresolved after it closes.
+     */
+    get unresolvedCount() {
+        const d = this.state.data;
+        return (d && d.ok && this.isEmp && d.unresolved) || 0;
+    }
+    get rcnRows() { return this.state.rcnRows || []; }
+    get rcnTicked() { return this.rcnRows.filter((r) => r.tick); }
+
+    async openReconcile() {
+        if (!this.state.configId) { return; }
+        this.state.rcnOpen = true;
+        this.state.rcnRows = null;
+        this.state.rcnBusy = true;
+        try {
+            const r = await this.orm.call(MODEL, "employee_mapping_unresolved",
+                                          [this.state.configId]);
+            this.state.rcnRows = ((r && r.rows) || []).map((x) => ({ ...x, tick: true }));
+        } catch (e) {
+            this.state.rcnRows = [];
+            this.notif.add(_t("Those columns could not be read."), { type: "warning" });
+        } finally {
+            this.state.rcnBusy = false;
+        }
+    }
+    closeReconcile() { this.state.rcnOpen = false; }
+    toggleRcnRow(row) { row.tick = !row.tick; }
+    setRcnAll(v) { for (const r of this.rcnRows) { r.tick = v; } }
+    setRcnType(row, t) { row.value_type = t; }
+
+    async applyReconcile() {
+        if (!this.state.configId || !this.rcnRows.length) { return; }
+        const decisions = this.rcnRows.map((r) => ({
+            id: r.id, component: !!r.tick, value_type: r.value_type || "amount",
+        }));
+        // MF15 again: an amount component lands in the payroll lane, which this
+        // board hides by default — reveal it, or the columns just resolved read as
+        // having disappeared rather than as having been dealt with.
+        if (decisions.some((d) => d.component && d.value_type === "amount")) {
+            this.state.empPayroll = true;
+        }
+        this.state.rcnBusy = true;
+        let r;
+        try {
+            r = await this.orm.call(MODEL, "employee_mapping_resolve_remaining",
+                                    [this.state.configId, decisions,
+                                     !!this.state.empPayroll]);
+        } catch (e) {
+            r = { ok: false, msg: _t("Those columns could not be saved.") };
+        } finally {
+            this.state.rcnBusy = false;
+        }
+        if (!r || r.ok === false) {
+            this.notif.add((r && r.msg) || _t("Those columns could not be saved."),
+                           { type: "warning" });
+            return;
+        }
+        // The RPC hands back the refreshed board, so the footer count and the lane
+        // chips move in the same frame the dialog closes in.
+        this.state.data = r;
+        this.state.rcnOpen = false;
+        const a = r.applied || {};
+        this.notif.add(_t("%s kept on the contract, %s left as reference.",
+                          a.components || 0, a.reference || 0),
+                       { type: "success" });
+    }
+
     // =============================================================== templates
     get templatable() { return TEMPLATABLE.includes(this.state.mode); }
 
+    /**
+     * J1 — the panel has two faces now.
+     *
+     * The Studio was apply-only: you could spend a template but never mint one,
+     * which made the feature look broken to anybody who reached it from here
+     * rather than from the overlay. Save and delete moved across, and the panel
+     * became a `tmplMode` ("save" | "apply") rather than a boolean, so the two
+     * share one shell, one scrim and one Escape.
+     */
     async openTemplates() {
-        this.state.tmplOpen = true;
+        this.state.tmplMode = "apply";
         this.state.tmplResult = null;
         this.state.tmplBusy = true;
         try {
@@ -781,7 +1159,46 @@ export class MappingStudio extends Component {
             this.state.tmplBusy = false;
         }
     }
-    closeTemplates() { this.state.tmplOpen = false; this.state.tmplResult = null; }
+    openTemplateSave() {
+        this.state.tmplMode = "save";
+        this.state.tmplName = "";
+        this.state.tmplResult = null;
+    }
+    closeTemplates() { this.state.tmplMode = ""; this.state.tmplResult = null; }
+
+    onTmplName(ev) { this.state.tmplName = ev.target.value || ""; }
+    /**
+     * Enter saves — and only from THIS input.
+     *
+     * MF33's lesson one input device over: a key handler that acts on more than
+     * the element it is bound to acts on things nobody pressed it for. This is
+     * bound to the name box, so there is nothing else it can reach.
+     */
+    onTmplKey(ev) { if (ev.key === "Enter") { this.saveTemplate(); } }
+
+    async saveTemplate() {
+        const name = (this.state.tmplName || "").trim();
+        if (!name) {
+            this.notif.add(_t("Give the template a name."), { type: "warning" });
+            return;
+        }
+        this.state.tmplBusy = true;
+        try {
+            const r = await this.orm.call(MODEL, "mapping_template_save",
+                                          [this.state.configId, this.state.mode, name]);
+            if (r && r.ok) {
+                this.notif.add(
+                    _t("Saved “%(name)s” — %(n)s wire(s).", { name, n: r.line_count }),
+                    { type: "success" });
+                this.closeTemplates();
+            } else {
+                this.notif.add((r && r.msg) || _t("That template could not be saved."),
+                               { type: "warning" });
+            }
+        } finally {
+            this.state.tmplBusy = false;
+        }
+    }
 
     async applyTemplate(id) {
         this.state.tmplBusy = true;
@@ -799,6 +1216,16 @@ export class MappingStudio extends Component {
         } finally {
             this.state.tmplBusy = false;
         }
+    }
+
+    async deleteTemplate(id) {
+        const r = await this.orm.call(MODEL, "mapping_template_delete", [id]);
+        if (r && r.ok === false) {
+            this.notif.add(r.msg || _t("That template could not be deleted."),
+                           { type: "warning" });
+            return;
+        }
+        await this.openTemplates();      // refresh the list in place
     }
 
     // ================================================================== empty
