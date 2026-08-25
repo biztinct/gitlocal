@@ -527,7 +527,17 @@ class TestJourneyTransformations(TransactionCase):
                  'mapping_studio.js'))
         block = js.split('export const MODES')[1].split('];')[0]
         ids = re.findall(r'id:\s*"([a-z]+)"', block)
-        self.assertEqual(ids[:3], ['api', 'transform', 'import'])
+        # J5 put the Journey in front of the strip, so an ABSOLUTE slice is the
+        # wrong assertion — it pins where the tab happens to sit rather than
+        # what J4 actually claimed, which is that a transformation reads what
+        # the system sent (the tab to its LEFT) and feeds a component (the tab
+        # to its RIGHT). Stated relatively, that claim survives any number of
+        # tabs being added anywhere else.
+        self.assertEqual(ids.index('transform'), ids.index('api') + 1,
+                         "Transformations must sit immediately after the "
+                         "System fields tab it reads from")
+        self.assertEqual(ids.index('import'), ids.index('transform') + 1,
+                         "…and immediately before the Spreadsheet tab")
         self.assertIn('Transformations', block)
 
     def test_08a2_an_unchosen_connector_is_re_derived_per_board(self):

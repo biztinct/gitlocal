@@ -55,11 +55,16 @@ export class TransformFlowBoard extends Component {
         onDraw: { type: Function },
         onDelete: { type: Function },
         onLineage: { type: Function, optional: true },
+        // JOURNEY J5 — the pre-filter a Journey door arrives with. Optional and
+        // read ONCE, at mount, into the board's own search: after that the box
+        // belongs to the reader, and a prop that kept re-imposing itself would
+        // make the search un-clearable for as long as the tab was open.
+        focus: { type: String, optional: true },
     };
 
     setup() {
         this.ui = useState({
-            q: "",
+            q: this.props.focus || "",
             // the armed rule OUTPUT, waiting for a component to land on. The
             // board's only write gesture, and it is two clicks rather than a
             // drag for the reason the canvas is: a drag over a 250-card column

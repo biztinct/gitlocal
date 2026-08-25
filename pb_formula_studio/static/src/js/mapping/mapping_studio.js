@@ -63,6 +63,7 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { MappingCanvas } from "./mapping_canvas";
 import { TransformFlowBoard } from "./transform_flow_board";
+import { JourneyBoard } from "./journey_board";
 import { placeInLane } from "./mapping_geometry";
 import { ROLE_LANE_ORDER, roleIcon, roleLabel } from "./mapping_roles";
 // JOURNEY J4 — the Rule Composer is IMPORTED, never re-implemented. J4's brief
@@ -86,6 +87,17 @@ const MODEL = "pb.formula.studio";
  * the overlay's `state.mapMode`; only the words a person reads are new.
  */
 export const MODES = [
+    // JOURNEY J5 — FIRST, and the cold-start default. It is first because it is
+    // the only tab that answers the question the other six are pieces of, and
+    // it is the default because the two doors that arrive without naming a mode
+    // (the Settings card and the global palette) are exactly the arrivals of
+    // somebody who does not yet know which piece they want. Every deep link
+    // that NAMES a `pb_mode` is unchanged — that is the regression this phase
+    // is most at risk of and case 1 checks each documented door individually.
+    { id: "journey", icon: "compass", label: _t("Journey"),
+      hint: _t("The whole picture: which systems, feeds and files reach this "
+               + "scheme, what each one changes on the way, and what the last "
+               + "pay run actually used.") },
     { id: "api", icon: "plug", label: _t("System fields → Scheme"),
       hint: _t("Wire the fields an HR system's API delivers onto a scheme's inputs.") },
     // JOURNEY J4 — between the API tab and the Spreadsheet tab, because that is
@@ -117,7 +129,8 @@ const TEMPLATABLE = ["api", "cycle"];
 
 export class MappingStudio extends Component {
     static template = "pb_formula_studio.MappingStudio";
-    static components = { MappingCanvas, TransformFlowBoard, RuleComposer, HubBackChip };
+    static components = { MappingCanvas, TransformFlowBoard, JourneyBoard,
+                          RuleComposer, HubBackChip };
     static props = ["*"];
 
     setup() {
@@ -142,7 +155,12 @@ export class MappingStudio extends Component {
 
         this.state = useState({
             loaded: false, busy: false,
-            mode: askedMode || "api",
+            // J5 — cold start lands on the Journey. `askedMode` is still king:
+            // a link that names a mode gets that mode, which is what keeps every
+            // pre-existing door (the Integrations cockpit's `api`, the connector
+            // cockpit's `api`, Formula Studio's `employee`) landing exactly where
+            // it always did.
+            mode: askedMode || "journey",
             connectors: [], configs: [], batches: [],
             connectorId: 0, endpointId: 0, configId: 0, batchId: 0,
             // JOURNEY J4 — was the connector CHOSEN, or merely defaulted to?
@@ -197,6 +215,19 @@ export class MappingStudio extends Component {
             // second convention for opening it would be a second thing to keep
             // in step.
             composer: null,
+            // ---- J5: the arrival's pre-filter, and the way back.
+            //
+            // `focus` is read ONCE off `pb_focus` here and thereafter written
+            // only by a Journey door. It is the host's, not any board's: wiring
+            // it through the arrival reader once was the handover's explicit
+            // instruction, and the alternative — every tab learning to read a
+            // context key — is six places to keep in step for one feature.
+            focus: (ctx.pb_focus || "").toString(),
+            // Set when a Journey node opened this tab, so the tab can offer the
+            // way BACK to the picture. `HubBackChip` leaves the whole cockpit;
+            // this is a move within it, and conflating the two would make the
+            // Journey a place you can only leave.
+            fromJourney: false,
         });
 
         // J3 S2 — when the conflict dialog appears, focus goes INTO it. Without
@@ -390,6 +421,13 @@ export class MappingStudio extends Component {
     get fromSlot() {
         const d = this.state.data || {};
         switch (this.state.mode) {
+            case "journey":
+                // The FROM half of the Journey is every source at once, which is
+                // the one honest thing to put there — naming a single connector
+                // over a picture of two would be W76.3's bug class, a header
+                // that looks right and describes the wrong thing.
+                return { kind: "static", title: _t("Every source"),
+                         sub: _t("Systems, files and records"), icon: "gitMerge" };
             case "api":
                 return { kind: "connector", title: this.connectorName,
                          sub: this.fromSub, icon: "plug" };
@@ -421,6 +459,11 @@ export class MappingStudio extends Component {
     get toSlot() {
         const d = this.state.data || {};
         switch (this.state.mode) {
+            // J5 — the scheme picker is HALF THE SENTENCE here, which is how
+            // scope 1's "scheme picker as on other tabs" is met without adding a
+            // seventh control: the Journey is a picture OF a scheme, so the
+            // scheme belongs in the header, not in a chip beside the tabs.
+            case "journey":
             case "api":
             case "transform":
             case "import":
@@ -484,6 +527,14 @@ export class MappingStudio extends Component {
     }
 
     get isTransform() { return this.state.mode === "transform"; }
+
+    get isJourney() { return this.state.mode === "journey"; }
+
+    /** "42 wired" — the Journey's own middle-of-the-sentence count. */
+    get journeyWired() {
+        const d = this.state.data;
+        return (d && d.ok && d.header && d.header.wired) || 0;
+    }
 
     /** "8 rules · 1 output unread" — the health counts, in the FROM sub-line. */
     get transformSub() {
@@ -628,6 +679,11 @@ export class MappingStudio extends Component {
         try {
             let r;
             switch (this.state.mode) {
+                case "journey":
+                    // ONE read for five lanes. It composes the helpers the other
+                    // tabs already call; it defines nothing and it writes nothing.
+                    r = await this.orm.call(MODEL, "journey_data", [cfg]);
+                    break;
                 case "api":
                     r = await this.orm.call(MODEL, "api_mapping_data",
                                             [cfg, this.state.connectorId || false,
@@ -692,8 +748,91 @@ export class MappingStudio extends Component {
         this.state.data = null;
         this.state.extraCols = [];
         this.state.tmplMode = "";
+        // A tab chosen from the strip is not an arrival from the Journey, so it
+        // carries neither the pre-filter nor the way back. Leaving them set
+        // would leave a "Journey" chip on a tab nobody reached from there and a
+        // search box narrowed by a word the user never typed.
+        this.state.focus = "";
+        this.state.fromJourney = false;
         this._resetEmpToolkit();
         await this.load();
+    }
+
+    // ======================= J5 — the doors, and the way back ================
+    /**
+     * A Journey node was clicked. Land on its tab, already scoped.
+     *
+     * This is the whole of scope 4 and it is deliberately ONE method: the
+     * alternative — a handler per node kind — is six places that have to agree
+     * about what "pre-scoped" means, which is the duplication this programme
+     * has spent five phases removing. A door is `{mode, connector, endpoint,
+     * focus}` and every field is optional.
+     *
+     * Nothing here writes. It changes which tab is on screen and what that tab
+     * is pointed at; the RPC it ends in is the destination tab's own read.
+     */
+    async openDoor(door) {
+        if (!door || !MODES.some((m) => m.id === door.mode)) { return; }
+        if (door.connector) {
+            this.state.connectorId = Number(door.connector) || 0;
+            // MJ22 — a door that NAMES a connector has chosen one, and a choice
+            // must survive the tab it lands on re-deriving its own default.
+            this.state.connectorPicked = true;
+            this.state.endpointId = 0;
+        }
+        if (door.endpoint) { this.state.endpointId = Number(door.endpoint) || 0; }
+        this.state.mode = door.mode;
+        this.state.data = null;
+        this.state.extraCols = [];
+        this.state.tmplMode = "";
+        this.state.focus = (door.focus || "").toString();
+        this.state.fromJourney = true;
+        this._resetEmpToolkit();
+        // BEFORE the load, not after: `state.data = null` unmounts the board,
+        // and a board that is about to be created reads the order at mount
+        // (see `MappingCanvas.setup`). Bumping the token afterwards would race
+        // the render and lose the filter about half the time — the flakiest
+        // possible shape for a feature whose whole promise is "one click".
+        this._applyFocus();
+        await this.load();
+    }
+
+    /** "← Journey" — a move WITHIN the cockpit, never `HubBackChip`'s exit. */
+    async backToJourney() {
+        this.state.fromJourney = false;
+        this.state.focus = "";
+        await this.setMode("journey");
+    }
+
+    /**
+     * Hand the pre-filter to whichever board is now on screen.
+     *
+     * The canvas takes it through `command` — the one-shot order channel that
+     * already exists for exactly this, already carries three kinds and is
+     * already guarded by a token, so a fourth costs no new prop and cannot fire
+     * on a board that does not send it. The transformation board takes it as an
+     * optional prop because it has no command channel.
+     *
+     * A board with neither simply ignores it, which is the right failure: an
+     * unhonoured pre-filter is a tab that opened one click further from the
+     * answer, not a tab that opened on the wrong thing.
+     */
+    _applyFocus() {
+        const text = (this.state.focus || "").trim();
+        if (this.isJourney || this.isTransform) { return; }
+        // ALWAYS write the command, even with nothing to focus — and this is the
+        // whole of a defect the live pass caught.
+        //
+        // `command` is replayed at mount (that is what makes a door land
+        // pre-filtered at all). So a door with NO focus, returning early, left
+        // the PREVIOUS door's order sitting in the prop: opening "Payobook
+        // records" after opening a feed called Employees mounted the people
+        // board filtered to "Employees", which looks exactly like a board that
+        // has lost most of its cards. An empty order is still an order — it
+        // says "filter by nothing" — and issuing it is what makes each door
+        // independent of the one before it.
+        this.state.cmd = { token: this.state.cmd.token + 1,
+                           kind: "search", text };
     }
 
     /**
@@ -1668,7 +1807,12 @@ export class MappingStudio extends Component {
         // and on this board two of those three are wrong: there are no
         // suggestions, and the first thing to do with a rule-less connector is
         // write a rule. The board renders its own empty states instead.
-        if (this.isTransform) { return false; }
+        // J5 — never on the Journey either, and for a sharper version of the
+        // same reason: the three-step strip tells you to pick a source and draw
+        // a wire, and the Journey is the tab you are on precisely because you do
+        // not yet know which source. Its ghosts carry the invitation instead,
+        // one per lane, each pointing at the tab that can actually do it.
+        if (this.isTransform || this.isJourney) { return false; }
         return !!(this.state.data && this.state.data.ok && !this.mappedCount);
     }
 

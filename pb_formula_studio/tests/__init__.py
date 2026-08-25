@@ -14,3 +14,6 @@ from . import test_journey_guardrails
 
 # JOURNEY J4 — the Transformations tab: fields → rule → output → component.
 from . import test_journey_transformations
+
+# JOURNEY J5 — the Journey view: five lanes, one read, no writes.
+from . import test_journey_view

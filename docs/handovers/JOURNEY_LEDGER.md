@@ -1,6 +1,7 @@
 # JOURNEY — one mapping home, the Excel on-ramp, honest two-way sourcing, the Journey view
 
-**STATUS: IN FLIGHT — designed 2026-08-25. J1 and J2 delivered 2026-08-25; J3 next.**
+**STATUS: COMPLETE — J1–J5 delivered and live on abm · acme · payobook · payobook_template
+(2026-08-26). The Journey is the Mapping cockpit's landing tab and its cold-start default.**
 
 Follow-on programme to SOURCING (see `docs/handovers/SOURCING_LEDGER.md` + `SOURCING_CLOSEOUT.md`)
 and MAPFIX (`docs/handovers/MAPFIX_LEDGER.md`, which itself binds COLROLES CR1–CR33). **All standing
@@ -298,6 +299,73 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   Owner debt: the admin password on abm was reset to log in at all (CR33's
   family) — it is now `J4validate!2026`.
 
+- **J5 — DONE, live on abm · acme · payobook · payobook_template (2026-08-26).**
+  → `JOURNEY_PHASE_J5_HANDOVER.md`.
+  Versions: pb_formula_studio **19.0.1.146.0** (`pb_hr_payroll_formula`, `pb_integrations`,
+  `biz_theme` untouched; `om_hr_payroll` untouched — CR1).
+  **The programme's question now has one screen that answers it.** A seventh tab
+  sits FIRST in the strip and is the cold-start default, and on abm it renders
+  the whole sentence at once: `AB Mauri Payroll — 99 components · 26 wired ·
+  18 fallback · 8 need attention`, over five lanes holding 30 nodes and 34
+  edges (2 connectors · 14 feeds · 8 rules · the scheme + 2 health nodes · the
+  pay-run ghost).
+  **Every number is defended from the database, and the sum is the proof.**
+  99 = 26 wired + 36 calculated + 9 fixed + 19 contract + 6 record + 3 unfed,
+  checked against SQL: `wired` 26 is `count(distinct target_rule_id)` on the
+  field mappings (abm has ZERO non-empty bindings, so all 26 come from S6's
+  tier-3 wires), `fallback` 18 is the non-bank people-mapping components, and
+  the scheme lane's bar is a tally of six disjoint named counts rather than a
+  score. The `_declared_source` family, `_source_conflicts` (J3) and
+  `_tf_consumers` (J4, i.e. `pb.integrations._rule_consumers`) are CALLED, not
+  re-implemented — the tests assert agreement on a fixture, which a second
+  implementation would fail and a grep would not.
+  **The tab's best sentence is one nobody had asked for.** `config.connector_id`
+  is unset on every scheme on all four databases (S20), and the resolver's
+  pre-pass is gated on exactly that field — so abm's **33 drawn feed wires are
+  inert** and always have been. The Journey says so: both connectors dim, each
+  carries a `Not read` chip explaining why, and the scheme lane raises
+  `33 feed wires are not read · This scheme names no connection, and a pay run
+  only reads the one it is set to.` The one-connector limit made visible (scope
+  3) had to include the case where the limit has never been exercised.
+  **A fourth bucket, deliberately.** The via→bucket contract is
+  `_JOURNEY_VIA_BUCKETS`, written once server-side and pinned SET-WISE against
+  `input_provenance.VIAS` in both directions. It ships FOUR families, not the
+  handover's three: `proration`/`retro`/`carryover` appear as a `via` only when
+  the adjustment INVENTED the code, and such a value carries `src='calculated'`
+  — it was not wired, did not fall back and is not a default, so it gets
+  `computed`. A fourth honest column costs less than a wrong one.
+  **"Records updated" is not shown, because nothing stores it.** `action_process`
+  calls `_update_employee_from_raw_data`, `_sync_employee_bank_account`,
+  `_update_contract_from_raw_data` and `_sync_contract_components` per line and
+  counts none of them; the batch stores only `created_*_ids`. So the run lane
+  shows what was CREATED plus the mapping-count ⇆ note, exactly as the handover
+  specified for the else-branch. Owner debt, recorded, not invented.
+  **`MappingCanvas` gained ONE additive command kind and nothing else.** `search`
+  rides the existing token-guarded one-shot channel (`pulse`, `suggested`,
+  `armLeft`), so the canvas' props contract is byte-identical and the four other
+  boards are untouched.
+  Tests: Python **373 on abm, 2 failed + 1 error — all three PRE-EXISTING and
+  none J5's** (baseline taken on the machine before a line was written:
+  **334 with the same three**, `-u pb_hr_payroll_formula,pb_formula_studio,pb_integrations`).
+  +39 new (`TestJourneyView`). hoot **98** at `?filter=mapping_canvas`, 0 failed
+  (baseline 82 + 16). 16/16 numbered cases pass. 0 console errors on a clean
+  load; **0 bounding-box overlaps** over **21298** same-layer pairs at 1440 and
+  **13514** at 1024, with a chip layer on screen and no horizontal body scroll.
+  `journey_data` on abm config 14: **166 ms / 11.3 KB**, one round trip.
+  **The read-only proof: the MF37 diff across the ENTIRE live session is EMPTY,
+  with no restore step** — `hr_payslip_import_mapping` 21 rows ids
+  `1,2,30…108`, `hr_integration_field_mapping` 59, `hr_formula_rule` config 14
+  99, `hr_api_transformation_rule` 8, 0 batches, 0 lines, 0 payslips, 3
+  employees, all fingerprints byte-identical before and after. Two throwaway
+  configs were created AND deleted (abm 3001 and 3254; config count 1→1 both
+  times) and the empty world was exercised on acme in a rolled-back shell
+  (0 configs → 0). `action_process` was never called; no live API pull was made.
+  Owner debt: the abm admin password had to be reset again to log in (CR33's
+  family) — the login is **`ash@biztinct.com`**, not `admin`, and the password
+  is now **`J5validate!2026`**; acme's `lan@acme.com` was set to the same and
+  **still lacks the Formula Engine groups**, which is why acme's Journey was
+  proven by payload rather than on screen.
+
 ## Gotchas discovered (append per phase, MJ-numbered)
 
 - MJ1 (J1): **`groupFilter` filters the LEFT column only, and always did.** The handover's
@@ -563,3 +631,85 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   bound `rule/WORKEDHRS/board` exactly as designed. **When a UI probe disagrees with the
   code, suspect the clock before the wiring — and count the round trips before choosing
   the timeout.**
+
+- MJ24 (J5, environment): **`--stop-after-init` hung in "Initiating shutdown" and the NEXT
+  run started anyway, so two upgrades ran concurrently on one database — and both
+  reported success.** CR20 says a browser tab holding a websocket hangs a detached
+  `odoo-bin`; what it does not say is what that costs the run AFTER it. The baseline
+  unit finished its tests at 16:26 and its pid was still alive at 16:44; the deploy
+  unit, dispatched meanwhile, upgraded the same database underneath it and wrote
+  `EXIT[abm]=0`. Nothing looked wrong anywhere: the sentinel was green, the version
+  bumped, the tests had a number. **A `systemd-run` dispatcher returns immediately, so
+  "the unit was launched" and "the unit finished" are different facts and only the
+  second one is safe to build on.** The runner now polls the LOG for
+  `odoo.tests.result` and then kills by pid rather than waiting for a shutdown that
+  may never come — `--stop-after-init` is a request, not a guarantee. Before every
+  run: `pgrep -af odoo-bin` and prove it is empty BY PID. And the service does not
+  always come back: `/etc/init.d/odoo-server start` at the end of a script that has
+  just `kill -9`'d its own children silently no-ops often enough that the live
+  databases were down three separate times in this phase. Verify with
+  `curl -o /dev/null -w '%{http_code}' /web/login` and expect 303, not the exit code
+  of `start`.
+- MJ25 (J5, testing): **four of the first seven test failures were the ORACLE being
+  wrong, not the code — and three of them were the same mistake: an ambiguous
+  `split()` anchor.** `test_05c` split on `case "journey":` and got `fromSlot`'s
+  copy instead of the loader's; `test_07b2` split on `_applyFocus()` and got the CALL
+  SITE instead of the definition; `test_04c` asserted the literal `pb_mode: "employee"`
+  against a door that spells it `pb_mode: mode || "employee"`; `test_06c` guessed at
+  the first characters of a payload value and rejected
+  `ep.name or ep.code or _("Unnamed feed")`. Every one of them failed against
+  perfectly correct code, and each cost a diagnosis. **A source assertion is a
+  parser you wrote in a hurry.** Anchor on the most specific string that can only
+  occur once (`_applyFocus() {`, `async load()`), and when you find yourself
+  encoding "the value probably starts with one of these characters", ask the precise
+  question instead — `test_06c` became "is this key assigned a BARE QUOTED STRING",
+  which is the only thing that can actually ship untranslated, and it stopped having
+  opinions about correct code.
+- MJ26 (J5, testing): **two of J5's own tests asserted a fact that was only true of
+  abm, and the phase's own feature is what exposed the difference.** `test_03k2`
+  demanded that all five lanes ghost on an empty scheme. That is true on acme (no
+  connectors, no rules) and FALSE on abm, where the Systems, Feeds and
+  Transformations lanes describe the DATABASE rather than the scheme — abm has two
+  connectors and eight rules, so a brand-new scheme there is empty and those lanes
+  are still rightly full. The fix was to state the invariant that is actually true:
+  per-SCHEME lanes (the file, the records, the run, the scheme itself) always ghost
+  on an empty scheme; database-wide lanes ghost exactly when the database is empty
+  of that thing. **"All five" was a description of one database, mistaken for a
+  rule** — the same shape as MJ14's `-u` scope lesson, one axis over: a test can be
+  scoped to a DATABASE as silently as a suite can be scoped to a module list.
+- MJ27 (J5): **a one-shot order that is REPLAYED at mount stops being one-shot, and
+  the bug is invisible on the door you are testing.** J5's pre-filter rides
+  `MappingCanvas`' existing `command` channel, which fires from
+  `onWillUpdateProps` — so an order issued in the same turn as the tab switch that
+  MOUNTS the board is swallowed by the token capture in `setup`. Replaying it at
+  mount fixes that, and introduces the opposite defect: a door with NO focus
+  returned early, left the PREVIOUS door's order sitting in the prop, and the next
+  mount re-applied it. Live, opening "Payobook records" after opening a feed called
+  Employees mounted the people board filtered to `Employees` — a board that has lost
+  most of its cards, for a reason nothing on screen explains. **An empty order is
+  still an order.** `_applyFocus` now always writes the command, `""` included, and
+  the canvas honours empty text as "filter by nothing". Only `search` is replayed at
+  mount; replaying `pulse` would flash every wire on every tab open and `armLeft`
+  would arm a card nobody clicked.
+- MJ28 (J5): **MJ1, restated for the door protocol, and caught only by looking at the
+  screenshot.** The pre-filter seeded BOTH columns with the door's focus. Every
+  focus a Journey node carries is a SOURCE-side name — a feed, a sheet, a rule
+  output — so arriving from the feed "Employees" filtered the 99-component
+  DESTINATION catalogue by it and the right column read `0 of 99 · Nothing matches
+  that`. The board had hidden the ninety-nine components the reader clicked through
+  to see, and every RPC, count and door assertion was green while it did.
+  MJ1 settled this two years of phases ago for `groupFilter` ("filtering the
+  destination catalogue by a SOURCE column's role is not a narrowing anybody asked
+  for") and the lesson did not transfer because the mechanism was different. The
+  door narrows what you arrived FROM and clears what you are aiming AT.
+- MJ29 (J5): **the tab's most valuable sentence was one the handover did not ask for,
+  and it was only findable by rendering the real database.** Test 2 expected the
+  scheme's `connector_id` marked primary and the others dimmed. On abm — and on all
+  four databases — `connector_id` is UNSET (S20 recorded it as a tie-break nuisance),
+  and the resolver's pre-pass is gated on that exact field: `if self.source_type ==
+  'api_data_store' and config.connector_id:`. So abm's 33 drawn feed wires have
+  never been read by anything, and no screen in the product said so. The handover's
+  case could not pass as written; the honest reading of it — make the one-connector
+  limit visible — REQUIRED covering the case where the limit has never been set.
+  **A spec written against the code can still be silent about the state the data is
+  actually in; render the real database before deciding a case is unpassable.**

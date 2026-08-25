@@ -79,6 +79,14 @@
                    three lanes to flash. A disabled button is a control that
                    teaches the reader to stop trying (W64). -->
               <span t-if="isTransform" class="pbms-count is-static"><b t-esc="ruleCount"/> rules</span>
+              <!-- J5 — the Journey counts WIRED COMPONENTS, because that is
+                   what the picture is about: how much of this scheme has a
+                   source. It is a label and not a button for the reason the
+                   Transformations count is one: the two verbs the other boards
+                   put here (flash the wires, filter to the suggestions) do not
+                   exist on a board with five lanes and no suggestions, and a
+                   disabled control teaches the reader to stop trying (W64). -->
+              <span t-elif="isJourney" class="pbms-count is-static"><b t-esc="journeyWired"/> wired</span>
               <button t-else="" class="pbms-count" t-att-disabled="mappedCount ? false : 'disabled'"
                       title="Flash every mapped wire on the board"
                       t-on-click="flashWires"><b t-esc="mappedCount"/> mapped</button>
@@ -147,6 +155,19 @@
           </button>
 
           <div class="pbms-modes__sp"/>
+
+          <!-- ==== J5: the way back to the picture ====
+               A Journey node opened this tab, so the tab offers the way back to
+               where it was opened from. Deliberately NOT `HubBackChip`, which
+               leaves the whole cockpit: this is a move within it, and one chip
+               that sometimes means "back to Settings" and sometimes "back to
+               the Journey" would be a control the reader has to test. -->
+          <button t-if="state.fromJourney and !isJourney" class="pbms-schemechip"
+                  title="Back to the Journey"
+                  t-on-click="backToJourney">
+            <span t-out="ic('back', 13)"/>
+            <span class="n">Journey</span>
+          </button>
 
           <!-- the scheme is one click away even in the modes where it is not
                half of the sentence -->
@@ -425,9 +446,18 @@
                  a middle lane none of them can render would arrive on all of
                  them at once. Both boards live in the same `.pbms-canvas` frame,
                  so the shell around them is genuinely one shell. -->
-            <div t-if="isTransform" class="pbms-canvas">
+            <!-- ==== J5 — the Journey. First tab, cold-start default, and the
+                 only board on this surface that cannot write. Five lanes, one
+                 read, every card a door. ==== -->
+            <div t-if="isJourney" class="pbms-canvas">
+              <JourneyBoard data="state.data" busy="state.busy"
+                            onOpenDoor="(door) => this.openDoor(door)"/>
+            </div>
+
+            <div t-elif="isTransform" class="pbms-canvas">
               <TransformFlowBoard data="state.data"
                                   configName="configName"
+                                  focus="state.focus"
                                   canEdit="canEdit" busy="state.busy"
                                   onOpenRule="(id) => this.openComposer(id)"
                                   onDraw="(key, rid) => this.draw(key, rid)"

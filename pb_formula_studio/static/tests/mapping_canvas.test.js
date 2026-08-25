@@ -41,6 +41,9 @@ import { ROLES, ROLE_LANE_ORDER, roleIcon }
 // kernel and the icon registry and nothing that mounts an action (MJ2).
 import { TransformFlowBoard }
     from "@pb_formula_studio/js/mapping/transform_flow_board";
+// JOURNEY J5 — the five-lane Journey board, imported under the same rule.
+import { JourneyBoard, LANES }
+    from "@pb_formula_studio/js/mapping/journey_board";
 
 describe.current.tags("desktop");
 defineMailModels();
@@ -1626,4 +1629,256 @@ test("J4 — a suppressed edge is counted on the edge it went out by", () => {
     expect(byKey["left-1"].filtered).toBe(1);
     expect(byKey["right1"].count).toBe(1);
     expect(byKey["right1"].filtered).toBe(1);
+});
+
+// =====================================================================
+// JOURNEY J5 — the Journey board.
+//
+// MJ3, third phase running: everything here is a TRANSLATION-FREE fact —
+// ids, ordering, bucketing, geometry, the shape of a door. A `_t()` at
+// module scope cannot be stringified in hoot at all, so every claim about
+// WORDING lives in `test_journey_view.py`, asserted against the source.
+//
+// `JourneyBoard` is imported for the same reason `TransformFlowBoard` is and
+// under the same restriction: it drags in the pure kernel and the icon
+// registry and nothing that mounts an action (MJ2 — a hoot timeout is a
+// measurement of the SERVER, and a host import is how a suite starts
+// measuring one).
+// =====================================================================
+
+function journey(data, q = "") {
+    const b = Object.create(JourneyBoard.prototype);
+    b.ui = { q, focus: "", geom: [] };
+    b.props = { data, busy: false };
+    b.qRef = { el: null };
+    b.rootRef = { el: null };
+    b.laneRefs = {};
+    b._schedule = () => {};          // no DOM, so no rAF to schedule
+    return b;
+}
+
+const JNY = {
+    ok: true,
+    config: { id: 14, name: "AB Mauri Payroll", code: "ABM" },
+    header: { components: 99, wired: 42, fallback: 18, attention: 3 },
+    primary_id: 3,
+    lanes: {
+        systems: [
+            { id: "c:1", kind: "connector", lane: "systems", label: "People",
+              status: "connected", last_sync: "", wires: 18, dimmed: true },
+            { id: "c:3", kind: "connector", lane: "systems", label: "People (ABM)",
+              status: "connected", last_sync: "", wires: 8, primary: true },
+            { id: "file", kind: "file", lane: "systems", label: "March.xlsx",
+              sub: "read 3 Mar", door: { mode: "import" } },
+            { id: "records", kind: "records", lane: "systems",
+              label: "Payobook records", count: 21, door: { mode: "employee" } },
+        ],
+        feeds: [
+            { id: "e:11", kind: "endpoint", lane: "feeds", parent: "c:3",
+              label: "Attendance", fields: 40, drift: 2, last_sync: "",
+              door: { mode: "api", connector: 3, endpoint: 11 } },
+            { id: "s:SEVL", kind: "sheet", lane: "feeds", parent: "file",
+              label: "SEVL", columns: 360, door: { mode: "import" } },
+        ],
+        transforms: [
+            { id: "r:1", kind: "rule", lane: "transforms", parent: "c:3",
+              label: "Overtime 150%", key: "OTHRS150", reads: 2, feeds: 1,
+              door: { mode: "transform", connector: 3 } },
+            { id: "r:2", kind: "rule", lane: "transforms", parent: "c:3",
+              label: "Dependants", key: "DEPCOUNT", reads: 1, feeds: 0,
+              tone: "warn", chip: { label: "Unread output", tone: "warn" },
+              door: { mode: "transform", connector: 3 } },
+        ],
+        scheme: [
+            { id: "scheme", kind: "scheme", lane: "scheme", label: "AB Mauri Payroll",
+              counts: { total: 99, inputs: 54, wired: 42, calculated: 45,
+                        constant: 9, contract: 0, people: 0, unfed: 3,
+                        fallback: 18 } },
+            { id: "h:conflict", kind: "health", lane: "scheme", tone: "warn",
+              label: "7 components wired twice", door: { mode: "api" } },
+        ],
+        run: [
+            { id: "run", kind: "run", lane: "run", ghost: true,
+              label: "No pay run yet", door: { mode: "import" } },
+        ],
+    },
+    edges: [
+        { from: "c:3", to: "e:11", kind: "contain", count: 0 },
+        { from: "e:11", to: "scheme", kind: "feed", count: 8 },
+        { from: "c:3", to: "r:1", kind: "contain", count: 0 },
+        { from: "r:1", to: "scheme", kind: "rule", count: 1 },
+        { from: "file", to: "s:SEVL", kind: "contain", count: 0 },
+        { from: "records", to: "scheme", kind: "records", count: 21, bidi: true },
+        { from: "c:1", to: "scheme", kind: "feed", count: 18, dimmed: true },
+    ],
+    counts: { total: 99, wired: 42, conflicts: 7, dangling: 0, severed: 0,
+              unread: 1, connectors: 2, rules: 2 },
+};
+
+test("J5 — the five lanes are in story order, and the order IS the story", () => {
+    expect(LANES.map((l) => l.id)).toEqual(
+        ["systems", "feeds", "transforms", "scheme", "run"]);
+});
+
+test("J5 — every lane carries an icon from the kit, never an emoji", () => {
+    for (const lane of LANES) {
+        expect(typeof lane.icon).toBe("string");
+        expect(lane.icon.length > 0).toBe(true);
+        // a Lucide key is ASCII; an emoji is not
+        expect(/^[a-zA-Z]+$/.test(lane.icon)).toBe(true);
+    }
+});
+
+test("J5 — a node id is unique across the WHOLE board, not per lane", () => {
+    // the geometry keys every measured card by `dataset.id` into ONE map, so a
+    // duplicate id in two lanes is a wire that silently anchors on the wrong end
+    const b = journey(JNY);
+    const ids = b.allNodes.map((n) => n.id);
+    expect(new Set(ids).size).toBe(ids.length);
+});
+
+test("J5 — the filter matches THROUGH a neighbour, in both directions", () => {
+    // typing a rule's key must not empty the lane holding the field it reads,
+    // or `/` breaks every wire on the board (J4's lesson, five lanes on)
+    const b = journey(JNY, "OTHRS150");
+    expect(b.nodesFor("transforms").map((n) => n.id)).toEqual(["r:1"]);
+    // the scheme is wired to that rule, so it survives the filter
+    expect(b.nodesFor("scheme").map((n) => n.id)).toEqual(["scheme"]);
+    // and so does the connector the rule belongs to, through `parent`
+    expect(b.nodesFor("systems").map((n) => n.id)).toEqual(["c:3"]);
+});
+
+test("J5 — an unmatched lane empties rather than pretending", () => {
+    const b = journey(JNY, "nothing-is-called-this");
+    for (const lane of LANES) {
+        expect(b.nodesFor(lane.id).length).toBe(0);
+    }
+});
+
+test("J5 — the component picture partitions the scheme", () => {
+    // the bar is a tally of disjoint counts, so its segments sum to 100%
+    const b = journey(JNY);
+    const bars = b.schemeBars;
+    const n = bars.reduce((a, x) => a + x.n, 0);
+    expect(n).toBe(99);
+    // and a count of zero draws no segment at all — an empty band with a
+    // label the reader has to dismiss costs them something (W64)
+    expect(bars.some((x) => x.n === 0)).toBe(false);
+    expect(bars.map((x) => x.key)).toEqual(["wired", "calculated", "constant", "unfed"]);
+});
+
+test("J5 — the run buckets are the SERVER's four, never invented here", () => {
+    const b = journey({
+        ...JNY,
+        lanes: { ...JNY.lanes, run: [{ id: "run", kind: "run", lane: "run",
+            label: "March", payslips: 3, read: 3, capped: false,
+            created: { employees: 0, contracts: 0, payslips: 3 },
+            agg: { slips: 3, values: 12, unreadable: 0, fell_back: 2,
+                   by_src: { excel: 7, feed: 3, none: 2 },
+                   by_bucket: { wired: 8, fallback: 2, computed: 0, default: 2 } } }] },
+    });
+    expect(b.runBuckets.map((x) => x.key)).toEqual(["wired", "fallback", "default"]);
+    expect(b.runBuckets.reduce((a, x) => a + x.n, 0)).toBe(12);
+    // by-source is sorted biggest first, so the eye lands on the real story
+    expect(b.runSources.map((x) => x.key)).toEqual(["excel", "feed", "none"]);
+});
+
+test("J5 — only the records edge is double-headed (J-D4, opt-in as J3 wrote it)", () => {
+    const plain = wireGeometry(300, 100, 400, 140);
+    const bidi = wireGeometry(300, 100, 400, 140, true);
+    expect(plain.headBack).toBe(undefined);
+    expect(typeof bidi.headBack).toBe("string");
+    // and the curve starts inside its own head, so the two do not overlap
+    expect(bidi.d.startsWith("M 300 100")).toBe(false);
+    expect(plain.d.startsWith("M 300 100")).toBe(true);
+});
+
+test("J5 — a door names a mode, and optionally a connector and a feed", () => {
+    const b = journey(JNY);
+    const ep = b.allNodes.find((n) => n.id === "e:11");
+    expect(ep.door.mode).toBe("api");
+    expect(ep.door.connector).toBe(3);
+    expect(ep.door.endpoint).toBe(11);
+    // a health node's door needs no scope beyond the tab
+    const health = b.allNodes.find((n) => n.id === "h:conflict");
+    expect(health.door.mode).toBe("api");
+    expect(health.door.connector).toBe(undefined);
+});
+
+test("J5 — the focused node is the one the ring is on, and Escape clears it", () => {
+    const b = journey(JNY);
+    b.onNodeFocus(b.allNodes[0]);
+    expect(b.isFocused("c:1")).toBe(true);
+    b.onKeydown({ key: "Escape", target: { tagName: "DIV" } });
+    expect(b.ui.focus).toBe("");
+});
+
+test("J5 — MF33: Enter on a node is the BUTTON's, never the board's as well", () => {
+    // every card here is a `<button>`, so the platform opens the door; the root
+    // handler must stand aside or the same door opens twice. On the canvas the
+    // identical shape DREW A WIRE, which is why the guard is written down
+    let acted = 0;
+    const b = journey(JNY);
+    b.clearSearch = () => { acted++; };
+    b.ui.q = "x";
+    b.onKeydown({ key: "Enter", target: { tagName: "BUTTON" } });
+    b.onKeydown({ key: " ", target: { tagName: "BUTTON" } });
+    expect(acted).toBe(0);
+    // and Escape still reaches the board
+    b.onKeydown({ key: "Escape", target: { tagName: "DIV" } });
+    expect(acted).toBe(1);
+});
+
+test("J5 — `/` reaches the filter box, and is a plain character inside it", () => {
+    const b = journey(JNY);
+    let focused = 0, prevented = 0;
+    b.qRef.el = { focus: () => { focused++; } };
+    b.onKeydown({ key: "/", target: { tagName: "DIV" },
+                  preventDefault: () => { prevented++; } });
+    expect(focused).toBe(1);
+    expect(prevented).toBe(1);
+    b.onKeydown({ key: "/", target: { tagName: "INPUT" },
+                  preventDefault: () => { prevented++; } });
+    expect(focused).toBe(1);
+});
+
+test("J5 — the lane count describes the VIEW, not the board", () => {
+    // MJ3: the unfiltered branch returns a PLAIN string and can be compared;
+    // the filtered branch returns a `_t()` and is asserted through the count it
+    // is built from, because hoot cannot stringify a lazy translation at all.
+    const b = journey(JNY);
+    expect(b.laneCount("systems")).toBe("4");
+    const f = journey(JNY, "OTHRS150");
+    expect(f.nodesFor("systems").length).toBe(1);
+    expect((JNY.lanes.systems || []).length).toBe(4);
+});
+
+test("J5 — a dimmed connector is present, not hidden", () => {
+    // the one-connector limit made visible: the ignored connection stays on the
+    // board, greyed, because "it is there and nothing reads it" is the fact
+    const b = journey(JNY);
+    const c1 = b.allNodes.find((n) => n.id === "c:1");
+    expect(c1.dimmed).toBe(true);
+    expect(b.nodeClass(c1).includes("dim")).toBe(true);
+    const c3 = b.allNodes.find((n) => n.id === "c:3");
+    expect(b.nodeClass(c3).includes("prim")).toBe(true);
+    expect(b.nodeClass(c3).includes("dim")).toBe(false);
+});
+
+test("J5 — a ghost is styled as an invitation and still carries its door", () => {
+    const b = journey(JNY);
+    const run = b.allNodes.find((n) => n.id === "run");
+    expect(b.nodeClass(run).includes("ghost")).toBe(true);
+    expect(run.door.mode).toBe("import");
+});
+
+test("J5 — an edge that jumps a lane is measured as a span, not as a break", () => {
+    // `span` is what makes a lane-jumping wire render dashed instead of looking
+    // like a wire that stopped in the middle. It is arithmetic over the lane
+    // order and nothing else, so it is checked here rather than on a screenshot.
+    const idx = {};
+    LANES.forEach((l, i) => { idx[l.id] = i; });
+    expect(Math.abs(idx.scheme - idx.feeds)).toBe(2);      // a feed to the scheme
+    expect(Math.abs(idx.scheme - idx.systems)).toBe(3);    // records to the scheme
+    expect(Math.abs(idx.transforms - idx.scheme)).toBe(1); // a rule is adjacent
 });

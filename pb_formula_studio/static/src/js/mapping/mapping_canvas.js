@@ -157,6 +157,24 @@ export class MappingCanvas extends Component {
         this._flashTimer = null;
         this._pulseTimer = null;
         this._cmdToken = (this.props.command && this.props.command.token) || 0;
+        // JOURNEY J5 — an order that arrived BEFORE this board existed.
+        //
+        // `_runCommand` fires from `onWillUpdateProps`, so a command issued in
+        // the same turn as the mode switch that mounts this board is swallowed
+        // by the token capture above: the host bumps the token, the board is
+        // then created holding it, and nothing ever runs. A Journey door does
+        // exactly that — it changes tab and seeds the filter in one gesture.
+        //
+        // ONLY `search` is replayed. Honouring `pulse` at mount would flash
+        // every wire on the board each time a tab is opened, and `armLeft`
+        // would arm a card nobody clicked — a one-shot order replayed on mount
+        // stops being one-shot.
+        const first = this.props.command;
+        if (first && first.kind === "search") {
+            const t = first.text || "";
+            this.ui.q.left = t; this.ui.qa.left = t;   // LEFT only — see MJ1 above
+            this.ui.q.right = ""; this.ui.qa.right = "";
+        }
         this._tfRef = null;       // mapping ref of the open transform popover
         this._tfToken = 0;        // C8 supersede token for the debounced preview
         this._tfTimer = null;
@@ -464,6 +482,37 @@ export class MappingCanvas extends Component {
             this.ui.f.right = "suggested";
             this.ui.q.left = ""; this.ui.qa.left = "";
             this.ui.q.right = ""; this.ui.qa.right = "";
+        } else if (cmd.kind === "search") {
+            // JOURNEY J5 — a door that arrives pre-FILTERED.
+            //
+            // The one change this phase makes to the canvas, and it is made
+            // here rather than as a new prop deliberately: `command` is the
+            // channel that already exists for "the host has a one-shot order",
+            // it already carries three kinds, and it is already guarded by a
+            // token — so this cannot fire on any of the five boards that never
+            // send it, and the canvas' props contract is byte-identical.
+            //
+            // It seeds the SEARCH, not a filter chip: the reader must be able
+            // to widen it in one keystroke, and a filter they cannot see the
+            // cause of is worse than no filter at all (MF39's family).
+            // An EMPTY text is a legal order and means "filter by nothing".
+            // Ignoring it would leave the previous door's filter in place on a
+            // door that asked for none — which is what the live pass found.
+            //
+            // LEFT ONLY, and that is MJ1 restated. Every focus a Journey door
+            // carries is a SOURCE-side name — a feed, a sheet, a rule output —
+            // and filtering the destination catalogue by it is "not a narrowing
+            // anybody asked for". Live, seeding both columns from the feed
+            // "Employees" left the right column reading `0 of 99 · Nothing
+            // matches that`: a board that has hidden the ninety-nine components
+            // the reader came to look at. The right column is cleared instead,
+            // so the door narrows what you arrived FROM and leaves what you are
+            // aiming AT alone.
+            const t = cmd.text || "";
+            this.ui.q.left = t; this.ui.qa.left = t;
+            this.ui.q.right = ""; this.ui.qa.right = "";
+            this.ui.f.left = "all"; this.ui.f.right = "all";
+            this._schedule();
         } else if (cmd.kind === "armLeft" && cmd.leftId != null) {
             // MAPFIX B2 — "Send to a field instead…" is not a write. It is a
             // request to DRAW, so it arms the card the host names and puts the
