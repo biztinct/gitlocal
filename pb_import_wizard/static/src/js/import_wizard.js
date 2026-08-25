@@ -37,12 +37,36 @@ export class ImportWizard extends Component {
             summary: null,
             match: { lineId: null, term: "", results: [] },
         });
+        // JOURNEY J2 — the doors that were already scoped stay scoped.
+        //
+        // Every legacy import door now lands here, and four of them knew
+        // something when they were pressed: the scheme whose form you were on,
+        // the connection whose cockpit you were in, whether a file or a pull is
+        // meant. Landing on "the first scheme alphabetically" would have made
+        // consolidation a downgrade for exactly the users who had a shortcut.
+        // Read once from the arrival context and never written back — the
+        // arrival protocol every cockpit in this product follows. Anything the
+        // context names that this user cannot have is simply not applied, and
+        // the picker below shows what they did get.
+        const ctx = (this.props.action && this.props.action.context) || {};
+        this.arrival = {
+            config: Number(ctx.default_formula_config_id) || 0,
+            connector: Number(ctx.default_connector_id) || 0,
+            source: ["excel", "connector", "api_data_store", "manual"]
+                .includes(ctx.default_source_type) ? ctx.default_source_type : "",
+        };
         onWillStart(async () => {
             const d = await this.orm.call("pb.import.wizard", "get_defaults", []);
             this.state.defaults = d;
             this.state.form.name = d.name;
-            if (d.configs && d.configs.length) this.state.form.formula_config_id = String(d.configs[0].id);
-            if (d.connectors && d.connectors.length) this.state.form.connector_id = String(d.connectors[0].id);
+            const pick = (list, asked) =>
+                (asked && (list || []).some((x) => x.id === asked) ? asked
+                    : ((list || []).length ? list[0].id : 0));
+            const cfg = pick(d.configs, this.arrival.config);
+            const con = pick(d.connectors, this.arrival.connector);
+            if (cfg) this.state.form.formula_config_id = String(cfg);
+            if (con) this.state.form.connector_id = String(con);
+            if (this.arrival.source) this.state.form.source_type = this.arrival.source;
         });
     }
 

@@ -47,8 +47,9 @@
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_launch_payroll_import"
                                 icon="fa-upload"
+                                title="Load pay data through this connection — upload or pull, review the matches, then commit."
                                 invisible="connection_status != 'connected'">
-                            <span class="o_stat_text">Payroll Import</span>
+                            <span class="o_stat_text">Load pay data</span>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_view_data_store"
                                 icon="fa-database"

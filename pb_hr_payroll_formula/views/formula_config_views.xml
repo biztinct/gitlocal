@@ -38,10 +38,14 @@
                             invisible="state == 'draft'"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
 
-                    <button name="action_import_from_excel_multisheet" string="Import from Excel"
+                    <!-- JOURNEY J2 — STRUCTURE, not data. Behaviour untouched;
+                         the label is what changed, because "Import from Excel"
+                         beside a "Payroll Import" button was the single worst
+                         confusion on this form. -->
+                    <button name="action_import_from_excel_multisheet" string="Set up columns from Excel"
                             type="object" class="btn-secondary" icon="fa-file-excel-o"
                             groups="pb_hr_payroll_formula.group_formula_manager"
-                            title="Import salary components from multi-sheet Excel file with cross-sheet formula resolution"/>
+                            title="One-off setup: read a colour-coded workbook and turn its columns into this scheme's salary components. This does not load any pay data — use Load Pay Data for that."/>
                     <button name="action_regenerate_formulas" string="Regenerate Formulas"
                             type="object" class="btn-secondary" icon="fa-refresh"
                             invisible="rule_count == 0"
@@ -75,8 +79,9 @@
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_launch_payroll_import"
                                 icon="fa-upload"
+                                title="Load this period's pay data for this scheme — upload the file, review the matches, then commit."
                                 invisible="state not in ('active', 'validated')">
-                            <span class="o_stat_text">Payroll Import</span>
+                            <span class="o_stat_text">Load pay data</span>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_view_cycle_carryovers"
                                 icon="fa-exchange"

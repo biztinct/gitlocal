@@ -135,6 +135,9 @@ export class MappingStudio extends Component {
             empQuery: "", empResults: [],       // "Add a field to map…"
             empExtras: [], empHidden: [],       // session-scoped right-column edits
             empMenu: null, empMenuFilter: "", empMenuAll: {},   // Employee ▾ / Contract ▾
+            // ---- J2: the Excel on-ramp (the `import` board only)
+            rampBusy: "",       // "read" | "template" | "handoff" while one runs
+            rampOver: false,    // a file is being dragged over the dropzone
             // ---- J1: reconciliation (MAPFIX B3), moved here whole
             rcnOpen: false, rcnBusy: false, rcnRows: null,
             // template panel. `tmplMode` replaced the old `tmplOpen` boolean when
@@ -336,9 +339,13 @@ export class MappingStudio extends Component {
                 return { kind: "connector", title: this.connectorName,
                          sub: this.fromSub, icon: "plug" };
             case "import":
+                // J2 — a file dropped on the ramp NAMES the FROM half. Before
+                // it, this said "No import batch": a technical noun for a thing
+                // the reader had not done and had no way to do from here.
                 return { kind: "batch",
-                         title: (this.batch && this.batch.name) || d.left_title
-                                || _t("No import batch"),
+                         title: (this.batch && this.batch.name)
+                                || (this.sample && this.sample.filename)
+                                || d.left_title || _t("No file yet"),
                          sub: this.fromSub, icon: "table" };
             case "employee":
                 return { kind: "config", title: this.configName,
@@ -1056,6 +1063,231 @@ export class MappingStudio extends Component {
         }
         if (r && r.msg) { this.notif.add(r.msg, { type: "success" }); }
         await this.load();
+    }
+
+    // ======================== J2 — the Excel on-ramp ==========================
+    //
+    // The Spreadsheet board's whole problem was that it could not answer "what
+    // are my file's columns?". You could type a heading from memory and wire it
+    // to a component, and find out next month whether you had spelled it right.
+    //
+    // Four verbs fix that, and they are deliberately the SAME four a person
+    // does with a spreadsheet: show me my columns · give me the file to fill
+    // in · use this one · forget it. Everything below is thin — the parsing,
+    // the storage and the load all happen on the server, in code that already
+    // existed, because a second parser in the browser would be a second
+    // opinion about what a column is called.
+
+    get isImport() { return this.state.mode === "import"; }
+
+    /** `{filename, read_on, columns, shown, line}` — or null before any drop. */
+    get sample() {
+        const d = this.state.data;
+        return (d && d.ok && d.sample) || null;
+    }
+
+    get rampBusy() { return !!this.state.rampBusy; }
+
+    /** "38 of 54 components are fed by a column." Said once, where it matters. */
+    get coverage() {
+        const d = this.state.data;
+        if (!d || !d.ok || !d.inputs) { return ""; }
+        return _t("%(wired)s of %(total)s components are fed by a column.",
+                  { wired: d.wired || 0, total: d.inputs });
+    }
+
+    // ---- the dropzone ---------------------------------------------------------
+    onRampOver(ev) { ev.preventDefault(); this.state.rampOver = true; }
+    onRampLeave(ev) { ev.preventDefault(); this.state.rampOver = false; }
+    onRampDrop(ev) {
+        ev.preventDefault();
+        this.state.rampOver = false;
+        const f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+        if (f) { this.readFile(f); }
+    }
+    onRampPick(ev) {
+        const f = ev.target.files && ev.target.files[0];
+        // Clear the input so choosing the SAME file twice fires a change event
+        // the second time — otherwise "re-read it, I fixed a heading" silently
+        // does nothing, which reads as the feature being broken.
+        ev.target.value = "";
+        if (f) { this.readFile(f); }
+    }
+
+    /** Base64 the file in the browser; everything else happens server-side. */
+    _b64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+            reader.onerror = () => reject(new Error("read failed"));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * "Read the headings" — and say so, in those words, before and after.
+     *
+     * The copy is load-bearing: a person about to drop a payroll file on a
+     * screen they have not used before needs to know the numbers in it are not
+     * going anywhere. Nothing here creates a batch, a line or a payslip.
+     */
+    async readFile(file, { thenHandoff = false } = {}) {
+        if (!this.state.configId) {
+            this.notif.add(_t("Pick the payroll scheme this file belongs to first."),
+                           { type: "warning" });
+            return null;
+        }
+        let b64;
+        this.state.rampBusy = thenHandoff ? "handoff" : "read";
+        try {
+            b64 = await this._b64(file);
+        } catch (e) {
+            this.state.rampBusy = "";
+            this.notif.add(_t("That file could not be opened."), { type: "danger" });
+            return null;
+        }
+        try {
+            if (thenHandoff) { return await this._handoff(b64, file.name); }
+            const r = await this.orm.call(MODEL, "import_mapping_read_headers",
+                                          [this.state.configId, b64, file.name]);
+            if (!r || r.ok === false) {
+                this.notif.add((r && r.msg) || _t("Those headings could not be read."),
+                               { type: "warning" });
+                return null;
+            }
+            this.state.data = r;
+            this.state.extraCols = [];
+            const read = r.read || {};
+            this.notif.add(
+                _t("Read %(n)s column heading(s) from %(file)s. No data was imported.",
+                   { n: read.shown || read.columns || 0, file: file.name }),
+                { type: "success" });
+            if (read.truncated) {
+                this.notif.add(_t("That workbook is very wide — only the first "
+                                  + "columns were kept."), { type: "info" });
+            }
+            return r;
+        } catch (e) {
+            console.warn("pb_formula_studio: header read failed", e);
+            this.notif.add(_t("Those headings could not be read."), { type: "danger" });
+            return null;
+        } finally {
+            this.state.rampBusy = "";
+        }
+    }
+
+    async forgetFile() {
+        if (!this.state.configId) { return; }
+        this.state.rampBusy = "read";
+        try {
+            const r = await this.orm.call(MODEL, "import_mapping_forget_headers",
+                                          [this.state.configId]);
+            if (r && r.ok === false) {
+                this.notif.add(r.msg || _t("That file could not be forgotten."),
+                               { type: "warning" });
+                return;
+            }
+            this.state.data = r;
+            this.notif.add(_t("The file was forgotten. Every wire you drew is still here."),
+                           { type: "info" });
+        } finally {
+            this.state.rampBusy = "";
+        }
+    }
+
+    // ---- the template ---------------------------------------------------------
+    /**
+     * "Download a template built from this scheme".
+     *
+     * The blob-download path is `formula_studio.js`' (`exportTestTemplate`),
+     * which is the one this codebase already uses for every generated
+     * workbook; the interesting half is server-side, where the headings are
+     * derived from what the resolver matches rather than from a label.
+     */
+    async downloadTemplate() {
+        if (!this.state.configId) {
+            this.notif.add(_t("Pick a payroll scheme first."), { type: "warning" });
+            return;
+        }
+        this.state.rampBusy = "template";
+        try {
+            const r = await this.orm.call(MODEL, "import_mapping_template",
+                                          [this.state.configId]);
+            if (!r || r.ok === false) {
+                this.notif.add((r && r.msg) || _t("That template could not be built."),
+                               { type: "warning" });
+                return;
+            }
+            const bin = atob(r.file_b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+            const url = URL.createObjectURL(new Blob([bytes], { type: r.mimetype }));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = r.filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            this.notif.add(
+                _t("Template downloaded — one column per input component, "
+                   + "headed exactly as this scheme reads them."),
+                { type: "success" });
+        } catch (e) {
+            console.warn("pb_formula_studio: template failed", e);
+            this.notif.add(_t("That template could not be built."), { type: "danger" });
+        } finally {
+            this.state.rampBusy = "";
+        }
+    }
+
+    // ---- the handoff ----------------------------------------------------------
+    /**
+     * "Load this file as a pay run…" — the one door, from here.
+     *
+     * Calls the guided flow's own `create_and_load`, which creates the batch,
+     * loads the rows and matches employees, and then STOPS. Validate and
+     * commit stay on the batch, in front of a person. This board can start a
+     * run; it can never finish one.
+     */
+    loadAsPayRun() {
+        if (!this.sample) { return; }
+        return this._handoff(null, null);
+    }
+
+    onRampHandoffPick(ev) {
+        const f = ev.target.files && ev.target.files[0];
+        ev.target.value = "";
+        if (f) { this.readFile(f, { thenHandoff: true }); }
+    }
+
+    async _handoff(b64, filename) {
+        this.state.rampBusy = "handoff";
+        let r;
+        try {
+            r = await this.orm.call(MODEL, "import_mapping_handoff",
+                                    [this.state.configId, b64 || false,
+                                     filename || false]);
+        } catch (e) {
+            console.warn("pb_formula_studio: handoff failed", e);
+            r = { ok: false };
+        } finally {
+            this.state.rampBusy = "";
+        }
+        if (!r || r.ok === false) {
+            this.notif.add((r && r.msg) || _t("That file could not be loaded as a pay run."),
+                           { type: "warning" });
+            return null;
+        }
+        this.notif.add(
+            _t("%(rows)s row(s) loaded, %(matched)s matched. Nothing is committed yet.",
+               { rows: r.total_lines || 0, matched: r.matched || 0 }),
+            { type: "success" });
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "pb_import_batch_cockpit",
+            name: _t("Pay data load"),
+            params: { batch_id: r.batch_id },
+        });
+        return r;
     }
 
     // ---- reconciliation (MAPFIX B3) -------------------------------------------

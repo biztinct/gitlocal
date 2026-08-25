@@ -2,7 +2,9 @@
 
 import logging
 import json
+import re
 from datetime import date, datetime, timedelta, time
+from decimal import Decimal
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from ..formula_engine.column_manager import ColumnManager
@@ -26,6 +28,11 @@ from .column_role_classifier import (
 )
 
 _logger = logging.getLogger(__name__)
+
+# JOURNEY J2 — the primary-key value of the phantom row `_load_multisheet_data`
+# uses to shape a workbook that has headings and no data. It never survives the
+# call (see `shape_only`); it exists so the merge has something to key on.
+_SHAPE_PROBE = '\x00pb-shape-probe'
 
 
 def json_serializer(obj):
@@ -401,6 +408,206 @@ class HrPayrollImportBatch(models.Model):
                         vals['payroll_journal_id'] = journal.id
         return super().create(vals_list)
 
+    # ------------------------------------------------------------------
+    # JOURNEY J2 — ONE parser, two consumers.
+    #
+    # The branch below used to live inline in `action_load_file`, which meant
+    # the only way to find out what keys a file would produce was to load it —
+    # to create a batch, write import lines and put a row in front of the
+    # matcher. That is why the Excel mapping board could only ever show "the
+    # keys of one line of one load": reading a workbook's HEADINGS and loading
+    # its DATA were the same act.
+    #
+    # They are now two callers of one function. `action_load_file` runs it and
+    # keeps the rows; `peek_source_columns` runs it and keeps only the keys.
+    # The guarantee this buys is the entire point of the on-ramp: **if the
+    # board offers you a column, the loader will produce that key for the same
+    # file** — not because two pieces of code agree, but because there is one.
+    # ------------------------------------------------------------------
+    def _parse_source_file(self, file_content, filename, connector=None):
+        """Parse a pay file exactly as an import would.
+
+        Returns the loader's own `{'headers': [...], 'rows': [...]}` plus a
+        `multisheet` flag saying which branch ran — additive, and ignored by
+        every existing caller.
+        """
+        self.ensure_one()
+        connector = connector if connector is not None else self._get_excel_connector()
+        use_multisheet = bool(
+            filename and
+            filename.lower().endswith(('.xlsx', '.xls')) and
+            self.formula_config_id.rule_ids.filtered(lambda r: r.source_sheet_name)
+        )
+        if use_multisheet:
+            headers, rows = self._load_multisheet_data(file_content, connector)
+            return {'headers': headers, 'rows': rows, 'multisheet': True}
+        data = connector.load_file(
+            file_content,
+            filename,
+            header_row=self.file_header_row,
+            data_start_row=self.file_data_start_row,
+            sheet_name=self.file_sheet_name,
+        )
+        data['multisheet'] = False
+        return data
+
+    def _raw_data_from_row(self, headers, row):
+        """Shape one parsed row into the dict an import line stores.
+
+        The second half of the parity guarantee: the keys of THIS dict are the
+        keys the resolver looks a component up by, so they are the keys the
+        mapping board is entitled to show.
+        """
+        if isinstance(row, dict):
+            return dict(row)
+        raw_data = {}
+        for col_idx, header in enumerate(headers):
+            if col_idx < len(row):
+                raw_data[header] = row[col_idx]
+                col_letter = ColumnManager.index_to_letter(col_idx)
+                if col_letter not in raw_data:
+                    raw_data[col_letter] = row[col_idx]
+        return raw_data
+
+    @api.model
+    def peek_source_columns(self, config, file_content, filename):
+        """Read a pay file's COLUMN HEADINGS. Never its data.
+
+        Creates nothing: the probe is an in-memory `new()` record carrying the
+        same field defaults a real batch would be created with, so the parse it
+        runs is the parse `action_load_file` runs — no batch row, no import
+        line, no employee touched, no pay value written anywhere.
+
+        Returns `[{key, sheet, header, letter, sample, preferred}]` in the
+        loader's own key order. `sample` is the FIRST row's value for that
+        column, stringified and clipped — one value, so the board can say
+        "e.g. 12,500,000" beside a heading and the reader knows they have the
+        right column. `preferred` marks the one spelling of a column that the
+        board puts a card on; the other spellings (a bare column letter, the
+        un-prefixed twin of a sheet-qualified key) stay in the list because the
+        loader really does produce them, and stay reachable through the search
+        box's "use this as a spreadsheet column".
+        """
+        Batch = self.env['hr.payroll.import.batch']
+        vals = {'import_filename': filename or ''}
+        if config:
+            vals['formula_config_id'] = config.id
+        # `new()` does not run default_get; take the defaults explicitly so the
+        # probe reads the file with the same header/data rows a created batch
+        # would (parity is worth four lines).
+        for fname, value in Batch.default_get(
+                ['file_header_row', 'file_data_start_row', 'file_sheet_name']).items():
+            if value:
+                vals[fname] = value
+        probe = Batch.new(vals)
+        data = probe._parse_source_file(file_content, filename)
+        headers = list(data.get('headers') or [])
+        rows = data.get('rows') or []
+        if rows:
+            raw = probe._raw_data_from_row(headers, rows[0])
+        elif data.get('multisheet'):
+            # the multisheet merge already returns the full key shape
+            raw = {h: None for h in headers}
+        else:
+            raw = probe._raw_data_from_row(headers, [None] * len(headers))
+
+        header_set = set(headers)
+        letters = {ColumnManager.index_to_letter(i) for i in range(len(headers))}
+        multisheet = bool(data.get('multisheet'))
+        cols, best = [], {}
+        for key in raw.keys():
+            k = str(key)
+            if not k.strip():
+                continue
+            sheet, rest = '', k
+            if '|' in k:
+                sheet, rest = k.split('|', 1)
+            sheet, rest = sheet.strip(), rest.strip()
+            if rest in header_set and rest not in letters:
+                header, letter = rest, ''
+            elif rest in letters or re.fullmatch(r'[A-Z]{1,3}', rest or ''):
+                header, letter = '', rest
+            else:
+                header, letter = rest, ''
+            if header and letter == '':
+                try:
+                    letter = ColumnManager.index_to_letter(headers.index(header))
+                except ValueError:
+                    letter = ''
+            cols.append({
+                'key': k, 'sheet': sheet, 'header': header, 'letter': letter,
+                'sample': self._sample_text(raw.get(key)),
+                'preferred': False,
+            })
+            # ONE card per real column: the sheet-qualified spelling when the
+            # scheme is multisheet (that is the candidate the resolver tries
+            # first), the bare heading otherwise. A card per alias would put
+            # "Employee Code", "SEVL|Employee Code", "A" and "SEVL|A" on the
+            # board four times and teach the reader to stop reading it.
+            if header and (bool(sheet) == multisheet):
+                best.setdefault(header, len(cols) - 1)
+        for idx in best.values():
+            cols[idx]['preferred'] = True
+        return cols
+
+    @api.model
+    def _sample_text(self, value, limit=42):
+        """One cell, as a person would read it. Never a repr, never a float tail."""
+        if value is None or value is False:
+            return ''
+        if isinstance(value, bool):
+            return ''
+        if isinstance(value, float) and float(value).is_integer():
+            value = int(value)
+        if isinstance(value, (datetime, date)):
+            text = value.strftime('%Y-%m-%d')
+        elif isinstance(value, (int, Decimal)):
+            text = '{:,}'.format(value)
+        else:
+            text = str(value)
+        text = ' '.join(text.split())
+        return (text[:limit - 1] + '…') if len(text) > limit else text
+
+    @api.model
+    def action_open_guided_import(self, config=None, connector=None, source_type=None):
+        """THE door into loading pay data — one flow, however you arrived.
+
+        JOURNEY J2. There were five ways into "import" and four of them dropped
+        the user on a bare `hr.payroll.import.batch` form: upload, guess which
+        of eleven fields matter, press Load, press Match, press Validate,
+        press Process. The guided flow (upload → review matches → fix → commit)
+        already existed and only ONE door reached it.
+
+        So every door now returns this. The form is still there and still
+        works — nothing was deleted, and a database without `pb_import_wizard`
+        installed falls back to it — but nobody is sent there by a button any
+        more. `config`/`connector` are carried into the flow as defaults, so a
+        door that was pre-scoped stays pre-scoped.
+        """
+        ctx = dict(self.env.context)
+        if config:
+            ctx['default_formula_config_id'] = config.id
+        if connector:
+            ctx['default_connector_id'] = connector.id
+        if source_type:
+            ctx['default_source_type'] = source_type
+        guided = self.env.ref('pb_import_wizard.action_pb_import_wizard',
+                              raise_if_not_found=False)
+        if guided:
+            action = guided.sudo().read()[0]
+            action['context'] = ctx
+            action['target'] = 'current'
+            return action
+        # No guided flow on this database — the native form, as before.
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Load Pay Data'),
+            'res_model': 'hr.payroll.import.batch',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': ctx,
+        }
+
     def action_load_file(self):
         """Load data from Excel/CSV file into import lines"""
         self.ensure_one()
@@ -417,27 +624,13 @@ class HrPayrollImportBatch(models.Model):
         # Get connector instance for file parsing
         connector = self._get_excel_connector()
 
-        # Parse file
+        # Parse file — J2: through the shared parser, which is also what the
+        # mapping board's header reader runs.
         try:
             import base64
             file_content = base64.b64decode(self.import_file)
-            use_multisheet = (
-                self.import_filename and
-                self.import_filename.lower().endswith(('.xlsx', '.xls')) and
-                self.formula_config_id.rule_ids.filtered(lambda r: r.source_sheet_name)
-            )
-
-            if use_multisheet:
-                headers, rows = self._load_multisheet_data(file_content, connector)
-                data = {'headers': headers, 'rows': rows}
-            else:
-                data = connector.load_file(
-                    file_content,
-                    self.import_filename,
-                    header_row=self.file_header_row,
-                    data_start_row=self.file_data_start_row,
-                    sheet_name=self.file_sheet_name
-                )
+            data = self._parse_source_file(file_content, self.import_filename,
+                                           connector=connector)
         except Exception as e:
             raise UserError(_("Failed to parse file: %s") % str(e))
 
@@ -455,17 +648,9 @@ class HrPayrollImportBatch(models.Model):
 
         line_vals_list = []
         for idx, row in enumerate(rows, start=1):
-            # Build raw data JSON
-            if isinstance(row, dict):
-                raw_data = dict(row)
-            else:
-                raw_data = {}
-                for col_idx, header in enumerate(headers):
-                    if col_idx < len(row):
-                        raw_data[header] = row[col_idx]
-                        col_letter = ColumnManager.index_to_letter(col_idx)
-                        if col_letter not in raw_data:
-                            raw_data[col_letter] = row[col_idx]
+            # Build raw data JSON — J2: the shared shaper, so the keys the
+            # board offered are the keys this line carries.
+            raw_data = self._raw_data_from_row(headers, row)
 
             # Extract key fields for matching
             employee_code, employee_name, employee_email = \
@@ -757,7 +942,21 @@ class HrPayrollImportBatch(models.Model):
         )
 
         merged_rows = {}
-        for row in main_sheet['data_rows']:
+        # JOURNEY J2 — a workbook with headings and no rows (exactly what
+        # "download a template built from this scheme" hands you) still has a
+        # SHAPE, and the mapping board needs it. Shape it by running ONE
+        # phantom row through the identical merge below, then drop the row
+        # before returning: `rows` stays empty, so `action_load_file` still
+        # refuses the file with "No data found" and nothing about loading
+        # changes. Only `headers` — which the loader uses for a log line and
+        # for dict-rows never — gains the truth it always should have had.
+        main_rows = main_sheet['data_rows']
+        shape_only = False
+        if not main_rows and main_sheet['headers']:
+            main_rows = [{h: (_SHAPE_PROBE if h == main_pk else None)
+                          for h in main_sheet['headers']}]
+            shape_only = True
+        for row in main_rows:
             pk_value = row.get(main_pk)
             pk_key = self._normalize_code(pk_value)
             if not pk_key:
@@ -826,7 +1025,7 @@ class HrPayrollImportBatch(models.Model):
             header_set.update(row.keys())
         headers = sorted(header_set)
 
-        return headers, list(merged_rows.values())
+        return headers, ([] if shape_only else list(merged_rows.values()))
 
     def action_match_employees(self):
         """Match import lines to existing employees"""

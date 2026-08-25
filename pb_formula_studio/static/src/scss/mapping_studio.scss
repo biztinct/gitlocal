@@ -395,6 +395,125 @@
  */
 .pbim.pbms .pbms-wrap {
 
+    /* ---- JOURNEY J2: the Excel on-ramp ----
+       One row, two faces. Empty it is a dropzone with room for the sentence
+       that matters (headings, not data); filled it collapses to a provenance
+       line and its verbs, because after the drop the board below is the point
+       and the ramp must stop taking vertical space from it. No new hex — the
+       hover/drag state is the shared primary wash. */
+    .pbms-ramp {
+        padding: 11px 22px;
+        background: var(--pbim-surface);
+        border-bottom: 1px solid var(--pbim-line);
+    }
+
+    /* the hidden file input inside every <label> affordance here */
+    .pbms-file { position: absolute; width: 1px; height: 1px; opacity: 0;
+                 pointer-events: none; }
+
+    .pbms-drop {
+        position: relative;
+        display: flex; align-items: center; gap: 14px;
+        margin: 0;
+        padding: 15px 18px;
+        border: 1.5px dashed var(--pbim-primary-light);
+        border-radius: var(--pbim-r-md, 10px);
+        background: #fff;
+        cursor: pointer;
+        transition: border-color .14s, background .14s, box-shadow .14s;
+    }
+    .pbms-drop:hover { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+    .pbms-drop:focus-within { box-shadow: 0 0 0 3px var(--pbim-ring); }
+    .pbms-drop.over {
+        border-color: var(--pbim-primary);
+        border-style: solid;
+        background: var(--pbim-soft2);
+    }
+    .pbms-drop.busy { opacity: .65; pointer-events: none; }
+    .pbms-drop__ic {
+        flex: 0 0 auto; display: inline-flex;
+        color: var(--pbim-primary);
+    }
+    .pbms-drop__tx {
+        flex: 1 1 auto; min-width: 0;
+        display: flex; flex-direction: column; gap: 2px;
+        b { font-size: 13px; font-weight: 800; color: var(--pbim-text); }
+        span { font-size: 12px; line-height: 1.45; color: var(--pbim-muted); }
+    }
+    .pbms-drop__cta {
+        flex: 0 0 auto;
+        display: inline-flex; align-items: center;
+        padding: 6px 13px; border-radius: 999px;
+        background: var(--pbim-primary); color: #fff;
+        font-size: 12px; font-weight: 700; white-space: nowrap;
+    }
+
+    .pbms-ramp__ro {
+        display: flex; align-items: center; gap: 9px;
+        padding: 11px 14px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: #fff;
+        font-size: 12px; color: var(--pbim-muted);
+        svg { color: var(--pbim-muted); flex: 0 0 auto; }
+    }
+
+    .pbms-ramp__alt {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        margin-top: 9px;
+        font-size: 12px; color: var(--pbim-muted);
+    }
+    .pbms-ramp__altq { font-weight: 700; color: var(--pbim-text); }
+    .pbms-ramp__or { font-style: normal; }
+
+    /* ---- filled: the file, and what you do with it ---- */
+    .pbms-ramp__bar {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 9px 13px;
+        border: 1px solid var(--pbim-primary-light);
+        border-radius: var(--pbim-r-sm);
+        background: #fff;
+    }
+    .pbms-ramp__ic { flex: 0 0 auto; display: inline-flex; color: var(--pbim-primary); }
+    .pbms-ramp__tx {
+        flex: 1 1 240px; min-width: 0;
+        display: flex; flex-direction: column; gap: 1px;
+        b {
+            font-size: 13px; font-weight: 800; color: var(--pbim-text);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .s { font-size: 11.5px; color: var(--pbim-muted); }
+    }
+    .pbms-ramp__acts {
+        flex: 0 0 auto;
+        display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+    }
+    /* a <label> has to look and size exactly like the buttons beside it */
+    .pbms-ramp__swap {
+        position: relative; margin: 0; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    /* …and it has to SHOW focus like them too. The input this label wraps is
+       1px and transparent (that is how a file picker is styled at all), so a
+       keyboard user tabbing onto it got no ring anywhere — the control was
+       reachable and invisible, which is worse than unreachable because Enter
+       then opens a file dialog nobody asked for. Found by pressing Tab; no
+       screenshot of a mouse session can show it. */
+    .pbms-ramp__swap:focus-within {
+        border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+
+    @media (max-width: 1180px) {
+        /* The FILLED bar wraps its verbs onto their own line — four buttons and
+           a filename do not fit beside each other at 1024.
+           The dropzone deliberately does NOT wrap: an early cut sent the text
+           to `order: 3`, which put "Choose a file…" ABOVE the sentence telling
+           you what dropping a file does. The row already fits at 1024 (the text
+           has `min-width: 0` and wraps inside its own cell), so the honest
+           reading order is the one the DOM already has. */
+        .pbms-ramp__acts { width: 100%; }
+    }
+
     /* ---- the toolbar row: two ways to reach one of 236 destinations ---- */
     .pbms-emptools {
         display: flex; align-items: center; gap: 10px; flex-wrap: wrap;

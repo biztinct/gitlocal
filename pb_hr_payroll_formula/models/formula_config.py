@@ -464,6 +464,29 @@ class HrFormulaConfig(models.Model):
               "print body without deleting the seeded section configuration.")
     )
 
+    # ------------------------------------------------------------------
+    # JOURNEY J2 — the spreadsheet this scheme's columns were read from.
+    #
+    # A mapping board that can only show the columns of a file somebody has
+    # already imported is a board you cannot use until after you have done the
+    # thing it exists to help you do. These four fields hold the answer to
+    # "what does my file look like" between visits: the workbook itself (so the
+    # same gesture can hand it on as a pay run), its name and when it was read,
+    # and the columns the loader produced from it.
+    #
+    # Nothing here is pay DATA. The stored columns carry one sample value each
+    # so a heading can be recognised; the file is kept because the user
+    # uploaded it to be used, and it is replaced or forgotten on request.
+    # ------------------------------------------------------------------
+    import_sample_file = fields.Binary(
+        string='Sample Pay File', attachment=True, copy=False,
+        help="The spreadsheet whose column headings were read for the mapping board.")
+    import_sample_filename = fields.Char(string='Sample Pay File Name', copy=False)
+    import_sample_date = fields.Datetime(string='Headings Read On', copy=False)
+    import_sample_columns_json = fields.Text(
+        string='Discovered Columns', copy=False,
+        help="The column keys the loader produces for the stored file, as JSON.")
+
     # Dynamic components inside rich payslip content are persisted as inert,
     # human-readable markers.  The editor turns them into non-editable chips;
     # preview and print resolve them with the active sample/payslip values.
@@ -1289,21 +1312,23 @@ class HrFormulaConfig(models.Model):
         }
 
     # ==========================================
-    # IMPORT FROM EXCEL (MULTI-SHEET WIZARD)
+    # SET UP COLUMNS FROM EXCEL (MULTI-SHEET WIZARD)
     # ==========================================
     def action_import_from_excel_multisheet(self):
-        """Open multi-sheet Excel import wizard with enhanced features.
+        """Read a workbook's STRUCTURE and turn it into this scheme's columns.
 
-        This wizard provides:
-        - Worksheet selection with checkboxes
-        - Per-sheet column selection
-        - Append order configuration
-        - Cross-sheet formula resolution (VLOOKUP, SUMIF, etc.)
+        JOURNEY J2 — behaviour unchanged, name corrected. This is the sixth
+        and most confusing of the old import doors: it was called "Import from
+        Excel" next to another button called "Payroll Import", and the two do
+        opposite things. This one defines what the columns ARE (a one-off
+        setup act, from a colour-coded workbook); the other loads this month's
+        numbers into them. Every string it puts on screen now says "columns"
+        and "set up" so the two can never be confused again.
         """
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Import from Excel (Multi-Sheet)'),
+            'name': _('Set Up Columns from Excel'),
             'res_model': 'hr.formula.multisheet.import.wizard',
             'view_mode': 'form',
             'target': 'new',
@@ -1311,6 +1336,44 @@ class HrFormulaConfig(models.Model):
                 'default_config_id': self.id,
             }
         }
+
+    # ==========================================
+    # JOURNEY J2 — the template built from this scheme
+    # ==========================================
+    def _pay_template_pk_header(self):
+        """The employee-identifier heading a generated template leads with.
+
+        Prefer what this scheme already reads — a component bound to (or named
+        after) an identifier column means the file in use spells it that way,
+        and a template that spells it differently would fail to merge. Fall
+        back to the loader's own first candidate.
+        """
+        self.ensure_one()
+        from ..integrations.excel_connector import ExcelConnector
+        Batch = self.env['hr.payroll.import.batch']
+        for rule in self.rule_ids.sorted(key=lambda r: r.sequence):
+            _sheet, header = ExcelConnector.template_slot_for(rule)
+            if header and Batch._find_primary_key_header([header]):
+                return header
+        return _('Employee Code')
+
+    def _build_pay_data_template(self):
+        """`(bytes, filename)` — the workbook whose headings this scheme reads.
+
+        One generator, and it lives where every other Excel-shaped thing in
+        this module lives. The studio's download button and the tests are its
+        callers; before J2 it had none at all.
+        """
+        self.ensure_one()
+        from ..integrations.excel_connector import ExcelConnector
+        connector = ExcelConnector(self.env['hr.integration.connector'])
+        content = connector.generate_template(
+            self.rule_ids.sorted(key=lambda r: r.sequence),
+            pk_header=self._pay_template_pk_header(),
+            sheet_title=_('Pay Data'),
+        )
+        stem = (self.code or self.name or 'scheme').strip().replace(' ', '_')
+        return content, '%s_pay_data_template.xlsx' % stem
 
     # ==========================================
     # COLUMN ROLES — shared summary (COLROLES P4)
@@ -1424,19 +1487,15 @@ class HrFormulaConfig(models.Model):
         }
 
     def action_launch_payroll_import(self):
-        """Launch payroll import with this configuration pre-selected"""
+        """Load this month's pay data for this scheme — through the guided flow.
+
+        JOURNEY J2: same door, same pre-scoping, one destination. It used to
+        open the raw batch form; it now arrives in the same four-step flow the
+        Import cockpit's hero button opens, with this scheme already chosen.
+        """
         self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('New Payroll Import'),
-            'res_model': 'hr.payroll.import.batch',
-            'view_mode': 'form',
-            'target': 'current',
-            'context': {
-                'default_formula_config_id': self.id,
-                'default_source_type': 'excel',
-            },
-        }
+        return self.env['hr.payroll.import.batch'].action_open_guided_import(
+            config=self, source_type='excel')
 
     def action_delete_all_rules(self):
         """Delete all salary component rules from this configuration"""

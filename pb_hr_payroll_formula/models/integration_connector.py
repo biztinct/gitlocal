@@ -1591,7 +1591,12 @@ class HrIntegrationConnector(models.Model):
         }
 
     def action_launch_payroll_import(self):
-        """Launch payroll import using this connector"""
+        """Load pay data through this connection — in the guided flow.
+
+        JOURNEY J2: the source-type heuristic below is unchanged (it is the
+        only thing that knows whether this connection has a data store worth
+        pulling); what changed is where it lands. One flow, whichever door.
+        """
         self.ensure_one()
 
         # Determine best source type
@@ -1603,17 +1608,8 @@ class HrIntegrationConnector(models.Model):
         else:
             source_type = 'connector'
 
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('New Payroll Import'),
-            'res_model': 'hr.payroll.import.batch',
-            'view_mode': 'form',
-            'target': 'current',
-            'context': {
-                'default_connector_id': self.id,
-                'default_source_type': source_type,
-            },
-        }
+        return self.env['hr.payroll.import.batch'].action_open_guided_import(
+            connector=self, source_type=source_type)
 
     # ==========================================
     # CONNECTOR FACTORY
