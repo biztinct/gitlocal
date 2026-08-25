@@ -302,6 +302,127 @@ class PbFormulaStudio(models.AbstractModel):
             return set()
         return {m.component_id.id for m in found if m.component_id}
 
+    # ==================================================================
+    # JOURNEY J3 S2 — two live sources on one component, detected ONCE.
+    # ==================================================================
+    @api.model
+    def _source_conflicts(self, config):
+        """Every component of `config` that is read by TWO live sources.
+
+        J-D3. A component can hold a spreadsheet binding (`source_binding='excel'`)
+        while a live `hr.integration.field.mapping` wire targets it, and until this
+        phase nothing anywhere said so. On a system run the connector pre-pass fills
+        the value first and the resolver's `if rule.code not in input_values` skip
+        locks out the binding entirely — so the spreadsheet column a person had
+        deliberately chosen was simply never read, silently, for as long as both
+        rows existed. The same is true of a component wired on two different
+        connections: only the connection the SCHEME is set to is consulted.
+
+        ONE detector, read by both mapping boards' payloads and by the draw-time
+        probe, so the chip a user sees and the dialog they are shown can never
+        disagree about whether a conflict exists.
+
+        Returns `{rule_id: {...}}` with, per entry:
+          `binding_kind`/`binding_key` — the component's declared binding, if any;
+          `wires` — `[{'connector': rec, 'key': str, 'kind': 'feed'|'rule'}]`;
+          `shape` — `'excel_vs_feed'` or `'two_feeds'`;
+          `primary`/`fallback` — which source a system run actually uses, and which
+          one only speaks when the first is empty. **Never the reverse** (J-D5): the
+          feed outranks the binding in the resolver and this phase does not reorder
+          it, so any wording built from this must say the feed is primary.
+
+        Read-only and guarded: a chip must never break a board.
+        """
+        FM = self.env.get('hr.integration.field.mapping')
+        if FM is None or not config or not config.rule_ids:
+            return {}
+        try:
+            maps = FM.sudo().search([('target_rule_id', 'in', config.rule_ids.ids)],
+                                    order='id')
+        except Exception:       # noqa: BLE001
+            return {}
+        by_rule = {}
+        computed = {}
+        for m in maps:
+            rid = m.target_rule_id.id
+            if not rid or not m.source_field:
+                continue
+            cid = m.connector_id.id
+            if cid not in computed:
+                try:
+                    computed[cid] = FM._computed_output_keys(m.connector_id)
+                except Exception:   # noqa: BLE001
+                    computed[cid] = set()
+            by_rule.setdefault(rid, []).append({
+                'connector': m.connector_id, 'key': m.source_field, 'mapping': m,
+                'kind': 'rule' if m.source_field in computed[cid] else 'feed',
+            })
+        out = {}
+        for rule in config.rule_ids:
+            wires = by_rule.get(rule.id) or []
+            b_kind = rule.source_binding or False
+            b_key = (rule.source_binding_key or '').strip()
+            if b_kind and not b_key:
+                b_kind = False      # a half-set binding is not a source (S3)
+            shape = None
+            if b_kind == 'excel' and wires:
+                shape = 'excel_vs_feed'
+            elif len({w['connector'].id for w in wires}) > 1:
+                shape = 'two_feeds'
+            if not shape:
+                continue
+            out[rule.id] = {
+                'binding_kind': b_kind, 'binding_key': b_key, 'wires': wires,
+                'shape': shape,
+                'primary': 'feed', 'fallback': 'excel' if b_kind == 'excel' else 'feed',
+            }
+        return out
+
+    @api.model
+    def _conflict_chip(self, conflict, board):
+        """The chip a conflicted component wears, worded for the board you are on.
+
+        Two sentences, because the useful one is always about the OTHER source: on
+        the spreadsheet board you already know about the column, and what you are
+        missing is that a feed will beat it. The wording is fixed by the ladder and
+        not by preference — the feed is primary on system runs, the spreadsheet is
+        the fallback, and saying it the other way round would be a comfortable lie.
+        """
+        if not conflict:
+            return None
+        if conflict['shape'] == 'two_feeds':
+            names = [w['connector'].name or _("Unnamed connection")
+                     for w in conflict['wires']]
+            uniq = list(dict.fromkeys(names))
+            return {
+                # The PILL says the surprising thing in as few words as will fit
+                # beside the source chip on a 280px card; the full sentence is the
+                # tooltip. Live on abm this label was "Wired to 2 connections" and
+                # it clipped mid-word — a chip that cannot finish its own sentence
+                # is worse than a short one.
+                'label': _("Wired twice"),
+                'hint': _(
+                    "This component is wired on %(names)s. A pay run reads only "
+                    "the connection its scheme is set to; the others are ignored.",
+                    names=', '.join(uniq)),
+            }
+        conn = conflict['wires'][0]['connector'].name or _("the connected system")
+        if board == 'import':
+            return {
+                'label': _("Feed wins"),
+                'hint': _(
+                    "Also wired to %(conn)s. The feed wins on system runs — this "
+                    "spreadsheet column is read only when %(conn)s sends nothing "
+                    "for it.", conn=conn),
+            }
+        return {
+            'label': _("Spreadsheet fallback"),
+            'hint': _(
+                "Also bound to the spreadsheet column “%(key)s”. The feed wins on "
+                "system runs — that column is read only when this feed sends "
+                "nothing for it.", key=conflict['binding_key']),
+        }
+
     @api.model
     def _source_wire_dests(self, config):
         """Components this config already has a LIVE connector wire into.
@@ -606,7 +727,7 @@ class PbFormulaStudio(models.AbstractModel):
         return out
 
     @api.model
-    def _mc_right_item(self, rule, declared, note='', lineage=None):
+    def _mc_right_item(self, rule, declared, note='', lineage=None, conflict=None):
         wirable = rule.column_type == 'input'
         item = {'id': rule.id, 'label': (rule.name or rule.code),
                 'sublabel': rule.code or '',
@@ -621,6 +742,12 @@ class PbFormulaStudio(models.AbstractModel):
             lin = lineage.get(declared['key'])
             if lin:
                 item['lineage'] = lin
+        # JOURNEY J3 S2 — a component read by two live sources SAYS so, on both
+        # boards, however the state arose. Pre-existing dual rows (abm has several,
+        # drawn long before the dialog existed) get the chip on load; nothing has
+        # to be redrawn for the truth to appear.
+        if conflict:
+            item['conflict'] = conflict
         # SOURCING S5 — an input with nothing feeding it can start a rule from
         # here. The key is sanitised through the SAME contract S2 put on
         # `output_key`, so the composer never opens on a key its own constraint
@@ -671,17 +798,24 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def _mc_right_column(self, config, actuals, emp_dest, wirable_only=False,
-                         wire_dests=None, lineage=None):
-        """Every component a mapping board should show, in display order."""
+                         wire_dests=None, lineage=None, board=''):
+        """Every component a mapping board should show, in display order.
+
+        J3 S2 — `board` ('api' | 'import') selects the WORDING of the conflict
+        chip, not whether it is computed: the useful sentence is always about the
+        source you are NOT looking at. Detection runs once for the whole config
+        through `_source_conflicts`, so the two boards can never disagree.
+        """
         rules = config.rule_ids if not wirable_only else config.rule_ids.filtered(
             lambda r: r.column_type == 'input')
         rules = rules.sorted(key=lambda r: r.sequence)
+        conflicts = self._source_conflicts(config) if board else {}
         out = []
         for r in rules:
             declared = self._declared_source(r, emp_dest, wire_dests)
             out.append(self._mc_right_item(
                 r, declared, self._source_note(r, actuals, emp_dest, wire_dests),
-                lineage))
+                lineage, self._conflict_chip(conflicts.get(r.id), board)))
         return out
 
     @api.model
@@ -4887,7 +5021,7 @@ class PbFormulaStudio(models.AbstractModel):
         # connector that can reach this scheme, for the components.
         right = self._mc_right_column(
             config, _acts, _emp, wire_dests=_wires,
-            lineage=self._lineage_for_config(config, conn))
+            lineage=self._lineage_for_config(config, conn), board='api')
         # accepted wires = persisted field mappings on this connector → these inputs
         wires = []
         mapped_paths, mapped_rules = set(), set()
@@ -5039,8 +5173,22 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def api_mapping_create(self, config_id, connector_id, source_field,
-                           target_rule_id, endpoint_id=None):
+                           target_rule_id, endpoint_id=None, resolve=None):
         """Draw an API wire, stamped with the feed it was drawn on.
+
+        JOURNEY J3 S2 — `resolve` is the user's answer to the conflict dialog, and
+        it is OPTIONAL and defaults to today's behaviour, so every existing caller
+        and every test is unchanged:
+
+          * `'replace'` — the other live source goes. A spreadsheet binding is
+            overwritten (which is what happens anyway), AND wires on other
+            connections are unlinked, which is the part that never used to happen.
+          * `'keep'`   — both survive. The wire is drawn and an existing SPREADSHEET
+            binding is left in place as the fallback the resolver's empty-feed
+            guard now genuinely honours (J3 S2 in `payroll_import_batch`). Without
+            that guard this option would be a lie, which is why the two shipped
+            together.
+          * `None`     — exactly what this method did before J3.
 
         `endpoint_id` is validated against THIS connector's feeds rather than
         trusted: an id from the browser that named another connector's feed
@@ -5086,6 +5234,12 @@ class PbFormulaStudio(models.AbstractModel):
         # one source→one input per connector: drop existing on either side
         FM.search(['&', ('connector_id', '=', conn.id),
                    '|', ('source_field', '=', src), ('target_rule_id', '=', rule.id)]).unlink()
+        # J3 S2 — "replace" reaches ACROSS connections. The search above has only
+        # ever tidied within one connector, which is exactly why a component wired
+        # on two connections could exist at all (abm has several).
+        if resolve == 'replace':
+            FM.search([('target_rule_id', '=', rule.id),
+                       ('connector_id', '!=', conn.id)]).unlink()
         FM.create(vals)
         # SOURCING S6 — and the wire is now a BINDING as well as a mapping.
         #
@@ -5101,8 +5255,139 @@ class PbFormulaStudio(models.AbstractModel):
         # vendor sent.
         kind = 'rule' if src in FM._computed_output_keys(conn) else 'feed'
         replaced = self._binding_replaced(rule, kind, src)
-        rule.set_source_binding(kind, src, origin='board')
+        # J3 S2 — "keep as fallback" means the spreadsheet binding SURVIVES. The
+        # wire is drawn either way; what `keep` buys is that `set_source_binding`
+        # does not overwrite the declaration that makes the fallback readable.
+        # The feed is still primary — the resolver's pre-pass outranks the binding
+        # and J3 did not reorder it (J-D5) — so nothing here promotes anything.
+        if resolve == 'keep' and rule.source_binding == 'excel' \
+                and (rule.source_binding_key or '').strip():
+            replaced = None
+        else:
+            rule.set_source_binding(kind, src, origin='board')
         return {'ok': True, 'replaced': replaced}
+
+    @api.model
+    def source_conflict_probe(self, config_id, board, target_rule_id,
+                              key=None, connector_id=None):
+        """WOULD drawing this create a second live source? **Writes nothing.**
+
+        JOURNEY J3 S2 (owner decision J-D3). The either-API-or-Excel rule used to
+        be enforced by whichever code happened to run last, silently. It is now an
+        explicit choice — and a choice needs to be offered BEFORE the write, which
+        is why this is a separate read-only adapter rather than a flag on the
+        create. The cancel path of the dialog therefore makes no writing RPC at
+        all: there is nothing to roll back because nothing was ever sent.
+
+        `board` is `'api'` or `'import'` — which side the user is drawing from.
+        Returns `{'ok': True, 'conflict': False}` when the draw is unremarkable
+        (including every same-source redraw: excel→excel and a rewire on the same
+        connection keep today's silent swap and its toast), otherwise a dict of
+        finished SENTENCES for the dialog. The client renders text; it never
+        composes it, so the wording lives with the ladder it describes.
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        rule = self.env['hr.formula.rule'].browse(self._as_id(target_rule_id))
+        if not rule.exists():
+            return {'ok': True, 'conflict': False}
+        incoming_key = (self._ec_spec(key) or '').strip()
+        for prefix in ('c:', 'f:'):
+            if incoming_key.startswith(prefix):
+                incoming_key = incoming_key[2:]
+        FM = self.env.get('hr.integration.field.mapping')
+        # `env.get` returns an EMPTY RECORDSET, which is falsy — `if FM` here would
+        # take the else branch on every call and the probe would report "no
+        # conflict" forever, silently. The absence test is `is None`.
+        wires = (FM.sudo().search([('target_rule_id', '=', rule.id)])
+                 if FM is not None else self.env['hr.formula.rule'].browse())
+        b_kind = rule.source_binding or False
+        b_key = (rule.source_binding_key or '').strip()
+        if b_kind and not b_key:
+            b_kind = False
+        code = rule.code or rule.name or ''
+
+        if board == 'import':
+            # Drawing a SPREADSHEET column onto a component that a live feed
+            # already wires. This is the trap in its original form: today both
+            # rows survive and the feed silently wins.
+            if not wires:
+                return {'ok': True, 'conflict': False}
+            names = list(dict.fromkeys(
+                [w.connector_id.name or _("Unnamed connection") for w in wires]))
+            conn = ', '.join(names)
+            return {'ok': True, 'conflict': {
+                'shape': 'excel_over_feed',
+                'title': _("“%s” already has a live source") % code,
+                'body': _(
+                    "%(code)s is wired to %(conn)s. On a system run the feed is "
+                    "read first — a spreadsheet column can only fill in when the "
+                    "feed sends nothing for this component.",
+                    code=code, conn=conn),
+                'existing': {'label': self._source_label('feed'), 'key': conn},
+                'incoming': {'label': self._source_label('excel'),
+                             'key': incoming_key},
+                'replace_label': _("Use the spreadsheet instead"),
+                'replace_note': _(
+                    "Removes the wire from %s. Only the spreadsheet column feeds "
+                    "this component after that.") % conn,
+                'keep_label': _("Keep the feed, use the spreadsheet as fallback"),
+                'keep_note': _(
+                    "%(conn)s stays primary on system runs. The spreadsheet "
+                    "column is read only when the feed sends nothing.", conn=conn),
+                'cancel_label': _("Cancel"),
+            }}
+
+        # board == 'api': drawing a WIRE onto a component that already reads
+        # somewhere else.
+        conn = self.env['hr.integration.connector'].browse(self._as_id(connector_id))
+        others = [w for w in wires if w.connector_id.id != conn.id]
+        if b_kind == 'excel':
+            return {'ok': True, 'conflict': {
+                'shape': 'feed_over_excel',
+                'title': _("“%s” already reads a spreadsheet column") % code,
+                'body': _(
+                    "%(code)s is bound to the spreadsheet column “%(key)s”. A feed "
+                    "is read FIRST on system runs, so wiring one here changes what "
+                    "this component reads.", code=code, key=b_key),
+                'existing': {'label': self._source_label('excel'), 'key': b_key},
+                'incoming': {'label': self._source_label('feed'),
+                             'key': incoming_key},
+                'replace_label': _("Use the feed instead"),
+                'replace_note': _(
+                    "Clears the spreadsheet binding. Only %s feeds this component "
+                    "after that.") % (conn.name or _("this connection")),
+                'keep_label': _("Keep the spreadsheet as fallback"),
+                'keep_note': _(
+                    "The feed is primary on system runs. The spreadsheet column "
+                    "“%(key)s” is read only when the feed sends nothing.",
+                    key=b_key),
+                'cancel_label': _("Cancel"),
+            }}
+        if others:
+            names = list(dict.fromkeys(
+                [w.connector_id.name or _("Unnamed connection") for w in others]))
+            other = ', '.join(names)
+            return {'ok': True, 'conflict': {
+                'shape': 'feed_over_feed',
+                'title': _("“%s” is already wired to another connection") % code,
+                'body': _(
+                    "%(code)s is wired to %(other)s. A pay run reads only the "
+                    "connection its scheme is set to, so two wires means one of "
+                    "them is doing nothing.", code=code, other=other),
+                'existing': {'label': self._source_label('feed'), 'key': other},
+                'incoming': {'label': self._source_label('feed'),
+                             'key': incoming_key},
+                'replace_label': _("Use %s instead") % (
+                    conn.name or _("this connection")),
+                'replace_note': _("Removes the wire from %s.") % other,
+                'keep_label': _("Keep both wires"),
+                'keep_note': _(
+                    "Both wires stay. Whichever connection the scheme is set to "
+                    "is the one a pay run reads."),
+                'cancel_label': _("Cancel"),
+            }}
+        return {'ok': True, 'conflict': False}
 
     @api.model
     def _binding_replaced(self, rule, kind, key):
@@ -5683,7 +5968,7 @@ class PbFormulaStudio(models.AbstractModel):
         _wires = self._source_wire_dests(config)
         right = self._mc_right_column(
             config, _acts, _emp, wire_dests=_wires,
-            lineage=self._lineage_for_config(config))
+            lineage=self._lineage_for_config(config), board='import')
         wires, mapped_rules = [], set()
         for r in input_rules:
             # The BINDING is the wire. `data_source_field` still draws one for a
@@ -5798,8 +6083,16 @@ class PbFormulaStudio(models.AbstractModel):
         return out
 
     @api.model
-    def import_mapping_create(self, config_id, batch_id, column, target_rule_id):
+    def import_mapping_create(self, config_id, batch_id, column, target_rule_id,
+                              resolve=None):
         """Bind a component to a spreadsheet column — for real, this time.
+
+        JOURNEY J3 S2 — `resolve` is the conflict dialog's answer (see
+        `api_mapping_create` for the vocabulary). `'replace'` unlinks the live wires
+        that would otherwise beat this binding on every system run; `'keep'` and
+        `None` leave them, which is today's behaviour and is now honest rather than
+        silent, because the component wears a conflict chip and the resolver's
+        empty-feed guard lets this column actually speak when the feed does not.
 
         This wrote `rule.write({'data_source_field': col})` and nothing else, which
         is why **S12** found that Char empty on every rule on all four databases:
@@ -5826,6 +6119,10 @@ class PbFormulaStudio(models.AbstractModel):
         if sealed:
             return sealed
         replaced = self._binding_replaced(rule, 'excel', col)
+        if resolve == 'replace':
+            FM = self.env.get('hr.integration.field.mapping')
+            if FM is not None:
+                FM.sudo().search([('target_rule_id', '=', rule.id)]).unlink()
         rule.set_source_binding('excel', col, origin='board')
         return {'ok': True, 'replaced': replaced}
 
@@ -6568,6 +6865,7 @@ class PbFormulaStudio(models.AbstractModel):
         right = self._ec_right_column(q)
         present = {i['id'] for i in right}
         Mapping = self.env['hr.payslip.import.mapping'].sudo()
+        by_left = {i['id']: i for i in left}
         wires = []
         for m in Mapping.search([('salary_structure_id', '=', config.id)]):
             if not m.component_id:
@@ -6577,6 +6875,12 @@ class PbFormulaStudio(models.AbstractModel):
                 continue
             wires.append({'id': 'em%s' % m.id, 'kind': 'mapping', 'ref': m.id,
                           'leftId': m.component_id.id, 'rightId': rid, 'state': 'accepted'})
+            # JOURNEY J3 S1 (owner decision J-D4) — the card SAYS which way this
+            # row runs. Additive: two new keys under `meta`, every pre-J3 key
+            # untouched, so a stale bundle renders exactly what it rendered before.
+            card = by_left.get(m.component_id.id)
+            if card is not None:
+                card['meta'].update(self._ec_direction(m))
             # A wired field must appear in RIGHT even when the catalogue did not
             # offer it — a search may have filtered it out, or the catalogue may
             # refuse the destination outright. MAPFIX E2: this goes through the
@@ -6594,7 +6898,15 @@ class PbFormulaStudio(models.AbstractModel):
         return {
             'ok': True, 'left': left, 'right': right, 'wires': wires,
             'left_title': config.name, 'right_title': _("Employee, contract & bank"),
-            'subtitle': _("Send people data where it belongs"),
+            # J3 S1 — the subtitle stopped being true the moment the resolver
+            # learned to read these rows back, which was long before this phase.
+            'subtitle': _("People data goes to the record, and comes back when a "
+                          "pay run needs it"),
+            # J3 S1 — a CANVAS CAPABILITY, keyed off this adapter's payload rather
+            # than switched on globally: only wires on this board render
+            # double-headed, because only these rows run both ways. The API,
+            # spreadsheet, scheme and cycle boards send nothing and are unchanged.
+            'bidirectional': True,
             'supports_suggest': True, 'contexts': [], 'context_id': False,
             'include_payroll': bool(include_payroll),
             'counts': self._ec_role_counts(config, wires),
@@ -6604,6 +6916,44 @@ class PbFormulaStudio(models.AbstractModel):
             # it; the problems rail counts the SAME set (`_ec_unresolved`), so the
             # two surfaces can never disagree about how much work is left.
             'unresolved': len(self._ec_unresolved(config)),
+        }
+
+    @api.model
+    def _ec_direction(self, mapping):
+        """Which way this mapping row actually runs, in a sentence.
+
+        JOURNEY J3 S1 / owner decision J-D4. This board has always said "send to",
+        and for a `field` row that is only half of what the code does:
+
+          * on IMPORT the value is WRITTEN onto the record —
+            `payroll_import_batch._apply_employee_writeback` / the contract half;
+          * on a PAY RUN the resolver READS it back — `get_mapped_input_value`
+            walks the same `hr.payslip.import.mapping` rows and returns the
+            employee/contract field's value when neither the file nor the feed
+            carried anything for that component.
+
+        So a `field` row is genuinely two-way and the board now renders it that
+        way. A `bank_account` row is NOT: `get_mapped_input_value` covers
+        `hr.employee` and `hr.contract` only, and the resolver never reads a bank
+        part back into an input. Printing the read-back half there would be the
+        exact class of confident falsehood this phase exists to remove — so it
+        gets the import half and nothing else, and `direction` says `to_record`
+        rather than `two_way` so no later reader has to infer it from the prose.
+        """
+        if mapping.destination_type == 'bank_account':
+            return {
+                'direction': 'to_record',
+                'directionNote': _("On import: builds the bank account."),
+            }
+        model = mapping.target_model_id
+        field = mapping.target_field_id
+        where = '%s › %s' % (
+            model.name or model.model or '', field.field_description or field.name or '')
+        return {
+            'direction': 'two_way',
+            'directionNote': _(
+                "On import: fills %(where)s. On pay run: used when the file or "
+                "feed leaves this empty.", where=where),
         }
 
     @api.model

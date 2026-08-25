@@ -1357,3 +1357,51 @@ test("J2 — the dropped-file lane is ONE group, so it draws ONE heading", () =>
         MappingCanvas.prototype.leftGroupHead.call(null, items, n));
     expect(heads).toEqual([lane, "", "", "Already used by this scheme"]);
 });
+
+// ============================================== JOURNEY J3 — the two-way board
+test("J3 — a bidirectional wire grows a SECOND head, and nothing else moves", () => {
+    // The default is the whole safety argument: five boards call this and only
+    // one is two-way, so an opt-out would have been a regression waiting for
+    // whichever adapter forgot.
+    const one = wireGeometry(100, 50, 400, 300);
+    const two = wireGeometry(100, 50, 400, 300, true);
+    expect(one.headBack).toBe(undefined);
+    expect(two.headBack).not.toBe(undefined);
+    // the forward head is IDENTICAL — a second arrow must not move the first
+    expect(two.head).toBe(one.head);
+    expect(two.hx).toBe(one.hx);
+    expect(two.hy).toBe(one.hy);
+    // the back head's apex is the SOURCE point, pointing away from the target
+    const [apex] = two.headBack.split(" ");
+    expect(apex).toBe("100,50");
+    expect(two.headBack.split(" ").length).toBe(3);
+    // and the stroke now starts clear of it, so the curve does not run under
+    // its own arrowhead
+    expect(two.d.startsWith(`M ${100 + HEAD} 50`)).toBe(true);
+    expect(one.d.startsWith("M 100 50")).toBe(true);
+});
+
+test("J3 — a right-to-left two-way wire reserves the back head on the right", () => {
+    const g = wireGeometry(400, 50, 100, 300, true);
+    expect(g.headBack.startsWith("400,50")).toBe(true);
+    expect(g.d.startsWith(`M ${400 - HEAD} 50`)).toBe(true);
+});
+
+test("J3 — the conflict chip renders only what the adapter sent", () => {
+    const chip = MappingCanvas.prototype.conflictChip;
+    expect(chip.call(null, { id: 1 })).toBe(null);
+    expect(chip.call(null, { id: 1, conflict: {} })).toBe(null);
+    const c = chip.call(null, { id: 1, conflict: { label: "L", hint: "H" } });
+    expect(c).toEqual({ label: "L", hint: "H" });
+    // no hint sent → the label is its own tooltip, never an empty title
+    expect(chip.call(null, { id: 1, conflict: { label: "L" } }).hint).toBe("L");
+});
+
+test("J3 — the direction note is read off meta, and only off meta", () => {
+    const dir = MappingCanvas.prototype.dirNote;
+    expect(dir.call(null, { id: 1 })).toBe(null);
+    expect(dir.call(null, { id: 1, meta: {} })).toBe(null);
+    expect(dir.call(null, { id: 1, meta: { directionNote: "N" } })).toBe("N");
+    // it is NOT the right column's `note` channel — those are different facts
+    expect(dir.call(null, { id: 1, meta: { note: { text: "N" } } })).toBe(null);
+});

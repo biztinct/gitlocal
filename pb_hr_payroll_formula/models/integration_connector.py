@@ -1184,8 +1184,9 @@ class HrIntegrationConnector(models.Model):
                 endpoint, employee_refs, str(period_from), str(period_to))
             pull_ms = int((time.time() - started) * 1000)
             Store = self.env['hr.api.data.store']
+            pulled = Store.browse()
             for item in rows:
-                self._store_api_record(
+                stored = self._store_api_record(
                     Store, item.get('payload') or {},
                     data_type=endpoint.data_type,
                     endpoint_id=endpoint.id,
@@ -1196,6 +1197,13 @@ class HrIntegrationConnector(models.Model):
                     triggered_by=triggered_by,
                     results=results,
                 )
+                if stored:
+                    pulled |= stored
+            # J3 S3 — the per-feed sync now does what the full sync has always
+            # done. Before this line a rule-fed component read EMPTY after a feed
+            # refresh, because nothing ever wrote `computed_data` on these rows.
+            # Same helper, same rules, scoped to what this pull produced.
+            self._run_transformation_rules(pulled)
             now = fields.Datetime.now()
             outcome = ('partial' if results['errors'] and results['pulled']
                        else 'failed' if results['errors'] else 'success')
@@ -1469,10 +1477,7 @@ class HrIntegrationConnector(models.Model):
                 ('state', '=', 'extracted'),
                 ('pull_date', '>=', fields.Datetime.now()),
             ])
-            if new_records and self.transformation_rule_ids:
-                active_rules = self.transformation_rule_ids.filtered('active')
-                if active_rules:
-                    active_rules._execute_for_records(new_records)
+            self._run_transformation_rules(new_records)
 
         except Exception as e:
             self.write({
@@ -1498,6 +1503,38 @@ class HrIntegrationConnector(models.Model):
                 'type': 'success' if not results['errors'] else 'warning',
             }
         }
+
+    def _run_transformation_rules(self, records):
+        """Run this connection's active transformation rules over `records`.
+
+        JOURNEY J3 S3. There were two call sites doing this (`action_pull_data`
+        and `action_recompute_transformations`) and a third that should have been
+        and was not — `action_pull_endpoint`, the per-feed sync, which is the
+        button a user actually presses when they want one feed refreshed. The
+        consequence was invisible and total: a component bound to a
+        transformation-rule OUTPUT read empty after a per-feed pull, because the
+        store rows arrived with `extracted_data` and no `computed_data` at all.
+        The full "Pull Data" button then fixed it, which is the worst kind of bug
+        — the workaround looks like an unrelated action working better.
+
+        Scoped to the records handed in, never to the whole store: recomputing
+        every historical row on every feed refresh would make one button's cost
+        grow with the database's age.
+
+        Returns the records it transformed (possibly empty), so a caller can say
+        what happened. Silent no-op when there is nothing to do — a pull with no
+        rules configured is the normal case, not an error (which is precisely why
+        `action_recompute_transformations`, whose whole purpose IS transforming,
+        keeps its own `UserError` instead of calling through here for that).
+        """
+        self.ensure_one()
+        if not records:
+            return records.browse() if hasattr(records, 'browse') else records
+        active_rules = self.transformation_rule_ids.filtered('active')
+        if not active_rules:
+            return records.browse()
+        active_rules._execute_for_records(records)
+        return records
 
     def _store_api_record(self, DataStore, raw_data, data_type,
                           endpoint_id=None,
@@ -1557,10 +1594,16 @@ class HrIntegrationConnector(models.Model):
             results['pulled'] += 1
             if record.has_changes:
                 results['changes'] += 1
+            # J3 S3 — the caller needs to know WHICH rows it just wrote, so it can
+            # run the transformation rules over those and not over the store's
+            # whole history. Additive: this returned None before and no caller
+            # read it, so every existing call site is unchanged.
+            return record
 
         except Exception as e:
             results['errors'].append(str(e))
             _logger.warning("Failed to store API record: %s", str(e))
+        return None
 
     def action_recompute_transformations(self):
         """Recompute all transformation rules for extracted data store records."""
@@ -1576,7 +1619,11 @@ class HrIntegrationConnector(models.Model):
         if not active_rules:
             raise UserError(_('No active transformation rules configured.'))
 
-        active_rules._execute_for_records(records)
+        # J3 S3 — same helper as the two pull paths. The two `UserError`s above
+        # stay here rather than moving into it: this button's whole purpose is to
+        # transform, so "nothing to transform" is a refusal worth saying, while on
+        # a pull it is an ordinary outcome.
+        self._run_transformation_rules(records)
 
         return {
             'type': 'ir.actions.client',
@@ -1602,11 +1649,13 @@ class HrIntegrationConnector(models.Model):
         # Determine best source type
         if self.connector_type == 'excel':
             source_type = 'excel'
-        elif self.data_store_count > 0:
-            # If data store has records, default to api_data_store
-            source_type = 'api_data_store'
         else:
-            source_type = 'connector'
+            # J3 S5 — everything that is not an Excel connection loads through the
+            # data store. The old `else: 'connector'` branch (taken when the store
+            # was still empty) produced a batch nothing could load; the guided flow
+            # now lands on the store path and says the store is empty, which is a
+            # true sentence about a real state instead of a dead source type.
+            source_type = 'api_data_store'
 
         return self.env['hr.payroll.import.batch'].action_open_guided_import(
             connector=self, source_type=source_type)

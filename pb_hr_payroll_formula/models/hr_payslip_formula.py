@@ -337,6 +337,78 @@ class HrPayslipFormula(models.Model):
         # 5. Any active config for this company.
         return Config.search(company_domain + [('state', '=', 'active')], limit=1)
 
+    def _j3_feed_hits_by_rule(self, config):
+        """What this employee's connected-system data delivers, per component.
+
+        JOURNEY J3 S4 — the batch-free half of the connector story.
+
+        The blob is built exactly the way the import batch builds it
+        (`action_load_from_data_store`): the connector's `hr.api.data.store` rows
+        for this employee, `data_type` in employee/salary, merged through
+        `get_mappable_data()` so a transformation rule's `computed_data` overrides
+        the raw `extracted_data` of the same name. Rows are merged OLDEST FIRST so
+        the newest version of a key wins, and `employee` is merged before `salary`
+        so compensation beats master data where they collide — the same precedence
+        the batch loader applies by its `employee_external_id, data_type` ordering.
+
+        Preference, in order: `state='extracted'` rows (ready for mapping) if there
+        are any, else whatever is there apart from `archived`/`error`. A `consumed`
+        row is data an import batch has already used — still true, still readable,
+        and refusing it would mean a live payrun stopped working the moment
+        somebody ran an import.
+
+        Then `_feed_values_for` — the SAME function the import pre-pass calls —
+        applies the wires, their transforms and J3's empty-value guard. There is no
+        second implementation of "what did the feed say" anywhere in this codebase,
+        which is the whole point of the helper existing.
+
+        Returns `{rule_id: {'value', 'key', 'kind'}}`; `{}` on any absence, and it
+        never raises: a payslip must compute even when the integration layer is
+        misconfigured, missing or mid-migration.
+        """
+        self.ensure_one()
+        if not (config and config.connector_id and self.employee_id):
+            return {}
+        Store = self.env.get('hr.api.data.store')
+        FieldMapping = self.env.get('hr.integration.field.mapping')
+        if Store is None or FieldMapping is None:
+            return {}
+        try:
+            connector = config.connector_id.sudo()
+            mappings = connector._sync_mapping_ids()
+            if not mappings:
+                return {}
+            base = [('connector_id', '=', connector.id),
+                    ('employee_id', '=', self.employee_id.id),
+                    ('data_type', 'in', ['employee', 'salary'])]
+            rows = Store.sudo().search(
+                base + [('state', '=', 'extracted')],
+                order='data_type asc, version asc, id asc')
+            if not rows:
+                rows = Store.sudo().search(
+                    base + [('state', 'not in', ('archived', 'error'))],
+                    order='data_type asc, version asc, id asc')
+            if not rows:
+                return {}
+            blob = {}
+            for row in rows:
+                data = row.get_mappable_data()
+                if isinstance(data, dict):
+                    blob.update(data)
+            computed = FieldMapping._computed_output_keys(connector)
+            out = {}
+            for hit in FieldMapping._feed_values_for(mappings, blob):
+                out[hit['rule'].id] = {
+                    'value': hit['value'], 'key': hit['key'],
+                    'kind': 'rule' if hit['key'] in computed else 'feed',
+                }
+            return out
+        except Exception:       # noqa: BLE001
+            _logger.warning(
+                "J3 S4: could not read connected-system data for payslip %s",
+                self.id, exc_info=True)
+            return {}
+
     def _get_formula_input_values(self, config, provenance=None):
         """
         Get input values for formula computation from various sources:
@@ -358,6 +430,13 @@ class HrPayslipFormula(models.Model):
 
         # Get input rules
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input')
+
+        # JOURNEY J3 S4 — read the connected system's data ONCE, not per rule.
+        # `_feed_hits_by_rule` returns {rule_id: hit} for the wires that actually
+        # delivered something for THIS employee; empty dict when there is no
+        # connector, no data, or nothing matched, in which case every branch below
+        # behaves exactly as it did before this phase.
+        feed_hits = self._j3_feed_hits_by_rule(config)
 
         for rule in input_rules:
             value = rule.default_value
@@ -393,16 +472,28 @@ class HrPayslipFormula(models.Model):
                         value = worked_day.number_of_days
                     src, key, via = 'employee_field', wd_code, 'worked_days'
 
-            # Try to get from integration connector (only confirmed 'active'
-            # mappings are load-bearing — F114/D114.2)
-            if config.connector_id:
-                # Get from mapped field
-                mapping = config.connector_id._sync_mapping_ids().filtered(
-                    lambda m: m.target_rule_id == rule
-                )[:1]
-                if mapping:
-                    # TODO: Get actual value from synced data
-                    pass
+            # Get from integration connector (only confirmed 'active' mappings are
+            # load-bearing — F114/D114.2).
+            #
+            # JOURNEY J3 S4 — this was `if mapping: # TODO … pass`. A live pay run
+            # with no import batch could not read API data AT ALL: every wire on
+            # the API mapping board was decorative on this path, and the only way
+            # to get a feed value into a payslip was to route it through an import
+            # batch. The component silently fell to its contract wage or its
+            # default and the provenance said so, truthfully and unhelpfully.
+            #
+            # The wire wins over the contract/worked-days branches above for the
+            # same reason it does inside the import resolver: it is the one thing
+            # here a PERSON declared. And it wins only when it DELIVERED —
+            # `_feed_values_for` applies J3's empty-value guard identically, so an
+            # empty feed leaves the contract/worked-days/default tail exactly as it
+            # was, which is what makes "keep the other source as a fallback" true
+            # on this path as well as on the batch one.
+            hit = feed_hits.get(rule.id)
+            if hit:
+                value = hit['value']
+                src = 'rule' if hit['kind'] == 'rule' else 'feed'
+                key, via = hit['key'], 'connector_mapping'
 
             values[rule.code] = value
             if provenance is not None:

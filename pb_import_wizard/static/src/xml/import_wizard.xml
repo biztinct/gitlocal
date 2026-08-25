@@ -42,7 +42,7 @@
                   <option t-foreach="state.defaults.configs" t-as="c" t-key="c.id" t-att-value="c.id"
                           t-att-selected="('' + c.id) === state.form.formula_config_id" t-esc="c.name"/>
                 </select>
-                <t t-if="state.form.source_type === 'connector' or state.form.source_type === 'api_data_store'">
+                <t t-if="state.form.source_type === 'api_data_store'">
                   <label>Connector</label>
                   <select class="iw-in" t-on-change="(ev) => this.onField('connector_id', ev)">
                     <option t-foreach="state.defaults.connectors" t-as="cn" t-key="cn.id" t-att-value="cn.id"

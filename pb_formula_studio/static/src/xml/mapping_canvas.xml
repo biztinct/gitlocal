@@ -59,6 +59,10 @@
               </path>
               <path class="mc-wire" t-att-d="g.d"/>
               <polygon class="mc-head" t-att-points="g.head"/>
+              <!-- JOURNEY J3 S1 — the second head. Present only on a board whose
+                   rows genuinely run both ways, because an arrow that claims a
+                   direction the code does not have is worse than no arrow. -->
+              <polygon t-if="g.headBack" class="mc-head back" t-att-points="g.headBack"/>
               <!-- the travelling highlight: a normalised dash walking the same
                    path, desynchronised per wire so N of them never march in
                    lockstep. CSS, not SMIL — SMIL restarts on every re-render. -->
@@ -133,6 +137,11 @@
                       <t t-set="mcSide" t-value="'left'"/>
                     </t>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                    <!-- JOURNEY J3 S1 — what this row DOES, both halves of it.
+                         Left column only: it is a statement about the mapping,
+                         and the mapping is anchored on the component. -->
+                    <div t-if="dirNote(it)" t-attf-class="mc-item-dir {{ it.meta.direction }}"
+                         t-att-title="dirNote(it)"><span class="mc-item-dir__g" t-esc="it.meta.direction === 'two_way' ? '⇆' : '→'"/><t t-esc="dirNote(it)"/></div>
                     <!-- what the data looks like. A live sample is a value that
                          arrived; a catalogue sample is an example, and the `e.g.`
                          is the whole difference between the two. -->

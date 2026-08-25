@@ -31,22 +31,34 @@ export const HEAD_H = 6;
  * @param {number} sy  source y
  * @param {number} tx  target x (the tip — where the arrow POINTS, not where the stroke stops)
  * @param {number} ty  target y
- * @returns {{d: string, head: string, basex: number, hx: number, hy: number}}
+ * @param {boolean} [bidi]  JOURNEY J3 S1 — draw a SECOND arrowhead at the source
+ *   end, for a board whose rows genuinely run both ways (Employee & contract: the
+ *   same row writes the record on import and is read back on a pay run). Opt-in
+ *   and defaulted off, so every existing caller gets a byte-identical `d` and
+ *   `head`: `headBack` is simply absent when it is not asked for, and the one
+ *   thing that changes when it IS asked for — the stroke starting HEAD px in, so
+ *   the curve does not run under its own arrowhead — happens only on that branch.
+ * @returns {{d: string, head: string, headBack?: string, basex: number, hx: number, hy: number}}
  */
-export function wireGeometry(sx, sy, tx, ty) {
+export function wireGeometry(sx, sy, tx, ty, bidi = false) {
     const rtl = tx < sx;                       // pointing left?
     const basex = tx + (rtl ? HEAD : -HEAD);
     const dx = basex - sx;
     const c1 = sx + dx * 0.45;
     const c2 = sx + dx * 0.55;
     const p = hubPoint(sx, sy, tx, ty);
-    return {
-        d: `M ${sx} ${sy} C ${c1} ${sy} ${c2} ${ty} ${basex} ${ty}`,
+    const startx = bidi ? sx + (rtl ? -HEAD : HEAD) : sx;
+    const out = {
+        d: `M ${startx} ${sy} C ${c1} ${sy} ${c2} ${ty} ${basex} ${ty}`,
         head: `${tx},${ty} ${basex},${ty - HEAD_H} ${basex},${ty + HEAD_H}`,
         basex,
         hx: p.x,
         hy: p.y,
     };
+    if (bidi) {
+        out.headBack = `${sx},${sy} ${startx},${sy - HEAD_H} ${startx},${sy + HEAD_H}`;
+    }
+    return out;
 }
 
 /**

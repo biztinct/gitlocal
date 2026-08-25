@@ -13,7 +13,7 @@ STATE_LABEL = {
 PIPELINE = ['draft', 'loaded', 'matched', 'validated', 'processing', 'done']
 
 SOURCE_LABEL = {
-    'excel': 'Excel / CSV', 'connector': 'Connector',
+    'excel': 'Excel / CSV',
     'api_data_store': 'API store', 'manual': 'Manual',
 }
 # IA Cycle 3 — the one-door law. `pb_hr_payroll_formula.action_integration_

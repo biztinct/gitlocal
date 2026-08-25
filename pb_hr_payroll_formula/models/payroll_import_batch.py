@@ -91,9 +91,22 @@ class HrPayrollImportBatch(models.Model):
     )
 
     # Source Configuration
+    # JOURNEY J3 S5 — `('connector', 'Integration Connector')` is GONE.
+    #
+    # It was a source a user could choose and the system could not load. There has
+    # never been an `action_load_from_connector` in this codebase: every door routes
+    # a connector batch to `action_load_from_data_store`, which refuses anything
+    # that is not `api_data_store` (see its guard below). So the value produced a
+    # batch that reached `draft` and stopped, with a refusal whose text blamed the
+    # user's choice for a loader that was never written.
+    #
+    # `api_data_store` is what "pull from the connected system" has always MEANT
+    # here — the connector writes `hr.api.data.store` rows and the batch reads
+    # those. One value for one behaviour. The migration converts any surviving row
+    # (expected 0 on all four databases) rather than leaving an unselectable value
+    # rendering as a blank radio button.
     source_type = fields.Selection([
         ('excel', 'Excel/CSV File'),
-        ('connector', 'Integration Connector'),
         ('api_data_store', 'API Data Store'),
         ('manual', 'Manual Entry'),
     ], string='Source Type', required=True, default='excel', tracking=True)
@@ -2950,8 +2963,8 @@ class HrPayrollImportBatch(models.Model):
         # definition the other kind. `rule` bindings read the FEED side, because a
         # transformation rule's output is delivered in the feed payload.
         topup = topup_data or {}
-        primary_origin = ('feed' if self.source_type in ('connector', 'api_data_store')
-                          else 'excel')
+        # J3 S5 — one value means "the connected system fed this run".
+        primary_origin = 'feed' if self.source_type == 'api_data_store' else 'excel'
         topup_origin = 'excel' if primary_origin == 'feed' else 'feed'
 
         def blob_for_kind(kind):
@@ -3074,13 +3087,14 @@ class HrPayrollImportBatch(models.Model):
         # only confirmed 'active' mappings — never 'suggested' template guesses)
         # SOURCING S2 — the gate opens for the data-store path too.
         #
-        # It was written for `source_type == 'connector'`, but there is no
-        # `action_load_from_connector` in this codebase: the cockpit routes a
-        # connector batch to `action_load_from_data_store`, which refuses anything
-        # that is not `api_data_store` (:521-522). So the branch below has never
-        # executed in production and every wire drawn on the API mapping board was
-        # decorative. The connector is reachable via `config.connector_id` on both
-        # paths, which is what makes widening it correct rather than merely possible.
+        # It was written for `source_type == 'connector'` — a value that no longer
+        # exists (J3 S5). There was never an `action_load_from_connector` in this
+        # codebase: every door routes a connector batch to
+        # `action_load_from_data_store`, which refuses anything that is not
+        # `api_data_store`. So the branch below was decorative until S2 widened the
+        # gate, and the value it was gated on has now been removed rather than left
+        # as a choice the system cannot honour. The connector is reachable via
+        # `config.connector_id`, which is what makes the single gate sufficient.
         #
         # Safe by data as well as by argument: there is no `api_data_store` batch on
         # any of the four databases (all 6 live batches are `excel`), so this changes
@@ -3098,31 +3112,61 @@ class HrPayrollImportBatch(models.Model):
         # Because a mapping can now displace a value that genuinely arrived, the
         # displaced one is RECORDED (`ignored`) rather than dropped — the owner's
         # rule is that the unused side is reported, never silently discarded.
-        if self.source_type in ('connector', 'api_data_store') and config.connector_id:
+        #
+        # ==================================================================
+        # JOURNEY J3 S2 — THE EMPTY-FEED GUARD. Read this before touching it.
+        #
+        # WHAT THIS BLOCK DID: `raw_data.get(source_field)` then
+        # `if source_value is not None`. Absence of the key already fell through
+        # (`.get` returns None) — but a key PRESENT and EMPTY did not. A feed that
+        # delivered `''` for a component, or a transform that produced `''` or
+        # None out of something, still assigned `input_values[code]` — and
+        # `normalize_input_value` turns an empty string into the component's
+        # DEFAULT. So the slot was taken, and the loop's `if rule.code not in
+        # input_values` skip below then locked out every rung underneath: the
+        # explicit spreadsheet binding, the cross-blob top-up, the name ladder,
+        # the mapped employee/contract field, the contract amount. The component
+        # read its default and the provenance said `feed`, confidently.
+        #
+        # WHAT IT DOES NOW: `_feed_values_for` (on `hr.integration.field.mapping`)
+        # returns only the wires that DELIVERED — key present, transform run, and
+        # the result non-empty by the resolver's own test (`None` or a
+        # whitespace-only string; `0` and `False` are values). A wire that
+        # delivered nothing does not appear, so it does not assign, so the rungs
+        # below it run exactly as they do on an Excel run.
+        #
+        # WHY THIS IS NOT A LADDER REORDER (J-D5): the order is untouched. When
+        # the pre-pass HAS a value it still outranks every other rung, including
+        # an explicit binding — the precedence stated in the paragraph above is
+        # unchanged and its tests still pass. The only thing that changed is what
+        # counts as *having a value*, and it changed to match the definition the
+        # bound branch two hundred lines below has always used. Before this, the
+        # owner's "keep the spreadsheet as a fallback" (J-D3) was not implementable:
+        # the fallback could never fire, because an empty feed looked exactly like
+        # a full one from here.
+        # ==================================================================
+        if self.source_type == 'api_data_store' and config.connector_id:
             connector = config.connector_id.sudo()
-            for mapping in connector._sync_mapping_ids():
-                if mapping.target_rule_id and mapping.source_field:
-                    source_value = raw_data.get(mapping.source_field)
-                    if source_value is not None:
-                        transformed = mapping.transform_value(source_value, raw_data)
-                        target = mapping.target_rule_id
-                        input_values[target.code] = normalize_input_value(
-                            target, transformed
-                        )
-                        if prov is not None:
-                            # Did a header for this same component also arrive? If so
-                            # the mapping has just displaced it, and the displaced
-                            # value is reported rather than dropped.
-                            ignored = None
-                            own_keys = [k for k in (target.name, target.code) if k]
-                            if own_keys:
-                                other_value, other_key = lookup_raw_value_with_key(own_keys)
-                                if other_value is not None and other_key != mapping.source_field:
-                                    ignored = input_provenance.ignored_side(
-                                        'feed', other_key, other_value)
-                            prov[target.code] = input_provenance.entry(
-                                'feed', key=mapping.source_field,
-                                via='connector_mapping', ignored=ignored)
+            FieldMapping = self.env['hr.integration.field.mapping']
+            for hit in FieldMapping._feed_values_for(
+                    connector._sync_mapping_ids(), raw_data):
+                target = hit['rule']
+                input_values[target.code] = normalize_input_value(
+                    target, hit['value'])
+                if prov is not None:
+                    # Did a header for this same component also arrive? If so
+                    # the mapping has just displaced it, and the displaced
+                    # value is reported rather than dropped.
+                    ignored = None
+                    own_keys = [k for k in (target.name, target.code) if k]
+                    if own_keys:
+                        other_value, other_key = lookup_raw_value_with_key(own_keys)
+                        if other_value is not None and other_key != hit['key']:
+                            ignored = input_provenance.ignored_side(
+                                'feed', other_key, other_value)
+                    prov[target.code] = input_provenance.entry(
+                        'feed', key=hit['key'],
+                        via='connector_mapping', ignored=ignored)
 
         # ------------------------------------------------------------------
         # COLROLES P3 — people data stops pretending to be an input.
@@ -3358,10 +3402,18 @@ class HrPayrollImportBatch(models.Model):
                         if bound_empty and resolved_source == 'default':
                             via = 'binding_empty'
                     prov[rule.code] = input_provenance.entry(
-                        # `origin` is 'excel' for every batch until S3 gives a run a
-                        # second source; the argument is passed explicitly so S3 adds
-                        # a caller rather than a signature.
-                        input_provenance.provenance_token(resolved_source, origin='excel'),
+                        # J3 — this was the literal `'excel'`, with a comment saying
+                        # it was 'excel' for every batch "until S3 gives a run a
+                        # second source". S3 did, and this line did not follow: a
+                        # component resolved by the NAME LADDER on a data-store run
+                        # reported `src='excel'` about a value that arrived in the
+                        # feed. `primary_origin` is computed two hundred lines above
+                        # and says which blob `raw_data` actually is; using it makes
+                        # the chip name the source the number came from. Excel runs
+                        # are unaffected — `primary_origin` is 'excel' for them by
+                        # construction.
+                        input_provenance.provenance_token(
+                            resolved_source, origin=primary_origin),
                         key=matched_key if resolved_source == 'raw' else None,
                         via=via,
                     )
