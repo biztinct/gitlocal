@@ -1,14 +1,15 @@
 # SOURCING — closeout
 
-**Programme complete. Five phases, live on abm · acme · payobook · payobook_template (2026-08-25).**
-Read this instead of the five phase reports. Detail: `SOURCING_DESIGN.md` (design + phase split),
-`SOURCING_LEDGER.md` (conventions + gotchas S1–S20), `SOURCING_PHASE_S{1..5}_HANDOVER.md`.
+**Programme complete. Six phases, live on abm · acme · payobook · payobook_template (2026-08-25).**
+Read this instead of the six phase reports. Detail: `SOURCING_DESIGN.md` (design + phase split),
+`SOURCING_LEDGER.md` (conventions + gotchas S1–S27), `SOURCING_PHASE_S{1..6}_HANDOVER.md`.
+**The owner's guide is `SOURCING_WALKTHROUGH.md`** — written for a reader, not an engineer.
 
-Final module versions: **pb_hr_payroll_formula 19.0.1.78.0 · pb_formula_studio 19.0.1.128.0 ·
+Final module versions: **pb_hr_payroll_formula 19.0.1.78.0 · pb_formula_studio 19.0.1.129.0 ·
 pb_integrations 19.0.1.12.0 · pb_workforce_payroll_bridge 19.0.1.2.0 · pb_trip_payroll_bridge
 19.0.1.1.0** · om_hr_payroll 19.0.1.0.2 (never touched — CR1).
-Commits: S1 `6724892c` · S2 `d074ce9f` · S3 `c960d022` · S4 `59835a8f` · S5 = the commit carrying
-this file. **Nothing is pushed.**
+Commits: S1 `6724892c` · S2 `d074ce9f` · S3 `c960d022` · S4 `59835a8f` · S5 `3e273842` · S6 = the
+commit carrying this file. **Nothing is pushed.**
 
 ---
 
@@ -36,9 +37,23 @@ Three things were broken and one was being thrown away:
 | **S3** Bindings + two sources | `source_binding` (+key/stamp), `binding_dangling`; `raw_data_topup_json` + `source_origin`; merge-not-unlink top-up; binding-wins / fallback / ignored | **Byte-identical AND the bound branch entered 0 times** — two independent proofs |
 | **S4** Every screen | `source` block on the serializer (declared + actual); shared `source_vocab.js`; chips on rail, card, Cell Editor, grid header, both boards | **0 overlaps** at 1440/1024; **zero writes** (checksum identical); payload +5.2% |
 | **S5** Lineage + sealed + cockpit | "Derived here" lane; lineage popover; sealed calculated components (3 enforcement points); inline rule creation; cockpit reverse links; 4 health hints; S15 header fix | **0 overlaps at both widths, 0 codes truncated**; **14/14 orphan rules surfaced**; zero writes |
+| **S6** The owner's three defects | One pill per fact (de-duplicating assembler + shared label sub-template); the Excel board writes a real binding and works with no file; a live wire is a declared source; lineage on the component; the owner's walkthrough | **0 duplicate pills / 0 overlaps** at 1440+1024, all five adapters, both hosts; **8 rule outputs surfaced on a board that showed none**; Excel binding proven end to end; **zero net writes**, neutrality md5 unchanged |
 
-**The neutrality gate held across all five phases**: the same md5 (`b1dcd785739e1c0f49d304ee5428229a`)
-before S1 and after S5, over every payobook import line.
+**The neutrality gate held across all six phases**: the same md5 (`b1dcd785739e1c0f49d304ee5428229a`)
+before S1 and after S6, over every payobook import line.
+
+### What S6 changed about the honest state above
+
+S6 is the owner's review of the live result, and it moved two rows of the table below:
+
+- **Bindings are no longer waiting for a mechanism, only for a decision.** S3 built them and nothing
+  wrote one; S12 found `data_source_field` empty everywhere because the tab that wrote it had never
+  worked. Both mapping boards now write a real `set_source_binding(…, origin='board')`, and the
+  spreadsheet board draws itself with no file loaded — you can name a column by typing its heading.
+- **The 26 components abm already had a source for now say so.** `declared` read the S3 binding and
+  the component's nature and ignored the live wires drawn years earlier, so 8 rule-fed and 18
+  feed-fed components rendered "No source chosen". A live mapping is now a declared source, which is
+  also what put "Rule output" and a lineage button on a board that had shown neither (**S24**).
 
 ---
 
@@ -71,7 +86,7 @@ the data to exercise them does not exist yet. None of this is a defect; it is th
 
 ---
 
-## Gotchas (S1–S20) — the ones worth carrying to the next programme
+## Gotchas (S1–S27) — the ones worth carrying to the next programme
 
 **Operational**
 - **S17** — `odoo-bin -u` in a detached unit **does not reload the running service's Python**. It
@@ -106,13 +121,34 @@ the data to exercise them does not exist yet. None of this is a defect; it is th
   appear, check whether the surrounding *already-working* markup is there.
 - **S15** — reserve space, never truncate a code (owner ruling). `max-width` resolves against the cell
   and does nothing at all on an inline element.
+- **S21/S22 (S6)** — three chips answering three questions can still collide on one word, and the fix
+  belongs in a **de-duplicating assembler**, not at each producer. And a branch covering two cases
+  (`formula` + `constant`) must not hardcode one of them: the loud duplicate was standing in front of
+  a wrong label on nine cards.
+- **S23 (S6)** — `declared` ignored the most explicit statement of source these databases hold: a
+  drawn mapping. **Audit what the database already asserts before adding a screen that says it
+  asserts nothing.**
+- **S24 (S6)** — S20 with a price tag. A user-visible fact must never depend on a default nobody
+  chose: abm's board tie-broke onto the connector with no transformation rules and the product looked
+  like it had none.
+- **S25 (S6)** — **dead payload ships silently.** `meta.createRule` has been sent since S5 and is read
+  by nothing; `onRightBlocked`/`onLineage` were never passed by either host, so the sealed refusal was
+  server-only and "Open rule" had never rendered. **Grep the client for every new payload key before
+  calling a phase done.**
+- **S26 (S6)** — S17 has a one-command objective test: the running `odoo-bin` pid's start time must be
+  **later** than the module row's `write_date`. Diagnose it that way instead of waiting for a shell and
+  a browser to contradict each other. And when picking a phase up from an interrupted session, `md5sum`
+  the deployed tree against the working tree — a correct version number only proves a `-u` ran.
+- **S27 (S6)** — the owner's guide was written from the design table and inverted its own instruction:
+  it said the last three chips "cannot be connected", but the last row is *no chip*, which is exactly
+  the state of a component waiting to be mapped. **Walk a user-facing doc against the product.**
 
 ---
 
 ## What the owner still has to decide
 
-1. **Push.** Five commits (`6724892c`, `d074ce9f`, `c960d022`, `59835a8f`, S5) are on `19.1` and
-   **not pushed**. Nothing leaves this machine until you say so.
+1. **Push.** Six commits (`6724892c`, `d074ce9f`, `c960d022`, `59835a8f`, `3e273842`, S6) are on
+   `19.1` and **not pushed**. Nothing leaves this machine until you say so.
 2. **payobook's cross-company repair.** Its 8 mappings were repaired on exact-code matches into
    company 2 while the connector is company 1. Evidence was exact, not heuristic, and it cannot affect
    a payslip — but it is a judgement call you may want reversed. Pre-repair snapshots are at
@@ -123,8 +159,19 @@ the data to exercise them does not exist yet. None of this is a defect; it is th
    need renaming + wiring) or they are dead (and should be archived).
 4. **The 268 unsourced inputs on payobook / 34 on abm.** They resolve by name-matching today, which
    works until a column is renamed. Binding them is now possible; nobody has.
-5. **A shared label sub-template for the mapping canvas** (S18) — the third time a chip has had to be
-   added twice. Small, and it stops the next one being a bug.
+5. ~~**A shared label sub-template for the mapping canvas** (S18).~~ **Done in S6** — it was indeed
+   the third time, and it was the reported defect.
+6. **S25 — the right column has no action menu**, so `meta.createRule` ("Create a rule for this",
+   reported as shipped in S5) is payload nothing renders. Giving that column a menu would also give it
+   "Clear the source". Small, deliberate, and out of S6's scope; say whether you want it.
+7. **abm's two connectors.** *Zoho People* holds 18 wires and no rules; *Zoho People (ABM)* holds the
+   8 transformation rules and 15 wires — and seven components are wired on **both**. The board picks
+   the first by mapping count. Nothing is broken, and it is probably not what you meant: either
+   consolidate onto one connector, or set the scheme's connector explicitly so nothing has to guess.
+8. **Nothing to decide — recorded so you know it changed.** The re-verification pass corrected one
+   sentence in `SOURCING_WALKTHROUGH.md`. It had told you that components with **no chip** cannot be
+   connected; they are the only ones that are *waiting* to be, and section 4 of the same guide walks
+   you through connecting one. Corrected in place (**S27**); no code change.
 
 ---
 
@@ -135,6 +182,25 @@ ssh Payobook19v2
 sudo -u postgres psql -d payobook -tAc "select count(*) from hr_integration_field_mapping where is_severed"   -- 0
 sudo -u postgres psql -d abm      -tAc "select count(*) from hr_integration_field_mapping where target_rule_id is not null"  -- 33
 ```
-Recompute neutrality: `/tmp/capture.py` on the server, compared against `/tmp/before.json`
-(md5 `b1dcd785739e1c0f49d304ee5428229a`). Batteries:
-`python3 pb_hr_payroll_formula/tools/{provenance,excel_semantics,import_resolution}_battery.py`.
+Both numbers above were re-checked on 2026-08-25 and are current.
+
+Recompute neutrality — this is the exact invocation, and it rolls back at the end:
+
+```
+ssh Payobook19v2
+sudo -u odoo bash -c 'CAPTURE_OUT=/tmp/check.json \
+  /odoo/odoo-server/odoo-bin shell -c /etc/odoo-server.conf -d payobook --no-http < /tmp/s3_neutral.py'
+md5sum /tmp/check.json      # must be b1dcd785739e1c0f49d304ee5428229a
+```
+
+It also prints `BOUND_BRANCH_ENTERED` (must be `0` while no binding is set) and `TOPUP_LINES`.
+
+Confirm the running service actually holds the deployed Python (**S17**, **S26**) — the module row must
+be written *before* the live process started:
+
+```
+sudo -u postgres psql -d abm -tAc "select latest_version, write_date from ir_module_module where name='pb_formula_studio'"
+ps -eo pid,lstart,cmd | grep -a '[o]doo-bin'      # server clock is UTC
+```
+
+Batteries: `python3 pb_hr_payroll_formula/tools/{provenance,excel_semantics,import_resolution}_battery.py`.

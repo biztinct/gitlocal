@@ -2160,7 +2160,7 @@
 
             <!-- the canvas -->
             <MappingCanvas t-if="state.mapData and state.mapData.ok"
-                           leftItems="state.mapData.left" rightItems="mapRightItems"
+                           leftItems="mapLeftItems" rightItems="mapRightItems"
                            wires="mapWires"
                            leftTitle="state.mapData.left_title" rightTitle="state.mapData.right_title"
                            canEdit="state.mapData.can_edit" busy="state.mapBusy"
@@ -2175,7 +2175,12 @@
                            onLeftBlocked="state.mapMode === 'employee' ? ((it) => this.mapEmpBlocked(it)) : undefined"
                            onLeftAction="state.mapMode === 'employee' ? ((it, act) => this.mapEmpAction(it, act)) : undefined"
                            onClearGroupFilter="() => this.clearMapLane()"
-                           onRemoveRight="state.mapMode === 'employee' ? ((id) => this.removeRightField(id)) : undefined"/>
+                           onRemoveRight="state.mapMode === 'employee' ? ((id) => this.removeRightField(id)) : undefined"
+                           onRightBlocked="(it) => this.mapRightBlocked(it)"
+                           onLineage="(ruleId) => this.mapOpenRule(ruleId)"
+                           canAddLeft="mapCanAddLeft"
+                           addLeftLabel="mapAddLeftLabel"
+                           onAddLeft="(text) => this.mapAddLeftColumn(text)"/>
 
             <!-- W65 — mapping template panel (save / apply) -->
             <t t-if="state.tmplMode">

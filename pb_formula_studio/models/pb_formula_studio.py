@@ -303,6 +303,65 @@ class PbFormulaStudio(models.AbstractModel):
         return {m.component_id.id for m in found if m.component_id}
 
     @api.model
+    def _source_wire_dests(self, config):
+        """Components this config already has a LIVE connector wire into.
+
+        SOURCING S6, D3 fix A. `_declared_source` used to read the S3 binding and
+        the component's own nature and nothing else — so the most explicit
+        statement of source these databases actually contain, a drawn field
+        mapping, said nothing on any screen. On abm that silenced EIGHT components
+        fed by transformation-rule outputs (`OTHRS150` → `OT15HOURS`, `DEPCOUNT` →
+        `NOOFDEPENDEN`, `WORKEDHRS` → `ACTUWORKHOUR`, …): every one of them rendered
+        "No source chosen" while a wire had been drawn to it, which is the "where is
+        the transformation indication" the owner asked about.
+
+        Returns `{rule_id: {'kind': 'rule'|'feed', 'key': source_field,
+                            'connector': <connector record>}}`.
+
+        ONE search for the whole config plus one per connector for its rules — the
+        S4 precedent (one payslip read, not one read per component). A per-component
+        lookup here would be ninety-nine queries to answer one question.
+
+        **Determinism matters more than it looks.** Seven of abm's components are
+        wired on BOTH connectors, so a first-row-wins rule would make the chip
+        depend on row order. A `rule` wire beats a `feed` wire — a rule output is
+        the more specific fact, and it is the one with lineage behind it — and ties
+        break on the lowest mapping id.
+
+        Read-only, and guarded: a chip must never break the studio.
+        """
+        FM = self.env.get('hr.integration.field.mapping')
+        if FM is None or not config.rule_ids:
+            return {}
+        try:
+            maps = FM.sudo().search([('target_rule_id', 'in', config.rule_ids.ids)],
+                                    order='id')
+        except Exception:       # noqa: BLE001
+            return {}
+        if not maps:
+            return {}
+        computed = {}
+        for connector in maps.mapped('connector_id'):
+            try:
+                computed[connector.id] = FM._computed_output_keys(connector)
+            except Exception:   # noqa: BLE001
+                computed[connector.id] = set()
+        out = {}
+        for m in maps:
+            rid = m.target_rule_id.id
+            if not rid or not m.source_field:
+                continue
+            kind = ('rule' if m.source_field in computed.get(m.connector_id.id, set())
+                    else 'feed')
+            prev = out.get(rid)
+            # a rule wire beats a feed wire; otherwise the first (lowest id) stands
+            if prev and not (kind == 'rule' and prev['kind'] != 'rule'):
+                continue
+            out[rid] = {'kind': kind, 'key': m.source_field,
+                        'connector': m.connector_id}
+        return out
+
+    @api.model
     def _source_actuals(self, config):
         """What the LAST run recorded, indexed by component code.
 
@@ -336,13 +395,24 @@ class PbFormulaStudio(models.AbstractModel):
         return blob, (slip.date_to and slip.date_to.strftime('%B %Y')) or slip.name or ''
 
     @api.model
-    def _declared_source(self, rule, emp_dest_rule_ids):
+    def _declared_source(self, rule, emp_dest_rule_ids, wire_dests=None):
         """What configuration SAYS feeds this component.
 
-        Order matters: a calculated component is calculated whatever else is set on
-        it, and an explicit binding outranks anything inferred from the component's
-        nature. Everything below the binding is a description of what the component
-        IS, not of what anybody chose.
+        Order matters, and every tier above the last is something a PERSON stated:
+
+          1. a calculated or fixed column is that whatever else is set on it;
+          2. the S3 binding — the explicit per-component declaration;
+          3. **a live connector wire** (S6) — drawn on a mapping board before S3
+             existed, and just as explicit. `rule` when the wire's source field is
+             an output key of that connector's transformation rules, `feed`
+             otherwise;
+          4. below that, a description of what the component IS rather than of
+             anything anybody chose.
+
+        `wire_dests` is `_source_wire_dests(config)`, computed once for the whole
+        config. `None` means the caller did not compute it, and tier 3 is then
+        SKIPPED rather than answered with ninety-nine queries — the failure mode of
+        a forgetful caller is today's behaviour, never a slow one.
         """
         if rule.column_type == 'formula':
             return {'kind': 'calculated', 'key': '', 'wirable': False}
@@ -352,6 +422,9 @@ class PbFormulaStudio(models.AbstractModel):
             return {'kind': rule.source_binding,
                     'key': (rule.source_binding_key or '').strip(),
                     'wirable': True}
+        wired = (wire_dests or {}).get(rule.id)
+        if wired:
+            return {'kind': wired['kind'], 'key': wired['key'], 'wirable': True}
         if rule.is_contract_component:
             return {'kind': 'contract_component', 'key': '', 'wirable': False}
         if rule.id in emp_dest_rule_ids:
@@ -365,6 +438,28 @@ class PbFormulaStudio(models.AbstractModel):
         'contract_component': "Contract component", 'employee_field': "Employee record",
         'calculated': "Calculated", 'constant': "Fixed value", 'none': "No source",
     }
+
+    @api.model
+    def _source_label(self, kind):
+        """The one translated label for a source kind.
+
+        `_SOURCE_LABELS` above is the untranslated register — it exists so a board
+        can never invent a ninth term, and it is read where the string is a key
+        rather than a sentence. This is the TRANSLATED reading of the same eight
+        words, with every literal written out so gettext can find it: `_(variable)`
+        extracts nothing and ships English forever (S19's family — a translation
+        that fails silently at the point of use).
+        """
+        return {
+            'excel': _("Spreadsheet"),
+            'feed': _("Connected system"),
+            'rule': _("Rule output"),
+            'contract_component': _("Contract component"),
+            'employee_field': _("Employee record"),
+            'calculated': _("Calculated"),
+            'constant': _("Fixed value"),
+            'none': _("No source"),
+        }.get(kind or 'none', _("No source"))
 
     #: SOURCING S5 — cards a board shows but will not let you wire.
     #: `column_type` is the authority: a formula or a constant is PRODUCED by this
@@ -463,12 +558,69 @@ class PbFormulaStudio(models.AbstractModel):
         return key[:40]
 
     @api.model
-    def _mc_right_item(self, rule, declared, note=''):
+    def _lineage_for_config(self, config, connector=None):
+        """Lineage for every rule output that can reach THIS config, keyed by key.
+
+        SOURCING S6, D3 fix B. `_lineage_by_output_key` answers for one connector,
+        which is right for the board's LEFT column — those cards are that
+        connector's fields. It is wrong for the right column, whose cards are
+        components, because a component's lineage does not depend on which
+        connector the board happened to pick.
+
+        And it picks. No config on any of the four databases has `connector_id`, so
+        `_api_active_connector` tie-breaks on mapping count: on abm that is
+        connector 1 (18 wired mappings, zero transformation rules) while all eight
+        rules live on connector 3. That is **S20**, and it is why the owner's board
+        showed no "Derived here" lane and no lineage anywhere — correctly, for the
+        connector it was showing, and unhelpfully for the question being asked.
+
+        So the union: the board's own connector, plus every connector holding a
+        wire into this config, plus the connector of any `('rule', key)` binding.
+        A rule that produces a key is a rule that produces a key; the vendor does
+        not have to have been called for that to be true.
+        """
+        Conn = self.env.get('hr.integration.connector')
+        FM = self.env.get('hr.integration.field.mapping')
+        if Conn is None or FM is None:
+            return {}
+        conns = Conn.browse()
+        if connector:
+            conns |= connector
+        try:
+            if config.rule_ids:
+                conns |= FM.sudo().search(
+                    [('target_rule_id', 'in', config.rule_ids.ids)]).mapped('connector_id')
+            if config.connector_id:
+                conns |= config.connector_id
+        except Exception:       # noqa: BLE001 — lineage must never break a board
+            pass
+        # A `('rule', key)` binding is written by `api_mapping_create`, which draws
+        # a field mapping on the same connector — so the mapping search above has
+        # already caught it. Nothing here walks every connector on the database:
+        # `_lineage_by_output_key` costs a search per rule, and an unbounded set
+        # would make a 200-connector bureau pay for one card's tooltip.
+        out = {}
+        for c in conns:
+            for key, val in self._lineage_by_output_key(c, config).items():
+                out.setdefault(key, val)
+        return out
+
+    @api.model
+    def _mc_right_item(self, rule, declared, note='', lineage=None):
         wirable = rule.column_type == 'input'
         item = {'id': rule.id, 'label': (rule.name or rule.code),
                 'sublabel': rule.code or '',
                 'srcKind': declared['kind'], 'srcNote': note,
                 'meta': {'col': rule.column_letter or '', 'type': rule.column_type}}
+        # SOURCING S6 — a component fed by a rule output carries that rule's
+        # lineage, so "how is this worked out" is answerable from the COMPONENT and
+        # not only from the vendor field two columns to the left. The canvas grows
+        # the affordance only for a card that has one, so every other board and
+        # every other card is unchanged.
+        if declared['kind'] == 'rule' and lineage:
+            lin = lineage.get(declared['key'])
+            if lin:
+                item['lineage'] = lin
         # SOURCING S5 — an input with nothing feeding it can start a rule from
         # here. The key is sanitised through the SAME contract S2 put on
         # `output_key`, so the composer never opens on a key its own constraint
@@ -483,51 +635,78 @@ class PbFormulaStudio(models.AbstractModel):
                 'component_id': rule.id,
             }
         if not wirable:
+            # ==========================================================
+            # SOURCING S6, D1 — ONE pill, and the pill says the right word.
+            #
+            # This block used to add `badge: "Calculated"` on top of the
+            # `srcKind: 'calculated'` set above, so every one of abm's 45 sealed
+            # cards rendered TWO adjacent pills both reading CALCULATED — the
+            # defect the owner photographed. For a produced column, "it is
+            # calculated" and "it needs no source" are one fact told twice; the
+            # explanation belongs in the tooltip, not in a second pill.
+            #
+            # The BADGE keeps it, not the source chip, for two reasons: it is the
+            # one that can carry a sentence (`badgeHint`), and it is the one the
+            # sealed styling and `meta.wirable` already key off. `srcKind` is
+            # dropped so the chip cannot render at all.
+            #
+            # And the defect nobody reported: this branch covers `constant` as
+            # well as `formula`, so abm's NINE fixed-value columns were badged
+            # "Calculated" — not a duplicate but a contradiction, sitting next to
+            # a chip correctly reading "Fixed value". The label now comes from the
+            # component's own kind, so a constant says Fixed value and means it.
+            # ==========================================================
+            item['srcKind'] = ''
+            label = self._source_label(declared['kind'])
             item['meta'].update({
                 'wirable': False,
-                'badge': _("Calculated"),
+                'badge': label,
                 'badgeTone': 'calc',
                 # Wording borrowed from the employee tab, which has said this for
                 # a year: a produced column is "produced, not imported".
-                'badgeHint': _("Calculated — needs no source. This column is "
-                               "produced by the scheme, not imported into it."),
+                'badgeHint': _("%s — needs no source. This column is produced by "
+                               "the scheme, not imported into it.") % label,
             })
         return item
 
     @api.model
-    def _mc_right_column(self, config, actuals, emp_dest, wirable_only=False):
+    def _mc_right_column(self, config, actuals, emp_dest, wirable_only=False,
+                         wire_dests=None, lineage=None):
         """Every component a mapping board should show, in display order."""
         rules = config.rule_ids if not wirable_only else config.rule_ids.filtered(
             lambda r: r.column_type == 'input')
         rules = rules.sorted(key=lambda r: r.sequence)
         out = []
         for r in rules:
-            declared = self._declared_source(r, emp_dest)
+            declared = self._declared_source(r, emp_dest, wire_dests)
             out.append(self._mc_right_item(
-                r, declared, self._source_note(r, actuals, emp_dest)))
+                r, declared, self._source_note(r, actuals, emp_dest, wire_dests),
+                lineage))
         return out
 
     @api.model
-    def _source_note(self, rule, actuals, emp_dest_rule_ids):
+    def _source_note(self, rule, actuals, emp_dest_rule_ids, wire_dests=None):
         """The one-line note a mapping board shows against a component.
 
         Says "already fed by X" so a user drawing a wire can see that this target
         is not idle. Silent when nothing feeds it — an empty note is the normal
         case and a board full of chips would say nothing at all.
         """
-        declared = self._declared_source(rule, emp_dest_rule_ids)
+        declared = self._declared_source(rule, emp_dest_rule_ids, wire_dests)
         kind = declared['kind']
         if kind == 'none':
             return ''
-        label = self._SOURCE_LABELS.get(kind, '')
+        label = self._source_label(kind)
         if declared['key']:
             return _("Already fed by %(src)s “%(key)s”",
                      src=label, key=declared['key'])
         return _("Already fed by %s") % label
 
     @api.model
-    def _source_block(self, rule, actuals, actual_run, emp_dest_rule_ids):
-        block = {'declared': self._declared_source(rule, emp_dest_rule_ids)}
+    def _source_block(self, rule, actuals, actual_run, emp_dest_rule_ids,
+                      wire_dests=None):
+        block = {'declared': self._declared_source(
+            rule, emp_dest_rule_ids, wire_dests)}
         entry = actuals.get(rule.code or '')
         if entry and isinstance(entry, dict):
             block['actual'] = {
@@ -575,6 +754,10 @@ class PbFormulaStudio(models.AbstractModel):
         # what keeps a 250-column scheme at one extra query instead of 250.
         actuals, actual_run = self._source_actuals(config)
         emp_dest_rule_ids = self._source_employee_dest_ids(config)
+        # SOURCING S6 — and the wires that were drawn before bindings existed. One
+        # search for the whole config; a component with a live connector wire stops
+        # saying "No source chosen" about a source somebody explicitly drew.
+        wire_dests = self._source_wire_dests(config)
 
         components = []
         for r in rules:
@@ -618,7 +801,7 @@ class PbFormulaStudio(models.AbstractModel):
                 # source block" rather than to half a truth. Same contract as
                 # `column_role` above, for the same reason.
                 'source': self._source_block(
-                    r, actuals, actual_run, emp_dest_rule_ids),
+                    r, actuals, actual_run, emp_dest_rule_ids, wire_dests),
             })
 
         samples = [{'id': s.id, 'name': s.name} for s in config.sample_data_ids]
@@ -4697,7 +4880,14 @@ class PbFormulaStudio(models.AbstractModel):
         # than filtered out, so a reader stops wondering where they went.
         _acts, _run = self._source_actuals(config)
         _emp = self._source_employee_dest_ids(config)
-        right = self._mc_right_column(config, _acts, _emp)
+        _wires = self._source_wire_dests(config)
+        # SOURCING S6 — lineage for the right column too, and NOT limited to the
+        # connector this board happens to be showing (S20). `lineage_by_key` above
+        # is this connector's, for its own cards; `_lineage_for_config` is every
+        # connector that can reach this scheme, for the components.
+        right = self._mc_right_column(
+            config, _acts, _emp, wire_dests=_wires,
+            lineage=self._lineage_for_config(config, conn))
         # accepted wires = persisted field mappings on this connector → these inputs
         wires = []
         mapped_paths, mapped_rules = set(), set()
@@ -4897,7 +5087,43 @@ class PbFormulaStudio(models.AbstractModel):
         FM.search(['&', ('connector_id', '=', conn.id),
                    '|', ('source_field', '=', src), ('target_rule_id', '=', rule.id)]).unlink()
         FM.create(vals)
-        return {'ok': True}
+        # SOURCING S6 — and the wire is now a BINDING as well as a mapping.
+        #
+        # S3 built `source_binding` and the resolver honours it; until now nothing
+        # in the product wrote one, so the owner's requirement — "each component
+        # clearly identified as to which source feeds it" — had a data model and no
+        # door. Drawing a wire IS the declaration, on this board and on the Excel
+        # board equally, so both write one and neither is the special case.
+        #
+        # `rule` when the path is one this connector COMPUTES, `feed` when the
+        # vendor delivers it. The distinction is the whole vocabulary: "Rule output"
+        # is a thing with lineage behind it, "Connected system" is a thing the
+        # vendor sent.
+        kind = 'rule' if src in FM._computed_output_keys(conn) else 'feed'
+        replaced = self._binding_replaced(rule, kind, src)
+        rule.set_source_binding(kind, src, origin='board')
+        return {'ok': True, 'replaced': replaced}
+
+    @api.model
+    def _binding_replaced(self, rule, kind, key):
+        """What this component was reading BEFORE, when it is about to change.
+
+        The owner's rule is that switching a component from one source to the other
+        is a single deliberate act — so it has to be an act that says what it did.
+        `None` when nothing is being displaced, which is the common case and stays
+        silent.
+        """
+        old_kind = rule.source_binding
+        old_key = (rule.source_binding_key or '').strip()
+        if not old_kind or (old_kind == kind and old_key == (key or '').strip()):
+            return None
+        return {'kind': old_kind, 'key': old_key,
+                'label': self._source_label(old_kind),
+                'msg': _("“%(code)s” now reads %(new)s “%(key)s” instead of "
+                         "%(old)s “%(old_key)s”.",
+                         code=rule.code or rule.name or '',
+                         new=self._source_label(kind), key=key,
+                         old=self._source_label(old_kind), old_key=old_key)}
 
     @api.model
     def api_mapping_delete(self, mapping_id):
@@ -4905,6 +5131,14 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': _("No permission.")}
         m = self.env['hr.integration.field.mapping'].browse(self._as_id(mapping_id))
         if m.exists():
+            # SOURCING S6 — removing the wire removes the wire. The binding is
+            # cleared only when it is THIS wire's binding: a component someone has
+            # since re-bound to a spreadsheet column must not lose that because an
+            # old feed mapping was tidied away.
+            rule = m.target_rule_id
+            if rule and rule.source_binding in ('feed', 'rule') and \
+                    (rule.source_binding_key or '').strip() == (m.source_field or '').strip():
+                rule.set_source_binding(False, False)
             m.unlink()
         return {'ok': True}
 
@@ -5180,6 +5414,28 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def import_mapping_data(self, config_id=None, batch_id=None):
+        """The Excel board — which, until S6, could not be opened at all.
+
+        It answered `{'ok': False, 'reason': 'no_batch'}` on any database with no
+        import batch (abm has none), so the only spreadsheet-mapping surface in the
+        product was a dead end from the first click. And its left column was "the
+        keys of one line of one load", which meant the board was only ever usable in
+        the minutes after somebody happened to upload a file — which is why, per
+        **S12**, it has never written a value on any of the four databases.
+
+        Three lanes now, each an honest source of column names, and the board draws
+        itself when all three are empty:
+
+          * the selected batch's columns (today's behaviour, kept);
+          * **the keys this scheme is already bound to** — so last month's wires are
+            on screen with no file loaded at all;
+          * legacy `data_source_field` values, for schemes that predate bindings.
+
+        And when the column you want is in none of them, the left column's search
+        box offers to take it as typed (`can_add`) — a header or a column letter.
+        A board that requires an upload before it will show you anything is a board
+        nobody uses.
+        """
         config = self._pick_config(config_id)
         if not config:
             return {'ok': False, 'reason': 'no_config'}
@@ -5190,22 +5446,26 @@ class PbFormulaStudio(models.AbstractModel):
         if not batch:
             batch = (batches.filtered(lambda b: b.formula_config_id.id == config.id and b.import_line_ids)[:1]
                      or batches.filtered(lambda b: b.import_line_ids)[:1] or batches[:1])
-        if not batch:
-            return {'ok': False, 'reason': 'no_batch', 'contexts': contexts}
-        cols = self._import_batch_columns(batch)
-        left = [{'id': 'c:' + c, 'label': c, 'sublabel': '', 'meta': {}} for c in cols]
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
             .sorted(key=lambda r: r.sequence)
+        cols = self._import_batch_columns(batch) if batch else []
+        left = self._import_left_columns(batch, cols, input_rules)
         _acts, _run = self._source_actuals(config)
         _emp = self._source_employee_dest_ids(config)
-        right = self._mc_right_column(config, _acts, _emp)
-        col_set = set(cols)
+        _wires = self._source_wire_dests(config)
+        right = self._mc_right_column(
+            config, _acts, _emp, wire_dests=_wires,
+            lineage=self._lineage_for_config(config))
         wires, mapped_rules = [], set()
         for r in input_rules:
-            dsf = r.data_source_field
-            if dsf and dsf in col_set:
+            # The BINDING is the wire. `data_source_field` still draws one for a
+            # scheme that predates bindings, so no existing configuration loses its
+            # picture — but it is the fallback, not the record.
+            key = ((r.source_binding_key or '').strip()
+                   if r.source_binding == 'excel' else '') or r.data_source_field
+            if key:
                 wires.append({'id': 'im%s' % r.id, 'kind': 'mapping', 'ref': r.id,
-                              'leftId': 'c:' + dsf, 'rightId': r.id, 'state': 'accepted'})
+                              'leftId': 'c:' + key, 'rightId': r.id, 'state': 'accepted'})
                 mapped_rules.add(r.id)
         # suggestions: best name/code match between an unmapped column and input
         rule_norms = [(r, self._norm(r.code), self._norm(r.name)) for r in input_rules
@@ -5234,29 +5494,82 @@ class PbFormulaStudio(models.AbstractModel):
                 used.add(best.id)
         return {
             'ok': True, 'left': left, 'right': right, 'wires': wires,
-            'left_title': '%s · columns' % batch.name,
+            'left_title': ('%s · columns' % batch.name) if batch
+                          else _("Spreadsheet columns"),
             'right_title': '%s · inputs' % config.name,
-            'subtitle': _("Map imported columns from %s onto this scheme's inputs") % batch.name,
+            'subtitle': (_("Map imported columns from %s onto this scheme's inputs")
+                         % batch.name) if batch else _(
+                "Say which spreadsheet column feeds each component. No file needs "
+                "to be loaded — type the column heading and connect it."),
             'supports_suggest': False,
-            'contexts': contexts, 'context_id': batch.id,
+            # The search box may take a column as typed. It is the answer to "the
+            # column I want is not in this list", which on a database with no
+            # upload is every column.
+            'can_add': True,
+            'add_label': _("Use “%s” as a spreadsheet column"),
+            'contexts': contexts, 'context_id': batch.id if batch else False,
             'can_edit': self._can_edit(),
         }
 
     @api.model
+    def _import_left_columns(self, batch, cols, input_rules):
+        """The Excel board's left column: three lanes, none of them invented.
+
+        Order is deliberate — the file first when there is one, because that is
+        what somebody with a file in front of them is looking for; then what this
+        scheme already reads, which is the only lane a never-uploaded database has.
+        """
+        out, seen = [], set()
+
+        def add(key, group):
+            key = (key or '').strip()
+            if not key or key in seen:
+                return
+            seen.add(key)
+            out.append({'id': 'c:' + key, 'label': key, 'sublabel': '',
+                        'group': group, 'meta': {}})
+
+        file_lane = (batch.name or _("This file")) if batch else _("Uploaded file")
+        for c in cols:
+            add(c, file_lane)
+        for r in input_rules:
+            if r.source_binding == 'excel':
+                add(r.source_binding_key, _("Already used by this scheme"))
+        for r in input_rules:
+            add(r.data_source_field, _("From this scheme's history"))
+        return out
+
+    @api.model
     def import_mapping_create(self, config_id, batch_id, column, target_rule_id):
+        """Bind a component to a spreadsheet column — for real, this time.
+
+        This wrote `rule.write({'data_source_field': col})` and nothing else, which
+        is why **S12** found that Char empty on every rule on all four databases:
+        one overloaded string that carried spreadsheet headers, feed keys and column
+        letters indiscriminately, with nothing to say which. S3 built the honest
+        answer — `source_binding` + `source_binding_key`, consulted by the resolver
+        in front of the name-matching ladder — and nothing wrote one.
+
+        Now this does, and `data_source_field` is deliberately NOT written beside
+        it. Two statements of one fact drift apart; the binding is the one the
+        resolver reads first and the one every chip renders, so it is the one that
+        gets written.
+        """
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
         # MAPFIX D1 — wrong-type in, refusal out (see `employee_mapping_create`).
         col = self._ec_spec(column)
         col = col[2:] if col.startswith('c:') else col
+        col = (col or '').strip()
         rule = self.env['hr.formula.rule'].browse(self._as_id(target_rule_id))
-        if not rule.exists():
+        if not (col and rule.exists()):
             return {'ok': False, 'msg': self._ec_bad_spec_msg()}
         sealed = self._mc_refuse_sealed(rule)
         if sealed:
             return sealed
-        rule.write({'data_source_field': col})
-        return {'ok': True}
+        replaced = self._binding_replaced(rule, 'excel', col)
+        rule.set_source_binding('excel', col, origin='board')
+        return {'ok': True, 'replaced': replaced}
 
     @api.model
     def import_mapping_delete(self, rule_id):
@@ -5264,7 +5577,13 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': _("No permission.")}
         rule = self.env['hr.formula.rule'].browse(self._as_id(rule_id))
         if rule.exists():
-            rule.write({'data_source_field': False})
+            # Clear whichever of the two drew the wire. A component wired from the
+            # legacy Char and one bound properly both have to come off the board
+            # when the user removes them, or "delete" is a lie on half the rows.
+            if rule.source_binding == 'excel':
+                rule.set_source_binding(False, False)
+            if rule.data_source_field:
+                rule.write({'data_source_field': False})
         return {'ok': True}
 
     # ------------------------------------------------------------------

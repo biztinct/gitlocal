@@ -238,6 +238,7 @@ export class PbFormulaStudio extends Component {
             mapMode: "cycle",        // cycle | api
             mapContextId: null,      // adapter context (e.g. connector id for api)
             mapDismissed: [],        // client-side-dismissed suggestion wire ids
+            mapExtraCols: [],        // SOURCING S6 — spreadsheet columns named by hand
             mapData: null,           // {ok, left, right, wires, left_title, right_title, supports_suggest, contexts, ...}
             // COLROLES P3 — the employee board's two parent-owned filters. Both live
             // here rather than in the canvas because the canvas is payroll-agnostic
@@ -4469,6 +4470,58 @@ export class PbFormulaStudio extends Component {
             ? this.mapEmpRight
             : ((this.state.mapData && this.state.mapData.right) || []);
     }
+
+    // ---- SOURCING S6 — the overlay's half of the spreadsheet board -----------
+    /**
+     * The same three additions the full-screen studio got, because the overlay is
+     * the same board and the owner met the defect on both. Columns typed by hand
+     * sit in front of the server's list; a wire makes one permanent (the server
+     * returns it in the "Already used by this scheme" lane), and one that was never
+     * wired does not survive a reload — which is the honest behaviour.
+     */
+    get mapLeftItems() {
+        const server = (this.state.mapData && this.state.mapData.left) || [];
+        const extra = (this.state.mapExtraCols || [])
+            .filter((c) => !server.some((x) => String(x.id) === "c:" + c))
+            .map((c) => ({ id: "c:" + c, label: c, sublabel: "",
+                           group: _t("Added here"), meta: {} }));
+        return extra.length ? extra.concat(server) : server;
+    }
+    get mapCanAddLeft() {
+        const d = this.state.mapData;
+        return !!(d && d.ok && d.can_add && d.can_edit);
+    }
+    get mapAddLeftLabel() {
+        return (this.state.mapData && this.state.mapData.add_label)
+            || _t("Use “%s” as a spreadsheet column");
+    }
+    mapAddLeftColumn(text) {
+        const t = (text || "").trim();
+        const have = this.state.mapExtraCols || [];
+        if (!t || have.includes(t)) { return; }
+        this.state.mapExtraCols = [...have, t];
+    }
+    /**
+     * A sealed component answers on the board too — S5 built the refusal in
+     * `clickRight` and in both create RPCs and then neither host passed the
+     * callback, so the click cleared the armed card and said nothing.
+     */
+    mapRightBlocked(item) {
+        const hint = (item && item.meta && item.meta.badgeHint)
+            || _t("This component is produced by the scheme, not imported into it.");
+        this.notif.add(hint, { type: "info" });
+    }
+    /** "Open rule" from the lineage popover. */
+    mapOpenRule(ruleId) {
+        if (!ruleId) { return; }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.api.transformation.rule",
+            res_id: ruleId,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
     // ---- Employee/Contract browse dropdowns (Employee ▾ / Contract ▾) --------
     // Toggle a per-model popover listing ALL writable scalar fields; lazy-load
     // once per model into mapEmpMenuAll.
@@ -4791,6 +4844,7 @@ export class PbFormulaStudio extends Component {
         this.state.mapData = null;
         this.state.mapContextId = null;
         this.state.mapDismissed = [];
+        this.state.mapExtraCols = [];
         this._resetEmpPicker();
         this._loadMapping();
     }
@@ -4800,12 +4854,14 @@ export class PbFormulaStudio extends Component {
         this.state.mapData = null;
         this.state.mapContextId = null;
         this.state.mapDismissed = [];
+        this.state.mapExtraCols = [];
         this._resetEmpPicker();
         this._loadMapping();
     }
     setMapContext(ev) {
         this.state.mapContextId = parseInt(ev.target.value, 10);
         this.state.mapDismissed = [];
+        this.state.mapExtraCols = [];
         this._loadMapping();
     }
     closeMapping() { this.state.mapOpen = false; }
@@ -4868,6 +4924,9 @@ export class PbFormulaStudio extends Component {
                 [this.state.config.id, this.state.mapContextId, leftId, rightId])
             : await this.orm.call("pb.formula.studio", "mapping_create", [this.state.config.id, leftId, rightId]);
         if (r && r.ok === false) { this.notif.add(r.msg || "Could not connect", { type: "warning" }); return; }
+        // SOURCING S6 — the wire may have re-pointed a component from one source to
+        // the other. One deliberate act, and it says what it replaced.
+        if (r && r.replaced && r.replaced.msg) { this.notif.add(r.replaced.msg, { type: "info" }); }
         // MAPFIX B2 — a successful wire may have CHANGED something else: drawing
         // onto a contract component demotes it, and the sentence that says what
         // happened to the values already on the contract is the whole reassurance

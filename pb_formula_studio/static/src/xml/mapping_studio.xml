@@ -217,7 +217,12 @@
                              onDraw="(l, r) => this.draw(l, r)"
                              onTransformPreview="(ref, d) => this.transformPreview(ref, d)"
                              onTransformSave="(ref, v) => this.transformSave(ref, v)"
-                             onLeftBlocked="(it) => this.leftBlocked(it)"/>
+                             onLeftBlocked="(it) => this.leftBlocked(it)"
+                             onRightBlocked="(it) => this.rightBlocked(it)"
+                             onLineage="(ruleId) => this.openRule(ruleId)"
+                             canAddLeft="canAddLeft"
+                             addLeftLabel="addLeftLabel"
+                             onAddLeft="(text) => this.addLeftColumn(text)"/>
             </div>
           </t>
         </div>
