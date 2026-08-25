@@ -336,6 +336,80 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   **When a fact is per-connector, name the connector in the test; a plausible empty result is the
   most expensive kind.**
 
+- **S21 (S6, design): three chips answering three questions can still collide on one word — and the
+  fix belongs in the assembler, not at each producer.** `provChip` ("where did this CARD come from"),
+  `srcChip` ("what feeds this COMPONENT") and `badge` ("what the card IS") are correctly three
+  separate questions, and S4/S5 added the second and third without anybody checking what happens when
+  two of them answer *the same word*. On a calculated component both said **Calculated**, so all 45
+  sealed cards on abm rendered `CALCULATED CALCULATED`. Patching `_mc_right_item` alone would have
+  fixed today's collision and left the next one to be discovered by the owner. `itemChips(it)` now
+  assembles the three and **drops any chip whose label duplicates an earlier one**, so the invariant
+  "a card never renders two pills with the same text" holds for boards not yet written. **An
+  N-producer slot needs a de-duplicating assembler, not N careful producers.**
+
+- **S22 (S6, finding): a branch that covers two cases must not hardcode one of them.** The same
+  `if not wirable:` block badged `formula` AND `constant` cards with the literal `"Calculated"`, so
+  abm's nine fixed-value columns carried `Fixed value` (chip) beside `Calculated` (badge) — not a
+  duplicate but a **contradiction**, and nobody reported it because the duplicate next to it was
+  louder. The badge label now comes from the card's own kind. **When you fix a reported defect, check
+  the other rows the same code path produces: the loud bug is often standing in front of a wrong one.**
+
+- **S23 (S6, design): `declared` ignored the most explicit statement of source these databases
+  actually hold.** `_declared_source` read the S3 binding and the component's own nature and stopped.
+  A **live `hr.integration.field.mapping`** — a wire somebody drew on a board, years before bindings
+  existed — said nothing on any screen. On abm that silenced 8 components fed by transformation-rule
+  outputs and 18 fed by vendor fields: every one of them rendered "No source chosen" while a wire was
+  attached. It is now a tier between the binding and the nature, computed once per config in one
+  search, with `rule` beating `feed` when a component is wired on two connectors (seven of abm's are)
+  so the answer cannot depend on row order. **"Explicit" is not a synonym for "the newest mechanism";
+  audit what the database already asserts before adding a screen that claims it asserts nothing.**
+
+- **S24 (S6, environment): S20's cost, measured.** abm has two connectors — 1 *Zoho People* (18
+  mappings, all wired, **0 transformation rules**) and 3 *Zoho People (ABM)* (41 mappings, 15 wired,
+  **all 8 rules**) — and config 14 has no `connector_id`, so `_api_active_connector` tie-breaks on
+  mapping count and lands on **connector 1**. The owner's board therefore had no "Derived here" lane
+  and no lineage anywhere, correctly, and the product looked like it had none at all. The lane was
+  never conditional on synced data (`_catalog_source_fields` has contributed rule outputs pre-sync
+  since Integrations Cycle 4). The fix is not to change the tie-break — connector 1's 18 wires are
+  real — it is that **a component's lineage must not be scoped to whichever connector a board
+  guessed**: `_lineage_for_config` unions every connector that can reach the scheme. **S20 said "name
+  the connector in the test"; S24 adds "and never let a user-visible fact depend on a default nobody
+  chose".**
+
+- **S25 (S6, finding): dead payload ships silently.** `_mc_right_item` has written
+  `meta.createRule` since S5 — the "Create a rule for this" affordance the closeout reports as
+  shipped — and **no template or component reads the key**. The right column has no action menu at
+  all. Likewise neither host passed `onRightBlocked` or `onLineage`, so S5's sealed-card refusal was
+  server-only and the lineage popover's **"Open rule"** button had never once rendered. All three are
+  invisible in every test that checks a payload rather than a pixel. **A server key nothing renders is
+  indistinguishable from a feature; grep the client for every new payload key before calling a phase
+  done.** (`onRightBlocked` and `onLineage` are wired in S6; `createRule` is left dead and reported.)
+
+- **S26 (S6 re-verification, environment): S17 has a cheap objective test — stop diagnosing it from
+  symptoms.** The documented signature of "the running service never reloaded the Python" is *a shell
+  and a browser disagreeing about the same method*, which you only notice after writing a test that
+  contradicts itself. There is a direct check, and it costs one command:
+  compare `ir_module_module.write_date` for the upgraded module against the **start time of the running
+  `odoo-bin` pid** (`ps -o lstart= -p <pid>`; the server clock is UTC). Restart-after-upgrade ⇒ the
+  process start is LATER than the module write. Here `21:57:56Z` vs `22:07:40Z` — satisfied, proven in
+  seconds, with no browser involved. **When a phase is picked up from an interrupted session, verify
+  the deploy the same way: per-file `md5sum` of the deployed tree against the working tree** (all nine
+  files matched), because "the version number is right" only proves a `-u` ran, not that the files
+  under it are the ones you are reading. Note `/odoo` is `0750 odoo:odoo`, so every such check needs
+  `sudo` — an `ls` that says *Permission denied* is the ledger's CR6 trap wearing a different hat, and
+  is **not** evidence the deploy is broken.
+
+- **S27 (S6 re-verification, finding): the owner-facing doc was written from the design table, not from
+  the running product — and inverted the one instruction it exists to give.** `SOURCING_WALKTHROUGH.md`
+  listed the eight chips and then said *"the last three cannot be connected to anything"*. Two of them
+  (`Calculated`, `Fixed value`) genuinely cannot. The third is **no chip at all** — which is precisely
+  the state of a component that is *waiting to be connected*, and the only kind the guide's own
+  spreadsheet walkthrough actually wires (`NIGHSHIFHOUR` has no chip until you feed it). A reader
+  following the guide would have skipped every component the guide was written to teach him to map.
+  The sentence is true of the *sealed* set and was copied onto a table whose last row means the
+  opposite. **A user-facing doc must be walked against the product, not derived from the spec table it
+  was designed alongside: the design table is grouped by "cannot be wired", the rendered board is not.**
+
 ## Owner decisions (locked)
 
 *(none yet beyond the seven in the brief — recorded here as they are made)*
@@ -443,3 +517,47 @@ Established 2026-08-24 against the code and the live databases. Full detail in
   pre-existing 3/2 from S4 are now 0/0. **S11 acceptance PASSED: the orphan-rule hint surfaces 14 of
   payobook's 14 rules** (and correctly 0 on abm, where S2 wired all 8). Zero writes: payobook rule
   checksum `eb80d6757a8f4a79a9f57e3b5ba13512` unchanged. Gotchas **S18**, **S19**, **S20**.
+- **S6 — One pill, an Excel source you can choose, lineage where it belongs. DONE + live on abm ·
+  acme · payobook · payobook_template (2026-08-25).** pb_formula_studio **19.0.1.129.0**. Three
+  owner-reported defects, spec at `SOURCING_PHASE_S6_HANDOVER.md`, owner guide at
+  `SOURCING_WALKTHROUGH.md`.
+  Shipped: **D1** — sealed cards send no `srcKind` and their badge label comes from their own kind
+  (`Calculated` / `Fixed value`), the de-duplicating `itemChips` assembler, and a **shared
+  `McItemLabel` sub-template rendered by both columns** (the durable fix for S16/S18, closeout open
+  item 5). **D2** — `import_mapping_data` never returns `no_batch`; three left-hand lanes (batch
+  columns · bound keys · legacy `data_source_field`); the search box takes a heading or a column
+  letter as typed (`canAddLeft`/`onAddLeft`); `import_mapping_create` writes a real
+  `set_source_binding('excel', …, origin='board')` and no longer writes `data_source_field`;
+  `api_mapping_create` writes the symmetric `feed`/`rule` binding; both deletes clear only their own
+  binding; `_binding_replaced` returns a sentence naming both sides. **D3** — `_source_wire_dests`
+  makes a live field mapping a declared source (`rule` beats `feed`, ties on lowest id);
+  `_lineage_for_config` unions every connector that can reach the scheme; right-column cards carry
+  lineage; both hosts now pass `onLineage` and `onRightBlocked`.
+  **Measured on abm:** 99 right cards, **0 duplicate-pill cards**, 36 `Calculated` + 9 `Fixed value`
+  (was 45 × `Calculated Calculated`, 9 of them contradicting their own chip); **8 `Rule output` chips
+  with lineage** where the board previously showed none; **0 bounding-box overlaps at 1440 AND 1024**
+  across all five adapters on both the full-screen studio and the overlay. Excel binding proven end to
+  end (`NIGHSHIFHOUR` ← `excel`/`Basic Salary VND`/`board`), the switch to `feed` proven with its
+  sentence, and both removals proven to clear it. **Neutrality: payobook `input_values` byte-identical,
+  md5 `b1dcd785739e1c0f49d304ee5428229a`.** **Zero net writes: all four databases restored to their
+  pre-test checksums.**
+  Gotchas **S21**, **S22**, **S23**, **S24**, **S25**.
+
+  **Independent re-verification (2026-08-25, second session — the phase was interrupted mid-way and
+  every claim above was re-run from scratch against the deployed code and the live databases).**
+  Deployed tree confirmed byte-identical to the working tree on all nine changed files (md5 per file);
+  `latest_version = 19.0.1.129.0` on all four; **S17 satisfied** — the upgrade wrote the module row at
+  `21:57:56Z` and `odoo-server` restarted at `22:07:40Z`, i.e. *after* it, so the running service holds
+  the new Python. T1 36 `Calculated` + 9 `Fixed value`, T2 **0** duplicate-pill cards over **149/99/257/1/0**
+  cards on the five adapters × two hosts × {1440, 1024} — **10 board-width combinations, 0 duplicates,
+  0 overlaps, 0 clipped glyphs**. T4–T8 re-proven with a *different* key (`NIGHSHIFHOUR` ←
+  `excel`/`Gross Salary VND`/`board`, `data_source_field` NULL), the switch sentence captured in both
+  directions, and the delete proven to clear binding **and** legacy Char. T9–T11 8 rule-output chips +
+  lineage on the owner's own connector-1 board; all **7** dual-wired components byte-identical across two
+  independent loads, `NOOFDEPENDEN` → `rule`/`DEPCOUNT` (rule beats feed). T12 refusal on mouse, on
+  **Enter**, and on both create RPCs. T13 all four DBs restored **exactly**: abm rules
+  `38b09d9b32f70251fe138915451e2bed` / mappings `5c7eae5e44ace0f30440e80a47bbd280`, payobook rules
+  `06eb9ed19cb628474d19cba8c759f688` / mappings `26928ec4ed0252c2cc0d28fa4afff79f`, acme and
+  payobook_template empty. T14 neutrality re-run live: `b1dcd785739e1c0f49d304ee5428229a`,
+  `BOUND_BRANCH_ENTERED 0`. T15 three batteries green. Zero console errors; no user-visible "Odoo".
+  Gotchas **S26**, **S27**; one owner-facing error corrected in the walkthrough (closeout item 8).

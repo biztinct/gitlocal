@@ -97,6 +97,8 @@ export class MappingStudio extends Component {
             connectorId: 0, endpointId: 0, configId: 0, batchId: 0,
             data: null,
             dismissed: [],
+            // SOURCING S6 — columns named by hand on the spreadsheet board
+            extraCols: [],
             // which rich dropdown is open, and its search box
             picker: "", pquery: "",
             // what the arrival context asked for and could not have
@@ -370,8 +372,61 @@ export class MappingStudio extends Component {
 
     get canEdit() { return !!(this.state.data && this.state.data.can_edit); }
 
-    get leftItems() { return (this.state.data && this.state.data.left) || []; }
+    get leftItems() {
+        const server = (this.state.data && this.state.data.left) || [];
+        // SOURCING S6 — columns typed in this session, kept in front of the
+        // server's list until a wire makes them permanent. They are dropped on
+        // every reload EXCEPT that a bound one comes back from the server in the
+        // "Already used by this scheme" lane, which is what makes the affordance
+        // honest: a card you never wired does not survive, and one you did does.
+        const extra = this.state.extraCols
+            .filter((c) => !server.some((x) => String(x.id) === "c:" + c))
+            .map((c) => ({ id: "c:" + c, label: c, sublabel: "",
+                           group: _t("Added here"), meta: {} }));
+        return extra.length ? extra.concat(server) : server;
+    }
     get rightItems() { return (this.state.data && this.state.data.right) || []; }
+
+    /** Only the spreadsheet board takes a column as typed. */
+    get canAddLeft() {
+        return !!(this.state.data && this.state.data.ok && this.state.data.can_add
+                  && this.canEdit);
+    }
+    get addLeftLabel() {
+        return (this.state.data && this.state.data.add_label)
+            || _t("Use “%s” as a spreadsheet column");
+    }
+    addLeftColumn(text) {
+        const t = (text || "").trim();
+        if (!t || this.state.extraCols.includes(t)) { return; }
+        this.state.extraCols = [...this.state.extraCols, t];
+    }
+
+    /**
+     * A sealed card answers on the board, not only on the server.
+     *
+     * S5 put the refusal in `clickRight` and in both create RPCs, and then
+     * neither host passed `onRightBlocked` — so clicking a calculated component
+     * cleared the armed card and said nothing at all, which reads as the board
+     * being broken rather than as the component being produced.
+     */
+    rightBlocked(item) {
+        const hint = (item && item.meta && item.meta.badgeHint)
+            || _t("This component is produced by the scheme, not imported into it.");
+        this.notif.add(hint, { type: "info" });
+    }
+
+    /** "Open rule" from the lineage popover — into the rule composer. */
+    openRule(ruleId) {
+        if (!ruleId) { return; }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.api.transformation.rule",
+            res_id: ruleId,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
 
     get wires() {
         const w = (this.state.data && this.state.data.wires) || [];
@@ -425,6 +480,7 @@ export class MappingStudio extends Component {
         if (this.state.mode === id) { return; }
         this.state.mode = id;
         this.state.data = null;
+        this.state.extraCols = [];
         this.state.tmplOpen = false;
         await this.load();
     }
@@ -536,6 +592,7 @@ export class MappingStudio extends Component {
             case "batch":
                 if (this.state.batchId === id) { return; }
                 this.state.batchId = id;
+                this.state.extraCols = [];
                 break;
             default:
                 return;
@@ -596,6 +653,13 @@ export class MappingStudio extends Component {
         if (r && r.ok === false) {
             this.notif.add(r.msg || _t("Could not connect those two."), { type: "warning" });
             return;
+        }
+        // SOURCING S6 — switching a component from one source to the other is one
+        // deliberate act, and an act that changes what a component reads has to say
+        // so. Silence here would make the two boards look independent when they are
+        // two doors onto one decision.
+        if (r && r.replaced && r.replaced.msg) {
+            this.notif.add(r.replaced.msg, { type: "info" });
         }
         await this.load();
     }

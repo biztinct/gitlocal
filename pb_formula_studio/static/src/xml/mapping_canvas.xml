@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
+  <!-- ===== ONE card label, rendered by BOTH columns =====
+       SOURCING S6. `mapping_canvas.xml` carried two item blocks with two
+       independent label blocks, and every chip therefore had to be added to
+       both. It was added to one three times running: the source chip (S16), the
+       sealed badge (S18), and now D1's duplicate — each one a template bug that
+       presents as a data bug, because the server payload and the client helper
+       both check out. There is one label block now.
+
+       `itemChips` is the other half of it: three chips answer three different
+       questions about a card, and nothing stopped two of them answering with the
+       same word. Now nothing can. -->
+  <t t-name="pb_formula_studio.McItemLabel">
+    <div class="mc-item-label">
+      <span t-esc="it.label"/>
+      <span t-foreach="itemChips(it)" t-as="ch" t-key="ch.key"
+            t-att-class="ch.cls" t-att-title="ch.hint" t-esc="ch.label"/>
+      <!-- SOURCING S5 — lineage, in place. Only a card that HAS lineage grows the
+           affordance, so every other board is unchanged. S6 — and a COMPONENT fed
+           by a rule output has lineage too, which is why this lives here rather
+           than in the left column alone. -->
+      <button t-if="hasLineage(it)" class="mc-item-lineage" type="button"
+              t-att-title="lineageLabel(it)"
+              t-on-click="(ev) => this.openLineage(it, ev, mcSide)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 7.2 15.6 11M8.5 16.8 15.6 13"/></svg>
+      </button>
+    </div>
+  </t>
+
   <t t-name="pb_formula_studio.MappingCanvas">
     <div t-attf-class="mapping-canvas {{ focusSet.on ? 'is-focus' : '' }} {{ props.busy ? 'is-busy' : '' }} {{ ui.pulse ? 'is-pulse' : '' }}"
          t-ref="root" tabindex="0" t-on-keydown="onKeydown">
@@ -78,6 +106,18 @@
                  handler has to sit exactly here or wire geometry silently goes
                  stale the moment the column moves (Integrations C5, W146). -->
             <div class="mc-col-body" t-ref="lbody" t-on-scroll="onColScroll">
+              <!-- SOURCING S6 — the column takes what you typed.
+                   The Excel board could only ever offer "the keys of the last
+                   load", so on a database with no upload it offered nothing and
+                   the only spreadsheet-mapping surface in the product was a dead
+                   end. Type a heading (or a column letter) that is not in the
+                   list and it becomes a card you can wire. Nothing at rest, and
+                   nothing at all on a board whose adapter does not allow it. -->
+              <button t-if="showAddLeft" class="mc-col-add" type="button"
+                      t-on-click="addLeft">
+                <span class="mc-col-add__ic" t-out="ic('plus', 12)"/>
+                <span class="mc-col-add__t" t-esc="addLeftText"/>
+              </button>
               <t t-set="lview" t-value="leftView"/>
               <t t-foreach="lview" t-as="it" t-key="it.id">
                 <!-- opt-in group header: drawn only for items that carry a
@@ -89,27 +129,9 @@
                      t-on-mouseenter="() => this.enterItem('left', it.id)"
                      t-on-mouseleave="() => this.leaveItem()">
                   <div class="mc-item-main">
-                    <div class="mc-item-label">
-                      <span t-esc="it.label"/>
-                      <!-- Integrations C6 — where this card came from. Nothing
-                           at all for a field the connector has actually
-                           delivered: the common case stays quiet, and a chip
-                           means "read me". -->
-                      <span t-if="provChip(it)" t-attf-class="mc-prov {{ provChip(it).tone }}"
-                            t-att-title="provChip(it).hint" t-esc="provChip(it).label"/>
-                      <!-- COLROLES P3 — "this card already has a destination".
-                           Same slot, same grammar as the provenance chip. -->
-                      <span t-if="badge(it)" t-attf-class="mc-badge {{ badge(it).tone }}"
-                            t-att-title="badge(it).hint" t-esc="badge(it).label"/>
-                      <!-- SOURCING S5 — lineage, in place. Only a card that HAS
-                           lineage (a rule output) grows the affordance, so every
-                           other board is unchanged. -->
-                      <button t-if="hasLineage(it)" class="mc-item-lineage" type="button"
-                              t-att-title="'How ' + it.label + ' is worked out'"
-                              t-on-click="(ev) => this.openLineage(it, ev)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 7.2 15.6 11M8.5 16.8 15.6 13"/></svg>
-                      </button>
-                    </div>
+                    <t t-call="pb_formula_studio.McItemLabel">
+                      <t t-set="mcSide" t-value="'left'"/>
+                    </t>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                     <!-- what the data looks like. A live sample is a value that
                          arrived; a catalogue sample is an example, and the `e.g.`
@@ -147,6 +169,11 @@
                   Nothing matches that.
                   <button t-on-click="() => this.clearFilters('left')">Clear</button>
                 </t>
+                <!-- SOURCING S6 — an empty column that can be filled says how.
+                     "Nothing to show on this side" over a board whose whole job is
+                     to be filled in is a dead end with a full stop after it. -->
+                <t t-elif="props.canAddLeft">Type a column heading in the search box
+                  above to add it — no file needs to be loaded.</t>
                 <t t-else="">Nothing to show on this side.</t>
               </div>
             </div>
@@ -193,21 +220,15 @@
                      t-on-mouseleave="() => this.leaveItem()">
                   <span class="mc-plug left"/>
                   <div class="mc-item-main">
-                    <!-- SOURCING S4 — "this component is already fed from
-                         somewhere else". The RIGHT column carried no chip at all
-                         before this; note it has its OWN label block, so the chip
-                         has to be added here and not only beside the left column's
-                         provenance chip (ledger S16). -->
-                    <div class="mc-item-label">
-                      <span t-esc="it.label"/>
-                      <span t-if="srcChip(it)" t-attf-class="mc-src s-{{ srcChip(it).kind }}"
-                            t-att-title="srcChip(it).hint" t-esc="srcChip(it).label"/>
-                      <!-- SOURCING S5 — the sealed badge. Same trap as S16: this
-                           column has its OWN label block, so a badge rendered only
-                           beside the left column's shows on nothing over here. -->
-                      <span t-if="badge(it)" t-attf-class="mc-badge {{ badge(it).tone }}"
-                            t-att-title="badge(it).hint" t-esc="badge(it).label"/>
-                    </div>
+                    <!-- SOURCING S6 — the SAME label block as the left column.
+                         S16 and S18 were both this: two item templates that did
+                         not share a label, so every chip had to be added twice and
+                         the right column silently omitted whichever addition
+                         forgot — which looks like a data bug and is a template
+                         one. D1 is that failure a third time. It shares now. -->
+                    <t t-call="pb_formula_studio.McItemLabel">
+                      <t t-set="mcSide" t-value="'right'"/>
+                    </t>
                     <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                     <!-- MAPFIX D4/D5 — what this destination will ACCEPT. A
                          selection's permitted values (with the stored code, which

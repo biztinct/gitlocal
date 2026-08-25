@@ -77,6 +77,18 @@ export class MappingCanvas extends Component {
         // token is what makes a repeated click repeat the effect. Optional, so
         // the Formula Studio overlay never has to know it exists.
         command: { type: Object, optional: true },
+        // SOURCING S6 — a left column that can take a card AS TYPED.
+        //
+        // The Excel board's left column used to be "the keys of the last load",
+        // so on a database with no upload it had nothing to show and nothing to
+        // offer. `canAddLeft` turns the column's own search box into the way to
+        // name a column that is not in the list — a heading, or a column letter —
+        // which is the only way to map a spreadsheet before the spreadsheet
+        // exists. Opt-in, so every other board is untouched and there is no new
+        // chrome at rest.
+        canAddLeft: { type: Boolean, optional: true },
+        addLeftLabel: { type: String, optional: true },   // "…“%s”…"
+        onAddLeft: { type: Function, optional: true },    // (text)
     };
 
     setup() {
@@ -683,14 +695,55 @@ export class MappingCanvas extends Component {
      */
     srcChip(it) {
         if (!it || !it.srcKind || it.srcKind === "none") { return null; }
+        // SOURCING S6 — a card the adapter SEALED carries its badge and nothing
+        // else. The badge already says "Calculated"/"Fixed value" and can carry
+        // the sentence explaining it; a source chip beside it repeats the word.
+        // The server stops sending `srcKind` for these, and this is the second
+        // lock: a stale bundle talking to a new server, or the reverse, must not
+        // be able to put the pill back.
+        if (it.meta && it.meta.wirable === false) { return null; }
         const labels = {
-            excel: "Spreadsheet", feed: "Connected system", rule: "Rule output",
-            contract_component: "Contract component", employee_field: "Employee record",
-            calculated: "Calculated", constant: "Fixed value",
+            excel: _t("Spreadsheet"), feed: _t("Connected system"),
+            rule: _t("Rule output"),
+            contract_component: _t("Contract component"),
+            employee_field: _t("Employee record"),
+            calculated: _t("Calculated"), constant: _t("Fixed value"),
         };
         const label = labels[it.srcKind];
         if (!label) { return null; }
         return { label, kind: it.srcKind, hint: it.srcNote || label };
+    }
+
+    /**
+     * SOURCING S6, D1 — every pill a card carries, and NEVER the same word twice.
+     *
+     * Three chips can land in one slot: `provChip` (where the CARD came from),
+     * `srcChip` (what FEEDS this component) and `badge` (what the card IS). Each
+     * answers a different question, which is why there are three — but three
+     * independent answers can still collide on one word, and that is exactly what
+     * shipped: every calculated component rendered CALCULATED · CALCULATED, and
+     * every constant rendered "Fixed value · Calculated", which is worse.
+     *
+     * The rule is stated here once, structurally, rather than patched at each of
+     * the sites that can produce it: a card never renders two pills with the same
+     * text. Later chips lose, because the earlier ones are the more specific
+     * question. This holds for boards not yet written.
+     */
+    itemChips(it) {
+        const out = [];
+        const push = (chip, cls) => {
+            if (!chip || !chip.label) { return; }
+            const key = String(chip.label).trim().toLowerCase();
+            if (!key || out.some((c) => c.key === key)) { return; }
+            out.push({ key, label: chip.label, hint: chip.hint || chip.label, cls });
+        };
+        const p = this.provChip(it);
+        if (p) { push(p, `mc-prov ${p.tone || ""}`); }
+        const s = this.srcChip(it);
+        if (s) { push(s, `mc-src s-${s.kind}`); }
+        const b = this.badge(it);
+        if (b) { push(b, `mc-badge ${b.tone || ""}`); }
+        return out;
     }
 
     provChip(it) {
@@ -1139,13 +1192,49 @@ export class MappingCanvas extends Component {
                   && it && String(this.ui.menu.id) === String(it.id));
     }
     hasLineage(it) { return !!(it && it.lineage); }
-    openLineage(it, ev) {
+    lineageLabel(it) {
+        return _t("How %s is worked out", (it && it.label) || "");
+    }
+    /**
+     * SOURCING S6 — `side` is a parameter now.
+     *
+     * The affordance used to exist only in the left item block, so lineage could
+     * be read about a vendor FIELD and never about the COMPONENT it feeds — and on
+     * a board pointed at a connector with no transformation rules (which is the
+     * board the owner was on) it could not be read at all. `closeItemMenu` returns
+     * focus to the card it came from, and it looks in the column it was told, so
+     * the side has to travel with the payload rather than be assumed.
+     */
+    openLineage(it, ev, side = "left") {
         if (ev) { ev.stopPropagation(); ev.preventDefault(); }
         if (this.isLineageOpen(it)) { this.closeItemMenu(); return; }
         if (!this.hasLineage(it)) { return; }
-        this._openMenu(ev, { id: it.id, kind: "lineage", side: "left",
+        this._openMenu(ev, { id: it.id, kind: "lineage", side,
                              trigger: ".mc-item-lineage",
                              label: it.label || "", lineage: it.lineage });
+    }
+
+    // ---- SOURCING S6 — taking a left card as typed ----------------------
+    /**
+     * Offered exactly when it is the only useful thing on screen: the adapter
+     * allows it, something has been typed, and nothing in the column already
+     * answers to it. No affordance at rest, and none that would duplicate a card.
+     */
+    get showAddLeft() {
+        if (!this.props.onAddLeft || !this.props.canAddLeft) { return false; }
+        const q = (this.ui.q.left || "").trim();
+        if (!q) { return false; }
+        const k = q.toLowerCase();
+        return !this.props.leftItems.some(
+            (x) => String(x.label || "").trim().toLowerCase() === k);
+    }
+    get addLeftText() {
+        const q = (this.ui.q.left || "").trim();
+        return (this.props.addLeftLabel || _t("Use “%s”")).replace("%s", q);
+    }
+    addLeft() {
+        const q = (this.ui.q.left || "").trim();
+        if (q && this.props.onAddLeft) { this.props.onAddLeft(q); }
     }
 
     /**
