@@ -240,6 +240,64 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   DID move a row (rule 581 gained an `excel` binding, both its wires intact) was
   restored and re-diffed clean. `action_process` was never called.
 
+- **J4 — DONE, live on abm · acme · payobook · payobook_template (2026-08-26).**
+  → `JOURNEY_PHASE_J4_HANDOVER.md`.
+  Versions: pb_formula_studio **19.0.1.139.0** (`pb_hr_payroll_formula`, `pb_integrations`,
+  `biz_theme` untouched; `om_hr_payroll` untouched — CR1).
+  **Transformations have an address.** A sixth tab sits between the API and
+  Spreadsheet tabs and renders the whole sentence at once: on abm's connector 3,
+  **6 feed fields → 8 sealed rule cards → 99 scheme components**, with 21 dashed
+  read edges and 8 solid feed wires. The header says
+  `FROM Zoho People (ABM) · 8 rules · 1 reads a field not seen ══ 8 rules ══▶
+  TO AB Mauri Payroll`.
+  **A new thin board, and the kernel finally earned its extraction.**
+  `TransformFlowBoard` (JS 500 lines, its own XML + SCSS) is a SIBLING of
+  `MappingCanvas`, not a mode of it — the canvas' two-lane contract carries five
+  tabs, four of which have nothing to do with rules, and a middle lane none of
+  them can render would have arrived on all of them at once. `MappingCanvas` has
+  **zero changes this phase.** The geometry is `mapping_geometry.js` unforked:
+  `wireGeometry`, `clampY`, `aggregateDocks`, `spreadHubs` and `itemMatches` are
+  arithmetic over points and do not care how many columns exist, which is why
+  they were extracted two cycles ago — J4 is the first phase to collect on it.
+  **One RPC, composed from what already existed.** `transform_flow_data` defines
+  nothing new. In particular it does NOT define "unread": that predicate is
+  `pb.integrations._rule_consumers`, beside the cockpit hint that first said it
+  out loud, and it is CALLED (`_tf_consumers`). The test asserts the two AGREE ON
+  A FIXTURE rather than grepping for the method name — a second definition would
+  pass a grep and fail that. The right lane is `_mc_right_column(board='api')`,
+  the same cards/chips/sealing/lineage/conflict pills the API board renders.
+  **No new write path.** An output key is already a legal `source_field`, so
+  `prefix` maps `transform → "api"` and the board draws through
+  `api_mapping_create` and cuts through `api_mapping_delete`. J3's conflict
+  dialog therefore fires here because it fires for `api`, not because a second
+  implementation remembered to — proven live on `EMPLOYEECODE`, cancel diffed
+  EMPTY. A drawn wire binds `rule/WORKEDHRS/board`, i.e. classifies as kind
+  `rule`; a plain feed field on the same adapter still binds `feed`.
+  **Field → rule edges are READ-ONLY**, and the board says so three ways: the
+  cursor (`cursor: default`), the lane note ("Read-only — edited in the rule")
+  and the hover sentence. They are `consumed_field_paths`, a DERIVED fact — there
+  is no row a drag could write, so no gesture is offered that would have to fail.
+  **The Rule Composer is opened, not rebuilt** — see the reuse note below.
+  Tests: Python **334 on abm, 2 failed + 1 error — all three PRE-EXISTING and
+  none J4's** (baseline measured on the machine before starting: **295 with the
+  same three**, `-u pb_hr_payroll_formula,pb_formula_studio,pb_integrations`; see
+  MJ20 for the third). +39 new (`TestJourneyTransformations` 37, +2 into
+  `TestOneMappingHome`). hoot **+14** J4 tests at `?filter=mapping_canvas`.
+  15/15 numbered cases pass. 0 console errors; **0 bounding-box overlaps** over
+  **5106** same-layer pairs at 1440 and **2541** at 1024, with a lineage popover
+  open and no horizontal body scroll.
+  abm left exactly as found — `hr_integration_field_mapping` back to its opening
+  fingerprint `a62e14bdfb100f20989d0281345e7717` (59 rows),
+  `hr_api_transformation_rule` `4de854155fd5e2f6ba49260134b55567` (8),
+  `hr_formula_rule` config 14 `4330c9f9d2c06db7be267ef0cad10a90` (99),
+  `hr_payslip_import_mapping` 21 rows ids `1,2,30…108`, 0 batches, 0 payslips.
+  The delete→redraw probe DID move rows (mapping 36 deleted, recreated as 3207;
+  component 584 gained a `rule` binding it never had) and was restored to id 36
+  with its original `endpoint_id`/timestamps and a cleared binding, then
+  re-diffed clean. `action_process` was never called; no live API pull was made.
+  Owner debt: the admin password on abm was reset to log in at all (CR33's
+  family) — it is now `J4validate!2026`.
+
 ## Gotchas discovered (append per phase, MJ-numbered)
 
 - MJ1 (J1): **`groupFilter` filters the LEFT column only, and always did.** The handover's
@@ -448,3 +506,60 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   Lessons: never write a multi-line string in JS without `+`; check the EXIT CODE, not the
   output, of a validator; and when a page comes back blank with a clean 200, `node --check`
   the bundle before believing anything about your feature.
+
+- MJ20 (J4, testing): **MJ14 again, one module further out — a THIRD long-standing red
+  was hiding behind the `-u` list, and finding it cost nothing only because the baseline
+  was taken first.** J3 recorded 246 tests with two reds under
+  `-u pb_hr_payroll_formula,pb_formula_studio`. J4 needed `pb_integrations` in the list
+  (the composer and `_rule_consumers` both live there), and the baseline — taken on the
+  machine, before a line was written — came back **295 tests, 2 failed + 1 error**. The
+  extra red is `pb_integrations` `TestLedgers.test_the_ledgers_never_sudo`, a SOURCE
+  assertion that `pb_integrations/models/pb_integrations.py` contains no `sudo(`; some
+  later change added one. It is nobody's regression and it has been red for as long as
+  nobody ran it. Had J4 not measured first, its own run would have shown "2 failed, 1
+  error" against a remembered "1 failed, 1 error" and the phase would have spent an hour
+  hunting a failure in a file it never opened. **MJ11 says take the baseline yourself;
+  MJ14 says record the `-u` list beside it; MJ20 is the corollary — when a phase WIDENS
+  the `-u` list, the widening itself is a measurement, and everything it newly touches
+  has to be re-baselined before it can be blamed.**
+- MJ21 (J4, environment): **`--` inside an XML comment is not a comment style, it is a
+  parse error, and OWL reports it as a template that does not exist.** Two J4 lane
+  headers were written `<!-- ==== LANE 2 — the rules ----- -->`, and `--pbim-z-modal` was
+  quoted inside a prose comment in `mapping_studio.xml`. XML forbids `--` in a comment
+  body outright; `xml.dom.minidom.parse` refuses the file and Odoo's loader refuses it
+  the same way — which surfaces as "Missing template" for every `t-name` in it, i.e. as a
+  component that was never registered rather than as a broken comment. It was caught
+  before deploy only because the well-formedness check was run with its EXIT CODE tested,
+  which is the half of MJ19 that generalises: **the value of a validator is its exit
+  code, and a syntax family you have never hit before is exactly the one your editor will
+  not colour differently.** Use `====` in decorative rules, and parse every XML file you
+  touch before shipping it.
+- MJ22 (J4): **the default connector is a per-BOARD question, and the shared heuristic
+  answers a different one.** `_api_active_connector` picks the connector this scheme's
+  WIRES point at — right for the API board, and on abm it answers connector 1 while all
+  eight transformation rules on the database live on connector 3. So the Transformations
+  tab opened on an empty state over a database with eight rules in it, which reads as the
+  feature being broken rather than as the connector being wrong. Two rules settle it and
+  both matter: a **chosen** connector (the picker, or a deep link that names one) is
+  never second-guessed — hence `state.connectorPicked`, because "the user picked this"
+  and "we guessed this" had been the same variable; and an unchosen one is re-derived by
+  `_tf_active_connector`, which DELEGATES to the old heuristic and overrides it only when
+  it lands on a connector with no rules. The heuristic itself is untouched: changing a
+  shared helper under four other callers to suit one board is the fork this programme
+  keeps refusing. **And the board must then ADOPT what the adapter chose** — a header
+  naming Zoho People over lanes showing Zoho People (ABM) is W76.3's bug class, which
+  looks right and describes the wrong thing. (An archived connector is never the default
+  either: a rule outlives its connector being archived, so without that guard the board
+  would open on a system somebody deliberately retired.)
+- MJ23 (J4, testing): **a live gesture that fires three RPCs needs a probe window sized
+  for three RPCs, and a short one reads exactly like a broken handler.** The arm-output →
+  click-component draw runs `source_conflict_probe`, then `api_mapping_create`, then a
+  full `transform_flow_data` reload over 99 components. A 2500ms wait showed the wire
+  count unchanged and the armed state cleared — the precise signature of "the handler ran
+  and the callback is not wired", and the next stretch went into a prop chain that was
+  correct all along. The DATABASE settled it (MF37, again): one row, created by the
+  direct call, none by the gesture — so the gesture really had not written, but only
+  because the read happened before it landed. Re-run at 7000ms it wrote, and the wire
+  bound `rule/WORKEDHRS/board` exactly as designed. **When a UI probe disagrees with the
+  code, suspect the clock before the wiring — and count the round trips before choosing
+  the timeout.**

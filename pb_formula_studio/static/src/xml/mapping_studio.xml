@@ -71,7 +71,15 @@
               <polygon class="pbms-link__h" points="234,10 220,3.5 220,16.5"/>
             </svg>
             <div class="pbms-link__c">
-              <button class="pbms-count" t-att-disabled="mappedCount ? false : 'disabled'"
+              <!-- J4 — on the Transformations board the middle of the sentence
+                   counts RULES, not wires: "FROM Zoho ══ 8 rules ══▶ TO VN".
+                   It is a label rather than a button because the two verbs the
+                   other boards put here (flash the wires, filter to the
+                   suggestions) do not exist on a board with no suggestions and
+                   three lanes to flash. A disabled button is a control that
+                   teaches the reader to stop trying (W64). -->
+              <span t-if="isTransform" class="pbms-count is-static"><b t-esc="ruleCount"/> rules</span>
+              <button t-else="" class="pbms-count" t-att-disabled="mappedCount ? false : 'disabled'"
                       title="Flash every mapped wire on the board"
                       t-on-click="flashWires"><b t-esc="mappedCount"/> mapped</button>
               <button t-if="suggestedCount" class="pbms-count sug"
@@ -377,9 +385,19 @@
           <div t-if="state.busy and !state.data" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
 
           <div t-elif="state.data and !state.data.ok" class="pbms-empty">
-            <span class="pbms-empty__ic" t-out="ic('gitMerge', 44)"/>
-            <b>Nothing to map yet</b>
+            <span class="pbms-empty__ic" t-out="ic(state.data.reason === 'no_rules' ? 'sigma' : 'gitMerge', 44)"/>
+            <b t-if="state.data.reason === 'no_rules'">No transformations yet</b>
+            <b t-elif="state.data.reason === 'no_connector'">No system connected</b>
+            <b t-else="">Nothing to map yet</b>
             <span t-esc="emptyReason"/>
+            <!-- J4 — an empty state with a verb in it. "This system has no rules"
+                 followed by nothing to do about it is a dead end; the hero button
+                 opens the composer empty, right here, which is the whole mission
+                 of the tab expressed in its emptiest state. -->
+            <button t-if="state.data.reason === 'no_rules' and state.data.can_edit"
+                    class="pbim-btn primary" t-on-click="() => this.openComposer(0)">
+              <t t-out="ic('plus', 15)"/> New transformation rule…
+            </button>
           </div>
 
           <t t-else="">
@@ -402,7 +420,22 @@
               </div>
             </div>
 
-            <div class="pbms-canvas">
+            <!-- J4 — the three-lane board. A SIBLING of the canvas, never a mode
+                 of it: the canvas' two-lane contract carries four other tabs and
+                 a middle lane none of them can render would arrive on all of
+                 them at once. Both boards live in the same `.pbms-canvas` frame,
+                 so the shell around them is genuinely one shell. -->
+            <div t-if="isTransform" class="pbms-canvas">
+              <TransformFlowBoard data="state.data"
+                                  configName="configName"
+                                  canEdit="canEdit" busy="state.busy"
+                                  onOpenRule="(id) => this.openComposer(id)"
+                                  onDraw="(key, rid) => this.draw(key, rid)"
+                                  onDelete="(ref) => this.removeTransformWire(ref)"
+                                  onLineage="(id) => this.openComposer(id)"/>
+            </div>
+
+            <div t-else="" class="pbms-canvas">
               <MappingCanvas leftItems="leftItems" rightItems="rightItems"
                              wires="wires"
                              leftTitle="'FROM — ' + fromSlot.title"
@@ -666,6 +699,20 @@
             </div>
           </div>
         </t>
+
+        <!-- ==== JOURNEY J4 — the Rule Composer, in place ====
+             `pb_integrations`' component, mounted unchanged. It is the LAST
+             child of the shell for the reason its own SCSS gives: its scrim is
+             `position: fixed` at the shared modal z-index, and a fixed scrim is trapped
+             by any ancestor carrying a `transform` — so it goes at the root,
+             a sibling of the board, exactly where the Integrations cockpit puts
+             it. Two callbacks are the whole contract. -->
+        <RuleComposer t-if="state.composer"
+                      connectorId="state.composer.connectorId"
+                      ruleId="state.composer.ruleId"
+                      connectors="composerConnectors"
+                      onClose="() => this.closeComposer()"
+                      onSaved="() => this.onRuleSaved()"/>
 
       </div>
     </div>

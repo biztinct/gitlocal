@@ -5428,6 +5428,268 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True}
 
     # ------------------------------------------------------------------
+    # JOURNEY J4 — the Transformations board.
+    #
+    # A transformation rule has always been a first-class source: its output key
+    # is a legal `source_field`, so a wire can carry it, and `set_source_binding`
+    # accepts kind `rule`. What it never had was an ADDRESS. The rule was authored
+    # in the Integrations cockpit, its output appeared on the API board as one more
+    # card in a lane called "Derived here", and the fields it reads were visible
+    # nowhere at all. Three facts about one object, on three screens, none of which
+    # said the other two existed.
+    #
+    # `transform_flow_data` is the whole of J4's server side: ONE read-only RPC
+    # that composes the three lanes out of pieces that already exist. It defines
+    # nothing new. In particular it does NOT define "unread" — that predicate
+    # lives in `pb.integrations._rule_consumers`, beside the cockpit hint that
+    # first said it out loud, and is CALLED here. A second definition of "nothing
+    # reads this" is exactly how two screens come to disagree about a rule.
+    # ------------------------------------------------------------------
+    @api.model
+    def _tf_consumers(self, rule):
+        """Who reads this rule's output — ONE definition, borrowed not copied.
+
+        `pb.integrations` owns it (`_rule_consumers`), because that is where the
+        "Rule outputs nothing reads" hint is raised and where a reader first meets
+        the concept. It is an AbstractModel, so it is in `self.env` whenever the
+        module is installed — which, since J4, `pb_formula_studio` depends on.
+
+        The `is None` test is deliberate and is MJ16, verbatim: `self.env.get(...)`
+        returns an EMPTY RECORDSET for a missing model and an empty recordset is
+        FALSY, so `if Model:` would take the fallback branch on every single call
+        and this board would report every output as unread, forever, silently.
+        """
+        Itg = self.env.get('pb.integrations')
+        if Itg is None:
+            return []
+        try:
+            return Itg._rule_consumers(rule)
+        except Exception as e:                                  # pragma: no cover
+            _logger.warning("J4: rule consumers failed for rule %s: %s: %s",
+                            rule.id, type(e).__name__, e)
+            return []
+
+    @api.model
+    def _tf_active_connector(self, config, connector_id=None):
+        """Which connector this board opens on — rules first.
+
+        `_api_active_connector` is the right heuristic for the API board and the
+        WRONG default for this one, and abm proves it: it answers connector 1
+        (Zoho People, which the scheme's wires point at) while all eight
+        transformation rules live on connector 3 (Zoho People (ABM)). The API
+        board is asking "where do this scheme's values come from"; this board is
+        asking "what does this system compute", and a Transformations tab that
+        opens on the one connector with no transformations shows an empty state
+        over a database with eight rules in it.
+
+        So: an EXPLICIT choice always wins (the picker and the deep link are
+        never second-guessed); otherwise, if the heuristic's answer has no rules
+        and some reachable connector does, take that one. The heuristic is not
+        modified — a shared helper that changed under four other callers to suit
+        this board would be exactly the fork this phase is avoiding.
+        """
+        asked = self._as_id(connector_id)
+        if asked:
+            return self._api_active_connector(config, asked)
+        conn = self._api_active_connector(config, None)
+        Rule = self.env.get('hr.api.transformation.rule')
+        if Rule is None:
+            return conn
+        try:
+            if conn and Rule.with_context(active_test=False).search_count(
+                    [('connector_id', '=', conn.id)]):
+                return conn
+            # An ARCHIVED connector is not a default. A rule survives its
+            # connector being archived (that is why the rule search ignores
+            # `active`), so without this the board would open on a system
+            # somebody has deliberately retired — and `no_connector` would
+            # become unreachable on any database that ever had a rule.
+            for rule in Rule.with_context(active_test=False).search(
+                    [], order='connector_id'):
+                if rule.connector_id and rule.connector_id.active:
+                    return rule.connector_id
+        except Exception as e:                                  # pragma: no cover
+            _logger.warning("J4: rule-bearing connector lookup failed: %s: %s",
+                            type(e).__name__, e)
+        return conn
+
+    @api.model
+    def transform_flow_data(self, config_id=None, connector_id=None):
+        """The three-lane flow: feed fields → transformation rules → components.
+
+        Read-only and additive. Every write this board can make goes out through
+        `api_mapping_create` / `api_mapping_delete`, unchanged — an output key is
+        already a legal `source_field` and those adapters already classify such a
+        wire as kind `rule` (see the classification line in `api_mapping_create`),
+        so J4 needed no new write path and deliberately built none.
+
+        The right lane is `_mc_right_column` with `board='api'` — the SAME cards,
+        chips, sealing, lineage and conflict pills the API board renders. Two
+        boards that show a component differently are two boards a reader has to
+        reconcile; and it is what makes the J3 conflict dialog fire here without a
+        second implementation.
+        """
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'reason': 'no_config'}
+        Conn = self.env['hr.integration.connector']
+        conn = self._tf_active_connector(config, connector_id)
+        contexts = [{'id': c.id, 'name': c.name} for c in Conn.search([], order='name')]
+        if not conn:
+            return {'ok': False, 'reason': 'no_connector', 'contexts': contexts}
+        Rule = self.env.get('hr.api.transformation.rule')
+        if Rule is None:                                        # pragma: no cover
+            return {'ok': False, 'reason': 'no_rules', 'contexts': contexts,
+                    'context_id': conn.id}
+        # `active_test=False` for the same reason the cockpit hint uses it: an
+        # archived rule whose output a component still reads is precisely the
+        # state a person needs to SEE, and filtering it out would make the wire
+        # into that component point at nothing.
+        rules = Rule.with_context(active_test=False).search(
+            [('connector_id', '=', conn.id)], order='sequence, id')
+
+        # ---- what the connector is KNOWN to deliver, for the drift verdict ----
+        # Same call the API board's FROM column makes, same swallow-and-log
+        # policy: a catalogue that cannot be read must not take the board down,
+        # but it must not be silent either (the Cycle-6 lesson at :4974).
+        try:
+            catalogue = self.env['hr.integration.field.mapping'] \
+                .get_available_source_fields(conn.id, None, None) or []
+        except Exception as e:
+            _logger.warning(
+                "J4: source-field discovery failed for connector %s: %s: %s — "
+                "the reads lane will render without drift verdicts.",
+                conn.id, type(e).__name__, e)
+            catalogue = []
+        by_path = {f['path']: f for f in catalogue if f.get('path')}
+        # A rule's OWN output is in that catalogue under "Derived here"; a rule
+        # that reads another rule's output is reading something real. Both are
+        # "known", neither is vendor drift.
+        known = set(by_path)
+
+        # ---- the middle lane: one sealed card per rule -------------------------
+        lineage_by_key = self._lineage_by_output_key(conn, config)
+        input_ids = set(config.rule_ids.filtered(
+            lambda r: r.column_type == 'input').ids)
+        FM = self.env['hr.integration.field.mapping']
+        wires, read_edges, fields_used = [], [], {}
+        cards, unread, drift_n, severed_n = [], 0, 0, 0
+        for r in rules:
+            key = (r.output_key or '').strip()
+            try:
+                reads = list(r._consumed_field_names() or [])
+            except Exception as e:                              # pragma: no cover
+                _logger.warning("J4: consumed fields failed for rule %s: %s: %s",
+                                r.id, type(e).__name__, e)
+                reads = []
+            consumers = self._tf_consumers(r) if key else []
+            # every field this rule reads becomes a LEFT card, once, however many
+            # rules read it — the lane is the connector's fields, not the union of
+            # per-rule lists (six overtime rules read the same three fields on abm).
+            r_drift = False
+            for path in reads:
+                if path not in fields_used:
+                    f = by_path.get(path) or {}
+                    fields_used[path] = {
+                        'id': 'f:' + path,
+                        'label': f.get('label') or path,
+                        'sublabel': path,
+                        'sample': self._sample_text(f.get('sample')),
+                        'group': (_("Derived here")
+                                  if f.get('provenance') == 'computed'
+                                  else (_("Delivered by this system") if path in known
+                                        else _("Not seen from this system"))),
+                        'prov': f.get('provenance') or ('live' if path in known else 'missing'),
+                        'drift': path not in known,
+                        'readers': 0,
+                        'meta': {'type': f.get('type') or ''},
+                    }
+                fields_used[path]['readers'] += 1
+                read_edges.append({'id': 'rd%s:%s' % (r.id, path),
+                                   'leftId': 'f:' + path, 'ruleId': r.id})
+                if path not in known:
+                    r_drift = True
+            if r_drift:
+                drift_n += 1
+            if key and not consumers:
+                unread += 1
+            # ---- the right half of the middle lane's story: what it feeds -------
+            r_sev = False
+            if key:
+                for m in FM.with_context(active_test=False).search(
+                        [('connector_id', '=', conn.id), ('source_field', '=', key)]):
+                    tgt = m.target_rule_id
+                    if not tgt or tgt.id not in input_ids:
+                        continue
+                    if m.is_severed:
+                        r_sev = True
+                    wires.append({'id': 'w%s' % m.id, 'ref': m.id, 'bind': False,
+                                  'ruleId': r.id, 'rightId': tgt.id,
+                                  'severed': bool(m.is_severed),
+                                  'state': 'accepted'})
+                # a component BOUND to this rule with no wire behind it is fed
+                # just as truly — the resolver reads the binding (rung 1). It is
+                # not deletable from here, because there is no wire to delete.
+                wired_targets = {w['rightId'] for w in wires if w['ruleId'] == r.id}
+                for br in config.rule_ids:
+                    if br.id in wired_targets or br.id not in input_ids:
+                        continue
+                    if br.source_binding == 'rule' and \
+                            (br.source_binding_key or '').strip() == key:
+                        wires.append({'id': 'b%s:%s' % (r.id, br.id), 'ref': 0,
+                                      'bind': True, 'ruleId': r.id, 'rightId': br.id,
+                                      'severed': False, 'state': 'accepted'})
+            if r_sev:
+                severed_n += 1
+            health = 'ok'
+            if r_sev:
+                health = 'severed'
+            elif key and not consumers:
+                health = 'unread'
+            elif r_drift:
+                health = 'drift'
+            cards.append({
+                'id': r.id,
+                'label': r.name or key or _("Untitled rule"),
+                'key': key,
+                'summary': r.plain_summary or '',
+                'kind': r.rule_type or '',
+                'active': bool(r.active),
+                'error': r.last_error or '',
+                'reads': reads,
+                'feeds': consumers,
+                'health': health,
+                'lineage': lineage_by_key.get(key),
+            })
+        if not cards:
+            return {'ok': False, 'reason': 'no_rules', 'contexts': contexts,
+                    'can_edit': self._can_edit(), 'context_id': conn.id,
+                    'connector': {'id': conn.id, 'name': conn.name or ''}}
+
+        _acts, _run = self._source_actuals(config)
+        _emp = self._source_employee_dest_ids(config)
+        _wires = self._source_wire_dests(config)
+        right = self._mc_right_column(
+            config, _acts, _emp, wire_dests=_wires,
+            lineage=self._lineage_for_config(config, conn), board='api')
+        left = sorted(fields_used.values(), key=lambda f: (f['drift'], f['label'].lower()))
+        return {
+            'ok': True,
+            'can_edit': self._can_edit(),
+            'context_id': conn.id,
+            'contexts': contexts,
+            'connector': {'id': conn.id, 'name': conn.name or ''},
+            'left': left,
+            'rules': cards,
+            'right': right,
+            'reads': read_edges,
+            'wires': wires,
+            'counts': {'rules': len(cards), 'unread': unread,
+                       'drift': drift_n, 'severed': severed_n,
+                       'fed': len({w['rightId'] for w in wires})},
+        }
+
+    # ------------------------------------------------------------------
     # W62 — transforms on the wire (surface + edit + live-preview the transforms
     # that ALREADY run at sync time). API adapter ONLY — cycle wires carry no
     # transform (D-I1: live payruns bypass cycle-mapping records, so a cycle

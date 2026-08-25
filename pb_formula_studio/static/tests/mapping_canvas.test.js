@@ -36,6 +36,11 @@ import {
 } from "@pb_formula_studio/js/mapping/mapping_geometry";
 import { ROLES, ROLE_LANE_ORDER, roleIcon }
     from "@pb_formula_studio/js/mapping/mapping_roles";
+// JOURNEY J4 — the three-lane board. A component, like `MappingCanvas`
+// above it, and imported under the same restriction: it drags in the pure
+// kernel and the icon registry and nothing that mounts an action (MJ2).
+import { TransformFlowBoard }
+    from "@pb_formula_studio/js/mapping/transform_flow_board";
 
 describe.current.tags("desktop");
 defineMailModels();
@@ -1404,4 +1409,221 @@ test("J3 — the direction note is read off meta, and only off meta", () => {
     expect(dir.call(null, { id: 1, meta: { directionNote: "N" } })).toBe("N");
     // it is NOT the right column's `note` channel — those are different facts
     expect(dir.call(null, { id: 1, meta: { note: { text: "N" } } })).toBe(null);
+});
+
+// =====================================================================
+// JOURNEY J4 — the three-lane transformation board.
+//
+// `TransformFlowBoard` is imported here for the same reason `MappingCanvas` is
+// and under the same restriction MJ2 spelled out: this file tests the BOARD and
+// the pure kernel, never a host. The import drags in the geometry module, the
+// icon registry and OWL — no `mapping_studio`, no `hub_nav`, nothing that mounts
+// an action. Every assertion below is translation-free (MJ3): a module-scope
+// `_t()` cannot be stringified in hoot at all, so the chip SENTENCES are
+// asserted from Python against the source and only ids, tones, ordering and
+// arithmetic are asserted here.
+// =====================================================================
+
+/**
+ * A `this` that has the prototype, so a method may compose other members (MJ4).
+ *
+ * `qRef` is in here rather than in the one test that obviously needs it, and
+ * that is MJ4 exactly: `clearSearch` composes `this.qRef.el`, so the Escape
+ * ladder — which has nothing to do with refs — threw a TypeError on its LAST
+ * rung after all four of its assertions had already passed. A hand-rolled `this`
+ * has to carry everything the method touches, not everything the test is about.
+ */
+function board(data, q = "") {
+    const b = Object.create(TransformFlowBoard.prototype);
+    b.ui = { q, armed: null, sealedSay: "", menu: null, focus: { lane: "", id: null },
+             selWire: null, hoverWire: null, geom: [], reads: [], docks: [] };
+    b.props = { data, canEdit: true };
+    b.qRef = { el: null };
+    b._schedule = () => {};          // no DOM, so no rAF to schedule
+    return b;
+}
+
+const FLOW = {
+    ok: true,
+    connector: { id: 3, name: "People (ABM)" },
+    left: [
+        { id: "f:OT_Type", label: "OT Type", sublabel: "OT_Type", readers: 2, drift: false },
+        { id: "f:Actual_Pay_Hour", label: "Actual Pay Hour", sublabel: "Actual_Pay_Hour", readers: 1, drift: false },
+        { id: "f:Gone_Field", label: "Gone Field", sublabel: "Gone_Field", readers: 1, drift: true },
+    ],
+    rules: [
+        { id: 1, label: "Overtime 150% — hours", key: "OTHRS150", summary: "Adds up Actual_Pay_Hour", health: "ok", active: true, reads: ["OT_Type", "Actual_Pay_Hour"], feeds: ["OT 1.5 (OT15HOURS)"] },
+        { id: 2, label: "Dependants", key: "DEPCOUNT", summary: "Counts rows", health: "unread", active: true, reads: ["Gone_Field"], feeds: [] },
+        { id: 3, label: "Retired rule", key: "OLDKEY", summary: "", health: "severed", active: false, reads: [], feeds: [] },
+    ],
+    right: [
+        { id: 606, label: "OT 1.5 hours", sublabel: "OT15HOURS" },
+        { id: 632, label: "Dependants", sublabel: "NOOFDEPENDEN" },
+    ],
+    reads: [
+        { id: "rd1:OT_Type", leftId: "f:OT_Type", ruleId: 1 },
+        { id: "rd1:Actual_Pay_Hour", leftId: "f:Actual_Pay_Hour", ruleId: 1 },
+        { id: "rd2:Gone_Field", leftId: "f:Gone_Field", ruleId: 2 },
+    ],
+    wires: [
+        { id: "w36", ref: 36, bind: false, ruleId: 1, rightId: 606, severed: false, state: "accepted" },
+    ],
+    counts: { rules: 3, unread: 1, drift: 1, severed: 1, fed: 1 },
+};
+
+test("J4 — a rule's TONE is its health, and 'off' outranks every health word", () => {
+    const tone = TransformFlowBoard.prototype.ruleTone;
+    expect(tone.call(null, { active: true, health: "ok" })).toBe("");
+    expect(tone.call(null, { active: true, health: "unread" })).toBe("warn");
+    expect(tone.call(null, { active: true, health: "drift" })).toBe("drift");
+    expect(tone.call(null, { active: true, health: "severed" })).toBe("sev");
+    // a switched-off rule is not amber-because-idle: it is off, and that is a
+    // different sentence from "nothing reads this"
+    expect(tone.call(null, { active: false, health: "unread" })).toBe("off");
+    // an unknown health never invents a class
+    expect(tone.call(null, { active: true, health: "wat" })).toBe("");
+});
+
+test("J4 — one query filters three lanes, and a lane matches THROUGH its neighbours", () => {
+    // the whole point: typing an output key must not empty the field lane, or
+    // `/` breaks every wire on the board and the reader sees three unrelated lists
+    const b = board(FLOW, "OTHRS150");
+    expect(b.midView.map((r) => r.id)).toEqual([1]);
+    // rule 1 reads these two, so they survive a query that names neither
+    expect(b.leftView.map((f) => f.id))
+        .toEqual(["f:OT_Type", "f:Actual_Pay_Hour"]);
+    // and the component rule 1 feeds survives too
+    expect(b.rightView.map((i) => i.id)).toEqual([606]);
+});
+
+test("J4 — an empty query keeps every lane whole", () => {
+    const b = board(FLOW, "");
+    expect(b.leftView.length).toBe(3);
+    expect(b.midView.length).toBe(3);
+    expect(b.rightView.length).toBe(2);
+});
+
+test("J4 — a field's own name still matches it directly", () => {
+    const b = board(FLOW, "Gone");
+    expect(b.leftView.map((f) => f.id)).toEqual(["f:Gone_Field"]);
+    expect(b.midView.map((r) => r.id)).toEqual([2], { message: "and its reader comes with it" });
+});
+
+test("J4 — a query that matches nothing empties all three lanes rather than half", () => {
+    const b = board(FLOW, "zzzznothing");
+    expect(b.leftView.length).toBe(0);
+    expect(b.midView.length).toBe(0);
+    expect(b.rightView.length).toBe(0);
+});
+
+test("J4 — a rule is searchable by its SUMMARY, which is how people remember one", () => {
+    const b = board(FLOW, "Counts rows");
+    expect(b.midView.map((r) => r.id)).toEqual([2]);
+});
+
+test("J4 — the arming gesture cannot write without a key", () => {
+    // `clickComponent` is the only path to `onDraw`; a rule with no output key
+    // has nothing to send, and the guard is what stops it sending `undefined`
+    let drawn = null;
+    const b = board(FLOW);
+    b.props = { ...b.props, onDraw: (k, r) => { drawn = [k, r]; } };
+    b.ui.armed = 3;
+    b.d.rules[2].key = "";
+    b.clickComponent({ id: 606 }, null);
+    expect(drawn).toBe(null);
+    expect(b.ui.armed).toBe(null, { message: "and it disarms rather than staying stuck" });
+    b.d.rules[2].key = "OLDKEY";
+});
+
+test("J4 — nothing armed means a component click writes nothing at all", () => {
+    // MF37's safe shape: a gesture that cannot write while nothing is armed is
+    // a gesture a live probe can exercise without a database diff
+    let calls = 0;
+    const b = board(FLOW);
+    b.props = { ...b.props, onDraw: () => { calls++; } };
+    b.clickComponent({ id: 632 }, null);
+    expect(calls).toBe(0);
+    expect(b.ui.focus).toEqual({ lane: "right", id: 632 }, { message: "it moves a focus ring" });
+});
+
+test("J4 — a BINDING is never cut from the board, because there is no row to cut", () => {
+    let deleted = null;
+    const b = board(FLOW);
+    b.props = { ...b.props, onDelete: (ref) => { deleted = ref; } };
+    b.removeWire({ id: "b2:632", bind: true, ref: 0 }, null);
+    expect(deleted).toBe(null);
+    b.removeWire({ id: "w36", bind: false, ref: 36 }, null);
+    expect(deleted).toBe(36);
+});
+
+test("J4 — Enter on a BUTTON never reaches the board's own Enter (MF33)", () => {
+    const b = board(FLOW);
+    b.ui.armed = 1;
+    let prevented = 0;
+    const ev = { key: "Enter", target: { tagName: "BUTTON" },
+                 preventDefault: () => { prevented++; } };
+    b.onKeydown(ev);
+    // the guard returns before any board behaviour — the arming survives
+    // untouched, which is the proof that nothing fell through and drew a wire
+    expect(b.ui.armed).toBe(1);
+    expect(prevented).toBe(0);
+});
+
+test("J4 — the Escape ladder consumes ONE rung per press, most-nested first", () => {
+    const b = board(FLOW, "query");
+    b.ui.menu = { kind: "verbs", ruleId: 1 };
+    b.ui.armed = 1;
+    b.ui.selWire = "w36";
+    const esc = { key: "Escape", target: { tagName: "DIV" } };
+    b.onKeydown(esc);
+    expect(b.ui.menu).toBe(null);
+    expect(b.ui.armed).toBe(1, { message: "one Escape never dismisses two things" });
+    b.onKeydown(esc);
+    expect(b.ui.armed).toBe(null);
+    b.onKeydown(esc);
+    expect(b.ui.selWire).toBe(null);
+    b.onKeydown(esc);
+    expect(b.ui.q).toBe("");
+});
+
+test("J4 — `/` reaches the search box, and is a plain character inside it", () => {
+    const b = board(FLOW);
+    let focused = 0;
+    b.qRef.el = { focus: () => { focused++; } };
+    let prevented = 0;
+    b.onKeydown({ key: "/", target: { tagName: "DIV" },
+                  preventDefault: () => { prevented++; } });
+    expect(focused).toBe(1);
+    expect(prevented).toBe(1);
+    // typing a slash INTO the box must type a slash
+    b.onKeydown({ key: "/", target: { tagName: "INPUT" },
+                  preventDefault: () => { prevented++; } });
+    expect(focused).toBe(1);
+    expect(prevented).toBe(1);
+});
+
+test("J4 — the two edge sets anchor on DIFFERENT lane pairs", () => {
+    // the board's whole geometric claim: read edges span lane 1→2 and feed edges
+    // span lane 2→3, over the same unforked kernel
+    const read = wireGeometry(300, 100, 400, 140);
+    const feed = wireGeometry(700, 140, 800, 200);
+    expect(read.d.startsWith("M 300 100")).toBe(true);
+    expect(feed.d.startsWith("M 700 140")).toBe(true);
+    // neither is bidirectional — J3's second head is opt-in and stays off here
+    expect(read.headBack).toBe(undefined);
+    expect(feed.headBack).toBe(undefined);
+});
+
+test("J4 — a suppressed edge is counted on the edge it went out by", () => {
+    // MAPFIX F1's contract, reused unchanged: a wire hidden by the search still
+    // says so, or it reads as a lost one
+    const docks = aggregateDocks([], [
+        { id: "rd2:Gone_Field", hiddenL: true, dockL: -1, hiddenR: false, dockR: 0 },
+        { id: "w36", hiddenL: false, dockL: 0, hiddenR: true, dockR: 1 },
+    ]);
+    const byKey = Object.fromEntries(docks.map((d) => [d.key, d]));
+    expect(byKey["left-1"].count).toBe(1);
+    expect(byKey["left-1"].filtered).toBe(1);
+    expect(byKey["right1"].count).toBe(1);
+    expect(byKey["right1"].filtered).toBe(1);
 });
