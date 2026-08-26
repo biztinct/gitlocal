@@ -305,6 +305,56 @@ class HrFormulaConfig(models.Model):
         help="HR system connector for importing payroll input data"
     )
 
+    def _resolve_feed_connector(self):
+        """The connector whose field mappings feed this scheme, or empty.
+
+        The explicit binding wins. When there is none, the wires themselves are
+        asked — a mapping already carries both its connector and, through
+        `target_rule_id.config_id`, the scheme it lands on, so a scheme with
+        wires is never genuinely ambiguous about where its values come from.
+
+        This exists because the run-time gate in
+        `payroll_import_batch._transform_data_to_formula_inputs` reads
+        `config.connector_id` and, when it is unset, applies NO mappings at all
+        — silently. ABM had 25 confirmed Zoho wires onto this scheme and an
+        unset binding, so the board reported 25 mapped while the pay run
+        behaved as though the connector did not exist. `create` on
+        `hr.integration.field.mapping` now binds on the way in and a migration
+        backfilled what was already there; this is the third rail, so that a
+        row written by SQL, a restore, or a future path that clears the field
+        cannot put a scheme back into that silence.
+
+        Resolving also BINDS, so the answer is stable and visible on the record
+        afterwards rather than being recomputed differently later. When wires
+        from more than one connector land on the same scheme the one with the
+        most wires is chosen, ties broken by id, and the choice is logged —
+        the run-time gate can only honour one, and picking silently at random
+        would be the same class of defect this method exists to close.
+        """
+        self.ensure_one()
+        if self.connector_id:
+            return self.connector_id
+        Mapping = self.env['hr.integration.field.mapping']
+        mappings = Mapping.sudo().search([
+            ('target_rule_id.config_id', '=', self.id),
+            ('connector_id', '!=', False),
+        ])
+        if not mappings:
+            return self.env['hr.integration.connector']
+        tally = {}
+        for mapping in mappings:
+            tally[mapping.connector_id] = tally.get(mapping.connector_id, 0) + 1
+        winner = sorted(tally.items(), key=lambda kv: (-kv[1], kv[0].id))[0][0]
+        if len(tally) > 1:
+            _logger.warning(
+                "Scheme %s has field mappings from %s connectors; the pay run "
+                "can apply only one and chose %s (%s of %s wires). Bind the "
+                "scheme explicitly to say otherwise.",
+                self.display_name, len(tally), winner.display_name,
+                tally[winner], len(mappings))
+        self.sudo().connector_id = winner.id
+        return winner
+
     use_color_coded_excel_import = fields.Boolean(
         string='Use Color-Coded Excel Import',
         default=True,

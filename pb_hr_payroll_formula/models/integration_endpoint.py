@@ -162,6 +162,18 @@ class HrIntegrationEndpoint(models.Model):
     last_sync_status = fields.Selection(SYNC_STATUSES, string='Last Sync Status')
     last_error = fields.Char(string='Last Error')
 
+    # WHICH MONTH the rows on this feed are about — not when they were fetched.
+    # `last_sync` answers "when did we ask"; for every dated feed (attendance,
+    # overtime, leave, timesheets) the far more important question is "what
+    # window did we ask FOR", and the two are routinely different: a July pay
+    # run refreshed in August pulled August's data and no screen said so.
+    last_period_from = fields.Date(
+        string='Last Pulled Period From',
+        help="The start of the window the last pull asked this feed for.")
+    last_period_to = fields.Date(
+        string='Last Pulled Period To',
+        help="The end of the window the last pull asked this feed for.")
+
     synced_count = fields.Integer(
         string='Records Pulled', compute='_compute_counts')
     staged_count = fields.Integer(

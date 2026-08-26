@@ -719,7 +719,8 @@ class HrIntegrationConnector(models.Model):
             return False
         return str(value)[:128]
 
-    def _stamp_endpoint(self, data_type, status, error=False):
+    def _stamp_endpoint(self, data_type, status, error=False,
+                        period_from=None, period_to=None):
         """Record a pull's outcome on the feed that produced it.
 
         Create-if-missing through the same catalogue path, so a connector that
@@ -757,11 +758,18 @@ class HrIntegrationConnector(models.Model):
                 'operation': 'generic',
                 'sequence': 50,
             })
-        ep.write({
+        vals = {
             'last_sync': fields.Datetime.now(),
             'last_sync_status': status,
             'last_error': (error or '')[:512] or False,
-        })
+        }
+        if period_from:
+            # Same reason as the endpoint-scoped pull: the window a feed was
+            # asked for is a different fact from the moment it was asked, and
+            # only one of the two is on the card unless this is recorded.
+            vals['last_period_from'] = period_from
+            vals['last_period_to'] = period_to or period_from
+        ep.write(vals)
         return ep
 
     # ==========================================
@@ -1223,6 +1231,12 @@ class HrIntegrationConnector(models.Model):
             endpoint.write({
                 'last_sync': now, 'last_sync_status': outcome,
                 'last_error': error_text,
+                # The window this pull actually asked for, recorded beside the
+                # time it was asked. Every dated feed here is scoped by it, and
+                # without it a card saying "Synced 1h ago" cannot be read as a
+                # claim about any particular month.
+                'last_period_from': period_from,
+                'last_period_to': period_to,
             })
             self.write({
                 'connection_status': 'connected',
@@ -1330,7 +1344,8 @@ class HrIntegrationConnector(models.Model):
                 # propagates to the outer one, which stamps nothing because the
                 # whole pull failed and the CONNECTOR carries that. What this
                 # records is the branch that ran.
-                self._stamp_endpoint('employee', 'success')
+                self._stamp_endpoint('employee', 'success',
+                                      period_from=period_from, period_to=period_to)
 
             # Pull salary/payroll data
             if 'salary' in data_types:
@@ -1369,11 +1384,13 @@ class HrIntegrationConnector(models.Model):
                                     triggered_by=triggered_by,
                                     results=results,
                                 )
-                    self._stamp_endpoint('salary', 'success')
+                    self._stamp_endpoint('salary', 'success',
+                                      period_from=period_from, period_to=period_to)
                 except Exception as e:
                     results['errors'].append(f"Salary pull error: {str(e)}")
                     _logger.warning("Salary pull failed for connector %s: %s", self.name, str(e))
-                    self._stamp_endpoint('salary', 'failed', str(e))
+                    self._stamp_endpoint('salary', 'failed', str(e),
+                                      period_from=period_from, period_to=period_to)
 
             # Pull dependent data (one record per dependent)
             if 'dependent' in data_types and hasattr(connector, 'fetch_dependents'):
@@ -1402,11 +1419,13 @@ class HrIntegrationConnector(models.Model):
                                     triggered_by=triggered_by,
                                     results=results,
                                 )
-                    self._stamp_endpoint('dependent', 'success')
+                    self._stamp_endpoint('dependent', 'success',
+                                      period_from=period_from, period_to=period_to)
                 except Exception as e:
                     results['errors'].append(f"Dependent pull error: {str(e)}")
                     _logger.warning("Dependent pull failed for connector %s: %s", self.name, str(e))
-                    self._stamp_endpoint('dependent', 'failed', str(e))
+                    self._stamp_endpoint('dependent', 'failed', str(e),
+                                      period_from=period_from, period_to=period_to)
 
             # Pull attendance data
             if 'attendance' in data_types and hasattr(connector, 'fetch_attendance'):
@@ -1434,11 +1453,13 @@ class HrIntegrationConnector(models.Model):
                                 triggered_by=triggered_by,
                                 results=results,
                             )
-                    self._stamp_endpoint('attendance', 'success')
+                    self._stamp_endpoint('attendance', 'success',
+                                      period_from=period_from, period_to=period_to)
                 except Exception as e:
                     results['errors'].append(f"Attendance pull error: {str(e)}")
                     _logger.warning("Attendance pull failed for connector %s: %s", self.name, str(e))
-                    self._stamp_endpoint('attendance', 'failed', str(e))
+                    self._stamp_endpoint('attendance', 'failed', str(e),
+                                      period_from=period_from, period_to=period_to)
 
             # Pull leave data (one record per leave entry)
             if 'leave' in data_types and hasattr(connector, 'fetch_leaves'):
@@ -1467,11 +1488,13 @@ class HrIntegrationConnector(models.Model):
                                     triggered_by=triggered_by,
                                     results=results,
                                 )
-                    self._stamp_endpoint('leave', 'success')
+                    self._stamp_endpoint('leave', 'success',
+                                      period_from=period_from, period_to=period_to)
                 except Exception as e:
                     results['errors'].append(f"Leave pull error: {str(e)}")
                     _logger.warning("Leave pull failed for connector %s: %s", self.name, str(e))
-                    self._stamp_endpoint('leave', 'failed', str(e))
+                    self._stamp_endpoint('leave', 'failed', str(e),
+                                      period_from=period_from, period_to=period_to)
 
             # Update connector sync status
             self.write({
