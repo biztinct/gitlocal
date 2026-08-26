@@ -23,3 +23,6 @@ from . import test_journey_j6_defects
 
 # JOURNEY J7 — the two legibility defects reported against the live shared board.
 from . import test_journey_j7_legibility
+
+# JOURNEY J8 — the contract-component lane, and the clipped arrowhead.
+from . import test_journey_j8_components

@@ -162,11 +162,124 @@
         }
     }
 
+    // ---- J8 D2 — an arrowhead is CONTENT, and the sweep never measured one ---
+    //
+    // MJ12 taught this sweep to drop every `SVGElement`, because two `<path>`s of
+    // one Lucide glyph overlap by construction. That exclusion is correct, and
+    // MJ30 already recorded its cost: the sweep has never once measured a wire.
+    // It has therefore never been able to fire on a wire's ARROWHEAD either —
+    // which is not a drawing's internals, it is the symbol that says where the
+    // wire ends, and J8 D2 is a defect in exactly that.
+    //
+    // So heads are re-admitted BY NAME (`polygon.mc-head`, never `<path>`), and
+    // tested against the two things that can eat one:
+    //
+    //   * CLIPPING — the derived clip box (same `clip()` as above) is smaller
+    //     than the head's own rect;
+    //   * OCCLUSION — the head is drawn in `.mc-wires` (`z-index: 1`) and the
+    //     whole column layer `.mc-cols` is `2`, so ANY opaque box of that layer
+    //     covering it wins. The boxes are named, not guessed: every card, every
+    //     dock chip, and the SCROLLBAR GUTTER of every column body — the last of
+    //     which is what J8 D2 actually was, and which no rect-versus-element
+    //     sweep could ever have found, because a scrollbar is not an element.
+    const gutters = [...document.querySelectorAll(".mc-col-body, .tfb-col-b")]
+        .map((b) => {
+            const r = b.getBoundingClientRect();
+            const cs = getComputedStyle(b);
+            const left = r.left + (parseFloat(cs.borderLeftWidth) || 0);
+            const right = r.right - (parseFloat(cs.borderRightWidth) || 0);
+            const top = r.top + (parseFloat(cs.borderTopWidth) || 0);
+            const bottom = r.bottom - (parseFloat(cs.borderBottomWidth) || 0);
+            const sbw = (right - left) - b.clientWidth;
+            if (sbw <= 0.5) { return null; }
+            // LTR: the vertical scrollbar sits at the right of the padding box.
+            return { name: "scrollbar-gutter", left: right - sbw, right, top, bottom };
+        })
+        .filter(Boolean);
+
+    const opaque = [
+        ...[...document.querySelectorAll(".mc-item, .tfb-item, .mc-dock, .tfb-dock")]
+            .map((e) => ({ name: e.className, ...clip(e) })),
+        ...gutters,
+    ];
+
+    const headOcclusions = [];
+    const heads = [...document.querySelectorAll(
+        "polygon.mc-head, polygon.tfb-head, polygon.tfb-rh")];
+    for (const h of heads) {
+        const r = h.getBoundingClientRect();
+        if (r.width < 0.5 || r.height < 0.5) { continue; }
+        const c = clip(h);
+        const lostX = (c.left - r.left) + (r.right - c.right);
+        const lostY = (c.top - r.top) + (r.bottom - c.bottom);
+        if (lostX > 0.5 || lostY > 0.5) {
+            headOcclusions.push({ head: h.getAttribute("class"), reason: "clipped",
+                                  lostX: +lostX.toFixed(1), lostY: +lostY.toFixed(1) });
+        }
+        for (const o of opaque) {
+            const ox = Math.min(r.right, o.right) - Math.max(r.left, o.left);
+            const oy = Math.min(r.bottom, o.bottom) - Math.max(r.top, o.top);
+            if (ox > 0.5 && oy > 0.5) {
+                headOcclusions.push({ head: h.getAttribute("class"),
+                                      reason: "occluded", by: String(o.name),
+                                      ox: +ox.toFixed(1), oy: +oy.toFixed(1) });
+            }
+        }
+    }
+
+    // ---- MJ30's check, finally a committed artefact ------------------------
+    // How far is a wire's endpoint from the port it claims to end on? For a card
+    // carrying ONE wire that port is its centre and 0 is the only right answer.
+    // For a card carrying several (J8's arrival comb) the port is the card's EDGE
+    // SEGMENT: the endpoint must still be inside the card, and `err` is how far
+    // outside it is — which is 0 for a comb that is bounded by its card, and
+    // large for any of the coordinate-space slips MJ30 is about.
+    const endpointErrors = [];
+    const cardCentres = (sel, side) => {
+        const m = new Map();
+        for (const el of document.querySelectorAll(sel)) {
+            if (el.dataset && el.dataset.side === side && el.dataset.id) {
+                m.set(String(el.dataset.id), el.getBoundingClientRect());
+            }
+        }
+        return m;
+    };
+    const canvas = document.querySelector(".mapping-canvas .mc-board");
+    if (canvas) {
+        const cb = canvas.getBoundingClientRect();
+        const lmap = cardCentres(".mc-col.left .mc-col-body > *", "left");
+        const rmap = cardCentres(".mc-col.right .mc-col-body > *", "right");
+        for (const g of document.querySelectorAll(".mc-w")) {
+            const wid = g.getAttribute("data-wire");
+            const path = g.querySelector("path.mc-wire");
+            if (!path) { continue; }
+            const len = path.getTotalLength();
+            const p0 = path.getPointAtLength(0);
+            const p1 = path.getPointAtLength(len);
+            for (const [pt, map, key, docked] of [
+                [p0, lmap, g.getAttribute("data-left"), g.getAttribute("data-dockl")],
+                [p1, rmap, g.getAttribute("data-right"), g.getAttribute("data-dockr")]]) {
+                if (docked && docked !== "0") { continue; }   // parked on the band
+                const card = map.get(String(key));
+                if (!card) { continue; }
+                const y = pt.y + cb.top;
+                const err = Math.max(0, card.top - y, y - card.bottom);
+                if (err > 0.5) {
+                    endpointErrors.push({ wire: wid, key, err: +err.toFixed(1) });
+                }
+            }
+        }
+    }
+
     return {
         w: innerWidth, h: innerHeight,            // MJ13 — assert the width
         pairs, overlaps,
         docks: docks.map((d) => d.innerText.trim()),
         dockOverCard,
+        heads: heads.length, headOcclusions,
+        endpoints: endpointErrors.length,
+        maxErr: endpointErrors.reduce((m, e) => Math.max(m, e.err), 0),
+        endpointErrors: endpointErrors.slice(0, 10),
         bodyScrollsX: document.body.scrollWidth > document.body.clientWidth + 1,
     };
 })();

@@ -145,7 +145,23 @@
    `box-sizing: border-box` (the backend's global reset) means this does NOT move the
    element's border box, and `getBoundingClientRect` is where the wire clamp
    band comes from. Cards start 30px lower; wires end exactly where they did. */
-.mapping-canvas .mc-col-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: 4px 14px 20px; border-top: 30px solid transparent; border-bottom: 30px solid transparent; display: flex; flex-direction: column; gap: 7px; }
+/* JOURNEY J8 D2 — the horizontal padding is the ARROWHEAD'S band, and 14px was
+   one pixel too few.
+
+   A wire's head is a triangle spanning `ANCHOR_GAP` (4) to `ANCHOR_GAP + HEAD`
+   (15) from the card's edge, so it is drawn INTO this padding. At 14px the last
+   pixel of the head — the flat BASE of the triangle, its widest and most
+   recognisable edge — fell outside the padding box and under the column's
+   scrollbar, which belongs to `.mc-cols` (`z-index: 2`) and paints over
+   `.mc-wires` (`z-index: 1`). Measured live on abm at 1440 before the fix: the
+   head's layout box ran 375→386 and its painted pixels stopped at 384. Nothing
+   was clipped by `.mc-board`; the column layer simply covered it.
+
+   18px is `ANCHOR_GAP + HEAD + 3`, and the same number is `WIRE_GUTTER` in
+   `mapping_geometry.js` (which the empty-column anchor fallback reads); a test
+   pins them together, because two constants that must agree and cannot see each
+   other is how this arrived. */
+.mapping-canvas .mc-col-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: 4px 18px 20px; border-top: 30px solid transparent; border-bottom: 30px solid transparent; display: flex; flex-direction: column; gap: 7px; }
 .mapping-canvas .mc-col-empty { padding: 22px 10px; text-align: center; font-size: 12px; color: var(--muted, #6B7280); }
 .mapping-canvas .mc-col-empty button { display: block; margin: 8px auto 0; border: 1px solid var(--line, #E8E9F3); background: #fff; border-radius: 8px; padding: 5px 12px; font-family: inherit; font-size: 11.5px; font-weight: 700; color: var(--i600, #4A3D96); cursor: pointer; }
 
