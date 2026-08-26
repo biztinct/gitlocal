@@ -58,3 +58,7 @@ from . import test_journey_j9_sources
 # JOURNEY J10 — the record destination as a ranked source, and the three
 # writebacks resolving through the SAME order the payslip does.
 from . import test_journey_j10_writeback
+
+# The Zoho response contract — an HTTP-200 refusal must not read as an empty
+# result set (the ABM "Sync said nothing and pulled nothing" incident).
+from . import test_zoho_response_contract

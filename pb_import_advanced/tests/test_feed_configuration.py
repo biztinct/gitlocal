@@ -33,9 +33,9 @@ class TestFeedConfiguration(TransactionCase):
         self.assertEqual(by_code['zohoemployees']['operation'], 'employee')
         self.assertEqual(
             by_code['zohoemployees']['full_url'],
-            'https://people.zoho.com/people/api/forms/P_Employee/records')
+            'https://people.zoho.com/people/api/forms/employee/getRecords')
         self.assertTrue(by_code['zohoemployees']['runnable'])
-        self.assertEqual(by_code['zoholeave']['path'], 'leave/getLeaveDetails')
+        self.assertEqual(by_code['zoholeave']['path'], 'forms/leave/getRecords')
         self.assertEqual(by_code['zohotimesheet']['operation'], 'catalog_only')
         self.assertFalse(by_code['zohotimesheet']['runnable'])
 
@@ -76,7 +76,7 @@ class TestFeedConfiguration(TransactionCase):
         employee.invalidate_recordset()
         self.assertFalse(result.get('error'))
         self.assertEqual(employee.name, 'Employees')
-        self.assertEqual(employee.path, 'forms/P_Employee/records')
+        self.assertEqual(employee.path, 'forms/employee/getRecords')
         self.assertEqual(employee.operation, 'employee')
 
     def test_invalid_and_credential_bearing_urls_are_refused(self):
@@ -96,7 +96,7 @@ class TestFeedConfiguration(TransactionCase):
                 'id': 0, 'name': 'Duplicate employees',
                 'code': 'zohoemployees', 'data_type': 'employee',
                 'operation': 'employee', 'http_method': 'get',
-                'path': 'forms/P_Employee/records', 'active': True,
+                'path': 'forms/employee/getRecords', 'active': True,
             }])
 
     def test_feed_output_type_is_stable_after_it_has_stored_data(self):

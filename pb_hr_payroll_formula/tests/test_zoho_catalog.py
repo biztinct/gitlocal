@@ -36,16 +36,22 @@ MIGRATION_PY = os.path.join(
 # The seven Zoho People feeds, as `code: (data_type, path, is_legacy_abm)`.
 # Restated here rather than read from the data file on purpose: a test that
 # reads the same file it is checking proves only that the file equals itself.
+#
+# Every path below was executed against a live Zoho People tenant on
+# 2026-08-26. Four of them replace a seeded path Zoho refuses to serve — see
+# migrations/19.0.1.84.0 for the exact refusal in each case — so this table is
+# also the regression: it is what stops the `P_`-prefixed guesses coming back.
 ZOHO_FEEDS = {
-    'zohoemployees': ('employee', 'forms/P_Employee/records', True),
+    'zohoemployees': ('employee', 'forms/employee/getRecords', True),
     'zohoattsummary': ('attendance', 'attendance/getSummaryReport', True),
     'zohoovertime': ('custom', 'forms/overtime_request/getRecords', True),
-    'zohosalary': ('salary', 'forms/P_Salary/records', False),
-    # The executable connector calls this proven v2/hr-relative endpoint.
-    # `api/v2/leavetracker/leaves/records` was the older catalogue guess and
-    # is corrected create-safely by the 19.0.1.59.0 migration.
-    'zoholeave': ('leave', 'leave/getLeaveDetails', False),
-    'zohoattdaily': ('attendance', 'attendance/getAttendanceByDate', False),
+    'zohosalary': ('salary', 'forms/salary_details/getRecords', False),
+    # Leave is a FORM, read whole and windowed by this platform: Zoho People
+    # has no per-employee leave API on this plan (`leave/getLeaveDetails` and
+    # `leave/getRecords` are both 404s), and its form search accepts a date
+    # filter and then ignores it.
+    'zoholeave': ('leave', 'forms/leave/getRecords', False),
+    'zohoattdaily': ('attendance', 'attendance/getUserReport', False),
     'zohotimesheet': ('custom', 'timetracker/gettimesheet', False),
 }
 

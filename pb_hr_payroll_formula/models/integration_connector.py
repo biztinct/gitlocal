@@ -547,10 +547,15 @@ class HrIntegrationConnector(models.Model):
     # Zoho's metadata call reports the FORM a component belongs to; the feed
     # catalogue is keyed on our own endpoint codes. Anything not listed falls
     # back to the feed the operator pressed the button on.
+    # Vendor form link name -> the feed that reads it. These are the names Zoho
+    # itself lists at `GET /forms`; the `P_`-prefixed guesses that used to be
+    # here (`P_Salary`, `P_Attendance`) are rejected by Zoho as invalid form
+    # names, so every discovered field fell through to the fallback feed.
     _VENDOR_FORM_ENDPOINT = {
-        'P_Employee': 'zohoemployees',
-        'P_Salary': 'zohosalary',
-        'P_Attendance': 'zohoattsummary',
+        'employee': 'zohoemployees',
+        'salary_details': 'zohosalary',
+        'leave': 'zoholeave',
+        'overtime_request': 'zohoovertime',
     }
 
     def field_fetch_capability(self):
@@ -1177,6 +1182,13 @@ class HrIntegrationConnector(models.Model):
                     'id': external_id,
                     'email': payload.get('email') or payload.get('EmailID') or
                              raw.get('EmailID') or '',
+                    # The vendor's own employee NUMBER, which is a different
+                    # identifier from the record id in `id` — Zoho's daily
+                    # attendance report answers "Invalid User" for the record
+                    # id and accepts only this or the email address.
+                    'employee_id': str(payload.get('employee_id') or
+                                       payload.get('EmployeeID') or
+                                       raw.get('EmployeeID') or ''),
                 })
                 seen_employee_ids.add(external_id)
             started = time.time()
