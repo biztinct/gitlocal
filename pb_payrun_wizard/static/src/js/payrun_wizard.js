@@ -127,7 +127,10 @@ export class PayrunWizard extends Component {
         }
         const summary = await this.orm.silent.call("pb.payrun.wizard", "get_summary", [run_id]);
         summary.exceptions = exceptions;
-        summary.computed = computed;
+        // Payslips prepare_run claimed from the period were never computed here,
+        // so they must be counted as done or the result reads "computed 0 of 152".
+        summary.computed = computed + (prep.adopted || 0);
+        summary.adopted = prep.adopted || 0;
         this.state.progress = null;
         this.state.summary = summary;
     }

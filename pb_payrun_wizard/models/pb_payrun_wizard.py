@@ -59,6 +59,56 @@ class PbPayrunWizard(models.AbstractModel):
             self.env['hr.payslip.run'].search([('date_start', '<=', de), ('date_end', '>=', ds)])
         return runs.filtered(lambda r: r.slip_ids)
 
+    # ---------------- Payslips this period already has, outside any run ----------------
+    def _loose_slips(self, ds, de):
+        """Computed payslips for exactly this period that belong to no pay run.
+
+        An import batch produces payslips and groups them in its own run; delete
+        that run from the list view and the payslips are left behind — the
+        many2one is `set null`, so the work survives but nothing on any screen
+        points at it any more. ABM June 2026 had 152 such payslips carrying
+        12,160 computed lines while the Run Payroll wizard, which cannot see
+        them, built a second, parallel, EMPTY June alongside.
+
+        Deliberately narrow, because these get adopted into a run without
+        asking: the dates must be the run's own, the payslip must still be a
+        draft, and it must already have computed lines. Anything looser and this
+        would sweep up an unrelated payslip somebody was in the middle of.
+        """
+        Slip = self.env['hr.payslip']
+        domain = [
+            ('payslip_run_id', '=', False),
+            ('date_from', '=', ds), ('date_to', '=', de),
+            ('state', '=', 'draft'),
+        ]
+        if 'company_id' in Slip._fields:
+            domain.append(('company_id', 'in', self.env.companies.ids))
+        return Slip.sudo().search(domain).filtered(lambda s: s.line_ids)
+
+    def _adopt_loose_slips(self, run, ds, de):
+        """Move this period's orphaned payslips into the run being built.
+
+        Non-destructive by construction — it only claims payslips no run owns —
+        and it is what stops the wizard from computing a second payroll on top
+        of one that already exists. Nothing is recomputed: the numbers a batch
+        produced are the numbers the run shows.
+        """
+        slips = self._loose_slips(ds, de)
+        if slips:
+            # Link them through the RUN's own one2many rather than by writing
+            # the payslip's many2one. Both move the payslip; only this one tells
+            # the run that `slip_ids` changed, and the run's KPI band is a
+            # STORED field computed from `slip_ids` that a run created seconds
+            # ago has already computed — over an empty list. Write it the other
+            # way round and the pay run goes on showing the very 0.00 this
+            # exists to repair.
+            run.sudo().write({'slip_ids': [(4, sid) for sid in slips.ids]})
+            _logger.info(
+                "Payrun wizard: adopted %s existing payslip(s) for %s → %s into "
+                "run %s instead of computing a parallel set.",
+                len(slips), ds, de, run.id)
+        return slips
+
     def _july_period(self, ds):
         year = (ds or '2026-01-01')[:4]
         return {'name': 'Payroll July %s' % year,
@@ -123,7 +173,9 @@ class PbPayrunWizard(models.AbstractModel):
 
         run = Run.create({'name': name, 'date_start': ds, 'date_end': de})
 
-        emp_ids = self._eligible_employees()
+        adopted = self._adopt_loose_slips(run, ds, de)      # see prepare_run
+        emp_ids = [e for e in self._eligible_employees()
+                   if e not in set(adopted.mapped('employee_id').ids)]
         exceptions = []
         created = Slip
         for emp in self.env['hr.employee'].browse(emp_ids):
@@ -155,14 +207,30 @@ class PbPayrunWizard(models.AbstractModel):
         for slip in created:
             try:
                 slip.compute_sheet()
-                computed += 1
+            except (AccessError, UserError) as e:
+                _logger.warning("Payrun wizard: compute refused for %s: %s",
+                                slip.employee_id.name, e)
+                exceptions.append({'emp': slip.employee_id.name, 'why': str(e)})
+                continue
             except Exception as e:
-                _logger.warning("Payrun wizard: compute fail %s: %s", slip.employee_id.name, e)
+                _logger.exception("Payrun wizard: compute fail %s: %s",
+                                  slip.employee_id.name, e)
                 exceptions.append({'emp': slip.employee_id.name, 'why': 'Compute error'})
+                continue
+            if not slip.line_ids:
+                exceptions.append({
+                    'emp': slip.employee_id.name,
+                    'why': 'Computed no pay components — neither a salary '
+                           'structure nor a payroll scheme applies to this '
+                           'employee for this period',
+                })
+                continue
+            computed += 1
 
         summary = self.get_summary(run.id)
         summary['exceptions'] = exceptions
         summary['computed'] = computed
+        summary['adopted'] = len(adopted)
         return summary
 
     # ---------------- Step 2 (chunked): prepare + compute in batches ----------------
@@ -203,12 +271,20 @@ class PbPayrunWizard(models.AbstractModel):
             self.sudo()._clean_period(existing.sudo())
 
         run = self.env['hr.payslip.run'].sudo().create({'name': name, 'date_start': ds, 'date_end': de})
-        emp_ids = self._eligible_employees()
+
+        # Claim the period's existing payslips before computing anything, and
+        # take their employees off the list — computing them again would put two
+        # payslips on one person for one month, which is the pay-run shape of the
+        # duplicate this system already refuses everywhere else.
+        adopted = self._adopt_loose_slips(run, ds, de)
+        emp_ids = [e for e in self._eligible_employees()
+                   if e not in set(adopted.mapped('employee_id').ids)]
         return {
             'run_id': run.id, 'name': name,
             'date_start': ds, 'date_end': de,
             'division': vals.get('division'),   # passed back to compute_batch
             'emp_ids': emp_ids, 'total': len(emp_ids),
+            'adopted': len(adopted),
         }
 
     @api.model
@@ -226,7 +302,15 @@ class PbPayrunWizard(models.AbstractModel):
         Slip = self.env['hr.payslip'].sudo()
         exceptions = []
         created = Slip.browse()
+        # Whoever is already in this run for this month keeps the payslip they
+        # have. Chunks are retried by the client on a dropped connection, and a
+        # retry must not be how somebody gets paid twice.
+        already = set(Slip.search([
+            ('payslip_run_id', '=', run_id), ('employee_id', 'in', emp_ids),
+        ]).mapped('employee_id').ids)
         for emp in self.env['hr.employee'].sudo().browse(emp_ids):
+            if emp.id in already:
+                continue
             try:
                 oc = Slip.onchange_employee_id(ds, de, emp.id, contract_id=False)
                 v = oc.get('value', {})
@@ -257,18 +341,51 @@ class PbPayrunWizard(models.AbstractModel):
         for slip in created:
             try:
                 slip.with_context(pb_salary_rule_cache=rule_cache).compute_sheet()
-                computed += 1
+            except (AccessError, UserError) as e:
+                # A refusal states its own reason; passing it on is the whole
+                # difference between a run that reports 146 employees and 0.00
+                # and one that says what went wrong for each of them.
+                _logger.warning("Payrun wizard: compute refused for %s: %s",
+                                slip.employee_id.name, e)
+                exceptions.append({'emp': slip.employee_id.name, 'why': str(e)})
+                continue
             except Exception as e:
-                _logger.warning("Payrun wizard: compute fail %s: %s", slip.employee_id.name, e)
+                _logger.exception("Payrun wizard: compute fail %s: %s",
+                                  slip.employee_id.name, e)
                 exceptions.append({'emp': slip.employee_id.name, 'why': 'Compute error'})
+                continue
+            if not slip.line_ids:
+                # It did not raise and it produced nothing. Silence here is what
+                # a whole month of zeros looks like from the outside.
+                exceptions.append({
+                    'emp': slip.employee_id.name,
+                    'why': 'Computed no pay components — neither a salary '
+                           'structure nor a payroll scheme applies to this '
+                           'employee for this period',
+                })
+                continue
+            computed += 1
 
         return {'computed': computed, 'exceptions': exceptions}
 
     # ---------------- Step 3/4: summary + approve ----------------
     @api.model
     def _slip_net(self, slip):
+        """What this employee is actually paid.
+
+        The component's CATEGORY is what says "this is net pay"; its code is
+        whatever the person who built the scheme called it. ABM's net component
+        is `NETPAY`, so matching on the code `NET` found nothing, every payslip
+        read as zero, and the review step flagged all 152 as needing attention
+        while the run itself totalled ₫727,655,630. The pay run's own KPI band
+        already aggregates by category — this now agrees with it.
+        """
         try:
-            lines = slip.line_ids.filtered(lambda l: (l.code or '').upper() == 'NET')
+            lines = slip.line_ids.filtered(
+                lambda l: (l.category_id.code or '').upper() == 'NET')
+            if not lines:
+                lines = slip.line_ids.filtered(
+                    lambda l: (l.code or '').upper() == 'NET')
             if lines:
                 return sum(lines.mapped('total'))
             # fallback: last line total

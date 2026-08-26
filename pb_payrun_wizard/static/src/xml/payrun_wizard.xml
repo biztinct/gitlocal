@@ -87,6 +87,10 @@
                         <div class="pw-result-ic"><t t-out="ic('zap',30)"/></div>
                         <h3>Computed <t t-esc="state.summary.computed"/> of <t t-esc="state.summary.count"/> payslips</h3>
                         <p class="pw-muted"><t t-esc="state.summary.name"/> · net total <b t-esc="vnd(state.summary.total_net)"/></p>
+                        <p class="pw-muted" t-if="state.summary.adopted">
+                            <t t-esc="state.summary.adopted"/> payslip(s) for this period already existed and were
+                            added to this run as they are, rather than computed again.
+                        </p>
                         <div class="pw-statpills" data-coach="pw-pills">
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.count"/><div class="l">Payslips</div></div>
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.computed"/><div class="l">Computed</div></div>
