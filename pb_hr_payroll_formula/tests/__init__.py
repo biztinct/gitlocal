@@ -71,3 +71,7 @@ from . import test_feed_binding_and_period
 # Run the same import twice and get the same people: the source key, the
 # name-merge guard, the unique-barcode trap and one contract per employee.
 from . import test_import_identity
+
+# A payslip with no salary structure computes through its scheme instead of
+# through silence — the ABM June 2026 "146 employees, 0.00" defect.
+from . import test_structureless_payslip

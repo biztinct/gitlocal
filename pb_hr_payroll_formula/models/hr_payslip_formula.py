@@ -564,12 +564,60 @@ class HrPayslipFormula(models.Model):
     # ==========================================
     # OVERRIDE STANDARD COMPUTE
     # ==========================================
+    def _adopt_scheme_when_structureless(self):
+        """Give a payslip with no salary structure the scheme that governs it.
+
+        The standard engine computes a payslip by walking its structure's salary
+        rules. With no `struct_id` there are no rules, so it walks nothing,
+        writes nothing, and returns True — a payslip of zero lines and no
+        complaint. On a tenant whose payroll is defined by a formula scheme
+        rather than by salary structures that is EVERY payslip the Run Payroll
+        wizard makes, and it is how ABM's June 2026 run reported 146 employees
+        and a total net of 0.00.
+
+        So: no structure and a scheme that resolves means the scheme is what
+        this payslip is for. Nothing here touches a payslip that HAS a
+        structure — that one has a real standard computation to do and keeps it.
+
+        Returns the payslips promoted, for the caller's own bookkeeping.
+        """
+        promoted = self.browse()
+        for payslip in self:
+            if payslip.struct_id or payslip.calculation_method == 'formula':
+                continue
+            config = payslip._find_formula_config()
+            if not config:
+                continue
+            payslip.write({
+                'calculation_method': 'formula',
+                'formula_config_id': config.id,
+            })
+            promoted |= payslip
+        if promoted:
+            _logger.info(
+                "Computing %s payslip(s) with no salary structure through their "
+                "payroll scheme instead of the structure engine, which has no "
+                "rules to run for them.", len(promoted))
+        return promoted
+
     def compute_sheet(self):
         """Override to support formula-based computation"""
+        self._adopt_scheme_when_structureless()
         formula_payslips = self.filtered(
             lambda p: p.calculation_method == 'formula' and p.formula_config_id
         )
         standard_payslips = self - formula_payslips
+        # What is left with neither a structure nor a scheme cannot compute at
+        # all. Saying so is the point: it used to return True and write nothing.
+        stranded = standard_payslips.filtered(lambda p: not p.struct_id)
+        if stranded:
+            raise UserError(_(
+                "%(count)s payslip(s) cannot be computed: %(who)s has neither a "
+                "salary structure on the contract nor a payroll scheme for this "
+                "company. Assign one and run payroll again.",
+                count=len(stranded),
+                who=stranded[0].employee_id.display_name or _('this employee'),
+            ))
 
         # Compute formula payslips
         if formula_payslips:
