@@ -697,6 +697,104 @@ class ZohoConnector(BaseHRConnector):
         self._leave_cache = window
         return window
 
+    # The date each overtime row is ABOUT, in the order it should be trusted.
+    # `OT_Date` is the day worked; the start/end stamps are the fallback for a
+    # row that predates it.
+    OVERTIME_DATE_KEYS = ('OT_Date', 'Start_Date_Time', 'End_Date_Time')
+
+    @classmethod
+    def _within_window(cls, rows: List[Dict[str, Any]],
+                       date_from: str, date_to: str) -> List[Dict[str, Any]]:
+        """Overtime rows that fall inside the period, filtered HERE.
+
+        Zoho's overtime form accepts `fromDate`/`toDate` and ignores them, in
+        exactly the way its form search accepts a date filter and ignores it.
+        Measured on ABM: asking for June 2026, July 2026 and August 2026 each
+        returned the SAME 201 rows, whose `OT_Date` values run from August 2024
+        to March 2026 — not one of them in any month asked for.
+
+        Unfiltered, every one of those hours would have been added to whichever
+        month was being run, and to every other month as well. A silently
+        ignored parameter is worse than an unsupported one, so the window is
+        applied here where it can be seen.
+
+        A row whose date cannot be read is DROPPED rather than kept — the
+        opposite of the leave rule, and deliberately: a leave record with an
+        unreadable date is a payroll input that would be lost, while an
+        overtime row with no date has no claim on any particular month and
+        keeping it would put it in all of them.
+        """
+        def day(value):
+            text = str(value or '').strip()[:10]
+            for fmt in ('%d-%m-%Y', '%Y-%m-%d', '%d/%m/%Y'):
+                try:
+                    return datetime.strptime(text, fmt).date()
+                except (TypeError, ValueError):
+                    continue
+            return None
+
+        start, end = day(date_from), day(date_to)
+        if not (start and end):
+            return rows
+        kept, undated = [], 0
+        for row in rows:
+            when = next((day(row.get(k)) for k in cls.OVERTIME_DATE_KEYS
+                         if day(row.get(k))), None)
+            if when is None:
+                undated += 1
+                continue
+            if start <= when <= end:
+                kept.append(row)
+        if undated:
+            _logger.info(
+                "Overtime: %s row(s) carried no readable date and were left "
+                "out of %s–%s.", undated, start, end)
+        return kept
+
+    @staticmethod
+    def _ref_index(refs: List[Dict[str, str]]) -> Dict[str, str]:
+        """Every identifier a Zoho row might carry, pointing at the record id.
+
+        The employee master and the salary form key their rows on the Zoho
+        RECORD id (`811648…`). The attendance summary keys its rows on the
+        employee NUMBER (`11708`) and the email address, and the generic reader
+        resolved only email — so an attendance row arrived under `11708`, an
+        employee row under `811648…`, and the two never joined. On ABM that put
+        42 attendance rows into the import as 42 extra people with no name and
+        no salary, while 152 real employees had no worked hours.
+
+        One index, all three spellings, so a feed can be keyed on whichever of
+        them the vendor happens to use.
+        """
+        index = {}
+        for ref in refs:
+            record_id = str(ref.get('id') or '')
+            if not record_id:
+                continue
+            for identifier in (ref.get('email'), ref.get('employee_id'), record_id):
+                key = str(identifier or '').strip().lower()
+                if key:
+                    index.setdefault(key, record_id)
+        return index
+
+    @classmethod
+    def _resolve_ext(cls, value: Dict[str, Any], index: Dict[str, str]) -> str:
+        """The record id this row belongs to, from whichever key it carries."""
+        candidates = [value.get('employeeId'), value.get('EmployeeID'),
+                      value.get('empId'), value.get('emailId'),
+                      value.get('_result_key')]
+        for candidate in candidates:
+            key = str(candidate or '').strip().lower()
+            if key and key in index:
+                return index[key]
+        # Nothing matched a known employee. The raw identifier is kept rather
+        # than blanked, so the row is still traceable to whatever the vendor
+        # called it instead of silently becoming unattributed.
+        for candidate in candidates:
+            if str(candidate or '').strip():
+                return str(candidate).strip()
+        return ''
+
     @staticmethod
     def _overlaps(row_from, row_to, date_from, date_to) -> bool:
         """Does `[row_from, row_to]` touch `[date_from, date_to]`?
@@ -880,6 +978,8 @@ class ZohoConnector(BaseHRConnector):
                 except ZohoApiError as error:
                     failures.append(str(error))
                     continue
+                if operation == 'overtime':
+                    values = self._within_window(values, date_from, date_to)
                 for value in values:
                     rows.append({
                         'payload': value,
@@ -903,13 +1003,10 @@ class ZohoConnector(BaseHRConnector):
             timeout=60,
         )
         payload = self._payload(response, endpoint.name or endpoint.code)
-        email_to_id = {str(ref.get('email') or '').lower(): ref.get('id')
-                       for ref in refs if ref.get('email')}
+        index = self._ref_index(refs)
         for value in self._result_rows(payload):
-            ext = (value.get('employeeId') or value.get('EmployeeID') or
-                   value.get('empId') or value.get('emailId') or '')
-            ext = email_to_id.get(str(ext).lower(), ext)
-            rows.append({'payload': value, 'employee_external_id': str(ext)})
+            rows.append({'payload': value,
+                         'employee_external_id': self._resolve_ext(value, index)})
         return rows
 
     # ------------------------------------------------ per-employee feed rails

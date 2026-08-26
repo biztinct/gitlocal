@@ -774,7 +774,7 @@ class HrPayrollImportBatch(models.Model):
         store_records = DataStore.search([
             ('connector_id', '=', self.connector_id.id),
             ('state', '=', 'extracted'),
-            ('data_type', 'in', ['salary', 'employee']),
+            self._store_data_type_leaf(),
         ], order='employee_external_id, data_type')
         if not store_records:
             raise UserError(_(
@@ -816,6 +816,30 @@ class HrPayrollImportBatch(models.Model):
             employee_email = mapped_employee_email
         return employee_code, employee_name, employee_email
 
+    def _store_data_type_leaf(self):
+        """Which staged data types an import reads — every feed, not two of them.
+
+        Both loaders (the primary one and the top-up) used the literal
+        `['salary', 'employee']`, which was the whole of what a connector could
+        deliver back when the only feeds were an employee list and a salary
+        form. It is not remotely that now.
+
+        On ABM the attendance summary carries worked and expected hours, the
+        overtime feed carries the six OT bands and the leave feed carries days
+        taken — **ten of the twenty-five confirmed mappings on that scheme**,
+        every one landing on a data type this filter excluded. They were
+        pulled, staged, transformed, counted on the feed cards, and then left
+        out of the import without a word.
+
+        Widening adds COLUMNS to a person's row, not rows to the batch: the
+        loaders group by `employee_external_id`, which every feed carries.
+
+        One method rather than two literals because the top-up path's own
+        comment already says it must read the feed exactly as a primary load
+        would — a promise two copies of a list cannot keep.
+        """
+        return ('data_type', '!=', False)
+
     def _identity_from_store_row(self, raw_data, ext_id=None):
         """Employee code / name / email as the DATA STORE loader has always read them."""
         employee_code = self._normalize_code(
@@ -851,7 +875,7 @@ class HrPayrollImportBatch(models.Model):
         domain = [
             ('connector_id', '=', self.connector_id.id),
             ('state', '=', 'extracted'),
-            ('data_type', 'in', ['salary', 'employee']),
+            self._store_data_type_leaf(),
         ]
 
         # Filter by period if specified
@@ -1095,6 +1119,66 @@ class HrPayrollImportBatch(models.Model):
         action['context'] = {'default_applied_in_batch_id': self.id}
         return action
 
+    def _match_ok(self, employee, source_ref):
+        """Refuse a candidate that the SAME source system says is someone else.
+
+        Every rung below the source key reads a mappable field, and on ABM they
+        all read the ID card number — which two employees can share. Within one
+        run that is enough to hand row `3:0729` the employee created moments
+        earlier for row `3:0442`, and pay two people as one.
+
+        So a candidate carrying a source reference from this same connection
+        that is not this row's is rejected outright. A candidate with no
+        reference (imported before this existed, or created by hand) is still
+        accepted — that is how those records acquire one.
+        """
+        if not (employee and source_ref) or 'pb_source_ref' not in employee._fields:
+            return True
+        held = employee.pb_source_ref
+        if not held or held == source_ref:
+            return True
+        if held.split(':', 1)[0] == source_ref.split(':', 1)[0]:
+            _logger.info(
+                "Rejecting employee %s for %s: the same connection already "
+                "knows that record as %s.", employee.id, source_ref, held)
+            return False
+        return True
+
+    def _pick(self, employees, source_ref):
+        """The first candidate this source system does not contradict."""
+        for employee in employees:
+            if self._match_ok(employee, source_ref):
+                return employee
+        return False
+
+    def _stamp_source_ref(self, employee, line):
+        """Record who this person is in the source system, if not already."""
+        if not (employee and line) or 'pb_source_ref' not in employee._fields:
+            return
+        source_ref = self._source_ref(line.employee_code)
+        if source_ref and employee.pb_source_ref != source_ref:
+            if employee.pb_source_ref:
+                # Already claimed by a different row of the same system. Do not
+                # overwrite: that would move the key onto whoever was imported
+                # last and leave the first person unfindable.
+                _logger.warning(
+                    "Employee %s already carries source reference %s; row %s "
+                    "claims %s. Leaving the existing one.",
+                    employee.id, employee.pb_source_ref, line.id, source_ref)
+                return
+            employee.pb_source_ref = source_ref
+
+    def _source_ref(self, code):
+        """`<connection id>:<their code>` — this person, in that system.
+
+        Empty for an import that has no connected system (a plain spreadsheet),
+        where there is no source to be authoritative about.
+        """
+        code = self._normalize_code(code) if code else False
+        if not (code and self.connector_id):
+            return False
+        return '%s:%s' % (self.connector_id.id, code)
+
     def _find_employee(self, line):
         """
         Find employee by code first, then by email.
@@ -1120,6 +1204,17 @@ class HrPayrollImportBatch(models.Model):
         if mapped_employee_code not in (None, ''):
             employee_code = mapped_employee_code
         employee_code = self._normalize_code(employee_code) if employee_code else False
+        # THE SOURCE SYSTEM'S OWN CODE, kept beside the mapped one.
+        #
+        # `employee_code` above prefers whatever a declared mapping points at,
+        # and on ABM that mapping points at the ID CARD number — so employees
+        # were created and searched under a 12-digit CCCD while the feed's own
+        # stable key (Zoho's EmployeeID, `11708`) was never used for either.
+        # Both are tried, so a person is found by whichever key they were
+        # stored under, this month or last.
+        source_code = self._normalize_code(line.employee_code) \
+            if line and line.employee_code else False
+        codes = [c for c in dict.fromkeys([employee_code, source_code]) if c]
         id_no = self._extract_field(raw_data, [
             'id_no', 'id no', 'idno', 'id_number', 'id number', 'identification_id', 'identity'
         ])
@@ -1134,36 +1229,54 @@ class HrPayrollImportBatch(models.Model):
         if self.company_id:
             base_domain.append(('company_id', '=', self.company_id.id))
 
+        # THE SOURCE SYSTEM'S KEY, BEFORE ANYTHING ELSE.
+        #
+        # Every rung below reads a field a user can point a mapping at, and on
+        # ABM they all point at the ID card number — which two employees can
+        # share and which says nothing about who Zoho thinks this row is. This
+        # one cannot be mapped and cannot be overwritten by an update, so it is
+        # asked first and it is what makes a second run recognise the same
+        # person instead of creating another.
+        source_ref = self._source_ref(line.employee_code if line else False)
+        if source_ref and 'pb_source_ref' in Employee._fields:
+            employee = Employee.search(
+                [('pb_source_ref', '=', source_ref)] + base_domain, limit=1)
+            if employee:
+                return employee
+
         # Try matching by employee code first
-        if self.match_by_code and employee_code:
+        if self.match_by_code and codes:
             code_domain = [
                 '|',
                 '|',
-                ('identification_id', '=', employee_code),
-                ('barcode', '=', employee_code),
-                ('employee_id', '=', employee_code),
+                ('identification_id', 'in', codes),
+                ('barcode', 'in', codes),
+                ('employee_id', 'in', codes),
             ]
-            employee = Employee.search(code_domain + base_domain, limit=1)
+            employee = self._pick(
+                Employee.search(code_domain + base_domain, limit=5), source_ref)
             if employee:
                 return employee
 
         if id_no:
-            employee = Employee.search([('identification_id', '=', id_no)] + base_domain, limit=1)
+            employee = self._pick(Employee.search(
+                [('identification_id', '=', id_no)] + base_domain, limit=5),
+                source_ref)
             if employee:
                 return employee
 
         # Try matching by email
         if self.match_by_email and employee_email:
-            employee = Employee.search([
+            employee = self._pick(Employee.search([
                 ('work_email', '=ilike', employee_email)
-            ] + base_domain, limit=1)
+            ] + base_domain, limit=5), source_ref)
             if employee:
                 return employee
 
             # Also check private email
-            employee = Employee.search([
+            employee = self._pick(Employee.search([
                 ('private_email', '=ilike', employee_email)
-            ] + base_domain, limit=1)
+            ] + base_domain, limit=5), source_ref)
             if employee:
                 return employee
 
@@ -1176,17 +1289,59 @@ class HrPayrollImportBatch(models.Model):
             if 'phone' in Employee._fields:
                 phone_domain.append(('phone', 'ilike', phone))
             if phone_domain:
-                domain = phone_domain[0]
-                for clause in phone_domain[1:]:
-                    domain = ['|', domain, clause]
-                employee = Employee.search(domain + base_domain, limit=1)
+                # Prefix form, FLAT. The previous version nested each new OR
+                # inside a list (`['|', domain, clause]`), which is not a
+                # domain: with the three phone fields this build actually has,
+                # element 1 came out as a list and the ORM died on it with
+                # "'tuple' object has no attribute 'lower'".
+                #
+                # It only fires when code, id and email have all missed — i.e.
+                # exactly when an employee is about to be created — so the
+                # first real import of a workforce hit it on line one and
+                # every line after. `['|'] * (n - 1) + leaves` is the canonical
+                # n-ary OR and stays flat however many phone fields exist.
+                domain = ['|'] * (len(phone_domain) - 1) + phone_domain
+                employee = self._pick(
+                    Employee.search(domain + base_domain, limit=5), source_ref)
                 if employee:
                     return employee
 
         if employee_name:
-            candidates = Employee.search([('name', '=ilike', employee_name)] + base_domain, limit=2)
+            candidates = Employee.search(
+                [('name', '=ilike', employee_name)] + base_domain, limit=2)
             if len(candidates) == 1:
-                return candidates[0]
+                # A NAME IS NOT AN IDENTIFIER.
+                #
+                # This rung used to match on name alone, and on a real
+                # workforce that merges people: ABM's June import collapsed
+                # three different employees (codes 0258, 11368 and 0016, three
+                # different email addresses) into one record because all three
+                # are called NGA NGUYEN — and then paid them as one person.
+                # Seven more pairs went the same way.
+                #
+                # The rung still earns its place for the case it was written
+                # for: an employee already in the system with no code at all,
+                # meeting a source that has one, where matching by name is how
+                # the code gets attached. So it now fires only when the
+                # candidate has NO code of its own. A candidate carrying a
+                # DIFFERENT code is a different person, whatever they are
+                # called, and the correct answer is to create the new one.
+                candidate = candidates[0]
+                held = {self._normalize_code(value) for value in (
+                    candidate.barcode,
+                    candidate.employee_id if 'employee_id' in candidate._fields else False,
+                    candidate.identification_id,
+                ) if value}
+                if not self._match_ok(candidate, source_ref):
+                    return False
+                if not held:
+                    return candidate
+                if codes and held & set(codes):
+                    return candidate
+                _logger.info(
+                    "Not matching %s to %s by name: that record already holds "
+                    "code(s) %s and this row carries %s.",
+                    employee_name, candidate.id, sorted(held), codes or '(none)')
 
         return False
 
@@ -1248,17 +1403,28 @@ class HrPayrollImportBatch(models.Model):
         try:
             for line in self.import_line_ids.filtered(lambda l: l.state in ['validated', 'matched', 'unmatched']):
                 try:
-                    # Step 1: Ensure employee exists
+                    # Step 1: Ensure employee exists.
+                    #
+                    # The lookup is UNCONDITIONAL on having no `employee_id`.
+                    # It used to be gated on `line.is_new_employee`, which is
+                    # only set by `action_match_employees` — so a line that
+                    # reached processing without that step having run was
+                    # neither matched nor created, and failed with "No employee
+                    # found and auto-create is disabled" while auto-create was
+                    # in fact on. Looking again costs one indexed search and is
+                    # the only thing standing between a re-run and a second
+                    # copy of every employee.
                     employee = line.employee_id
-                    if not employee and line.is_new_employee and self.auto_create_employees:
+                    if not employee:
                         employee = self._find_employee(line)
                         if employee:
                             line.employee_id = employee.id
                             line.is_new_employee = False
-                        else:
+                        elif self.auto_create_employees:
                             employee = self._create_employee(line)
                             created_employees |= employee
                             line.employee_id = employee.id
+                            line.is_new_employee = False
 
                     if not employee:
                         line.state = 'error'
@@ -1266,6 +1432,11 @@ class HrPayrollImportBatch(models.Model):
                         continue
 
                     raw_data = line.get_raw_data()
+                    # Backfill the source key on an employee who was matched
+                    # rather than created — including everyone who predates
+                    # this field — so the NEXT run finds them by it directly
+                    # instead of falling back down the mappable rungs.
+                    self._stamp_source_ref(employee, line)
                     self._update_employee_from_raw_data(employee, raw_data, line=line)
 
                     # Step 1b: Bank destinations (COLROLES P3). Deliberately its own
@@ -1347,15 +1518,29 @@ class HrPayrollImportBatch(models.Model):
         mappings = self._get_model_mappings('hr.employee')
         mapped_fields = set(mappings.mapped('target_field_id.name'))
 
-        # Extract employee info from raw data
+        # A DECLARED MAPPING SAYS WHERE TO LOOK, NOT "REFUSE IF ABSENT".
+        #
+        # These three blocks read `if <field> in mapped_fields: use the mapped
+        # value` with NO fallback, so a mapping that exists but resolves to
+        # nothing on this row was treated as an instruction to give up. That is
+        # exactly what happens when a feed meets mappings authored against a
+        # spreadsheet: ABM's scheme declares `hr.employee.name`, `work_email`
+        # and `employee_id` against Excel column headers that a Zoho payload
+        # does not contain, so all 152 lines failed with "Cannot create
+        # employee: Name is required" — while the line itself was carrying
+        # "THANH HUYNH" and "thanh.huynh@abmauri.vn" the whole time.
+        #
+        # The identifier is the one that matters most: an employee created
+        # without `identification_id` cannot be found by `_find_employee` next
+        # month, so the next run creates a SECOND copy of that person. A
+        # mapping that happens not to resolve must never be able to cause that.
+        #
+        # Precedence is unchanged where the mapping DOES resolve: it still wins.
         mapped_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
-        if 'name' in mapped_fields:
-            name = mapped_name
-        else:
-            name = mapped_name or line.employee_name or self._extract_field(
-                raw_data,
-                ['name', 'full_name', 'employee_name']
-            )
+        name = mapped_name or line.employee_name or self._extract_field(
+            raw_data,
+            ['name', 'full_name', 'employee_name']
+        )
 
         if not name:
             raise ValidationError(_("Cannot create employee: Name is required"))
@@ -1364,28 +1549,43 @@ class HrPayrollImportBatch(models.Model):
             self._get_mapped_value_for_field(raw_data, 'hr.employee', 'work_email')
             or self._get_mapped_value_for_field(raw_data, 'hr.employee', 'private_email')
         )
-        work_email = mapped_email if 'work_email' in mapped_fields else mapped_email or line.employee_email
+        work_email = mapped_email or line.employee_email
         vals = {
             'name': name,
             'work_email': work_email,
             'company_id': self.company_id.id,
         }
 
-        identifier_fields = {'employee_id', 'identification_id', 'barcode'}
         mapped_identifier = self._get_employee_identifier_value(raw_data)
-        if mapped_fields & identifier_fields:
-            employee_code = mapped_identifier
-        else:
-            employee_code = mapped_identifier or line.employee_code
+        employee_code = mapped_identifier or line.employee_code
         if employee_code:
             employee_code = self._normalize_code(employee_code)
             vals['identification_id'] = employee_code
             if 'employee_id' in self.env['hr.employee']._fields:
                 vals['employee_id'] = employee_code
 
+        # THE SOURCE SYSTEM'S KEY, ALWAYS, wherever the mapped one came from.
+        #
+        # A declared mapping decides what goes in `employee_id` — on ABM that
+        # is the ID card number — and if the feed's own stable key is not also
+        # written down, NOTHING on this record can find the person again next
+        # month. Two people who share an ID card field that is blank, or a
+        # name, then merge. `barcode` is the stored field `_find_employee`
+        # already searches, so the source key goes there and the round trip
+        # closes: created under Zoho's `11708`, found next month under
+        # Zoho's `11708`.
+        source_code = self._normalize_code(line.employee_code) \
+            if line.employee_code else False
+        if source_code and not vals.get('barcode'):
+            vals['barcode'] = source_code
+        source_ref = self._source_ref(line.employee_code)
+        if source_ref and 'pb_source_ref' in self.env['hr.employee']._fields:
+            vals['pb_source_ref'] = source_ref
+
         if 'private_email' in mapped_fields and mapped_email:
             vals['private_email'] = mapped_email
 
+        self._drop_taken_barcode(vals)
         employee = self.env['hr.employee'].create(vals)
         self._update_employee_from_raw_data(employee, raw_data, line=line)
         self._log("Created employee: %s [%s]" % (employee.name, employee.identification_id))
@@ -1406,7 +1606,31 @@ class HrPayrollImportBatch(models.Model):
         # Find structure from formula config
         structure = self.formula_config_id.structure_id
 
-        date_start = self.date_from or joining_date or date.today().replace(day=1)
+        # WHEN THE PERSON STARTED, not when payroll happened to be run.
+        #
+        # This read `self.date_from or joining_date`, and `date_from` is always
+        # set on a period import — so `joining_date` could never be reached and
+        # EVERY employee created by a June import got a contract starting
+        # 1 June, including someone who joined in 2019. Seniority, severance
+        # and any proration that asks "did this contract cover the whole
+        # period" were all being told the same wrong thing, quietly, about the
+        # entire workforce at once.
+        #
+        # A joining date AFTER the period being run is the one case where the
+        # feed's own date cannot be used: the contract has to cover the payslip
+        # it is being created for, and a contract that does not overlap its own
+        # period would not be found by `_get_latest_contract` next month either
+        # — so the next run would create a SECOND contract for the same person.
+        # That employee keeps the period start and the fact is logged.
+        period_start = self.date_from or date.today().replace(day=1)
+        period_end = self.date_to
+        date_start = joining_date or period_start
+        if period_end and date_start > period_end:
+            _logger.info(
+                "Contract for %s: joining date %s is after the period being "
+                "run (%s–%s), so the contract starts at the period instead.",
+                employee.name, date_start, period_start, period_end)
+            date_start = period_start
         name_suffix = fields.Date.to_string(date_start) if date_start else _("Contract")
         vals = {
             'name': _("%s - %s") % (employee.name, name_suffix),
@@ -2315,10 +2539,23 @@ class HrPayrollImportBatch(models.Model):
         if field_type == 'many2one':
             return value.display_name
         if field_type == 'selection':
-            selection = field.selection(record.env) if callable(field.selection) \
-                else field.selection
-            lookup = dict(selection or [])
-            return lookup.get(value, value)
+            # `field` is an `ir.model.fields` ROW, and on that model `selection`
+            # is a Char holding the definition as text ("[('a','A'), …]") — not
+            # a list of pairs and not callable. `dict(<str>)` walks the string
+            # one character at a time and dies with "dictionary update sequence
+            # element #0 has length 1; 2 is required", which is what every one
+            # of ABM's 152 lines failed with the moment a selection field
+            # (employment status, residency status) was read back off a record.
+            #
+            # The labels live on the real field, so ask the model for them.
+            model_field = record._fields.get(field.name)
+            selection = []
+            if model_field is not None:
+                try:
+                    selection = model_field._description_selection(record.env)
+                except Exception:          # noqa: BLE001 — a label is a nicety
+                    selection = []
+            return dict(selection or []).get(value, value)
         if field_type == 'boolean':
             return bool(value)
         if field_type in ('integer', 'float', 'monetary'):
@@ -2628,6 +2865,22 @@ class HrPayrollImportBatch(models.Model):
                 lambda c: (not c.date_start or c.date_start <= date_to)
                 and (not c.date_end or c.date_end >= date_from)
             )
+        if not contracts and employee.contract_ids:
+            # NOTHING OVERLAPS, BUT THIS PERSON ALREADY HAS A CONTRACT.
+            #
+            # Returning False here sends the caller to `_create_contract`, and
+            # doing that once a month is how an employee ends up with twelve
+            # contracts. The window filter above is a preference — "use the
+            # contract that covers this period" — not a licence to mint another
+            # one when none does. So the most recent existing contract is
+            # reused and the reason is logged; a genuinely new contract is
+            # still created for someone who has none, and the explicit
+            # amendment path (`requires_new_contract`) is untouched.
+            contracts = employee.contract_ids
+            _logger.info(
+                "Contract select: no contract of %s covers %s–%s; reusing the "
+                "most recent rather than creating another.",
+                employee.name, self.date_from, self.date_to)
         contracts = contracts.sorted(key=lambda c: c.date_start or date.min, reverse=True)
         if _logger.isEnabledFor(logging.INFO):
             _logger.info(
@@ -2889,7 +3142,41 @@ class HrPayrollImportBatch(models.Model):
                 updates['job_id'] = job.id
 
         if updates:
+            self._drop_taken_barcode(updates, employee)
             employee.write(updates)
+
+    def _drop_taken_barcode(self, vals, employee=None):
+        """Never let a mapped value collide on `hr_employee_barcode_uniq`.
+
+        `barcode` carries a UNIQUE constraint, and a declared mapping can point
+        it at a column that is not unique at all — ABM's points it at the ID
+        CARD number, which two of its employees share. Writing the second one
+        raises `UniqueViolation`, and because that aborts the PostgreSQL
+        transaction the whole import dies there: on the June run every line
+        after the collision failed with "current transaction is aborted",
+        turning one duplicated card number into a total loss.
+
+        A barcode somebody else already holds is dropped and said out loud.
+        Identity does not depend on it any more — `pb_source_ref` carries that
+        — so losing a contested barcode costs nothing, while letting it through
+        costs the run.
+        """
+        barcode = (vals or {}).get('barcode')
+        if not barcode:
+            return vals
+        Employee = self.env['hr.employee']
+        domain = [('barcode', '=', barcode)]
+        if employee:
+            domain.append(('id', '!=', employee.id))
+        holder = Employee.sudo().with_context(active_test=False).search(
+            domain, limit=1)
+        if holder:
+            _logger.warning(
+                "Barcode %s is already held by employee %s; leaving it off %s "
+                "rather than failing the run.", barcode, holder.id,
+                employee.id if employee else vals.get('name') or 'a new employee')
+            vals.pop('barcode', None)
+        return vals
 
     def _update_contract_from_raw_data(self, contract, raw_data, line=None):
         """Update contract fields from raw import data.
