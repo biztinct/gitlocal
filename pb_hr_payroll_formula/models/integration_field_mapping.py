@@ -501,6 +501,49 @@ Example: value * 1.1 if value > 1000 else value
         return self.transform_value(value, record)
 
     # ==========================================
+    # A WIRE BINDS THE SCHEME IT LANDS ON
+    # ==========================================
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Create the wires, then make sure the scheme knows where they come from.
+
+        `payroll_import_batch._transform_data_to_formula_inputs` applies a
+        connector's mappings only when `config.connector_id` is set — its own
+        comment says "the connector is reachable via `config.connector_id`,
+        which is what makes the single gate sufficient". Nothing set it.
+
+        So a user could wire a full board — ABM had **25 confirmed mappings**
+        from Zoho onto the AB Mauri Payroll scheme — and every one of them was
+        skipped at run time, with no error and nothing on screen to look at.
+        The board said 25 mapped; the pay run behaved as if none existed.
+
+        Binding here rather than at the four board endpoints that create wires
+        (`mc_create_mapping`, template apply, the Excel lane, the repair path)
+        because the property wanted is "a scheme with wires knows its
+        connector", and a property is kept by the model, not by remembering it
+        at each call site. An existing binding is never overwritten: a scheme
+        deliberately pointed at another connector stays pointed there.
+        """
+        records = super().create(vals_list)
+        records._bind_target_configs()
+        return records
+
+    def _bind_target_configs(self):
+        """Fill `connector_id` on any target scheme that has none."""
+        for mapping in self:
+            connector = mapping.connector_id
+            config = mapping.target_rule_id.config_id
+            if not (connector and config) or config.connector_id:
+                continue
+            # `sudo`: whoever may draw a wire on the board may bind the scheme
+            # the wire lands on — the alternative is a wire that silently does
+            # nothing for want of a write the same gesture implies.
+            config.sudo().connector_id = connector.id
+            _logger.info(
+                "Scheme %s bound to connector %s by its first field mapping.",
+                config.display_name or config.id, connector.display_name)
+
+    # ==========================================
     # JOURNEY J3 — what a feed actually DELIVERED, in one place
     # ==========================================
     @api.model

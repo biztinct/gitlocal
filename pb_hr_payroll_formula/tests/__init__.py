@@ -62,3 +62,8 @@ from . import test_journey_j10_writeback
 # The Zoho response contract — an HTTP-200 refusal must not read as an empty
 # result set (the ABM "Sync said nothing and pulled nothing" incident).
 from . import test_zoho_response_contract
+
+# The July-run defects: a scheme that never learned its connector (so 25
+# confirmed wires were skipped in silence), and a pull that never carried the
+# period (so July's run refreshed August's numbers).
+from . import test_feed_binding_and_period

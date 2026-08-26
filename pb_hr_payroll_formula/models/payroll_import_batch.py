@@ -3580,8 +3580,15 @@ class HrPayrollImportBatch(models.Model):
         # the fallback could never fire, because an empty feed looked exactly like
         # a full one from here.
         # ==================================================================
-        if self.source_type == 'api_data_store' and config.connector_id:
-            connector = config.connector_id.sudo()
+        # `_resolve_feed_connector` rather than `config.connector_id` directly:
+        # an unset binding used to make this whole branch vanish in silence, so
+        # a scheme with confirmed wires and no binding read as a scheme with no
+        # wires. The resolver falls back to the wires themselves and binds what
+        # it finds. See `hr.formula.config._resolve_feed_connector`.
+        feed_connector = (config._resolve_feed_connector()
+                          if self.source_type == 'api_data_store' else None)
+        if feed_connector:
+            connector = feed_connector.sudo()
             FieldMapping = self.env['hr.integration.field.mapping']
             for hit in FieldMapping._feed_values_for(
                     connector._sync_mapping_ids(), raw_data):

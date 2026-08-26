@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import calendar
 import logging
 import re
+from datetime import date
 from urllib.parse import urljoin, urlparse
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -38,6 +40,16 @@ DATA_TYPE_ICON = {
 DEFAULT_API_BASE = {
     'zoho': 'https://people.zoho.com/people/api',
     'darwin': 'https://api.darwinbox.in',
+}
+
+# The feed operations whose ANSWER depends on the window they are asked for.
+# `employee` and `salary` return the current state of a record and are the same
+# whichever month you ask about; the rest are dated and a wrong window silently
+# returns a different month's numbers, which is the defect the period selector
+# exists to close.
+PERIOD_SCOPED = {
+    'attendance_summary', 'attendance_daily', 'leave', 'overtime', 'timesheet',
+    'generic',
 }
 
 # ============================================================== credentials
@@ -147,6 +159,7 @@ class PbConnectorCockpit(models.AbstractModel):
             'data_store_count': len(c.data_store_ids),
             'rules': rules,
             'endpoints': self._endpoints(c),
+            'pull_period': self._default_pull_period(c),
             'configuration': self._configuration(c),
             'credentials': self._credentials(c),
             'can_write': c.has_access('write'),
@@ -240,6 +253,14 @@ class PbConnectorCockpit(models.AbstractModel):
             # describing different moments.
             'last_sync': str(e.last_sync or '')[:16],
             'last_sync_iso': e.last_sync.isoformat() if e.last_sync else '',
+            # WHICH window this feed last pulled, beside WHEN it pulled. A feed
+            # whose rows are August's, refreshed during a July run, looked
+            # identical to a correct one until this was on the card.
+            'period_from': str(e.last_period_from or ''),
+            'period_to': str(e.last_period_to or ''),
+            'period_label': self._period_label(e.last_period_from,
+                                               e.last_period_to),
+            'period_scoped': (e.operation or 'catalog_only') in PERIOD_SCOPED,
             'status': e.last_sync_status or '',
             'last_error': e.last_error or '',
             'synced': e.synced_count,
@@ -380,15 +401,22 @@ class PbConnectorCockpit(models.AbstractModel):
         return acts
 
     @api.model
-    def run_connector_action(self, connector_id, method):
+    def run_connector_action(self, connector_id, method,
+                             period_from=None, period_to=None):
         if method not in LIFECYCLE:
             d = self.get_connector_detail(connector_id)
             d['error'] = 'Action not permitted'
             return d
         c = self.env['hr.integration.connector'].browse(int(connector_id))
+        start, end = self._period(period_from, period_to)
         err = None
         try:
-            getattr(c, method)()          # discard notification/reload return
+            if method == 'action_pull_data' and start:
+                # The only lifecycle action that reads a window. The others
+                # take no arguments and must keep being called with none.
+                c.action_pull_data(period_from=start, period_to=end)
+            else:
+                getattr(c, method)()      # discard notification/reload return
         except Exception as e:
             err = str(getattr(e, 'name', None) or e) or 'Action failed'
             _logger.warning("Connector action %s failed: %s", method, e)
@@ -397,15 +425,85 @@ class PbConnectorCockpit(models.AbstractModel):
         return detail
 
     # ================================================================== feeds
+    def _default_pull_period(self, c):
+        """The window the cockpit should offer, and why that one.
+
+        The LAST window this connector's feeds were actually pulled for, when
+        there is one — a connector being worked on for July should keep saying
+        July until somebody changes it, rather than silently rolling to the
+        current month the moment the calendar does. Otherwise the current
+        month, which is the right guess for a first pull.
+
+        Returned with the month's own bounds, never a partial month, so the
+        control opens on something a pay run can use as-is.
+        """
+        today = date.today()
+        start = today.replace(day=1)
+        end = today.replace(day=calendar.monthrange(today.year, today.month)[1])
+        Endpoint = self.env.get('hr.integration.endpoint') \
+            if 'hr.integration.endpoint' in self.env else None
+        if Endpoint is not None and Endpoint._schema_ready():
+            last = Endpoint.search(
+                [('connector_id', '=', c.id), ('last_period_from', '!=', False)],
+                order='last_sync desc, id desc', limit=1)
+            if last:
+                start, end = last.last_period_from, last.last_period_to or end
+        return {'from': str(start), 'to': str(end),
+                'label': self._period_label(start, end)}
+
+    @staticmethod
+    def _period_label(start, end):
+        """"Jul 2026", or "01 Jul – 15 Aug 2026" when it is not a whole month."""
+        if not (start and end):
+            return ''
+        month_start = start.day == 1
+        month_end = end.day == calendar.monthrange(end.year, end.month)[1]
+        if month_start and month_end and (start.year, start.month) == (end.year, end.month):
+            return start.strftime('%b %Y')
+        return '%s – %s' % (start.strftime('%d %b'), end.strftime('%d %b %Y'))
+
+    @staticmethod
+    def _period(period_from, period_to):
+        """The window a pull should ask the vendor for, validated.
+
+        Returned as `(from, to)` strings, or `(None, None)` to let the model
+        keep its own default. A half-given or malformed window is refused
+        rather than half-applied: silently pulling a different month than the
+        one on screen is the defect this parameter exists to fix, and doing it
+        by falling back would reintroduce it one level down.
+        """
+        if not (period_from and period_to):
+            return None, None
+        try:
+            start = fields.Date.to_date(period_from)
+            end = fields.Date.to_date(period_to)
+        except (TypeError, ValueError):
+            raise ValidationError(_('That period is not a pair of dates.'))
+        if not (start and end):
+            raise ValidationError(_('That period is not a pair of dates.'))
+        if end < start:
+            raise ValidationError(_('A period cannot end before it starts.'))
+        if (end - start).days > 366:
+            raise ValidationError(_('Pull one year at a time or less.'))
+        return start, end
+
     @api.model
-    def sync_endpoint(self, connector_id, endpoint_id):
-        """Pull ONE feed — `action_pull_data` scoped to that feed's data type.
+    def sync_endpoint(self, connector_id, endpoint_id,
+                      period_from=None, period_to=None):
+        """Pull ONE feed, for a stated period.
 
         Returns the refreshed endpoint row (plus an `error` when the pull said
         something), so the chip can repaint itself without re-reading the whole
         connector. The endpoint is looked up THROUGH the connector rather than
         browsed by id alone: an id from the browser must not be able to make
         this method pull for a connector the caller was not looking at.
+
+        `period_from`/`period_to` reach the vendor call. Without them the model
+        falls back to the CURRENT calendar month, which is right for a routine
+        refresh and wrong for every other case: a July pay run refreshed from
+        this button in August got August's attendance, August's overtime and
+        August's leave, stamped onto rows the run then read as July's. Nothing
+        errored — the numbers were simply the wrong month's.
         """
         c = self.env['hr.integration.connector'].browse(int(connector_id))
         if not c.exists():
@@ -413,9 +511,10 @@ class PbConnectorCockpit(models.AbstractModel):
         ep = c.endpoint_ids.filtered(lambda e: e.id == int(endpoint_id))
         if not ep:
             return {'error': 'That feed is not on this connector.'}
+        start, end = self._period(period_from, period_to)
         err = None
         try:
-            c.action_pull_endpoint(ep.id)
+            c.action_pull_endpoint(ep.id, period_from=start, period_to=end)
         except Exception as e:
             err = str(getattr(e, 'name', None) or e) or 'Pull failed'
             _logger.warning("Endpoint sync failed for %s/%s: %s",

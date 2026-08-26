@@ -71,6 +71,12 @@ export class ConnectorCockpit extends Component {
         this.backLabel = p.back_label || _t("Integrations");
         this.state = useState({
             loaded: false, busy: false, busyMsg: "", detail: null,
+            // The window every dated pull asks for. Seeded from the server
+            // (last window pulled, else this month) and left alone once the
+            // user has chosen one, so a period picked for a July run is not
+            // quietly reset by the next refresh.
+            period: { from: "", to: "", label: "" },
+            periodTouched: false,
             // which endpoint is mid-pull (id), so one chip spins and the rest
             // of the strip stays usable
             syncing: 0,
@@ -126,6 +132,8 @@ export class ConnectorCockpit extends Component {
     async refresh() {
         try {
             this.state.detail = await this.orm.call(MODEL, "get_connector_detail", [this.connectorId]);
+            const p = (this.state.detail || {}).pull_period;
+            if (p && !this.state.periodTouched) { this.state.period = { ...p }; }
         } catch (e) {
             this.state.detail = { error: "Could not load this connector." };
         } finally {
@@ -151,7 +159,73 @@ export class ConnectorCockpit extends Component {
     runAction(method) {
         const msg = { action_test_connection: "Testing connection…", action_pull_data: "Pulling data…",
                       action_fetch_available_fields: "Fetching fields…", action_disconnect: "Disconnecting…" }[method] || "Working…";
-        return this._run(this.orm.call(MODEL, "run_connector_action", [this.connectorId, method]), msg);
+        const args = [this.connectorId, method];
+        if (method === "action_pull_data") {
+            // Only the pull reads a window; the other three take none and must
+            // keep being called with none.
+            args.push(this.pullFrom, this.pullTo);
+        }
+        return this._run(this.orm.call(MODEL, "run_connector_action", args), msg);
+    }
+
+    // ================================================== the window being pulled
+    //
+    // Every dated feed here (attendance, overtime, leave, timesheets) answers
+    // for a WINDOW, and without one the server falls back to the current
+    // calendar month. A July pay run refreshed from this screen in August
+    // therefore pulled August's attendance and August's overtime, stamped them
+    // onto rows the run then read as July's, and reported success. Nothing was
+    // wrong except the month, and no screen said which month it was.
+    get pullFrom() { return this.state.period.from; }
+    get pullTo() { return this.state.period.to; }
+    get pullPeriodLabel() { return this.state.period.label || ""; }
+
+    setPeriod(which, ev) {
+        const value = ev.target.value;
+        if (!value) { return; }
+        this.state.periodTouched = true;
+        this.state.period[which] = value;
+        if (which === "from" && this.state.period.to < value) {
+            this.state.period.to = value;
+        }
+        this.state.period.label = "";
+    }
+
+    /** Jump the window a whole month at a time — the unit a pay run uses. */
+    shiftPeriod(months) {
+        const from = new Date(this.state.period.from + "T00:00:00Z");
+        if (isNaN(from.getTime())) { return; }
+        this.state.periodTouched = true;
+        const y = from.getUTCFullYear();
+        const m = from.getUTCMonth() + months;
+        const start = new Date(Date.UTC(y, m, 1));
+        const end = new Date(Date.UTC(y, m + 1, 0));
+        this.state.period.from = start.toISOString().slice(0, 10);
+        this.state.period.to = end.toISOString().slice(0, 10);
+        this.state.period.label = "";
+    }
+
+    /** Does this feed's data depend on the window? Employees and salary do not. */
+    isPeriodScoped(ep) { return !!ep.period_scoped; }
+
+    /**
+     * What a feed card should say about the month its rows are about.
+     *
+     * Deliberately separate from `since()`: that answers "when did we ask",
+     * this answers "what did we ask for", and conflating them is what let a
+     * feed full of August rows look correct during a July run.
+     */
+    periodNote(ep) {
+        if (!ep.period_scoped || !ep.period_label) { return ""; }
+        if (ep.period_from === this.state.period.from && ep.period_to === this.state.period.to) {
+            return _t("Holds %s", ep.period_label);
+        }
+        return _t("Holds %s — not the selected period", ep.period_label);
+    }
+    periodMismatch(ep) {
+        return !!(ep.period_scoped && ep.period_from &&
+                  (ep.period_from !== this.state.period.from ||
+                   ep.period_to !== this.state.period.to));
     }
 
     /**
@@ -270,7 +344,8 @@ export class ConnectorCockpit extends Component {
         this.state.syncing = ep.id;
         try {
             const res = await this.orm.call(
-                MODEL, "sync_endpoint", [this.connectorId, ep.id]);
+                MODEL, "sync_endpoint",
+                [this.connectorId, ep.id, this.pullFrom, this.pullTo]);
             if (res && res.endpoint) {
                 // Replace the row in place so the strip does not reflow while
                 // the user is looking at it.

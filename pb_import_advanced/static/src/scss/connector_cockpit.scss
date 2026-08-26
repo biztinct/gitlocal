@@ -109,6 +109,13 @@
         background: var(--pbim-amber-soft); border-radius: 999px; padding: 1px 7px; }
     .pbcc-feed__mode.off { color: var(--pbim-muted); background: var(--pbim-line-2); }
     .pbcc-feed__counts { font-size: 11.5px; font-weight: 600; color: var(--pbim-text); }
+    /* WHICH MONTH this feed's rows are about. Muted while it agrees with the
+       selected period, amber the moment it does not — a feed still holding
+       August during a July run is the whole reason the period control exists,
+       and it has to be visible without reading the number beside it. */
+    .pbcc-feed__period { display: flex; align-items: center; gap: 5px; margin-top: 3px;
+        font-size: 10.5px; font-weight: 700; color: var(--pbim-muted); line-height: 1.35; }
+    .pbcc-feed__period.warn { color: var(--pbim-amber); }
     .pbcc-feed__legacy { display: flex; align-items: center; gap: 5px; margin-top: 5px;
         color: var(--pbim-amber); font-size: 9.5px; font-weight: 700; line-height: 1.35; }
     /* C6 — the expected-field count. Indigo, because it is a statement about
@@ -187,7 +194,21 @@
     .pbcc-credhint { font-size: 11.5px; font-weight: 600; color: var(--pbim-muted); }
 
     // =========================================== Connection & Feed Studio
-    .pbcc-panel-actions { display: flex; align-items: center; gap: 6px; }
+    .pbcc-panel-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    /* The period every dated pull asks for, sitting with the buttons it governs. */
+    .pbcc-period { display: flex; align-items: center; gap: 4px;
+        padding: 3px 7px; border: 1px solid var(--pbim-line); border-radius: 9px;
+        background: var(--pbim-surface-2); }
+    .pbcc-period__lb { display: flex; align-items: center; gap: 4px; margin-right: 2px;
+        font-size: 10px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: .04em; color: var(--pbim-muted); }
+    .pbcc-period__in { border: 1px solid var(--pbim-line); border-radius: 7px;
+        padding: 2px 6px; font-size: 11.5px; font-weight: 600;
+        color: var(--pbim-text); background: var(--pbim-surface);
+        font-family: inherit; }
+    .pbcc-period__in:focus { outline: 2px solid var(--pbim-indigo-soft); outline-offset: 1px; }
+    .pbcc-period__sep { font-size: 11px; color: var(--pbim-muted); }
+    .pbim-btn-xs { padding: 2px 7px; font-size: 11px; line-height: 1.5; }
     .pbcc-studio {
         position: fixed; inset: 42px 0 0 247px; z-index: 950;
         background: var(--pbim-bg); overflow: auto;

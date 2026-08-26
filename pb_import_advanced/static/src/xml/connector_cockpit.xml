@@ -114,6 +114,25 @@
             <div><h2 class="pbim-h2">Feeds <span class="pbcc-count" t-esc="endpoints.length"/></h2>
               <p class="pbcc-feedhint">Installed from the vendor catalogue; your edits are never overwritten automatically.</p></div>
             <div class="pbcc-panel-actions" t-if="canWrite">
+              <!-- THE WINDOW EVERY DATED PULL ASKS FOR.
+                   Attendance, overtime, leave and timesheets each answer for a
+                   period, and without one the server falls back to the current
+                   calendar month — so a July pay run refreshed in August got
+                   August's numbers, silently. This control is beside the Sync
+                   buttons it governs, because a period chosen on another screen
+                   is a period nobody checks. -->
+              <div class="pbcc-period" title="Attendance, overtime, leave and timesheets are pulled for this window">
+                <span class="pbcc-period__lb"><t t-out="ic('calendar',13)"/> Period</span>
+                <button class="pbim-btn ghost pbim-btn-xs" t-on-click="() => this.shiftPeriod(-1)"
+                        title="Previous month">&#8592;</button>
+                <input type="date" class="pbcc-period__in" t-att-value="state.period.from"
+                       t-on-change="(ev) => this.setPeriod('from', ev)" aria-label="Period from"/>
+                <span class="pbcc-period__sep">&#8594;</span>
+                <input type="date" class="pbcc-period__in" t-att-value="state.period.to"
+                       t-on-change="(ev) => this.setPeriod('to', ev)" aria-label="Period to"/>
+                <button class="pbim-btn ghost pbim-btn-xs" t-on-click="() => this.shiftPeriod(1)"
+                        title="Next month">&#8594;</button>
+              </div>
               <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openConfiguration()">
                 <t t-out="ic('settings',14)"/> Configure
               </button>
@@ -139,6 +158,11 @@
                 <span t-if="ep.is_legacy_abm" class="pbcc-feed__abm">ABM</span>
                 <span t-if="!ep.active" class="pbcc-feed__mode off">Off</span>
                 <span t-elif="!ep.runnable" class="pbcc-feed__mode">Catalogue only</span>
+              </div>
+              <div t-if="periodNote(ep)"
+                   t-attf-class="pbcc-feed__period {{ periodMismatch(ep) ? 'warn' : '' }}"
+                   title="The window this feed's rows are about — a different fact from when it was last fetched.">
+                <t t-out="ic('calendar',12)"/> <t t-esc="periodNote(ep)"/>
               </div>
               <div class="pbcc-feed__counts">
                 <t t-esc="counts(ep)"/>

@@ -10,7 +10,7 @@ Houses the power-user Import surfaces as guided OWL experiences:
    reimplementing their logic.
 All share the pb_import_kit powder design system.
 """,
-    'version': '19.0.1.11.0',
+    'version': '19.0.1.12.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
