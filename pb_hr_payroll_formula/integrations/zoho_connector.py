@@ -15,6 +15,18 @@ from .base_connector import BaseHRConnector
 _logger = logging.getLogger(__name__)
 
 
+class ZohoApiError(RuntimeError):
+    """Zoho answered, and the answer was a refusal.
+
+    A distinct type because the interesting property of a Zoho failure is that
+    it does NOT arrive as an HTTP status. `forms/P_Employee/records` — the path
+    this connector shipped with — answers `200 OK` with the body
+    `[{"message":"Invalid View Name","errorcode":7012,"Response status":2}]`,
+    and `attendance/getUserReport` answers `200 OK` with `{"error":"Invalid
+    User."}`. Anything that only checks `status_code` reads those as success.
+    """
+
+
 class ZohoConnector(BaseHRConnector):
     """
     Zoho People API connector for fetching employee and payroll data.
@@ -29,10 +41,44 @@ class ZohoConnector(BaseHRConnector):
     BASE_URL = "https://people.zoho.com/people/api"
     AUTH_URL = "https://accounts.zoho.com/oauth/v2"
 
+    # The paths this connector falls back to when a feed row carries none.
+    # Every one of them was executed against a live Zoho People tenant on
+    # 2026-08-26 — see `docs/ZOHO_API_PATHS.md` for the responses. The four
+    # marked (was …) replace a path that Zoho refuses; they are corrected on
+    # existing databases by migration 19.0.1.84.0.
+    EMPLOYEE_PATH = 'forms/employee/getRecords'            # was forms/P_Employee/records
+    SALARY_PATH = 'forms/salary_details/getRecords'        # was forms/P_Salary/records
+    LEAVE_PATH = 'forms/leave/getRecords'                  # was leave/getLeaveDetails
+    ATTENDANCE_DAILY_PATH = 'attendance/getUserReport'     # was attendance/getAttendanceByDate
+    ATTENDANCE_SUMMARY_PATH = 'attendance/getSummaryReport'
+    OVERTIME_PATH = 'forms/overtime_request/getRecords'
+    TIMESHEET_PATH = 'timetracker/gettimesheet'
+
+    # Zoho's form APIs page at 200 rows. The cap is a runaway guard, not a
+    # policy: a feed that legitimately exceeds it says so in the log rather
+    # than returning a quietly truncated list.
+    PAGE_SIZE = 200
+    MAX_PAGES = 200
+
+    # The Zoho form each catalogued feed reads, for field discovery. The link
+    # names are the tenant's own (`GET /forms`), NOT the `P_`-prefixed internal
+    # names this connector used to guess at: `P_Salary` and `P_Attendance` are
+    # both rejected with "Form name is invalid".
+    FORM_BY_ENDPOINT = {
+        'zohoemployees': 'employee',
+        'zohosalary': 'salary_details',
+        'zoholeave': 'leave',
+        'zohoovertime': 'overtime_request',
+    }
+
     def __init__(self, connector_record):
         super().__init__(connector_record)
         self.access_token = None
         self.token_expiry = None
+        # One whole-form leave read per pull, not one per employee — see
+        # `_leave_rows`.
+        self._leave_cache_key = None
+        self._leave_cache = []
 
     # ==========================================
     # CONFIGURED URL RESOLUTION
@@ -83,6 +129,148 @@ class ZohoConnector(BaseHRConnector):
             json=params if method == 'post' else None,
             timeout=timeout,
         )
+
+    # ==========================================
+    # RESPONSE CONTRACT
+    # ==========================================
+
+    # Zoho reports "there is nothing here" as an ERROR: code 7024, message
+    # "No records found", `status: 1`, HTTP 200. It is returned by an employee
+    # with no overtime this month exactly as it is by a form that is empty, and
+    # by the page AFTER the last page of any paginated feed. Reading it as a
+    # failure would make an ordinary quiet month look broken — which is the
+    # mirror image of the bug this file is being corrected for, so it gets the
+    # same care.
+    EMPTY_ERROR_CODES = {7024}
+
+    @classmethod
+    def _zoho_is_empty(cls, payload) -> bool:
+        """Is this Zoho's way of saying the result set is empty?"""
+        codes = set()
+        if isinstance(payload, dict):
+            body = payload.get('response')
+            body = body if isinstance(body, dict) else payload
+            errors = body.get('errors')
+            if isinstance(errors, dict):
+                errors = [errors]
+            if isinstance(errors, list):
+                codes = {e.get('code') for e in errors if isinstance(e, dict)}
+        elif isinstance(payload, list):
+            codes = {item.get('errorcode') for item in payload
+                     if isinstance(item, dict)}
+        codes.discard(None)
+        return bool(codes) and codes <= cls.EMPTY_ERROR_CODES
+
+    @classmethod
+    def _zoho_error(cls, payload) -> str:
+        """The sentence Zoho refused with, or '' if this payload is data.
+
+        Four shapes, all observed on one tenant in one afternoon, all of them
+        arriving with a 2xx status on at least one endpoint:
+
+          `[{"message": …, "errorcode": 7012, "Response status": 2}]`
+              a form/view name the tenant does not have;
+          `{"response": {"errors": {"code": 7201, "message": …}, "status": 1}}`
+              a path that does not exist (usually served as 404, but the body
+              is the only thing that says *why*);
+          `{"response": {"errors": [{"code": 9002, …}], "status": 1}}`
+              the same, with the errors as a list — `timetracker/gettimesheet`
+              answers this, with 200, when the `user` parameter is missing;
+          `{"error": "Invalid User."}`
+              `attendance/getUserReport` given an id it does not recognise.
+
+        `status` 0 and `Response status` 1 mean success, so neither is tested
+        for truthiness — only for the explicit failure value. An emptiness
+        signal is not a refusal and is filtered out first.
+        """
+        if cls._zoho_is_empty(payload):
+            return ''
+        if isinstance(payload, list):
+            for item in payload:
+                if not isinstance(item, dict):
+                    continue
+                if 'errorcode' in item or str(item.get('Response status')) == '2':
+                    return str(item.get('message') or
+                               item.get('errorcode') or 'Zoho refused the call')
+            return ''
+        if not isinstance(payload, dict):
+            return ''
+        if isinstance(payload.get('error'), str) and payload['error']:
+            return payload['error']
+        body = payload.get('response')
+        body = body if isinstance(body, dict) else payload
+        errors = body.get('errors')
+        if isinstance(errors, dict):
+            errors = [errors]
+        if isinstance(errors, list) and errors:
+            parts = [str(e.get('message') or e.get('code'))
+                     for e in errors if isinstance(e, dict)]
+            joined = '; '.join(p for p in parts if p)
+            if joined:
+                return joined
+        if str(body.get('status')) == '1':
+            return str(body.get('message') or 'Zoho refused the call')
+        return ''
+
+    def _payload(self, response, what: str):
+        """The decoded body of a Zoho response, or `ZohoApiError`.
+
+        Every read goes through here. Before this existed each fetch method
+        did its own `if status_code == 200: data.get('response', {})…` inside a
+        bare `except: return []`, which is how a wrong path became an empty
+        result set instead of a message: the malformed body raised
+        `AttributeError: 'list' object has no attribute 'get'`, the except
+        swallowed it, the feed stamped `success` and the cockpit showed
+        `0 staged · 0 pulled` with no error anywhere a user could see.
+        """
+        try:
+            payload = response.json()
+        except ValueError:
+            payload = None
+        if payload is not None and self._zoho_is_empty(payload):
+            # Normalised to a real empty result set rather than handed on: the
+            # body still carries an `errors` key, and `_result_rows` would
+            # otherwise turn that key into a fabricated row.
+            return {'response': {'result': []}}
+        problem = self._zoho_error(payload) if payload is not None else ''
+        if problem:
+            raise ZohoApiError("%s: %s" % (what, problem))
+        if response.status_code >= 400:
+            raise ZohoApiError("%s: Zoho returned HTTP %s" % (
+                what, response.status_code))
+        if payload is None:
+            raise ZohoApiError(
+                "%s: Zoho returned a non-JSON response (HTTP %s)" % (
+                    what, response.status_code))
+        return payload
+
+    def _paged_form_rows(self, code: str, fallback_path: str, what: str,
+                         params: Optional[Dict] = None) -> List[Dict[str, Any]]:
+        """Every row of a Zoho FORM feed, following `sIndex`/`limit`.
+
+        Form responses nest one level deeper than they look —
+        `result: [{"<recordId>": [{…the fields…}]}]` — which `_result_rows`
+        unwraps. Paging stops on a short page, and `MAX_PAGES` bounds a feed
+        whose vendor ignores the window (Zoho's form search silently ignores
+        `searchField`/`searchOperator` on a date column, so several of these
+        feeds are whole-form reads by nature).
+        """
+        rows: List[Dict[str, Any]] = []
+        sindex = 1
+        for page in range(self.MAX_PAGES):
+            request_params = dict(params or {},
+                                  sIndex=sindex, limit=self.PAGE_SIZE)
+            response = self._feed_request(code, fallback_path,
+                                          params=request_params, timeout=60)
+            page_rows = self._result_rows(self._payload(response, what))
+            rows.extend(page_rows)
+            if len(page_rows) < self.PAGE_SIZE:
+                return rows
+            sindex += self.PAGE_SIZE
+        _logger.warning(
+            "Zoho feed %s stopped at the %s-page limit (%s rows). Narrow the "
+            "feed or raise MAX_PAGES.", code, self.MAX_PAGES, len(rows))
+        return rows
 
     # ==========================================
     # AUTHENTICATION
@@ -232,23 +420,8 @@ class ZohoConnector(BaseHRConnector):
             return []
 
         fields = []
-
-        try:
-            # Get Employee form fields
-            employee_fields = self._get_form_fields('P_Employee')
-            fields.extend(employee_fields)
-
-            # Get Salary form fields
-            salary_fields = self._get_form_fields('P_Salary')
-            fields.extend(salary_fields)
-
-            # Get Attendance form fields
-            attendance_fields = self._get_form_fields('P_Attendance')
-            fields.extend(attendance_fields)
-
-        except Exception as e:
-            _logger.error(f"Failed to fetch fields: {e}")
-
+        for form_name in self.FORM_BY_ENDPOINT.values():
+            fields.extend(self._get_form_fields(form_name))
         return fields
 
     def _get_form_fields(self, form_name: str) -> List[Dict[str, Any]]:
@@ -256,7 +429,7 @@ class ZohoConnector(BaseHRConnector):
         Get fields for a specific Zoho form.
 
         Args:
-            form_name: Zoho form link name
+            form_name: Zoho form link name, as listed by `GET /forms`
 
         Returns:
             List of field definitions
@@ -272,21 +445,30 @@ class ZohoConnector(BaseHRConnector):
                 headers=self._get_headers(),
                 timeout=30
             )
+            components = self._payload(
+                response, f"the {form_name} form layout")
+            components = components.get('response', {}).get('result', []) \
+                if isinstance(components, dict) else []
 
-            if response.status_code != 200:
-                return fields
-
-            data = response.json()
-            components = data.get('response', {}).get('result', [])
-
+            # Zoho's component keys are ALL LOWERCASE — `labelname`,
+            # `displayname`, `comptype`, `ismandatory`. This method used to
+            # read `compLinkName`/`labelName`/`compType`/`isMandatory`, so
+            # every field came back nameless and was dropped: "Fetch fields"
+            # answered "That system returned no fields for this feed" on a
+            # form that had just described sixty of them.
             for comp in components:
+                if not isinstance(comp, dict):
+                    continue
+                name = (comp.get('labelname') or '').strip()
+                if not name:
+                    continue
                 field = {
-                    'name': comp.get('compLinkName', ''),
-                    'label': comp.get('labelName', comp.get('compLinkName', '')),
-                    'data_type': self._map_zoho_type(comp.get('compType', '')),
-                    'path': f"{form_name}.{comp.get('compLinkName', '')}",
+                    'name': name,
+                    'label': (comp.get('displayname') or '').strip() or name,
+                    'data_type': self._map_zoho_type(comp.get('comptype', '')),
+                    'path': f"{form_name}.{name}",
                     'form': form_name,
-                    'required': comp.get('isMandatory', False),
+                    'required': bool(comp.get('ismandatory')),
                 }
                 fields.append(field)
 
@@ -329,76 +511,54 @@ class ZohoConnector(BaseHRConnector):
             List of employee data dictionaries
         """
         if not self.authenticate():
-            return []
+            raise ZohoApiError(
+                "Zoho would not authenticate this connection. Check the "
+                "client id, client secret and refresh token.")
 
-        employees = []
-
-        try:
-            params = {
-                'sIndex': 1,
-                'limit': 200,
-            }
-
-            # Apply filters
-            if filters:
-                if 'status' in filters:
-                    params['searchField'] = 'Employeestatus'
-                    params['searchOperator'] = 'Is'
-                    params['searchText'] = filters['status']
-
-            while True:
-                response = self._feed_request(
-                    'zohoemployees', 'forms/P_Employee/records',
-                    params=params, timeout=60)
-
-                if response.status_code != 200:
-                    _logger.error(f"Failed to fetch employees: {response.status_code}")
-                    break
-
-                data = response.json()
-                records = data.get('response', {}).get('result', [])
-
-                if not records:
-                    break
-
-                for record in records:
-                    emp = self._parse_employee_record(record)
-                    employees.append(emp)
-
-                # Check for more records
-                if len(records) < params['limit']:
-                    break
-
-                params['sIndex'] += params['limit']
-
-        except Exception as e:
-            _logger.exception("Failed to fetch employees")
-
-        return employees
+        params = {
+            # The legacy ABM application asked for ISO dates and parsed them as
+            # ISO (om_hr_payroll/models/hr_zoho_staging.py:317). Without this
+            # Zoho answers dd/MM/yyyy and every date lands as text.
+            'dateFormat': 'yyyy-MM-dd',
+        }
+        if filters and 'status' in filters:
+            params.update({
+                'searchField': 'Employeestatus',
+                'searchOperator': 'Is',
+                'searchText': filters['status'],
+            })
+        rows = self._paged_form_rows(
+            'zohoemployees', self.EMPLOYEE_PATH, "the employee form", params)
+        return [self._parse_employee_record(row) for row in rows]
 
     def _parse_employee_record(self, record: Dict) -> Dict[str, Any]:
         """
         Parse a Zoho employee record into standard format.
 
         Args:
-            record: Raw Zoho record
+            record: One employee's field dict, already unwrapped out of the
+                `{"<recordId>": [ … ]}` envelope by `_result_rows`.
 
         Returns:
             Standardized employee dictionary
         """
+        first = record.get('FirstName') or ''
+        last = record.get('LastName') or ''
         return {
-            'id': record.get('Zoho_ID', record.get('recordId', '')),
+            # `Zoho_ID` arrives as a JSON number on some forms, so it is made a
+            # string here rather than at each of the four places that compare it.
+            'id': str(record.get('Zoho_ID') or record.get('recordId') or ''),
             'employee_id': record.get('EmployeeID', ''),
-            'name': record.get('Name', ''),
-            'first_name': record.get('FirstName', ''),
-            'last_name': record.get('LastName', ''),
+            'name': record.get('Name') or ' '.join(p for p in (first, last) if p),
+            'first_name': first,
+            'last_name': last,
             'email': record.get('EmailID', ''),
             'department': record.get('Department', ''),
             'designation': record.get('Designation', ''),
             'date_of_joining': record.get('Dateofjoining', ''),
             'employment_status': record.get('Employeestatus', ''),
             'reporting_to': record.get('Reporting_To', ''),
-            'location': record.get('Location', ''),
+            'location': record.get('LocationName', record.get('Location', '')),
             # Raw data for custom field access
             '_raw': record,
         }
@@ -425,7 +585,9 @@ class ZohoConnector(BaseHRConnector):
             Dict mapping employee_id to payroll data
         """
         if not self.authenticate():
-            return {}
+            raise ZohoApiError(
+                "Zoho would not authenticate this connection. Check the "
+                "client id, client secret and refresh token.")
 
         payroll_data = {}
 
@@ -455,62 +617,108 @@ class ZohoConnector(BaseHRConnector):
         Returns:
             Salary data dictionary
         """
-        try:
-            params = {
-                'searchField': 'Employee_ID.Zoho_ID',
-                'searchOperator': 'Is',
-                'searchText': employee_id,
-            }
-
-            response = self._feed_request(
-                'zohosalary', 'forms/P_Salary/records', params=params)
-
-            if response.status_code == 200:
-                data = response.json()
-                records = data.get('response', {}).get('result', [])
-                if records:
-                    return records[0]
-
-        except Exception as e:
-            _logger.warning(f"Failed to get salary for {employee_id}: {e}")
-
-        return {}
+        params = {
+            'searchField': 'Employee_ID.Zoho_ID',
+            'searchOperator': 'Is',
+            'searchText': employee_id,
+            'dateFormat': 'yyyy-MM-dd',
+        }
+        response = self._feed_request(
+            'zohosalary', self.SALARY_PATH, params=params)
+        rows = self._result_rows(
+            self._payload(response, "the salary form"))
+        return rows[0] if rows else {}
 
     def _get_employee_attendance(
         self,
         employee_id: str,
         date_from: str,
-        date_to: str
+        date_to: str,
+        employee_number: Optional[str] = None,
+        email: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
-        Get attendance records for an employee.
+        Get day-by-day attendance for one employee.
+
+        Zoho's `empId` here is the EMPLOYEE NUMBER on the employee form
+        (`EmployeeID`, e.g. `11708`) — passing the record id (`Zoho_ID`,
+        `811648…`) is answered with `{"error": "Invalid User."}` and an HTTP
+        200. `emailId` is accepted as an alternative and is what the caller
+        supplies when a record has no employee number.
 
         Args:
-            employee_id: Zoho employee ID
-            date_from: Start date
-            date_to: End date
+            employee_id: Zoho record id, used only as a last resort
+            date_from: Start date (YYYY-MM-DD)
+            date_to: End date (YYYY-MM-DD)
+            employee_number: the employee's `EmployeeID`, preferred
+            email: the employee's `EmailID`, used when there is no number
 
         Returns:
-            List of attendance records
+            List of attendance records, one per day
         """
-        try:
-            params = {
-                'empId': employee_id,
-                'sdate': date_from,
-                'edate': date_to,
-            }
+        params = {
+            'sdate': self._period(date_from),
+            'edate': self._period(date_to),
+            'dateFormat': 'dd-MM-yyyy',
+        }
+        if employee_number:
+            params['empId'] = employee_number
+        elif email:
+            params['emailId'] = email
+        else:
+            params['empId'] = employee_id
+        response = self._feed_request(
+            'zohoattdaily', self.ATTENDANCE_DAILY_PATH, params=params)
+        # The response is keyed BY DATE rather than being a list;
+        # `_result_rows` carries each key through as `_result_key`.
+        return self._result_rows(
+            self._payload(response, "the daily attendance report"))
 
-            response = self._feed_request(
-                'zohoattdaily', 'attendance/getAttendanceByDate', params=params)
+    def _leave_rows(self, date_from: str, date_to: str) -> List[Dict[str, Any]]:
+        """Every leave record overlapping the window, for the whole company.
 
-            if response.status_code == 200:
-                data = response.json()
-                return data.get('response', {}).get('result', [])
+        There is no per-employee leave API on this plan: `leave/getLeaveDetails`
+        and `leave/getRecords` are both 404s, and the leave FORM ignores
+        `searchField=From&searchOperator=Between` (a January-2020 window returns
+        the same first page as no window at all). So the window is applied
+        HERE, on `From`/`To`, and the whole-form read is done once per pull and
+        cached — asking per employee would be one full-form read per employee.
+        """
+        cache_key = (date_from, date_to)
+        if getattr(self, '_leave_cache_key', None) == cache_key:
+            return self._leave_cache
+        rows = self._paged_form_rows(
+            'zoholeave', self.LEAVE_PATH, "the leave form",
+            {'dateFormat': 'yyyy-MM-dd'})
+        window = [row for row in rows
+                  if self._overlaps(row.get('From'), row.get('To'),
+                                    date_from, date_to)]
+        self._leave_cache_key = cache_key
+        self._leave_cache = window
+        return window
 
-        except Exception as e:
-            _logger.warning(f"Failed to get attendance for {employee_id}: {e}")
+    @staticmethod
+    def _overlaps(row_from, row_to, date_from, date_to) -> bool:
+        """Does `[row_from, row_to]` touch `[date_from, date_to]`?
 
-        return []
+        A row whose dates cannot be read is KEPT. Dropping a leave record
+        because its date did not parse would silently shorten a payroll input,
+        which is the failure mode this whole file is being corrected for.
+        """
+        def iso(value):
+            try:
+                return datetime.strptime(str(value)[:10], '%Y-%m-%d').date()
+            except (TypeError, ValueError):
+                return None
+        start, end = iso(row_from), iso(row_to)
+        window_start, window_end = iso(date_from), iso(date_to)
+        if not (window_start and window_end):
+            return True
+        start = start or end
+        end = end or start
+        if not start:
+            return True
+        return start <= window_end and end >= window_start
 
     def _get_employee_leave(
         self,
@@ -519,34 +727,19 @@ class ZohoConnector(BaseHRConnector):
         date_to: str
     ) -> List[Dict[str, Any]]:
         """
-        Get leave records for an employee.
+        Get leave records for one employee, out of the company-wide form read.
 
         Args:
-            employee_id: Zoho employee ID
-            date_from: Start date
-            date_to: End date
+            employee_id: Zoho employee record id
+            date_from: Start date (YYYY-MM-DD)
+            date_to: End date (YYYY-MM-DD)
 
         Returns:
             List of leave records
         """
-        try:
-            params = {
-                'empId': employee_id,
-                'fromDate': date_from,
-                'toDate': date_to,
-            }
-
-            response = self._feed_request(
-                'zoholeave', 'leave/getLeaveDetails', params=params)
-
-            if response.status_code == 200:
-                data = response.json()
-                return data.get('response', {}).get('result', [])
-
-        except Exception as e:
-            _logger.warning(f"Failed to get leave for {employee_id}: {e}")
-
-        return []
+        wanted = str(employee_id or '')
+        return [row for row in self._leave_rows(date_from, date_to)
+                if str(row.get('Employee_ID.ID') or '') == wanted]
 
     # ==========================================
     # FEED-SCOPED EXECUTION
@@ -612,21 +805,37 @@ class ZohoConnector(BaseHRConnector):
         refs = [item if isinstance(item, dict) else {'id': str(item), 'email': ''}
                 for item in employees]
         rows = []
+        if operation in ('salary', 'attendance_daily', 'leave', 'overtime',
+                         'timesheet'):
+            # Each of these asks Zoho about ONE employee at a time, so a feed
+            # run before the Employees feed has landed has nobody to ask about
+            # and would otherwise report a clean zero — the same silence this
+            # file is being corrected for, one step further along.
+            self._require_employee_refs(refs, endpoint)
+
         if operation in ('salary', 'attendance_daily', 'leave'):
+            failures = []
             for ref in refs:
                 employee_id = ref.get('id') or ''
-                if operation == 'salary':
-                    values = self._get_employee_salary(employee_id)
-                    values = [values] if values else []
-                elif operation == 'attendance_daily':
-                    values = self._get_employee_attendance(
-                        employee_id, date_from, date_to)
-                else:
-                    values = self._get_employee_leave(
-                        employee_id, date_from, date_to)
+                try:
+                    if operation == 'salary':
+                        values = self._get_employee_salary(employee_id)
+                        values = [values] if values else []
+                    elif operation == 'attendance_daily':
+                        values = self._get_employee_attendance(
+                            employee_id, date_from, date_to,
+                            employee_number=ref.get('employee_id'),
+                            email=ref.get('email'))
+                    else:
+                        values = self._get_employee_leave(
+                            employee_id, date_from, date_to)
+                except ZohoApiError as error:
+                    failures.append(str(error))
+                    continue
                 for value in values:
                     rows.append({'payload': value,
                                  'employee_external_id': str(employee_id)})
+            self._report_failures(failures, refs, rows)
             return rows
 
         params = {}
@@ -636,33 +845,54 @@ class ZohoConnector(BaseHRConnector):
                 'endDate': self._period(date_to),
                 'dateFormat': 'dd-MM-yyyy',
             }
-        elif operation == 'overtime':
+        elif operation in ('overtime', 'timesheet'):
+            failures, addressable = [], 0
             for ref in refs:
                 email = ref.get('email') or ''
                 if not email:
                     continue
-                params = {
-                    'sIndex': 1, 'limit': 200,
-                    'searchColumn': 'EMPLOYEEMAILALIAS',
-                    'searchValue': email, 'dateFormat': 'dd-MM-yyyy',
-                    'fromDate': self._period(date_from),
-                    'toDate': self._period(date_to),
-                }
-                response = self._feed_request(
-                    endpoint.code, endpoint.path or '', params=params, timeout=60)
-                response.raise_for_status()
-                for value in self._result_rows(response.json()):
+                addressable += 1
+                if operation == 'overtime':
+                    params = {
+                        'sIndex': 1, 'limit': self.PAGE_SIZE,
+                        'searchColumn': 'EMPLOYEEMAILALIAS',
+                        'searchValue': email, 'dateFormat': 'dd-MM-yyyy',
+                        'fromDate': self._period(date_from),
+                        'toDate': self._period(date_to),
+                    }
+                    what = "the overtime form"
+                else:
+                    # `timetracker/gettimesheet` answers HTTP 200 with
+                    # "No user parameter specified." unless `user` is given —
+                    # the reason this feed shipped catalogue-only.
+                    params = {
+                        'user': email,
+                        'fromDate': self._period(date_from),
+                        'toDate': self._period(date_to),
+                        'dateFormat': 'dd-MM-yyyy',
+                    }
+                    what = "the timesheet report"
+                try:
+                    response = self._feed_request(
+                        endpoint.code, endpoint.path or '', params=params,
+                        timeout=60)
+                    values = self._result_rows(self._payload(response, what))
+                except ZohoApiError as error:
+                    failures.append(str(error))
+                    continue
+                for value in values:
                     rows.append({
                         'payload': value,
                         'employee_external_id': str(ref.get('id') or email),
                     })
+            if not addressable:
+                raise ZohoApiError(
+                    "%s is looked up by employee email address, and none of "
+                    "the %s stored employee records has one. Re-sync the "
+                    "Employees feed." % (endpoint.name or endpoint.code,
+                                         len(refs)))
+            self._report_failures(failures, refs, rows)
             return rows
-        elif operation == 'timesheet':
-            params = {
-                'startDate': self._period(date_from),
-                'endDate': self._period(date_to),
-                'dateFormat': 'dd-MM-yyyy',
-            }
 
         response = requests.request(
             (endpoint.http_method or 'get').upper(),
@@ -672,15 +902,51 @@ class ZohoConnector(BaseHRConnector):
             json=params if (endpoint.http_method or 'get') == 'post' else None,
             timeout=60,
         )
-        response.raise_for_status()
+        payload = self._payload(response, endpoint.name or endpoint.code)
         email_to_id = {str(ref.get('email') or '').lower(): ref.get('id')
                        for ref in refs if ref.get('email')}
-        for value in self._result_rows(response.json()):
+        for value in self._result_rows(payload):
             ext = (value.get('employeeId') or value.get('EmployeeID') or
                    value.get('empId') or value.get('emailId') or '')
             ext = email_to_id.get(str(ext).lower(), ext)
             rows.append({'payload': value, 'employee_external_id': str(ext)})
         return rows
+
+    # ------------------------------------------------ per-employee feed rails
+    @staticmethod
+    def _require_employee_refs(refs, endpoint):
+        """A per-employee feed with no employees is a failure, not a zero.
+
+        Every Zoho feed except Employees and the attendance summary is a
+        per-employee lookup, so all six of them return a clean, wordless zero
+        on a connector whose employee store is empty. That is exactly what the
+        broken employee path produced, and the cockpit reported it as
+        `0 staged · 0 pulled` on six cards at once with no cause named
+        anywhere.
+        """
+        if not refs:
+            raise ZohoApiError(
+                "%s is pulled one employee at a time and this connection has "
+                "no stored employees yet. Sync the Employees feed first."
+                % (endpoint.name or endpoint.code))
+
+    @staticmethod
+    def _report_failures(failures, refs, rows):
+        """Say what went wrong when a per-employee sweep partly or wholly failed.
+
+        Partial failure stays a warning in the log and lets the good rows
+        through; total failure is raised, because a feed that could not read a
+        single employee has nothing to distinguish it from an empty period.
+        """
+        if not failures:
+            return
+        if not rows:
+            raise ZohoApiError(
+                "None of the %s employees could be read. First error: %s"
+                % (len(refs), failures[0]))
+        _logger.warning(
+            "Zoho feed: %s of %s employees failed, %s rows kept. First "
+            "error: %s", len(failures), len(refs), len(rows), failures[0])
 
     # ==========================================
     # OAUTH FLOW HELPERS

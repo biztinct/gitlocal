@@ -43,16 +43,24 @@
             <field name="data_type">employee</field>
             <field name="operation">employee</field>
             <field name="http_method">get</field>
-            <field name="path">forms/P_Employee/records</field>
-            <field name="params_note">sIndex, limit=200 (paginated)</field>
+            <field name="path">forms/employee/getRecords</field>
+            <field name="params_note">sIndex, limit=200 (paginated), dateFormat=yyyy-MM-dd</field>
             <field name="is_legacy_abm" eval="True"/>
             <field name="sequence">10</field>
-            <field name="description">The employee master form. This platform reads the P_Employee
-form with sIndex/limit=200 pagination (integrations/zoho_connector.py:284).
+            <field name="description">The employee master form, read with sIndex/limit=200
+pagination and dateFormat=yyyy-MM-dd.
 
-The legacy ABM application read the SAME data from the older
-`forms/employee/getRecords` variant with dateFormat=yyyy-MM-dd and no
-pagination at all — one call, first 200 records
+This row shipped as `forms/P_Employee/records`, which Zoho does not serve: it
+answers HTTP 200 with the body `[{"message":"Invalid View Name",
+"errorcode":7012,"Response status":2}]`. The connector's error handling read
+that as data, crashed on it, swallowed the crash and reported a successful pull
+of zero employees — and because every other Zoho feed is a per-employee lookup
+driven by the stored employee list, all seven feeds then read empty. Corrected
+to the path the legacy ABM application always used, and verified against a live
+tenant on 2026-08-26. Migration 19.0.1.84.0 repairs installed databases.
+
+The legacy ABM application read the SAME data from this endpoint, with
+dateFormat=yyyy-MM-dd and no pagination at all — one call, first 200 records
 (om_hr_payroll/models/hr_zoho_staging.py:309). Its dependent count came from
 this record's `tabularSections` → "Dependent and Dependent Health Insurance"
 (:367-373), which is why the DEPCOUNT transformation rule reads employee rows
@@ -111,12 +119,19 @@ scopes every response to the payroll window (:497-557).</field>
             <field name="data_type">salary</field>
             <field name="operation">salary</field>
             <field name="http_method">get</field>
-            <field name="path">forms/P_Salary/records</field>
+            <field name="path">forms/salary_details/getRecords</field>
             <field name="params_note">searchField=Employee_ID.Zoho_ID, searchOperator=Is, searchText</field>
             <field name="sequence">40</field>
-            <field name="description">The P_Salary form, looked up by the employee's Zoho id
-(integrations/zoho_connector.py:411). Not used by the legacy ABM application,
-which took pay from the payroll spreadsheet rather than from Zoho.</field>
+            <field name="description">The salary form, looked up by the employee's Zoho record id
+(integrations/zoho_connector.py, `_get_employee_salary`). Not used by the legacy
+ABM application, which took pay from the payroll spreadsheet rather than Zoho.
+
+This row shipped as `forms/P_Salary/records`. There is no form called
+`P_Salary` — Zoho rejects the name outright ("Form name 'P_Salary' is
+invalid"), and the `/records` suffix returns the same silent "Invalid View
+Name" body that broke the employee feed. The tenant's link name is
+`salary_details`; verified live 2026-08-26 and repaired on installed databases
+by migration 19.0.1.84.0.</field>
         </record>
 
         <record id="ep_zoho_leave" model="hr.integration.endpoint.template">
@@ -126,12 +141,24 @@ which took pay from the payroll spreadsheet rather than from Zoho.</field>
             <field name="data_type">leave</field>
             <field name="operation">leave</field>
             <field name="http_method">get</field>
-            <field name="path">leave/getLeaveDetails</field>
-            <field name="params_note">empId, fromDate, toDate</field>
+            <field name="path">forms/leave/getRecords</field>
+            <field name="params_note">sIndex, limit=200 (paginated), dateFormat=yyyy-MM-dd; the
+payroll window is applied by this platform, not by Zoho</field>
             <field name="sequence">50</field>
-            <field name="description">The per-employee leave endpoint used by this platform
-(integrations/zoho_connector.py). It is intentionally the executable path,
-rather than the dormant v2 records path previously shown by the catalogue.</field>
+            <field name="description">The leave form.
+
+Two earlier paths were wrong here. `api/v2/leavetracker/leaves/records` was
+dormant, and the 19.0.1.59.0 migration replaced it with `leave/getLeaveDetails`
+— which Zoho answers with 404 "Incorrect URL". Both are per-employee shapes,
+and Zoho People has no per-employee leave API on this plan: leave is a FORM,
+read whole.
+
+So this feed reads the form and filters to the payroll window itself, on
+From/To. Zoho's form search accepts searchField=From&amp;searchOperator=Between
+and then ignores it — a January-2020 window returns the same first page as no
+window at all — so a server-side filter here would be a filter that silently
+does nothing. Verified live 2026-08-26; `Employee_ID.ID` carries the employee's
+Zoho record id and is the join key.</field>
         </record>
 
         <record id="ep_zoho_att_daily" model="hr.integration.endpoint.template">
@@ -141,13 +168,21 @@ rather than the dormant v2 records path previously shown by the catalogue.</fiel
             <field name="data_type">attendance</field>
             <field name="operation">attendance_daily</field>
             <field name="http_method">get</field>
-            <field name="path">attendance/getAttendanceByDate</field>
-            <field name="params_note">empId, sdate, edate</field>
+            <field name="path">attendance/getUserReport</field>
+            <field name="params_note">empId (the employee NUMBER) or emailId, sdate, edate,
+dateFormat=dd-MM-yyyy</field>
             <field name="sequence">60</field>
-            <field name="description">Day-by-day punches for one employee
-(integrations/zoho_connector.py:454). The summary report above is the feed a
-payroll run wants; this one is for looking at a single person's days when a
-number is disputed.</field>
+            <field name="description">Day-by-day punches for one employee. The summary report
+above is the feed a payroll run wants; this one is for looking at a single
+person's days when a number is disputed.
+
+This row shipped as `attendance/getAttendanceByDate`, which Zoho answers with
+404 "Incorrect URL". The live path is `attendance/getUserReport`, and its
+`empId` is the employee NUMBER from the employee form (EmployeeID, e.g. 11708)
+— given the Zoho record id (811648…) it answers HTTP 200 with
+`{"error":"Invalid User."}`, so the connector passes the number, falling back
+to emailId. The response is keyed by date rather than being a list. Verified
+live 2026-08-26; repaired by migration 19.0.1.84.0.</field>
         </record>
 
         <record id="ep_zoho_timesheet" model="hr.integration.endpoint.template">
@@ -158,13 +193,19 @@ number is disputed.</field>
             <field name="operation">catalog_only</field>
             <field name="http_method">get</field>
             <field name="path">timetracker/gettimesheet</field>
-            <field name="params_note">dateFormat, startDate, endDate</field>
+            <field name="params_note">user (email address, required), fromDate, toDate,
+dateFormat=dd-MM-yyyy</field>
             <field name="sequence">70</field>
             <field name="description">The time tracker. Catalogued because the legacy code names it
 (om_hr_payroll/models/hr_zoho.py:182) — but it names it in a COMMENTED-OUT
 line, immediately replaced by the attendance summary report. Nothing has ever
-called it here, so its default execution is deliberately Catalogue only and
-the parameters remain unverified.</field>
+called it in production here, so its default execution stays Catalogue only.
+
+Its parameters are no longer unverified: without `user` it answers HTTP 200
+with "No user parameter specified.", and with an email address in `user` it
+answers an empty result on a tenant that does not use time tracking (verified live
+2026-08-26). The connector implements it as a per-employee call by email, so a
+tenant that does use it can switch this feed to Executable.</field>
         </record>
 
         <!-- ================= DarwinHR / Darwinbox =================
