@@ -125,8 +125,27 @@
 
 /* `position: relative` is load-bearing: the jump scrolls this element by
    `offsetTop` arithmetic rather than `scrollIntoView`, so it must be the
-   offsetParent of its own cards — and nothing else on the screen can move. */
-.mapping-canvas .mc-col-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: 4px 14px 20px; display: flex; flex-direction: column; gap: 7px; }
+   offsetParent of its own cards — and nothing else on the screen can move.
+
+   JOURNEY J7 D1 — and so is the BORDER, which is the dock strip.
+
+   The chips are absolutely positioned over this column at `z-index: 4`; they
+   used to hang on the clamp band, a line inside the scrollport, so the top chip
+   sat on the first card and the bottom chip on the last (measured live on abm:
+   167.9 × 23.8px over "Last Working Day"). A strip has to be reserved for them,
+   and the reservation has to survive SCROLLING — which rules out padding, whose
+   whole behaviour is to scroll away, in the exact state ("11 above") where the
+   chip exists. A border is outside the scrollport: no card can ever be painted
+   in it, at any offset.
+
+   Unconditional, and that is the point. Growing the strip only when a chip
+   appears moves every card, which moves which cards fall outside the band,
+   which changes whether there is a chip — a placement wired into its own cause.
+
+   `box-sizing: border-box` (the backend's global reset) means this does NOT move the
+   element's border box, and `getBoundingClientRect` is where the wire clamp
+   band comes from. Cards start 30px lower; wires end exactly where they did. */
+.mapping-canvas .mc-col-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: 4px 14px 20px; border-top: 30px solid transparent; border-bottom: 30px solid transparent; display: flex; flex-direction: column; gap: 7px; }
 .mapping-canvas .mc-col-empty { padding: 22px 10px; text-align: center; font-size: 12px; color: var(--muted, #6B7280); }
 .mapping-canvas .mc-col-empty button { display: block; margin: 8px auto 0; border: 1px solid var(--line, #E8E9F3); background: #fff; border-radius: 8px; padding: 5px 12px; font-family: inherit; font-size: 11.5px; font-weight: 700; color: var(--i600, #4A3D96); cursor: pointer; }
 
@@ -134,8 +153,42 @@
 .mapping-canvas .mc-col.right .mc-item { flex-direction: row-reverse; text-align: right; }
 .mapping-canvas .mc-item:hover { border-color: var(--i-border, #CBC2EE); box-shadow: 0 3px 10px rgba(90, 75, 176, .12); }
 .mapping-canvas .mc-item-main { flex: 1; min-width: 0; }
-.mapping-canvas .mc-item-label { font-size: 13px; font-weight: 700; color: var(--ink, #1E1B2E); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: baseline; gap: 6px; }
-.mapping-canvas .mc-item-label > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* ---- JOURNEY J7 D2 — the whole name, on the card ----
+   The owner's ask was "find out a way to display full name of the component",
+   against cards reading "Enroll for Insu…", "Employee Bank Ac…", "Phone
+   Allowa…". The cause was measured on the live board rather than assumed: the
+   label row is 252px, and a 142px "Contract component" source pill sits ON THE
+   NAME'S LINE — so the name was being offered 104px of it, and 23 of the right
+   column's 73 cards were ellipsised. It is MF13/MF26 a third time, in its
+   original form: an affordance whose width is not the text's cannot share a
+   line with the text.
+
+   `flex-wrap: wrap` is the entire fix, and it works because flex wraps on BASE
+   sizes before it shrinks anything: a name that cannot fit beside its chips
+   sends the chips to the next line and keeps the full 252px, where every one of
+   abm's 99 components fits (the longest needs 224px). Nothing moves on a card
+   whose name was always short — those chips stay inline, so the board does not
+   grow a row it did not need.
+
+   The name may then take TWO lines before it clamps, which is 500px of text at
+   this width; `-webkit-line-clamp` is what puts the ellipsis on the second one.
+   `overflow-wrap: break-word` deliberately, never `anywhere`: `anywhere` feeds
+   into min-content and that is the road back to MF13's one-character label. */
+.mapping-canvas .mc-item-label { font-size: 13px; font-weight: 700; color: var(--ink, #1E1B2E); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; row-gap: 3px; }
+.mapping-canvas .mc-item-label > span:first-child {
+    min-width: 0; overflow: hidden; white-space: normal; overflow-wrap: break-word;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+    line-height: 1.32;
+}
+/* The residual: a name that fills both lines. MJ34 — the full text is in a
+   `title`, and the card SAYS the title is there, because an affordance nobody
+   can see is one that does not exist. Set by the measured pass in
+   `_clipPass()`, so it appears on exactly the cards that lost a word. */
+.mapping-canvas .mc-item-label > span.is-clipped {
+    cursor: help;
+    text-decoration: underline dotted currentColor;
+    text-decoration-thickness: 1px; text-underline-offset: 2px;
+}
 
 /* ---- Integrations Cycle 6: where this card came from ----
    Rendered only when `provChip()` returns something, which it does not for a
@@ -467,10 +520,16 @@
 }
 .mapping-canvas .mc-dock__ic { display: inline-flex; }
 .mapping-canvas .mc-dock svg { width: 12px; height: 12px; }
-.mapping-canvas .mc-dock.left.up    { transform: translate(-100%, 2px); }
-.mapping-canvas .mc-dock.left.down  { transform: translate(-100%, calc(-100% - 2px)); }
-.mapping-canvas .mc-dock.right.up   { transform: translate(0, 2px); }
-.mapping-canvas .mc-dock.right.down { transform: translate(0, calc(-100% - 2px)); }
+/* J7 D1 — all four variants centre on the strip's mid-line, which is what the
+   component now sends as `d.y`. The old pair hung the chip just BELOW the top
+   band edge and just ABOVE the bottom one, i.e. deliberately into the column —
+   correct for a marker on a wire's parked end, and the reason it landed on a
+   card. Vertical centring is what makes "the chip is inside the 30px strip" a
+   fact of the stylesheet rather than a coincidence of two offsets. */
+.mapping-canvas .mc-dock.left.up    { transform: translate(-100%, -50%); }
+.mapping-canvas .mc-dock.left.down  { transform: translate(-100%, -50%); }
+.mapping-canvas .mc-dock.right.up   { transform: translate(0, -50%); }
+.mapping-canvas .mc-dock.right.down { transform: translate(0, -50%); }
 .mapping-canvas .mc-dock.left  { margin-left: -8px; }
 .mapping-canvas .mc-dock.right { margin-left: 8px; }
 .mapping-canvas .mc-dock:hover { box-shadow: 0 6px 20px rgba(36, 31, 82, .42); }

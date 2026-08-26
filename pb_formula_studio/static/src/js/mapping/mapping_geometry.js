@@ -93,6 +93,53 @@ export function clampY(y, top, bottom) {
 }
 
 /**
+ * The height of the strip a column reserves at each end for its dock chips —
+ * JOURNEY J7 D1.
+ *
+ * A dock chip used to be placed AT the clamp band edge (`bandTop`/`bandBot`),
+ * which is a point INSIDE the column's scrollport: exactly where the first and
+ * the last visible card sit. `.mc-docks` paints at `z-index: 4` over
+ * `.mc-cols`' 2, so the chip covered that card's name row — measured live on
+ * abm at 167.9 × 23.8px over "Last Working Day", and in the plain scrolled
+ * state over all four chips at once.
+ *
+ * The fix is a reserved strip rather than a re-placement, and the strip is a
+ * TRANSPARENT BORDER on `.mc-col-body` (`mapping.scss`), for one reason that
+ * decides the whole design: a border is outside the scrollport, so content can
+ * never enter it AT ANY SCROLL OFFSET — where padding is inside it and scrolls
+ * away the moment the column moves, which is precisely the state ("N above")
+ * in which the chip exists at all.
+ *
+ * It is UNCONDITIONAL on purpose. A strip that appears only when a chip does
+ * moves every card by its height, which moves which cards are outside the band,
+ * which changes how many chips there are — a placement that feeds back into its
+ * own predicate, and the two-frame oscillation that follows is not survivable
+ * on a scroll handler.
+ *
+ * And because a border does not change an element's BORDER BOX — `flex: 1`
+ * under `box-sizing: border-box` sizes the outer box — `getBoundingClientRect`
+ * on the column body returns the same numbers it always did. The clamp band is
+ * measured from that rect, so **wire geometry is byte-identical**: J7 changes
+ * where cards start, never where wires end (MJ30's hazard, closed by
+ * construction rather than by re-measurement).
+ *
+ * 30px carries a 24px chip with ~3px of air either side.
+ */
+export const DOCK_RAIL = 30;
+
+/**
+ * Where a column's dock chips hang: the CENTRE LINE of each reserved strip.
+ *
+ * Deliberately NOT the clamp band, which is what J7 D1 was. The two numbers are
+ * independent by design — `top`/`bottom` here are the column body's border-box
+ * edges, so a chip is centred in the strip no card can occupy, while the wires
+ * keep clamping wherever `BAND` says they should.
+ */
+export function dockAnchors(top, bottom, rail = DOCK_RAIL) {
+    return { railTop: top + rail / 2, railBot: bottom - rail / 2 };
+}
+
+/**
  * One chip per column edge, not one per wire.
  *
  * The reference renderer draws a 4px dot at each parked endpoint. That is right

@@ -4,7 +4,11 @@
 (2026-08-26). The Journey is the Mapping cockpit's landing tab and its cold-start default.**
 **Defect round J6 (2026-08-26): four defects the owner reported against the live J4
 Transformations board — one of which destroyed a live wire — repaired, fixed and live on all
-four. The programme stays COMPLETE; J6 is a defect round, not a sixth scope.**
+four. Defect round J7 (2026-08-26): two legibility defects reported against the live
+`System fields → Scheme` board — a dock chip painted over the top card, and component names
+truncated with no way to read them — fixed in the SHARED canvas, so all five two-lane adapters
+and the transform board inherit them. The programme stays COMPLETE; J6 and J7 are defect
+rounds, not further scopes.**
 
 Follow-on programme to SOURCING (see `docs/handovers/SOURCING_LEDGER.md` + `SOURCING_CLOSEOUT.md`)
 and MAPFIX (`docs/handovers/MAPFIX_LEDGER.md`, which itself binds COLROLES CR1–CR33). **All standing
@@ -452,6 +456,110 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   for column against the dump taken before any probe. `action_process` was never
   called; no live API pull was made.
 
+- **J7 — DONE, live on abm · acme · payobook · payobook_template (2026-08-26).**
+  → `JOURNEY_PHASE_J7_HANDOVER.md`.
+  Version: pb_formula_studio **19.0.1.151.0** (`pb_hr_payroll_formula`, `pb_integrations`,
+  `biz_theme` untouched; `om_hr_payroll` untouched — CR1). **Presentation only: the
+  MF37 diff across the whole session is EMPTY, with no restore step.**
+  **D1's cause was that two numbers were one number.** A dock chip was placed at
+  `bandTop`/`bandBot` — the CLAMP BAND, which is a line INSIDE the column's
+  scrollport, i.e. the exact place the first and the last visible card sit. The
+  chips paint at `z-index: 4` over `.mc-cols`' 2, so the chip covered the card.
+  Measured before the fix on abm at 1440: **167.9 × 23.8px** of "Last Working
+  Day" behind "4 hidden by filter above", and in the plain scrolled state **all
+  four chips over five cards at once** — it was never filter-specific.
+  **The strip is a transparent BORDER, and that is the whole design.** Padding
+  is inside the scrollport and scrolls away, in the exact state ("11 above") in
+  which the chip exists at all; a border is outside it and no card can be
+  painted there at any offset. It is UNCONDITIONAL because a strip that appears
+  with the chip moves every card, which moves which cards fall outside the band,
+  which changes whether there is a chip — a placement wired into its own
+  predicate. And because `box-sizing: border-box` means a border does not move a
+  BORDER BOX, `getBoundingClientRect` on the column body is unchanged — so the
+  clamp band is unchanged and **wire geometry is byte-identical by construction**
+  (MJ30's hazard closed by arithmetic, not by re-measurement). `maxErr` was
+  **0** before and **0** after, at 1440 and at 1024, in every state measured.
+  Live: chip 507.5–531.3, first card 538.4 — 7.1px clear.
+  **The gap was measured and rejected, which is why this is not J6's fix.** J6
+  put the transform board's chips over its LANE GAPS ("cannot collide by
+  construction", MJ33) — that board has three lanes and therefore two gaps, one
+  per side. The canvas has ONE gap: at 1024 it is **284px** between the column
+  bodies and the two chips are **174.9 + 167.9 = 342.8px**, so the same fix
+  would have recreated MJ33 exactly. The strip costs 60px of column height and
+  cannot collide with anything.
+  **D1 had a second cause, and it is what made it intermittent.** `_sig` carried
+  a dock's key, count and filtered count and NOT its coordinates, so a pure
+  layout shift never reassigned `ui.docks`. Turning a filter on grows the column
+  head by the "N wires hidden by this filter" row and moves the body ~31px; the
+  chip stayed at the previous layout's coordinate — measured live at 483.6px
+  against a true 514.4px. The rounded x/y are in the signature now.
+  **D2's cause was not `white-space: nowrap`.** The label row is **252px** and a
+  **142px** "Contract component" source pill (`.mc-src`, `flex-shrink: 0`) sits
+  ON THE NAME'S LINE, so the name was offered **104px** and **23 of the right
+  column's 73 cards** were ellipsised. MF13/MF26 a third time, in its original
+  form. `flex-wrap: wrap` is the entire fix and it works because flex wraps on
+  BASE sizes before it shrinks anything: a name that cannot fit beside its chips
+  sends the chips to the next line and keeps the whole row. After: **0 of 99
+  right-column names clipped**, widest 252, and only the two 40-character
+  "Actual Working Hours including/excluding Paid leave" names take a second
+  line. Cards grow only where they had to. `overflow-wrap: break-word`
+  deliberately, never `anywhere` — `anywhere` feeds min-content and is the road
+  back to MF13's one-character label (asserted).
+  **The residual is measured, not guessed.** A name that fills both lines gets
+  `-webkit-line-clamp`'s ellipsis plus `title`, `cursor: help` and a dotted
+  underline, applied by `_clipPass()` — which asks `scrollHeight` against
+  `clientHeight`, the same question the browser answered when it clamped, on
+  patch and on resize and never on the scroll path. Exercised live on a
+  131-character typed column (client-only, `addLeftColumn` makes no RPC): the
+  53-character name wrapped clean with no title, the 131-character one clamped
+  WITH the full name in its title and the affordance visibly different.
+  **Why five phases of sweeps ran over D1.** MJ7 taught the sweep to skip pairs
+  that do not share a layer; "layer" was implemented as the nearest positioned
+  ancestor's `z-index`, and `.mc-docks` is 4 where `.mc-cols` is 2 — so every
+  dock-versus-card pair was skipped as an intentional overlay. The sweep is now
+  a committed artefact (`pb_formula_studio/tools/mapping_overlap_sweep.js`) with
+  a NAMED, closed list of things a user opens, and it asserts dock-versus-card
+  separately so a refactor of `layerOf` cannot silently stop testing it. It also
+  gained a second correction found in the same run — see MJ38.
+  Tests: Python **436 on abm, 2 failed + 1 error — all three PRE-EXISTING and
+  none J7's** (baseline taken on the machine first: **420 with the same three**,
+  `-u pb_hr_payroll_formula,pb_formula_studio,pb_integrations`,
+  `--test-tags /pb_hr_payroll_formula,/pb_formula_studio,/pb_integrations`).
+  +16 new (`TestJourneyJ7Legibility`). hoot **119**, 0 failed (baseline taken on
+  a warm server: 113 + 6 J7). 12/12 numbered cases pass.
+  **0 bounding-box overlaps and 0 dock-over-card pairs in 5 states at 1440 and
+  4 at 1024** — both columns, above AND below chips, resting / scrolled /
+  the owner's filtered state / filtered-and-scrolled / suggested-only — with
+  `elementFromPoint` at each chip's centre agreeing, and no horizontal body
+  scroll. The transform board inherits the name fix (113 cards, 0 clipped) and
+  keeps J6's alignment (`maxErr 0`).
+  Two caveats, both recorded rather than smoothed over. (a) Case 4 asked that a
+  docked wire "still fade and lose its arrowhead" — that is the TRANSFORM
+  board's behaviour (J6 deviation 3). The canvas has always marked a parked end
+  with a `.mc-park` dot and KEPT its head, and J7 did not change it: 45–49 park
+  dots render in the scrolled states. Changing it would be a redesign of the
+  canvas' wire vocabulary, not a J7 defect. (b) Case 7 asked for a wrapped card
+  in EACH column carrying a wire. abm's feed catalogue has no name long enough
+  to wrap (widest 236px of 252), so the wrapped-LEFT case was proven for layout,
+  sweep, centring and the clip affordance — via a client-only typed column,
+  `addLeftColumn` makes no RPC — but not with a wire on it, because drawing one
+  would have been a write. The wrapped-RIGHT case IS proven with wires
+  (`maxErr 0` with both wrapped cards on screen), and anchoring reads the card's
+  rect, which does not know which column it is in.
+  **MF37 on abm: byte-identical before and after, no restore step** —
+  `hr_integration_field_mapping` 42 rows `115857ac9ba1762a425d83fc493331c5`,
+  `hr_formula_rule` config 14 99 rows `ce6602578d9e6971d85b6f3028761fe3` with 8
+  non-empty bindings, `hr_payslip_import_mapping` 21, `hr_api_transformation_rule`
+  8, 0 batches, 0 lines, 0 payslips. `action_process` was never called; no live
+  API pull was made.
+  **The opening state was NOT J6's closing state, and the log said why** (MJ35's
+  method, second use): the table read 42 rows against J6's recorded 41 and config
+  14 had 8 non-empty bindings against J6's recorded 0. `odoo.models.unlink` shows
+  User #2 deleting one rival row per draw between **01:24 and 01:30**, eight
+  times, each paired with a create — the owner drawing wires on the live board
+  eight minutes before this session began. Nothing was "repaired"; today's state
+  was taken as the baseline and returned unchanged.
+
 ## Gotchas discovered (append per phase, MJ-numbered)
 
 - MJ1 (J1): **`groupFilter` filters the LEFT column only, and always did.** The handover's
@@ -873,3 +981,62 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   exactly. **A row count tells you something is missing; only the log tells you whether
   putting it back is a repair or a regression.** Read `grep -a 'deleted <model>'` before
   restoring anything, and reconcile the arithmetic out loud.
+
+- MJ36 (J7): **a reserved band has to be reserved against SCROLLING, and only one CSS box is —
+  the border.** D1's chip sat on the first card, and the obvious fix is "push the content down".
+  Padding on a scroller does that at rest and only at rest: padding is INSIDE the scrollport, so
+  the moment the column moves the cards ride up through it. That is not a corner case here, it is
+  the main case — an "↑ 11 above" chip exists *because* the column is scrolled, so the one state
+  where padding protects nothing is the only state the chip appears in. A border is outside the
+  scrollport and content can never be painted in it at any offset. The corollary is the half that
+  makes it safe: `box-sizing: border-box` means a border does not change the element's BORDER BOX,
+  and the wire clamp band is measured from `getBoundingClientRect` — so 30px of border moved every
+  card and not one wire, and `maxErr` was 0 before and after without a single coordinate being
+  re-derived. **When you must reserve space inside a scroller, ask which box the reservation lives
+  in before choosing the property.**
+- MJ37 (J7): **a placement that depends on what it displaces will oscillate, so the reservation
+  has to be unconditional.** The tempting version of MJ36 is a `.has-dock-up` class that grows the
+  strip only when there is a chip. Follow it round: the strip appears → every card moves 30px down
+  → the card whose centre was just above the band is now just inside it → it stops being docked →
+  the chip's count drops, possibly to zero → the strip goes → the cards move back. Two frames, a
+  new signature each time, forever, on a scroll handler. The same shape as MJ27's replayed
+  one-shot, in geometry rather than in state. **A layout that is a function of its own output is
+  a loop; pay the fixed cost instead.** (60px of column height here, and no jolt when a filter
+  changes either — which is a second win nobody asked for.)
+- MJ38 (J7, testing): **the sweep's clip box was a NAME, and the name was of the wrong element —
+  so it invented eleven defects in the same run it was fixed to find one.** MJ7 says "compare each
+  card's rect intersected with the clip box" and names `.mc-board`. `.mc-board` does not clip a
+  card: `.mc-col-body` does, and its scrollport is its PADDING box. So a card at either end of a
+  scrolled column reports a layout rect running past where it is painted, and the first corrected
+  run reported the column's own filter chips, the "N wires hidden" row and the dock chips all
+  "overlapping" cards that are invisible where they were said to collide. J7's 30px strip is a
+  BORDER, which widens that gap to exactly the band the chips live in — so a border-box sweep would
+  have reported every chip as covering a card forever, and a phase that trusted it would have
+  "fixed" a working board. `clip()` now DERIVES the box: walk the ancestors, intersect with the
+  padding box of each one that is not `overflow: visible`. **A clip box is a property of the
+  element, never a selector you remember** — and MJ7's own disproof (`elementFromPoint` at the
+  chip's centre) is kept as a positive assertion beside the rects, because the two disagreeing is
+  the signal that the arithmetic is wrong.
+- MJ39 (J7): **`_sig` decides what a human is allowed to see move, and a coordinate left out of it
+  is a coordinate that goes stale silently.** The recompute writes `ui.docks` only when its
+  signature changes, and the signature carried each chip's key, count and filtered count — not its
+  x/y. So a pure LAYOUT shift repositioned nothing: turning a filter on grows the column head by
+  the "N wires hidden by this filter" row, moves the body 31px down, and the chip stayed where the
+  previous layout had put it (483.6px against a true 514.4px, measured live). It is a nasty bug to
+  meet because it makes the real defect INTERMITTENT — the first probe of the owner's exact state
+  showed the chip 1px clear of the card and passing, and only forcing a fresh recompute put it back
+  on top. **A memo-guard is a claim about what can change; anything you place with a number has to
+  be in it.** Rounded to integers so sub-pixel jitter cannot start a render loop.
+- MJ40 (J7): **MF13's real subject was never the hover verbs — it is any fixed-width neighbour on
+  the name's line, and the biggest one shipped two programmes later.** MF13 (three hover buttons)
+  and MF26 (the same three, floated) were both diagnosed as affordance problems. D2 is the same
+  failure with no affordance in it at all: SOURCING S4's `.mc-src` source pill — 142px,
+  `flex-shrink: 0`, `white-space: nowrap` — sits in `.mc-item-label` beside the name, on a 252px
+  row, and left the name 104px. Twenty-three of seventy-three cards on the owner's board were
+  ellipsised by a chip that was itself perfectly correct. The fix is not a width negotiation but
+  `flex-wrap: wrap`, because flex wraps on BASE sizes BEFORE it shrinks anything: the name keeps
+  the whole row and the pill takes the next line, and a card whose name was always short does not
+  grow at all. **State the rule as "nothing of fixed width shares the name's line unless both
+  fit", not as "affordances go out of the flow"** — and note that `overflow-wrap: anywhere` would
+  quietly undo it by feeding min-content, which is MF13's one-character label arriving by a new
+  road.

@@ -110,9 +110,10 @@ export class TransformFlowBoard extends Component {
         this._raf = null;
         this._recomputes = 0;
         this._recompute = this._recompute.bind(this);
+        this._clipDirty = true;   // J7 D2 — a name-overflow pass is owed
         onMounted(() => {
             this._recompute();
-            this._ro = new ResizeObserver(() => this._schedule());
+            this._ro = new ResizeObserver(() => { this._clipDirty = true; this._schedule(); });
             for (const el of [this.rootRef.el, this.boardRef.el,
                               this.bodyRefs.left.el,
                               this.bodyRefs.mid.el, this.bodyRefs.right.el]) {
@@ -139,8 +140,9 @@ export class TransformFlowBoard extends Component {
                 this.ui.focus = { lane: "", id: null };
             }
         });
-        onPatched(() => this._schedule());
-        useExternalListener(window, "resize", () => this._schedule());
+        onPatched(() => { this._clipDirty = true; this._schedule(); });
+        useExternalListener(window, "resize",
+            () => { this._clipDirty = true; this._schedule(); });
         // A click anywhere that is not a menu closes the menu. Bound to the
         // window rather than to a scrim so the board underneath stays live.
         useExternalListener(window, "click", () => { this.ui.menu = null; });
@@ -372,6 +374,35 @@ export class TransformFlowBoard extends Component {
      * this origin: it is a sibling of the board, outside the clip, and
      * `toggleVerbs`/`openLineage` keep measuring it against the root.
      */
+    /**
+     * J7 D2 — mark the names this board had to clamp, and give them a title.
+     *
+     * The twin of `MappingCanvas._clipPass`, over three lanes instead of two.
+     * It is a twin rather than an import because the two boards do not share a
+     * card: `.tfb-item-l` and `.mc-item-label` are different classes with
+     * different chips, and a shared helper reaching into both would have to
+     * know both — which is the fork this programme keeps refusing, pointed the
+     * other way.
+     */
+    _clipPass() {
+        for (const k of ["left", "mid", "right"]) {
+            const body = this.bodyRefs[k].el;
+            if (!body) { continue; }
+            for (const el of body.children) {
+                if (!el.dataset || !el.dataset.id) { continue; }
+                let span = el._tfbName;
+                if (!span || !span.isConnected) {
+                    span = el._tfbName = el.querySelector(".tfb-item-l > span");
+                }
+                if (!span) { continue; }
+                const clipped = span.scrollHeight > span.clientHeight + 1;
+                span.classList.toggle("is-clipped", clipped);
+                if (clipped) { span.title = span.textContent; }
+                else if (span.title) { span.removeAttribute("title"); }
+            }
+        }
+    }
+
     _recompute() {
         const root = this.rootRef.el;
         const board = this.boardRef.el;
@@ -381,6 +412,10 @@ export class TransformFlowBoard extends Component {
         const M = this._measure(this.bodyRefs.mid.el, rb, "mid");
         const R = this._measure(this.bodyRefs.right.el, rb, "right");
         this._recomputes++;
+        // J7 D2 — the canvas' name-overflow pass, over this board's three lanes.
+        // Same reason, same measurement, and the same refusal to guess a fit
+        // from a character count; see `MappingCanvas._clipPass`.
+        if (this._clipDirty) { this._clipDirty = false; this._clipPass(); }
         const reads = [], geom = [], suppressed = [];
         if (L && M) {
             for (const e of this.d.reads || []) {

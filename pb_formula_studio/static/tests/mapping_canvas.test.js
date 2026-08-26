@@ -25,6 +25,7 @@ import { MappingCanvas } from "@pb_formula_studio/js/mapping/mapping_canvas";
 import {
     aggregateDocks,
     clampY,
+    dockAnchors,
     hubPoint,
     itemMatches,
     laneOrderOf,
@@ -33,6 +34,7 @@ import {
     wireGeometry,
     HEAD,
     LANE_LAST,
+    DOCK_RAIL,
 } from "@pb_formula_studio/js/mapping/mapping_geometry";
 import { ROLES, ROLE_LANE_ORDER, roleIcon }
     from "@pb_formula_studio/js/mapping/mapping_roles";
@@ -2073,4 +2075,146 @@ test("J6 — Escape drops the reveal bar before it disarms", () => {
     expect(b.ui.armed).toBe(1);             // one Escape, one rung
     b.onKeydown({ key: "Escape", target: { tagName: "DIV" } });
     expect(b.ui.armed).toBe(null);
+});
+
+// =====================================================================
+// JOURNEY J7 — the two legibility defects the owner reported against the
+// live `System fields → Scheme` board.
+//
+// Both are geometry the unit suite could see and never asked about, which is
+// the whole reason they are here rather than only in a screenshot:
+//
+//   D1  the dock chip hung on the CLAMP BAND, a line inside the column's
+//       scrollport, i.e. exactly where the first and the last visible card
+//       are. Measured live on abm: 167.9 x 23.8px of "Last Working Day" was
+//       behind "4 hidden by filter above".
+//   D2  the name shared its line with a 142px source pill on a 252px row, so
+//       it was offered 104px and 23 of 73 cards ellipsised.
+//
+// The D1 assertions are deliberately written as "the strip and the band are
+// two different numbers", because the defect was that they were one.
+// =====================================================================
+
+test("J7 D1 — the dock strip is centred on the column's edge, and holds a chip", () => {
+    const a = dockAnchors(100, 500);
+    expect(a.railTop).toBe(100 + DOCK_RAIL / 2);
+    expect(a.railBot).toBe(500 - DOCK_RAIL / 2);
+    // a dock chip measures ~24px on the live board (10.5px text, 3px padding,
+    // 1px border); the strip has to hold one with air on both sides or the
+    // "reserved" strip is not a reservation.
+    expect(DOCK_RAIL >= 28).toBe(true);
+    // the strip scales with the column, and never inverts on a short one
+    expect(dockAnchors(0, DOCK_RAIL).railTop).toBe(DOCK_RAIL / 2);
+    expect(dockAnchors(0, DOCK_RAIL).railBot).toBe(DOCK_RAIL / 2);
+});
+
+test("J7 D1 — the strip is not the band, and J7 did not move the band", async () => {
+    // MJ30's hazard, closed by arithmetic rather than by re-measurement: the
+    // rail is derived from the SAME border-box rect the band is, and a
+    // transparent border does not move a border box. If this test ever fails,
+    // every wire on the board moved with it.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    await animationFrame();
+    const stub = {
+        getBoundingClientRect: () => ({ top: 200, bottom: 700, left: 0,
+                                        right: 340, width: 340, height: 500 }),
+        children: [],
+    };
+    const m = canvas._measure(stub, { top: 0, left: 0 }, "left");
+    expect(m.bandTop).toBe(208);          // BAND is 8 and stayed 8
+    expect(m.bandBot).toBe(692);
+    expect(m.railTop).toBe(200 + DOCK_RAIL / 2);
+    expect(m.railBot).toBe(700 - DOCK_RAIL / 2);
+    // and the chip's own box clears where a card can start: the border keeps
+    // content out of the first DOCK_RAIL px, and the chip ends before them.
+    expect(m.railTop + 12 <= 200 + DOCK_RAIL).toBe(true);
+    expect(m.railBot - 12 >= 700 - DOCK_RAIL).toBe(true);
+});
+
+test("J7 D1 — a chip's coordinates are part of what a recompute publishes", async () => {
+    // The chip was placed once and then left there: `_sig` carried the counts
+    // and not the position, so turning a filter on — which grows the column
+    // head by the "N wires hidden by this filter" row and moves the body ~31px
+    // — repositioned nothing. A chip 31px out of date is outside its strip.
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    await animationFrame();
+    await refilter(canvas, { f: { left: "mapped", right: "all" } });
+    await animationFrame();
+    expect(canvas.ui.docks.length > 0).toBe(true);
+    expect(canvas._sig.includes("@")).toBe(true);
+    for (const d of canvas.ui.docks) {
+        expect(typeof d.y).toBe("number");
+    }
+});
+
+test("J7 D2 — a name that had to be clamped says so, and carries its full text", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: props({
+            leftItems: [{ id: "L0", sublabel: "x",
+                          label: "Constant Unemployment Insurance contribution 1 %" }],
+            wires: [],
+        }),
+    });
+    await animationFrame();
+    const span = document.querySelector(".mc-col.left .mc-item-label > span");
+    expect(span).not.toBe(null);
+    // The clamp is a CSS decision and this bundle is not a stylesheet test —
+    // what is asserted is the RULE: whatever the browser decided, the pass
+    // reports it and nothing else. (MJ3's family: keep hoot to facts the
+    // runner can actually own.)
+    Object.defineProperty(span, "scrollHeight", { value: 60, configurable: true });
+    Object.defineProperty(span, "clientHeight", { value: 30, configurable: true });
+    canvas._clipDirty = true;
+    canvas._recompute();
+    expect(span.classList.contains("is-clipped")).toBe(true);
+    expect(span.title).toBe(span.textContent);
+
+    Object.defineProperty(span, "scrollHeight", { value: 30, configurable: true });
+    canvas._clipDirty = true;
+    canvas._recompute();
+    expect(span.classList.contains("is-clipped")).toBe(false);
+    expect(span.hasAttribute("title")).toBe(false);
+});
+
+test("J7 D2 — scrolling cannot change whether a name fits, so it is not re-measured", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    await animationFrame();
+    let passes = 0;
+    const real = canvas._clipPass.bind(canvas);
+    canvas._clipPass = () => { passes++; real(); };
+    canvas._clipDirty = false;
+    const body = document.querySelector(".mc-col.left .mc-col-body");
+    body.dispatchEvent(new Event("scroll"));
+    await animationFrame();
+    expect(passes).toBe(0);
+    // …but a patch is exactly when it can have changed
+    canvas._clipDirty = true;
+    canvas._recompute();
+    expect(passes).toBe(1);
+});
+
+test("J7 D2 — the transform board answers the same question about its own cards", () => {
+    const b = board(FLOW);
+    const mk = (text, clipped) => {
+        const el = document.createElement("div");
+        el.dataset.id = "1";
+        const l = document.createElement("div");
+        l.className = "tfb-item-l";
+        const s = document.createElement("span");
+        s.textContent = text;
+        l.appendChild(s); el.appendChild(l);
+        Object.defineProperty(s, "scrollHeight", { value: clipped ? 60 : 30 });
+        Object.defineProperty(s, "clientHeight", { value: 30 });
+        return { el, s };
+    };
+    const long = mk("OT Night shift weekend hours, second half", true);
+    const short = mk("OT 3 Hours", false);
+    const lane = document.createElement("div");
+    lane.appendChild(long.el); lane.appendChild(short.el);
+    b.bodyRefs = { left: { el: lane }, mid: { el: null }, right: { el: null } };
+    b._clipPass();
+    expect(long.s.classList.contains("is-clipped")).toBe(true);
+    expect(long.s.title).toBe("OT Night shift weekend hours, second half");
+    expect(short.s.classList.contains("is-clipped")).toBe(false);
+    expect(short.s.hasAttribute("title")).toBe(false);
 });
