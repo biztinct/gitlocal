@@ -897,11 +897,17 @@ export class MappingCanvas extends Component {
         // lock: a stale bundle talking to a new server, or the reverse, must not
         // be able to put the pill back.
         if (it.meta && it.meta.wirable === false) { return null; }
+        // JOURNEY J10 — ten terms. `contract_field` and `bank_account` were
+        // both being called "Employee record", because the server tier that
+        // produced them was a bare set of rule ids with no room for which
+        // record or which field.
         const labels = {
             excel: _t("Spreadsheet"), feed: _t("Connected system"),
             rule: _t("Rule output"),
             contract_component: _t("Contract component"),
             employee_field: _t("Employee record"),
+            contract_field: _t("Contract record"),
+            bank_account: _t("Bank account"),
             calculated: _t("Calculated"), constant: _t("Fixed value"),
         };
         const label = labels[it.srcKind];
@@ -944,11 +950,17 @@ export class MappingCanvas extends Component {
             // compatibility rail stops being one.
             return one ? [{ ...one, rank: 0 }] : [];
         }
+        // JOURNEY J10 — ten terms. `contract_field` and `bank_account` were
+        // both being called "Employee record", because the server tier that
+        // produced them was a bare set of rule ids with no room for which
+        // record or which field.
         const labels = {
             excel: _t("Spreadsheet"), feed: _t("Connected system"),
             rule: _t("Rule output"),
             contract_component: _t("Contract component"),
             employee_field: _t("Employee record"),
+            contract_field: _t("Contract record"),
+            bank_account: _t("Bank account"),
             calculated: _t("Calculated"), constant: _t("Fixed value"),
         };
         const out = [];

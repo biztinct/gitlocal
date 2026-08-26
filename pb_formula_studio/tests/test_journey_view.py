@@ -359,7 +359,7 @@ class TestJourneyView(TransactionCase):
         the same components, or two screens describe one scheme differently."""
         if not self.config:
             self.skipTest("no formula config on this database")
-        emp = self.Studio._source_employee_dest_ids(self.config)
+        emp = self.Studio._source_record_dests(self.config)
         wires = self.Studio._source_wire_dests(self.config)
         expect = len([
             r for r in self.config.rule_ids

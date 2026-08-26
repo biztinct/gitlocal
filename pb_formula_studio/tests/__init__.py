@@ -30,3 +30,7 @@ from . import test_journey_j8_components
 # JOURNEY J9 — every source on the card, ranked; the (kind, key) fold; the three
 # places the either/or restriction was enforced.
 from . import test_journey_j9_display
+
+# JOURNEY J10 — EMPLOYEE / CONTRACT RECORD and BANK ACCOUNT on the card,
+# beside whatever else it declares, at rank 4.
+from . import test_journey_j10_record_source

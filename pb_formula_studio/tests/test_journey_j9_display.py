@@ -58,7 +58,7 @@ class TestJourneyJ9Display(TransactionCase):
 
     def _declared(self, cfg, rule):
         return self.Studio._declared_sources(
-            rule, self.Studio._source_employee_dest_ids(cfg),
+            rule, self.Studio._source_record_dests(cfg),
             self.Studio._source_wire_dests(cfg))
 
     # =====================================================================
@@ -99,7 +99,7 @@ class TestJourneyJ9Display(TransactionCase):
         _conn, cfg, rule = self._world('J9 Scalar')
         rule.set_source_binding('excel', 'A Col')
         one = self.Studio._declared_source(
-            rule, self.Studio._source_employee_dest_ids(cfg),
+            rule, self.Studio._source_record_dests(cfg),
             self.Studio._source_wire_dests(cfg))
         self.assertEqual(set(one), {'kind', 'key', 'wirable'})
         self.assertEqual(one['kind'], 'excel')
@@ -180,7 +180,7 @@ class TestJourneyJ9Display(TransactionCase):
         # the detector still SEES it — nothing was hidden, only not repeated
         self.assertIn(rule.id, self.Studio._source_conflicts(cfg))
         col = self.Studio._mc_right_column(
-            cfg, {}, self.Studio._source_employee_dest_ids(cfg),
+            cfg, {}, self.Studio._source_record_dests(cfg),
             wire_dests=self.Studio._source_wire_dests(cfg), board='import')
         card = [c for c in col if c['id'] == rule.id][0]
         self.assertEqual(len(card['srcKinds']), 2)
@@ -195,7 +195,7 @@ class TestJourneyJ9Display(TransactionCase):
             self.FM.create({'connector_id': c.id, 'target_rule_id': rule.id,
                             'source_field': 'Gas', 'active_state': 'active'})
         col = self.Studio._mc_right_column(
-            cfg, {}, self.Studio._source_employee_dest_ids(cfg),
+            cfg, {}, self.Studio._source_record_dests(cfg),
             wire_dests=self.Studio._source_wire_dests(cfg), board='api')
         card = [c for c in col if c['id'] == rule.id][0]
         self.assertEqual(len(card['srcKinds']), 1)
@@ -206,7 +206,7 @@ class TestJourneyJ9Display(TransactionCase):
         rule.set_source_binding('excel', 'SEVL|Gas')
         rule.is_contract_component = True
         note = self.Studio._source_note(
-            rule, {}, self.Studio._source_employee_dest_ids(cfg),
+            rule, {}, self.Studio._source_record_dests(cfg),
             self.Studio._source_wire_dests(cfg))
         self.assertNotIn('Already fed by', note,
                          "'already fed by' was a warning about something that "
@@ -215,7 +215,7 @@ class TestJourneyJ9Display(TransactionCase):
         # a single source keeps the original sentence: there is no order to state
         rule.is_contract_component = False
         one = self.Studio._source_note(
-            rule, {}, self.Studio._source_employee_dest_ids(cfg),
+            rule, {}, self.Studio._source_record_dests(cfg),
             self.Studio._source_wire_dests(cfg))
         self.assertIn('Already fed by', one)
 

@@ -22,8 +22,16 @@ export const SOURCES = [
     { key: "excel", icon: "sheet" },
     { key: "feed", icon: "cloud" },
     { key: "rule", icon: "sigma" },
-    { key: "contract_component", icon: "briefcase" },
+    // JOURNEY J10 — the record destination is a SOURCE, at rank 4, and it now
+    // has three spellings instead of one. "Employee record" was being shown for
+    // a mapping onto the contract as readily as one onto the employee, because
+    // the tier it came from was a bare set of ids that could not tell them
+    // apart. Each glyph is distinguishable from the others at 12px with no
+    // colour: a document is not a briefcase and neither is a bank.
     { key: "employee_field", icon: "person" },
+    { key: "contract_field", icon: "filetext" },
+    { key: "bank_account", icon: "bank" },
+    { key: "contract_component", icon: "briefcase" },
     { key: "calculated", icon: "equals" },
     { key: "constant", icon: "lock" },
     { key: "none", icon: "dashed" },
@@ -48,6 +56,8 @@ export function srcLabel(kind) {
         rule: _t("Rule output"),
         contract_component: _t("Contract component"),
         employee_field: _t("Employee record"),
+        contract_field: _t("Contract record"),
+        bank_account: _t("Bank account"),
         calculated: _t("Calculated"),
         constant: _t("Fixed value"),
         none: _t("No source"),
@@ -90,7 +100,11 @@ export function srcSentence(c, hasAnyRun = true) {
     const d = srcDeclared(c);
     const a = srcActual(c);
     const q = (k) => (k ? ` “${k}”` : "");
-    let out = d.kind === "none" ? _t("No source chosen") : `${srcLabel(d.kind)}${q(d.key)}`;
+    // J10 — a record source folds on the TECHNICAL field name (`job_id`) and
+    // ships the human one beside it. Show the human one; the key is for
+    // comparing, not for reading.
+    let out = d.kind === "none" ? _t("No source chosen")
+        : `${srcLabel(d.kind)}${q(d.label || d.key)}`;
     if (!a) {
         return hasAnyRun ? out : `${out} · ${_t("This scheme has not been run yet")}`;
     }
