@@ -20,3 +20,6 @@ from . import test_journey_view
 
 # JOURNEY J6 — the four defects reported against the live Transformations board.
 from . import test_journey_j6_defects
+
+# JOURNEY J7 — the two legibility defects reported against the live shared board.
+from . import test_journey_j7_legibility

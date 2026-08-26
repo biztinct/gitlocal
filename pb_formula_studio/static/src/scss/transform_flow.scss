@@ -179,8 +179,23 @@
 .tfb .tfb-item.field { cursor: default; }
 .tfb .tfb-item.rule:hover, .tfb .tfb-item.comp:hover { border-color: var(--i-border, #CBC2EE); box-shadow: 0 3px 10px rgba(15, 12, 40, .08); }
 
-.tfb .tfb-item-l { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--ink, #1F2233); min-width: 0; }
-.tfb .tfb-item-l > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+/* JOURNEY J7 D2 — the same rule as the canvas' card, because it is the same
+   defect: "OT Night shift weeken…" is this board's version of "Employee Bank
+   Ac…". The chrome is NOT literally shared (`.tfb-item-l` is this board's own
+   class, `.mc-item-label` is the canvas'), so the fix is stated twice on
+   purpose rather than forked once by accident — see the canvas' block for why
+   `flex-wrap` alone does it and why `break-word` and not `anywhere`. */
+.tfb .tfb-item-l { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; row-gap: 3px; font-size: 12.5px; font-weight: 700; color: var(--ink, #1F2233); min-width: 0; }
+.tfb .tfb-item-l > span:first-child {
+    overflow: hidden; white-space: normal; overflow-wrap: break-word; min-width: 0;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+    line-height: 1.32;
+}
+.tfb .tfb-item-l > span.is-clipped {
+    cursor: help;
+    text-decoration: underline dotted currentColor;
+    text-decoration-thickness: 1px; text-underline-offset: 2px;
+}
 .tfb .tfb-item-s { font-size: 11px; color: var(--muted, #6B7280); margin-top: 2px; line-height: 1.35; }
 .tfb .tfb-item-v { font-size: 11px; color: var(--i600, #4A3D96); background: var(--mc-wash); border-radius: 5px; padding: 1px 6px; margin-top: 4px; align-self: flex-start; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tfb .tfb-item-n { font-size: 10.5px; color: var(--muted, #6B7280); margin-top: 4px; }

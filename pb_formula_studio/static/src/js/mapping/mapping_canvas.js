@@ -30,8 +30,8 @@ import { Component, useState, useRef, onMounted, onWillUnmount, onPatched,
          onWillUpdateProps, useExternalListener } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
-import { aggregateDocks, clampY, itemMatches, spreadHubs, wireGeometry }
-    from "./mapping_geometry";
+import { aggregateDocks, clampY, dockAnchors, itemMatches, spreadHubs,
+         wireGeometry } from "./mapping_geometry";
 
 /** How many wires may carry a travelling highlight before it becomes noise. */
 const FLOW_LIMIT = 60;
@@ -179,9 +179,10 @@ export class MappingCanvas extends Component {
         this._tfToken = 0;        // C8 supersede token for the debounced preview
         this._tfTimer = null;
         this._recompute = this._recompute.bind(this);
+        this._clipDirty = true;   // J7 D2 — a name-overflow pass is owed
         onMounted(() => {
             this._recompute();
-            this._ro = new ResizeObserver(() => this._schedule());
+            this._ro = new ResizeObserver(() => { this._clipDirty = true; this._schedule(); });
             // The ROOT alone never reports a column growing a scrollbar or a
             // filtered list changing height — observe both scrollers too.
             for (const el of [this.rootRef.el, this.lbodyRef.el, this.rbodyRef.el]) {
@@ -218,8 +219,55 @@ export class MappingCanvas extends Component {
             }
             this._runCommand(next.command);
         });
-        onPatched(() => this._schedule());
-        useExternalListener(window, "resize", () => this._schedule());
+        onPatched(() => { this._clipDirty = true; this._schedule(); });
+        useExternalListener(window, "resize",
+            () => { this._clipDirty = true; this._schedule(); });
+    }
+
+    /**
+     * ============ JOURNEY J7 D2 — the residual name, and how to read it =====
+     *
+     * D2's fix is layout, not script: `.mc-item-label` wraps, so a name that
+     * does not fit beside its chips takes the whole line and then up to TWO of
+     * them. Measured on abm's live catalogue that is enough for every card —
+     * the longest of the 99 components needs 224px against a 252px label row —
+     * so this pass is about the case the measurement does NOT cover: a name
+     * long enough to fill two lines on some other database.
+     *
+     * It runs where the answer actually lives. "Does this text fit" is not
+     * derivable from the string: it depends on the font, the chips beside it
+     * and the column's width, and every attempt to guess it from a character
+     * count is a heuristic that is wrong on the one name somebody complains
+     * about. So it is MEASURED (`scrollHeight` against `clientHeight`, the same
+     * question the browser answered when it decided to clamp) and the card is
+     * marked with what it found.
+     *
+     * NOT on the scroll path. Scrolling cannot change whether a name fits, and
+     * `_recompute` runs on every frame a column moves; this runs on patch and
+     * on resize, which is exactly when the answer can have changed.
+     */
+    _clipPass() {
+        for (const body of [this.lbodyRef.el, this.rbodyRef.el]) {
+            if (!body) { continue; }
+            for (const el of body.children) {
+                if (!el.dataset || !el.dataset.id) { continue; }   // group headers
+                // cached per ELEMENT, not per item: OWL reuses the node for the
+                // card in that slot and only rewrites its text, so the reference
+                // stays valid for the life of the row.
+                let span = el._mcName;
+                if (!span || !span.isConnected) {
+                    span = el._mcName = el.querySelector(".mc-item-label > span");
+                }
+                if (!span) { continue; }
+                const clipped = span.scrollHeight > span.clientHeight + 1;
+                span.classList.toggle("is-clipped", clipped);
+                // MJ34 — a `title` nobody can tell is there is not an
+                // affordance, which is why `.is-clipped` also carries a cursor
+                // and an underline. The title is what the cursor promises.
+                if (clipped) { span.title = span.textContent; }
+                else if (span.title) { span.removeAttribute("title"); }
+            }
+        }
     }
 
     /** Lucide, from the shared registry — never a hand-rolled path (W2). */
@@ -253,6 +301,11 @@ export class MappingCanvas extends Component {
         const map = new Map();
         const bandTop = br.top - rb.top + BAND;
         const bandBot = br.bottom - rb.top - BAND;
+        // J7 D1 — the dock strip, measured off the SAME border-box rect and
+        // deliberately not off the band. A transparent border keeps every card
+        // out of it at any scroll offset; these two numbers are where the chips
+        // hang inside it. Nothing here feeds back into `bandTop`/`bandBot`.
+        const { railTop, railBot } = dockAnchors(br.top - rb.top, br.bottom - rb.top);
         let edge = null;
         let firstVisibleId = null;
         // NOTE the keys are STRINGS. `dataset.id` always is, and the adapters
@@ -278,7 +331,7 @@ export class MappingCanvas extends Component {
             // an empty or fully filtered-out column still has to anchor its wires
             edge = side === "left" ? (br.right - rb.left - 14) : (br.left - rb.left + 14);
         }
-        return { map, edge, bandTop, bandBot, firstVisibleId };
+        return { map, edge, bandTop, bandBot, railTop, railBot, firstVisibleId };
     }
 
     /** Full-list index maps, rebuilt only when the props arrays change. */
@@ -361,6 +414,9 @@ export class MappingCanvas extends Component {
             this.ui.supp = []; this.ui.hid = { left: 0, right: 0 };
             return;
         }
+        // J7 D2 — after the rects are read (so the layout is already flushed)
+        // and before any of the arithmetic, because it touches neither.
+        if (this._clipDirty) { this._clipDirty = false; this._clipPass(); }
         const { L: iL, R: iR } = this._indexes();
 
         const geom = [];
@@ -438,7 +494,11 @@ export class MappingCanvas extends Component {
             const edgeY = d.dir < 0 ? col.bandTop : col.bandBot;
             d.ids.sort((a, b) => Math.abs(byId.get(a)[key] - edgeY)
                                - Math.abs(byId.get(b)[key] - edgeY));
-            return { ...d, x: col.edge, y: d.dir < 0 ? col.bandTop : col.bandBot };
+            // J7 D1 — the chip hangs in the reserved strip, NOT on `edgeY`. The
+            // sort above still ranks by distance from the clamp band, because
+            // "nearest first" is a fact about the WIRES; where the chip is
+            // drawn is a fact about the column.
+            return { ...d, x: col.edge, y: d.dir < 0 ? col.railTop : col.railBot };
         });
 
         // Assigning `ui.geom` unconditionally is a RENDER LOOP: a new array is
@@ -447,7 +507,17 @@ export class MappingCanvas extends Component {
         // survivable at 6 wires and is not at 200×40.) Write only when a number
         // a human could see has actually moved.
         const sig = geom.map((g) => `${g.id}~${g.d}~${g.hy.toFixed(1)}~${g.dockL}${g.dockR}~${g.state}`).join("|")
-            + "#" + docks.map((d) => `${d.key}:${d.count}:${d.filtered}`).join(",")
+            // J7 D1 — the chip's COORDINATES are part of "a number a human could
+            // see". They were not, and the consequence was live on abm: turning a
+            // filter on grows the column head by the "N wires hidden by this
+            // filter" row, which moves the body ~31px down. The counts do not
+            // change, so the signature did not, so `ui.docks` was never
+            // reassigned and the chip stayed at the coordinate it had before the
+            // header grew. A chip that is 31px out of date is a chip that is not
+            // in the strip reserved for it — which is D1 again, one cause further
+            // back. Rounded, so sub-pixel jitter cannot start a render loop.
+            + "#" + docks.map((d) => `${d.key}:${d.count}:${d.filtered}`
+                                   + `@${Math.round(d.x)},${Math.round(d.y)}`).join(",")
             + "#" + gone + "#" + supp.map((s) => s.id).join(",")
             + "#" + hid.left + "/" + hid.right;
         this._cost = performance.now() - t0;
