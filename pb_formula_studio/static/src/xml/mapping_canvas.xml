@@ -43,7 +43,18 @@
         <!-- wire layer (SVG bezier paths, pixel coords relative to the board) -->
         <svg class="mc-wires" preserveAspectRatio="none">
           <t t-foreach="ui.geom" t-as="g" t-key="g.id">
-            <g t-attf-class="mc-w {{ g.state }} {{ g.err ? 'error' : '' }} {{ wireTone(g) }} {{ ui.selWire === g.id ? 'sel' : '' }}">
+            <!-- JOURNEY J8 — the wire says which cards it claims, in the DOM.
+                 MJ30's lesson was that no automated check this codebase owns can
+                 see a wire (MJ12 excludes SVG from the sweep, by necessity), and
+                 the check that finally caught it — "how far is this endpoint from
+                 the port it says it ends on" — was typed into a console by hand
+                 twice. These five attributes are what make it a committed
+                 artefact (`tools/mapping_overlap_sweep.js`): they are read only
+                 by that harness and change nothing on screen. -->
+            <g t-attf-class="mc-w {{ g.state }} {{ g.err ? 'error' : '' }} {{ wireTone(g) }} {{ ui.selWire === g.id ? 'sel' : '' }}"
+               t-att-data-wire="g.id" t-att-data-left="g.leftId"
+               t-att-data-right="g.rightId"
+               t-att-data-dockl="g.dockL" t-att-data-dockr="g.dockR">
               <!-- a fat transparent stroke under the visible one: a 2px line is
                    not a trackpad target, and the layer itself takes no events -->
               <path class="mc-hit" t-att-d="g.d"

@@ -30,8 +30,8 @@ import { Component, useState, useRef, onMounted, onWillUnmount, onPatched,
          onWillUpdateProps, useExternalListener } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
-import { aggregateDocks, clampY, dockAnchors, itemMatches, spreadHubs,
-         wireGeometry } from "./mapping_geometry";
+import { ANCHOR_GAP, aggregateDocks, clampY, combOffsets, dockAnchors,
+         itemMatches, spreadHubs, wireGeometry, WIRE_GUTTER } from "./mapping_geometry";
 
 /** How many wires may carry a travelling highlight before it becomes noise. */
 const FLOW_LIMIT = 60;
@@ -316,22 +316,33 @@ export class MappingCanvas extends Component {
         // of `"183"` is a silent miss that reads on screen as "this wire's
         // target has been filtered away". Everything below goes through
         // `String()` (Integrations C5, W146).
+        // J8 — a card's HEIGHT, for the arrival comb. Kept in its own map rather
+        // than turned into an object per card: `map` is read on the hot path by
+        // every wire in the board and a shape change there is a change to five
+        // adapters' inner loop.
+        const hmap = new Map();
         for (const el of body.children) {
             const id = el.dataset && el.dataset.id;
             if (!id || el.dataset.side !== side) { continue; }   // group headers
             const r = el.getBoundingClientRect();
             const cy = r.top + r.height / 2 - rb.top;
             map.set(id, cy);
+            hmap.set(id, r.height);
             if (edge === null) {
                 edge = side === "left" ? (r.right - rb.left) : (r.left - rb.left);
             }
             if (firstVisibleId === null && cy >= bandTop) { firstVisibleId = id; }
         }
         if (edge === null) {
-            // an empty or fully filtered-out column still has to anchor its wires
-            edge = side === "left" ? (br.right - rb.left - 14) : (br.left - rb.left + 14);
+            // an empty or fully filtered-out column still has to anchor its wires.
+            // `WIRE_GUTTER` is the column body's own horizontal padding (J8 D2) —
+            // it used to be a literal 14 here and a literal 14 in the stylesheet,
+            // two constants that had to agree with no way of noticing when they
+            // stopped.
+            edge = side === "left" ? (br.right - rb.left - WIRE_GUTTER)
+                                   : (br.left - rb.left + WIRE_GUTTER);
         }
-        return { map, edge, bandTop, bandBot, railTop, railBot, firstVisibleId };
+        return { map, hmap, edge, bandTop, bandBot, railTop, railBot, firstVisibleId };
     }
 
     /** Full-list index maps, rebuilt only when the props arrays change. */
@@ -397,6 +408,32 @@ export class MappingCanvas extends Component {
         return !this._passes(side, items[at]);
     }
 
+    /**
+     * Comb the arrival points of every wire that shares an endpoint card — J8.
+     *
+     * `key` names the endpoint being shared, `by` the OTHER end's raw y (the
+     * ordering, so the fan does not cross), `out` the offset field to write, and
+     * `hmap` the card heights measured this frame. Wires whose endpoint is
+     * scrolled out of the list have no card and no height, so they are skipped:
+     * a docked wire parks on the band edge, which is not a card and must not be
+     * combed (that is where J6's clamped wires already say "it runs off this
+     * way").
+     */
+    _comb(live, key, by, out, hmap) {
+        const groups = new Map();
+        for (const e of live) {
+            if (!hmap.has(e[key])) { continue; }
+            const g = groups.get(e[key]);
+            if (g) { g.push(e); } else { groups.set(e[key], [e]); }
+        }
+        for (const [id, group] of groups) {
+            if (group.length < 2) { continue; }
+            group.sort((a, b) => a[by] - b[by]);
+            const offs = combOffsets(group.length, hmap.get(id));
+            group.forEach((e, n) => { e[out] = offs[n]; });
+        }
+    }
+
     _recompute() {
         this._recomputes++;
         const t0 = performance.now();
@@ -423,7 +460,13 @@ export class MappingCanvas extends Component {
         const supp = [];                      // MAPFIX F1 — filtered out, not drawn
         const hid = { left: 0, right: 0 };
         let gone = 0;
-        const sx = L.edge + 4, tx = R.edge - 4;
+        const sx = L.edge + ANCHOR_GAP, tx = R.edge - ANCHOR_GAP;
+        // ---- pass 1: which wires are drawn at all, and where each end sits ----
+        // J8 — split out of the single loop this used to be, because the arrival
+        // comb below needs to know how many wires reach a card BEFORE it can
+        // decide where any one of them lands. Every decision here is the one that
+        // was made before, in the same order.
+        const live = [];
         for (const w of this.props.wires) {
             const lk = String(w.leftId), rk = String(w.rightId);
             const hasL = L.map.has(lk), hasR = R.map.has(rk);
@@ -450,32 +493,60 @@ export class MappingCanvas extends Component {
                 });
                 continue;
             }
-            let y1, dockL, rawL;
+            const e = { w, lk, rk, hasL, hasR };
             if (hasL) {
-                rawL = L.map.get(lk);
-                const c = clampY(rawL, L.bandTop, L.bandBot);
+                e.rawL = L.map.get(lk);
+            } else {
+                e.dockL = this._hiddenDir(iL, lk, L.firstVisibleId);
+                e.rawL = e.dockL < 0 ? -1e6 : 1e6;
+            }
+            if (hasR) {
+                e.rawR = R.map.get(rk);
+            } else {
+                e.dockR = this._hiddenDir(iR, rk, R.firstVisibleId);
+                e.rawR = e.dockR < 0 ? -1e6 : 1e6;
+            }
+            live.push(e);
+        }
+        // ---- pass 2: the arrival comb (J8) -----------------------------------
+        // Twenty wires into one card is a knot, not a diagram, and the contract
+        // component lane makes that the NORMAL case rather than a rarity: every
+        // flagged column in the scheme ends on the same two cards. The arrival
+        // points are combed down the card's own edge, bounded by it — so an
+        // endpoint never leaves the card it claims to end on, which is MJ30's
+        // invariant restated for a segment instead of a point.
+        //
+        // Order is by the OTHER end's y, so the fan does not cross itself, and a
+        // card with one wire is untouched: `combOffsets(1, …)` is `[0]`, which is
+        // why the four other adapters get byte-identical geometry unless they
+        // already had a pile-up — in which case they had this defect too.
+        this._comb(live, "rk", "rawL", "offR", R.hmap);
+        this._comb(live, "lk", "rawR", "offL", L.hmap);
+        // ---- pass 3: clamp, curve, publish -----------------------------------
+        for (const e of live) {
+            const w = e.w;
+            let y1, dockL;
+            if (e.hasL) {
+                const c = clampY(e.rawL + (e.offL || 0), L.bandTop, L.bandBot);
                 y1 = c.y; dockL = c.docked;
             } else {
-                dockL = this._hiddenDir(iL, lk, L.firstVisibleId);
+                dockL = e.dockL;
                 y1 = dockL < 0 ? L.bandTop : L.bandBot;
-                rawL = dockL < 0 ? -1e6 : 1e6;
             }
-            let y2, dockR, rawR;
-            if (hasR) {
-                rawR = R.map.get(rk);
-                const c = clampY(rawR, R.bandTop, R.bandBot);
+            let y2, dockR;
+            if (e.hasR) {
+                const c = clampY(e.rawR + (e.offR || 0), R.bandTop, R.bandBot);
                 y2 = c.y; dockR = c.docked;
             } else {
-                dockR = this._hiddenDir(iR, rk, R.firstVisibleId);
+                dockR = e.dockR;
                 y2 = dockR < 0 ? R.bandTop : R.bandBot;
-                rawR = dockR < 0 ? -1e6 : 1e6;
             }
             const g = wireGeometry(sx, y1, tx, y2, !!this.props.bidirectional);
             geom.push({
                 ...w,
                 d: g.d, head: g.head, headBack: g.headBack, hx: g.hx, hy: g.hy,
-                sx, tx, y1, y2, rawL, rawR,
-                dockL, dockR, hiddenL: !hasL, hiddenR: !hasR,
+                sx, tx, y1, y2, rawL: e.rawL, rawR: e.rawR,
+                dockL, dockR, hiddenL: !e.hasL, hiddenR: !e.hasR,
                 err: !!(w.transform && w.transform.error),
             });
         }

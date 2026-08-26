@@ -237,11 +237,22 @@ class TestJourneyJ6Defects(TransactionCase):
         self.assertIn('=== "api"', canvas)
 
     def test_02d_the_toast_offers_undo(self):
+        # JOURNEY J8 — the cut/restore PAIR became the helper's arguments, so a
+        # contract-component wire (which is cut by clearing two booleans, not by
+        # unlinking a row) reaches the same toast instead of a second copy of it.
+        # This test therefore anchors on the invariant rather than on the two
+        # method names it used to find inline: the toast, its verb, and the fact
+        # that the API board still passes ITS pair to the one helper (MJ25 — an
+        # oracle that describes the implementation fails against correct code).
         body = self.studio_js.split('async _removeWireUndoable(')[1][:1200]
-        self.assertIn('api_mapping_cut', body)
+        self.assertIn('cutMethod', body)
         self.assertIn('_t("Wire removed")', body)
         self.assertIn('_t("Undo")', body)
-        self.assertIn('api_mapping_restore', body)
+        self.assertIn('this.orm.call(MODEL, restoreMethod, [snapshot])', body)
+        self.assertIn('_removeWireUndoable("api_mapping_cut", "api_mapping_restore"',
+                      self.studio_js)
+        # ...and there is still exactly ONE of it
+        self.assertEqual(self.studio_js.count('async _removeWireUndoable('), 1)
 
     def test_02e_the_undo_window_is_the_toast_and_is_not_sticky(self):
         body = self.studio_js.split('async _removeWireUndoable(')[1][:1200]

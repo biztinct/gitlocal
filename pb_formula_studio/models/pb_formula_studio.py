@@ -7503,6 +7503,8 @@ class PbFormulaStudio(models.AbstractModel):
                                              'date_end', 'trial_date_end',
                                              'structure_type_id',
                                              'contract_type_id', 'notes')),)),
+        # JOURNEY J8 — two synthetic cards, not fields. See `_component_lane_items`.
+        ('contract_component', ()),
         ('bank', ()),
         ('other_employee', (('hr.employee', ()),)),
         ('other_contract', (('hr.contract', ()),)),
@@ -7568,6 +7570,176 @@ class PbFormulaStudio(models.AbstractModel):
             })
         return items
 
+    # ------------------------------------------------------------------
+    # JOURNEY J8 — the CONTRACT COMPONENT LANE.
+    #
+    # The commonest destination on this board was the only one it did not draw.
+    # A contract component is not a field of `hr.contract`: it is a row of
+    # `hr.contract.advantage` pointing at an `hr.contract.advantage.template`,
+    # matched by CODE — so it could never come out of `ir.model.fields`, and
+    # widening `_EC_TTYPES` would not have produced it either. What said so on
+    # the board was a badge on the LEFT card, which only tells you where a value
+    # lands if you already know what the badge means.
+    #
+    # Two cards rather than one, because the value TYPE is a real fork in the
+    # model (`is_text_component` / `hr.contract.advantage.template.value_type`)
+    # and it decides something a reader can see: an AMOUNT is read back into the
+    # pay calculation, TEXT is not (`payroll_import_batch._transform_data_to_
+    # formula_inputs` skips `value_type == 'text'` outright). Choosing at wire
+    # time is the difference between the board expressing that decision and
+    # hiding it.
+    #
+    # The `c:` prefix follows the `b:` precedent exactly, for the same reason:
+    # `employee_mapping_create` tells the id kinds apart by inspection.
+    # ------------------------------------------------------------------
+    _COMPONENT_LANE_KINDS = ('amount', 'text')
+
+    @api.model
+    def _ec_component_codes(self, config):
+        """`{'amount': [codes], 'text': [codes]}` for the config's flagged rules.
+
+        A text component carries BOTH booleans (`employee_mapping_make_component`
+        writes `is_contract_component=True, is_text_component=True`), so the test
+        for "amount" has to exclude the text ones rather than merely assert the
+        first flag."""
+        out = {'amount': [], 'text': []}
+        if not config:
+            return out
+        for rule in config.rule_ids:
+            if not (rule.is_contract_component or rule.is_text_component):
+                continue
+            code = (rule.code or '').strip()
+            if not code:
+                continue
+            out['text' if rule.is_text_component else 'amount'].append(code)
+        return out
+
+    @api.model
+    def _ec_component_state(self, config):
+        """Does this destination exist yet, and how much is in it — per kind.
+
+        The owner's actual question ("are the rows not created yet?") and the
+        reason the lane earns its place. Two facts, both from the database:
+
+          * the TEMPLATE is created lazily by the first processed import
+            (`payroll_import_batch._get_or_create_advantage_template`), so "no
+            template" is the honest, common, not-a-problem state;
+          * a LINE proves nothing on its own — `hr.contract.create` seeds one
+            EMPTY advantage line per template on every contract (CR18) — so what
+            is counted is a line somebody's data is actually IN, the same
+            predicate `_ec_component_history` uses.
+
+        Cost: ONE search over templates, plus ONE `count_distinct` aggregate per
+        kind that actually HAS templates. On a database where nothing has been
+        imported (every live one today) that is a single indexed search and no
+        aggregate at all. The distinct-CONTRACT count is deliberately an
+        aggregate rather than a line `search_count`: a lane spans several codes,
+        and one contract carrying three of them is one contract, not three.
+        """
+        codes = self._ec_component_codes(config)
+        state = {k: {'codes': len(codes[k]), 'templates': 0, 'contracts': 0}
+                 for k in self._COMPONENT_LANE_KINDS}
+        allcodes = codes['amount'] + codes['text']
+        if not allcodes:
+            return state
+        Template = self.env.get('hr.contract.advantage.template')
+        if Template is None:
+            return state
+        templates = Template.sudo().search([('code', 'in', allcodes)])
+        if not templates:
+            return state
+        by_kind = {'amount': [], 'text': []}
+        for tpl in templates:
+            code = (tpl.code or '').strip()
+            kind = 'text' if code in codes['text'] else 'amount'
+            by_kind[kind].append(tpl.id)
+        Line = self.env['hr.contract.advantage'].sudo()
+        for kind in self._COMPONENT_LANE_KINDS:
+            ids = by_kind[kind]
+            state[kind]['templates'] = len(ids)
+            if not ids:
+                continue
+            groups = Line._read_group(
+                [('advantage_template_id', 'in', ids),
+                 '|', ('amount', '!=', 0.0), ('text_value', '!=', False)],
+                [], ['contract_id:count_distinct'])
+            state[kind]['contracts'] = (groups and groups[0][0]) or 0
+        return state
+
+    @api.model
+    def _ec_component_state_note(self, kind, state):
+        """The card's live state line — `{text, title, tone}`, or None.
+
+        `warn` is deliberately NOT used for "nothing yet": a component that no
+        import has run for is correct, not broken, and painting it amber would
+        make every clean scheme look like it had a problem.
+        """
+        st = (state or {}).get(kind) or {}
+        if not st.get('codes'):
+            return None
+        if not st.get('templates'):
+            return {
+                'text': _("Created on the first import — nothing on any contract yet."),
+                'title': _("The contract entry for a component is created the first "
+                           "time pay data is processed for it. Wiring a column here "
+                           "is what decides that it will be."),
+                'tone': 'info',
+            }
+        n = st.get('contracts') or 0
+        if not n:
+            return {
+                'text': _("Ready on the contract — no values stored yet."),
+                'title': _("The contract entry exists, and no contract carries a "
+                           "value under it so far."),
+                'tone': 'info',
+            }
+        return {
+            'text': _("%(n)s contracts carry a value.") % {'n': n},
+            'title': _("Counted over the contracts that hold a real value for one "
+                       "of this scheme's %(kind)s components — an empty row that "
+                       "was created with the contract does not count.")
+                     % {'kind': (_("amount") if kind == 'amount' else _("text"))},
+            'tone': 'ok',
+        }
+
+    @api.model
+    def _component_lane_items(self, config=None):
+        """The lane's two cards, built the way `_bank_lane_items` builds its four.
+
+        MAPFIX E2's construction invariant applies here too: a card rendered on
+        the right carries the metadata it would have had from the catalogue —
+        `lane`, `lane_order`, an id kind, a `note` — so nothing downstream has to
+        ask which construction site made it.
+        """
+        labels = {
+            'amount': (_("Contract component — amount"),
+                       _("Kept on the contract under this column's own code, as a "
+                         "number the pay calculation reads back")),
+            'text': (_("Contract component — text"),
+                     _("Kept on the contract as text — a grade, a shift code, a note")),
+        }
+        group = self._ec_lane_label('contract_component')
+        _pos, order_of = self._ec_lane_index()
+        state = self._ec_component_state(config)
+        items = []
+        for kind in self._COMPONENT_LANE_KINDS:
+            label, sub = labels[kind]
+            meta = {'component_kind': kind, 'kind': 'component',
+                    'lane': 'contract_component',
+                    'lane_order': order_of.get('contract_component', 99),
+                    'mappable': True}
+            note = self._ec_component_state_note(kind, state)
+            if note:
+                meta['note'] = note
+            items.append({
+                'id': 'c:%s' % kind,
+                'label': label,
+                'sublabel': sub,
+                'group': group,
+                'meta': meta,
+            })
+        return items
+
     @api.model
     def _ec_lane_label(self, key):
         """Lane heading. Literal `_()` calls so the terms stay extractable."""
@@ -7577,6 +7749,7 @@ class PbFormulaStudio(models.AbstractModel):
             'contact': _("Contact"),
             'job': _("Job & organisation"),
             'contract_terms': _("Contract terms"),
+            'contract_component': _("Contract components"),
             'bank': _("Bank account"),
             'other_employee': _("Other employee fields"),
             'other_contract': _("Other contract fields"),
@@ -7913,20 +8086,33 @@ class PbFormulaStudio(models.AbstractModel):
         return [t[3] for t in rows]
 
     @api.model
-    def _ec_right_column(self, q=''):
-        """The catalogue with the four synthetic bank cards spliced into their own
-        lane position, so the RIGHT column reads top-to-bottom in one order and the
-        canvas' consecutive-group headers tell the truth."""
+    def _ec_right_column(self, q='', config=None):
+        """The catalogue with the SYNTHETIC lanes spliced into their own lane
+        positions, so the RIGHT column reads top-to-bottom in one order and the
+        canvas' consecutive-group headers tell the truth.
+
+        JOURNEY J8 — there are two synthetic lanes now (contract components, then
+        bank), so the splice is driven by the lane index rather than by one
+        remembered key. A second hand-written copy of "is it time to insert yet"
+        is how the second lane would have landed in the wrong place on the day a
+        third one arrived.
+        """
         _pos, order_of = self._ec_lane_index()
-        bank_at = order_of.get('bank', 99)
-        items, out, placed = self._ec_right_items(q), [], False
+        synthetic = [
+            (order_of.get('contract_component', 99),
+             self._component_lane_items(config)),
+            (order_of.get('bank', 99), self._bank_lane_items()),
+        ]
+        synthetic.sort(key=lambda t: t[0])
+        items, out = self._ec_right_items(q), []
+        pending = list(synthetic)
         for it in items:
-            if not placed and (it.get('meta', {}).get('lane_order') or 0) > bank_at:
-                out.extend(self._bank_lane_items())
-                placed = True
+            lo = (it.get('meta', {}).get('lane_order') or 0)
+            while pending and lo > pending[0][0]:
+                out.extend(pending.pop(0)[1])
             out.append(it)
-        if not placed:
-            out.extend(self._bank_lane_items())
+        for _at, cards in pending:
+            out.extend(cards)
         return out
 
     # LEFT swim-lane order. Identity first because it is what finds the row at all;
@@ -8059,7 +8245,7 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'reason': 'no_config'}
         q = context_id.strip().lower() if isinstance(context_id, str) else ''
         left = self._ec_left_items(config, include_payroll=include_payroll)
-        right = self._ec_right_column(q)
+        right = self._ec_right_column(q, config)
         present = {i['id'] for i in right}
         Mapping = self.env['hr.payslip.import.mapping'].sudo()
         by_left = {i['id']: i for i in left}
@@ -8092,6 +8278,29 @@ class PbFormulaStudio(models.AbstractModel):
                 if fld:
                     self._ec_place_in_lane(right, self._ec_field_item(fld))
                     present.add(rid)
+        # ------------------------------------------------------------------
+        # JOURNEY J8 — the component wires, which have no row behind them.
+        #
+        # There IS no `hr.payslip.import.mapping` for a contract component: the
+        # boolean on the rule is the fact, and that is exactly why the board
+        # could never draw one. They are synthesised here, in their own id
+        # namespace and with their own `kind`, so that no client path can hand a
+        # RULE id to `employee_mapping_delete` — which browses the mapping table
+        # and would unlink a stranger's row. `ref` is deliberately False for the
+        # same reason: even a careless caller gets an empty recordset.
+        # ------------------------------------------------------------------
+        for rule in config.rule_ids:
+            if not (rule.is_contract_component or rule.is_text_component):
+                continue
+            kind = 'text' if rule.is_text_component else 'amount'
+            wires.append({'id': 'cc%s' % rule.id, 'kind': 'component',
+                          'ref': False, 'componentId': rule.id,
+                          'componentKind': kind,
+                          'leftId': rule.id, 'rightId': 'c:%s' % kind,
+                          'state': 'accepted'})
+            card = by_left.get(rule.id)
+            if card is not None:
+                card['meta'].update(self._ec_component_direction(rule))
         return {
             'ok': True, 'left': left, 'right': right, 'wires': wires,
             'left_title': config.name, 'right_title': _("Employee, contract & bank"),
@@ -8151,6 +8360,39 @@ class PbFormulaStudio(models.AbstractModel):
             'directionNote': _(
                 "On import: fills %(where)s. On pay run: used when the file or "
                 "feed leaves this empty.", where=where),
+        }
+
+    @api.model
+    def _ec_component_direction(self, rule):
+        """Which way a CONTRACT COMPONENT runs — and the two kinds differ.
+
+        JOURNEY J8. An AMOUNT component is genuinely two-way, and it is the one
+        rung of the resolver ladder that reads the contract rather than the file:
+        `_transform_data_to_formula_inputs` builds `contract_component_amounts`
+        from the contract's advantage lines and uses it when neither the file nor
+        the feed carried anything (`resolved_source = 'contract_component'`), with
+        a flagged rule that has no line falling back to `0.0`.
+
+        A TEXT component is NOT read back, and the code says so out loud: the same
+        loop SKIPS `value_type == 'text'` outright, because letting a text
+        component in would feed a permanent 0.0 into any formula naming it. So the
+        text card gets the import half and nothing else — the same refusal J3 made
+        for a bank row rather than print a confident falsehood.
+        """
+        code = (rule.code or '').strip()
+        if rule.is_text_component:
+            return {
+                'direction': 'to_record',
+                'directionNote': _(
+                    "On import: kept on the contract as text under %(code)s.",
+                    code=code or (rule.name or '')),
+            }
+        return {
+            'direction': 'two_way',
+            'directionNote': _(
+                "On import: kept on the contract as an amount under %(code)s. On "
+                "pay run: read back from the contract when the file or feed "
+                "leaves this empty.", code=code or (rule.name or '')),
         }
 
     @api.model
@@ -8270,6 +8512,24 @@ class PbFormulaStudio(models.AbstractModel):
                             'destination_type': 'bank_account', 'bank_role': bank_role})
             return {'ok': True, 'msg': note} if note else {'ok': True}
 
+        # ------------------------------------------------------------------
+        # JOURNEY J8 — the contract-component lane. Placed BEFORE the `f:` parse
+        # for the same reason `b:` is: these ids are not `model:field` and a
+        # three-part split would read `c:amount` as malformed rather than as the
+        # destination it is.
+        #
+        # It ROUTES to the existing promotion rather than repeating it.
+        # `employee_mapping_make_component` already refuses a non-`input`
+        # column, already unlinks any field or bank row so the column keeps
+        # exactly ONE destination, and already sets the role per CR-A2. A second
+        # implementation here would be the fork this programme keeps refusing.
+        # ------------------------------------------------------------------
+        if spec.startswith('c:'):
+            kind = spec[2:]
+            if kind not in self._COMPONENT_LANE_KINDS:
+                return {'ok': False, 'msg': self._ec_bad_spec_msg()}
+            return self.employee_mapping_make_component(comp.id, kind)
+
         parts = spec.split(':')
         if len(parts) != 3 or parts[0] != 'f':
             return {'ok': False, 'msg': self._ec_bad_spec_msg()}
@@ -8366,6 +8626,47 @@ class PbFormulaStudio(models.AbstractModel):
         return _("%(name)s now goes to %(dest)s instead of the contract.") % {
             'name': rule.name or rule.code or '', 'dest': dest_label}
 
+    @api.model
+    def _ec_component_type_clash(self, rule, value_type):
+        """The sentence to refuse with when the contract already types this code
+        the other way — or '' when there is nothing in the way.
+
+        JOURNEY J8. `_get_or_create_advantage_template` NEVER flips an existing
+        template's `value_type`: every line already filed under it was written as
+        the other kind, and re-typing would silently reinterpret that history. It
+        logs a warning instead — server-side, where no user will ever see it. So
+        without this guard the board would accept a wire, say it succeeded, and
+        the next import would keep writing the old kind: a promise made on screen
+        and declined in a log file.
+
+        Only fires when a template EXISTS with the other type, which is exactly
+        the case the import refuses. A code with no template yet is free to be
+        either.
+        """
+        code = (rule.code or '').strip()
+        if not code:
+            return ''
+        Template = self.env.get('hr.contract.advantage.template')
+        if Template is None:
+            return ''
+        tpl = Template.sudo().search([('code', '=', code)], limit=1)
+        if not tpl or 'value_type' not in tpl._fields:
+            return ''
+        current = tpl.value_type or 'amount'
+        if current == value_type:
+            return ''
+        if current == 'text':
+            return _(
+                "%(code)s is already kept on the contract as TEXT, and the "
+                "contract entry is never re-typed — an import would go on writing "
+                "text. Send this column to a field instead, or leave it as a text "
+                "component.") % {'code': code}
+        return _(
+            "%(code)s is already kept on the contract as an AMOUNT, and the "
+            "contract entry is never re-typed — an import would go on writing a "
+            "number. Send this column to a field instead, or leave it as an "
+            "amount component.") % {'code': code}
+
     # ------------------------------------------------------------------
     # COLROLES P3 — turning a stranded column into a contract component.
     #
@@ -8397,6 +8698,10 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': _(
                 "Only an imported column can be kept on the contract — this one is "
                 "calculated.")}
+        # JOURNEY J8 — a promise the import would quietly decline is refused here.
+        clash = self._ec_component_type_clash(rule, value_type)
+        if clash:
+            return {'ok': False, 'msg': clash}
         # An existing mapping would mean the value lands in two places, which is two
         # sources of truth for one fact. The wire goes.
         self.env['hr.payslip.import.mapping'].sudo().search([
@@ -8452,9 +8757,54 @@ class PbFormulaStudio(models.AbstractModel):
                     "this column to a field instead — what the contracts hold is "
                     "kept as history — or leave it on the contract."
                 ) % {'count': filled, 'code': code}}
+        # JOURNEY J8 — the snapshot the Undo toast puts back. Taken BEFORE the
+        # write and consisting only of what this method changes: the two booleans
+        # plus the role and its source, which `employee_mapping_make_component`
+        # rewrites on the way back in. Nothing derived, nothing about the
+        # advantage template — a detach never touched either (MJ32's rule: an
+        # undo is the inverse of the delete, not a replay of the create).
+        snapshot = {
+            'rule_id': rule.id,
+            'is_contract_component': bool(rule.is_contract_component),
+            'is_text_component': bool(rule.is_text_component),
+            'column_role': rule.column_role or False,
+            'column_role_source': rule.column_role_source or False,
+        }
         rule.write({'is_contract_component': False, 'is_text_component': False})
-        return {'ok': True, 'msg': _("%s is no longer kept on the contract.") % (
-            rule.name or code or '')}
+        return {'ok': True, 'snapshot': snapshot,
+                'msg': _("%s is no longer kept on the contract.") % (
+                    rule.name or code or '')}
+
+    @api.model
+    def employee_component_restore(self, snapshot):
+        """Put a detached component back exactly as it was — JOURNEY J8.
+
+        The inverse of `employee_mapping_detach_component`, and deliberately NOT
+        a call to `employee_mapping_make_component`: a promotion is a DECISION —
+        it unlinks any rival mapping row and re-derives the role from the value
+        type — where an undo has to restore the role and the role SOURCE the
+        column actually had. MJ32 taught this on the API board with a label that
+        a redraw would have rewritten; the same shape, one board over.
+
+        Idempotent, so a double-pressed Undo restores one component. Refuses a
+        malformed payload rather than raising: the toast is gone by then and a
+        traceback would have nowhere to land.
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        if not isinstance(snapshot, dict):
+            return {'ok': False, 'msg': self._ec_bad_spec_msg()}
+        rule = self.env['hr.formula.rule'].browse(self._as_id(snapshot.get('rule_id')))
+        if not rule.exists():
+            return {'ok': False, 'msg': _("That column no longer exists.")}
+        rule.write({
+            'is_contract_component': bool(snapshot.get('is_contract_component')),
+            'is_text_component': bool(snapshot.get('is_text_component')),
+            'column_role': snapshot.get('column_role') or 'payroll',
+            'column_role_source': snapshot.get('column_role_source') or 'user',
+        })
+        return {'ok': True, 'msg': _("%s is kept on the contract again.") % (
+            rule.name or rule.code or '')}
 
     @api.model
     def employee_mapping_delete(self, mapping_id):

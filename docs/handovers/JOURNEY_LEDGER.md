@@ -7,8 +7,11 @@ Transformations board — one of which destroyed a live wire — repaired, fixed
 four. Defect round J7 (2026-08-26): two legibility defects reported against the live
 `System fields → Scheme` board — a dock chip painted over the top card, and component names
 truncated with no way to read them — fixed in the SHARED canvas, so all five two-lane adapters
-and the transform board inherit them. The programme stays COMPLETE; J6 and J7 are defect
-rounds, not further scopes.**
+and the transform board inherit them. Defect round J8 (2026-08-26): the board's single
+most-used destination was the only one it did not draw — a `Contract components` lane now
+sits between Contract terms and Bank account, wirable both ways — plus the arrowhead that was
+being painted under the column's scrollbar. The programme stays COMPLETE; J6, J7 and J8 are
+defect rounds, not further scopes.**
 
 Follow-on programme to SOURCING (see `docs/handovers/SOURCING_LEDGER.md` + `SOURCING_CLOSEOUT.md`)
 and MAPFIX (`docs/handovers/MAPFIX_LEDGER.md`, which itself binds COLROLES CR1–CR33). **All standing
@@ -560,6 +563,116 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   eight minutes before this session began. Nothing was "repaired"; today's state
   was taken as the baseline and returned unchanged.
 
+- **J8 — DONE, live on abm · acme · payobook · payobook_template (2026-08-26).**
+  → `JOURNEY_PHASE_J8_HANDOVER.md`.
+  Version: pb_formula_studio **19.0.1.153.0** (`pb_hr_payroll_formula`, `pb_integrations`,
+  `biz_theme` untouched; `om_hr_payroll` untouched — CR1).
+  **The commonest destination on the board was the only one it never drew.** A contract
+  component is not a field of `hr.contract` — it is a row of `hr.contract.advantage`
+  pointing at a template matched by CODE — so it could never have come out of
+  `ir.model.fields`, and the only thing that said where Gas Allowance goes was a badge
+  on the left card. There is now a **`Contract components` lane** between Contract terms
+  and Bank account carrying two synthetic cards on the `b:` precedent, `c:amount` and
+  `c:text`, and abm's **20 flagged rules draw 20 wires into them (17 + 3)**, asserted
+  against the badge programmatically rather than by eye. `_ec_right_column` splices BOTH
+  synthetic lanes off the lane index now, because a second remembered key is how the
+  second lane lands in the wrong place the day a third arrives.
+  **Two cards, and the reason is in the resolver rather than in the taxonomy.**
+  `_transform_data_to_formula_inputs` builds `contract_component_amounts` from the
+  contract's advantage lines and **SKIPS `value_type == 'text'` outright** — letting a
+  text component in would feed a permanent 0.0 into any formula naming it. So an amount
+  is genuinely two-way (⇆, "read back from the contract when the file or feed leaves
+  this empty") and text is `to_record` and says only the import half — J3's refusal to
+  print a confident falsehood, one destination over.
+  **Nothing was reimplemented.** Drawing to `c:amount` ROUTES to
+  `employee_mapping_make_component`, which already refused a calculated column, already
+  unlinked any rival field/bank row and already set the role per CR-A2; the wire's
+  Remove verb routes to `employee_mapping_detach_component`, whose refusal ("N contracts
+  already carry a value for CODE") is SHOWN, with no force path. There is no
+  `hr.payslip.import.mapping` row behind a component, so the wires are synthesised with
+  their own id namespace (`cc<id>`), their own `kind`, and **`ref: False`** — the client
+  branches on `kind`, and even a careless path hands `employee_mapping_delete` an empty
+  recordset instead of a stranger's row.
+  **Undo is one helper with two arguments, not a second copy.** J6's
+  `_removeWireUndoable` now takes the cut and restore RPC names; a component's snapshot
+  is the two booleans plus `column_role`/`column_role_source`, and
+  `employee_component_restore` deliberately does NOT route through the promotion, which
+  would re-derive the role (MJ32, one board over — proven: a component detached with
+  role `reference`/source `auto` comes back with `reference`/`auto`, not `payroll`/`user`).
+  **The card answers "does this exist yet?"** — one indexed template search, plus a
+  `contract_id:count_distinct` aggregate per kind that actually has templates. On abm
+  (0 templates) that is one search and no aggregate, and the card reads *"Created on the
+  first import — nothing on any contract yet."* `employee_mapping_data` measured live,
+  warmed, median of 7: **90.5 ms before → 93.5 ms after (+3.0 ms), 127 KB → 134 KB**,
+  the before taken by putting the pre-J8 model file back on the same machine and DB.
+  **A type clash is refused at wire time**, because `_get_or_create_advantage_template`
+  never flips an existing template's `value_type` — it logs a warning where no user will
+  see it, so accepting would be a promise the import quietly declines.
+  **The card cannot vanish under the hand that wired it** (MF15's trap by a second
+  gesture): a wire to `c:amount` sets `column_role = 'payroll'`, which the board hides,
+  so the draw turns the payroll chip on through the SAME state flag the menu verb uses
+  and the toast says so — proven live from a cold board with the chip off:
+  *"J8 probe column is now kept on the contract as an amount. Pay columns are shown so
+  you can see it."*
+  **D2's cause was OCCLUSION, not clipping, and it was one pixel.** An arrowhead spans
+  `ANCHOR_GAP + HEAD` = 15px from a card's edge and `.mc-col-body` gave it 14px of
+  padding; the sixteenth pixel is the column's SCROLLBAR, which belongs to `.mc-cols`
+  (`z-index: 2`) and paints over `.mc-wires` (`z-index: 1`). Measured live at 1440
+  before the fix: head box 375→386, painted pixels stopped at **384**, and what was lost
+  was the flat BASE of the triangle — its widest, most recognisable edge. `.mc-board`'s
+  `overflow: clip` was never involved (proved by `scrollbar-width: none`, which made the
+  head whole at once). The gutter is now `WIRE_GUTTER = ANCHOR_GAP + HEAD + 3` in the
+  kernel and the same number in the stylesheet, pinned together by a test; the empty-
+  column anchor fallback reads it instead of its own literal 14. Cards narrow 8px —
+  measured after: label row 252→**244px**, widest name 223.8px, **0 of 357 names
+  clipped**, so J7's fix holds with 20px to spare.
+  **The arrival comb, and why it is in the shared canvas.** Twenty curves converging on
+  one port is a knot, and the component lane makes that the normal case. `combOffsets`
+  (pure, in the kernel) spreads arrivals down the card's own edge, BOUNDED by it, at
+  `min(9px, room/(n−1))`; `n <= 1` returns `[0]`, so every board without a pile-up is
+  byte-identical. Measured at 1440 and at 1024 with the payroll chip ON: 17 arrivals on
+  the 119px amount card at a uniform **6.56px**, all 17 distinct and all inside the card;
+  the 3 text wires get the full 9px. `_recompute` is three passes now because the comb
+  has to know how many wires reach a card before it can place any of them.
+  **The sweep can finally see an arrowhead.** MJ12 drops every `SVGElement`, which is
+  correct and is exactly why no sweep has ever measured a wire (MJ30). Heads are
+  re-admitted BY NAME (`polygon.mc-head`, never `<path>`) and tested against the derived
+  clip box plus the named opaque boxes of the column layer — cards, dock chips, and the
+  **scrollbar gutter**, which is not an element and which no rect-versus-element pass
+  could ever have found. Proof it could not have fired before: forcing the old 14px
+  padding back on the live board and recomputing reports **3 `mc-head back` occluded by
+  `scrollbar-gutter`, 1.0 × 12.0px each**; at 18px it reports 0.
+  `wireEndpointError` is a committed artefact at last — `.mc-w` carries
+  `data-wire/left/right/dockl/dockr`, read only by the harness.
+  Tests: Python **467 on abm, 2 failed + 1 error — all three PRE-EXISTING and none
+  J8's** (baseline taken on the machine first: **436 with the same three**,
+  `-u pb_hr_payroll_formula,pb_formula_studio,pb_integrations`,
+  `--test-tags /pb_hr_payroll_formula,/pb_formula_studio,/pb_integrations`). +31 new
+  (`TestJourneyJ8Components`). hoot **126**, 0 failed (baseline 119 + 7 J8).
+  15/15 numbered cases pass. **0 bounding-box overlaps, 0 dock-over-card pairs and 0
+  occluded or clipped arrowheads in 6 states at 1440 and 5 at 1024** — resting, left
+  scrolled, right parked on the component lane, both mid, filtered, filtered-and-
+  scrolled — with `maxErr 0` in every one, 82 heads measured each time, and no
+  horizontal body scroll. The Transformations board is clean on the same sweep (19
+  heads, 0 occlusions) and does NOT share D2's cause: its heads carry no `+4` anchor
+  offset, so 11px fits its 14px padding.
+  **MF37 on abm: byte-identical before and after** — `hr_integration_field_mapping` 41
+  rows `8c41d0953db14c8c6a6ade05476ade84`, `hr_payslip_import_mapping` 21 rows ids
+  `1,2,30…108` `07792a486d5d74400f63e2606599383e`, `hr_formula_rule` config 14 99 rows
+  `8a0d5bdc8e5439b40769ac61887d9ec7`, the flagged set the SAME twenty ids
+  `582,593,594,595,596,597,598,599,602,603,604,605,638,669,670,675,676,677,678,679`, and
+  **`hr_contract_advantage_template` and `hr_contract_advantage` both still 0 rows**.
+  Every live write went through a throwaway rule (`J8PROBE`, id 13584) that was created,
+  promoted by mouse, cut, undone, cut again, expired and then deleted; no live column was
+  touched. `action_process` was never called; no live API pull was made.
+  **One finding worth the owner's attention.** The transform/API board shows 19 of the 20
+  flagged columns with a `Contract component` source pill, and Gas Allowance with
+  `Already fed by Spreadsheet "SEVL|Gas Allowance"`. The two boards are not disagreeing:
+  the source pill names the rung of the resolver ladder that WINS (an explicit binding,
+  rung 1, outranks a contract component, rung 5) and the new lane names where the value
+  is KEPT. Gas Allowance is the one flagged column that also carries a binding — one of
+  the eight the owner drew on 2026-08-26 (J7's opening note).
+
 ## Gotchas discovered (append per phase, MJ-numbered)
 
 - MJ1 (J1): **`groupFilter` filters the LEFT column only, and always did.** The handover's
@@ -1040,3 +1153,40 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   fit", not as "affordances go out of the flow"** — and note that `overflow-wrap: anywhere` would
   quietly undo it by feeding min-content, which is MF13's one-character label arriving by a new
   road.
+
+- MJ41 (J8): **the defect was one pixel, and the pixel it was in belonged to a SCROLLBAR — which
+  is not an element, so nothing this codebase measures could ever have seen it.** An arrowhead is
+  a triangle spanning `ANCHOR_GAP` (4) to `ANCHOR_GAP + HEAD` (15) from a card's edge, and
+  `.mc-col-body` reserved **14px** of padding for it. That is not a rounding error, it is a
+  constant in a stylesheet that had to agree with a constant in a pure kernel and had no way to,
+  and for the whole life of the board it has been one short. The sixteenth pixel is the column's
+  scrollbar gutter: `.mc-cols` is `z-index: 2` and `.mc-wires` is `1`, so the head is drawn
+  UNDER the scrollbar, and what it loses is the flat BASE of the triangle — the widest and most
+  recognisable part, which is why a 1px geometric overlap reads on screen as a head chopped in
+  half. Measured live on abm at 1440: layout box 375→386, painted pixels stopped at 384.
+  Two things this taught. (a) **`overflow: clip` was the obvious suspect and was innocent** —
+  `scrollbar-width: none` made the head whole instantly, which is a ten-second experiment that
+  settles occlusion-versus-clipping and should be the first move every time. (b) A bounding-box
+  sweep cannot find it, because a scrollbar has no rect to compare against and
+  `elementFromPoint` in that band answers `.mc-col-body` whether or not the scrollbar is there.
+  The gutter has to be DERIVED — `(paddingBoxWidth - clientWidth)` — and named as an opaque box
+  in its own right. **When a layer paints over another, its opaque parts include things that are
+  not elements.**
+- MJ42 (J8, testing): **`node --check` on a `.js` file containing ES-module syntax exits 0
+  without parsing it, so MJ19's "check the exit code" is satisfiable by a check that is not
+  running.** MJ19's lesson was that `node --check "$f" | head -2` reports on `head`, not on the
+  code. J8 fixed that — every file was checked by exit code — and every file passed, including
+  one deliberately corrupted probe copy. Node 24 treats a `.js` file as CommonJS and, on this
+  build, a top-level `import` makes `--check` return 0 for ANY content that follows. Copy the
+  file to **`.mjs`** and it fails as it should. So the harness lied a second time, in the same
+  place, in a new way — and the thing that caught it was, again, fetching the SERVED bundle and
+  parsing that (MJ19's other half).
+- MJ43 (J8): **a `//` comment inside an `import { … }` destructuring list kills the whole asset
+  bundle, and only in the SERVED file.** Odoo's ES-module → `odoo.define` transform is textual;
+  a comment between the braces makes it emit `require({)`, and the entire bundle then dies with
+  `SyntaxError: Unexpected token ')'`. On the hoot runner that is a red banner and **zero tests
+  executed** — not a failure list, a suite that never started. The source file is perfectly valid
+  JavaScript and passes a real `.mjs` parse; the transform is what cannot read it. Same shape as
+  MJ19 and MJ21: a syntax family your editor colours correctly and the pipeline does not. Put the
+  comment ABOVE the `import`, never inside it — and after any change to an import list, parse the
+  bundle the browser is actually served.

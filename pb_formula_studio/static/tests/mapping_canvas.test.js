@@ -35,6 +35,11 @@ import {
     HEAD,
     LANE_LAST,
     DOCK_RAIL,
+    ANCHOR_GAP,
+    WIRE_GUTTER,
+    combOffsets,
+    ARRIVAL_GAP,
+    ARRIVAL_PAD,
 } from "@pb_formula_studio/js/mapping/mapping_geometry";
 import { ROLES, ROLE_LANE_ORDER, roleIcon }
     from "@pb_formula_studio/js/mapping/mapping_roles";
@@ -2217,4 +2222,154 @@ test("J7 D2 — the transform board answers the same question about its own card
     expect(long.s.title).toBe("OT Night shift weekend hours, second half");
     expect(short.s.classList.contains("is-clipped")).toBe(false);
     expect(short.s.hasAttribute("title")).toBe(false);
+});
+
+// ================================================= JOURNEY J8 — the component
+// lane, the `c:` spec, the arrival comb, and the arrowhead's gutter.
+//
+// Everything here is a pure/DOM fact and translation-free (MJ3): the lane's
+// LABEL is built with a module-scope `_t()` and cannot be stringified in this
+// runner, so what is asserted is ids, order, arithmetic and geometry — which is
+// where the mistakes are invisible on a screenshot anyway.
+
+test("J8 D2 — the gutter is defined by the arrowhead, not by a round number", () => {
+    // The inequality that WAS the defect: a head spans ANCHOR_GAP → ANCHOR_GAP +
+    // HEAD from a card's edge (15px), and the column gave it 14. The sixteenth
+    // pixel is the scrollbar, which paints over the wire layer.
+    expect(WIRE_GUTTER >= ANCHOR_GAP + HEAD).toBe(true);
+    expect(WIRE_GUTTER).toBe(ANCHOR_GAP + HEAD + 3);
+});
+
+test("J8 — the arrival comb spreads N wires down a card and never off it", () => {
+    // one wire is untouched, which is why four other boards get byte-identical
+    // geometry
+    expect(combOffsets(1, 60)).toEqual([0]);
+    expect(combOffsets(0, 60)).toEqual([0]);
+
+    // a few wires get the full gap and stay centred on the card
+    const few = combOffsets(3, 90);
+    expect(few.length).toBe(3);
+    expect(few[1]).toBe(0);
+    expect(few[2] - few[1]).toBe(ARRIVAL_GAP);
+    expect(few[0] + few[2]).toBe(0);
+
+    // twenty into one card: the step SHRINKS so the comb still fits, which is
+    // the property that keeps an endpoint on the card it claims to end on
+    const many = combOffsets(20, 90);
+    expect(many.length).toBe(20);
+    const half = (90 - 2 * ARRIVAL_PAD) / 2;
+    expect(Math.abs(many[0]) <= half + 0.001).toBe(true);
+    expect(Math.abs(many[19]) <= half + 0.001).toBe(true);
+    expect(many[1] - many[0] < ARRIVAL_GAP).toBe(true);
+
+    // a card with no measurable height cannot spread, and must not produce NaN
+    for (const o of combOffsets(5, 0)) { expect(o).toBe(0); }
+});
+
+test("J8 — twenty wires into one card land on it, in order, once", async () => {
+    const wires = Array.from({ length: 20 }, (_, i) => ({
+        id: `c${i}`, kind: "component", leftId: `L${i}`, rightId: "R5",
+        state: "accepted",
+    }));
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: props({ wires }),
+    });
+    await animationFrame();
+    canvas._recompute();
+    const geom = canvas.ui.geom;
+    expect(geom.length).toBe(20);
+
+    const card = document.querySelector('.mc-col.right .mc-item[data-id="R5"]');
+    const rb = document.querySelector(".mapping-canvas").getBoundingClientRect();
+    const cr = card.getBoundingClientRect();
+    const top = cr.top - rb.top, bottom = cr.bottom - rb.top;
+    const ys = geom.map((g) => g.y2);
+    // every arrival is ON the card — the comb is bounded by it
+    for (const y of ys) {
+        expect(y >= top - 0.5 && y <= bottom + 0.5).toBe(true);
+    }
+    // ...and they are distinct, which is the whole point of combing them
+    expect(new Set(ys.map((y) => y.toFixed(2))).size > 1).toBe(true);
+    // the order follows the OTHER end, so the fan does not cross itself
+    const sorted = [...geom].sort((a, b) => a.rawL - b.rawL).map((g) => g.y2);
+    expect(sorted).toEqual([...sorted].sort((a, b) => a - b));
+});
+
+test("J8 — one wire per card is byte-identical to what it always was", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    await animationFrame();
+    canvas._recompute();
+    const rb = document.querySelector(".mapping-canvas").getBoundingClientRect();
+    for (const g of canvas.ui.geom) {
+        const card = document.querySelector(
+            `.mc-col.right .mc-item[data-id="${g.rightId}"]`);
+        if (!card || g.dockR) { continue; }
+        const cr = card.getBoundingClientRect();
+        expect(Math.abs(g.y2 - (cr.top + cr.height / 2 - rb.top)) < 0.51).toBe(true);
+    }
+});
+
+test("J8 — a wire names the cards it claims, so the endpoint harness can run", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props() });
+    await animationFrame();
+    canvas._recompute();
+    await animationFrame();
+    const g = document.querySelector(".mc-w");
+    expect(g).not.toBe(null);
+    expect(g.getAttribute("data-wire")).toBe("w1");
+    expect(g.getAttribute("data-left")).toBe("L0");
+    expect(g.getAttribute("data-right")).toBe("R0");
+    expect(g.hasAttribute("data-dockl")).toBe(true);
+    expect(g.hasAttribute("data-dockr")).toBe(true);
+});
+
+test("J8 — a synthetic destination card renders and can be wired to", async () => {
+    // the lane splice, as the canvas sees it: two cards whose ids are not
+    // `f:model:field`, in their own group, addressable by a drawn wire.
+    const rightItems = [
+        { id: "c:amount", label: "Contract component — amount",
+          sublabel: "a number the pay calculation reads back",
+          group: "Contract components",
+          meta: { kind: "component", component_kind: "amount", lane_order: 5 } },
+        { id: "c:text", label: "Contract component — text",
+          sublabel: "a grade, a shift code, a note",
+          group: "Contract components",
+          meta: { kind: "component", component_kind: "text", lane_order: 5 } },
+        ...items(4, "R"),
+    ];
+    const drawn = [];
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: props({
+            rightItems,
+            wires: [{ id: "cc1", kind: "component", leftId: "L0",
+                      rightId: "c:amount", state: "accepted" }],
+            onDraw: (l, r) => drawn.push([l, r]),
+        }),
+    });
+    await animationFrame();
+    canvas._recompute();
+    expect(document.querySelector('.mc-item[data-id="c:amount"]')).not.toBe(null);
+    expect(document.querySelector('.mc-item[data-id="c:text"]')).not.toBe(null);
+    // the wire is drawn, and it is drawn to the synthetic card
+    expect(canvas.ui.geom.length).toBe(1);
+    expect(canvas.ui.geom[0].rightId).toBe("c:amount");
+    expect(canvas.ui.gone).toBe(0);
+    // the lane header is emitted once for the pair, not once per card
+    const heads = [...document.querySelectorAll(".mc-col.right .mc-group")]
+        .map((e) => e.textContent.trim())
+        .filter((t) => t === "Contract components");
+    expect(heads.length).toBe(1);
+});
+
+test("J8 — `placeInLane` puts a component card before the bank lane", () => {
+    // the client twin of the server's splice; both are ordered by `lane_order`,
+    // which is what makes the group headings tell the truth.
+    const list = [
+        { id: "f:hr.contract:wage", meta: { lane_order: 4 } },
+        { id: "b:acc_number", meta: { lane_order: 6 } },
+        { id: "f:hr.employee:x", meta: { lane_order: 7 } },
+    ];
+    placeInLane(list, { id: "c:amount", meta: { lane_order: 5 } });
+    expect(list.map((i) => i.id)).toEqual([
+        "f:hr.contract:wage", "c:amount", "b:acc_number", "f:hr.employee:x"]);
 });

@@ -25,6 +25,70 @@ export const HEAD = 11;
 export const HEAD_H = 6;
 
 /**
+ * The air between a card's edge and the tip of the arrow that points at it.
+ *
+ * JOURNEY J8 D2 — this used to be a bare `+ 4` / `- 4` in the canvas, and the
+ * number it has to be compared against lives in a stylesheet, so nothing ever
+ * compared them.
+ */
+export const ANCHOR_GAP = 4;
+
+/**
+ * The horizontal padding a column body reserves beside its cards — the band a
+ * wire's arrowhead is drawn INTO.
+ *
+ * JOURNEY J8 D2, and the whole of it is one inequality. An arrowhead pointing
+ * at a left-hand card is a triangle spanning `cardRight + ANCHOR_GAP` to
+ * `cardRight + ANCHOR_GAP + HEAD` — 15px — and `.mc-col-body` used to give it
+ * **14px** of padding. One pixel short, which does not sound like a defect until
+ * you ask what is in the sixteenth pixel: the column's SCROLLBAR, which is part
+ * of `.mc-cols` (`z-index: 2`) and therefore paints OVER `.mc-wires`
+ * (`z-index: 1`). Measured live on abm at 1440 before the fix: the head's
+ * layout box ran 375→386, its painted pixels stopped at 384, and the flat BASE
+ * of the triangle — its widest, most recognisable edge — was the part that was
+ * gone. Not clipped by `.mc-board`; occluded by the column layer.
+ *
+ * So the padding is now a function of the arrowhead rather than a round number
+ * that happened to be close, with 3px of air so that a sub-pixel layout or a
+ * wider platform scrollbar cannot eat it back. `mapping.scss` sets the same
+ * number and a test pins the two together — the previous arrangement was two
+ * independent constants that had to agree and had no way to.
+ */
+export const WIRE_GUTTER = ANCHOR_GAP + HEAD + 3;      // 18
+
+/**
+ * Where several wires arriving at ONE card should land — JOURNEY J8.
+ *
+ * A contract-component card is the destination of every flagged column in the
+ * scheme, and abm has twenty of them today. Twenty curves converging on one
+ * point is a knot: you cannot tell which wire is which, hovering picks whichever
+ * stroke happens to be on top, and the count is unreadable. So the arrival
+ * points are combed down the card's own edge instead.
+ *
+ * Two properties are deliberate:
+ *
+ *   * the comb is BOUNDED BY THE CARD. `step` shrinks so that N points always
+ *     fit between `pad` and `height - pad`, which means an endpoint never leaves
+ *     the card it claims to end on however many wires arrive — the invariant
+ *     MJ30's harness measures, restated for a segment rather than a point;
+ *   * it does nothing at all for `n <= 1`, so every board that has never had a
+ *     pile-up gets byte-identical geometry.
+ *
+ * Returns the offsets from the card's CENTRE, in slot order.
+ */
+export const ARRIVAL_GAP = 9;
+export const ARRIVAL_PAD = 7;
+
+export function combOffsets(n, height, gap = ARRIVAL_GAP, pad = ARRIVAL_PAD) {
+    if (!(n > 1)) { return [0]; }
+    const room = Math.max(0, (height || 0) - 2 * pad);
+    const step = Math.min(gap, room / (n - 1));
+    const out = [];
+    for (let k = 0; k < n; k++) { out.push((k - (n - 1) / 2) * step); }
+    return out;
+}
+
+/**
  * The wire between two points, as SVG.
  *
  * @param {number} sx  source x (the left card's outer edge)

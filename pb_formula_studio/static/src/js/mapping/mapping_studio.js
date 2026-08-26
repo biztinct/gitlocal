@@ -1011,7 +1011,28 @@ export class MappingStudio extends Component {
         // from the same method. The Excel and Employee boards cut different
         // models and are out of this round's scope; they keep today's path
         // rather than being handed a half-built safety net.
-        if (p === "api") { return this._removeWireUndoable(wire.ref); }
+        if (p === "api") {
+            return this._removeWireUndoable("api_mapping_cut", "api_mapping_restore",
+                                            [wire.ref]);
+        }
+        // ------------------------------------------------------------------
+        // JOURNEY J8 — a CONTRACT COMPONENT wire has no mapping row behind it.
+        //
+        // The boolean on the rule is the fact, so "remove" here means DETACH,
+        // and the id in `wire.ref` is deliberately false: handing a rule id to
+        // `employee_mapping_delete` would browse `hr.payslip.import.mapping` and
+        // unlink whatever row happened to carry that number. The `kind` is what
+        // decides, never the shape of the id.
+        //
+        // The detach can be REFUSED — contracts may already carry values under
+        // this code — and the refusal names the door that is open. It is shown,
+        // not swallowed, and there is no force path.
+        // ------------------------------------------------------------------
+        if (wire.kind === "component") {
+            return this._removeWireUndoable("employee_mapping_detach_component",
+                                            "employee_component_restore",
+                                            [wire.componentId]);
+        }
         await this.orm.call(MODEL, p ? `${p}_mapping_delete` : "mapping_delete",
                             [wire.ref]);
         await this.load();
@@ -1037,10 +1058,24 @@ export class MappingStudio extends Component {
      *
      * ONE implementation, deliberately: two copies would drift, and the copy
      * that drifted would be the one on the board nobody was testing that week.
+     *
+     * JOURNEY J8 — and that is why the two adapters are ARGUMENTS rather than a
+     * second copy. A contract component is cut by clearing two booleans on a
+     * rule, not by unlinking a row, and its restore has to put the column ROLE
+     * back as well; the shape ("cut returns a snapshot, undo replays it into an
+     * inverse RPC, the toast IS the window") is identical, so the shape is what
+     * is shared. A refusal from the cut — the detach the contracts block — is
+     * shown here and stops the toast, because there is nothing to undo.
      */
-    async _removeWireUndoable(ref) {
-        if (!ref) { return; }
-        const res = await this.orm.call(MODEL, "api_mapping_cut", [ref]);
+    async _removeWireUndoable(cutMethod, restoreMethod, args) {
+        if (!args || args[0] === undefined || args[0] === null
+            || args[0] === false) { return; }
+        const res = await this.orm.call(MODEL, cutMethod, args);
+        if (res && res.ok === false) {
+            this.notif.add(res.msg || _t("That wire could not be removed."),
+                           { type: "warning" });
+            return;
+        }
         await this.load();
         if (!res || !res.ok || !res.snapshot) { return; }
         const snapshot = res.snapshot;
@@ -1051,7 +1086,7 @@ export class MappingStudio extends Component {
                 name: _t("Undo"),
                 primary: true,
                 onClick: async () => {
-                    await this.orm.call(MODEL, "api_mapping_restore", [snapshot]);
+                    await this.orm.call(MODEL, restoreMethod, [snapshot]);
                     await this.load();
                 },
             }],
@@ -1135,6 +1170,21 @@ export class MappingStudio extends Component {
 
     async _commitDraw(leftId, rightId, resolve) {
         const p = this.prefix;
+        // ------------------------------------------------------------------
+        // JOURNEY J8 — the card must not vanish under the hand that wired it.
+        //
+        // `employee_mapping_make_component('amount')` sets `column_role =
+        // 'payroll'` (CR-A2), and the employee board hides payroll-role cards
+        // until the payroll chip is on. Wire a column to the amount card with
+        // that chip off and the card disappears the instant the wire succeeds —
+        // which reads as "the board ate my column", not as "this now feeds the
+        // calculation". MF15 already reveals the lane for the MENU verb; a wire
+        // is the same act by a different gesture and gets the same reveal, from
+        // the same state flag rather than from a second mechanism.
+        // ------------------------------------------------------------------
+        const revealPayroll = p === "employee" && rightId === "c:amount"
+                              && !this.state.empPayroll;
+        if (revealPayroll) { this.state.empPayroll = true; }
         const args = this._createArgs(leftId, rightId);
         if (resolve && (p === "api" || p === "import")) {
             // `api` takes (cfg, connector, src, rule, endpoint); `import` takes
@@ -1145,8 +1195,19 @@ export class MappingStudio extends Component {
             ? await this.orm.call(MODEL, `${p}_mapping_create`, args)
             : await this.orm.call(MODEL, "mapping_create", [this.state.configId, leftId, rightId]);
         if (r && r.ok === false) {
+            // the reveal was speculative; a refusal must not leave the board in
+            // a state the user did not ask for
+            if (revealPayroll) { this.state.empPayroll = false; }
             this.notif.add(r.msg || _t("Could not connect those two."), { type: "warning" });
             return;
+        }
+        if (r && r.ok && r.msg && p === "employee"
+            && String(rightId || "").startsWith("c:")) {
+            this.notif.add(
+                revealPayroll
+                    ? r.msg + " " + _t("Pay columns are shown so you can see it.")
+                    : r.msg,
+                { type: "success" });
         }
         // SOURCING S6 — switching a component from one source to the other is one
         // deliberate act, and an act that changes what a component reads has to say
@@ -1951,7 +2012,8 @@ export class MappingStudio extends Component {
      * here. J6 D3 — the same helper the API board uses, not a second copy of it.
      */
     async removeTransformWire(ref) {
-        return this._removeWireUndoable(ref);
+        return this._removeWireUndoable("api_mapping_cut", "api_mapping_restore",
+                                        [ref]);
     }
 }
 
