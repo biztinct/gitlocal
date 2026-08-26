@@ -5427,6 +5427,119 @@ class PbFormulaStudio(models.AbstractModel):
             m.unlink()
         return {'ok': True}
 
+    # The business spec of a wire, for J6's undo. Deliberately a LIST rather than
+    # "every stored field": `display_name`, `is_mapped`, `target_column_letter`,
+    # `target_rule_code`, `connector_type` and the transform-error pair are all
+    # DERIVED from the four fields above them, and writing a derived value back is
+    # how a restore quietly disagrees with a recompute. The intersection with
+    # `fields_get` below means a field dropped in a later version simply stops
+    # being carried instead of raising on the restore.
+    _J6_WIRE_SPEC = (
+        'connector_id', 'endpoint_id', 'target_rule_id', 'source_field',
+        'source_field_label', 'source_data_type', 'source_sample_value',
+        'transformation_type', 'transformation_code', 'transformation_value',
+        'transformation_decimals', 'default_value', 'min_value', 'max_value',
+        'notes', 'sequence', 'active_state', 'is_required', 'active',
+    )
+
+    @api.model
+    def _j6_wire_fields(self):
+        """Those of `_J6_WIRE_SPEC` this database can actually be handed back."""
+        info = self.env['hr.integration.field.mapping'].fields_get(
+            list(self._J6_WIRE_SPEC), ['type', 'store', 'readonly'])
+        return [f for f, d in info.items()
+                if d.get('store') and not d.get('readonly')]
+
+    @api.model
+    def api_mapping_snapshot(self, mapping_id):
+        """Everything needed to put this wire back, read-only.
+
+        Includes whether the TARGET's binding is this wire's, because
+        `api_mapping_delete` clears it in that case and an undo that restored the
+        row without the binding would put back two-thirds of a decision.
+        """
+        m = self.env['hr.integration.field.mapping'].browse(
+            self._as_id(mapping_id))
+        if not m.exists():
+            return False
+        spec = {}
+        for f in self._j6_wire_fields():
+            v = m[f]
+            spec[f] = v.id if hasattr(v, 'id') else v
+        rule = m.target_rule_id
+        binding = False
+        if rule and rule.source_binding in ('feed', 'rule') and \
+                (rule.source_binding_key or '').strip() == (m.source_field or '').strip():
+            binding = {'rule_id': rule.id, 'kind': rule.source_binding,
+                       'key': rule.source_binding_key or '',
+                       'origin': rule.source_binding_origin or 'user'}
+        return {'spec': spec, 'binding': binding,
+                'label': m.display_name or m.source_field or ''}
+
+    @api.model
+    def api_mapping_cut(self, mapping_id):
+        """Snapshot, then delete — one round trip, one delete implementation.
+
+        JOURNEY J6 D3. The snapshot is taken SERVER-side and in the same call as
+        the delete so there is no window in which the client holds an id whose row
+        has already changed underneath it. The delete itself is still
+        `api_mapping_delete`: this method adds an undo, it does not add a second
+        way to remove a wire.
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        snap = self.api_mapping_snapshot(mapping_id)
+        res = self.api_mapping_delete(mapping_id)
+        if res.get('ok'):
+            res['snapshot'] = snap
+        return res
+
+    @api.model
+    def api_mapping_restore(self, snapshot):
+        """Put a cut wire back exactly as it was.
+
+        NOT routed through `api_mapping_create`, and the reason is that they are
+        different verbs. `api_mapping_create` DRAWS: it re-derives the label from
+        the source field, discovers a fresh sample, unlinks whatever else occupied
+        either end, honours a conflict resolution and writes a binding. Every one
+        of those is right for a person drawing a wire and wrong for an undo, which
+        must be the delete's inverse and nothing else — the original
+        `source_field_label` ("Overtime 300% hours"), the original `notes` and the
+        original transform settings are precisely what a re-draw would throw away.
+        The id necessarily differs; the ORM cannot mint an old one (J3's
+        precedent).
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        if not snapshot or not snapshot.get('spec'):
+            return {'ok': False, 'msg': _("There is nothing to put back.")}
+        spec = snapshot['spec']
+        FM = self.env['hr.integration.field.mapping']
+        conn = self.env['hr.integration.connector'].browse(
+            self._as_id(spec.get('connector_id')))
+        rule = self.env['hr.formula.rule'].browse(
+            self._as_id(spec.get('target_rule_id')))
+        if not (conn.exists() and rule.exists() and spec.get('source_field')):
+            return {'ok': False, 'msg': self._ec_bad_spec_msg()}
+        # Undo pressed twice, or a re-draw in the meantime: the wire is already
+        # there, and putting a second one back would leave the create path to
+        # tidy up after the undo. Idempotent instead.
+        dup = FM.with_context(active_test=False).search(
+            [('connector_id', '=', conn.id),
+             ('source_field', '=', spec['source_field']),
+             ('target_rule_id', '=', rule.id)], limit=1)
+        if dup:
+            return {'ok': True, 'id': dup.id, 'already': True}
+        allowed = self._j6_wire_fields()
+        new = FM.create({f: v for f, v in spec.items() if f in allowed})
+        binding = snapshot.get('binding')
+        if binding:
+            self.env['hr.formula.rule'].browse(
+                self._as_id(binding.get('rule_id'))).set_source_binding(
+                    binding.get('kind'), binding.get('key'),
+                    origin=binding.get('origin') or 'user')
+        return {'ok': True, 'id': new.id}
+
     # ------------------------------------------------------------------
     # JOURNEY J4 — the Transformations board.
     #

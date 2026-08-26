@@ -26,7 +26,8 @@
         <div t-if="ui.armed" t-attf-class="tfb-arm {{ ui.sealedSay ? 'no' : '' }}">
           <t t-out="ic(ui.sealedSay ? 'alert' : 'zap', 13)"/>
           <span t-if="ui.sealedSay" t-esc="ui.sealedSay"/>
-          <span t-else="">Pick the component this output should feed.</span>
+          <!-- the canvas' sentence, verbatim: one gesture, one wording (J6 D4) -->
+          <span t-else="">Click a target component to connect · <b>Esc</b> to cancel</span>
           <button class="tfb-arm__x" t-on-click="() => this.cancelArm()">Cancel</button>
         </div>
       </div>
@@ -34,18 +35,27 @@
       <!-- THE BOARD. Clips, exactly like `.mc-board`: a wire may end on a lane's
            edge, it may never paint over the bar above it. The popover is a
            sibling, outside the clip, because it is allowed to overhang (MJ7). -->
-      <div class="tfb-board">
+      <div class="tfb-board" t-ref="board">
 
         <svg class="tfb-wires" preserveAspectRatio="none">
           <!-- read edges: field → rule. Dashed, thin, no hit area, no verbs.
                They are a DERIVED fact and there is nothing here to click. -->
           <g class="tfb-reads">
             <t t-foreach="ui.reads" t-as="g" t-key="g.id">
+              <!-- J6 D2 — a read edge gains a hit area for ONE gesture:
+                   double-click to centre both of its ends. It stays read-only
+                   (no selection, no verb, `cursor: default`) because there is
+                   still no row here a gesture could write; bringing two cards
+                   into view is navigation, not editing. -->
+              <path class="tfb-hit read" t-att-d="g.d"
+                    t-on-dblclick="(ev) => this.centreBoth(g, ev)">
+                <title t-esc="readsDblHint"/>
+              </path>
               <path t-att-d="g.d"
-                    t-attf-class="tfb-r {{ ui.menu and ui.menu.ruleId === g.ruleId ? 'lit' : '' }}">
+                    t-attf-class="tfb-r {{ g.dockR ? 'dockend' : '' }} {{ ui.menu and ui.menu.ruleId === g.ruleId ? 'lit' : '' }}">
                 <title t-esc="readsHint"/>
               </path>
-              <polygon class="tfb-rh" t-att-points="g.head"/>
+              <polygon t-if="!g.dockR" class="tfb-rh" t-att-points="g.head"/>
             </t>
           </g>
           <!-- feed edges: rule → component. Real rows; these have verbs. -->
@@ -54,12 +64,20 @@
                  wire by index arithmetic over the payload, which is a second
                  opinion about the render order and stops being true the first
                  time a filter suppresses one. -->
+            <!-- `dockend` (J6 D1): this wire's target is scrolled out of the
+                 lane, so it is parked on the band edge. An ARROWHEAD there says
+                 "it ends on this card" about whichever card the edge happens to
+                 fall next to — which is how the owner read solid wires as
+                 feeding "Actual Parking". A parked end loses its head and fades:
+                 it now says "runs off this way", and the dock chip beside it
+                 says how many. -->
             <g t-att-data-wire="g.id" t-att-data-ref="g.ref"
-               t-attf-class="tfb-w {{ g.bind ? 'bind' : '' }} {{ g.severed ? 'sev' : '' }} {{ ui.selWire === g.id ? 'sel' : '' }} {{ ui.hoverWire === g.id ? 'hot' : '' }}">
+               t-attf-class="tfb-w {{ g.bind ? 'bind' : '' }} {{ g.severed ? 'sev' : '' }} {{ g.dockR ? 'dockend' : '' }} {{ ui.selWire === g.id ? 'sel' : '' }} {{ ui.hoverWire === g.id ? 'hot' : '' }}">
               <path class="tfb-hit" t-att-d="g.d"
                     t-on-mouseenter="() => this.enterWire(g.id)"
                     t-on-mouseleave="() => this.leaveWire()"
-                    t-on-click="(ev) => this.selectWire(g, ev)">
+                    t-on-click="(ev) => this.selectWire(g, ev)"
+                    t-on-dblclick="(ev) => this.centreBoth(g, ev)">
                 <title t-esc="wireTitle(g)"/>
               </path>
               <path class="tfb-wire" t-att-d="g.d"/>
@@ -68,15 +86,30 @@
           </t>
         </svg>
 
-        <!-- the wire's verb, placed on the wire it belongs to -->
-        <div t-if="selectedWire" class="tfb-wireact"
-             t-attf-style="left:{{ selectedWire.hx }}px; top:{{ selectedWire.hy }}px;">
+        <!-- The wire's verb — beside the wire, never ON it (J6 D3).
+             It used to be placed at the hub point, i.e. the middle of the
+             stroke the reader had just clicked, so the second click of a
+             double-click pressed Remove. `verbPos` lifts it clear and flips it
+             below when the top of the board is in the way. The double-click
+             handler here is a stop, not a verb: a double-click that begins on
+             the wire and drifts onto the pill must still not delete. -->
+        <div t-if="verbPos" t-attf-class="tfb-wireact {{ verbPos.flip ? 'below' : '' }}"
+             t-attf-style="left:{{ verbPos.x }}px; top:{{ verbPos.y }}px;"
+             t-on-dblclick.stop.prevent="() => {}">
           <span t-if="selectedWire.bind" class="tfb-wireact__say">Set on the component</span>
           <button t-elif="props.canEdit" class="tfb-wireact__x" type="button"
                   title="Remove this wire"
                   t-on-click="(ev) => this.removeWire(selectedWire, ev)">
             <t t-out="ic('x', 12)"/> Remove
           </button>
+        </div>
+
+        <!-- J6 D2 — the reveal bar, the canvas' sentence and the canvas' verb. -->
+        <div t-if="ui.reveal" class="tfb-reveal">
+          <span class="tfb-reveal__ic" t-out="ic('eyeOff', 14)"/>
+          <span class="tfb-reveal__t" t-esc="revealText"/>
+          <button class="tfb-reveal__go" t-on-click="revealBoth">Clear the filter and show me</button>
+          <button class="tfb-reveal__x" title="Dismiss" t-on-click="dismissReveal" t-out="ic('x', 13)"/>
         </div>
 
         <!-- ============================ LANE 1 — the fields the rules read -->
@@ -138,14 +171,28 @@
                 </div>
                 <div t-if="r.summary" class="tfb-item-s" t-esc="r.summary"/>
                 <div t-if="r.error" class="tfb-item-err" t-att-title="r.error">Last run reported a problem</div>
-                <div class="tfb-item-out">
+                <!-- J6 D4 — the draw affordance, said out loud.
+                     This was a 22px icon-only button carrying the whole write
+                     gesture of the board, on a card whose entire body opens the
+                     Rule Composer. It worked; nobody could find it, and an
+                     affordance a user cannot discover does not exist (MF26). It
+                     is now the output ROW itself: the key, the sentence and the
+                     glyph in one labelled button. `armOutput` stops the event,
+                     so arming never opens the composer — and the card body
+                     still does, which is the other half of D4. -->
+                <button t-if="props.canEdit and r.key" type="button"
+                        t-attf-class="tfb-out port {{ isArmed(r.id) ? 'on' : '' }}"
+                        t-att-title="armHint" t-att-aria-pressed="isArmed(r.id)"
+                        t-on-click="(ev) => this.armOutput(r, ev)">
                   <span class="tfb-out-k" t-esc="r.key"/>
-                  <button t-if="props.canEdit and r.key" type="button"
-                          t-attf-class="tfb-out-d {{ isArmed(r.id) ? 'on' : '' }}"
-                          title="Wire this output to a component"
-                          t-on-click="(ev) => this.armOutput(r, ev)">
-                    <t t-out="ic('gitMerge', 12)"/>
-                  </button>
+                  <span class="tfb-out-lbl">
+                    <t t-if="isArmed(r.id)">Now click a component…</t>
+                    <t t-else="">Wire this output to a component…</t>
+                  </span>
+                  <t t-out="ic('gitMerge', 13)"/>
+                </button>
+                <div t-else="" class="tfb-item-out">
+                  <span class="tfb-out-k" t-esc="r.key"/>
                 </div>
                 <button t-if="props.canEdit" type="button"
                         aria-haspopup="menu"
@@ -176,8 +223,15 @@
                    on the API board: shown rather than filtered out (so a reader
                    stops wondering where it went), and refusing the wire with the
                    adapter's own sentence rather than in silence. -->
+              <!-- J6 D4 — the keyboard half of the draw gesture. The card is
+                   reachable by Tab only while an output is ARMED: it is a
+                   target for exactly as long as there is something to land, and
+                   99 permanent tab stops through a catalogue nobody is aiming
+                   at would cost every other keyboard user the column. -->
               <div data-lane="right" t-att-data-id="it.id"
+                   t-att-tabindex="ui.armed and !isSealed(it) ? 0 : null"
                    t-attf-class="tfb-item comp {{ isSealed(it) ? 'sealed' : '' }} {{ ui.focus.lane === 'right' and ui.focus.id === it.id ? 'focus' : '' }}"
+                   t-on-keydown="(ev) => this.keyComponent(it, ev)"
                    t-on-click="(ev) => this.clickComponent(it, ev)">
                 <span class="tfb-plug left"/>
                 <div class="tfb-item-l">
@@ -204,7 +258,15 @@
              says so, on the edge it went out by (MAPFIX F1 / the kernel's
              `aggregateDocks`). -->
         <t t-foreach="ui.docks" t-as="dk" t-key="dk.key">
-          <div t-attf-class="tfb-dock {{ dk.side }} {{ dk.dir &lt; 0 ? 'up' : 'down' }} {{ dk.filtered ? 'filt' : '' }}">
+          <!-- J6 D1 — placed against the lane BODIES' band (`dockStyle`), not
+               pinned to the top of the board, which is the lane header row: an
+               "N hidden by the search above" chip used to print straight over
+               the word TRANSFORMATIONS. -->
+          <div t-attf-class="tfb-dock {{ dk.side }} {{ dk.dir &lt; 0 ? 'up' : 'down' }} {{ dk.filtered ? 'filt' : '' }}"
+               t-attf-style="{{ dockStyle(dk) }}"
+               t-att-role="dk.filtered ? 'button' : null"
+               t-att-title="dk.filtered ? clearHint : null"
+               t-on-click="() => this.clickDock(dk)">
             <t t-out="ic(dk.dir &lt; 0 ? 'arrowUp' : 'arrowDown', 11)"/>
             <t t-esc="dockLabel(dk)"/>
           </div>

@@ -1439,9 +1439,14 @@ test("J3 — the direction note is read off meta, and only off meta", () => {
 function board(data, q = "") {
     const b = Object.create(TransformFlowBoard.prototype);
     b.ui = { q, armed: null, sealedSay: "", menu: null, focus: { lane: "", id: null },
-             selWire: null, hoverWire: null, geom: [], reads: [], docks: [] };
+             selWire: null, hoverWire: null, geom: [], reads: [], docks: [],
+             // J6: `reveal` and `band` join for MJ4's reason — `centreBoth` and
+             // `verbPos` compose them, and a hand-rolled `this` has to carry
+             // everything the method touches, not everything the test is about.
+             reveal: null, band: null };
     b.props = { data, canEdit: true };
     b.qRef = { el: null };
+    b.bodyRefs = { left: { el: null }, mid: { el: null }, right: { el: null } };
     b._schedule = () => {};          // no DOM, so no rAF to schedule
     return b;
 }
@@ -1881,4 +1886,191 @@ test("J5 — an edge that jumps a lane is measured as a span, not as a break", (
     expect(Math.abs(idx.scheme - idx.feeds)).toBe(2);      // a feed to the scheme
     expect(Math.abs(idx.scheme - idx.systems)).toBe(3);    // records to the scheme
     expect(Math.abs(idx.transforms - idx.scheme)).toBe(1); // a rule is adjacent
+});
+
+// =====================================================================
+// JOURNEY J6 — the four defects reported against the live J4 board.
+//
+// The load-bearing one is D3: a double-click on a live wire DELETED it on abm
+// (the `OTHRS300` row, repaired as D0). So the first assertion here is the
+// negative one — no gesture on a wire reaches the delete prop — and it is
+// written against the PROP rather than against an RPC, because the board has no
+// `orm` and never did: `onDelete` is the only way out of this component towards
+// a deletion, which makes it the exact seam to guard.
+//
+// The host's undo helper is NOT tested here, deliberately. It lives in
+// `mapping_studio.js`, and importing that into this bundle is precisely what
+// MJ2 spent a phase diagnosing — it drags `hub_nav` and the import kit in and
+// makes this suite a measurement of the host's asset graph. Its contract is
+// asserted from Python instead (`TestJourneyJ6Defects`), against the source and
+// against a real round trip on the ORM, which is a stronger oracle anyway.
+// =====================================================================
+
+test("J6 D3 — a double-click on a wire never reaches the delete prop", () => {
+    const b = board(FLOW);
+    let deleted = 0;
+    b.props.onDelete = () => { deleted++; };
+    b.ui.geom = [{ id: "w36", ref: 36, ruleId: 1, rightId: 606, kind: "feed",
+                   hx: 200, hy: 300 }];
+    b._centreLane = () => true;
+    // ten rapid double-clicks, the numbered case
+    for (let n = 0; n < 10; n++) {
+        b.centreBoth(b.ui.geom[0], { stopPropagation() {}, preventDefault() {} });
+    }
+    expect(deleted).toBe(0);
+    expect(b.ui.selWire).toBe("w36");
+});
+
+test("J6 D3 — only the explicit verb deletes, and a binding still refuses", () => {
+    const b = board(FLOW);
+    const cut = [];
+    b.props.onDelete = (ref) => { cut.push(ref); };
+    b.removeWire({ id: "w36", ref: 36, bind: false }, { stopPropagation() {} });
+    expect(cut).toEqual([36]);
+    // a `('rule', key)` binding is a field on the component, not a row
+    b.removeWire({ id: "wb", ref: 0, bind: true }, { stopPropagation() {} });
+    expect(cut).toEqual([36]);
+});
+
+test("J6 D3 — the verb is placed clear of the wire it belongs to", () => {
+    const b = board(FLOW);
+    b.ui.geom = [{ id: "w36", ref: 36, kind: "feed", hx: 210, hy: 400 }];
+    b.ui.selWire = "w36";
+    b.ui.band = { top: 60, bot: 900 };
+    const p = b.verbPos;
+    expect(p.x).toBe(210);
+    // above the hub, by more than the wire's own 8px hit radius
+    expect(p.y < 400 - 8).toBe(true);
+    expect(p.flip).toBe(false);
+});
+
+test("J6 D3 — the verb flips rather than leaving through the top of the board", () => {
+    const b = board(FLOW);
+    b.ui.geom = [{ id: "w36", ref: 36, kind: "feed", hx: 210, hy: 70 }];
+    b.ui.selWire = "w36";
+    b.ui.band = { top: 60, bot: 900 };
+    const p = b.verbPos;
+    expect(p.flip).toBe(true);
+    expect(p.y > 70).toBe(true);      // below the wire, still off it
+});
+
+test("J6 D2 — double-click centres BOTH ends of either wire family", () => {
+    const b = board(FLOW);
+    const centred = [];
+    b._centreLane = (lane, id) => { centred.push(`${lane}:${id}`); return true; };
+    b.ui.geom = [{ id: "w36", kind: "feed", ruleId: 1, rightId: 606, hx: 1, hy: 1 }];
+    b.centreBoth(b.ui.geom[0], null);
+    expect(centred).toEqual(["mid:1", "right:606"]);
+    centred.length = 0;
+    b.ui.reads = [{ id: "rd1", kind: "read", leftId: "f:OT_Type", ruleId: 1 }];
+    b.centreBoth(b.ui.reads[0], null);
+    expect(centred).toEqual(["left:f:OT_Type", "mid:1"]);
+    expect(b.ui.reveal).toBe(null);
+});
+
+test("J6 D2 — an end the search hides raises the reveal bar instead of a no-op", () => {
+    const b = board(FLOW, "OTHRS150");
+    b._centreLane = (lane) => lane !== "right";     // the target is filtered away
+    b.ui.geom = [{ id: "w36", kind: "feed", ruleId: 1, rightId: 606, hx: 1, hy: 1 }];
+    b.centreBoth(b.ui.geom[0], null);
+    expect(b.ui.reveal.sides).toEqual(["right"]);
+    expect(b.ui.reveal.id).toBe("w36");
+    // and the reachable end was still centred — never a silent no-op
+    b.dismissReveal();
+    expect(b.ui.reveal).toBe(null);
+});
+
+test("J6 D2 — selecting a read edge is not a thing; centring it is", () => {
+    const b = board(FLOW);
+    b._centreLane = () => true;
+    b.ui.reads = [{ id: "rd1", kind: "read", leftId: "f:OT_Type", ruleId: 1 }];
+    b.centreBoth(b.ui.reads[0], null);
+    expect(b.ui.selWire).toBe(null);      // a read edge has no row to select
+});
+
+test("J6 D1 — a dock chip sits inside the lane band, not on the header", () => {
+    const b = board(FLOW);
+    b.ui.band = { top: 64, bot: 880 };
+    expect(b.dockStyle({ dir: -1 })).toBe("top:64px;");
+    expect(b.dockStyle({ dir: 1 })).toBe("top:880px;");
+    // before the first measurement it says nothing and CSS decides
+    b.ui.band = null;
+    expect(b.dockStyle({ dir: -1 })).toBe("");
+});
+
+test("J6 D1 — the two dock chips sit over different lane gaps and cannot meet", () => {
+    // `left: 34%` and `right: 34%` are two points that MEET as the board
+    // narrows; at 1024 the pair overlapped by 32px. The gaps cannot.
+    const b = board(FLOW);
+    b.ui.band = { top: 64, bot: 880, gapL: 330, gapR: 700 };
+    expect(b.dockStyle({ dir: -1, side: "left" })).toBe("top:64px;left:330px;");
+    expect(b.dockStyle({ dir: -1, side: "right" })).toBe("top:64px;left:700px;");
+    expect(b.dockStyle({ dir: 1, side: "right" })).toBe("top:880px;left:700px;");
+});
+
+test("J6 D1 — a chip that counts what the search hid is a door; a scrolled one is not", () => {
+    const b = board(FLOW, "OTHRS150");
+    let cleared = 0;
+    b.qRef.el = { value: "OTHRS150" };
+    b.clearSearch = () => { cleared++; };
+    b.clickDock({ filtered: 3, count: 3, dir: -1 });
+    expect(cleared).toBe(1);
+    b.clickDock({ filtered: 0, count: 5, dir: 1 });
+    expect(cleared).toBe(1);
+});
+
+test("J6 D4 — Enter lands an armed output, and does nothing when nothing is armed", () => {
+    const b = board(FLOW);
+    const drawn = [];
+    b.props.onDraw = (key, id) => { drawn.push([key, id]); };
+    const ev = { key: "Enter", preventDefault() {}, stopPropagation() {} };
+    b.keyComponent({ id: 606, label: "OT 1.5 hours" }, ev);
+    expect(drawn.length).toBe(0);           // nothing armed: nothing happens
+    b.ui.armed = 1;
+    b.keyComponent({ id: 606, label: "OT 1.5 hours" }, ev);
+    expect(drawn).toEqual([["OTHRS150", 606]]);
+    expect(b.ui.armed).toBe(null);          // the arm is spent
+});
+
+test("J6 D4 — a key that is not Enter or Space is not a draw gesture", () => {
+    const b = board(FLOW);
+    let drawn = 0;
+    b.props.onDraw = () => { drawn++; };
+    b.ui.armed = 1;
+    b.keyComponent({ id: 606 }, { key: "a", preventDefault() {}, stopPropagation() {} });
+    expect(drawn).toBe(0);
+    expect(b.ui.armed).toBe(1);
+});
+
+test("J6 D4 — arming a rule's output does not open the composer", () => {
+    const b = board(FLOW);
+    let opened = 0;
+    b.props.onOpenRule = () => { opened++; };
+    let stopped = 0;
+    b.armOutput(FLOW.rules[0], { stopPropagation: () => { stopped++; } });
+    expect(opened).toBe(0);
+    expect(stopped).toBe(1);
+    expect(b.ui.armed).toBe(1);
+    // and clicking it again disarms rather than arming a second time
+    b.armOutput(FLOW.rules[0], { stopPropagation() {} });
+    expect(b.ui.armed).toBe(null);
+});
+
+test("J6 D4 — the card body still opens the composer", () => {
+    const b = board(FLOW);
+    const opened = [];
+    b.props.onOpenRule = (id) => { opened.push(id); };
+    b.clickRule(FLOW.rules[0], { stopPropagation() {} });
+    expect(opened).toEqual([1]);
+});
+
+test("J6 — Escape drops the reveal bar before it disarms", () => {
+    const b = board(FLOW);
+    b.ui.reveal = { id: "w36", sides: ["right"] };
+    b.ui.armed = 1;
+    b.onKeydown({ key: "Escape", target: { tagName: "DIV" } });
+    expect(b.ui.reveal).toBe(null);
+    expect(b.ui.armed).toBe(1);             // one Escape, one rung
+    b.onKeydown({ key: "Escape", target: { tagName: "DIV" } });
+    expect(b.ui.armed).toBe(null);
 });

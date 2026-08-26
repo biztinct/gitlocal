@@ -17,3 +17,6 @@ from . import test_journey_transformations
 
 # JOURNEY J5 — the Journey view: five lanes, one read, no writes.
 from . import test_journey_view
+
+# JOURNEY J6 — the four defects reported against the live Transformations board.
+from . import test_journey_j6_defects

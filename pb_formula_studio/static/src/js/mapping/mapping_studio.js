@@ -79,6 +79,17 @@ import { RuleComposer } from "@pb_integrations/js/rule_composer";
 const MODEL = "pb.formula.studio";
 
 /**
+ * How long a cut wire can be put back — JOURNEY J6 D3.
+ *
+ * The toast IS the undo window, so this number is the whole policy. The house
+ * default is 4000ms, which is enough time to READ "Wire removed" and not enough
+ * to decide you did not mean it and move a mouse there; 10s is the pause a
+ * person actually takes before "…wait, no". Deliberately not `sticky`: a safety
+ * net that never expires is an undo system, and this is not one.
+ */
+const UNDO_MS = 10000;
+
+/**
  * The five adapters, in plain language.
  *
  * The tab labels they replace were the adapter names — "API fields", "Cycle
@@ -995,9 +1006,56 @@ export class MappingStudio extends Component {
 
     async remove(wire) {
         const p = this.prefix;
+        // JOURNEY J6 D3 — the API board and the Transformations board cut the
+        // SAME model (`prefix` maps both to `api`), so they get the same undo,
+        // from the same method. The Excel and Employee boards cut different
+        // models and are out of this round's scope; they keep today's path
+        // rather than being handed a half-built safety net.
+        if (p === "api") { return this._removeWireUndoable(wire.ref); }
         await this.orm.call(MODEL, p ? `${p}_mapping_delete` : "mapping_delete",
                             [wire.ref]);
         await this.load();
+    }
+
+    /**
+     * Cut a wire, and give the reader one chance to put it back.
+     *
+     * JOURNEY J6 D3, and the reason it exists is D0: the owner double-clicked a
+     * live wire, the board deleted `OTHRS300` → "OT 3 Hours", and there was no
+     * way back from the screen it happened on. D3 removes the accident (a
+     * double-click is not destructive any more, and the Remove verb is off the
+     * wire's click path); this is the second line of defence, for the delete
+     * that was deliberate and wrong.
+     *
+     * **The undo window IS the toast.** No queue, no history stack, no
+     * "restore last deleted" hiding in a menu — those are an undo SYSTEM, which
+     * would need to answer what happens when the row is re-drawn, re-cut and
+     * re-drawn while three tabs are open. This is a safety net: it catches the
+     * mistake you have just made, while you are still looking at it, and then it
+     * is gone. `api_mapping_restore` is idempotent, so a double-pressed Undo puts
+     * back one wire.
+     *
+     * ONE implementation, deliberately: two copies would drift, and the copy
+     * that drifted would be the one on the board nobody was testing that week.
+     */
+    async _removeWireUndoable(ref) {
+        if (!ref) { return; }
+        const res = await this.orm.call(MODEL, "api_mapping_cut", [ref]);
+        await this.load();
+        if (!res || !res.ok || !res.snapshot) { return; }
+        const snapshot = res.snapshot;
+        this.notif.add(_t("Wire removed"), {
+            type: "warning",
+            autocloseDelay: UNDO_MS,
+            buttons: [{
+                name: _t("Undo"),
+                primary: true,
+                onClick: async () => {
+                    await this.orm.call(MODEL, "api_mapping_restore", [snapshot]);
+                    await this.load();
+                },
+            }],
+        });
     }
 
     /** The create signature differs per adapter; this is the one place it does. */
@@ -1888,11 +1946,12 @@ export class MappingStudio extends Component {
         await this.load();
     }
 
-    /** A rule → component edge, cut. `ref` is the mapping id; bindings never get here. */
+    /**
+     * A rule → component edge, cut. `ref` is the mapping id; bindings never get
+     * here. J6 D3 — the same helper the API board uses, not a second copy of it.
+     */
     async removeTransformWire(ref) {
-        if (!ref) { return; }
-        await this.orm.call(MODEL, "api_mapping_delete", [ref]);
-        await this.load();
+        return this._removeWireUndoable(ref);
     }
 }
 
