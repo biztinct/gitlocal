@@ -2,6 +2,9 @@
 
 **STATUS: COMPLETE — J1–J5 delivered and live on abm · acme · payobook · payobook_template
 (2026-08-26). The Journey is the Mapping cockpit's landing tab and its cold-start default.**
+**Defect round J6 (2026-08-26): four defects the owner reported against the live J4
+Transformations board — one of which destroyed a live wire — repaired, fixed and live on all
+four. The programme stays COMPLETE; J6 is a defect round, not a sixth scope.**
 
 Follow-on programme to SOURCING (see `docs/handovers/SOURCING_LEDGER.md` + `SOURCING_CLOSEOUT.md`)
 and MAPFIX (`docs/handovers/MAPFIX_LEDGER.md`, which itself binds COLROLES CR1–CR33). **All standing
@@ -366,6 +369,89 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   **still lacks the Formula Engine groups**, which is why acme's Journey was
   proven by payload rather than on screen.
 
+- **J6 — DONE, live on abm · acme · payobook · payobook_template (2026-08-26).**
+  → `JOURNEY_PHASE_J6_HANDOVER.md`.
+  Version: pb_formula_studio **19.0.1.149.0** (`pb_hr_payroll_formula`, `pb_integrations`,
+  `biz_theme` untouched; `om_hr_payroll` untouched — CR1).
+  **A defect round that began by putting a row back.** The owner double-clicked the
+  `OTHRS300` wire on the live board and it was deleted: `hr.integration.field.mapping`
+  **39**, "Overtime 300% hours → OT 3 Hours". D0 recreated it through the ORM as
+  **8551** with its original business fields, recovered from
+  `tools/abm_seed_integrations.py:113-115` — the seed that minted it — so the label
+  reads "Overtime 300% hours" and the notes still cite
+  `hr_zoho_staging.py:522-530`, rather than the `Othrs300` a redraw would have
+  produced. Every computed field landed on its sibling's pattern unaided
+  (`BA`, `OT3HOURS`, decimals 2, sequence 10). **No binding was restored, deliberately:**
+  abm has ZERO non-empty `source_binding`s (J5's recorded state), so component 609 had
+  none to lose and writing one would have invented a decision nobody made.
+  **The 19-row scare, and what settled it.** The table read **40** rows against J5's
+  recorded **59** — nineteen missing, not one. The log named all of them:
+  `odoo.models.unlink` shows User #2 deleting ids 109-126 one at a time between
+  23:53 and 23:56 and then archiving connector 1 ("Zoho People") at 23:59:50 — the
+  owner tidying a legacy connection on purpose — and then, separately, **id 39 at
+  00:03:32**, the last deletion on the table. 59 − 18 − 1 = 40 reconciles exactly.
+  Only the accident was repaired; the housekeeping was left alone. (MJ35.)
+  **D1's root cause was one number: 49.75.** The board measured its geometry against
+  `.tfb` — the whole tab, search bar included — and painted it into `.tfb-wires`,
+  which is `inset: 0` of `.tfb-board`, one search bar lower. Every wire was drawn
+  exactly the bar's height too low, measured live on abm at **49.75px**. Both owner
+  screenshots are that one fact: a wire whose target is on screen misses its port by
+  50px (sloppy, not obviously broken), and a wire whose target is scrolled away is
+  clamped to a band that is shifted with it, so the "edge" it parks on is 49.75px
+  INSIDE the lane and lands on whatever card sits there — which is how solid wires
+  came to appear to feed "Actual Parking" and "Actual Taxi allowance", two sealed
+  Calculated components no rule feeds. Proven before the fix (wires w41/w42, the two
+  unclamped ones, measured `+49.8`) and after (**maxErr 0** at 1440 and 1024).
+  `.tfb-board` is now the origin for the wires, the dock chips and the wire verb; the
+  MENU still measures against the root, because it is a sibling outside the clip.
+  A parked end also lost its **arrowhead** (`dockend`): an arrowhead is the symbol for
+  "it ends here", and the honest reading of a clamped wire is "it runs off this way,
+  and the chip beside it says how many".
+  **D2** double-click centres both ends of either wire family, reusing the canvas'
+  sentence ("Clear the filter and show me") rather than a second reveal mechanism;
+  read edges gained a hit area for that ONE gesture and stayed uneditable
+  (`cursor: default`, no selection, no verb).
+  **D3** double-click is never destructive, and the mechanism was geometric: the
+  Remove pill rendered at the hub point — the Bézier MIDPOINT — so selecting a wire
+  put a delete button under the cursor that had just selected it, and the second click
+  of a double-click pressed it. `VERB_DY = 34` lifts it clear (measured live: **19px**
+  above the click point, with the wire's own hit path still the element under that
+  point), flipping below when the top of the board is in the way. Every delete on the
+  Transformations AND the `System fields → Scheme` boards now goes through ONE helper,
+  `MappingStudio._removeWireUndoable`, and raises a **"Wire removed — Undo"** toast
+  whose lifetime IS the undo window (`UNDO_MS = 10000`, not sticky — a safety net,
+  not an undo system).
+  **The undo is the delete's inverse, not a second draw.** `api_mapping_restore` does
+  NOT route through `api_mapping_create`, because a create DRAWS: it re-derives the
+  label, discovers a fresh sample, unlinks rivals and writes a binding. Proven live on
+  the API board — cutting `Employeestatus` (id 19) and undoing gave back a row whose
+  `source_field_label` is still **"Employment status"**; a redraw would have written
+  "Employeestatus". The binding is restored with its ORIGIN intact
+  (`rule|OTHRS150|board`, verified live).
+  **D4 was discoverability, not a regression** — the arming path worked the whole
+  time. It was a 22px icon-only button carrying the board's only write gesture, on a
+  card whose entire body opens the Rule Composer, and `armOutput` already stopped the
+  event. The output ROW is now the button: key, sentence and glyph, always visible,
+  "Wire this output to a component…". Mouse-only creation verified end to end on the
+  live board (armed banner = the canvas' sentence, 99 targets lit, composer stayed
+  shut, wire written), plus a keyboard path (`keyComponent`) whose targets are
+  tabbable only while something is armed.
+  Tests: Python **420 on abm, 2 failed + 1 error — all three PRE-EXISTING and none
+  J6's** (baseline taken on the machine first: **373 with the same three**,
+  `-u pb_hr_payroll_formula,pb_formula_studio,pb_integrations`,
+  `--test-tags /pb_hr_payroll_formula,/pb_formula_studio,/pb_integrations`). +47 new
+  (`TestJourneyJ6Defects`). hoot **113**, 0 failed (baseline 98 + 15 J6).
+  14/14 numbered cases pass. **0 bounding-box overlaps** at 1440 and 1024 over 144
+  same-layer pairs each, in the filtered-with-chips state the sweep had never
+  covered — which is where it caught a defect of its own (MJ33).
+  **The MF37 diff is EMPTY against the post-repair state**, with the ids restored
+  (J4's precedent): `hr_integration_field_mapping` 41 rows,
+  `478c051b85e20e4d0e1c832376d3e0ed`; `hr_api_transformation_rule` 8,
+  `e0b1b917e424db79a66f2a731813232d`; `hr_formula_rule` config 14 99 rows, **0**
+  non-empty bindings, `a922a60cab34e716d37cb7ad4ccdc427`. Row 37 was rebuilt column
+  for column against the dump taken before any probe. `action_process` was never
+  called; no live API pull was made.
+
 ## Gotchas discovered (append per phase, MJ-numbered)
 
 - MJ1 (J1): **`groupFilter` filters the LEFT column only, and always did.** The handover's
@@ -713,3 +799,77 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   limit visible — REQUIRED covering the case where the limit has never been set.
   **A spec written against the code can still be silent about the state the data is
   actually in; render the real database before deciding a case is unpassable.**
+
+- MJ30 (J6): **the wires were measured in one element and painted in another, and every
+  automated check this codebase owns is structurally blind to it.** `_recompute` took its
+  origin from `.tfb` (the tab) while `.tfb-wires` is `inset: 0` of `.tfb-board` (the tab
+  minus its search bar), so every wire was drawn **49.75px** too low — the bar's exact
+  height. It survived J4's whole validation, and the reason is worth more than the bug:
+  **MJ12 taught the bounding-box sweep to exclude SVG nodes**, because Lucide `<path>`
+  siblings overlapping each other invented five defects. That exclusion is correct and it
+  means the sweep has never once measured a wire. Screenshots did not catch it either,
+  because 50px on a dense board reads as loose drawing rather than as breakage. What
+  finally caught it was asking a question no existing check asks: **how far is this wire's
+  endpoint from the port it claims to end on** — 0px is the only right answer, and it is
+  cheap to assert. The compounding half is nastier: `clampY`'s band is measured in the same
+  wrong space, so a scrolled-away target parks the wire 49.75px INSIDE the lane, where it
+  lands on a real card and reads as a termination. The owner reported it as "wires anchor to
+  the wrong cards"; it was one offset, twice. **When a component computes coordinates for a
+  child it does not own, the origin is a contract — assert that the measured element IS the
+  positioning ancestor.**
+- MJ31 (J6): **the delete button was rendered at the midpoint of the thing you click to
+  select, which turns a double-click into a delete — and no test that mounts nothing can see
+  it.** `.tfb-wireact` was placed at `(hx, hy)`, the Bézier midpoint, i.e. dead centre of the
+  wire's own stroke. Click one selects the wire; the pill materialises under the cursor;
+  click two of a double-click presses **Remove**. That is how the owner destroyed a live
+  mapping on a production database, and every unit test, every RPC probe and every source
+  grep passes while it is true: the handler is correct, the RPC is correct, the affordance is
+  labelled and titled. **The defect is a coincidence of coordinates between two elements that
+  never reference each other.** The fix is arithmetic (`VERB_DY`, with a flip when the clip
+  would eat the pill) and the test is the one the defect suggests: assert the verb's box does
+  not contain the point that selected it, and that `elementFromPoint` there is still the
+  wire. Generally: **a destructive verb must never be positioned by the geometry of the
+  gesture that reveals it.**
+- MJ32 (J6): **`api_mapping_create` is a DRAW, and an undo routed through it silently
+  degrades the row it claims to restore.** The obvious implementation of "put the wire back"
+  is to call the create adapter with the same three ids. It returns `ok`, the wire reappears,
+  the board looks right — and the row has lost its `source_field_label` (re-derived from the
+  source field: "Overtime 300% hours" becomes "Othrs300"), its `notes`, its `endpoint_id` and
+  its transform settings, because create also unlinks rivals, discovers a fresh sample and
+  writes a binding. All of those are correct for a person drawing a wire and wrong for an
+  inverse. `api_mapping_restore` therefore recreates from a server-side snapshot of the
+  business fields, intersected with `fields_get` so no DERIVED column is ever written back.
+  Proven live: cutting `Employeestatus` and undoing returns a row still labelled "Employment
+  status". **An undo is the inverse of the delete, not a replay of the create — and the test
+  that catches the difference is field-by-field equality, never "a row exists again".**
+- MJ33 (J6): **`left: 34%` and `right: 34%` are two points that MEET as the container
+  narrows, and the sweep that was extended to find the reported defect found this one
+  instead.** The two dock chips cleared each other at 1440 and overlapped by 32px at 1024 —
+  invisible at the width everything is designed at, live for anyone on a laptop. It was
+  caught only because D1 required adding the filtered-with-chips state to the MJ7/MJ12 sweep,
+  which is the state that renders both chips at once; the sweep then failed on a pair nobody
+  had gone looking for. Each chip is now placed over the LANE GAP its wires cross, which
+  cannot collide by construction. **A percentage pair is a coincidence, not a layout — and
+  the value of widening a regression sweep is mostly the defects it finds that nobody
+  reported.**
+- MJ34 (J6): **"I cannot do X" from an owner is not evidence that X is broken, and checking
+  which one it is costs ten minutes.** D4 arrived as "creating a mapping by mouse is
+  impossible". The arming path was intact: the button existed, was always visible, carried a
+  `title`, and `armOutput` already called `stopPropagation` so the card's open-composer click
+  could never swallow it. What was true is that a 22px unlabelled icon carried the board's
+  ONLY write gesture, on a card whose entire body opens the Rule Composer — so every
+  exploratory click landed on the composer and the owner concluded the feature was missing.
+  MF26 with the sign flipped: **an affordance nobody can find is indistinguishable from an
+  affordance that does not work, and the two have completely different fixes.** Establish
+  which before writing either. (The fix was discoverability only: the output ROW became the
+  button. No handler changed.)
+- MJ35 (J6, environment): **`odoo.models.unlink` in the server log is the only oracle that can
+  tell an accident from a decision, and without it this phase would have "repaired" nineteen
+  rows the owner deleted on purpose.** The table was 19 rows short of J5's recorded closing
+  state, against an owner report of ONE lost wire. The log named every deletion with its id,
+  its user and its timestamp: eighteen of them were ids 109-126, removed one at a time over
+  three minutes and followed by `action_archive` on connector 1 — a person retiring a legacy
+  connection deliberately — and one was id 39, four minutes later, alone. 59 − 18 − 1 = 40,
+  exactly. **A row count tells you something is missing; only the log tells you whether
+  putting it back is a repair or a regression.** Read `grep -a 'deleted <model>'` before
+  restoring anything, and reconcile the arithmetic out loud.
