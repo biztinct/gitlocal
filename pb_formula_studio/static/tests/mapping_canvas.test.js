@@ -51,6 +51,9 @@ import { TransformFlowBoard }
 // JOURNEY J5 — the five-lane Journey board, imported under the same rule.
 import { JourneyBoard, LANES }
     from "@pb_formula_studio/js/mapping/journey_board";
+// JOURNEY J10 — the source vocabulary itself, because the phase added two
+// words to it and a glyph that is nobody else's.
+import { srcIcon } from "@pb_formula_studio/js/source_vocab";
 
 describe.current.tags("desktop");
 defineMailModels();
@@ -2389,6 +2392,8 @@ async function j9Canvas() {
     return canvas;
 }
 
+const j10Canvas = j9Canvas;
+
 test("J9 — one source: one chip, and no superscript", async () => {
     const canvas = await j9Canvas();
     const chips = canvas.srcChips({
@@ -2561,4 +2566,110 @@ test("J9 — the Transformations board shows the same ranked sources", () => {
     expect(board.srcChips({ srcKind: "none", meta: {} })).toEqual([]);
     expect(board.srcChips({ srcKind: "calculated", srcKinds: [],
                             meta: { wirable: false } })).toEqual([]);
+});
+
+// ==================================================================
+// JOURNEY J10 — the record destination is a source, and it is rank 4.
+//
+// The server used to answer "does this component write to a record" with a bare
+// set of ids, so every record destination rendered as one unnamed
+// `employee_field` chip and only when nothing else was declared. It sends the
+// KIND and the FIELD now, which means the client has two words it has never
+// had to render — and a kind missing from either label map renders NO CHIP AT
+// ALL rather than an ugly one, which is why both are covered here.
+// ==================================================================
+test("J10 — a feed card with a contract field renders two ranked chips", async () => {
+    const canvas = await j10Canvas();
+    const chips = canvas.srcChips({
+        srcKind: "feed",
+        srcKinds: [
+            { kind: "feed", key: "Designation", rank: 1, note: "a" },
+            { kind: "contract_field", key: "job_id", label: "Job Position",
+              rank: 2, note: "b" },
+        ],
+        meta: {},
+    });
+    expect(chips.map((c) => c.kind)).toEqual(["feed", "contract_field"]);
+    expect(chips.map((c) => c.rank)).toEqual([1, 2]);
+    // The WORDS are asserted from Python against the source (MJ3: a label
+    // built with `_t()` cannot be stringified in the hoot runner). What is
+    // asserted here is that a chip EXISTS for the kind at all — a kind
+    // missing from the label map renders nothing, silently.
+    expect(!!chips[1].label).toBe(true);
+});
+
+test("J10 — Contract record and Bank account render with their own classes", async () => {
+    const canvas = await j10Canvas();
+    const out = canvas.itemChips({
+        srcKind: "feed",
+        srcKinds: [
+            { kind: "feed", key: "Bank_Name", rank: 1, note: "a" },
+            { kind: "bank_account", key: "bank_name", label: "Bank name",
+              rank: 2, note: "b" },
+        ],
+        meta: {},
+    });
+    const src = out.filter((c) => c.cls.startsWith("mc-src"));
+    expect(src.length).toBe(2);
+    expect(src.map((c) => c.cls)).toEqual([
+        "mc-src s-feed", "mc-src s-bank_account",
+    ]);
+    const con = canvas.itemChips({
+        srcKind: "contract_field",
+        srcKinds: [{ kind: "contract_field", key: "job_id", rank: 0, note: "" }],
+        meta: {},
+    }).filter((c) => c.cls.startsWith("mc-src"));
+    expect(con.map((c) => c.cls)).toEqual(["mc-src s-contract_field"]);
+});
+
+test("J10 — a record-only card keeps one chip and no superscript", async () => {
+    // J9's case 15 guarantee, and the regression this phase could most easily
+    // cause: a card that had exactly one chip must still have exactly one.
+    const canvas = await j10Canvas();
+    const chips = canvas.srcChips({
+        srcKind: "employee_field",
+        srcKinds: [{ kind: "employee_field", key: "work_email",
+                     label: "Work Email", rank: 0, note: "n" }],
+        meta: {},
+    });
+    expect(chips.length).toBe(1);
+    expect(chips[0].rank).toBe(0);
+});
+
+test("J10 — three sources render 1/2/3 in rank order", async () => {
+    const canvas = await j10Canvas();
+    const chips = canvas.srcChips({
+        srcKind: "feed",
+        srcKinds: [
+            { kind: "feed", key: "Designation", rank: 1, note: "a" },
+            { kind: "excel", key: "SEVL|Designation", rank: 2, note: "b" },
+            { kind: "contract_field", key: "job_id", rank: 3, note: "c" },
+        ],
+        meta: {},
+    });
+    expect(chips.map((c) => c.rank)).toEqual([1, 2, 3]);
+    expect(chips.map((c) => c.kind)).toEqual([
+        "feed", "excel", "contract_field",
+    ]);
+});
+
+test("J10 — a stale server sending employee_field for a contract field still renders", async () => {
+    // The compatibility rail, pointed the other way from J9's: a server that
+    // predates this phase calls every record destination `employee_field`, and
+    // a client that only knew the two new words would render nothing at all.
+    const canvas = await j10Canvas();
+    const chips = canvas.srcChips({ srcKind: "employee_field", srcNote: "n",
+                                    meta: {} });
+    expect(chips.length).toBe(1);
+    expect(chips[0].kind).toBe("employee_field");
+    expect(chips[0].rank).toBe(0);
+});
+
+test("J10 — the two new kinds carry a glyph of their own", () => {
+    expect(srcIcon("contract_field")).toBe("filetext");
+    expect(srcIcon("bank_account")).toBe("bank");
+    // and they are not the employee's or the contract component's, because the
+    // glyph is what a colour-blind reader tells them apart by
+    expect(srcIcon("employee_field")).toBe("person");
+    expect(srcIcon("contract_component")).toBe("briefcase");
 });

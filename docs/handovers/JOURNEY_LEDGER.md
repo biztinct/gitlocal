@@ -15,7 +15,14 @@ defect rounds, not further scopes. Scope round J9 (2026-08-26): the owner WITHDR
 the either/or source restriction — a component may declare a connected-system key, a
 spreadsheet column and the contract component at once, every card shows all of them
 with a superscript rank, and the resolver walks them in the order that was already in
-the file. J-D5 is untouched: what changed is arity, not precedence.**
+the file. J-D5 is untouched: what changed is arity, not precedence.
+Scope round J10 (2026-08-26): the owner reported that a component's RECORD
+destination — Employee record, Contract record, Bank account — was shown only
+when it was the sole source, and asked that the WRITEBACK follow the same
+priority as the payslip. Both are answered by one thing: the record joins the
+ranked list at rank 4, where the resolver's tail has always read it, and ONE
+function now decides that order for the resolver and for all four writeback
+seams. J-D5 still untouched; nothing moved.**
 
 Follow-on programme to SOURCING (see `docs/handovers/SOURCING_LEDGER.md` + `SOURCING_CLOSEOUT.md`)
 and MAPFIX (`docs/handovers/MAPFIX_LEDGER.md`, which itself binds COLROLES CR1–CR33). **All standing
@@ -745,6 +752,97 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   deleted. One collateral deletion was made and repaired: see **MJ46**.
   `action_process` was never called; no live API pull was made.
 
+- **J10 — DONE, live on abm · payobook · payobook_template (2026-08-26).**
+  → `JOURNEY_PHASE_J10_HANDOVER.md`. **acme is redundant and was NOT upgraded**
+  (owner ruling, standing since J9): it stays at 19.0.1.153.0 / 19.0.1.81.0.
+  Versions: pb_hr_payroll_formula **19.0.1.83.0** · pb_formula_studio
+  **19.0.1.160.0** (`pb_integrations`, `biz_theme` untouched; `om_hr_payroll`
+  untouched — CR1).
+  **The owner's bug report was one line.** `if out: return out` at
+  `pb_formula_studio.py:615` made the record tier reachable only when nothing
+  else was declared, which is exactly *"you are showing EMPLOYEE RECORD or
+  CONTRACT RECORD only if that is the only source"*. The contract component two
+  lines below had been APPENDED unconditionally since J9 and that is the
+  treatment the record now gets. `_source_employee_dest_ids` returned a bare
+  `set()` of rule ids, so neither WHICH record nor WHICH FIELD was available to
+  render even if the early return had gone: it is `_source_record_dests` now,
+  `{rule_id: {kind, key, label}}`, in **one SQL statement** joining `ir_model`
+  and `ir_model_fields` (measured: `assertQueryCount(__system__=1)` on a
+  99-rule config).
+  **Three spellings, one rung.** `employee_field` / `contract_field` /
+  `bank_account` join `_SOURCE_RANK` at position 4 and **nothing moved**
+  (J-D5): that is where `get_mapped_input_value` has always sat, after the
+  spreadsheet and before `contract_component_amounts`. A component carries at
+  most one `hr.payslip.import.mapping` row so the three never compete.
+  **Request (a): the writeback obeys the order, and the ordering constraint is
+  why.** The writebacks run at steps 1-3 of `action_process` and the resolver
+  runs inside step 4, so a writeback cannot reuse `input_values` — it does not
+  exist yet. Nothing was reordered; the ORDER was extracted instead of the
+  RESULT. `_declared_source_walk` is the single implementation and J9's two
+  bound branches moved into it verbatim (the "search the other side" heuristic
+  is unconditional for ONE declared kind, because S3 reports the loser as
+  `ignored` even when the binding wins, and `if not hits` for two or more,
+  because J9 wrote it that way). `_shared_resolution_entered` is the instrument
+  — a counter, because a source grep is satisfiable by a second copy that
+  spells the method name in a comment.
+  **FOUR seams, not three** (a handover discrepancy, resolved by covering
+  both readings): `_update_employee_from_raw_data`,
+  `_update_contract_from_raw_data` (+ its `_sync_employee_contract_mirror_fields`
+  half), `_sync_employee_bank_account` and `_sync_contract_components` all
+  resolve through `_writeback_raw_value`. §2.5's snippet named steps 1b-3; §1
+  and §3.2 said "employee, contract and bank", which is a different three. All
+  four now share one order.
+  **The no-op rail.** A winner whose tier is `record` or `component` makes the
+  writeback a no-op: the record already holds it and a self-assign only dirties
+  `write_date`. Proven by `write_date` equality, not by value equality.
+  **The neutrality rail.** A component that declares NOTHING takes
+  `_get_rule_raw_value` unchanged, which is the ~40 mapped-but-unbound
+  components on the live databases. `_multi_source_walk_entered` is **0** on a
+  single-source run (`test_15a`), and S3's fallback provenance survives
+  byte-for-byte (`test_15b`, `test_15c`).
+  Tests: Python **559 on abm, 2 failed + 1 error — all three PRE-EXISTING and
+  none J10's** (baseline taken on the machine first: **515 with the same
+  three**, `-u pb_hr_payroll_formula,pb_formula_studio,pb_integrations`,
+  `--test-tags /pb_hr_payroll_formula,/pb_formula_studio,/pb_integrations`).
+  +44 new (`TestJourneyJ10Writeback` 24, `TestJourneyJ10RecordSource` 20).
+  hoot **141**, 0 failed, 541 assertions (baseline **135** measured on the same
+  server before a line was written). 24/24 numbered cases pass, with three
+  measured deviations from §2 recorded below.
+  **The abm picture: 2 cards with two chips became 16, not 1 → 11.** Both ends
+  of the handover's number were wrong and both were measured rather than
+  argued — see **MJ50**. `DESIGNATION` reads **Connected system¹ · Contract
+  record²** and `BANKNAME` reads **Connected system¹ · Bank account²**, with
+  the FIELD LABEL in the tooltip ("Reads “Job Position” from Contract record")
+  and never `job_id`.
+  Sweep: **0 overlaps, 0 dock-over-card, 0 occluded/clipped heads, maxErr 0 and
+  0 names clipped** across all four boards at 1440 and 1024 in resting and
+  mid-scroll states (157 / 152 / 260 / 113 names). Two pre-existing overlap
+  families were found by widening it and are recorded in **MJ48**; both were
+  disproved as J10's by hiding `.mc-src` and re-sweeping.
+  Round trips, warmed, median of 8, with the pre-J10 model files put back on
+  the same machine and DB for the "before": `employee_mapping_data`
+  **105 → 85 ms** (110.7 KB both — its right column is the field catalogue and
+  carries no source chips), `import_mapping_data` **79 → 73 ms**, 45.7 → 50.0 KB,
+  `api_mapping_data` **124 → 125 ms**, 61.2 → 65.5 KB.
+  **MF37 on abm: byte-identical before and after, with no restore step** —
+  `hr_payslip_import_mapping` 21 rows ids `1,2,30…108`
+  `07792a486d5d74400f63e2606599383e`, `hr_integration_field_mapping` 41
+  `c62ec8dfc9a24a42e0b978fb23eebef3`, `hr_formula_rule` config 14 99
+  `e269041b4312d60d0ff3ec2063a8eea7`, `hr_formula_rule_source` 13
+  `4a4b916d79d9591d068b0f92c179cacb`, `hr_api_transformation_rule` 8, 0
+  batches, 0 lines, 0 payslips, and **`hr_contract_advantage_template` and
+  `hr_contract_advantage` both still 0 rows**. This is the first phase that
+  could silently touch employee data, so it is also proved: `hr_employee`
+  content fingerprint `1ad9bc974a863804712aa50d5cd978ae` unchanged, 3 rows,
+  `hr_contract` 0 rows, `res_partner_bank` 0 rows. The only `hr_employee`
+  `write_date` movement all session was **`HR Presence: cron`**, hourly,
+  `lastcall` matching the stamp to the microsecond — MJ35's method applied to a
+  timestamp instead of a deletion. Every live write went through the throwaway
+  rule **`J10PROBE`** (id 20685, mapping 2214), created → rendered on the live
+  board (**Spreadsheet¹ · Contract record²**) → deleted; **no connector wire
+  was drawn**, because MJ46 says `api_mapping_create` unlinks a rival on the
+  SOURCE end too. `action_process` was never called; no live API pull was made.
+
 ## Gotchas discovered (append per phase, MJ-numbered)
 
 - MJ1 (J1): **`groupFilter` filters the LEFT column only, and always did.** The handover's
@@ -1316,3 +1414,71 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   codepoints are correct. MJ25's family: a source assertion is a parser you wrote in a hurry, and
   the parse it most often gets wrong is "is this a string or a comment". Strip, then assert — and
   say in the test WHY comments are exempt, or the next phase will "fix" it by deleting the comment.
+
+- MJ48 (J10, testing): **the sweep found two real overlaps and neither was mine, and the
+  ten-second experiment that proved it is worth more than the finding.** Widening the sweep to
+  states nobody had covered — both columns scrolled to the MIDDLE and to the END, and the
+  `Employee & contract ⇆` board at 1024 — produced 2-4 overlaps where every prior phase reported
+  zero. The phase had just added a second chip to fourteen more cards, which changes card height,
+  which moves every wire endpoint, so "my chips did this" was the obvious reading and it was
+  wrong. The disproof is one line of CSS: inject `.mc-src { display: none !important }`, fire a
+  `resize`, re-sweep, remove it, re-sweep. Identical counts in all three passes (4 / 4 / 4)
+  settles it in fifteen seconds, and on the `Employee & contract` board it settled it twice over —
+  `document.querySelectorAll('.mc-src').length` is **0** there, so the board that overlapped has no
+  source chips at all. The two families, recorded and NOT fixed (both are geometry this phase does
+  not own): (a) `.mc-hub.suggested` confidence chips ("80%", "85%") pile on top of each other when
+  both columns are scrolled far enough that many wires clamp into one band — `spreadHubs` spreads
+  hubs along their own wire, not against each other; (b) the `.mc-gone` footer note ("20 mappings
+  point at a field this source is not known to deliver.") wraps to a second line at 1024 and rides
+  over the cards and dock chips above it. **Widening a regression sweep is worth doing for the
+  defects nobody reported (MJ33) — and the first thing to establish about one is whether it is
+  yours, with an experiment rather than an argument.**
+- MJ49 (J10): **`False` is how Odoo spells NULL in a Char, a Date and a many2one, so MJ15's "`0`
+  and `False` are real values" is a rule about a PAYLOAD and not about a COLUMN.** MJ15 is right
+  and is restated as a non-goal in every handover since: a connector reporting zero overtime has
+  answered the question, and only `None` or whitespace is silence. Applying the same test to a
+  RECORD read inverts it. `getattr(employee, 'job_title')` on an empty field returns `False`, which
+  is not "the record says false" but "there is nothing here" — and `False in (None, '')` is `False`,
+  so the pre-existing `get_mapped_input_value` has always let it through. Consequence once the
+  record became a ranked source: **every mapped component would report "the record already holds
+  it"**, the tier below would never be reached, and the writeback would decline to write a field
+  that was empty. The walk therefore applies its own emptiness rule at rank 4 — `False` is nothing
+  unless the mapped field's `ttype` is `boolean`, which is the one case where it is an answer — and
+  `get_mapped_input_value` itself is untouched, so the resolver is byte-identical. A test asserting
+  "blank feed + blank record → the contract component wins" fails against correct-looking code
+  until you notice the blank record is not blank. **When a sentinel crosses from a message into a
+  column, re-derive what emptiness means on the other side.**
+- MJ50 (J10): **a count in a handover is a query somebody wrote, and this one was missing a JOIN —
+  render the real database before treating it as a gate.** §2.4 predicted abm would go from **1**
+  card with two or more chips to **11**, with "if you measure 1 the early return is still there; if
+  you measure 21 the fold has broken" as the diagnostic. The measurement was **2 → 16**, and both
+  ends were wrong for reasons that are ordinary rather than careless. The BEFORE was 2 because
+  `COSTCENTEFOR` carries an excel binding *and* `is_contract_component` — J9 recorded exactly one
+  such component (`GASALLOWANCE`) and the owner has drawn another since, so a ledger figure about a
+  set of rows aged out the moment somebody used the product. The AFTER was 16 because the
+  handover's ten hidden destinations were derived from `hr_formula_rule_source` alone, and the
+  studio's display side ALSO folds in the live connector wire (`_source_wire_dests`, S6): four more
+  components — `EMPLOYEECODE`, `DATEOFJOININ`, `EMPSTATUS`, `LOCATION` — declare nothing but are
+  wired and mapped, so they gain a second chip too. MJ29's lesson, one programme later: **a spec
+  written against the code can still be silent about the state the data is actually in.** The safe
+  move is to run the projection as SQL against the live database before starting, which cost ten
+  minutes here and turned a "the fold has broken" panic into a footnote.
+- MJ51 (J10, environment): **there are three copies of every module on this server and the one you
+  rsync to is probably not the one that loads.** `addons_path=/odoo/odoo-server/addons,/odoo/custom/addons`,
+  and there is a third at `/odoo/c6addons`. The first entry WINS. A deploy into `/odoo/custom/addons`
+  alone completed with no error, logged `Loading module pb_formula_studio`, restarted the service
+  cleanly, returned HTTP 303 — and ran the OLD code: `ir_module_module.latest_version` stayed at the
+  previous number and the suite reported **515 tests, exactly the baseline**, with none of the
+  forty-four new ones collected. Every signal except the version and the count said success. Two
+  rules: rsync to **every** directory on `addons_path` that already holds the module (they were
+  in sync before you arrived, and leaving them divergent is the next phase's mystery), and treat
+  `latest_version` and the TEST COUNT as the deploy's only receipts — a version that did not move
+  after `-u` means the upgrade you watched happened somewhere else.
+- MJ52 (J10, testing): **hoot has no `toBeTruthy`, and an unknown matcher fails as "called once
+  without calling any matchers" plus "1 unverified error".** `expect(x).toBeTruthy()` throws
+  `expect(...).toBeTruthy is not a function`, and the report names neither the matcher nor the
+  line — it says the expectation was never completed, which reads as a bug in the code under test.
+  Use `expect(!!x).toBe(true)`. And the run's SUMMARY is only in the console
+  (`[HOOT] Passed 141 tests (541 assertions…)`, a `dir` message): hoot tears its UI out of the DOM
+  when it finishes, so `document.body.innerText` is empty and `document.title` carries only a ✔ or
+  a ✖. Read the count from `list_console_messages`, last page, not from the page.

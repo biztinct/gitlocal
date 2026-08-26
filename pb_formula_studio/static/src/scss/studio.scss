@@ -1314,6 +1314,9 @@
     .ol-src.s-rule               { background: var(--i-soft);     color: var(--i600); }
     .ol-src.s-contract_component { background: var(--amber-soft); color: var(--amber); }
     .ol-src.s-employee_field     { background: #E8EEF7;           color: #3B5B8C; }
+    /* J10 — the record tier's other two spellings. */
+    .ol-src.s-contract_field     { background: #E4EBF6;           color: #2F4E80; }
+    .ol-src.s-bank_account       { background: #E7EEF3;           color: #35617A; }
     .ol-src.s-calculated         { background: var(--i-soft2);    color: var(--i-deep); }
     .ol-src.s-constant           { background: #EEF1F5;           color: #64748B; }
     .ol-src.s-none               { background: #F1F3F7;           color: #94A3B8; }
@@ -1334,6 +1337,8 @@
     .sub-src.s-rule { color: var(--i600); }
     .sub-src.s-contract_component { color: var(--amber); }
     .sub-src.s-employee_field { color: #3B5B8C; }
+    .sub-src.s-contract_field { color: #2F4E80; }
+    .sub-src.s-bank_account { color: #35617A; }
     .sub-src.s-calculated { color: var(--i-deep); }
     .sub-src.s-constant, .sub-src.s-none { color: #64748B; }
 
@@ -1354,6 +1359,8 @@
     .ce-srcchip.s-rule               { background: var(--i-soft);     color: var(--i600); }
     .ce-srcchip.s-contract_component { background: var(--amber-soft); color: var(--amber); }
     .ce-srcchip.s-employee_field     { background: #E8EEF7;           color: #3B5B8C; }
+    .ce-srcchip.s-contract_field     { background: #E4EBF6;           color: #2F4E80; }
+    .ce-srcchip.s-bank_account       { background: #E7EEF3;           color: #35617A; }
     .ce-srcchip.s-calculated         { background: var(--i-soft2);    color: var(--i-deep); }
     .ce-srcchip.src-diff { box-shadow: 0 0 0 1.5px var(--amber); }
     .ce-srckey {
@@ -1394,6 +1401,8 @@
     .g2-src.s-rule { color: var(--i600); }
     .g2-src.s-contract_component { color: var(--amber); }
     .g2-src.s-employee_field { color: #3B5B8C; }
+    .g2-src.s-contract_field { color: #2F4E80; }
+    .g2-src.s-bank_account { color: #35617A; }
     .g2-src.s-calculated { color: var(--i-deep); }
     .g2-src.s-constant, .g2-src.s-none { color: #94A3B8; }
     .g2-src.src-diff { color: var(--amber); }

@@ -237,9 +237,20 @@ class HrFormulaRule(models.Model):
     #: order that was already in `payroll_import_batch.py`; nothing moved (J-D5).
     #: `feed` before `rule` because both arrive in the FEED payload and a
     #: connector's own field mapping is the more specific statement; `excel`
-    #: third. The contract component is not a binding — it is rank 4, always
-    #: last, and it is added by `declared_sources()` rather than stored.
-    _SOURCE_RANK = ('feed', 'rule', 'excel')
+    #: third.
+    #:
+    #: JOURNEY J10 — three more members, and STILL nothing moved. The mapped
+    #: employee/contract field and the bank destination are read by the
+    #: resolver's tail AFTER the spreadsheet and BEFORE the contract component
+    #: (`payroll_import_batch.get_mapped_input_value`, then
+    #: `contract_component_amounts`, then the default), so rank 4 is where they
+    #: have always been; they simply had no name in this tuple. They are ONE
+    #: RUNG, not three: a component carries at most one `hr.payslip.import.
+    #: mapping` row, so they never compete — the three spellings are chosen by
+    #: what that row points at (§2.3). The contract component is still not a
+    #: binding: it is the last rung and `declared_sources()` appends it.
+    _SOURCE_RECORD_KINDS = ('employee_field', 'contract_field', 'bank_account')
+    _SOURCE_RANK = ('feed', 'rule', 'excel') + _SOURCE_RECORD_KINDS
 
     @api.depends('source_ids.kind', 'source_ids.key', 'source_ids.origin',
                  'source_ids.set_date', 'source_ids.set_uid')
@@ -315,6 +326,16 @@ class HrFormulaRule(models.Model):
         branch for the first time. The display side folds the wire in, because a
         drawn wire is something a person stated and belongs on the card; see
         `pb_formula_studio._declared_sources`.
+
+        JOURNEY J10 — NEITHER IS THE MAPPED RECORD FIELD, for the same reason in
+        reverse: it lives on `hr.payslip.import.mapping`, which is a property of
+        the CONFIG rather than of this rule, and answering it from here would be
+        one search per component. It is rank 4 in `_SOURCE_RANK` and the two
+        callers that can afford the query — the studio's `_source_record_dests`
+        and the batch's `_declared_source_plan` — splice it in at that position,
+        ahead of the trailing contract component. The ORDER is defined once, in
+        `_SOURCE_RANK`; only the lookup is duplicated, and it is duplicated
+        because the two live in different modules with different query budgets.
         """
         self.ensure_one()
         rank = self._SOURCE_RANK

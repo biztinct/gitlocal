@@ -54,3 +54,7 @@ from . import test_journey_truth
 # JOURNEY J9 — the binding, plural: the ranked walk, its neutrality rail, the
 # migration and the per-source dangling check.
 from . import test_journey_j9_sources
+
+# JOURNEY J10 — the record destination as a ranked source, and the three
+# writebacks resolving through the SAME order the payslip does.
+from . import test_journey_j10_writeback

@@ -1284,7 +1284,8 @@ class HrPayrollImportBatch(models.Model):
                         contract = self._create_contract(employee, line)
                         created_contracts |= contract
                     else:
-                        self._update_contract_from_raw_data(contract, raw_data)
+                        self._update_contract_from_raw_data(
+                            contract, raw_data, line=line)
 
                     # Step 3: Sync contract components from import data
                     contract = self._sync_contract_components(line, contract)
@@ -1427,7 +1428,7 @@ class HrPayrollImportBatch(models.Model):
                 vals['date_end'] = future_contracts[0].date_start - timedelta(days=1)
 
         contract = self.env['hr.contract'].create(vals)
-        self._update_contract_from_raw_data(contract, raw_data)
+        self._update_contract_from_raw_data(contract, raw_data, line=line)
         self._log("Created contract for %s: wage=%s" % (employee.name, basic_salary))
 
         return contract
@@ -1597,6 +1598,51 @@ class HrPayrollImportBatch(models.Model):
                 by_role[mapping.bank_role] = mapping
         return by_role
 
+    def _get_component_mapping_index(self):
+        """`{component_id: mapping}` — every record destination this config declares.
+
+        JOURNEY J10. One search for the whole config, because the alternative is
+        one per contract component per line. Lowest id wins where a badly-built
+        structure names two: the same tie-break `_get_bank_mappings` uses, for
+        the same reason — there is no sensible way to merge two destinations and
+        refusing the import over it would punish the wrong person.
+        """
+        rows = self.env['hr.payslip.import.mapping'].sudo().search(
+            [('salary_structure_id', '=', self.formula_config_id.id)],
+            order='id asc')
+        out = {}
+        for mapping in rows:
+            if mapping.component_id and mapping.component_id.id not in out:
+                out[mapping.component_id.id] = mapping
+        return out
+
+    def _contract_component_amounts(self, contract):
+        """`{normalised code: amount}` for the contract's advantage lines.
+
+        JOURNEY J10 — lifted out of `_transform_data_to_formula_inputs` so the
+        rank-5 rung has one implementation, read by the resolver and by the
+        writeback's no-op test. TEXT-typed components are skipped here exactly
+        as they always were: letting one in would feed a permanent 0.0 into any
+        formula naming it, which is worse than the formula plainly having no
+        such input (J8).
+        """
+        amounts = {}
+        if not contract:
+            return amounts
+        for advantage in contract.advantages_ids:
+            template = advantage.advantage_template_id
+            if template and 'value_type' in template._fields \
+                    and template.value_type == 'text':
+                continue
+            code = advantage.advantage_template_code or (
+                template.code if template else False)
+            if not code:
+                continue
+            normalized_code = self._normalize_header_key(code)
+            if normalized_code:
+                amounts[normalized_code] = advantage.amount
+        return amounts
+
     def _get_mappings_by_field(self, model_name, mappings=None):
         mappings = mappings or self._get_model_mappings(model_name)
         return {mapping.target_field_id.name: mapping for mapping in mappings}
@@ -1684,7 +1730,8 @@ class HrPayrollImportBatch(models.Model):
         return 0.0
 
     def _sync_employee_contract_mirror_fields(self, employee, contract, raw_data,
-                                              employee_mappings=None, contract_mappings=None):
+                                              employee_mappings=None, contract_mappings=None,
+                                              line=None):
         if not employee and not contract:
             return set()
 
@@ -1706,9 +1753,13 @@ class HrPayrollImportBatch(models.Model):
             mapping = employee_map.get(field_name) or contract_map.get(field_name)
             if not mapping or not mapping.component_id:
                 continue
-            value, has_value = self._get_rule_raw_value(
+            value, has_value = self._writeback_raw_value(
                 raw_data,
                 mapping.component_id,
+                mapping=mapping,
+                line=line,
+                contract=contract,
+                employee=employee,
                 allow_column_letter=False,
             )
             if not has_value:
@@ -2144,12 +2195,404 @@ class HrPayrollImportBatch(models.Model):
         if retro_lines:
             retro_lines.write({'applied_in_payslip_id': payslip.id})
 
-    def _get_mapping_updates(self, record, raw_data, mappings=None):
+    # ==================================================================
+    # JOURNEY J10 — ONE DEFINITION OF THE DECLARED-SOURCE ORDER.
+    #
+    # The owner asked for two things and they are the same thing: a card must
+    # show the record destination as a source (request b), and the WRITEBACK
+    # must obey the same priority as the payslip (request a). Both need an
+    # answer to one question — "which of this component's declared sources
+    # actually delivered a value, and which one wins" — and before this phase
+    # there were two answers to it: the resolver's ranked walk, and three
+    # writeback sites each re-reading the PRIMARY BLOB by name candidates.
+    #
+    # THE ORDERING CONSTRAINT THAT SHAPES ALL OF THIS. The writebacks run at
+    # steps 1-3 of `action_process` and the resolver runs inside step 4, so a
+    # writeback cannot reuse `input_values` — it does not exist yet. Moving the
+    # resolve earlier would change the transaction shape and destroy each
+    # step's deliberate try/except isolation. So the ORDER is extracted instead
+    # of the RESULT: `_declared_source_walk` below is called by the resolver's
+    # bound branch and by every writeback seam, and it is the only place in
+    # this file that knows what beats what.
+    #
+    # RANK, unchanged and now merely NAMED (J-D5 still binds):
+    #   feed > rule > excel > employee_field/contract_field/bank_account
+    #        > contract_component > (the untouched tail: header ladder, default)
+    # ==================================================================
+
+    #: J10 — incremented every time the shared walk runs, whoever calls it.
+    #: The instrument for "there is ONE implementation of the order": a test
+    #: exercises a writeback, sees this move, and knows the writeback did not
+    #: quietly grow a second copy. J9's `_multi_source_walk_entered` is the
+    #: neutrality counter and is untouched — it still counts only the ranked
+    #: walk over TWO OR MORE declared sources.
+    _shared_resolution_entered = 0
+
+    @api.model
+    def _sourcing_reset_shared_counter(self):
+        HrPayrollImportBatch._shared_resolution_entered = 0
+
+    @api.model
+    def _sourcing_shared_counter(self):
+        return HrPayrollImportBatch._shared_resolution_entered
+
+    @api.model
+    def _record_dest_spec(self, mapping):
+        """Which rank-4 spelling this mapping row is, and what its key is.
+
+        §2.3 — `destination_type` and the target model decide, and nothing else.
+        The KEY is the technical name because that is what the `(kind, key)`
+        fold compares; the human LABEL rides beside it for the sentence a
+        reader sees. Returns `None` for a row that names nothing.
+        """
+        if not mapping:
+            return None
+        if mapping.destination_type == 'bank_account':
+            if not mapping.bank_role:
+                return None
+            labels = dict(self.env['hr.payslip.import.mapping']
+                          ._fields['bank_role'].selection)
+            return {'kind': 'bank_account', 'key': mapping.bank_role,
+                    'label': labels.get(mapping.bank_role) or mapping.bank_role}
+        field = mapping.target_field_id
+        model = mapping.target_model_id.model or ''
+        if not field or not field.name:
+            return None
+        kind = ('contract_field' if model == 'hr.contract'
+                else 'employee_field' if model == 'hr.employee' else None)
+        if not kind:
+            return None
+        return {'kind': kind, 'key': field.name,
+                'label': field.field_description or field.name}
+
+    def _declared_source_plan(self, rule, mapping=None):
+        """Every source this component declares, in rank order, record included.
+
+        `rule.declared_sources()` is the storage-side definition (the ranked
+        `source_ids` plus the trailing contract component); this splices the
+        mapped record destination into rank 4, which is where the resolver's
+        tail has always read it. The contract component stays last because
+        `_SOURCE_RANK` says so, not because it happens to be appended.
+        """
+        plan = list(rule.declared_sources())
+        spec = self._record_dest_spec(mapping) if mapping else None
+        if spec:
+            rank = self.env['hr.formula.rule']._SOURCE_RANK
+            entry = dict(spec)
+            # Insert before the first entry that ranks below it — i.e. before
+            # the contract component, and after every binding kind.
+            pos = len(plan)
+            for i, other in enumerate(plan):
+                if other['kind'] not in rank \
+                        or rank.index(other['kind']) > rank.index(entry['kind']):
+                    pos = i
+                    break
+            plan.insert(pos, entry)
+        return plan
+
+    def _mapped_record_value(self, mapping, contract=None, employee=None):
+        """The value the mapped employee/contract field currently holds.
+
+        Lifted verbatim out of `_transform_data_to_formula_inputs`'s
+        `get_mapped_input_value` closure so the resolver and the writebacks read
+        the record through ONE function. `None` means "nothing there"; `0` and
+        `False` are values (MJ15) and are returned as such.
+        """
+        if not mapping or mapping.destination_type != 'field':
+            return None
+        model_name = mapping.target_model_id.model
+        record = (employee if model_name == 'hr.employee'
+                  else contract if model_name == 'hr.contract' else None)
+        if not record:
+            return None
+        field = mapping.target_field_id
+        if not field or field.name not in record._fields:
+            return None
+        value = getattr(record, field.name, None)
+        if value in (None, ''):
+            return None
+        field_type = getattr(field, 'ttype', None) or getattr(field, 'type', None)
+        if field_type == 'many2one':
+            return value.display_name
+        if field_type == 'selection':
+            selection = field.selection(record.env) if callable(field.selection) \
+                else field.selection
+            lookup = dict(selection or [])
+            return lookup.get(value, value)
+        if field_type == 'boolean':
+            return bool(value)
+        if field_type in ('integer', 'float', 'monetary'):
+            return float(value)
+        if field_type == 'date':
+            return fields.Date.to_string(value)
+        if field_type == 'datetime':
+            return fields.Datetime.to_string(value)
+        return value
+
+    def _bank_record_value(self, mapping, employee=None):
+        """What the employee's bank account already says for this role.
+
+        There is no field to read back here — a bank destination is three or
+        four columns assembling ONE `res.partner.bank` — so the read-back is
+        assembled the same way round. It exists for ONE purpose: to answer "is
+        this value already on the record" so the writeback can decline to
+        rewrite it (§3.2). It is never used to SUPPLY a value the file did not
+        carry; see `_sync_employee_bank_account`.
+        """
+        if not mapping or mapping.destination_type != 'bank_account' or not employee:
+            return None
+        role = mapping.bank_role
+        try:
+            accounts = employee.sudo().bank_account_ids \
+                if 'bank_account_ids' in employee._fields \
+                else employee.sudo().bank_account_id
+        except Exception:       # noqa: BLE001 — a read-back must never fail a line
+            return None
+        account = accounts[:1]
+        if not account:
+            return None
+        if role == 'acc_number':
+            return account.acc_number or None
+        if role == 'acc_holder_name':
+            return account.acc_holder_name or None
+        if role == 'bank_name':
+            return account.bank_id.name or None
+        if role == 'bank_bic':
+            return account.bank_id.bic or None
+        return None
+
+    def _writeback_blobs(self, raw_data, line=None):
+        """The two payloads a run can carry, keyed by ORIGIN.
+
+        The same two `blob_for_kind` hands the resolver (S3), assembled outside
+        it because the writebacks run three steps earlier. A run without a
+        top-up gets an empty dict for the other side, which is exactly what the
+        resolver sees for it.
+        """
+        topup = {}
+        if line is not None:
+            try:
+                topup = line.get_topup_data() or {}
+            except Exception:       # noqa: BLE001
+                topup = {}
+        primary_origin = 'feed' if self.source_type == 'api_data_store' else 'excel'
+        topup_origin = 'excel' if primary_origin == 'feed' else 'feed'
+        return {primary_origin: raw_data or {}, topup_origin: topup}
+
+    @api.model
+    def _blob_is_empty(self, value):
+        """THE emptiness test, unchanged (MJ15, and a J9/J10 non-goal).
+
+        `None` or a whitespace-only string is *nothing arrived*. **`0` and
+        `False` are real values** — a connector reporting zero overtime has
+        answered the question.
+        """
+        if value is None:
+            return True
+        return isinstance(value, str) and value.strip() == ''
+
+    def _declared_source_walk(self, rule, blobs, mapping=None, contract=None,
+                              employee=None, component_amounts=None,
+                              candidates=(), column_candidates=(),
+                              tiers=('blob', 'record', 'component')):
+        """Every declared source of `rule` that DELIVERED, in RANK ORDER.
+
+        **This is the single implementation of the declared-source order**, and
+        it is called by the resolver's bound branch and by all three writeback
+        seams. Two implementations of an order is how the boards started
+        disagreeing in the first place, and it is the failure this programme
+        exists to remove.
+
+        Each hit is `{'pos', 'kind', 'key', 'value', 'tier'}`. `pos` is the
+        position in the plan, or `None` for the S3 heuristic hit described
+        below. The list is in plan order, so `hits[0]` is the winner and
+        `hits[1:]` are the sources whose values were skipped — which is what
+        the caller reports through `ignored_side` rather than dropping.
+
+        LAZINESS IS A CONTRACT, not an optimisation. The blob tiers are dict
+        lookups and are always walked (the caller needs the skipped ones to
+        report them). The record and component tiers are read ONLY if nothing
+        above them delivered, so a component whose feed answered never touches
+        the employee record at all — case 6 asserts the read did not happen,
+        not merely that the value differs.
+
+        THE S3 HEURISTIC IS RETAINED VERBATIM for a component declaring exactly
+        ONE binding kind: the other blob is searched by the bound key and then
+        by the component's natural candidates. That is J9's neutrality rail and
+        it is why a feed-bound component on a single-blob Excel run still finds
+        its value where it always did.
+        """
+        HrPayrollImportBatch._shared_resolution_entered += 1
+        plan = self._declared_source_plan(rule, mapping=mapping)
+        binding_kinds = [d for d in plan
+                         if d['kind'] in ('excel', 'feed', 'rule') and d['key']]
+        hits = []
+        covered = set()
+
+        # ---- rungs 1-3: the declared blob sources, in rank order ----------
+        if 'blob' in tiers:
+            for pos, spec in enumerate(plan):
+                if spec['kind'] not in ('excel', 'feed', 'rule') or not spec['key']:
+                    continue
+                blob = blobs.get(
+                    'feed' if spec['kind'] == 'rule' else spec['kind']) or {}
+                if blob:
+                    covered.add(id(blob))
+                    value, key = self._lookup_in_blob(blob, [spec['key']])
+                    if not self._blob_is_empty(value):
+                        hits.append({'pos': pos, 'kind': spec['kind'],
+                                     'key': key, 'value': value,
+                                     'tier': 'blob'})
+
+            # S3's shape and J9's shape, both preserved exactly. With ONE
+            # declared kind the other side is searched unconditionally, because
+            # S3 reports it as `ignored` even when the binding won. With TWO OR
+            # MORE it is searched only when nothing was found, because J9 wrote
+            # it that way and a run carries at most two payloads — so with both
+            # kinds declared it is unreachable anyway.
+            #
+            # AND IT RUNS BEFORE THE RECORD TIER, which is not a detail: in the
+            # resolver this heuristic fills `value`, and `value is not None` is
+            # tested BEFORE `get_mapped_input_value` is ever called. A record
+            # read that preempted it here would make the writeback resolve to
+            # something the payslip does not.
+            if binding_kinds and (len(binding_kinds) == 1 or not hits):
+                for origin, blob in blobs.items():
+                    if not blob or id(blob) in covered:
+                        continue
+                    value, key = self._lookup_in_blob(
+                        blob, [d['key'] for d in binding_kinds]
+                        + list(candidates) + list(column_candidates))
+                    if not self._blob_is_empty(value):
+                        hits.append({'pos': None, 'kind': origin, 'key': key,
+                                     'value': value, 'tier': 'blob'})
+                        break
+
+        # ---- rungs 4-5: the record, then the contract component -----------
+        # READ ONLY IF NOTHING ABOVE DELIVERED. Case 6 asserts the read did not
+        # happen rather than that the value differs, because a tier that is
+        # merely outranked is still a query per component and still a claim the
+        # card would be making without evidence.
+        if hits:
+            return hits
+        for pos, spec in enumerate(plan):
+            kind = spec['kind']
+            if kind in ('employee_field', 'contract_field'):
+                if 'record' not in tiers:
+                    continue
+                value = self._mapped_record_value(
+                    mapping, contract=contract, employee=employee)
+                # `False` is how Odoo spells NULL on a Char, a Date and a
+                # many2one, and only a BOOLEAN field means it as a value. MJ15
+                # says `0` and `False` are real values and that stands for a
+                # PAYLOAD, where the sender chose to send them; a NULL column
+                # chose nothing. Without this every mapped component would
+                # report "the record already holds it" for a field holding
+                # nothing, and the tier below would never be reached.
+                if value is False and not self._record_dest_is_boolean(mapping):
+                    value = None
+            elif kind == 'bank_account':
+                if 'record' not in tiers:
+                    continue
+                value = self._bank_record_value(mapping, employee=employee)
+            elif kind == 'contract_component':
+                if 'component' not in tiers:
+                    continue
+                code = self._normalize_header_key(rule.code) if rule.code else ''
+                value = (component_amounts or {}).get(code)
+            else:
+                continue
+            if not self._blob_is_empty(value):
+                hits.append({'pos': pos, 'kind': kind, 'key': spec['key'],
+                             'value': value,
+                             'tier': 'component' if kind == 'contract_component'
+                             else 'record'})
+                break
+        return hits
+
+    @api.model
+    def _record_dest_is_boolean(self, mapping):
+        """Is the mapped field one where `False` is an answer rather than a NULL?"""
+        if not mapping or mapping.destination_type != 'field':
+            return False
+        field = mapping.target_field_id
+        ttype = getattr(field, 'ttype', None) or getattr(field, 'type', None)
+        return ttype == 'boolean'
+
+    def _resolve_declared_value(self, rule, blobs, mapping=None, contract=None,
+                                employee=None, component_amounts=None,
+                                candidates=(), column_candidates=()):
+        """The winning value for this component and where it came from.
+
+        The one-line reading of `_declared_source_walk` the writebacks want:
+        `(value, spec)`, or `(None, None)` when nothing declared delivered.
+        `spec['tier']` is what the caller checks against §3.2's first rail —
+        a winner that came OFF the record must never be written back ONTO it.
+        """
+        hits = self._declared_source_walk(
+            rule, blobs, mapping=mapping, contract=contract, employee=employee,
+            component_amounts=component_amounts, candidates=candidates,
+            column_candidates=column_candidates)
+        if not hits:
+            return None, None
+        win = hits[0]
+        return win['value'], win
+
+    def _writeback_raw_value(self, raw_data, rule, mapping=None, line=None,
+                             contract=None, employee=None,
+                             component_amounts=None, allow_column_letter=False):
+        """The value a WRITEBACK should copy onto a record, and whether there is one.
+
+        Drop-in for `_get_rule_raw_value` at the three writeback seams, with the
+        same `(value, has_value)` shape, and it answers request (a):
+
+        * A component that declares NOTHING behaves exactly as it did before
+          J10 — `_get_rule_raw_value` over the primary blob. That is the
+          neutrality rail, and it is why the ~40 mapped-but-unbound components
+          on the live databases write back byte-identically (case 15).
+        * A component that declares a source reads THE SOURCE THE PAYSLIP WILL
+          READ, through the shared walk, top-up blob included. That is the
+          defect: three writeback sites could not see the other payload at all.
+        * A winner that came off the record or off the contract component is a
+          NO-OP (`has_value=False`). The record already holds it; writing it
+          back would be a self-assign that dirties `write_date` and pollutes an
+          audit trail for no reader's benefit.
+        * Nothing declared and nothing delivered is still nothing. This phase
+          must not start creating rows that were not created before.
+        """
+        if not rule:
+            return None, False
+        declared = [d for d in rule.declared_sources()
+                    if d['kind'] in ('excel', 'feed', 'rule') and d['key']]
+        if not declared:
+            return self._get_rule_raw_value(
+                raw_data, rule, allow_column_letter=allow_column_letter)
+        blobs = self._writeback_blobs(raw_data, line=line)
+        candidates = self._rule_header_candidates(
+            rule, allow_column_letter=allow_column_letter)
+        value, spec = self._resolve_declared_value(
+            rule, blobs, mapping=mapping, contract=contract, employee=employee,
+            component_amounts=component_amounts, candidates=candidates)
+        if spec is None or spec['tier'] != 'blob':
+            return None, False
+        return value, True
+
+    def _get_mapping_updates(self, record, raw_data, mappings=None, line=None,
+                             contract=None, employee=None):
         mappings = mappings or self._get_model_mappings(record._name)
         # Belt and braces (COLROLES P3, test 6): callers may pass a recordset they
         # assembled themselves, and a bank row here would look up a field that is not
         # there. One line, and the guarantee holds no matter who calls.
         mappings = mappings.filtered(lambda m: m.destination_type == 'field')
+        # JOURNEY J10 — the record the rank-4 tier reads is the record this
+        # method is about to write. That is the whole of §3.2's first rail: if
+        # the winning source IS this field, the writeback declines, because the
+        # record already holds the value and a self-assign only dirties
+        # `write_date` and pollutes an audit trail.
+        emp = employee if employee is not None else (
+            record if record._name == 'hr.employee' else None)
+        con = contract if contract is not None else (
+            record if record._name == 'hr.contract' else None)
         updates = {}
         for mapping in mappings:
             field = mapping.target_field_id
@@ -2157,9 +2600,13 @@ class HrPayrollImportBatch(models.Model):
                 continue
             if field.name not in record._fields:
                 continue
-            value, has_value = self._get_rule_raw_value(
+            value, has_value = self._writeback_raw_value(
                 raw_data,
                 mapping.component_id,
+                mapping=mapping,
+                line=line,
+                contract=con,
+                employee=emp,
                 allow_column_letter=False,
             )
             if not has_value:
@@ -2293,10 +2740,18 @@ class HrPayrollImportBatch(models.Model):
         if not bank_mappings:
             return self.env['res.partner.bank']
 
+        # JOURNEY J10 — each role's column resolves through the declared-source
+        # order, so a bank column fed by the top-up payload is finally visible
+        # here. §3.2's first rail applies per ROLE: when the winner is the bank
+        # account itself, the part is dropped rather than written, because the
+        # account already says it. It is deliberately NOT used to SUPPLY a part
+        # the run did not carry — a row with a bank name and no account number
+        # is still not a bank account, and this method still declines it.
         values = {}
         for role, mapping in bank_mappings.items():
-            raw, has_value = self._get_rule_raw_value(
-                raw_data, mapping.component_id, allow_column_letter=False)
+            raw, has_value = self._writeback_raw_value(
+                raw_data, mapping.component_id, mapping=mapping, line=line,
+                employee=employee, allow_column_letter=False)
             if not has_value:
                 continue
             values[role] = raw
@@ -2341,13 +2796,23 @@ class HrPayrollImportBatch(models.Model):
         return account
 
     def _update_employee_from_raw_data(self, employee, raw_data, line=None):
-        """Update employee fields from raw import data."""
+        """Update employee fields from raw import data.
+
+        JOURNEY J10 — `line` is now used rather than merely accepted: it is how
+        this writeback reaches the TOP-UP payload. Before this phase all three
+        writebacks read `raw_data` — the primary blob only — by name candidates,
+        so on a run carrying two payloads they could not see the other one at
+        all, and a component whose declared source lived there wrote nothing
+        onto the record while the payslip read it perfectly. That is the owner's
+        request (a), and `_writeback_raw_value` is where it is answered.
+        """
         mappings = self._get_model_mappings(employee._name)
         mapped_fields = set(mappings.mapped('target_field_id.name'))
         contract_mappings = self._get_model_mappings('hr.contract')
         mirror_fields = self._get_mirrored_employee_contract_fields()
         mapped_fields |= mirror_fields.intersection(set(contract_mappings.mapped('target_field_id.name')))
-        updates = self._get_mapping_updates(employee, raw_data, mappings=mappings)
+        updates = self._get_mapping_updates(
+            employee, raw_data, mappings=mappings, line=line, employee=employee)
 
         emp_code = self._extract_field(raw_data, list(EMPLOYEE_CODE_HEADER_CANDIDATES))
         if not emp_code and line and line.employee_code:
@@ -2426,13 +2891,21 @@ class HrPayrollImportBatch(models.Model):
         if updates:
             employee.write(updates)
 
-    def _update_contract_from_raw_data(self, contract, raw_data):
-        """Update contract fields from raw import data."""
+    def _update_contract_from_raw_data(self, contract, raw_data, line=None):
+        """Update contract fields from raw import data.
+
+        JOURNEY J10 — `line` is new and optional, and it is the ONLY structural
+        change to this writeback: it is how the top-up payload is reached (see
+        `_update_employee_from_raw_data`). A caller that does not pass it gets
+        exactly today's single-blob behaviour.
+        """
         if not contract:
             return
         mappings = self._get_model_mappings(contract._name)
         mapped_fields = set(mappings.mapped('target_field_id.name'))
-        updates = self._get_mapping_updates(contract, raw_data, mappings=mappings)
+        updates = self._get_mapping_updates(
+            contract, raw_data, mappings=mappings, line=line, contract=contract,
+            employee=contract.employee_id or None)
         employee_mappings = self._get_model_mappings('hr.employee')
         handled_mirrors = self._sync_employee_contract_mirror_fields(
             contract.employee_id,
@@ -2440,6 +2913,7 @@ class HrPayrollImportBatch(models.Model):
             raw_data,
             employee_mappings=employee_mappings,
             contract_mappings=mappings,
+            line=line,
         )
         for field_name in handled_mirrors:
             updates.pop(field_name, None)
@@ -2880,23 +3354,9 @@ class HrPayrollImportBatch(models.Model):
         config = self.formula_config_id
         employee = employee or (contract.employee_id if contract else None)
         employee_code_markers = EMPLOYEE_CODE_MARKERS
-        contract_component_amounts = {}
-        if contract:
-            for advantage in contract.advantages_ids:
-                template = advantage.advantage_template_id
-                # Text-typed components have no amount to contribute; letting them in
-                # would feed a permanent 0.0 into any formula naming them, which is
-                # worse than the formula plainly having no such input.
-                if template and 'value_type' in template._fields \
-                        and template.value_type == 'text':
-                    continue
-                code = advantage.advantage_template_code or (
-                    template.code if template else False
-                )
-                if code:
-                    normalized_code = self._normalize_header_key(code)
-                    if normalized_code:
-                        contract_component_amounts[normalized_code] = advantage.amount
+        # JOURNEY J10 — rank 5, and now with ONE implementation: the writeback's
+        # "is this already on the contract" test asks the same function.
+        contract_component_amounts = self._contract_component_amounts(contract)
 
         def lookup_raw_value(candidates):
             for key in candidates:
@@ -2936,37 +3396,13 @@ class HrPayrollImportBatch(models.Model):
             searched by exactly the same rules rather than by a second
             implementation that would drift. `lookup_raw_value_with_key` below is
             now a one-line call with `raw_data`, so the unbound path is unchanged.
+
+            JOURNEY J10 — the body moved out to `_lookup_in_blob` so the
+            writeback seams, which run three steps before this function exists,
+            match a header exactly the way the payslip will. This closure is
+            kept as the name the branches below read.
             """
-            for key in candidates:
-                if key in data:
-                    return data.get(key), key
-            normalized_map = {self._normalize_header_key(k): k for k in data.keys()}
-            for key in candidates:
-                normalized_key = self._normalize_header_key(key)
-                if normalized_key in normalized_map:
-                    matched = normalized_map[normalized_key]
-                    return data.get(matched), matched
-            normalized_candidates = [
-                self._normalize_header_key(key) for key in candidates if key
-            ]
-            normalized_candidates = [key for key in normalized_candidates if len(key) >= 6]
-            if not normalized_candidates:
-                return None, None
-            matches = []
-            for header_key, original_key in normalized_map.items():
-                for candidate in normalized_candidates:
-                    if candidate and candidate in header_key:
-                        matches.append(original_key)
-            if len(set(matches)) == 1:
-                matched = matches[0]
-                return data.get(matched), matched
-            if matches:
-                _logger.info(
-                    "Input match ambiguous for candidates %s: %s",
-                    candidates,
-                    sorted(set(matches)),
-                )
-            return None, None
+            return self._lookup_in_blob(data, candidates)
 
         def lookup_raw_value_with_key(candidates):
             return lookup_in_with_key(raw_data, candidates)
@@ -2980,11 +3416,12 @@ class HrPayrollImportBatch(models.Model):
         primary_origin = 'feed' if self.source_type == 'api_data_store' else 'excel'
         topup_origin = 'excel' if primary_origin == 'feed' else 'feed'
 
-        def blob_for_kind(kind):
-            want = 'feed' if kind == 'rule' else kind
-            if want == primary_origin:
-                return raw_data, primary_origin
-            return topup, topup_origin
+        # JOURNEY J10 — the same pair, expressed as a dict keyed by ORIGIN
+        # rather than as a kind→blob function, because `_declared_source_walk`
+        # takes it and the three writeback seams assemble the identical dict
+        # through `_writeback_blobs` three steps earlier. The kind→origin map
+        # ('rule' reads the feed side) lives in the walk, once.
+        blobs = {primary_origin: raw_data, topup_origin: topup}
 
         def is_employee_code_rule(rule):
             tokens = [
@@ -3066,35 +3503,20 @@ class HrPayrollImportBatch(models.Model):
                 mapping_by_rule = {m.component_id.id: m for m in mappings if m.component_id}
 
         def get_mapped_input_value(rule):
+            """Rank 4 — what the mapped employee/contract field already holds.
+
+            JOURNEY J10 — the body moved to `_mapped_record_value` so the
+            writebacks read the record through the SAME function, and so the
+            rung this represents could finally be given a name in
+            `_SOURCE_RANK`. Nothing about when it is consulted changed: the
+            tail below still reaches it only after the raw/bound branches have
+            produced nothing, which is where it has always sat.
+            """
             mapping = mapping_by_rule.get(rule.id)
             if not mapping:
                 return None
-            model_name = mapping.target_model_id.model
-            record = employee if model_name == 'hr.employee' else contract if model_name == 'hr.contract' else None
-            if not record:
-                return None
-            field = mapping.target_field_id
-            if field.name not in record._fields:
-                return None
-            value = getattr(record, field.name, None)
-            if value in (None, ''):
-                return None
-            field_type = getattr(field, 'ttype', None) or getattr(field, 'type', None)
-            if field_type == 'many2one':
-                return value.display_name
-            if field_type == 'selection':
-                selection = field.selection(record.env) if callable(field.selection) else field.selection
-                lookup = dict(selection or [])
-                return lookup.get(value, value)
-            if field_type == 'boolean':
-                return bool(value)
-            if field_type in ('integer', 'float', 'monetary'):
-                return float(value)
-            if field_type == 'date':
-                return fields.Date.to_string(value)
-            if field_type == 'datetime':
-                return fields.Datetime.to_string(value)
-            return value
+            return self._mapped_record_value(
+                mapping, contract=contract, employee=employee)
 
         # First, try using connector field mappings if available (F114/D114.2:
         # only confirmed 'active' mappings — never 'suggested' template guesses)
@@ -3254,7 +3676,6 @@ class HrPayrollImportBatch(models.Model):
                 declared = [d for d in rule.declared_sources()
                             if d['kind'] in ('excel', 'feed', 'rule') and d['key']]
                 bound_kind = declared[0]['kind'] if declared else False
-                bound_key = declared[0]['key'] if declared else ''
                 bound_empty = False
                 matched_group = None
                 is_collaborate = self._normalize_header_key(rule.code or rule.name or '') == 'collaborate'
@@ -3352,44 +3773,44 @@ class HrPayrollImportBatch(models.Model):
                 # anything, so nothing about how any live database resolves
                 # changes until the owner draws a second wire.
                 # ----------------------------------------------------------
-                if bound_kind and len(declared) > 1:
+                # ----------------------------------------------------------
+                # JOURNEY J10 — ONE WALK, AND IT IS THE ONE THE WRITEBACKS USE.
+                #
+                # J9 shipped this as two branches: a ranked walk for two or
+                # more declared sources, and S3's code verbatim for one. Both
+                # bodies moved into `_declared_source_walk`, which reproduces
+                # each shape exactly (the "search the other side" heuristic is
+                # unconditional for one declared kind, because S3 reports the
+                # loser as `ignored` even when the binding wins; it is
+                # `if not hits` for two or more, because J9 wrote it that way
+                # and with both kinds declared it is unreachable anyway).
+                #
+                # Why move it at all: the three writebacks run three steps
+                # before this function exists and had to answer the same
+                # question by re-reading the primary blob by name. Two
+                # implementations of one order is how the boards started
+                # disagreeing, and it is what the owner's request (a) is
+                # actually about.
+                #
+                # `tiers=('blob',)` — the record field and the contract
+                # component are rank 4 and 5 and are read by the UNTOUCHED
+                # TAIL below, which has read them since long before this
+                # branch existed. The ORDER is one thing (`_SOURCE_RANK`); the
+                # place each rung is evaluated is not being moved (J-D5).
+                # ----------------------------------------------------------
+                if bound_kind:
                     HrPayrollImportBatch._sourcing_bound_branch_entered += 1
-                    HrPayrollImportBatch._multi_source_walk_entered += 1
-                    hits = []           # (rank, kind, matched_key, value)
-                    covered = set()
-                    for pos, spec in enumerate(declared):
-                        blob, _origin = blob_for_kind(spec['kind'])
-                        covered.add(id(blob))
-                        if not blob:
-                            continue
-                        v_d, k_d = lookup_in_with_key(blob, [spec['key']])
-                        if isinstance(v_d, str) and v_d.strip() == '':
-                            v_d = None
-                        if v_d is not None:
-                            hits.append((pos, spec['kind'], k_d, v_d))
-                    if not hits:
-                        # A blob no declared kind names is still searched the way
-                        # a single binding searches "the other side" — by every
-                        # declared key first, then by the component's natural
-                        # candidates. It is unreachable when both kinds of blob
-                        # are declared, and it is what stops a SECOND source ever
-                        # making a component resolve to less than one source did.
-                        for blob, origin in (
-                                (raw_data, primary_origin), (topup, topup_origin)):
-                            if id(blob) in covered or not blob:
-                                continue
-                            v_u, k_u = lookup_in_with_key(
-                                blob, [d['key'] for d in declared]
-                                + candidates + column_candidates)
-                            if isinstance(v_u, str) and v_u.strip() == '':
-                                v_u = None
-                            if v_u is not None:
-                                hits.append((None, origin, k_u, v_u))
-                                break
+                    if len(declared) > 1:
+                        HrPayrollImportBatch._multi_source_walk_entered += 1
+                    hits = self._declared_source_walk(
+                        rule, blobs,
+                        candidates=candidates,
+                        column_candidates=column_candidates,
+                        tiers=('blob',))
                     if hits:
-                        win_pos, win_kind, win_key, win_value = hits[0]
+                        win = hits[0]
                         input_values[rule.code] = normalize_input_value(
-                            rule, win_value)
+                            rule, win['value'])
                         raw_input_codes.add(rule.code)
                         if prov is not None:
                             # The unused sides are REPORTED, never silently
@@ -3397,63 +3818,18 @@ class HrPayrollImportBatch(models.Model):
                             # `ignored_side` rather than a second helper.
                             ignored = None
                             if len(hits) > 1:
-                                _p, o_kind, o_key, o_value = hits[1]
+                                other = hits[1]
                                 ignored = input_provenance.ignored_side(
-                                    o_kind, o_key, o_value)
-                            first = win_pos == 0
+                                    other['kind'], other['key'], other['value'])
+                            first = win['pos'] == 0
                             prov[rule.code] = input_provenance.entry(
-                                win_kind, key=win_key,
+                                win['kind'], key=win['key'],
                                 via='binding' if first else 'fallback',
                                 fell_back=not first, ignored=ignored)
                         continue
                     # Nothing anywhere. Fall through to the untouched tail, so the
                     # value is exactly what an unbound component would get; only
                     # the explanation differs.
-                    value = None
-                    bound_empty = True
-                elif bound_kind:
-                    HrPayrollImportBatch._sourcing_bound_branch_entered += 1
-                    side_b, _bo = blob_for_kind(bound_kind)
-                    side_o, other_origin = (
-                        (topup, topup_origin) if side_b is raw_data
-                        else (raw_data, primary_origin))
-                    v_b, k_b = lookup_in_with_key(side_b, [bound_key])
-                    # The other side is searched by the BOUND KEY FIRST, then by the
-                    # component's natural candidates. Both matter, and the bound key
-                    # matters most: the same column is very often called the same
-                    # thing in both sources ("Bonus Col" in the file and in the
-                    # feed), and searching only by name/code/letter would miss it
-                    # and report "nothing arrived" while the value sat one key away.
-                    v_o, k_o = lookup_in_with_key(
-                        side_o, [bound_key] + candidates + column_candidates) \
-                        if side_o else (None, None)
-                    if isinstance(v_b, str) and v_b.strip() == '':
-                        v_b = None
-                    if isinstance(v_o, str) and v_o.strip() == '':
-                        v_o = None
-                    if v_b is not None:
-                        input_values[rule.code] = normalize_input_value(rule, v_b)
-                        raw_input_codes.add(rule.code)
-                        if prov is not None:
-                            prov[rule.code] = input_provenance.entry(
-                                bound_kind, key=k_b, via='binding',
-                                # Both sides carried it: the binding wins and the
-                                # loser is REPORTED. Reusing S2's `ignored_side`
-                                # rather than writing a second one.
-                                ignored=(input_provenance.ignored_side(
-                                    other_origin, k_o, v_o) if v_o is not None else None))
-                        continue
-                    if v_o is not None:
-                        # Owner decision 3 — fall back, but say so.
-                        input_values[rule.code] = normalize_input_value(rule, v_o)
-                        raw_input_codes.add(rule.code)
-                        if prov is not None:
-                            prov[rule.code] = input_provenance.entry(
-                                other_origin, key=k_o, via='fallback', fell_back=True)
-                        continue
-                    # Neither side had it. Fall through to the untouched tail below
-                    # so the value is exactly what an unbound component would get;
-                    # only the explanation differs.
                     value = None
                     bound_empty = True
 
@@ -3698,6 +4074,48 @@ class HrPayrollImportBatch(models.Model):
         digits = ''.join(ch for ch in str(value) if ch.isdigit())
         return digits or False
 
+    def _lookup_in_blob(self, data, candidates):
+        """The header-matching ladder over one payload, returning `(value, key)`.
+
+        SOURCING S3's `lookup_in_with_key`, lifted out of the resolver closure by
+        J10 so the three writeback seams match a header EXACTLY the way the
+        payslip will. Exact key, then normalised key, then the ≥6-character
+        substring stage — which stays here rather than being simplified,
+        because "the writeback found it and the payslip did not" is precisely
+        the disagreement this programme exists to remove.
+        """
+        data = data or {}
+        for key in candidates:
+            if key in data:
+                return data.get(key), key
+        normalized_map = {self._normalize_header_key(k): k for k in data.keys()}
+        for key in candidates:
+            normalized_key = self._normalize_header_key(key)
+            if normalized_key in normalized_map:
+                matched = normalized_map[normalized_key]
+                return data.get(matched), matched
+        normalized_candidates = [
+            self._normalize_header_key(key) for key in candidates if key
+        ]
+        normalized_candidates = [key for key in normalized_candidates if len(key) >= 6]
+        if not normalized_candidates:
+            return None, None
+        matches = []
+        for header_key, original_key in normalized_map.items():
+            for candidate in normalized_candidates:
+                if candidate and candidate in header_key:
+                    matches.append(original_key)
+        if len(set(matches)) == 1:
+            matched = matches[0]
+            return data.get(matched), matched
+        if matches:
+            _logger.info(
+                "Input match ambiguous for candidates %s: %s",
+                candidates,
+                sorted(set(matches)),
+            )
+        return None, None
+
     def _lookup_raw_value(self, raw_data, candidates):
         for key in candidates:
             if key in raw_data:
@@ -3709,9 +4127,16 @@ class HrPayrollImportBatch(models.Model):
                 return raw_data.get(normalized_map[normalized_key])
         return None
 
-    def _get_rule_raw_value(self, raw_data, rule, allow_column_letter=True):
+    def _rule_header_candidates(self, rule, allow_column_letter=True):
+        """The header names this component answers to, in the order tried.
+
+        JOURNEY J10 — extracted from `_get_rule_raw_value` so the writeback's
+        undeclared fallback and its declared "search the other side" heuristic
+        can offer the SAME names the reader is used to, without a second copy of
+        the list drifting away from this one.
+        """
         if not rule:
-            return None, False
+            return []
         candidates = []
 
         if rule.data_source_field:
@@ -3734,6 +4159,13 @@ class HrPayrollImportBatch(models.Model):
             candidates.append(rule.code)
         if allow_column_letter and rule.column_letter:
             candidates.append(rule.column_letter)
+        return candidates
+
+    def _get_rule_raw_value(self, raw_data, rule, allow_column_letter=True):
+        if not rule:
+            return None, False
+        candidates = self._rule_header_candidates(
+            rule, allow_column_letter=allow_column_letter)
 
         value = self._lookup_raw_value(raw_data, candidates) if candidates else None
         if isinstance(value, str) and value.strip() == '':
@@ -3925,14 +4357,27 @@ class HrPayrollImportBatch(models.Model):
         desired_values = {}
         new_contract_needed = False
         line_map = self._get_contract_advantage_map(contract)
+        # JOURNEY J10 — the same order the payslip will read, so the amount put
+        # on the contract and the amount on the payslip cannot disagree. The
+        # component's own record mapping and its existing advantage amount are
+        # the two rungs BELOW the declared sources; a winner from either is a
+        # no-op here, which is exactly what `found=False` already means to the
+        # code below (keep whatever the contract says).
+        mapping_index = self._get_component_mapping_index()
+        component_amounts = self._contract_component_amounts(contract)
 
         for rule in rules:
             template = self._get_or_create_advantage_template(rule, template_cache)
             existing_line = line_map.get(template.code)
             is_text = 'value_type' in template._fields and template.value_type == 'text'
-            value, found = self._get_rule_raw_value(
+            value, found = self._writeback_raw_value(
                 raw_data,
                 rule,
+                mapping=mapping_index.get(rule.id),
+                line=line,
+                contract=contract,
+                employee=contract.employee_id or None,
+                component_amounts=component_amounts,
                 allow_column_letter=False,
             )
             if is_text:

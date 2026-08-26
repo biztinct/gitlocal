@@ -640,6 +640,12 @@
 .mapping-canvas .mc-src.s-rule               { background: #EDEAF8; color: #4A3D96; }
 .mapping-canvas .mc-src.s-contract_component { background: #FEF3C7; color: #B7791F; }
 .mapping-canvas .mc-src.s-employee_field     { background: #E8EEF7; color: #3B5B8C; }
+/* JOURNEY J10 — the record tier, in three spellings. Related hues, because
+   they are ONE RUNG of the ladder and a reader should see that at a glance;
+   distinct enough to tell apart, because which record a value is kept on is
+   exactly what the owner could not see. The glyphs carry it without colour. */
+.mapping-canvas .mc-src.s-contract_field     { background: #E4EBF6; color: #2F4E80; }
+.mapping-canvas .mc-src.s-bank_account       { background: #E7EEF3; color: #35617A; }
 .mapping-canvas .mc-src.s-calculated         { background: #DDD6F2; color: #241F52; }
 .mapping-canvas .mc-src.s-constant           { background: #EEF1F5; color: #64748B; }
 

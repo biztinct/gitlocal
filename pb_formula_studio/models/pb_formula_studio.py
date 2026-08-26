@@ -280,27 +280,94 @@ class PbFormulaStudio(models.AbstractModel):
     # creation path maintains it; its vocabulary does not match the resolver's; and
     # no line of the payroll pipeline reads it. It stays demoted (owner ruling O-3).
     # ==================================================================
-    #: The eight kinds, and whether a mapping board may draw a wire to one.
+    #: The source kinds (ten since J10), and whether a mapping board may draw
+    #: a wire to one. The record destinations are drawn on the Employee &
+    #: contract board, not onto a scheme card, so they are not wirable here.
     _SOURCE_WIRABLE = {'excel', 'feed', 'rule'}
 
     @api.model
-    def _source_employee_dest_ids(self, config):
-        """Rules that read a field off the employee/contract record.
+    def _source_record_dests(self, config):
+        """Where each component lands on the employee/contract/bank record.
 
         One query for the whole config. `hr.payslip.import.mapping` is the
         employee-field board's model — NOT `hr.integration.field.mapping`, which is
         the vendor feed's. The two were conflated once already (see the resolver's
         own note at `payroll_import_batch.py:2648-2661`) and the distinction is
         exactly what tells "Employee record" from "Connected system".
+
+        JOURNEY J10 — THIS RETURNED A BARE `set()` OF RULE IDS, and that is why
+        the owner's screenshot showed DESIGNATION as "Connected system" and
+        nothing else. A set can answer "does this component write to a record"
+        and nothing more: neither WHICH record nor WHICH FIELD was available to
+        render, so the tier could only ever be a single unnamed chip — and
+        `_declared_sources` could only reach it when nothing else was declared.
+        It returns `{rule_id: {'kind', 'key', 'label'}}` now:
+
+          `destination_type='bank_account'`  → `bank_account`, key = bank role
+          `field` on `hr.contract`           → `contract_field`
+          `field` on `hr.employee`           → `employee_field`
+
+        `key` is the TECHNICAL name because that is what the `(kind, key)` fold
+        compares; `label` is what a reader sees. `in` works on a dict as it did
+        on a set, which is exactly why every call site was changed in one go
+        rather than found later by a failure.
+
+        ONE SQL statement, deliberately. The ORM path is four constant-cost
+        reads (mappings, `ir_model`, `ir_model_fields`, then the translations),
+        which is fine, but this is a chip on a ninety-nine card board and the
+        join is trivial. `field_description` is a translated column and is read
+        as jsonb with a plain-text fallback, so the same code serves a database
+        where it is not.
         """
         Mapping = self.env.get('hr.payslip.import.mapping')
         if Mapping is None or not config.rule_ids:
-            return set()
+            return {}
+        lang = self.env.lang or self.env.user.lang or 'en_US'
         try:
-            found = Mapping.sudo().search([('component_id', 'in', config.rule_ids.ids)])
+            self.env.cr.execute("""
+                SELECT m.component_id, m.destination_type, m.bank_role,
+                       im.model, imf.name, imf.field_description::text
+                  FROM hr_payslip_import_mapping m
+             LEFT JOIN ir_model im ON im.id = m.target_model_id
+             LEFT JOIN ir_model_fields imf ON imf.id = m.target_field_id
+                 WHERE m.component_id IN %s
+              ORDER BY m.id ASC
+            """, (tuple(config.rule_ids.ids),))
+            rows = self.env.cr.fetchall()
         except Exception:       # noqa: BLE001 — a chip must never break the studio
-            return set()
-        return {m.component_id.id for m in found if m.component_id}
+            return {}
+        bank_labels = dict(Mapping._fields['bank_role'].selection)
+        out = {}
+        for rule_id, dest, bank_role, model, field_name, description in rows:
+            if not rule_id or rule_id in out:
+                continue        # lowest id wins, as `_get_bank_mappings` does
+            if dest == 'bank_account':
+                if not bank_role:
+                    continue
+                out[rule_id] = {'kind': 'bank_account', 'key': bank_role,
+                                'label': bank_labels.get(bank_role) or bank_role}
+                continue
+            kind = ('contract_field' if model == 'hr.contract'
+                    else 'employee_field' if model == 'hr.employee' else None)
+            if not kind or not field_name:
+                continue
+            out[rule_id] = {'kind': kind, 'key': field_name,
+                            'label': self._field_label(description, field_name,
+                                                       lang)}
+        return out
+
+    @api.model
+    def _field_label(self, description, fallback, lang='en_US'):
+        """`ir_model_fields.field_description` read out of a jsonb column."""
+        if not description:
+            return fallback
+        try:
+            blob = json.loads(description)
+        except (TypeError, ValueError):
+            return description or fallback
+        if not isinstance(blob, dict):
+            return str(blob) or fallback
+        return blob.get(lang) or blob.get('en_US') or fallback
 
     # ==================================================================
     # JOURNEY J3 S2 — two live sources on one component, detected ONCE.
@@ -525,7 +592,7 @@ class PbFormulaStudio(models.AbstractModel):
         return blob, (slip.date_to and slip.date_to.strftime('%B %Y')) or slip.name or ''
 
     @api.model
-    def _declared_source(self, rule, emp_dest_rule_ids, wire_dests=None):
+    def _declared_source(self, rule, record_dests, wire_dests=None):
         """What configuration SAYS feeds this component.
 
         Order matters, and every tier above the last is something a PERSON stated:
@@ -549,7 +616,7 @@ class PbFormulaStudio(models.AbstractModel):
         deprecated: four callers want the winning source and nothing else, and
         handing them a list to index would be a change with no reader.
         """
-        return self._declared_sources(rule, emp_dest_rule_ids, wire_dests)[0]
+        return self._declared_sources(rule, record_dests, wire_dests)[0]
 
     #: JOURNEY J9 — the boards' copy of the resolver's order, and it is a COPY of
     #: nothing: `hr.formula.rule._SOURCE_RANK` is the definition and this reads
@@ -559,7 +626,7 @@ class PbFormulaStudio(models.AbstractModel):
         return self.env['hr.formula.rule']._SOURCE_RANK
 
     @api.model
-    def _declared_sources(self, rule, emp_dest_rule_ids, wire_dests=None):
+    def _declared_sources(self, rule, record_dests, wire_dests=None):
         """EVERY source this component declares, in the order a run reads them.
 
         JOURNEY J9. The owner removed the either/or restriction, so this returns
@@ -584,8 +651,16 @@ class PbFormulaStudio(models.AbstractModel):
           0. a calculated or fixed column is that, whatever else is set on it;
           1. the declared sources (`source_ids`), ranked;
           2. a live connector wire, folded in when it is not already one of them;
-          3. the contract component, always last among things a person stated;
-          4. below that, a description of what the component IS.
+          3. **the mapped record destination** (J10) — employee field, contract
+             field or bank account, at rank 4, where the resolver's tail has
+             always read it;
+          4. the contract component, always last among things a person stated;
+          5. below that, a description of what the component IS.
+
+        `record_dests` is `_source_record_dests(config)`, computed once for the
+        whole config. It was a bare set of rule ids until J10 and is a dict now;
+        `in` works on both, which is why every call site was changed together —
+        a missed one would have failed SILENTLY rather than loudly.
         """
         if rule.column_type == 'formula':
             return [{'kind': 'calculated', 'key': '', 'wirable': False}]
@@ -608,21 +683,55 @@ class PbFormulaStudio(models.AbstractModel):
             if pair not in seen:
                 seen.add(pair)
                 out.append({'kind': pair[0], 'key': pair[1], 'wirable': True})
+        # ==============================================================
+        # JOURNEY J10 — THE RECORD IS A SOURCE TOO, AND IT IS RANK 4.
+        #
+        # This block used to sit BELOW an `if out: return out`, which made the
+        # record tier reachable only when nothing else was declared — the
+        # owner's exact bug report: *"Currently you are showing EMPLOYEE RECORD
+        # or CONTRACT RECORD only if that is the only source."* Ten of abm's
+        # twenty-one mappings sat on a component that already declared
+        # something, so ten cards were silently hiding half of what they do.
+        #
+        # The contract component two lines below has been APPENDED
+        # unconditionally since J9, and that is precisely the treatment the
+        # owner asked for here — so the early return goes and this joins the
+        # ranked list. NOTHING MOVED (J-D5): rank 4 is where the resolver's tail
+        # has always read it, after the spreadsheet and before the contract
+        # component (`payroll_import_batch.get_mapped_input_value`).
+        #
+        # `employee_field`, `contract_field` and `bank_account` are ONE RUNG,
+        # not three: a component carries at most one `hr.payslip.import.mapping`
+        # row, so they never compete. The `(kind, key)` fold still applies —
+        # nothing else can produce these kinds today, but a database that grew
+        # a second way to say it must not render the same fact twice.
+        # ==============================================================
+        dest = (record_dests or {}).get(rule.id)
+        if dest:
+            pair = (dest['kind'], (dest['key'] or '').strip())
+            if pair not in seen:
+                seen.add(pair)
+                out.append({'kind': pair[0], 'key': pair[1], 'wirable': False,
+                            'label': dest.get('label') or pair[1]})
         out.sort(key=lambda d: rank.index(d['kind']))
         if rule.is_contract_component:
             out.append({'kind': 'contract_component', 'key': '',
                         'wirable': False})
         if out:
             return out
-        if rule.id in emp_dest_rule_ids:
-            return [{'kind': 'employee_field', 'key': '', 'wirable': False}]
         return [{'kind': 'none', 'key': '', 'wirable': True}]
 
     #: Board-chip wording. Kept next to the vocabulary it uses so a board can
     #: never invent a ninth term. Mirrors `srcLabel` in `source_vocab.js`.
+    #: JOURNEY J10 — ten terms now, and the two new ones are SPLIT OUT of one
+    #: that was doing two jobs. "Employee record" was shown for a mapping onto
+    #: `hr.contract` as readily as one onto `hr.employee`, because the tier
+    #: below could not tell them apart (it was a set of rule ids). A component
+    #: whose designation lands on the CONTRACT now says so.
     _SOURCE_LABELS = {
         'excel': "Spreadsheet", 'feed': "Connected system", 'rule': "Rule output",
         'contract_component': "Contract component", 'employee_field': "Employee record",
+        'contract_field': "Contract record", 'bank_account': "Bank account",
         'calculated': "Calculated", 'constant': "Fixed value", 'none': "No source",
     }
 
@@ -631,8 +740,8 @@ class PbFormulaStudio(models.AbstractModel):
         """The one translated label for a source kind.
 
         `_SOURCE_LABELS` above is the untranslated register — it exists so a board
-        can never invent a ninth term, and it is read where the string is a key
-        rather than a sentence. This is the TRANSLATED reading of the same eight
+        can never invent a term of its own, and it is read where the string is a
+        key rather than a sentence. This is the TRANSLATED reading of the same ten
         words, with every literal written out so gettext can find it: `_(variable)`
         extracts nothing and ships English forever (S19's family — a translation
         that fails silently at the point of use).
@@ -643,6 +752,8 @@ class PbFormulaStudio(models.AbstractModel):
             'rule': _("Rule output"),
             'contract_component': _("Contract component"),
             'employee_field': _("Employee record"),
+            'contract_field': _("Contract record"),
+            'bank_account': _("Bank account"),
             'calculated': _("Calculated"),
             'constant': _("Fixed value"),
             'none': _("No source"),
@@ -816,35 +927,49 @@ class PbFormulaStudio(models.AbstractModel):
             out.append({
                 'kind': kind,
                 'key': src.get('key') or '',
+                # J10 — the human name, when the key is a technical one. The
+                # client prefers it for the chip's own text and the server has
+                # already used it in `note`.
+                'label': src.get('label') or '',
                 'rank': (pos + 1) if total > 1 else 0,
                 'note': self._source_rank_note(kind, src.get('key') or '',
-                                               pos, total),
+                                               pos, total,
+                                               label=src.get('label')),
             })
         return out
 
     @api.model
-    def _source_rank_note(self, kind, key, pos, total):
+    def _source_rank_note(self, kind, key, pos, total, label=None):
         """The tooltip on one ranked chip: what it reads, and when.
 
         Every literal is written out — `_(variable)` extracts nothing and ships
         English forever (S19). The vocabulary stays inside `_SOURCE_LABELS`; no
-        ninth term appears here.
+        term of this method's own appears here.
+
+        JOURNEY J10 — `label` is the HUMAN name of what is read, and the record
+        tiers are the reason it exists. The key a record source folds on is the
+        technical field name (`job_id`), which is the right thing to compare and
+        the wrong thing to show: the sentence a reader wants is *"Reads Job
+        Position from the contract record"*. Every other kind's key is already
+        the name a person typed, so they pass nothing and read exactly as they
+        did.
         """
-        label = self._source_label(kind)
+        src = self._source_label(kind)
+        shown = label or key
         if total <= 1:
-            if key:
-                return _("Reads “%(key)s” from %(src)s.", key=key, src=label)
-            return _("Read from %s.") % label
+            if shown:
+                return _("Reads “%(key)s” from %(src)s.", key=shown, src=src)
+            return _("Read from %s.") % src
         if pos == 0:
-            if key:
+            if shown:
                 return _("Reads “%(key)s” from %(src)s. Tried first.",
-                         key=key, src=label)
-            return _("Read from %s. Tried first.") % label
-        if key:
+                         key=shown, src=src)
+            return _("Read from %s. Tried first.") % src
+        if shown:
             return _("Reads “%(key)s” from %(src)s. Used when nothing above "
-                     "delivered a value.", key=key, src=label)
+                     "delivered a value.", key=shown, src=src)
         return _("Read from %s. Used when nothing above delivered a value.") \
-            % label
+            % src
 
     @api.model
     def _mc_right_item(self, rule, declared, note='', lineage=None, conflict=None):
@@ -927,7 +1052,7 @@ class PbFormulaStudio(models.AbstractModel):
         return item
 
     @api.model
-    def _mc_right_column(self, config, actuals, emp_dest, wirable_only=False,
+    def _mc_right_column(self, config, actuals, record_dests, wirable_only=False,
                          wire_dests=None, lineage=None, board=''):
         """Every component a mapping board should show, in display order.
 
@@ -942,7 +1067,7 @@ class PbFormulaStudio(models.AbstractModel):
         conflicts = self._source_conflicts(config) if board else {}
         out = []
         for r in rules:
-            declared = self._declared_sources(r, emp_dest, wire_dests)
+            declared = self._declared_sources(r, record_dests, wire_dests)
             # JOURNEY J9 — a card that already renders its sources RANKED is
             # saying the whole thing; the conflict chip would hand the reader the
             # same fact a second time, in weaker words. S6 D1's principle, one
@@ -950,12 +1075,13 @@ class PbFormulaStudio(models.AbstractModel):
             conflict = (self._conflict_chip(conflicts.get(r.id), board)
                         if len(declared) < 2 else None)
             out.append(self._mc_right_item(
-                r, declared, self._source_note(r, actuals, emp_dest, wire_dests),
+                r, declared, self._source_note(r, actuals, record_dests,
+                                              wire_dests),
                 lineage, conflict))
         return out
 
     @api.model
-    def _source_note(self, rule, actuals, emp_dest_rule_ids, wire_dests=None):
+    def _source_note(self, rule, actuals, record_dests, wire_dests=None):
         """The one-line note a mapping board shows against a component.
 
         Says what already feeds this target, so a user drawing a wire can see it
@@ -968,15 +1094,16 @@ class PbFormulaStudio(models.AbstractModel):
         to state, and rewording it would churn every card on every board to say
         the same thing differently.
         """
-        declared = self._declared_sources(rule, emp_dest_rule_ids, wire_dests)
+        declared = self._declared_sources(rule, record_dests, wire_dests)
         if len(declared) > 1:
             parts = []
             for src in declared:
                 label = self._source_label(src['kind'])
+                # J10 — a record source shows its FIELD LABEL, never `job_id`.
+                shown = src.get('label') or src['key']
                 # The label is already translated; the quotes around a KEY are
                 # punctuation, not a sentence, so nothing here goes to gettext.
-                parts.append('%s “%s”' % (label, src['key'])
-                             if src['key'] else label)
+                parts.append('%s “%s”' % (label, shown) if shown else label)
             return _("Read in this order: %s") % ', '.join(parts)
         kind = declared[0]['kind']
         if kind == 'none':
@@ -988,10 +1115,10 @@ class PbFormulaStudio(models.AbstractModel):
         return _("Already fed by %s") % label
 
     @api.model
-    def _source_block(self, rule, actuals, actual_run, emp_dest_rule_ids,
+    def _source_block(self, rule, actuals, actual_run, record_dests,
                       wire_dests=None):
         block = {'declared': self._declared_source(
-            rule, emp_dest_rule_ids, wire_dests)}
+            rule, record_dests, wire_dests)}
         entry = actuals.get(rule.code or '')
         if entry and isinstance(entry, dict):
             block['actual'] = {
@@ -1038,7 +1165,7 @@ class PbFormulaStudio(models.AbstractModel):
         # is pure per-rule derivation. Doing it here rather than inside the loop is
         # what keeps a 250-column scheme at one extra query instead of 250.
         actuals, actual_run = self._source_actuals(config)
-        emp_dest_rule_ids = self._source_employee_dest_ids(config)
+        record_dests = self._source_record_dests(config)
         # SOURCING S6 — and the wires that were drawn before bindings existed. One
         # search for the whole config; a component with a live connector wire stops
         # saying "No source chosen" about a source somebody explicitly drew.
@@ -1086,7 +1213,7 @@ class PbFormulaStudio(models.AbstractModel):
                 # source block" rather than to half a truth. Same contract as
                 # `column_role` above, for the same reason.
                 'source': self._source_block(
-                    r, actuals, actual_run, emp_dest_rule_ids, wire_dests),
+                    r, actuals, actual_run, record_dests, wire_dests),
             })
 
         samples = [{'id': s.id, 'name': s.name} for s in config.sample_data_ids]
@@ -5164,7 +5291,7 @@ class PbFormulaStudio(models.AbstractModel):
         # SOURCING S5 — and it now shows CALCULATED components too, sealed rather
         # than filtered out, so a reader stops wondering where they went.
         _acts, _run = self._source_actuals(config)
-        _emp = self._source_employee_dest_ids(config)
+        _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
         # SOURCING S6 — lineage for the right column too, and NOT limited to the
         # connector this board happens to be showing (S20). `lineage_by_key` above
@@ -5568,6 +5695,12 @@ class PbFormulaStudio(models.AbstractModel):
         if wired and wired['kind'] != in_kind \
                 and (wired['kind'], (wired['key'] or '').strip()) not in specs:
             specs.append((wired['kind'], (wired['key'] or '').strip()))
+        # J10 — and so is the record this component is copied onto, for exactly
+        # the same reason one line up: the dialog must not describe a shorter
+        # order than the card behind it is showing.
+        dest = self._source_record_dests(rule.config_id).get(rule.id)
+        if dest and (dest['kind'], dest['key']) not in specs:
+            specs.append((dest['kind'], dest['key']))
         specs.sort(key=lambda s: rank.index(s[0]))
         out = [{'label': self._source_label(k), 'key': key, 'rank': i + 1}
                for i, (k, key) in enumerate(specs)]
@@ -6011,7 +6144,7 @@ class PbFormulaStudio(models.AbstractModel):
                     'connector': {'id': conn.id, 'name': conn.name or ''}}
 
         _acts, _run = self._source_actuals(config)
-        _emp = self._source_employee_dest_ids(config)
+        _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
         right = self._mc_right_column(
             config, _acts, _emp, wire_dests=_wires,
@@ -6237,7 +6370,7 @@ class PbFormulaStudio(models.AbstractModel):
         return len(rows), read_back, bank
 
     @api.model
-    def _journey_scheme_lane(self, config, emp_dest, wire_dests):
+    def _journey_scheme_lane(self, config, record_dests, wire_dests):
         """The component picture, every number defended by a direct count.
 
         One pass over `config.rule_ids`, asking `_declared_source` the same
@@ -6250,7 +6383,7 @@ class PbFormulaStudio(models.AbstractModel):
         wired_ids = set()
         for rule in config.rule_ids:
             counts['total'] += 1
-            declared = self._declared_source(rule, emp_dest, wire_dests)
+            declared = self._declared_source(rule, record_dests, wire_dests)
             kind = declared['kind']
             if rule.column_type == 'input':
                 counts['inputs'] += 1
@@ -6263,7 +6396,12 @@ class PbFormulaStudio(models.AbstractModel):
                 counts['constant'] += 1
             elif kind == 'contract_component':
                 counts['contract'] += 1
-            elif kind == 'employee_field':
+            elif kind in ('employee_field', 'contract_field', 'bank_account'):
+                # J10 — one rung with three spellings. The lane counts people
+                # data, and a designation kept on the contract is people data
+                # exactly as much as one kept on the employee; splitting the
+                # bar would be telling the reader about a mechanism instead of
+                # about their scheme.
                 counts['people'] += 1
             else:
                 counts['unfed'] += 1
@@ -6309,11 +6447,11 @@ class PbFormulaStudio(models.AbstractModel):
 
         # ---- what wires exist, once, for the whole board ---------------------
         emp_total, read_back_ids, bank_rows = self._journey_people_mappings(config)
-        emp_dest = self._source_employee_dest_ids(config)
+        record_dests = self._source_record_dests(config)
         wire_dests = self._source_wire_dests(config)
         conflicts = self._source_conflicts(config)
         scheme_counts, wired_ids = self._journey_scheme_lane(
-            config, emp_dest, wire_dests)
+            config, record_dests, wire_dests)
 
         input_ids = set(config.rule_ids.filtered(
             lambda r: r.column_type == 'input').ids)
@@ -7392,7 +7530,7 @@ class PbFormulaStudio(models.AbstractModel):
         cols = self._import_batch_columns(batch) if batch else []
         left = self._import_left_columns(batch, cols, input_rules, config=config)
         _acts, _run = self._source_actuals(config)
-        _emp = self._source_employee_dest_ids(config)
+        _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
         right = self._mc_right_column(
             config, _acts, _emp, wire_dests=_wires,
