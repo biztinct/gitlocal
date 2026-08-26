@@ -175,18 +175,46 @@ class HrFormulaRule(models.Model):
     #
     # Empty means "match by name, as before" — the unbound ladder is untouched and
     # is still how every component in every existing database resolves.
+    #
     # ==================================================================
+    # JOURNEY J9 — THE BINDING IS PLURAL NOW, AND THESE FIVE FIELDS ARE ITS HEAD.
+    #
+    # The owner removed the either/or restriction: a component may declare a
+    # connected-system key AND a spreadsheet column AND be kept on the contract,
+    # and the order between them has to be stated. The declarations live in
+    # `source_ids` (`hr.formula.rule.source`, one row per KIND); the five Chars
+    # below became COMPUTED, STORED and READONLY views of the highest-ranked row.
+    #
+    # They are kept — not deprecated, not renamed — because there are seventy-odd
+    # references to them across six files, including two `search()` domains in
+    # `pb_integrations` that need them stored and searchable. Every one keeps
+    # working untouched, reading exactly what it read before on every
+    # single-source component, which is all of them on all four live databases
+    # except GASALLOWANCE.
+    #
+    # WRITE THROUGH `set_source_binding` / `clear_source_binding`, never directly:
+    # a direct write to a stored computed field sticks until the next recompute
+    # and then silently disagrees with `source_ids`.
+    # ==================================================================
+    source_ids = fields.One2many(
+        'hr.formula.rule.source', 'rule_id', string='Sources',
+        help="Every source this component declares. A pay run reads them in "
+             "order: connected system, then rule output, then spreadsheet, and "
+             "the contract component last.")
+
     source_binding = fields.Selection([
         ('excel', 'Spreadsheet column'),
         ('feed', 'Connected system key'),
         ('rule', 'Rule output'),
-    ], string='Source',
-       help="Where this component's value is taken from when a run imports it. "
-            "Leave it empty to let the system match the component by name, "
-            "which is what happens today.")
+    ], string='Source', compute='_compute_source_binding', store=True,
+       readonly=True,
+       help="The first source this component reads. It is set by adding a "
+            "source; leave the component with none to let the system match it "
+            "by name, which is what happens today.")
 
     source_binding_key = fields.Char(
-        string='Source key',
+        string='Source key', compute='_compute_source_binding', store=True,
+        readonly=True,
         help="The column header, feed key or rule output name this component reads.")
 
     source_binding_origin = fields.Selection([
@@ -194,57 +222,67 @@ class HrFormulaRule(models.Model):
         ('board', 'Drawn on a mapping board'),
         ('import', 'Set during import'),
         ('migration', 'Inferred on upgrade'),
-    ], string='How the source was set',
+    ], string='How the source was set', compute='_compute_source_binding',
+       store=True, readonly=True,
        help="Whether a person chose this source or the system inferred it.")
 
-    source_binding_date = fields.Datetime(string='Source set on', readonly=True)
+    source_binding_date = fields.Datetime(
+        string='Source set on', compute='_compute_source_binding', store=True,
+        readonly=True)
     source_binding_uid = fields.Many2one(
-        'res.users', string='Source set by', readonly=True, ondelete='set null')
+        'res.users', string='Source set by', compute='_compute_source_binding',
+        store=True, readonly=True, ondelete='set null')
+
+    #: JOURNEY J9 — the order the resolver reads declared sources in. It is the
+    #: order that was already in `payroll_import_batch.py`; nothing moved (J-D5).
+    #: `feed` before `rule` because both arrive in the FEED payload and a
+    #: connector's own field mapping is the more specific statement; `excel`
+    #: third. The contract component is not a binding — it is rank 4, always
+    #: last, and it is added by `declared_sources()` rather than stored.
+    _SOURCE_RANK = ('feed', 'rule', 'excel')
+
+    @api.depends('source_ids.kind', 'source_ids.key', 'source_ids.origin',
+                 'source_ids.set_date', 'source_ids.set_uid')
+    def _compute_source_binding(self):
+        """The highest-ranked declared source, as the five legacy Chars.
+
+        T4 — this must never MANUFACTURE a binding. A sealed column has no source
+        rows (the child model refuses them), so it computes to False and
+        `_check_source_binding` has nothing to object to, which is what keeps a
+        live upgrade from aborting half-way through a scheme of ninety-nine
+        columns.
+        """
+        rank = self._SOURCE_RANK
+        for rule in self:
+            rows = [s for s in rule.source_ids
+                    if s.kind in rank and (s.key or '').strip()]
+            rows.sort(key=lambda s: rank.index(s.kind))
+            top = rows[0] if rows else None
+            rule.source_binding = top.kind if top else False
+            rule.source_binding_key = (top.key or '').strip() if top else False
+            rule.source_binding_origin = (top.origin or 'user') if top else False
+            rule.source_binding_date = top.set_date if top else False
+            rule.source_binding_uid = top.set_uid.id if (top and top.set_uid) else False
 
     binding_dangling = fields.Boolean(
         compute='_compute_binding_dangling',
         string='Source no longer exists',
         help="This component names a source that nothing currently provides.")
 
-    @api.depends('source_binding', 'source_binding_key', 'config_id.connector_id')
+    @api.depends('source_ids.dangling')
     def _compute_binding_dangling(self):
-        """Does anything currently answer to the name this component is bound to?
+        """Does anything currently answer to the names this component declares?
 
-        Deliberately NOT stored: it is a statement about the world outside this
-        record (a rule that may be archived tomorrow, a catalogue that changes on
-        every sync), and a stored copy would be wrong between syncs — which is the
-        whole disease this programme is treating.
-
-        `excel` is advisory only. A spreadsheet column exists when a spreadsheet is
-        uploaded; calling a binding "dangling" because no file happens to be loaded
-        right now would be a false alarm on every fresh scheme.
+        T6 — one boolean over N sources now. Deliberately NOT stored: it is a
+        statement about the world outside this record (a rule that may be
+        archived tomorrow, a catalogue that changes on every sync), and a stored
+        copy would be wrong between syncs — which is the whole disease this
+        programme is treating. The per-source answer, including `excel` never
+        being dangling and an EMPTY catalogue meaning "unknown" rather than
+        "gone", lives on the child so there is one definition of it.
         """
-        Rule = self.env.get('hr.api.transformation.rule')
         for rule in self:
-            kind, key = rule.source_binding, (rule.source_binding_key or '').strip()
-            if not kind or not key or kind == 'excel':
-                rule.binding_dangling = False
-                continue
-            connector = rule.config_id.connector_id
-            if not connector:
-                rule.binding_dangling = False
-                continue
-            if kind == 'rule':
-                rule.binding_dangling = not (Rule is not None and Rule.sudo().search_count([
-                    ('connector_id', '=', connector.id), ('output_key', '=', key)]))
-            else:
-                # `get_available_source_fields` is the catalogue the mapping board
-                # itself draws from, so a binding is judged against exactly what a
-                # user would have been offered. An EMPTY catalogue means the
-                # connector has never synced — that is "unknown", not "dangling",
-                # and must not raise a false alarm.
-                try:
-                    paths = {f.get('path') for f in (
-                        self.env['hr.integration.field.mapping'].sudo()
-                        .get_available_source_fields(connector.id) or [])}
-                except Exception:       # noqa: BLE001 — a chip must never break a form
-                    paths = set()
-                rule.binding_dangling = bool(paths) and key not in paths
+            rule.binding_dangling = any(s.dangling for s in rule.source_ids)
 
     @api.constrains('source_binding', 'source_binding_key', 'column_type')
     def _check_source_binding(self):
@@ -258,16 +296,84 @@ class HrFormulaRule(models.Model):
                     "“%s” is calculated — it needs no source.")
                     % (rule.code or rule.name or ''))
 
+    def declared_sources(self):
+        """Every source this component declares, in the order the resolver reads them.
+
+        JOURNEY J9. **This is the single definition of precedence**, and both the
+        resolver and every board must read it — two implementations of an order
+        is how the boards started disagreeing in the first place.
+
+        Returns an ordered list of `{'kind', 'key', 'origin'}`: the `source_ids`
+        sorted by `_SOURCE_RANK`, plus a trailing
+        `{'kind': 'contract_component', 'key': ''}` when `is_contract_component`.
+
+        A LIVE CONNECTOR WIRE IS NOT IN HERE, deliberately. A wire is read by the
+        connector pre-pass, which is a different mechanism gated on
+        `config.connector_id` (T5), and folding it in would make every wired
+        component on every live database suddenly "declare" a source it never
+        declared — twenty-two of them on abm — and enter the resolver's bound
+        branch for the first time. The display side folds the wire in, because a
+        drawn wire is something a person stated and belongs on the card; see
+        `pb_formula_studio._declared_sources`.
+        """
+        self.ensure_one()
+        rank = self._SOURCE_RANK
+        rows = [s for s in self.source_ids
+                if s.kind in rank and (s.key or '').strip()]
+        rows.sort(key=lambda s: rank.index(s.kind))
+        out = [{'kind': s.kind, 'key': (s.key or '').strip(),
+                'origin': s.origin or 'user'} for s in rows]
+        if self.is_contract_component:
+            out.append({'kind': 'contract_component', 'key': '',
+                        'origin': 'user'})
+        return out
+
     def set_source_binding(self, kind, key, origin='user'):
-        """The one way a binding is written, so the stamp cannot be forgotten."""
+        """Declare that this component reads `key` from `kind`.
+
+        JOURNEY J9 — THE SIGNATURE IS UNCHANGED AND THE MEANING IS NOW "UPSERT
+        THE ROW FOR THIS KIND, LEAVING OTHER KINDS ALONE". That single sentence
+        is the owner's "remove the restriction": drawing a feed wire onto a
+        component already bound to a spreadsheet column no longer silently throws
+        the spreadsheet column away.
+
+        `set_source_binding(False, ...)` still means CLEAR EVERYTHING, because
+        existing callers use it that way and a falsy first argument has never
+        meant anything else.
+        """
         for rule in self:
-            rule.write({
-                'source_binding': kind or False,
-                'source_binding_key': (key or '').strip() or False,
-                'source_binding_origin': origin if kind else False,
-                'source_binding_date': fields.Datetime.now() if kind else False,
-                'source_binding_uid': self.env.user.id if kind else False,
-            })
+            if not kind:
+                rule.clear_source_binding()
+                continue
+            clean = (key or '').strip()
+            if not clean:
+                raise ValidationError(_(
+                    "Choose which key “%s” reads, or clear its source.")
+                    % (rule.code or rule.name or ''))
+            existing = rule.source_ids.filtered(lambda s: s.kind == kind)
+            vals = {'kind': kind, 'key': clean, 'origin': origin,
+                    'set_date': fields.Datetime.now(),
+                    'set_uid': self.env.user.id}
+            if existing:
+                existing[0].write(vals)
+                (existing - existing[0]).unlink()
+            else:
+                rule.write({'source_ids': [(0, 0, vals)]})
+        return True
+
+    def clear_source_binding(self, kind=None):
+        """Remove a declared source. `None` removes every one of them.
+
+        The counterpart `set_source_binding` no longer has: once a component can
+        hold several sources, "stop reading the spreadsheet" and "stop reading
+        anything" are different acts and only one of them used to be expressible.
+        """
+        for rule in self:
+            rows = rule.source_ids
+            if kind:
+                rows = rows.filtered(lambda s: s.kind == kind)
+            if rows:
+                rows.unlink()
         return True
 
     source_sheet_name = fields.Char(

@@ -15,8 +15,14 @@
   <t t-name="pb_formula_studio.McItemLabel">
     <div class="mc-item-label">
       <span t-esc="it.label"/>
+      <!-- JOURNEY J9 — the rank is a real <sup>, never a Unicode superscript
+           character: a screen reader announces the element and skips the
+           glyph, and the font stack renders the element at every size where
+           the codepoint is missing from half the faces we ship. -->
       <span t-foreach="itemChips(it)" t-as="ch" t-key="ch.key"
-            t-att-class="ch.cls" t-att-title="ch.hint" t-esc="ch.label"/>
+            t-att-class="ch.cls" t-att-title="ch.hint">
+        <t t-esc="ch.label"/><sup t-if="ch.rank" t-esc="ch.rank"/>
+      </span>
       <!-- SOURCING S5 — lineage, in place. Only a card that HAS lineage grows the
            affordance, so every other board is unchanged. S6 — and a COMPONENT fed
            by a rule output has lineage too, which is why this lives here rather

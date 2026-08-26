@@ -50,3 +50,7 @@ from . import test_code_rename
 # JOURNEY J3 — the empty-feed guard, per-feed transformation rules, the
 # batch-free API read, and the broom.
 from . import test_journey_truth
+
+# JOURNEY J9 — the binding, plural: the ranked walk, its neutrality rail, the
+# migration and the per-source dangling check.
+from . import test_journey_j9_sources

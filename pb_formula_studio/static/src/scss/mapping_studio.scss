@@ -731,7 +731,11 @@
         padding: 16px 18px 10px; border-bottom: 1px solid var(--pbim-line);
         b { font-size: 14px; flex: 1; min-width: 0; }
     }
+    /* J9 — amber while this is a genuine conflict (two connections), primary
+       when it is a precedence notice. `.is-order` is set by the same condition
+       that chooses the glyph, so the colour and the icon cannot disagree. */
     .pbms-cfl__ic { flex: none; color: var(--pbim-amber); display: flex; }
+    .pbms-cfl.is-order .pbms-cfl__ic { color: var(--pbim-primary); }
     .pbms-cfl__body {
         margin: 0; padding: 14px 18px 4px;
         font-size: 12.5px; line-height: 1.55; color: var(--pbim-slate);
@@ -778,7 +782,29 @@
         &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
         &:disabled { opacity: .55; cursor: default; }
     }
-    .pbms-cfl__opt.keep { border-left: 3px solid var(--pbim-amber); }
+    /* JOURNEY J9 — "Add source" is the primary action now, so `keep` reads as
+       the recommended one rather than as the cautious alternative. */
+    .pbms-cfl__opt.keep {
+        border-left: 3px solid var(--pbim-primary);
+        background: var(--pbim-line-2);
+    }
+    /* The resulting order, with the same superscript grammar as the card. */
+    .pbms-cfl__order {
+        list-style: none; margin: 0; padding: 4px 18px 12px;
+        display: flex; flex-direction: column; gap: 6px;
+        li { display: flex; align-items: baseline; gap: 7px; }
+        b { font-size: 12.5px; }
+        code {
+            font-size: 11px; padding: 1px 6px; border-radius: 5px;
+            background: var(--pbim-line-2); color: var(--pbim-slate);
+        }
+    }
+    .pbms-cfl__rank {
+        flex: none; display: inline-grid; place-items: center;
+        width: 17px; height: 17px; border-radius: 999px;
+        background: var(--pbim-primary); color: #fff;
+        font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums;
+    }
     .pbms-cfl__f {
         display: flex; justify-content: flex-end;
         padding: 10px 18px 16px; border-top: 1px solid var(--pbim-line);

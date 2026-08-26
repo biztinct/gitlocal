@@ -2834,13 +2834,26 @@ class HrPayrollImportBatch(models.Model):
     #: new code path was never reached, rather than that it happened to agree.
     _sourcing_bound_branch_entered = 0
 
+    #: JOURNEY J9 — the SAME instrument, one arity further out. Incremented only
+    #: when a component declares TWO OR MORE sources and the ranked walk actually
+    #: runs. A component with exactly one declared source takes the single-source
+    #: branch below, which is S3's code unchanged, so a run over any of the four
+    #: live databases must leave this at zero. "The new path never executed" is a
+    #: strictly stronger claim than "the numbers agreed".
+    _multi_source_walk_entered = 0
+
     @api.model
     def _sourcing_reset_branch_counter(self):
         HrPayrollImportBatch._sourcing_bound_branch_entered = 0
+        HrPayrollImportBatch._multi_source_walk_entered = 0
 
     @api.model
     def _sourcing_branch_counter(self):
         return HrPayrollImportBatch._sourcing_bound_branch_entered
+
+    @api.model
+    def _sourcing_multi_walk_counter(self):
+        return HrPayrollImportBatch._multi_source_walk_entered
 
     def _transform_data_to_formula_inputs(self, raw_data, contract=None, employee=None,
                                           provenance=None, topup_data=None):
@@ -3231,10 +3244,17 @@ class HrPayrollImportBatch(models.Model):
                 # when it names a key. A half-set binding resolves as unbound
                 # rather than as "bound to nothing", so a partially-filled form can
                 # never make a component stop resolving.
-                bound_kind = rule.source_binding or False
-                bound_key = (rule.source_binding_key or '').strip()
-                if bound_kind and not bound_key:
-                    bound_kind = False
+                #
+                # JOURNEY J9 — and there may now be more than one of them.
+                # `declared_sources()` is the SINGLE definition of precedence,
+                # shared with every board; the contract-component entry it puts
+                # last is handled by the untouched tail below, not here, because
+                # the tail has read the contract's advantage lines since long
+                # before this branch existed.
+                declared = [d for d in rule.declared_sources()
+                            if d['kind'] in ('excel', 'feed', 'rule') and d['key']]
+                bound_kind = declared[0]['kind'] if declared else False
+                bound_key = declared[0]['key'] if declared else ''
                 bound_empty = False
                 matched_group = None
                 is_collaborate = self._normalize_header_key(rule.code or rule.name or '') == 'collaborate'
@@ -3311,7 +3331,87 @@ class HrPayrollImportBatch(models.Model):
                 # `_sourcing_bound_branch_entered` staying at zero, which is a
                 # stronger claim than the numbers merely agreeing.
                 # ----------------------------------------------------------
-                if bound_kind:
+                # ----------------------------------------------------------
+                # JOURNEY J9 — THE RANKED WALK, AND ITS NEUTRALITY RAIL.
+                #
+                # Two or more declared sources are read in `declared_sources()`
+                # order, taking the first that actually delivered a value by the
+                # resolver's own emptiness test (`0` and `False` ARE values —
+                # MJ15; a connector reporting zero overtime has answered the
+                # question). Reaching the end with nothing falls through to the
+                # untouched tail exactly as a single empty binding does.
+                #
+                # THE RAIL: this branch runs ONLY when a component declares two
+                # or more sources. One source takes S3's code below, verbatim,
+                # including its "search the other side by the bound key and then
+                # by the natural candidates" heuristic and its fallback
+                # provenance. That heuristic is what covers a kind the component
+                # has NOT declared — and with two kinds declared there is no
+                # undeclared blob left for it to cover, since a run carries at
+                # most two payloads. Only a second EXPLICIT source changes
+                # anything, so nothing about how any live database resolves
+                # changes until the owner draws a second wire.
+                # ----------------------------------------------------------
+                if bound_kind and len(declared) > 1:
+                    HrPayrollImportBatch._sourcing_bound_branch_entered += 1
+                    HrPayrollImportBatch._multi_source_walk_entered += 1
+                    hits = []           # (rank, kind, matched_key, value)
+                    covered = set()
+                    for pos, spec in enumerate(declared):
+                        blob, _origin = blob_for_kind(spec['kind'])
+                        covered.add(id(blob))
+                        if not blob:
+                            continue
+                        v_d, k_d = lookup_in_with_key(blob, [spec['key']])
+                        if isinstance(v_d, str) and v_d.strip() == '':
+                            v_d = None
+                        if v_d is not None:
+                            hits.append((pos, spec['kind'], k_d, v_d))
+                    if not hits:
+                        # A blob no declared kind names is still searched the way
+                        # a single binding searches "the other side" — by every
+                        # declared key first, then by the component's natural
+                        # candidates. It is unreachable when both kinds of blob
+                        # are declared, and it is what stops a SECOND source ever
+                        # making a component resolve to less than one source did.
+                        for blob, origin in (
+                                (raw_data, primary_origin), (topup, topup_origin)):
+                            if id(blob) in covered or not blob:
+                                continue
+                            v_u, k_u = lookup_in_with_key(
+                                blob, [d['key'] for d in declared]
+                                + candidates + column_candidates)
+                            if isinstance(v_u, str) and v_u.strip() == '':
+                                v_u = None
+                            if v_u is not None:
+                                hits.append((None, origin, k_u, v_u))
+                                break
+                    if hits:
+                        win_pos, win_kind, win_key, win_value = hits[0]
+                        input_values[rule.code] = normalize_input_value(
+                            rule, win_value)
+                        raw_input_codes.add(rule.code)
+                        if prov is not None:
+                            # The unused sides are REPORTED, never silently
+                            # dropped — the owner's standing rule, and S2's
+                            # `ignored_side` rather than a second helper.
+                            ignored = None
+                            if len(hits) > 1:
+                                _p, o_kind, o_key, o_value = hits[1]
+                                ignored = input_provenance.ignored_side(
+                                    o_kind, o_key, o_value)
+                            first = win_pos == 0
+                            prov[rule.code] = input_provenance.entry(
+                                win_kind, key=win_key,
+                                via='binding' if first else 'fallback',
+                                fell_back=not first, ignored=ignored)
+                        continue
+                    # Nothing anywhere. Fall through to the untouched tail, so the
+                    # value is exactly what an unbound component would get; only
+                    # the explanation differs.
+                    value = None
+                    bound_empty = True
+                elif bound_kind:
                     HrPayrollImportBatch._sourcing_bound_branch_entered += 1
                     side_b, _bo = blob_for_kind(bound_kind)
                     side_o, other_origin = (

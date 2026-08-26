@@ -19,6 +19,10 @@ from . import input_provenance
 from . import formula_config
 from . import formula_config_tests
 from . import formula_rule
+# JOURNEY J9 — the binding, plural. Imported AFTER `formula_rule` so the o2m's
+# comodel is registered first (W84's family: the registry adds model classes in
+# import order).
+from . import formula_rule_source
 from . import formula_rule_version
 from . import shadow_run
 from . import formula_simulation

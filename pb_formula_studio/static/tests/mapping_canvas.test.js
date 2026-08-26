@@ -2373,3 +2373,192 @@ test("J8 — `placeInLane` puts a component card before the bank lane", () => {
     expect(list.map((i) => i.id)).toEqual([
         "f:hr.contract:wage", "c:amount", "b:acc_number", "f:hr.employee:x"]);
 });
+
+// ==================================================================
+// JOURNEY J9 — every source on the card, with its place in the order.
+//
+// The owner withdrew the one-source-per-component restriction, so a card may now
+// carry several source chips and the reader has to be able to see which one wins.
+// Everything below is asserted on KINDS, RANKS and COUNTS rather than on label
+// TEXT: `_t()` inside the runner is MJ3's trap, and a chip's word is a Python
+// assertion (`test_journey_j9_display.py`) where gettext can actually see it.
+// ==================================================================
+async function j9Canvas() {
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props({}) });
+    await animationFrame();
+    return canvas;
+}
+
+test("J9 — one source: one chip, and no superscript", async () => {
+    const canvas = await j9Canvas();
+    const chips = canvas.srcChips({
+        srcKind: "excel", srcNote: "note",
+        srcKinds: [{ kind: "excel", key: "SEVL|Gas", rank: 0, note: "n" }],
+        meta: {},
+    });
+    expect(chips.length).toBe(1);
+    expect(chips[0].kind).toBe("excel");
+    // a number that is always 1 is decoration, and these chips have to keep
+    // meaning "read me"
+    expect(chips[0].rank).toBe(0);
+});
+
+test("J9 — two sources rank 1 and 2, three rank 1, 2 and 3, in resolver order", async () => {
+    const canvas = await j9Canvas();
+    const two = canvas.srcChips({
+        srcKind: "feed",
+        srcKinds: [
+            { kind: "feed", key: "Gas", rank: 1, note: "a" },
+            { kind: "excel", key: "SEVL|Gas", rank: 2, note: "b" },
+        ],
+        meta: {},
+    });
+    expect(two.map((c) => c.kind)).toEqual(["feed", "excel"]);
+    expect(two.map((c) => c.rank)).toEqual([1, 2]);
+    const three = canvas.srcChips({
+        srcKind: "feed",
+        srcKinds: [
+            { kind: "feed", key: "Gas", rank: 1, note: "a" },
+            { kind: "excel", key: "SEVL|Gas", rank: 2, note: "b" },
+            { kind: "contract_component", key: "", rank: 3, note: "c" },
+        ],
+        meta: {},
+    });
+    expect(three.map((c) => c.rank)).toEqual([1, 2, 3]);
+});
+
+test("J9 — the rank is among the sources ON THIS CARD, not per type", async () => {
+    // Spreadsheet + Contract component reads 1 and 2, never 2 and 3. The server
+    // numbers them (`_mc_src_kinds`) and the client renders exactly what it was
+    // given, so this asserts the client adds no opinion of its own.
+    const canvas = await j9Canvas();
+    const chips = canvas.srcChips({
+        srcKind: "excel",
+        srcKinds: [
+            { kind: "excel", key: "SEVL|Gas", rank: 1, note: "a" },
+            { kind: "contract_component", key: "", rank: 2, note: "b" },
+        ],
+        meta: {},
+    });
+    expect(chips.map((c) => c.rank)).toEqual([1, 2]);
+});
+
+test("J9 — a card with srcKind and no srcKinds renders one unranked chip", async () => {
+    // The compatibility rail: a board whose adapter predates `srcKinds`, or a
+    // stale bundle against a new server, must render exactly as it does today.
+    const canvas = await j9Canvas();
+    const chips = canvas.srcChips({ srcKind: "feed", srcNote: "note", meta: {} });
+    expect(chips.length).toBe(1);
+    expect(chips[0].kind).toBe("feed");
+    expect(chips[0].rank).toBe(0);
+    expect(canvas.srcChips({ srcKind: "none", meta: {} }).length).toBe(0);
+    expect(canvas.srcChips({ meta: {} }).length).toBe(0);
+});
+
+test("J9 — a sealed card renders no source chip and keeps its badge", async () => {
+    // SOURCING S6 D1 must not regress: the badge says "Calculated" and can carry
+    // the sentence; a source chip beside it repeats the word.
+    const canvas = await j9Canvas();
+    const sealed = {
+        srcKind: "", srcKinds: [],
+        meta: { wirable: false, badge: "Calculated", badgeTone: "calc" },
+    };
+    expect(canvas.srcChips(sealed).length).toBe(0);
+    // even if a server sent both, the client refuses
+    expect(canvas.srcChips({
+        ...sealed, srcKind: "calculated",
+        srcKinds: [{ kind: "calculated", key: "", rank: 0 }],
+    }).length).toBe(0);
+    const chips = canvas.itemChips(sealed);
+    expect(chips.length).toBe(1);
+    expect(chips[0].cls.includes("mc-badge")).toBe(true);
+});
+
+test("J9 — two chips with the same label still collapse to one (T2)", async () => {
+    // The dedupe rail is S6 D1's structural fix and it stays. The rank is NOT
+    // part of the key: a superscript is not a difference of meaning, and folding
+    // it in would let a genuine duplicate through by wearing a different number.
+    const canvas = await j9Canvas();
+    const chips = canvas.itemChips({
+        srcKind: "excel",
+        srcKinds: [
+            { kind: "excel", key: "A", rank: 1, note: "a" },
+            { kind: "excel", key: "B", rank: 2, note: "b" },
+        ],
+        meta: {},
+    });
+    expect(chips.filter((c) => c.cls.includes("mc-src")).length).toBe(1);
+});
+
+test("J9 — the conflict chip is dropped on a card that ranks its sources", async () => {
+    const canvas = await j9Canvas();
+    const two = canvas.itemChips({
+        srcKind: "feed",
+        srcKinds: [
+            { kind: "feed", key: "Gas", rank: 1, note: "a" },
+            { kind: "excel", key: "SEVL|Gas", rank: 2, note: "b" },
+        ],
+        conflict: { label: "Feed wins", hint: "…" },
+        meta: {},
+    });
+    expect(two.filter((c) => c.cls === "mc-conflict").length).toBe(0);
+    // and a single-source card still gets it
+    const one = canvas.itemChips({
+        srcKind: "feed",
+        srcKinds: [{ kind: "feed", key: "Gas", rank: 0, note: "a" }],
+        conflict: { label: "Wired twice", hint: "…" },
+        meta: {},
+    });
+    expect(one.filter((c) => c.cls === "mc-conflict").length).toBe(1);
+});
+
+test("J9 — the superscript is a real <sup> in the rendered card", async () => {
+    const rightItems = [{
+        id: "R0", label: "Gas Allowance", sublabel: "GASALLOWANCE",
+        srcKind: "excel",
+        srcKinds: [
+            { kind: "excel", key: "SEVL|Gas Allowance", rank: 1, note: "a" },
+            { kind: "contract_component", key: "", rank: 2, note: "b" },
+        ],
+        meta: {},
+    }];
+    await mountWithCleanup(MappingCanvas, {
+        props: props({ rightItems, wires: [] }),
+    });
+    await animationFrame();
+    const card = document.querySelector('.mc-item[data-id="R0"]');
+    expect(card).not.toBe(null);
+    const sups = [...card.querySelectorAll(".mc-src sup")].map((e) => e.textContent);
+    // a real element, not a Unicode superscript character: a screen reader
+    // announces the element and skips the glyph
+    expect(sups).toEqual(["1", "2"]);
+});
+
+test("J9 — the Transformations board shows the same ranked sources", () => {
+    // It is a SIBLING of MappingCanvas, not a mode of it (J4), so it cannot call
+    // `itemChips`. What it must share is the vocabulary and the grammar — before
+    // J9 it rendered one hardcoded "Rule output" chip and only when a rule
+    // happened to win, so a spreadsheet-fed component said nothing here and
+    // something two tabs away.
+    // MJ4, used the safe way round: `srcChips` composes only `isSealed`, another
+    // PROTOTYPE method that reads its argument and nothing else, so a bare
+    // prototype instance is a legitimate `this` here. Mounting the board would
+    // drag in three required callbacks and a full data payload to test a pure
+    // function.
+    const board = Object.create(TransformFlowBoard.prototype);
+    const two = board.srcChips({
+        srcKind: "feed",
+        srcKinds: [
+            { kind: "feed", key: "Gas", rank: 1, note: "a" },
+            { kind: "excel", key: "SEVL|Gas", rank: 2, note: "b" },
+        ],
+        meta: {},
+    });
+    expect(two.map((c) => c.kind)).toEqual(["feed", "excel"]);
+    expect(two.map((c) => c.rank)).toEqual([1, 2]);
+    // the stale-payload rail, and the sealed rail
+    expect(board.srcChips({ srcKind: "rule", meta: {} }).map((c) => c.rank)).toEqual([0]);
+    expect(board.srcChips({ srcKind: "none", meta: {} })).toEqual([]);
+    expect(board.srcChips({ srcKind: "calculated", srcKinds: [],
+                            meta: { wirable: false } })).toEqual([]);
+});

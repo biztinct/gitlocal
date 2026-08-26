@@ -40,6 +40,11 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { wireGeometry, clampY, aggregateDocks, spreadHubs,
          itemMatches } from "./mapping_geometry";
+// JOURNEY J9 — the one source vocabulary, so this board cannot invent a ninth
+// term for a chip the canvas already has a word for. (MJ43: never a comment
+// INSIDE an import list — the ES-module transform emits `require({)` and the
+// whole bundle dies, in the served file only.)
+import { srcLabel } from "../source_vocab";
 
 /** Pixels of a lane's band reserved so a clamped wire is not flush to the edge. */
 const BAND = 10;
@@ -299,6 +304,34 @@ export class TransformFlowBoard extends Component {
      */
     isSealed(item) {
         return !!(item && item.meta && item.meta.wirable === false);
+    }
+
+    /**
+     * JOURNEY J9 — every source this component declares, ranked.
+     *
+     * This board is a SIBLING of `MappingCanvas`, not a mode of it (J4), so it
+     * cannot call `itemChips`; what it shares is the vocabulary and the grammar,
+     * which is the part that has to agree. Before this it rendered exactly one
+     * hardcoded chip, "Rule output", and only when the winning source was a
+     * rule — so a component fed by a spreadsheet column said nothing here while
+     * the canvas two tabs away said "Spreadsheet". The owner's standing
+     * complaint is running between screens that each tell part of the truth.
+     *
+     * A sealed card gets none, as on the canvas: its badge already says what it
+     * is and can carry the sentence.
+     */
+    srcChips(item) {
+        if (!item || this.isSealed(item)) { return []; }
+        const list = item.srcKinds;
+        if (!list || !list.length) {
+            const k = item.srcKind;
+            return (!k || k === "none") ? [] : [{ kind: k, label: srcLabel(k), rank: 0,
+                                                  hint: item.srcNote || srcLabel(k) }];
+        }
+        return list.filter((s) => s.kind && s.kind !== "none").map((s) => ({
+            kind: s.kind, label: srcLabel(s.kind), rank: s.rank || 0,
+            hint: s.note || item.srcNote || srcLabel(s.kind),
+        }));
     }
 
     // ============================================================== geometry

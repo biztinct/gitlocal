@@ -293,6 +293,19 @@
 .tfb .tfb-chip.sev { border-color: var(--mc-rose); background: var(--mc-rose-wash); color: var(--mc-rose-ink); }
 .tfb .tfb-chip.rule { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); }
 .tfb .tfb-chip.off { border-color: var(--mc-slate); color: var(--muted, #6B7280); }
+/* JOURNEY J9 — the ranked source chips, in the canvas' own colours so the two
+   boards cannot drift into two vocabularies. Same `line-height: 0` on the
+   superscript as the canvas: a <sup> otherwise raises the chip's line box, and
+   this board measures its own wire band off these rows. */
+.tfb .tfb-chip.src.s-excel              { border-color: #A7E8CD; background: #D1FAE5; color: #0F8A63; }
+.tfb .tfb-chip.src.s-feed               { border-color: #B9E2EC; background: #E0F4F9; color: #0E7490; }
+.tfb .tfb-chip.src.s-rule               { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); }
+.tfb .tfb-chip.src.s-contract_component { border-color: #F3DFA0; background: #FEF3C7; color: #B7791F; }
+.tfb .tfb-chip.src.s-employee_field     { border-color: #C6D3E8; background: #E8EEF7; color: #3B5B8C; }
+.tfb .tfb-chip.src sup {
+    font-variant-numeric: tabular-nums; font-size: 8px; font-weight: 800;
+    line-height: 0; margin-left: 2px; vertical-align: super;
+}
 
 /* the plug: where a wire meets a card. Same 8px dot the canvas uses. */
 .tfb .tfb-plug { position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--line, #E8E9F3); transform: translateY(-50%); }

@@ -236,8 +236,16 @@
                 <span class="tfb-plug left"/>
                 <div class="tfb-item-l">
                   <span t-esc="it.label"/>
-                  <span t-if="it.srcKind === 'rule'" class="tfb-chip rule"
-                        title="This component reads a transformation rule's output.">Rule output</span>
+                  <!-- JOURNEY J9 — every declared source, ranked, in the same
+                       grammar the canvas uses. This was one hardcoded "Rule
+                       output" chip that appeared only when a rule happened to
+                       WIN, so a component reading a spreadsheet column said
+                       nothing here and something two tabs away. -->
+                  <span t-foreach="srcChips(it)" t-as="ch" t-key="ch.kind"
+                        t-attf-class="tfb-chip src s-{{ ch.kind }}"
+                        t-att-title="ch.hint">
+                    <t t-esc="ch.label"/><sup t-if="ch.rank" t-esc="ch.rank"/>
+                  </span>
                   <span t-if="it.conflict" class="tfb-chip warn"
                         t-att-title="it.conflict.hint or it.conflict.label" t-esc="it.conflict.label"/>
                   <span t-if="isSealed(it)" class="tfb-chip off"
