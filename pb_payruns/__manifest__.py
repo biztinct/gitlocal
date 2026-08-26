@@ -4,7 +4,7 @@
     'summary': 'Pay-run pipeline board + enhanced batch form (KPIs, approval pipeline)',
     # 19.0.1.6.0 — W105: the hr.payslip.line read ACL that had to sit beside the
     # hr.payslip one, plus tests/test_payslip_line_access.py.
-    'version': '19.0.1.7.0',
+    'version': '19.0.1.9.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

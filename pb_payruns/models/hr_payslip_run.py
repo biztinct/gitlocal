@@ -138,6 +138,14 @@ class HrPayslipRun(models.Model):
         run_ids = [r.id for r in self if r.id]
         if not run_ids:
             return
+        # This compute reads the tables directly, so anything still sitting in
+        # the ORM's write buffer is invisible to it — and a recompute triggered
+        # by the very write that has not landed yet is the normal case, not an
+        # exotic one. Attaching payslips to a run and reading its totals in the
+        # same transaction (the Run Payroll wizard does exactly that) returned
+        # zeros for that reason alone.
+        self.env['hr.payslip'].flush_model(['payslip_run_id', 'state'])
+        self.env['hr.payslip.line'].flush_model(['slip_id', 'category_id', 'total'])
         cr = self.env.cr
         cr.execute("""
             SELECT p.payslip_run_id, count(*)
@@ -152,7 +160,8 @@ class HrPayslipRun(models.Model):
             JOIN hr_payslip p ON p.id = pl.slip_id AND p.state != 'cancel'
             JOIN hr_salary_rule_category c ON c.id = pl.category_id
             WHERE p.payslip_run_id IN %s
-              AND c.code IN ('NET', 'GROSS', 'DED', 'DEDUCTION', 'COMP')
+              AND c.code IN ('NET', 'GROSS', 'DED', 'DEDUCTION', 'COMP',
+                             'BASIC', 'ALW')
             GROUP BY p.payslip_run_id, c.code
         """, (tuple(run_ids),))
         agg = {}
@@ -162,7 +171,12 @@ class HrPayslipRun(models.Model):
             d = agg.get(run.id, {})
             run.pb_employee_count = counts.get(run.id, 0)
             run.pb_total_net = d.get('NET', 0.0)
-            run.pb_total_gross = d.get('GROSS', 0.0)
+            # A scheme built by importing a payroll workbook rarely has a
+            # component filed under "Gross" — it has a basic and a list of
+            # allowances, and gross is their sum. Reading only 'GROSS' showed
+            # ₫0 next to ₫1.9bn of basic pay on ABM's June run.
+            run.pb_total_gross = d.get('GROSS') or (
+                d.get('BASIC', 0.0) + d.get('ALW', 0.0))
             run.pb_total_deductions = abs(d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
                                           + d.get('COMP', 0.0))
 
