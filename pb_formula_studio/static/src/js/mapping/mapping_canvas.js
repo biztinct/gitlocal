@@ -910,6 +910,60 @@ export class MappingCanvas extends Component {
     }
 
     /**
+     * JOURNEY J9 — EVERY source this component declares, ranked.
+     *
+     * The owner withdrew the one-source-per-component restriction: API and
+     * spreadsheet may both map to a component, the contract component may sit
+     * beside them, and the card has to show all of them with the order between
+     * them visible. `srcChip` above answered for exactly one; this answers for
+     * however many there are and keeps that one as its fallback.
+     *
+     * THE FALLBACK IS THE COMPATIBILITY RAIL. A board whose adapter predates
+     * `srcKinds` — or a stale bundle against a new server, or the reverse — sends
+     * only `srcKind`, and lands on `srcChip` and therefore on exactly today's
+     * single unranked chip. No board renders differently until its adapter says
+     * something new.
+     *
+     * The superscript appears only from TWO sources up, and it is the rank AMONG
+     * THE SOURCES ON THIS CARD (the owner chose this over a fixed number per
+     * type): Spreadsheet¹ · Contract component², never ²·³. A number that is
+     * always 1 is decoration, and these chips have to keep meaning "read me".
+     */
+    srcChips(it) {
+        if (!it) { return []; }
+        // SOURCING S6 — a sealed card carries its badge and nothing else. Same
+        // lock as `srcChip`, checked before the list so a server that sent both
+        // cannot put the pill back.
+        if (it.meta && it.meta.wirable === false) { return []; }
+        const list = it.srcKinds;
+        if (!list || !list.length) {
+            const one = this.srcChip(it);
+            // `rank: 0` explicitly rather than left undefined: every consumer of
+            // this list reads the same three keys whichever branch produced the
+            // chip, and "the fallback shape is subtly different" is how a
+            // compatibility rail stops being one.
+            return one ? [{ ...one, rank: 0 }] : [];
+        }
+        const labels = {
+            excel: _t("Spreadsheet"), feed: _t("Connected system"),
+            rule: _t("Rule output"),
+            contract_component: _t("Contract component"),
+            employee_field: _t("Employee record"),
+            calculated: _t("Calculated"), constant: _t("Fixed value"),
+        };
+        const out = [];
+        for (const src of list) {
+            const label = labels[src.kind];
+            if (!label) { continue; }
+            out.push({
+                label, kind: src.kind, rank: src.rank || 0,
+                hint: src.note || it.srcNote || label,
+            });
+        }
+        return out;
+    }
+
+    /**
      * SOURCING S6, D1 — every pill a card carries, and NEVER the same word twice.
      *
      * Three chips can land in one slot: `provChip` (where the CARD came from),
@@ -930,19 +984,37 @@ export class MappingCanvas extends Component {
             if (!chip || !chip.label) { return; }
             const key = String(chip.label).trim().toLowerCase();
             if (!key || out.some((c) => c.key === key)) { return; }
-            out.push({ key, label: chip.label, hint: chip.hint || chip.label, cls });
+            out.push({
+                key, label: chip.label, hint: chip.hint || chip.label, cls,
+                // J9 — the RANK travels with the chip and is NOT part of the
+                // dedupe key. Two chips that genuinely say the same word must
+                // still collapse to one; a superscript is not a difference of
+                // meaning, and folding it into the key would let a duplicate
+                // through by wearing a different number.
+                rank: chip.rank || 0,
+            });
         };
         const p = this.provChip(it);
         if (p) { push(p, `mc-prov ${p.tone || ""}`); }
-        const s = this.srcChip(it);
-        if (s) { push(s, `mc-src s-${s.kind}`); }
+        // JOURNEY J9 — every declared source, in resolver order. On a card with
+        // one source this is byte-identical to the single `srcChip` it replaces.
+        const sources = this.srcChips(it);
+        for (const s of sources) { push(s, `mc-src s-${s.kind}`); }
         const b = this.badge(it);
         if (b) { push(b, `mc-badge ${b.tone || ""}`); }
         // JOURNEY J3 S2 — the fourth question: is something ELSE also feeding
         // this? It is deliberately last, so on a card that is already saying
         // enough the dedupe above wins and the reader is not handed four pills.
-        const c = this.conflictChip(it);
-        if (c) { push(c, "mc-conflict"); }
+        //
+        // J9 — and on a card already showing its sources RANKED it is dropped
+        // outright. "Feed wins" is the same fact the numbered chips just stated,
+        // in weaker words; handing the reader a fact twice is what S6 D1 removed
+        // and this is the same removal one question later. The server also stops
+        // sending it, so this is the second lock rather than the only one.
+        if (sources.length < 2) {
+            const c = this.conflictChip(it);
+            if (c) { push(c, "mc-conflict"); }
+        }
         return out;
     }
 

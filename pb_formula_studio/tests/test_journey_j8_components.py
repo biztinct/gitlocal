@@ -235,16 +235,31 @@ class TestJourneyJ8Components(TransactionCase):
         self.assertTrue(rule.is_text_component)
         self.assertEqual(rule.column_role, 'contract')
 
-    def test_05c_the_column_keeps_exactly_one_destination(self):
-        """The promotion unlinks any field or bank row — one column, one home."""
+    def test_05c_the_promotion_adds_a_destination_rather_than_replacing_one(self):
+        """JOURNEY J9 — this asserted the OPPOSITE, and the owner changed it.
+
+        J8's promotion unlinked any field or bank row so a column kept exactly
+        one home. The owner has since withdrawn the either/or restriction:
+        "a card should show all the mappings done". Promoting now ADDS the
+        contract component beside whatever else the column feeds, and the card
+        renders both, ranked.
+
+        The asymmetry in the other direction is DELIBERATE and is J9's scope
+        boundary: drawing a wire to a native field still demotes a contract
+        component, because that is MAPFIX B2's `_ec_demote_component` — a
+        different mechanism, with its own sentence and its own tests, and not one
+        the owner asked about.
+        """
         cfg = self._config('J8 one home')
         rule = self._rule(cfg, 'J8ONE', 10)
         self.Studio.employee_mapping_create(cfg.id, False, rule.id,
                                             'f:hr.employee:name')
         self.assertEqual(self.Mapping.search_count([('component_id', '=', rule.id)]), 1)
         self.Studio.employee_mapping_create(cfg.id, False, rule.id, 'c:amount')
-        self.assertEqual(self.Mapping.search_count([('component_id', '=', rule.id)]), 0)
-        # ...and back the other way DEMOTES rather than adding a second home
+        self.assertEqual(self.Mapping.search_count([('component_id', '=', rule.id)]), 1,
+                         "the field wire SURVIVES the promotion now")
+        self.assertTrue(rule.is_contract_component)
+        # ...and back the other way still DEMOTES (MAPFIX B2, untouched)
         self.Studio.employee_mapping_create(cfg.id, False, rule.id,
                                             'f:hr.employee:name')
         self.assertFalse(rule.is_contract_component)

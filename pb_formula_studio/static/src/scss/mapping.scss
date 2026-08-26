@@ -643,6 +643,18 @@
 .mapping-canvas .mc-src.s-calculated         { background: #DDD6F2; color: #241F52; }
 .mapping-canvas .mc-src.s-constant           { background: #EEF1F5; color: #64748B; }
 
+/* JOURNEY J9 — the rank, on a card that carries more than one source.
+   `line-height: 0` is the load-bearing declaration: a <sup> otherwise raises
+   the chip's line box and every card on the board grows a pixel or two, which
+   moves the clamp band the wires are measured against (MJ36's family). At zero
+   the superscript is painted outside the flow of the line and the chip's box is
+   the same box it was. `tabular-nums` so 1 and 2 occupy the same width and the
+   chips do not shuffle sideways as the list grows. */
+.mapping-canvas .mc-src sup {
+    font-variant-numeric: tabular-nums; font-size: 8px; font-weight: 800;
+    line-height: 0; margin-left: 2px; vertical-align: super;
+}
+
 
 /* SOURCING S5 — lineage in place, and the sealed-card badge. */
 .mapping-canvas .mc-item-lineage {

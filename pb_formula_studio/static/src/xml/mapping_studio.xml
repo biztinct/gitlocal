@@ -609,12 +609,17 @@
              Cancel writes nothing because nothing has been sent yet. -->
         <t t-if="state.conflict">
           <div class="pbms-rcn-scrim" t-on-click="cancelConflict"/>
-          <div class="pbms-cfl" role="dialog" aria-modal="true"
+          <div t-attf-class="pbms-cfl {{ state.conflict.order ? 'is-order' : '' }}"
+               role="dialog" aria-modal="true"
                aria-labelledby="pbms-cfl-title"
                t-on-keydown="(ev) => ev.key === 'Escape' &amp;&amp; this.cancelConflict()"
                t-on-click="(ev) => ev.stopPropagation()">
             <div class="pbms-cfl__h">
-              <span class="pbms-cfl__ic" t-out="ic('alert', 20)"/>
+              <!-- JOURNEY J9 — a LIST, not an alert triangle. Two sources on one
+                   component stopped being a warning the moment the owner asked
+                   for them; an icon that still says "danger" would be the one
+                   thing on this dialog contradicting every sentence on it. -->
+              <span class="pbms-cfl__ic" t-out="ic(state.conflict.order ? 'layers' : 'alert', 20)"/>
               <b id="pbms-cfl-title" t-esc="state.conflict.title"/>
               <button class="pbms-x" t-on-click="cancelConflict" aria-label="Close">
                 <t t-out="ic('x', 16)"/>
@@ -634,17 +639,35 @@
                 <code t-esc="state.conflict.incoming.key"/>
               </div>
             </div>
+            <!-- ==== JOURNEY J9 — the resulting ORDER, stated ====
+                 The owner withdrew the either/or restriction, so this dialog is
+                 a priority notice rather than an ultimatum: it says what the
+                 component will read and in which order, with the same
+                 superscripts the card is about to grow. Server-composed, like
+                 every other sentence in here. -->
+            <ol class="pbms-cfl__order" t-if="state.conflict.order">
+              <li t-foreach="state.conflict.order" t-as="o" t-key="o.rank">
+                <span class="pbms-cfl__rank" t-esc="o.rank"/>
+                <b t-esc="o.label"/>
+                <code t-if="o.key" t-esc="o.key"/>
+              </li>
+            </ol>
             <div class="pbms-cfl__opts">
-              <button class="pbms-cfl__opt" t-ref="cflFocus"
+              <!-- "Add source" is the PRIMARY action and Replace is the
+                   secondary: keeping both is what the owner asked for, and the
+                   old behaviour stays reachable in one click rather than being
+                   the default answer to a question that is no longer a
+                   conflict. -->
+              <button class="pbms-cfl__opt keep" t-ref="cflFocus"
                       t-att-disabled="state.conflictBusy"
-                      t-on-click="() => this.resolveConflict('replace')">
-                <b t-esc="state.conflict.replace_label"/>
-                <span t-esc="state.conflict.replace_note"/>
-              </button>
-              <button class="pbms-cfl__opt keep" t-att-disabled="state.conflictBusy"
                       t-on-click="() => this.resolveConflict('keep')">
                 <b t-esc="state.conflict.keep_label"/>
                 <span t-esc="state.conflict.keep_note"/>
+              </button>
+              <button class="pbms-cfl__opt" t-att-disabled="state.conflictBusy"
+                      t-on-click="() => this.resolveConflict('replace')">
+                <b t-esc="state.conflict.replace_label"/>
+                <span t-esc="state.conflict.replace_note"/>
               </button>
             </div>
             <div class="pbms-cfl__f">

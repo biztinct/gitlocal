@@ -11,7 +11,11 @@ and the transform board inherit them. Defect round J8 (2026-08-26): the board's 
 most-used destination was the only one it did not draw — a `Contract components` lane now
 sits between Contract terms and Bank account, wirable both ways — plus the arrowhead that was
 being painted under the column's scrollbar. The programme stays COMPLETE; J6, J7 and J8 are
-defect rounds, not further scopes.**
+defect rounds, not further scopes. Scope round J9 (2026-08-26): the owner WITHDREW
+the either/or source restriction — a component may declare a connected-system key, a
+spreadsheet column and the contract component at once, every card shows all of them
+with a superscript rank, and the resolver walks them in the order that was already in
+the file. J-D5 is untouched: what changed is arity, not precedence.**
 
 Follow-on programme to SOURCING (see `docs/handovers/SOURCING_LEDGER.md` + `SOURCING_CLOSEOUT.md`)
 and MAPFIX (`docs/handovers/MAPFIX_LEDGER.md`, which itself binds COLROLES CR1–CR33). **All standing
@@ -673,6 +677,74 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   is KEPT. Gas Allowance is the one flagged column that also carries a binding — one of
   the eight the owner drew on 2026-08-26 (J7's opening note).
 
+- **J9 — DONE, live on abm · payobook · payobook_template (2026-08-26).**
+  → `JOURNEY_PHASE_J9_HANDOVER.md`. **acme was removed from the deploy scope by the
+  owner mid-phase — it is a redundant database and was not upgraded.**
+  Versions: pb_hr_payroll_formula **19.0.1.82.0** · pb_formula_studio **19.0.1.158.0**
+  (`pb_integrations`, `biz_theme` untouched; `om_hr_payroll` untouched — CR1).
+  **The restriction is gone, and what was missing was never the order.** The owner
+  withdrew J3's either/or rule: API and spreadsheet may both map to a Payroll Schema
+  component, the contract component may sit beside them, and the card shows all of
+  them with a superscript rank. J-D5 still binds and nothing moved — the precedence
+  the owner asked for (feed → spreadsheet → contract component) is the order that was
+  already in `payroll_import_batch.py`. **What was missing was ARITY:** the binding
+  was a single pair of Chars, so a second source could only be an unnamed heuristic
+  (`side_o`) and no screen could name it.
+  **`hr.formula.rule.source`, one row per KIND**, ranked `feed → rule → excel`; the
+  five `source_binding*` Chars became COMPUTED, STORED, READONLY views of the
+  highest-ranked row, so all seventy-odd references — including two `search()`
+  domains in `pb_integrations` that need them stored — keep working untouched.
+  `set_source_binding(kind, key)` keeps its signature and now UPSERTS the row for
+  that kind; `clear_source_binding(kind=None)` is the removal it never had.
+  **The neutrality rail held, and it is the whole of the risk.** A component with one
+  declared source takes S3's branch verbatim, `side_o` heuristic and fallback
+  provenance included; `_multi_source_walk_entered` is a class counter that a
+  single-source run must leave at **0**, and it does (`test_01a`–`test_01d`). The
+  multi walk is entered only by `len(declared) > 1`, and with two kinds declared there
+  is no undeclared blob left for the heuristic to cover — a run carries at most two
+  payloads.
+  **T1 held: exactly ONE card on abm renders two chips.** All nine feed-bound rules
+  carry a connector wire whose `source_field` is character-for-character the binding
+  key (`api_mapping_create` writes both in one gesture), and the `(kind, key)` fold
+  makes them one source: measured live on both boards, `BANKNAME=1 … WORKEMAIL=1`,
+  and the only multi-source card is **GASALLOWANCE → Spreadsheet¹ · Contract
+  component²**.
+  **The dialog stopped being an ultimatum.** `source_conflict_probe` still writes
+  nothing and still fires on the same predicate; it now returns the resulting RANKED
+  LIST and the primary action is **Add source**, with Replace kept as the secondary
+  and the alert triangle swapped for a list glyph. Two CONNECTIONS is still a genuine
+  conflict (a run reads only the one the scheme is set to) and keeps its old wording.
+  **Six pre-existing tests asserted the withdrawn restriction and were inverted, not
+  silenced** — `TestJourneyGuardrails` 02e/03e/04a, `TestJourneyJ8Components` 05c,
+  `TestMappingCatalogue` 07/08 — each with a comment saying what the owner changed.
+  One asymmetry is deliberate and recorded: wiring a component to a NATIVE FIELD still
+  demotes it (MAPFIX B2's `_ec_demote_component`), because that is a different
+  mechanism with its own sentence and the owner did not ask about it.
+  Tests: Python **515 on abm, 2 failed + 1 error — all three PRE-EXISTING and none
+  J9's** (baseline taken on the machine first: **467 with the same three**,
+  `-u pb_hr_payroll_formula,pb_formula_studio,pb_integrations`). +48 new
+  (`TestJourneyJ9Sources` 25, `TestJourneyJ9Display` 23). hoot **135**, 0 failed
+  (baseline 126 + 9 J9). 23/23 numbered cases pass.
+  **0 bounding-box overlaps, 0 dock-over-card pairs and 0 occluded or clipped
+  arrowheads in 7 states at 1440 and 6 at 1024**, `maxErr 0` in every one, and
+  **0 names clipped** on all four boards (568 at 1440, 386 at 1024) — MJ40's gate held
+  with the chips a line taller.
+  `employee_mapping_data` measured live, warmed, median of 8, with the pre-J9 model
+  file put back on the same machine and DB for the "before": **84 ms → 85 ms**, 102 KB
+  both (its right column is employee/contract fields and carries no source chips).
+  The boards that DID change: `import_mapping_data` **92 → 67 ms**, 36 → 42 KB;
+  `api_mapping_data` **134 → 131 ms**, 50 → 56 KB.
+  **MF37 on abm: byte-identical before and after** — `hr_formula_rule` config 14 99
+  rows `1b95d661069834dff8701ce4a2b9e3fd`, `hr_integration_field_mapping` 41 rows
+  `787b99f56c00a7a349986fcc0a7f60d2`, `hr_payslip_import_mapping` 21 ids `1,2,30…108`,
+  `hr_api_transformation_rule` 8, 0 batches, 0 lines, 0 payslips, and
+  **`hr_contract_advantage_template` and `hr_contract_advantage` both still 0 rows**.
+  The new `hr_formula_rule_source` holds exactly the 13 rows the migration converted.
+  Every live write went through the throwaway rule `J9PROBE` (id 15832), created →
+  bound by mouse → wired by mouse through the new dialog → cut → undone → cut →
+  deleted. One collateral deletion was made and repaired: see **MJ46**.
+  `action_process` was never called; no live API pull was made.
+
 ## Gotchas discovered (append per phase, MJ-numbered)
 
 - MJ1 (J1): **`groupFilter` filters the LEFT column only, and always did.** The handover's
@@ -1190,3 +1262,57 @@ with provenance, plus import-time writeback into Employee/Contract/Bank).
   MJ19 and MJ21: a syntax family your editor colours correctly and the pipeline does not. Put the
   comment ABOVE the `import`, never inside it — and after any change to an import list, parse the
   bundle the browser is actually served.
+
+- MJ44 (J9): **turning a plain stored column into a COMPUTED stored one is a bet on a detail of
+  `_auto_init`, and the cheap way to stop betting is a temporary table.** `source_binding` and its
+  four siblings became `compute=` + `store=True` views of the new `hr.formula.rule.source` rows,
+  and the post-migration seeds those rows FROM the columns. Whether Odoo flags an existing column
+  for recomputation when its field gains a `compute` decides whether that post-migration reads
+  thirteen bindings or thirteen nulls — and on a live database the wrong answer is silent, total
+  and unrecoverable, because the recompute would have run before the migration that needed the old
+  values. On this build it does not recompute (recomputation is flagged for columns that are NEW),
+  which was verified after the fact and would have been worthless to verify before: the question is
+  not "does it" but "what does it cost me to stop caring". A **pre-**migration `CREATE TABLE
+  j9_binding_backup AS SELECT …` costs twenty lines, makes the post-migration independent of the
+  columns it is about to rewrite, and makes it idempotent for free (`WHERE NOT EXISTS` on the copy,
+  then `DROP TABLE`). It ran on abm as `preserved 13 → converted 13, skipped_non_input 0,
+  realigned 0, cleared_unbacked 0`, and the `hr_formula_rule` fingerprint was byte-identical
+  before and after. **When a migration's input is a thing the same upgrade might overwrite, copy it
+  in a pre-script; do not reason about the ORM's order of operations.**
+- MJ45 (J9): **the derived head of a plural field is not a substitute for its rows, and every guard
+  written as `if x == 'excel'` stops seeing the state it was written for the moment a second row can
+  outrank it.** `source_binding` now computes to the HIGHEST-RANKED source. Three guards read it and
+  all three broke in the same way, only one of them loudly: `_source_conflicts` classified
+  excel-versus-feed by `b_kind == 'excel'`, so the instant a component declared a feed beside its
+  spreadsheet column the detector reported no conflict (caught by an existing test);
+  `import_mapping_delete` cleared the spreadsheet binding only `if rule.source_binding == 'excel'`,
+  so removing a spreadsheet wire from a feed-reading component would have taken the wire off the
+  board and left the component still reading the column (caught only by writing the test);
+  `api_mapping_snapshot` captured the undo binding by the same test, so cutting a `rule` wire off a
+  component that also read a feed would have lost it (caught by neither — found by asking the
+  question a third time). All three now ask `rule.source_ids.filtered(kind == …)`. **When a scalar
+  becomes the first of a list, grep for every comparison against it and assume each one meant "is
+  there one of these", not "is this the one".**
+- MJ46 (J9, live): **`api_mapping_create` unlinks a rival on the SOURCE end as well as the target
+  end, so a probe that draws a catalogue field onto a throwaway component deletes whatever that
+  field was already wired to.** The J9 probe drew `Aadhaar_Number` onto `J9PROBE`; the create's
+  `search(['&', connector, '|', source_field, target_rule_id]).unlink()` removed
+  `hr.integration.field.mapping` **28**, a live `suggested` row, and the row count went 41 → 40 with
+  nothing on screen saying so. MF37 caught it (the fingerprint moved) and **MJ35's method named the
+  cause in one grep**: `odoo.models.unlink` showed the deletion timestamped 20ms BEFORE the
+  `api_mapping_create` POST completed — so it was the create, not the mouse click that followed a
+  minute later. It was rebuilt at its original id by `INSERT … SELECT` cloning sibling row 27
+  (`UAN_Number`, the same template-derived shape) with the two text fields changed, and the
+  fingerprint returned to `787b99f5…` exactly. Two lessons: **a throwaway RULE is not a throwaway
+  GESTURE** — J8's `J8PROBE` convention protects the target end and says nothing about the source
+  end, so pick a source field that is genuinely unused, or snapshot the row first; and **the log's
+  timestamp is what distinguishes "my RPC did this" from "my click did this"** when both are in the
+  same minute.
+- MJ47 (J9, testing): **a source assertion that greps for a CHARACTER must strip comments first, or
+  it fails on the prose that documents the rule it is enforcing.** J9 renders the source rank as a
+  real `<sup>` element rather than `¹`, and the test that pins that greps the templates and the
+  canvas for `¹²³`. It failed on the canvas — on a doc-comment reading *"Spreadsheet¹ · Contract
+  component², never ²·³"*, which is exactly the sentence a reader needs and the only place those
+  codepoints are correct. MJ25's family: a source assertion is a parser you wrote in a hurry, and
+  the parse it most often gets wrong is "is this a string or a comment". Strip, then assert — and
+  say in the test WHY comments are exempt, or the next phase will "fix" it by deleting the comment.

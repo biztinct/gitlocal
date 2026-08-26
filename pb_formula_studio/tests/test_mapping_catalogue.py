@@ -260,7 +260,16 @@ class TestMappingCatalogue(TransactionCase):
                          "the demoted column is still synced to the contract")
 
     # ------------------------------------------------------------- test 7
-    def test_07_promotion_both_ways_removes_the_native_wire(self):
+    def test_07_promotion_both_ways_keeps_the_native_wire(self):
+        """JOURNEY J9 — the assertion below was inverted, on the owner's word.
+
+        MAPFIX B2 made a promotion remove the native wire so a column had one
+        home. The owner has withdrawn that: "a card should show all the mappings
+        done", and a component may feed a field AND be kept on the contract. What
+        this test still defends is everything else the promotion does — the
+        roles (CR-A2), the type flags, the refusal of a nonsense value type and
+        the Phase-3 alias.
+        """
         cfg = self._config('MAPFIX promote')
         rule = self._rule(cfg, 'SHIFTX', 10, name='Shift', column_role='profile')
         self.Studio.employee_mapping_create(
@@ -274,8 +283,9 @@ class TestMappingCatalogue(TransactionCase):
         self.assertTrue(rule.is_text_component)
         self.assertEqual(rule.column_role, 'contract')       # CR-A2
         self.assertEqual(rule.column_role_source, 'user')
-        self.assertFalse(self.Mapping.search_count([('component_id', '=', rule.id)]),
-                         "a column ended up with two destinations")
+        self.assertTrue(self.Mapping.search_count([('component_id', '=', rule.id)]),
+                        "the field wire survives the promotion — a column may "
+                        "have more than one destination now (J9)")
 
         res = self.Studio.employee_mapping_make_component(rule.id, 'amount')
         self.assertTrue(res.get('ok'), res)
@@ -292,27 +302,36 @@ class TestMappingCatalogue(TransactionCase):
             rule.id).get('ok'))
 
     # ------------------------------------------------------------- test 8
-    def test_08_round_trip_never_leaves_two_destinations(self):
+    def test_08_the_round_trip_is_still_a_round_trip(self):
+        """JOURNEY J9 — "never two destinations" was the restriction the owner
+        removed, so this now pins the round trip's SHAPE rather than its count.
+
+        Promoting adds the contract component; wiring to a native field still
+        demotes it (MAPFIX B2, deliberately untouched); deleting the wire leaves
+        the contract component behind. Every step still ends somewhere the board
+        can draw, which is what the original test was really defending.
+        """
         cfg = self._config('MAPFIX roundtrip')
         rule = self._rule(cfg, 'ROUNDX', 10, name='Round trip', column_role='profile')
 
-        def destinations():
+        def state():
             rule.invalidate_recordset()
             wires = self.Mapping.search_count([
                 ('salary_structure_id', '=', cfg.id), ('component_id', '=', rule.id)])
-            return wires + (1 if rule.is_contract_component else 0)
+            return wires, bool(rule.is_contract_component)
 
-        self.assertEqual(destinations(), 0)
+        self.assertEqual(state(), (0, False))
         self.Studio.employee_mapping_make_component(rule.id, 'amount')
-        self.assertEqual(destinations(), 1)
+        self.assertEqual(state(), (0, True))
         self.Studio.employee_mapping_create(
             cfg.id, False, rule.id, self._spec('hr.employee', 'job_title'))
-        self.assertEqual(destinations(), 1)
+        self.assertEqual(state(), (1, False), "wiring a field still demotes")
         self.Studio.employee_mapping_make_component(rule.id, 'text')
-        self.assertEqual(destinations(), 1)
+        self.assertEqual(state(), (1, True),
+                         "and promoting now ADDS rather than replaces")
         self.Studio.employee_mapping_delete(
             self.Mapping.search([('component_id', '=', rule.id)]).id or 0)
-        self.assertEqual(destinations(), 1)
+        self.assertEqual(state(), (0, True))
 
     # ------------------------------------------------------------- test 9
     def test_09_the_unresolved_set(self):

@@ -251,25 +251,43 @@ class TestJourneyGuardrails(TransactionCase):
         self.assertEqual(self.Studio._source_conflicts(cfg), {},
                          "a partially-filled form may not invent a conflict")
 
-    def test_02e_both_boards_chip_the_same_component_differently(self):
-        """The useful sentence is always about the source you are NOT looking at."""
+    def test_02e_both_boards_show_the_same_ranked_sources(self):
+        """JOURNEY J9 — this test used to demand a CONFLICT chip here.
+
+        It asserted, correctly for J3, that a component holding a spreadsheet
+        binding while a live wire targets it wears "Spreadsheet fallback" on one
+        board and "Feed wins" on the other. The owner has since withdrawn the
+        either/or restriction: two sources on one component is legal, so the
+        board states the ORDER instead of raising an alarm about it, and the
+        conflict chip is dropped from a card that is already saying the whole
+        thing (S6 D1's principle, one question later).
+
+        The DETECTOR is untouched and is still asserted — nothing was hidden,
+        only not repeated. Both boards show the same two ranked chips, which is
+        the standing complaint this programme exists to close: screens that each
+        tell part of the truth.
+        """
         cfg = self._config('J3 Chips')
         conn = self._connector('Zoho-ish')
         self._wire(conn, self.basic, 'Base')
         self.basic.set_source_binding('excel', 'Basic Salary', origin='board')
+        self.assertIn(self.basic.id, self.Studio._source_conflicts(cfg),
+                      "the detector still sees it; the card simply stops "
+                      "saying the same fact twice")
+        expected = [('feed', 1, 'Base'), ('excel', 2, 'Basic Salary')]
         api = self.Studio.api_mapping_data(cfg.id, conn.id, False)
         card = next(i for i in api['right'] if i['id'] == self.basic.id)
-        self.assertIn('conflict', card)
-        self.assertIn('spreadsheet', card['conflict']['label'].lower())
-        self.assertIn('Basic Salary', card['conflict']['hint'],
-                      "the tooltip names the column the pill has no room for")
-        self.assertIn('feed wins', card['conflict']['hint'].lower())
+        self.assertNotIn('conflict', card)
+        self.assertEqual([(s['kind'], s['rank'], s['key'])
+                          for s in card['srcKinds']], expected)
         imp = self.Studio.import_mapping_data(cfg.id, False)
         card = next(i for i in imp['right'] if i['id'] == self.basic.id)
-        self.assertIn('feed', card['conflict']['label'].lower())
-        self.assertIn('Zoho-ish', card['conflict']['hint'],
-                      "the tooltip names the connection the pill has no room for")
-        self.assertIn('feed wins', card['conflict']['hint'].lower())
+        self.assertNotIn('conflict', card)
+        self.assertEqual([(s['kind'], s['rank'], s['key'])
+                          for s in card['srcKinds']], expected,
+                         "both boards say the same thing, in the same order")
+        self.assertIn('Basic Salary', card['srcKinds'][1]['note'],
+                      "the tooltip names the column the chip has no room for")
 
     def test_02f_a_pre_existing_dual_state_chips_on_load(self):
         """No dialog involved: the state may predate the guardrail entirely."""
@@ -342,22 +360,37 @@ class TestJourneyGuardrails(TransactionCase):
                          "and the conflict is gone with it")
 
     def test_03e_keep_leaves_both_and_the_spreadsheet_stays_the_fallback(self):
+        """JOURNEY J9 — "keep as fallback" became "Add source", and the
+        difference is that the FEED is now declared too.
+
+        J3 could only keep the spreadsheet binding by NOT writing the feed one,
+        because there was room for exactly one. So `source_binding` read `excel`
+        and the feed was a wire nothing on the component named. With the binding
+        plural both are declared, both are visible, and the order between them is
+        stated rather than inferred — the feed is rank 1 because that is where
+        the resolver has always read it, and the spreadsheet column is still the
+        fallback it was.
+        """
         cfg = self._config('J3 Keep')
         conn = self._connector()
         self.basic.set_source_binding('excel', 'Basic Salary', origin='board')
         r = self.Studio.api_mapping_create(
             cfg.id, conn.id, 'Base', self.basic.id, resolve='keep')
         self.assertTrue(r['ok'])
-        self.basic.invalidate_recordset()
+        self.env.invalidate_all()
         self.assertEqual(
-            self.basic.source_binding, 'excel',
-            "'keep as fallback' means the binding SURVIVES — without it the "
-            "resolver has nothing to fall back TO")
+            [(d['kind'], d['key']) for d in self.basic.declared_sources()],
+            [('feed', 'Base'), ('excel', 'Basic Salary')],
+            "the spreadsheet declaration SURVIVES — without it the resolver has "
+            "nothing to fall back TO — and the feed is now declared beside it")
+        self.assertEqual(self.basic.source_binding, 'feed',
+                         "the head of the plural binding is the highest-ranked "
+                         "source, which is where a run reads first")
         self.assertTrue(self.FieldMapping.search_count(
             [('target_rule_id', '=', self.basic.id)]),
             "and the wire is drawn")
         self.assertIn(self.basic.id, self.Studio._source_conflicts(cfg),
-                      "both live, so both boards chip it")
+                      "both live, and the detector still says so")
 
     def test_03f_replace_reaches_across_connections(self):
         cfg = self._config('J3 CrossConn')
@@ -394,8 +427,16 @@ class TestJourneyGuardrails(TransactionCase):
         for key in ('title', 'body', 'existing', 'incoming', 'replace_label',
                     'replace_note', 'keep_label', 'keep_note', 'cancel_label'):
             self.assertTrue(c.get(key), "the dialog needs %s" % key)
-        self.assertIn('Darwin-ish', c['body'])
-        self.assertIn('fallback', c['keep_label'].lower())
+        # JOURNEY J9 — the body states the resulting ORDER rather than naming
+        # the connection, because the connection is on screen twice already (the
+        # "Reads now" side, and the ranked list below it) and the thing a reader
+        # cannot work out for themselves is which source wins.
+        self.assertIn('Darwin-ish', c['existing']['key'])
+        self.assertEqual([o['rank'] for o in c['order']], [1, 2])
+        self.assertIn('in that order', c['body'])
+        self.assertIn('add', c['keep_label'].lower(),
+                      "the primary action is to keep both, which is what the "
+                      "owner asked for")
 
     def test_04b_the_dialog_never_composes_precedence_itself(self):
         js = _strip_js_comments(

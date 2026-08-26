@@ -360,8 +360,17 @@ class PbFormulaStudio(models.AbstractModel):
         out = {}
         for rule in config.rule_ids:
             wires = by_rule.get(rule.id) or []
-            b_kind = rule.source_binding or False
-            b_key = (rule.source_binding_key or '').strip()
+            # JOURNEY J9 — asked of the SOURCE ROWS, not of `source_binding`.
+            # The derived field reports only the HIGHEST-RANKED source, so the
+            # moment a component declares a feed beside its spreadsheet column
+            # it reads `feed` and this detector would stop seeing the very state
+            # it was written to see. The predicate is unchanged for every
+            # component that has one binding, which is all of them on all four
+            # live databases; it simply stopped depending on rank.
+            excel_row = rule.source_ids.filtered(
+                lambda s: s.kind == 'excel' and (s.key or '').strip())
+            b_kind = 'excel' if excel_row else False
+            b_key = (excel_row[0].key or '').strip() if excel_row else ''
             if b_kind and not b_key:
                 b_kind = False      # a half-set binding is not a source (S3)
             shape = None
@@ -534,23 +543,80 @@ class PbFormulaStudio(models.AbstractModel):
         config. `None` means the caller did not compute it, and tier 3 is then
         SKIPPED rather than answered with ninety-nine queries — the failure mode of
         a forgetful caller is today's behaviour, never a slow one.
+
+        JOURNEY J9 — this is now the FIRST of `_declared_sources`, and its return
+        shape `{'kind', 'key', 'wirable'}` is unchanged. It is deliberately not
+        deprecated: four callers want the winning source and nothing else, and
+        handing them a list to index would be a change with no reader.
+        """
+        return self._declared_sources(rule, emp_dest_rule_ids, wire_dests)[0]
+
+    #: JOURNEY J9 — the boards' copy of the resolver's order, and it is a COPY of
+    #: nothing: `hr.formula.rule._SOURCE_RANK` is the definition and this reads
+    #: it, so a board can never sort by an order the resolver does not use.
+    @api.model
+    def _source_rank(self):
+        return self.env['hr.formula.rule']._SOURCE_RANK
+
+    @api.model
+    def _declared_sources(self, rule, emp_dest_rule_ids, wire_dests=None):
+        """EVERY source this component declares, in the order a run reads them.
+
+        JOURNEY J9. The owner removed the either/or restriction, so this returns
+        a LIST where `_declared_source` returned a scalar — and `_declared_source`
+        is now `list[0]`, so its four callers (the right column, the source note,
+        the transform board and the Journey lane bucketing) are unchanged.
+
+        Each entry is `{'kind', 'key', 'wirable'}` — the same three keys the
+        scalar has always carried, deliberately, so nothing downstream has to
+        learn a new shape.
+
+        THE (kind, key) FOLD IS LOAD-BEARING, and abm is the fixture that proves
+        it. `api_mapping_create` writes a field mapping AND an S3 binding in one
+        gesture, so all nine of abm's feed-bound components carry a wire whose
+        `source_field` is character-for-character the binding key. They are one
+        source recorded twice, and without this fold every one of them would
+        render two identical "Connected system" chips — which the canvas' label
+        dedupe would then HIDE, leaving the board looking right while the reader
+        was told the wrong thing about how many sources a component has.
+
+        Tiers, unchanged in kind and only widened in arity:
+          0. a calculated or fixed column is that, whatever else is set on it;
+          1. the declared sources (`source_ids`), ranked;
+          2. a live connector wire, folded in when it is not already one of them;
+          3. the contract component, always last among things a person stated;
+          4. below that, a description of what the component IS.
         """
         if rule.column_type == 'formula':
-            return {'kind': 'calculated', 'key': '', 'wirable': False}
+            return [{'kind': 'calculated', 'key': '', 'wirable': False}]
         if rule.column_type == 'constant':
-            return {'kind': 'constant', 'key': '', 'wirable': False}
-        if rule.source_binding and (rule.source_binding_key or '').strip():
-            return {'kind': rule.source_binding,
-                    'key': (rule.source_binding_key or '').strip(),
-                    'wirable': True}
+            return [{'kind': 'constant', 'key': '', 'wirable': False}]
+        rank = self._source_rank()
+        out, seen = [], set()
+        for spec in rule.declared_sources():
+            if spec['kind'] not in rank:
+                continue
+            pair = (spec['kind'], spec['key'])
+            if pair in seen:
+                continue
+            seen.add(pair)
+            out.append({'kind': spec['kind'], 'key': spec['key'],
+                        'wirable': True})
         wired = (wire_dests or {}).get(rule.id)
         if wired:
-            return {'kind': wired['kind'], 'key': wired['key'], 'wirable': True}
+            pair = (wired['kind'], (wired['key'] or '').strip())
+            if pair not in seen:
+                seen.add(pair)
+                out.append({'kind': pair[0], 'key': pair[1], 'wirable': True})
+        out.sort(key=lambda d: rank.index(d['kind']))
         if rule.is_contract_component:
-            return {'kind': 'contract_component', 'key': '', 'wirable': False}
+            out.append({'kind': 'contract_component', 'key': '',
+                        'wirable': False})
+        if out:
+            return out
         if rule.id in emp_dest_rule_ids:
-            return {'kind': 'employee_field', 'key': '', 'wirable': False}
-        return {'kind': 'none', 'key': '', 'wirable': True}
+            return [{'kind': 'employee_field', 'key': '', 'wirable': False}]
+        return [{'kind': 'none', 'key': '', 'wirable': True}]
 
     #: Board-chip wording. Kept next to the vocabulary it uses so a board can
     #: never invent a ninth term. Mirrors `srcLabel` in `source_vocab.js`.
@@ -727,11 +793,74 @@ class PbFormulaStudio(models.AbstractModel):
         return out
 
     @api.model
+    def _mc_src_kinds(self, srcs):
+        """The ranked source chips a card carries, with the sentence for each.
+
+        JOURNEY J9. The rank is the position among the sources ACTUALLY MAPPED
+        ON THIS CARD, not a fixed number per type — the owner chose that
+        explicitly. A card holding a spreadsheet column and a contract component
+        reads Spreadsheet¹ · Contract component², not ²·³, because the reader is
+        being told the order THIS component reads in and a gap would only invite
+        the question "where is number one?".
+
+        `rank` is 0 on a single-source card, and the client renders no
+        superscript for it: a number that is always 1 is decoration, and the
+        chips stop meaning "read me" the moment they carry decoration.
+        """
+        out = []
+        total = len(srcs)
+        for pos, src in enumerate(srcs):
+            kind = src.get('kind') or 'none'
+            if kind == 'none':
+                continue
+            out.append({
+                'kind': kind,
+                'key': src.get('key') or '',
+                'rank': (pos + 1) if total > 1 else 0,
+                'note': self._source_rank_note(kind, src.get('key') or '',
+                                               pos, total),
+            })
+        return out
+
+    @api.model
+    def _source_rank_note(self, kind, key, pos, total):
+        """The tooltip on one ranked chip: what it reads, and when.
+
+        Every literal is written out — `_(variable)` extracts nothing and ships
+        English forever (S19). The vocabulary stays inside `_SOURCE_LABELS`; no
+        ninth term appears here.
+        """
+        label = self._source_label(kind)
+        if total <= 1:
+            if key:
+                return _("Reads “%(key)s” from %(src)s.", key=key, src=label)
+            return _("Read from %s.") % label
+        if pos == 0:
+            if key:
+                return _("Reads “%(key)s” from %(src)s. Tried first.",
+                         key=key, src=label)
+            return _("Read from %s. Tried first.") % label
+        if key:
+            return _("Reads “%(key)s” from %(src)s. Used when nothing above "
+                     "delivered a value.", key=key, src=label)
+        return _("Read from %s. Used when nothing above delivered a value.") \
+            % label
+
+    @api.model
     def _mc_right_item(self, rule, declared, note='', lineage=None, conflict=None):
+        # JOURNEY J9 — `declared` is a LIST now (`_declared_sources`). A dict is
+        # still accepted, because a caller that only has the winning source is
+        # asking a legitimate question and should not have to wrap it.
+        srcs = declared if isinstance(declared, list) else [declared]
+        declared = srcs[0]
         wirable = rule.column_type == 'input'
         item = {'id': rule.id, 'label': (rule.name or rule.code),
                 'sublabel': rule.code or '',
+                # `srcKind` stays populated with the WINNER so a stale bundle
+                # against a new server still renders one correct chip, and
+                # `srcKinds` carries the whole ranked list for a current one.
                 'srcKind': declared['kind'], 'srcNote': note,
+                'srcKinds': self._mc_src_kinds(srcs),
                 'meta': {'col': rule.column_letter or '', 'type': rule.column_type}}
         # SOURCING S6 — a component fed by a rule output carries that rule's
         # lineage, so "how is this worked out" is answerable from the COMPONENT and
@@ -784,6 +913,7 @@ class PbFormulaStudio(models.AbstractModel):
             # component's own kind, so a constant says Fixed value and means it.
             # ==========================================================
             item['srcKind'] = ''
+            item['srcKinds'] = []
             label = self._source_label(declared['kind'])
             item['meta'].update({
                 'wirable': False,
@@ -812,28 +942,49 @@ class PbFormulaStudio(models.AbstractModel):
         conflicts = self._source_conflicts(config) if board else {}
         out = []
         for r in rules:
-            declared = self._declared_source(r, emp_dest, wire_dests)
+            declared = self._declared_sources(r, emp_dest, wire_dests)
+            # JOURNEY J9 — a card that already renders its sources RANKED is
+            # saying the whole thing; the conflict chip would hand the reader the
+            # same fact a second time, in weaker words. S6 D1's principle, one
+            # question further on.
+            conflict = (self._conflict_chip(conflicts.get(r.id), board)
+                        if len(declared) < 2 else None)
             out.append(self._mc_right_item(
                 r, declared, self._source_note(r, actuals, emp_dest, wire_dests),
-                lineage, self._conflict_chip(conflicts.get(r.id), board)))
+                lineage, conflict))
         return out
 
     @api.model
     def _source_note(self, rule, actuals, emp_dest_rule_ids, wire_dests=None):
         """The one-line note a mapping board shows against a component.
 
-        Says "already fed by X" so a user drawing a wire can see that this target
+        Says what already feeds this target, so a user drawing a wire can see it
         is not idle. Silent when nothing feeds it — an empty note is the normal
         case and a board full of chips would say nothing at all.
+
+        JOURNEY J9 — "Already fed by X" was a warning about something that is now
+        LEGAL, so a component with several sources states the resulting ORDER
+        instead. A single source keeps the original sentence: there is no order
+        to state, and rewording it would churn every card on every board to say
+        the same thing differently.
         """
-        declared = self._declared_source(rule, emp_dest_rule_ids, wire_dests)
-        kind = declared['kind']
+        declared = self._declared_sources(rule, emp_dest_rule_ids, wire_dests)
+        if len(declared) > 1:
+            parts = []
+            for src in declared:
+                label = self._source_label(src['kind'])
+                # The label is already translated; the quotes around a KEY are
+                # punctuation, not a sentence, so nothing here goes to gettext.
+                parts.append('%s “%s”' % (label, src['key'])
+                             if src['key'] else label)
+            return _("Read in this order: %s") % ', '.join(parts)
+        kind = declared[0]['kind']
         if kind == 'none':
             return ''
         label = self._source_label(kind)
-        if declared['key']:
+        if declared[0]['key']:
             return _("Already fed by %(src)s “%(key)s”",
-                     src=label, key=declared['key'])
+                     src=label, key=declared[0]['key'])
         return _("Already fed by %s") % label
 
     @api.model
@@ -5255,16 +5406,15 @@ class PbFormulaStudio(models.AbstractModel):
         # vendor sent.
         kind = 'rule' if src in FM._computed_output_keys(conn) else 'feed'
         replaced = self._binding_replaced(rule, kind, src)
-        # J3 S2 — "keep as fallback" means the spreadsheet binding SURVIVES. The
-        # wire is drawn either way; what `keep` buys is that `set_source_binding`
-        # does not overwrite the declaration that makes the fallback readable.
-        # The feed is still primary — the resolver's pre-pass outranks the binding
-        # and J3 did not reorder it (J-D5) — so nothing here promotes anything.
-        if resolve == 'keep' and rule.source_binding == 'excel' \
-                and (rule.source_binding_key or '').strip():
-            replaced = None
-        else:
-            rule.set_source_binding(kind, src, origin='board')
+        # JOURNEY J9 — the special case J3 needed here is GONE, and it is gone
+        # because `set_source_binding` no longer overwrites another kind. Adding
+        # a feed source to a component bound to a spreadsheet column simply adds
+        # a row; the spreadsheet declaration survives by construction rather than
+        # by this branch remembering to protect it. `replace` is the one answer
+        # that still removes something, and it now says so explicitly.
+        if resolve == 'replace':
+            rule.clear_source_binding('excel')
+        rule.set_source_binding(kind, src, origin='board')
         return {'ok': True, 'replaced': replaced}
 
     @api.model
@@ -5309,32 +5459,27 @@ class PbFormulaStudio(models.AbstractModel):
 
         if board == 'import':
             # Drawing a SPREADSHEET column onto a component that a live feed
-            # already wires. This is the trap in its original form: today both
-            # rows survive and the feed silently wins.
+            # already wires.
             if not wires:
                 return {'ok': True, 'conflict': False}
             names = list(dict.fromkeys(
                 [w.connector_id.name or _("Unnamed connection") for w in wires]))
             conn = ', '.join(names)
+            order = self._probe_order(rule, 'excel', incoming_key)
             return {'ok': True, 'conflict': {
                 'shape': 'excel_over_feed',
-                'title': _("“%s” already has a live source") % code,
-                'body': _(
-                    "%(code)s is wired to %(conn)s. On a system run the feed is "
-                    "read first — a spreadsheet column can only fill in when the "
-                    "feed sends nothing for this component.",
-                    code=code, conn=conn),
+                'title': _("“%s” will read more than one source") % code,
+                'body': self._probe_body(code, order),
+                'order': order,
                 'existing': {'label': self._source_label('feed'), 'key': conn},
                 'incoming': {'label': self._source_label('excel'),
                              'key': incoming_key},
+                'keep_label': _("Add source"),
+                'keep_note': self._probe_add_note(order),
                 'replace_label': _("Use the spreadsheet instead"),
                 'replace_note': _(
                     "Removes the wire from %s. Only the spreadsheet column feeds "
                     "this component after that.") % conn,
-                'keep_label': _("Keep the feed, use the spreadsheet as fallback"),
-                'keep_note': _(
-                    "%(conn)s stays primary on system runs. The spreadsheet "
-                    "column is read only when the feed sends nothing.", conn=conn),
                 'cancel_label': _("Cancel"),
             }}
 
@@ -5342,29 +5487,36 @@ class PbFormulaStudio(models.AbstractModel):
         # somewhere else.
         conn = self.env['hr.integration.connector'].browse(self._as_id(connector_id))
         others = [w for w in wires if w.connector_id.id != conn.id]
+        FMc = self.env['hr.integration.field.mapping']
+        try:
+            in_kind = ('rule' if incoming_key in FMc._computed_output_keys(conn)
+                       else 'feed')
+        except Exception:       # noqa: BLE001 — a probe must never break a draw
+            in_kind = 'feed'
         if b_kind == 'excel':
+            order = self._probe_order(rule, in_kind, incoming_key)
             return {'ok': True, 'conflict': {
                 'shape': 'feed_over_excel',
-                'title': _("“%s” already reads a spreadsheet column") % code,
-                'body': _(
-                    "%(code)s is bound to the spreadsheet column “%(key)s”. A feed "
-                    "is read FIRST on system runs, so wiring one here changes what "
-                    "this component reads.", code=code, key=b_key),
+                'title': _("“%s” will read more than one source") % code,
+                'body': self._probe_body(code, order),
+                'order': order,
                 'existing': {'label': self._source_label('excel'), 'key': b_key},
-                'incoming': {'label': self._source_label('feed'),
+                'incoming': {'label': self._source_label(in_kind),
                              'key': incoming_key},
+                'keep_label': _("Add source"),
+                'keep_note': self._probe_add_note(order),
                 'replace_label': _("Use the feed instead"),
                 'replace_note': _(
                     "Clears the spreadsheet binding. Only %s feeds this component "
                     "after that.") % (conn.name or _("this connection")),
-                'keep_label': _("Keep the spreadsheet as fallback"),
-                'keep_note': _(
-                    "The feed is primary on system runs. The spreadsheet column "
-                    "“%(key)s” is read only when the feed sends nothing.",
-                    key=b_key),
                 'cancel_label': _("Cancel"),
             }}
         if others:
+            # TWO CONNECTIONS is still a genuine conflict rather than a
+            # precedence, and J9 did not change that: a pay run reads only the
+            # connection its scheme is set to, so the second wire is not a
+            # fallback — it is inert. Saying "add source" here would promise an
+            # order the resolver has no way to honour.
             names = list(dict.fromkeys(
                 [w.connector_id.name or _("Unnamed connection") for w in others]))
             other = ', '.join(names)
@@ -5378,16 +5530,67 @@ class PbFormulaStudio(models.AbstractModel):
                 'existing': {'label': self._source_label('feed'), 'key': other},
                 'incoming': {'label': self._source_label('feed'),
                              'key': incoming_key},
-                'replace_label': _("Use %s instead") % (
-                    conn.name or _("this connection")),
-                'replace_note': _("Removes the wire from %s.") % other,
                 'keep_label': _("Keep both wires"),
                 'keep_note': _(
                     "Both wires stay. Whichever connection the scheme is set to "
                     "is the one a pay run reads."),
+                'replace_label': _("Use %s instead") % (
+                    conn.name or _("this connection")),
+                'replace_note': _("Removes the wire from %s.") % other,
                 'cancel_label': _("Cancel"),
             }}
         return {'ok': True, 'conflict': False}
+
+    # ------------------------------------------------------------------
+    # JOURNEY J9 — the dialog stopped being an ultimatum and became a NOTICE.
+    #
+    # J3 offered replace / keep-as-fallback / cancel because the owner's rule at
+    # the time was one source per component and the dialog had to make the loser
+    # explicit. That rule is withdrawn. The useful thing to say now is the
+    # resulting ORDER, so the primary action is "Add source" and Replace stays as
+    # the secondary — the old behaviour is still one click away, it is simply no
+    # longer the default answer to a question that is no longer a conflict.
+    #
+    # Every sentence is composed HERE, beside the ladder it describes. A client
+    # that built this text would be a second opinion about precedence.
+    # ------------------------------------------------------------------
+    @api.model
+    def _probe_order(self, rule, in_kind, in_key):
+        """The ranked list this component WOULD read, if the draw went ahead."""
+        rank = self._source_rank()
+        specs = [(s['kind'], s['key']) for s in rule.declared_sources()
+                 if s['kind'] in rank]
+        specs = [s for s in specs if s[0] != in_kind]
+        specs.append((in_kind, (in_key or '').strip()))
+        # A live wire the component already carries is a declared source too, and
+        # leaving it out would make the dialog contradict the card behind it.
+        wired = self._source_wire_dests(rule.config_id).get(rule.id)
+        if wired and wired['kind'] != in_kind \
+                and (wired['kind'], (wired['key'] or '').strip()) not in specs:
+            specs.append((wired['kind'], (wired['key'] or '').strip()))
+        specs.sort(key=lambda s: rank.index(s[0]))
+        out = [{'label': self._source_label(k), 'key': key, 'rank': i + 1}
+               for i, (k, key) in enumerate(specs)]
+        if rule.is_contract_component:
+            out.append({'label': self._source_label('contract_component'),
+                        'key': '', 'rank': len(out) + 1})
+        return out
+
+    @api.model
+    def _probe_body(self, code, order):
+        if not order:
+            return ''
+        names = ', '.join(o['label'] for o in order)
+        return _(
+            "%(code)s will read %(names)s, in that order. The first one that "
+            "carries a value wins; the others are read only when it does not.",
+            code=code, names=names)
+
+    @api.model
+    def _probe_add_note(self, order):
+        if not order:
+            return ''
+        return _("Both stay. %s is tried first.") % order[0]['label']
 
     @api.model
     def _binding_replaced(self, rule, kind, key):
@@ -5397,10 +5600,16 @@ class PbFormulaStudio(models.AbstractModel):
         is a single deliberate act — so it has to be an act that says what it did.
         `None` when nothing is being displaced, which is the common case and stays
         silent.
+
+        JOURNEY J9 — displaced now means "the row of THIS kind changed key".
+        Adding a feed source beside a spreadsheet column displaces nothing, which
+        is the whole point of the phase; reporting it as a replacement would be
+        the dialog and the toast disagreeing about what just happened.
         """
-        old_kind = rule.source_binding
-        old_key = (rule.source_binding_key or '').strip()
-        if not old_kind or (old_kind == kind and old_key == (key or '').strip()):
+        same = rule.source_ids.filtered(lambda s: s.kind == kind)
+        old_kind = kind if same else False
+        old_key = (same[0].key or '').strip() if same else ''
+        if not old_kind or old_key == (key or '').strip():
             return None
         return {'kind': old_kind, 'key': old_key,
                 'label': self._source_label(old_kind),
@@ -5409,6 +5618,18 @@ class PbFormulaStudio(models.AbstractModel):
                          code=rule.code or rule.name or '',
                          new=self._source_label(kind), key=key,
                          old=self._source_label(old_kind), old_key=old_key)}
+
+    @api.model
+    def _wire_source_kinds(self, rule, mapping):
+        """Which declared source kinds THIS wire wrote — snapshot, never live.
+
+        JOURNEY J9. Returned as a plain list of strings because the two callers
+        both mutate `source_ids` afterwards, and iterating a recordset that the
+        loop body is unlinking from is how a delete quietly skips a row.
+        """
+        want = (mapping.source_field or '').strip()
+        return [s.kind for s in rule.source_ids
+                if s.kind in ('feed', 'rule') and (s.key or '').strip() == want]
 
     @api.model
     def api_mapping_delete(self, mapping_id):
@@ -5421,9 +5642,14 @@ class PbFormulaStudio(models.AbstractModel):
             # since re-bound to a spreadsheet column must not lose that because an
             # old feed mapping was tidied away.
             rule = m.target_rule_id
-            if rule and rule.source_binding in ('feed', 'rule') and \
-                    (rule.source_binding_key or '').strip() == (m.source_field or '').strip():
-                rule.set_source_binding(False, False)
+            # JOURNEY J9 — clear THIS wire's kind, not every source the component
+            # has. Under S3 the two were the same act because there was only ever
+            # one binding; with several declared, `set_source_binding(False, …)`
+            # would take the spreadsheet column with it — which is exactly the
+            # "must not lose that" the comment above has always claimed.
+            if rule:
+                for kind in self._wire_source_kinds(rule, m):
+                    rule.clear_source_binding(kind)
             m.unlink()
         return {'ok': True}
 
@@ -5468,11 +5694,16 @@ class PbFormulaStudio(models.AbstractModel):
             spec[f] = v.id if hasattr(v, 'id') else v
         rule = m.target_rule_id
         binding = False
-        if rule and rule.source_binding in ('feed', 'rule') and \
-                (rule.source_binding_key or '').strip() == (m.source_field or '').strip():
-            binding = {'rule_id': rule.id, 'kind': rule.source_binding,
-                       'key': rule.source_binding_key or '',
-                       'origin': rule.source_binding_origin or 'user'}
+        # JOURNEY J9 — asked of the SOURCE ROW rather than of the derived
+        # `source_binding`, which now reports only the highest-ranked one. Cutting
+        # a `rule` wire off a component that also reads a feed must still be
+        # undoable, and the derived field would have said "feed" and lost it.
+        kinds = self._wire_source_kinds(rule, m) if rule else []
+        if kinds:
+            src = rule.source_ids.filtered(lambda s: s.kind == kinds[0])[0]
+            binding = {'rule_id': rule.id, 'kind': src.kind,
+                       'key': src.key or '',
+                       'origin': src.origin or 'user'}
         return {'spec': spec, 'binding': binding,
                 'label': m.display_name or m.source_field or ''}
 
@@ -7320,6 +7551,11 @@ class PbFormulaStudio(models.AbstractModel):
             FM = self.env.get('hr.integration.field.mapping')
             if FM is not None:
                 FM.sudo().search([('target_rule_id', '=', rule.id)]).unlink()
+            # JOURNEY J9 — "only the spreadsheet feeds this after that" has to be
+            # true of the DECLARATIONS as well as of the wires, now that removing
+            # a wire no longer takes its declaration with it by default.
+            rule.clear_source_binding('feed')
+            rule.clear_source_binding('rule')
         rule.set_source_binding('excel', col, origin='board')
         return {'ok': True, 'replaced': replaced}
 
@@ -7332,8 +7568,13 @@ class PbFormulaStudio(models.AbstractModel):
             # Clear whichever of the two drew the wire. A component wired from the
             # legacy Char and one bound properly both have to come off the board
             # when the user removes them, or "delete" is a lie on half the rows.
-            if rule.source_binding == 'excel':
-                rule.set_source_binding(False, False)
+            #
+            # JOURNEY J9 — asked of the SOURCE ROWS, not of `source_binding`. A
+            # component that reads a feed AND a spreadsheet column computes
+            # `source_binding = 'feed'`, so the old test would have found no
+            # spreadsheet binding to clear and this delete would have removed the
+            # wire from the board while leaving the component still reading it.
+            rule.clear_source_binding('excel')
             if rule.data_source_field:
                 rule.write({'data_source_field': False})
         return {'ok': True}
@@ -8520,9 +8761,17 @@ class PbFormulaStudio(models.AbstractModel):
         #
         # It ROUTES to the existing promotion rather than repeating it.
         # `employee_mapping_make_component` already refuses a non-`input`
-        # column, already unlinks any field or bank row so the column keeps
-        # exactly ONE destination, and already sets the role per CR-A2. A second
-        # implementation here would be the fork this programme keeps refusing.
+        # column, already refuses a type clash and already sets the role per
+        # CR-A2. A second implementation here would be the fork this programme
+        # keeps refusing.
+        #
+        # JOURNEY J9 — it no longer "unlinks any field or bank row so the column
+        # keeps exactly ONE destination". The owner withdrew that restriction:
+        # promoting ADDS a destination. Note the deliberate asymmetry, which is
+        # J9's scope boundary rather than an oversight — drawing a wire to a
+        # NATIVE FIELD still demotes a contract component (MAPFIX B2's
+        # `_ec_demote_component`, untouched here), because that is a different
+        # mechanism with its own sentence and its own tests.
         # ------------------------------------------------------------------
         if spec.startswith('c:'):
             kind = spec[2:]
@@ -8702,11 +8951,17 @@ class PbFormulaStudio(models.AbstractModel):
         clash = self._ec_component_type_clash(rule, value_type)
         if clash:
             return {'ok': False, 'msg': clash}
-        # An existing mapping would mean the value lands in two places, which is two
-        # sources of truth for one fact. The wire goes.
-        self.env['hr.payslip.import.mapping'].sudo().search([
-            ('salary_structure_id', '=', rule.config_id.id),
-            ('component_id', '=', rule.id)]).unlink()
+        # JOURNEY J9 — THE UNLINK IS GONE, and that is the whole of §4.5.1.
+        #
+        # It used to read: "an existing mapping would mean the value lands in two
+        # places, which is two sources of truth for one fact — the wire goes."
+        # The owner has withdrawn that premise. A component may be fed by a
+        # spreadsheet column AND a connected system AND be kept on the contract;
+        # the resolver reads them in a stated order and the card shows all of
+        # them, ranked. Promoting a column to a contract component therefore ADDS
+        # a source instead of silently replacing one. J8's type-clash refusal
+        # above is untouched: that is a promise the import would decline, which
+        # is a different thing from a restriction nobody asked for.
         is_text = value_type == 'text'
         rule.write({
             'is_contract_component': True,

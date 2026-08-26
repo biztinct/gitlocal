@@ -26,3 +26,7 @@ from . import test_journey_j7_legibility
 
 # JOURNEY J8 — the contract-component lane, and the clipped arrowhead.
 from . import test_journey_j8_components
+
+# JOURNEY J9 — every source on the card, ranked; the (kind, key) fold; the three
+# places the either/or restriction was enforced.
+from . import test_journey_j9_display
