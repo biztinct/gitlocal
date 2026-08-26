@@ -67,3 +67,7 @@ from . import test_zoho_response_contract
 # confirmed wires were skipped in silence), and a pull that never carried the
 # period (so July's run refreshed August's numbers).
 from . import test_feed_binding_and_period
+
+# Run the same import twice and get the same people: the source key, the
+# name-merge guard, the unique-barcode trap and one contract per employee.
+from . import test_import_identity
