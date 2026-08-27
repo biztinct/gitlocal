@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -85,6 +85,7 @@ msgstr "Đang tải lô…"
 #. module: pb_import_batch
 #. odoo-javascript
 #: code:addons/pb_import_batch/static/src/xml/batch_cockpit.xml:0
+#: code:addons/pb_import_batch/static/src/js/batch_cockpit.js:15
 msgid "Matched"
 msgstr "Đã khớp"
 
@@ -172,21 +173,25 @@ msgid "payslips"
 msgstr "phiếu lương"
 
 #. module: pb_import_batch
+#. odoo-javascript
 #: code:addons/pb_import_batch/static/src/js/batch_cockpit.js:15
 msgid "All"
 msgstr "Tất cả"
 
 #. module: pb_import_batch
+#. odoo-javascript
 #: code:addons/pb_import_batch/static/src/js/batch_cockpit.js:15
 msgid "New"
 msgstr "Mới"
 
 #. module: pb_import_batch
+#. odoo-javascript
 #: code:addons/pb_import_batch/static/src/js/batch_cockpit.js:15
 msgid "Needs attention"
 msgstr "Cần chú ý"
 
 #. module: pb_import_batch
+#. odoo-javascript
 #: code:addons/pb_import_batch/static/src/js/batch_cockpit.js:83
 msgid "Action failed."
 msgstr "Thao tác không thành công."

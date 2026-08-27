@@ -85,6 +85,9 @@ XML_TECHNICAL_FIELD_NAMES = {
 # Reviewed entries that need domain judgement or contain markup whose visible
 # attributes must be translated while CSS classes and styles remain untouched.
 CURATED_OVERRIDES = {
+    "Payroll command centre": "Trung tâm điều hành bảng lương",
+    "%s active contracts": "%s hợp đồng đang hoạt động",
+    "%s rules": "%s quy tắc",
     '<i class="fa fa-building" title="Company" style="font-size: 50px; margin-bottom: 10px; color: #475569;"/>':
         '<i class="fa fa-building" title="Công ty" style="font-size: 50px; margin-bottom: 10px; color: #475569;"/>',
     '<i class="fa fa-file-text" title="Salary Config" style="margin-right: 10px;"/>':
@@ -398,15 +401,26 @@ def _add_source_entry(
     source: str,
     relative_path: str,
     line: int,
+    extracted_comments: Iterable[str] = (),
 ) -> None:
     source = source.strip()
-    if not source or source in seen:
+    if not source:
+        return
+    occurrence = (f"code:addons/{relative_path}", str(line))
+    if source in seen:
+        entry = catalog.find(source)
+        if entry:
+            if occurrence not in entry.occurrences:
+                entry.occurrences.append(occurrence)
+            comments = [line for line in (entry.comment or "").splitlines() if line]
+            entry.comment = "\n".join(dict.fromkeys([*comments, *extracted_comments]))
         return
     seen.add(source)
     catalog.append(
         polib.POEntry(
             msgid=source,
-            occurrences=[(f"code:addons/{relative_path}", str(line))],
+            occurrences=[occurrence],
+            comment="\n".join(extracted_comments),
         )
     )
 
@@ -425,7 +439,14 @@ def extract_javascript_terms(module_dir: Path, catalog: polib.POFile) -> None:
                 value = bytes(value, "utf-8").decode("unicode_escape") if "\\" in value else value
             except UnicodeDecodeError:
                 pass
-            _add_source_entry(catalog, seen, value, relative, text.count("\n", 0, match.start()) + 1)
+            _add_source_entry(
+                catalog,
+                seen,
+                value,
+                relative,
+                text.count("\n", 0, match.start()) + 1,
+                extracted_comments=("odoo-javascript",),
+            )
 
 
 def extract_python_terms(
@@ -474,7 +495,14 @@ def extract_xml_terms(
             for attribute in XML_TRANSLATABLE_ATTRIBUTES:
                 value = node.get(attribute)
                 if value:
-                    _add_source_entry(catalog, seen, value, relative, 1)
+                    _add_source_entry(
+                        catalog,
+                        seen,
+                        value,
+                        relative,
+                        1,
+                        extracted_comments=("odoo-javascript",) if "/static/" in f"/{relative}" else (),
+                    )
             for value in (node.text, node.tail):
                 if value and value.strip():
                     normalized = " ".join(value.split())
@@ -490,7 +518,14 @@ def extract_xml_terms(
                         )
                     ):
                         continue
-                    _add_source_entry(catalog, seen, normalized, relative, 1)
+                    _add_source_entry(
+                        catalog,
+                        seen,
+                        normalized,
+                        relative,
+                        1,
+                        extracted_comments=("odoo-javascript",) if "/static/" in f"/{relative}" else (),
+                    )
 
 
 def source_augmented_template(
@@ -710,7 +745,18 @@ def make_catalog(
         )
         if not re.search(r"(?:^|\n)module:\s*", entry.comment or ""):
             entry.comment = "\n".join(filter(None, [f"module: {module}", entry.comment]))
-        entry.flags = [flag for flag in entry.flags if flag != "fuzzy"]
+        occurrence_paths = [path for path, _line in entry.occurrences]
+        code_marker = None
+        if any("/static/" in path and path.endswith((".js", ".xml")) for path in occurrence_paths):
+            code_marker = "odoo-javascript"
+        elif any(path.startswith("code:addons/") and path.endswith(".py") for path in occurrence_paths):
+            code_marker = "odoo-python"
+        if code_marker and not re.search(rf"(?:^|\n){re.escape(code_marker)}(?:\n|$)", entry.comment or ""):
+            entry.comment = "\n".join(filter(None, [entry.comment, code_marker]))
+        entry.flags = [
+            flag for flag in entry.flags
+            if flag not in {"fuzzy", "odoo-javascript", "odoo-python"}
+        ]
         entry.msgstr = translations.get(entry.msgid, "")
         if entry.msgid_plural:
             plural = translations.get(entry.msgid_plural, entry.msgstr)

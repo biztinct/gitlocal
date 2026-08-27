@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:48+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,12 +16,14 @@ msgstr ""
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:204
 msgid "%(label)s on %(date)s — %(detail)s"
 msgstr "%(label)s trên %(date)s — %(detail)s"
 
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:388
 msgid "%s imported, %s skipped."
 msgstr "%s đã được nhập, %s bị bỏ qua."
 
@@ -98,6 +100,7 @@ msgstr "Hành động Cần"
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:437
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
@@ -130,6 +133,7 @@ msgstr "Hoạt động Loại Biểu tượng"
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
 #: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__correction_type__create
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:321
 msgid "Add a punch"
 msgstr "Thêm một cú đấm"
 
@@ -137,6 +141,7 @@ msgstr "Thêm một cú đấm"
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
 #: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__correction_type__adjust
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:321
 msgid "Adjust a punch"
 msgstr "Điều chỉnh cú đấm"
 
@@ -167,6 +172,7 @@ msgstr ""
 #: code:addons/pb_attendance_flow/models/attendance_correction.py:0
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
 #: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__state__approved
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:325
 msgid "Applied"
 msgstr "Đã áp dụng"
 
@@ -375,6 +381,8 @@ msgstr "Sửa chữa"
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:286
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:306
 msgid "Correction refused."
 msgstr "Việc sửa chữa bị từ chối."
 
@@ -440,6 +448,7 @@ msgstr "Hoàn tất"
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:288
 msgid "Done."
 msgstr "Xong."
 
@@ -447,6 +456,7 @@ msgstr "Xong."
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
 #: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__state__draft
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:324
 msgid "Draft"
 msgstr "Nháp"
 
@@ -459,6 +469,7 @@ msgstr "Thả một tập tin đấm"
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:29
 msgid "Early departure"
 msgstr "Khởi hành sớm"
 
@@ -697,6 +708,7 @@ msgstr "Ân điển muộn (phút)"
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:28
 msgid "Late arrival"
 msgstr "đến muộn"
 
@@ -754,12 +766,14 @@ msgstr "Thông báo"
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:27
 msgid "Missing check-out"
 msgstr "Thiếu trả phòng"
 
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:26
 msgid "Missing punch"
 msgstr "Cú đấm thiếu"
 
@@ -868,6 +882,7 @@ msgstr "Chỉ có một sửa đổi được gửi có thể được phê duy�
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:392
 msgid "Only the first %s rows were imported — split the file for the rest."
 msgstr "Chỉ các hàng %s đầu tiên được nhập - chia tệp cho phần còn lại."
 
@@ -951,6 +966,7 @@ msgstr "Từ chối"
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
 #: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__state__refused
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:325
 msgid "Refused"
 msgstr "Đã từ chối"
 
@@ -964,6 +980,7 @@ msgstr "Từ chối nộp đơn:"
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
 #: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__correction_type__delete
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:322
 msgid "Remove a punch"
 msgstr "Loại bỏ một cú đấm"
 
@@ -1008,6 +1025,7 @@ msgstr "Lưu"
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:267
 msgid "Saved."
 msgstr "Đã lưu."
 
@@ -1068,6 +1086,7 @@ msgstr "Gửi"
 #: code:addons/pb_attendance_flow/models/attendance_correction.py:0
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
 #: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__state__submitted
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:324
 msgid "Submitted"
 msgstr "Đã gửi"
 
@@ -1101,6 +1120,7 @@ msgstr "Cú đấm hiện có để điều chỉnh hoặc loại bỏ (bắt bu
 #. module: pb_attendance_flow
 #. odoo-javascript
 #: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:356
 msgid ""
 "The file has more rows than the %s-row limit — only the first %s were read. Split the "
 "file to import the rest."

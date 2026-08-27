@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -50,6 +50,7 @@ msgstr "Nhóm lao động chưa thành niên phải có age_min < age_max (nhậ
 #. module: pb_young_worker
 #. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:100
 msgid "Action failed."
 msgstr "Thao tác thất bại."
 
@@ -123,6 +124,7 @@ msgstr "Tạo vào"
 #. module: pb_young_worker
 #. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:82
 msgid "Daily cap"
 msgstr "Giới hạn ngày"
 
@@ -217,6 +219,7 @@ msgstr "Giờ tối đa / Tuần"
 #. module: pb_young_worker
 #. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:83
 msgid "Missing birthday"
 msgstr "Thiếu ngày sinh"
 
@@ -267,6 +270,7 @@ msgstr "Khung giờ đêm"
 #. module: pb_young_worker
 #. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:83
 msgid "Night work"
 msgstr "Làm đêm"
 
@@ -331,6 +335,7 @@ msgstr "Chỉ quản lý tính lương mới có thể sửa quy định lao đ�
 #. module: pb_young_worker
 #. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:83
 msgid "Overtime"
 msgstr "Tăng ca"
 
@@ -448,6 +453,7 @@ msgstr "API lưới mục nhập hàng tuần"
 #. module: pb_young_worker
 #. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:82
 msgid "Weekly cap"
 msgstr "Giới hạn tuần"
 
@@ -521,12 +527,14 @@ msgstr ""
 #. module: pb_young_worker
 #. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:69
 msgid "adult"
 msgstr "đã đủ tuổi"
 
 #. module: pb_young_worker
 #. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:66
 msgid "age unknown"
 msgstr "chưa rõ tuổi"
 
@@ -561,11 +569,13 @@ msgid "…and"
 msgstr "…và"
 
 #. module: pb_young_worker
+#. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:70
 msgid "adult in"
 msgstr "đủ 18 sau"
 
 #. module: pb_young_worker
+#. odoo-javascript
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:70
 msgid "days"
 msgstr "ngày"

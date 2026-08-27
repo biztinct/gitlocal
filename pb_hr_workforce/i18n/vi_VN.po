@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -26,12 +26,14 @@ msgstr ""
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:188
 msgid "%(name)s exceeds the annual overtime cap of %(cap)s h. Submit anyway?"
 msgstr "%(name)s vượt mức trần làm thêm giờ hằng năm là %(cap)s giờ. Vẫn gửi?"
 
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:190
 msgid "%(name)s exceeds the monthly overtime cap of %(cap)s h. Submit anyway?"
 msgstr "%(name)s vượt mức trần làm thêm giờ hằng tháng là %(cap)s giờ. Vẫn gửi?"
 
@@ -50,6 +52,7 @@ msgstr "%s OT đã là %s."
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:153
 msgid "%s overtime request(s) %s."
 msgstr "%s yêu cầu làm thêm giờ %s."
 
@@ -134,6 +137,7 @@ msgstr "Hành động Cần"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:289
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
@@ -213,12 +217,14 @@ msgstr "Tất cả"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:213
 msgid "Already submitted or approved — locked."
 msgstr "Đã gửi hoặc phê duyệt — đã khóa."
 
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:341
 msgid "Also past this employee's annual ceiling of %s h."
 msgstr "Đồng thời, nhân viên này cũng đã vượt qua mức trần hàng năm %s h."
 
@@ -274,6 +280,7 @@ msgstr "Áp dụng"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:432
 msgid "Approval failed."
 msgstr "Duyệt thất bại."
 
@@ -380,6 +387,7 @@ msgstr "Rà soát Giờ Thưởng chỉ dành cho quản lý bảng lương."
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:213
 msgid "Bonus hours review is restricted to payroll and attendance managers."
 msgstr ""
 "Việc xem xét số giờ thưởng được giới hạn đối với người quản lý bảng lương và điểm "
@@ -395,6 +403,7 @@ msgstr "Thời gian nghỉ (giờ)"
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:448
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -492,6 +501,7 @@ msgstr "Cấu hình"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:216
 msgid "Could not be saved."
 msgstr "Không thể lưu được."
 
@@ -551,6 +561,7 @@ msgstr "Ngày"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:283
 msgid "Day"
 msgstr "Ngày"
 
@@ -573,6 +584,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__department_id
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:282
 msgid "Department"
 msgstr "Phòng ban"
 
@@ -637,12 +649,14 @@ msgstr "Tỷ lệ hiệu quả"
 #: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__employee_id
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:281
 msgid "Employee"
 msgstr "Nhân viên"
 
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:214
 msgid "Employee not found."
 msgstr "Không tìm thấy nhân viên."
 
@@ -688,12 +702,14 @@ msgstr "Xuất CSV"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:270
 msgid "Exported %s rows (capped at %s — narrow the filters)."
 msgstr "Đã xuất các hàng %s (giới hạn ở %s - thu hẹp các bộ lọc)."
 
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:271
 msgid "Exported %s rows."
 msgstr "Đã xuất các hàng %s."
 
@@ -705,6 +721,7 @@ msgstr "Làm thêm giờ kéo dài (>8 giờ OT)"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:425
 msgid "Failed to load payroll report"
 msgstr "Không thể tải báo cáo lương"
 
@@ -765,6 +782,7 @@ msgstr "Có Thông báo"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:208
 msgid "Hours must be between 0 and 24."
 msgstr "Giờ phải nằm trong khoảng từ 0 đến 24."
 
@@ -971,6 +989,7 @@ msgstr "Thứ 2"
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:285
 msgid "Month"
 msgstr "Tháng"
 
@@ -989,6 +1008,7 @@ msgstr "Buổi sáng"
 #. odoo-python
 #: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:210
 msgid "Multiple attendance records — edit on the attendance form."
 msgstr "Nhiều bản ghi điểm danh - chỉnh sửa trên biểu mẫu điểm danh."
 
@@ -1063,6 +1083,7 @@ msgstr "Tiếp theo Hoạt động Loại"
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__night
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_template__shift_type__night
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_kanban
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:173
 msgid "Night"
 msgstr "Đêm"
 
@@ -1086,6 +1107,7 @@ msgstr "Chưa có phòng ban"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:135
 msgid "No employees with entries this week — adjust the department or week."
 msgstr ""
 "Không có nhân viên nào có dữ liệu trong tuần này — điều chỉnh phòng ban hoặc tuần."
@@ -1111,6 +1133,7 @@ msgstr "Không có yêu cầu làm thêm giờ đang chờ phê duyệt."
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:211
 msgid "Not a grid entry — edit on the attendance form."
 msgstr "Không phải mục nhập dạng lưới — chỉnh sửa trên biểu mẫu chấm công."
 
@@ -1199,6 +1222,7 @@ msgstr "Đúng giờ"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:207
 msgid "On an authorized business trip — attendance is automatic here."
 msgstr ""
 "Trong một chuyến công tác được ủy quyền - việc tham dự ở đây được thực hiện tự động."
@@ -1328,6 +1352,7 @@ msgstr "Làm thêm vượt trần — chế độ xem cho quản lý bảng lư�
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:445
 msgid "Overtime ceiling exceeded"
 msgstr "Vượt mức trần làm thêm giờ"
 
@@ -1356,6 +1381,7 @@ msgstr ""
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:345
 msgid "Overtime this month"
 msgstr "Làm thêm giờ trong tháng này"
 
@@ -1422,6 +1448,7 @@ msgstr "Trước đó"
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__holiday
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:173
 msgid "Public Holiday"
 msgstr "Nghỉ lễ"
 
@@ -1588,6 +1615,7 @@ msgstr "Thứ 7"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:231
 msgid "Saved."
 msgstr "Đã lưu."
 
@@ -1719,6 +1747,7 @@ msgstr "Thời gian bắt đầu ca (định dạng 24h, ví dụ 8.0 = 08:00)"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:170
 msgid "Showing the first 200 employees. Narrow by department to see the rest."
 msgstr "Đang hiển thị 200 nhân viên đầu tiên. Lọc theo phòng ban để xem thêm."
 
@@ -1788,12 +1817,14 @@ msgstr "Gửi tất cả"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:447
 msgid "Submit anyway"
 msgstr "Vẫn gửi"
 
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:419
 msgid "Submit failed."
 msgstr "Gửi thất bại."
 
@@ -1827,6 +1858,7 @@ msgstr "Này Tháng"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:209
 msgid "This cell changed since you loaded it — refresh and retry."
 msgstr "Ô này đã thay đổi kể từ khi bạn tải nó - hãy làm mới và thử lại."
 
@@ -1841,6 +1873,7 @@ msgstr "Tháng này"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:212
 msgid "This overtime type doesn't apply on this day."
 msgstr "Loại làm thêm giờ này không áp dụng vào ngày này."
 
@@ -1940,6 +1973,7 @@ msgstr "Hành động không xác định."
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:215
 msgid "Unknown measure."
 msgstr "Biện pháp không xác định."
 
@@ -1963,6 +1997,7 @@ msgstr "Thứ 4"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:284
 msgid "Week"
 msgstr "Tuần"
 
@@ -1982,6 +2017,7 @@ msgstr "Lưới tuần"
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__weekday
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:172
 msgid "Weekday"
 msgstr "Ngày thường"
 
@@ -1995,6 +2031,7 @@ msgstr "Làm thêm giờ trong tuần"
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__weekend
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:172
 msgid "Weekend"
 msgstr "Cuối tuần"
 
@@ -2088,6 +2125,7 @@ msgstr "phê duyệt"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:154
 msgid "approved"
 msgstr "đã duyệt"
 
@@ -2112,6 +2150,7 @@ msgstr "giờ thưởng tháng này"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:228
 msgid "cell(s) could not be saved — see the highlighted cells."
 msgstr "ô không thể lưu — xem các ô được đánh dấu."
 
@@ -2128,6 +2167,7 @@ msgstr "ví dụ: Việt Nam — OT ngày trong tuần"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:357
 msgid "employee"
 msgstr "nhân viên"
 
@@ -2170,12 +2210,14 @@ msgstr "gần/vượt trần"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:428
 msgid "overtime request(s) approved."
 msgstr "yêu cầu làm thêm giờ đã được duyệt."
 
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:415
 msgid "overtime request(s) submitted."
 msgstr "yêu cầu làm thêm giờ đã được gửi."
 
@@ -2194,6 +2236,7 @@ msgstr "chờ duyệt"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:154
 msgid "refused"
 msgstr "đã từ chối"
 
@@ -2240,6 +2283,7 @@ msgid "— narrow filters"
 msgstr "- bộ lọc hẹp"
 
 #. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:330
 msgid "%(h)s h past the monthly ceiling of %(cap)s h. The excess is"
 msgstr "%(h)s h đã vượt mức trần hàng tháng của %(cap)s h. Phần dư thừa là"

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -125,12 +125,14 @@ msgstr "Chi tiêu thực tế trong tháng."
 #. module: pb_hr_payroll_demand
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:84
 msgid "All"
 msgstr "Tất cả"
 
 #. module: pb_hr_payroll_demand
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:65
 msgid "All Capabilities"
 msgstr "Tất cả khả năng"
 
@@ -142,12 +144,14 @@ msgstr "Tất cả các gói"
 #. module: pb_hr_payroll_demand
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:69
 msgid "All Roles"
 msgstr "Tất cả vai trò"
 
 #. module: pb_hr_payroll_demand
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:61
 msgid "All Years"
 msgstr "Tất cả các năm"
 
@@ -179,6 +183,7 @@ msgstr "Phê duyệt"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__state__approved
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:314
 msgid "Approved"
 msgstr "Đã phê duyệt"
 
@@ -204,6 +209,7 @@ msgstr "Lưu trữ"
 #: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__state__archived
 #: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__state__archived
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:315
 msgid "Archived"
 msgstr "Đã lưu trữ"
 
@@ -493,6 +499,7 @@ msgstr "Tên hiển thị"
 #: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__state__draft
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:312
 msgid "Draft"
 msgstr "Nháp"
 
@@ -514,6 +521,7 @@ msgstr "Chiến lược quan hệ nhân viên"
 #. module: pb_hr_payroll_demand
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:227
 msgid "Employees Needed"
 msgstr "Cần tuyển nhân viên"
 
@@ -683,6 +691,7 @@ msgstr "Quan trọng"
 #: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__state__review
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:313
 msgid "In Review"
 msgstr "Đang xem xét"
 
@@ -961,6 +970,7 @@ msgstr "Ngày đánh giá tiếp theo"
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
 #: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:165
 msgid "No significant variance detected."
 msgstr "Không có sự khác biệt đáng kể được phát hiện."
 
@@ -1084,6 +1094,7 @@ msgstr "Loại kế hoạch"
 #: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
 #: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__total_employee_cost
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:236
 msgid "Planned Cost"
 msgstr "Chi phí dự kiến"
 

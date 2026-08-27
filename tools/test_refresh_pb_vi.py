@@ -80,6 +80,7 @@ class SourceFallbackTests(unittest.TestCase):
             self.assertIn("Visible attribute", terms)
             self.assertIn("Visible text", terms)
             self.assertNotIn("technical.model", terms)
+            self.assertIn("odoo-javascript", catalog.find("Visible JS").comment)
             self.assertTrue(
                 all(
                     occurrence[0].startswith("code:addons/pb_example/")
@@ -87,6 +88,20 @@ class SourceFallbackTests(unittest.TestCase):
                     for occurrence in entry.occurrences
                 )
             )
+
+    def test_javascript_marker_is_merged_into_an_existing_term(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            module = Path(tmp) / "pb_example"
+            (module / "static" / "src").mkdir(parents=True)
+            (module / "static" / "src" / "app.js").write_text(
+                '_t("Shared label");', encoding="utf-8"
+            )
+            catalog = polib.POFile()
+            catalog.append(polib.POEntry(msgid="Shared label"))
+            extract_javascript_terms(module, catalog)
+            entry = catalog.find("Shared label")
+            self.assertIn("odoo-javascript", entry.comment)
+            self.assertTrue(entry.occurrences)
 
 
 if __name__ == "__main__":

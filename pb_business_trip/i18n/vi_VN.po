@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:48+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -46,6 +46,7 @@ msgstr "Hành động Cần"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:110
 msgid "Action failed."
 msgstr "Thao tác thất bại."
 
@@ -109,6 +110,8 @@ msgstr "Đường mòn phê duyệt"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:72
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:76
 msgid "Approve"
 msgstr "Duyệt"
 
@@ -116,6 +119,7 @@ msgstr "Duyệt"
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:19
 msgid "Approve as Finance"
 msgstr "Duyệt (Tài chính)"
 
@@ -123,12 +127,14 @@ msgstr "Duyệt (Tài chính)"
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:18
 msgid "Approve as Manager"
 msgstr "Duyệt (Quản lý)"
 
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:106
 msgid "Approved."
 msgstr "Đã duyệt."
 
@@ -146,6 +152,7 @@ msgstr "API thẻ chấm công"
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:20
 msgid "Authorize"
 msgstr "Phê duyệt"
 
@@ -659,6 +666,7 @@ msgstr "Đang trong chuyến công tác đã duyệt — chấm công tự độ
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
+#: code:addons/pb_business_trip/static/src/js/trip_composer.js:103
 msgid "Only JPG, PNG or PDF receipts are accepted."
 msgstr "Chỉ chấp nhận hóa đơn dạng JPG, PNG hoặc PDF."
 
@@ -740,6 +748,7 @@ msgstr "Biên lai"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
+#: code:addons/pb_business_trip/static/src/js/trip_composer.js:107
 msgid "Receipt is larger than 10 MB."
 msgstr "Hóa đơn lớn hơn 10 MB."
 
@@ -758,6 +767,7 @@ msgstr "Từ chối"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:129
 msgid "Refuse failed."
 msgstr "Từ chối thất bại."
 
@@ -928,12 +938,14 @@ msgstr "Hạng mục chi phí chuyến đi"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:105
 msgid "Trip authorized — attendance will be marked automatically."
 msgstr "Chuyến công tác đã được phê duyệt — chấm công sẽ được ghi nhận tự động."
 
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:125
 msgid "Trip refused."
 msgstr "Chuyến công tác bị từ chối."
 
@@ -950,6 +962,7 @@ msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
+#: code:addons/pb_business_trip/static/src/js/trip_composer.js:128
 msgid "Upload failed."
 msgstr "Tải lên thất bại."
 

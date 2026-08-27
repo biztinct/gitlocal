@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -829,6 +829,7 @@ msgstr "Hợp đồng"
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:363
 msgid "Cost Change"
 msgstr "Thay đổi chi phí"
 
@@ -991,6 +992,8 @@ msgstr "Tiền tệ"
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:226
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:296
 msgid "Current"
 msgstr "Hiện tại"
 
@@ -1361,6 +1364,7 @@ msgstr "Bản đồ nhiệt về mức sử dụng của nhân viên - 14 ngày 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1371
 msgid "Employees"
 msgstr "Nhân viên"
 
@@ -1559,6 +1563,9 @@ msgstr "Đối với các quy tắc dựa trên số lượng."
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:235
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:304
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1128
 msgid "Forecast"
 msgstr "Dự báo"
 
@@ -3234,6 +3241,7 @@ msgstr "Gắn thẻ các thành phần công thức để lập kế hoạch l�
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:694
 msgid "Target"
 msgstr "Mục tiêu"
 
@@ -3453,6 +3461,7 @@ msgstr "Phó Chủ tịch/Điều hành"
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1150
 msgid "Variance"
 msgstr "Phương sai"
 
@@ -3891,91 +3900,110 @@ msgid "· FY"
 msgstr "· Năm tài chính"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:686
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:747
 msgid "Hours Worked"
 msgstr "Giờ làm việc"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:726
 msgid "Check-ins"
 msgstr "Đăng ký"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:755
 msgid "Target Hours"
 msgstr "Số giờ mục tiêu"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:786
 msgid "OT Hours"
 msgstr "Giờ OT"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:795
 msgid "OT Cost"
 msgstr "Chi phí OT"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:833
 msgid "Upper Bound"
 msgstr "Giới hạn Trên"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:841
 msgid "Projected Cost"
 msgstr "Chi phí dự kiến"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:852
 msgid "Lower Bound"
 msgstr "Giới hạn Thấp"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:969
 msgid "Applicants"
 msgstr "Các ứng viên"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1014
 msgid "Coverage %"
 msgstr "Tỷ lệ bao phủ (%)"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1137
 msgid "Actual"
 msgstr "Thực tế"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
 msgid "Current Total"
 msgstr "Tổng số hiện tại"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
 msgid "+ Base Δ"
 msgstr "+ Cơ sở Δ"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
 msgid "+ Allowance Δ"
 msgstr "+ Phụ cấp Δ"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
 msgid "+ Employer Δ"
 msgstr "+ Nhà tuyển dụng Δ"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
 msgid "Forecast Total"
 msgstr "Tổng số dự báo"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1452
 msgid "Base"
 msgstr "Cơ sở"
 
 #. module: pb_hr_workforce_planning
+#. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1459
 msgid "Amount"
 msgstr "Số tiền"

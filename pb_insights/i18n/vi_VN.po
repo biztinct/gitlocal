@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,78 +16,91 @@ msgstr ""
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:200
 msgid "%s %s vs %s %s"
 msgstr "%s %s so với %s %s"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:260
 msgid "%s alert(s)"
 msgstr "%s cảnh báo"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:239
 msgid "%s early leave"
 msgstr "%s về sớm"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:253
 msgid "%s employee(s) at 90%% of the %s monthly ceiling"
 msgstr "%s nhân viên ở mức 90%% trần hàng tháng của %s"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:259
 msgid "%s employees"
 msgstr "%s nhân viên"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:197
 msgid "%s employees paid"
 msgstr "%s nhân viên đã được chi trả"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:238
 msgid "%s late"
 msgstr "%s đi muộn"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:237
 msgid "%s missing punch"
 msgstr "%s thiếu chấm công"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:240
 msgid "%s open punch"
 msgstr "%s lượt chấm công chưa đóng"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:214
 msgid "%s runs · net and gross per pay run"
 msgstr "%s đợt · thực lãnh và tổng thu nhập theo từng đợt"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:223
 msgid "%s slips · %s"
 msgstr "%s phiếu lương · %s"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:212
 msgid "%s-run trend"
 msgstr "xu hướng %s đợt"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:231
 msgid "+%s more departments"
 msgstr "thêm %s phòng ban"
 
@@ -119,6 +132,7 @@ msgstr ""
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:227
 msgid "Approximated from running contracts — no approved run yet"
 msgstr "Ước tính từ hợp đồng đang hiệu lực — chưa có đợt lương được duyệt"
 
@@ -149,12 +163,14 @@ msgstr "ban nhạc"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:265
 msgid "Board built in %s ms"
 msgstr "Bảng dựng trong %s ms"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:264
 msgid "Board built in %s ms · %s companies"
 msgstr "Bảng dựng trong %s ms · %s công ty"
 
@@ -203,18 +219,21 @@ msgstr "Diễn biến chi phí"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:566
 msgid "Could not load that list."
 msgstr "Không thể tải danh sách đó."
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:638
 msgid "Could not load this person's detail."
 msgstr "Không thể tải thông tin chi tiết của người này."
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:366
 msgid "Could not open the Explorer."
 msgstr "Không thể mở Explorer."
 
@@ -317,12 +336,14 @@ msgstr "Thuế TNCN đã khấu trừ"
 #: code:addons/pb_insights/static/src/js/insights.js:0
 #: code:addons/pb_insights/static/src/xml/insights.xml:0
 #: model:ir.actions.client,name:pb_insights.action_pb_insights
+#: code:addons/pb_insights/static/src/js/insights.js:502
 msgid "Insights"
 msgstr "Phân tích"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:76
 msgid "Insights could not be loaded."
 msgstr "Không tải được bảng phân tích."
 
@@ -359,6 +380,7 @@ msgstr "Quản lý"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:154
 msgid "Month over month, all pay runs in the month"
 msgstr "So sánh theo tháng, gồm mọi đợt lương trong tháng"
 
@@ -395,6 +417,7 @@ msgstr "Đã chi thực lãnh"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:228
 msgid "Net paid · %s"
 msgstr "Đã chi thực lãnh · %s"
 
@@ -421,6 +444,7 @@ msgstr ""
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:233
 msgid "No run yet"
 msgstr "Chưa có đợt lương"
 
@@ -528,6 +552,7 @@ msgstr "Xem cuộc chạy này được làm từ gì"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:619
 msgid "Showing %(shown)s of %(total)s"
 msgstr "Đang hiển thị %(shown)s của %(total)s"
 
@@ -556,12 +581,14 @@ msgstr "Nhân viên đó không còn tồn tại nữa."
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:358
 msgid "The Analytics Explorer is not installed on this database."
 msgstr "Analytics Explorer chưa được cài đặt trên cơ sở dữ liệu này."
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:476
 msgid "This snapshot is not linked to a pay run, so there is nothing to open."
 msgstr "Ảnh chụp nhanh này không được liên kết với một kỳ lương nên không có gì để mở."
 
@@ -628,12 +655,14 @@ msgstr "ban nhạc"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:134
 msgid "contributions"
 msgstr "khoản đóng"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:132
 msgid "employee share"
 msgstr "chia sẻ của nhân viên"
 
@@ -646,6 +675,7 @@ msgstr "đóng góp của doanh nghiệp"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:133
 msgid "employer share"
 msgstr "chia sẻ của nhà tuyển dụng"
 
@@ -664,6 +694,7 @@ msgstr "lương thực chi"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:218
 msgid "newest %s of %s runs in this window"
 msgstr "%s đợt mới nhất trong tổng số %s đợt của khoảng này"
 
@@ -676,12 +707,14 @@ msgstr "14 ngày tới"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:247
 msgid "out today · %s awaiting approval"
 msgstr "nghỉ hôm nay · %s chờ duyệt"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:257
 msgid "over the ceiling on %s request(s)"
 msgstr "vượt trần ở %s đề nghị"
 
@@ -700,12 +733,14 @@ msgstr "tuần này · từ đầu tháng"
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:244
 msgid "week of %s"
 msgstr "tuần từ %s"
 
 #. module: pb_insights
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:0
+#: code:addons/pb_insights/static/src/js/insights.js:196
 msgid "· latest run %s"
 msgstr "· đợt gần nhất %s"
 
@@ -716,6 +751,7 @@ msgid "· sampled"
 msgstr "· lấy mẫu"
 
 #. module: pb_insights
+#. odoo-javascript
 #: code:addons/pb_insights/static/src/js/insights.js:615
 msgid "Showing %(shown)s of %(total)s · the first %(loaded)s are"
 msgstr "Hiển thị %(shown)s của %(total)s · %(loaded)s đầu tiên là"

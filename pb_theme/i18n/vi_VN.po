@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,35 +16,41 @@ msgstr ""
 #. module: pb_theme
 #. odoo-javascript
 #: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:14
 msgid "Chat"
 msgstr "Trò chuyện"
 
 #. module: pb_theme
 #. odoo-javascript
 #: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:10
 msgid "My Preferences"
 msgstr "Tùy chọn của tôi"
 
 #. module: pb_theme
 #. odoo-javascript
 #: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:12
 msgid "Offline"
 msgstr "Ngoại tuyến"
 
 #. module: pb_theme
 #. odoo-javascript
 #: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:11
 msgid "Online"
 msgstr "Trực tuyến"
 
 #. module: pb_theme
 #. odoo-javascript
 #: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:9
 msgid "Shortcuts"
 msgstr "Phím tắt"
 
 #. module: pb_theme
 #. odoo-javascript
 #: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:13
 msgid "You will not receive any notifications"
 msgstr "Bạn sẽ không nhận được bất kỳ thông báo nào"
