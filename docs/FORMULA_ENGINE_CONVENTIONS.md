@@ -1423,3 +1423,31 @@ number from the handovers — keep the numbering stable.
      `rsync -az --perms --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r` (the `D…,F…` short form is
      rejected by rsync 3.x as an invalid argument), and check
      `find <addons>/<module> ! -perm -o+r | wc -l` is 0 after every deploy.
+122. **Payslip-line creation lives in TWO places, exactly like coercion did**
+     (VALUEKIND P2, and the direct sequel to C18.117). `hr_payslip_formula.
+     _create_payslip_lines_from_formulas` is the one you find by grepping
+     `appears_on_payslip`; `payroll_import_batch._compute_and_create_payslip_lines`
+     is the one the IMPORT and the **Recompute Formulas** button actually run.
+     Guarding only the first left ABM's `EMPBANKACCOA` on the payslip after a
+     full 152-payslip recompute, and the diff looked like the fix had simply not
+     worked. Any rail about what may become a payslip line must be added to both.
+123. **`appears_on_payslip` is a line-CREATION flag, not a print flag.** It
+     decides whether an `hr.payslip.line` ROW EXISTS, and every downstream total
+     sums those rows — `pb_total_*`, the Explorer's fact tables, the payroll
+     report, GL. On ABM it was set on a bank account and an insurance book
+     number, so 152 lines each carried an account number AS AN AMOUNT and
+     contributed 1,084,804,462,467,690 — which is the 1086T the Analytics
+     Explorer reported as employer cost. A payslip statement module
+     (`pb_payslip`) styles the statement; it cannot undo a row in the database.
+     The rail is the component's `value_kind`: a Float `total` can only hold a
+     number.
+124. **Deleting a pay run ORPHANS its payslips; it does not delete them.**
+     `hr_payslip.payslip_run_id` is `ON DELETE SET NULL`
+     (`pg_constraint.confdeltype = 'n'`) and `hr.payslip.run` has no `unlink`
+     override, so every payslip survives with a null run — draft ones included.
+     A subsequently created run for the same period re-parents them, WITHOUT
+     recomputing: on ABM the "new" run 14 carried payslips whose `create_date`
+     was still the import batch's, so they held values computed before a fix
+     that had already shipped. When a fix appears not to have taken, check
+     `hr_payslip.create_date` against the deploy time before looking anywhere
+     else — only a recompute rewrites `formula_input_values`.

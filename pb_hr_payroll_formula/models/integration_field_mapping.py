@@ -417,7 +417,7 @@ Example: value * 1.1 if value > 1000 else value
         # ==============================================================
         target_kind = self.target_rule_id.value_kind if self.target_rule_id else None
         if target_kind:
-            wants_number = target_kind in value_kind_classifier.NUMERIC_KINDS
+            wants_number = value_kind_classifier.wants_number(target_kind)
         else:
             wants_number = self.source_data_type in (
                 'number', 'float', 'integer', 'currency')
@@ -461,7 +461,10 @@ Example: value * 1.1 if value > 1000 else value
         else:
             result = self._apply_transform_ops(vals, value, record)
 
-        return self._clamp_result(result)
+        # `integer` rounds AFTER the op ladder, so a divide that lands on
+        # 2.0000001 comes back as 2 for a field a person declared whole.
+        return value_kind_classifier.apply_kind(
+            target_kind, self._clamp_result(result))
 
     def preview_transform(self, draft_vals):
         """W62 draft preview (D-I3) — evaluate a DRAFT transform against this row's

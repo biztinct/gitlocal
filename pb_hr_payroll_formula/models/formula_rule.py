@@ -650,16 +650,20 @@ class HrFormulaRule(models.Model):
     # `LOCATION` is read by `IF(F5="La Nga", …)` and arrived as `0.0`, so the
     # comparison was false for every employee on every run, in silence.
     value_kind = fields.Selection([
-        ('money', 'Money'),
-        ('quantity', 'Quantity'),
-        ('rate', 'Rate'),
-        ('identifier', 'Identifier'),
+        ('money', 'Amount (currency)'),
+        ('decimal', 'Decimal number'),
+        ('integer', 'Whole number'),
+        ('quantity', 'Quantity (hours, days)'),
+        ('rate', 'Percentage / rate'),
+        ('identifier', 'Reference code'),
         ('text', 'Text'),
         ('date', 'Date'),
         ('boolean', 'Yes / No'),
     ], string='Value Kind', default='money', required=True,
         help="What this component's value IS. Decides whether it is stored as a "
-             "number or kept as it arrived, and how it is displayed.")
+             "number or kept exactly as it arrived, whether it can become a "
+             "payslip line, and how it is displayed. The first five are "
+             "numbers; the last four are not and are never converted.")
 
     value_kind_source = fields.Selection([
         ('auto', 'Auto-classified'),

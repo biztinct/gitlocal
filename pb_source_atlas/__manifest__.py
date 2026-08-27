@@ -23,7 +23,7 @@ programme (``hr.payslip.formula_input_sources``); this module only reads it,
 joins it back to the raw material, and draws it. Per-lane spreadsheet downloads
 re-materialise exactly what the screen shows.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

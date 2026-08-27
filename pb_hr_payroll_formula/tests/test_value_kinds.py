@@ -258,7 +258,7 @@ class TestValueKinds(common.TransactionCase):
         """
         from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier
         self.assertEqual(set(value_kind_classifier.NUMERIC_KINDS),
-                         {'money', 'quantity', 'rate'})
+                         {'money', 'decimal', 'integer', 'quantity', 'rate'})
         for kind in ('text', 'identifier', 'date', 'boolean'):
             self.assertNotIn(kind, value_kind_classifier.NUMERIC_KINDS,
                              "%s must never reach float()" % kind)
@@ -281,3 +281,106 @@ class TestValueKinds(common.TransactionCase):
         self.assertEqual(fresh.value_kind, 'money')
         self.assertTrue((fresh.value_kind_reason or '').startswith('no signal'),
                         "the guard reads this prefix; changing it re-opens the hole")
+
+    # ------------------------------------------------------------------
+    # P2 — the vocabulary a person picks from
+    # ------------------------------------------------------------------
+    def test_16_integer_coerces_and_rounds(self):
+        from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier as vkc
+        self.assertTrue(vkc.wants_number('integer'))
+        self.assertEqual(vkc.apply_kind('integer', 12.7), 13.0)
+        self.assertEqual(vkc.apply_kind('integer', 12.2), 12.0)
+
+    def test_17_decimal_coerces_without_rounding(self):
+        from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier as vkc
+        self.assertTrue(vkc.wants_number('decimal'))
+        self.assertEqual(vkc.apply_kind('decimal', 12.7), 12.7)
+
+    def test_18_non_numeric_kinds_are_never_coerced(self):
+        from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier as vkc
+        for kind in ('identifier', 'text', 'date', 'boolean'):
+            self.assertFalse(vkc.wants_number(kind))
+
+    # ------------------------------------------------------------------
+    # P2 — the board
+    # ------------------------------------------------------------------
+    def test_19_board_has_a_row_per_component(self):
+        self.config.classify_value_kinds()
+        board = self.config.value_kind_board()
+        codes = {r['code'] for r in board['rows']}
+        self.assertTrue({'VKLOCATION', 'VKSALARY', 'VKEMPCODE'} <= codes)
+        self.assertTrue(board['options'])
+        for row in board['rows']:
+            self.assertTrue(row['lane'], "%s has no lane" % row['code'])
+            self.assertTrue(row['kind'])
+
+    def test_20_board_options_say_which_kinds_are_numbers(self):
+        options = {o['value']: o['numeric'] for o in self.config._value_kind_options()}
+        self.assertTrue(options['money'])
+        self.assertTrue(options['integer'])
+        self.assertFalse(options['text'])
+        self.assertFalse(options['identifier'])
+
+    def test_21_set_value_kinds_is_a_person(self):
+        res = self.config.set_value_kinds({'VKLOCATION': 'integer'})
+        self.assertEqual(res['changed'], ['VKLOCATION'])
+        self.assertEqual(self.r_loc.value_kind, 'integer')
+        self.assertEqual(self.r_loc.value_kind_source, 'user')
+        self.config.classify_value_kinds()
+        self.assertEqual(self.r_loc.value_kind, 'integer',
+                         "the classifier must not overwrite a person")
+
+    def test_22_set_value_kinds_refuses_nonsense(self):
+        from odoo.exceptions import UserError
+        with self.assertRaises(UserError):
+            self.config.set_value_kinds({'VKLOCATION': 'not-a-kind'})
+        with self.assertRaises(UserError):
+            self.config.set_value_kinds({'NOSUCHCODE': 'text'})
+
+    def test_23_reset_hands_it_back_to_the_classifier(self):
+        self.config.set_value_kinds({'VKLOCATION': 'integer'})
+        self.config.reset_value_kind(['VKLOCATION'])
+        self.assertEqual(self.r_loc.value_kind_source, 'auto')
+        self.assertEqual(self.r_loc.value_kind, 'text')
+
+    # ------------------------------------------------------------------
+    # P2 — the payslip-line rail
+    # ------------------------------------------------------------------
+    def test_24_a_non_numeric_component_cannot_be_a_payslip_line(self):
+        """A payslip line carries a Float `total`, so only a number can be one.
+
+        ABM had `EMPBANKACCOA` (a bank account) and `INSBOOKNO` (an insurance
+        book number) flagged `appears_on_payslip`, and their 152 lines each
+        contributed 1,084,804,462,467,690 to every line-based total — which is
+        what the Analytics Explorer was reporting as employer cost.
+        """
+        from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier as vkc
+        self.config.classify_value_kinds()
+        self.r_bank.write({'appears_on_payslip': True})
+        self.assertEqual(self.r_bank.value_kind, 'identifier')
+        self.assertFalse(vkc.wants_number(self.r_bank.value_kind),
+                         "an identifier must not be eligible for a payslip line")
+        self.r_salary.write({'appears_on_payslip': True})
+        self.assertTrue(vkc.wants_number(self.r_salary.value_kind))
+
+    def test_25_both_line_creators_carry_the_rail(self):
+        """Line creation lives in TWO places and both need the guard.
+
+        Guarding only `_create_payslip_lines_from_formulas` left ABM's bank
+        account on the payslip after a full recompute, because the import and
+        Recompute paths run `_compute_and_create_payslip_lines` instead
+        (C18.122).
+        """
+        import inspect
+        from odoo.addons.pb_hr_payroll_formula.models import (
+            hr_payslip_formula, payroll_import_batch,
+        )
+        for module, name in (
+            (hr_payslip_formula, '_create_payslip_lines_from_formulas'),
+            (payroll_import_batch, '_compute_and_create_payslip_lines'),
+        ):
+            klass = next(o for _n, o in inspect.getmembers(module, inspect.isclass)
+                         if hasattr(o, name))
+            src = inspect.getsource(getattr(klass, name))
+            self.assertIn('wants_number', src,
+                          "%s has no value-kind rail" % name)

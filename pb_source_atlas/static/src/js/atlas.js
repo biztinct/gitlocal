@@ -60,6 +60,12 @@ export class PbSourceAtlas extends Component {
             journeyLoading: false,
             journeyKey: "",
             downloading: "",
+            // VALUEKIND P2 — the Field types board.
+            types: null,
+            typesLoading: false,
+            typesDirty: {},
+            typesSaving: false,
+            typesOnlyDrift: false,
         });
 
         this._searchToken = 0;
@@ -109,6 +115,106 @@ export class PbSourceAtlas extends Component {
     async showGrid() {
         this.state.view = "grid";
         this.state.grid || (await this.loadGrid());
+    }
+
+    async showTypes() {
+        this.state.view = "types";
+        if (!this.state.types) {
+            await this.loadTypes();
+        }
+    }
+
+    // ------------------------------------------------- VALUEKIND: field types
+    /**
+     * The board reads through the Atlas but WRITES through hr.formula.config.
+     *
+     * `pb.source.atlas` is a strictly read-only facade and stays one — its
+     * `test_07` counts rows around every endpoint. The type of a value is a
+     * property of the pay COMPONENT, so the model that owns the component owns
+     * the write. That is also why one board covers a spreadsheet column and an
+     * API wire alike: neither of them holds the type.
+     */
+    async loadTypes() {
+        this.state.typesLoading = true;
+        try {
+            const configId = this.state.atlas?.config_ids?.[0];
+            if (!configId) {
+                this.state.error = _t("This pay run has no scheme to read types from.");
+            } else {
+                this.state.types = await this.orm.call(
+                    "hr.formula.config", "value_kind_board", [[configId], this.runId]
+                );
+                this.state.typesDirty = {};
+            }
+        } catch (error) {
+            this.state.error = error?.data?.message || error?.message || _t("Could not read the field types.");
+        }
+        this.state.typesLoading = false;
+    }
+
+    toggleOnlyDrift() {
+        this.state.typesOnlyDrift = !this.state.typesOnlyDrift;
+    }
+
+    get typeRows() {
+        const rows = this.state.types?.rows || [];
+        return this.state.typesOnlyDrift ? rows.filter((r) => r.drift) : rows;
+    }
+
+    get dirtyCount() {
+        return Object.keys(this.state.typesDirty).length;
+    }
+
+    kindOf(row) {
+        return this.state.typesDirty[row.code] ?? row.kind;
+    }
+
+    onKindChange(row, ev) {
+        const chosen = ev.target.value;
+        if (chosen === row.kind) {
+            delete this.state.typesDirty[row.code];
+        } else {
+            this.state.typesDirty[row.code] = chosen;
+        }
+    }
+
+    async saveTypes() {
+        if (!this.dirtyCount || this.state.typesSaving) {
+            return;
+        }
+        this.state.typesSaving = true;
+        try {
+            const configId = this.state.types.config_id;
+            const res = await this.orm.call(
+                "hr.formula.config", "set_value_kinds",
+                [[configId], { ...this.state.typesDirty }]
+            );
+            this.notif.add(res.note, { type: "success" });
+            await this.loadTypes();
+            // The grid renders BY kind, so it is now stale.
+            this.state.grid = null;
+        } catch (error) {
+            this.notif.add(
+                error?.data?.message || error?.message || _t("Could not save."),
+                { type: "danger" }
+            );
+        }
+        this.state.typesSaving = false;
+    }
+
+    async resetType(row) {
+        try {
+            const configId = this.state.types.config_id;
+            await this.orm.call("hr.formula.config", "reset_value_kind",
+                                [[configId], [row.code]]);
+            delete this.state.typesDirty[row.code];
+            await this.loadTypes();
+        } catch (error) {
+            this.notif.add(
+                error?.data?.message || error?.message || _t("Could not reset."),
+                { type: "danger" }
+            );
+        }
     }
 
     async focusLane(laneKey) {
@@ -298,6 +404,12 @@ export class PbSourceAtlas extends Component {
      */
     kindly(value, kind) {
         if (value === null || value === undefined || value === "") {
+            return "—";
+        }
+        // An unset Char reads as `false` through the ORM, so a text field with
+        // nothing in it arrives here as the boolean. Only a yes/no field means
+        // the word.
+        if (value === false && kind !== "boolean") {
             return "—";
         }
         switch (kind) {

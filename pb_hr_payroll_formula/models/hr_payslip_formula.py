@@ -7,6 +7,7 @@ import json
 import logging
 
 from . import input_provenance
+from . import value_kind_classifier
 
 _logger = logging.getLogger(__name__)
 
@@ -514,9 +515,34 @@ class HrPayslipFormula(models.Model):
         self.line_ids.unlink()
 
         lines_to_create = []
+        skipped_non_numeric = []
 
         for rule in rules:
             if not rule.appears_on_payslip:
+                continue
+
+            # ==========================================================
+            # VALUEKIND P2 — a payslip line has a Float `total`, so only a
+            # NUMBER can be one.
+            #
+            # `appears_on_payslip` is not a print flag: this loop is what
+            # creates the `hr.payslip.line` row, and every downstream total
+            # sums those rows (`pb_total_*`, the Explorer's fact tables, the
+            # payroll report, GL). On ABM, `EMPBANKACCOA` and `INSBOOKNO` —
+            # a bank account and an insurance book number — had the flag set,
+            # so 152 lines each carried the account number AS AN AMOUNT and
+            # contributed 1,084,804,462,467,690 to the line totals. That is
+            # the 1086T the Analytics Explorer was reporting.
+            #
+            # The rail is the component's own kind, not a name heuristic: an
+            # identifier, a date, a piece of text and a yes/no have no `total`
+            # by construction. Reported once per run rather than in silence
+            # (C7) — a component that stops printing is something a person
+            # must be able to see they did.
+            # ==========================================================
+            if not value_kind_classifier.wants_number(
+                    getattr(rule, 'value_kind', None)):
+                skipped_non_numeric.append(rule.code)
                 continue
 
             amount = computed_values.get(rule.code, 0.0)
@@ -560,6 +586,13 @@ class HrPayslipFormula(models.Model):
                 'component_detail': bool(rule.net_role_detail),
             }
             lines_to_create.append(line_data)
+
+        if skipped_non_numeric:
+            _logger.info(
+                "VALUEKIND: payslip %s — %s component(s) marked 'appears on "
+                "payslip' hold a non-numeric value and cannot be a payslip "
+                "line: %s", self.id, len(skipped_non_numeric),
+                ', '.join(sorted(set(skipped_non_numeric))))
 
         if lines_to_create:
             self.env['hr.payslip.line'].create(lines_to_create)

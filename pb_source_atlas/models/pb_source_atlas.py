@@ -293,6 +293,10 @@ class PbSourceAtlas(models.AbstractModel):
             'unknown_codes': [],
             'notes': [],
             'currency': self._atlas_currency(run),
+            # VALUEKIND P2 — the scheme(s) behind this run. The Field types
+            # board writes through `hr.formula.config`, not through this
+            # read-only facade, so it needs to know which config to address.
+            'config_ids': sorted({cfg for _s, _e, cfg, *_r in rows if cfg}),
         }
 
         if not rows:
