@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_source_atlas.Atlas">
+  <div class="pbim psa">
+
+    <!-- ============================================================ hero -->
+    <div class="psa-hero">
+      <div class="psa-hero-l">
+        <span class="psa-hero-ic"><t t-out="ic('compass', 22)"/></span>
+        <div class="psa-hero-tx">
+          <h1>Where the numbers come from</h1>
+          <p t-if="run.name">
+            <span class="psa-run" t-esc="run.name"/>
+            <span class="psa-dot">·</span>
+            <span t-esc="run.date_start"/> – <span t-esc="run.date_end"/>
+            <span class="psa-dot">·</span>
+            <span t-esc="run.slip_count"/> payslips
+          </p>
+        </div>
+      </div>
+      <div class="psa-hero-r">
+        <div class="psa-seg">
+          <button t-attf-class="psa-seg-b {{ state.view === 'lanes' ? 'on' : '' }}"
+                  t-on-click="showLanes">
+            <t t-out="ic('layers', 15)"/> Lanes
+          </button>
+          <button t-attf-class="psa-seg-b {{ state.view === 'grid' ? 'on' : '' }}"
+                  t-on-click="showGrid">
+            <t t-out="ic('table', 15)"/> Grid
+          </button>
+        </div>
+        <button class="psa-btn primary" t-on-click="() => this.download('matrix')"
+                t-att-disabled="state.downloading ? 1 : 0">
+          <t t-out="ic('download', 15)"/>
+          <span t-if="state.downloading === 'matrix'">Preparing…</span>
+          <span t-else="">Download everything</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================= loading -->
+    <div t-if="state.loading" class="psa-skel">
+      <div class="psa-skel-row" t-foreach="[1,2,3,4,5,6]" t-as="n" t-key="n"/>
+    </div>
+
+    <div t-elif="state.error" class="psa-empty">
+      <span class="psa-empty-ic warn"><t t-out="ic('alert', 26)"/></span>
+      <h2>This run could not be read</h2>
+      <p t-esc="state.error"/>
+    </div>
+
+    <!-- ====================================================== no payslips -->
+    <div t-elif="state.atlas.empty === 'no_slips'" class="psa-empty">
+      <span class="psa-empty-ic"><t t-out="ic('receipt', 26)"/></span>
+      <h2>Nothing has been calculated yet</h2>
+      <p>This pay run has no payslips, so there are no numbers to trace. Run
+         payroll for the period and every value's source appears here.</p>
+      <button class="psa-btn primary" t-on-click="runPayroll">
+        <t t-out="ic('play', 15)"/> Run payroll
+      </button>
+    </div>
+
+    <t t-else="">
+
+      <!-- ======================================================== notes -->
+      <div t-if="state.atlas.notes.length" class="psa-notes">
+        <div class="psa-note" t-foreach="state.atlas.notes" t-as="note" t-key="note_index">
+          <t t-out="ic('alert', 14)"/> <span t-esc="note"/>
+        </div>
+      </div>
+
+      <!-- ======================================================== LANES -->
+      <div t-if="state.view === 'lanes'" class="psa-lanes">
+        <div t-foreach="lanes" t-as="lane" t-key="lane.key"
+             t-attf-class="psa-lane t-{{ lane.tone }} {{ lane.muted ? 'muted' : '' }}">
+          <div class="psa-lane-top">
+            <span class="psa-lane-ic"><t t-out="ic(lane.icon, 20)"/></span>
+            <div class="psa-lane-hd">
+              <h3 t-esc="lane.label"/>
+              <span class="psa-lane-kind" t-if="lane.kind === 'declared'">from the component's own type</span>
+            </div>
+          </div>
+
+          <p class="psa-lane-blurb" t-esc="lane.blurb"/>
+
+          <div t-if="lane.muted" class="psa-lane-zero">
+            <t t-out="ic('minusCircle', 14)"/> Nothing in this run came this way.
+          </div>
+
+          <t t-else="">
+            <div class="psa-lane-stats">
+              <div class="psa-lane-stat">
+                <span class="v" t-esc="lane.components"/>
+                <span class="l">components</span>
+              </div>
+              <div class="psa-lane-stat">
+                <span class="v" t-esc="lane.employees"/>
+                <span class="l">employees</span>
+              </div>
+              <div class="psa-lane-stat">
+                <span class="v" t-esc="lane.cells"/>
+                <span class="l">values</span>
+              </div>
+            </div>
+
+            <div class="psa-cov">
+              <div class="psa-cov-bar">
+                <span t-attf-style="width:{{ lane.coverage }}%"/>
+              </div>
+              <span class="psa-cov-l"><t t-esc="lane.coverage"/>% of employees</span>
+            </div>
+
+            <div class="psa-lane-money" t-if="lane.amount !== null">
+              <span class="l">Carried into this run</span>
+              <span class="v" t-esc="money(lane.amount)"/>
+            </div>
+            <div class="psa-lane-money muted" t-else="">
+              <span class="l" t-esc="lane.amount_note"/>
+            </div>
+
+            <div class="psa-lane-foot">
+              <button class="psa-btn ghost sm" t-on-click="() => this.focusLane(lane.key)">
+                <t t-out="ic('search', 14)"/> See the cells
+              </button>
+              <button class="psa-btn ghost sm" t-on-click="() => this.download(lane.key)"
+                      t-att-disabled="state.downloading ? 1 : 0">
+                <t t-out="ic('download', 14)"/>
+                <span t-if="state.downloading === lane.key">Preparing…</span>
+                <span t-else="">Spreadsheet</span>
+              </button>
+            </div>
+          </t>
+        </div>
+      </div>
+
+      <!-- ========================================= unknown codes (lanes) -->
+      <div t-if="state.view === 'lanes' and state.atlas.unknown_codes.length" class="psa-unknown">
+        <h4><t t-out="ic('alert', 15)"/> Codes with a source but no component</h4>
+        <p>These carry provenance from an earlier version of the scheme. They are
+           listed rather than dropped, so nothing is hidden.</p>
+        <div class="psa-chips">
+          <span class="psa-chip warn" t-foreach="state.atlas.unknown_codes" t-as="u" t-key="u.code">
+            <t t-esc="u.code"/> <b t-esc="u.cells"/>
+          </span>
+        </div>
+      </div>
+
+      <!-- ========================================================= GRID -->
+      <div t-if="state.view === 'grid'" class="psa-grid-wrap">
+
+        <div class="psa-toolbar">
+          <div class="psa-search">
+            <t t-out="ic('search', 15)"/>
+            <input type="text" placeholder="Find an employee…"
+                   t-att-value="state.search" t-on-input="onSearch"/>
+          </div>
+          <div class="psa-search sm">
+            <t t-out="ic('filter', 15)"/>
+            <input type="text" placeholder="Filter components…"
+                   t-att-value="state.compSearch" t-on-input="onComponentSearch"/>
+          </div>
+          <div class="psa-legend">
+            <button t-foreach="activeLanes" t-as="lane" t-key="lane.key"
+                    t-attf-class="psa-lg t-{{ lane.tone }} {{ state.laneFilter === lane.key ? 'on' : '' }}"
+                    t-on-click="() => this.focusLane(lane.key)">
+              <span class="sw"/> <t t-esc="lane.label"/>
+            </button>
+          </div>
+        </div>
+
+        <div class="psa-bands" t-if="bands.length > 1">
+          <button t-attf-class="psa-band {{ !state.band ? 'on' : '' }}"
+                  t-on-click="() => this.setBand('')">All groups</button>
+          <button t-foreach="bands" t-as="band" t-key="band"
+                  t-attf-class="psa-band {{ state.band === band ? 'on' : '' }}"
+                  t-on-click="() => this.setBand(band)" t-esc="band"/>
+        </div>
+
+        <div class="psa-pagers" t-if="state.grid">
+          <div class="psa-pager">
+            <button class="psa-btn ghost sm" t-on-click="() => this.pageRows(-1)"
+                    t-att-disabled="state.offset === 0 ? 1 : 0">
+              <t t-out="ic('chevronLeft', 14)"/>
+            </button>
+            <span t-esc="rowRangeLabel"/>
+            <button class="psa-btn ghost sm" t-on-click="() => this.pageRows(1)"
+                    t-att-disabled="(state.offset + rows.length) >= state.grid.total ? 1 : 0">
+              <t t-out="ic('chevron', 14)"/>
+            </button>
+          </div>
+          <div class="psa-pager">
+            <button class="psa-btn ghost sm" t-on-click="() => this.pageCols(-1)"
+                    t-att-disabled="state.colOffset === 0 ? 1 : 0">
+              <t t-out="ic('chevronLeft', 14)"/>
+            </button>
+            <span t-esc="colRangeLabel"/>
+            <button class="psa-btn ghost sm" t-on-click="() => this.pageCols(1)"
+                    t-att-disabled="(state.colOffset + colPage) >= visibleComponents.length ? 1 : 0">
+              <t t-out="ic('chevron', 14)"/>
+            </button>
+          </div>
+        </div>
+
+        <div t-if="state.gridLoading" class="psa-grid-busy">Reading the run…</div>
+
+        <div t-if="!rows.length and !state.gridLoading" class="psa-empty inline">
+          <span class="psa-empty-ic"><t t-out="ic('users', 22)"/></span>
+          <h2>No employee matches that search</h2>
+        </div>
+
+        <div t-else="" class="psa-table-scroll">
+          <table class="psa-table">
+            <thead>
+              <tr>
+                <th class="psa-sticky">Employee</th>
+                <th t-foreach="windowComponents" t-as="comp" t-key="comp.code"
+                    t-attf-class="psa-th r-{{ roleTone(comp.net_role) }}">
+                  <span class="psa-th-code" t-esc="comp.code"/>
+                  <span class="psa-th-name" t-esc="comp.name"/>
+                  <span class="psa-th-band" t-esc="comp.band"/>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="rows" t-as="row" t-key="row.slip_id">
+                <th class="psa-sticky">
+                  <span class="psa-emp" t-esc="row.employee"/>
+                  <span class="psa-empc" t-esc="row.code"/>
+                  <span class="psa-noprov" t-if="!row.has_provenance">no source recorded</span>
+                </th>
+                <t t-foreach="windowComponents" t-as="comp" t-key="comp.code">
+                  <t t-set="cell" t-value="cellOf(row, comp.code)"/>
+                  <td t-if="cell"
+                      t-attf-class="psa-cell l-{{ cell.l }} {{ state.journeyKey === row.slip_id + ':' + comp.code ? 'on' : '' }}"
+                      t-on-click="() => this.openJourney(row.slip_id, comp.code)"
+                      t-att-title="cell.k">
+                    <span class="v" t-esc="short(cell.v)"/>
+                  </td>
+                  <td t-else="" class="psa-cell empty">·</td>
+                </t>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ====================================================== JOURNEY -->
+      <div t-if="state.journey or state.journeyLoading" class="psa-scrim" t-on-click="closeJourney"/>
+      <aside t-if="state.journey or state.journeyLoading" class="psa-journey">
+        <div class="psa-j-head">
+          <div>
+            <span class="psa-j-eyebrow">The journey of one number</span>
+            <h2 t-if="state.journey" t-esc="state.journey.name"/>
+            <p t-if="state.journey" class="psa-j-sub">
+              <span t-esc="state.journey.code"/>
+              <span class="psa-dot">·</span>
+              <span t-esc="state.journey.employee"/>
+            </p>
+          </div>
+          <button class="psa-x" t-on-click="closeJourney"><t t-out="ic('x', 16)"/></button>
+        </div>
+
+        <div t-if="state.journeyLoading" class="psa-j-busy">Following the chain…</div>
+
+        <t t-elif="state.journey">
+          <div class="psa-j-value">
+            <span class="l">Value on this payslip</span>
+            <span class="v" t-if="state.journey.money" t-esc="money(state.journey.number)"/>
+            <span class="v" t-else="" t-esc="num(state.journey.value)"/>
+            <span t-if="state.journey.net_role"
+                  t-attf-class="psa-role r-{{ roleTone(state.journey.net_role) }}"
+                  t-esc="roleLabel(state.journey.net_role)"/>
+          </div>
+
+          <div t-if="state.journey.warnings.length" class="psa-j-warn"
+               t-foreach="state.journey.warnings" t-as="w" t-key="w_index">
+            <t t-out="ic('alert', 14)"/> <span t-esc="w"/>
+          </div>
+
+          <!-- step 1 — where it came from -->
+          <div class="psa-flow">
+            <div t-attf-class="psa-step src l-{{ state.journey.lane }}">
+              <div class="psa-step-ic"><t t-out="ic(laneMeta(state.journey.lane).icon, 17)"/></div>
+              <div class="psa-step-bd">
+                <span class="psa-step-kicker" t-esc="state.journey.source.title"/>
+                <div class="psa-kv" t-if="state.journey.source.key">
+                  <span class="k">arrived on</span>
+                  <code t-esc="state.journey.source.key"/>
+                </div>
+                <div class="psa-kv" t-if="state.journey.source.raw_value !== undefined and state.journey.source.raw_value !== null">
+                  <span class="k">raw value</span>
+                  <b t-esc="num(state.journey.source.raw_value)"/>
+                </div>
+                <div class="psa-kv" t-if="state.journey.source.via_label">
+                  <span class="k">why this one</span>
+                  <span t-esc="state.journey.source.via_label"/>
+                </div>
+                <p class="psa-step-detail" t-if="state.journey.source.detail"
+                   t-esc="state.journey.source.detail"/>
+
+                <div class="psa-sub" t-if="state.journey.source.row">
+                  <t t-out="ic('inbox', 13)"/>
+                  <span t-esc="state.journey.source.row.batch"/>
+                  <span class="psa-dot">·</span>
+                  <span t-esc="state.journey.source.row.period"/>
+                  <span t-if="state.journey.source.row.row_no" class="psa-dot">·</span>
+                  <span t-if="state.journey.source.row.row_no">row <t t-esc="state.journey.source.row.row_no"/></span>
+                </div>
+                <div class="psa-sub" t-if="state.journey.source.feed">
+                  <t t-out="ic('cloud', 13)"/>
+                  <span t-esc="state.journey.source.feed.data_type"/>
+                  <span class="psa-dot">·</span>
+                  <span>pulled <t t-esc="state.journey.source.feed.pulled"/></span>
+                  <span class="psa-dot">·</span>
+                  <span>as delivered: <b t-esc="num(state.journey.source.feed.value)"/></span>
+                </div>
+                <div class="psa-sub" t-if="state.journey.source.record">
+                  <t t-out="ic('user', 13)"/>
+                  <span t-esc="state.journey.source.record.model"/>
+                  <span t-if="state.journey.source.record.field" class="psa-dot">·</span>
+                  <span t-if="state.journey.source.record.field" t-esc="state.journey.source.record.field"/>
+                </div>
+                <div class="psa-sub warn" t-if="state.journey.source.ignored">
+                  <t t-out="ic('eyeOff', 13)"/>
+                  <span>the other source also sent</span>
+                  <b t-esc="num(state.journey.source.ignored.value)"/>
+                  <span t-if="state.journey.source.ignored.key">on <code t-esc="state.journey.source.ignored.key"/></span>
+                  <span>— not used</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- step 2 — the transformation rule, when there is one -->
+            <t t-if="state.journey.transformation">
+              <div class="psa-conn"><span/></div>
+              <div class="psa-step rule">
+                <div class="psa-step-ic"><t t-out="ic('gitMerge', 17)"/></div>
+                <div class="psa-step-bd">
+                  <span class="psa-step-kicker">Shaped by a transformation rule</span>
+                  <b t-esc="state.journey.transformation.name"/>
+                  <p class="psa-step-detail" t-if="state.journey.transformation.summary"
+                     t-esc="state.journey.transformation.summary"/>
+                </div>
+              </div>
+            </t>
+
+            <!-- step 3 — the component itself -->
+            <div class="psa-conn"><span/></div>
+            <div class="psa-step comp">
+              <div class="psa-step-ic"><t t-out="ic('receipt', 17)"/></div>
+              <div class="psa-step-bd">
+                <span class="psa-step-kicker">The component</span>
+                <b><t t-esc="state.journey.code"/> — <t t-esc="state.journey.name"/></b>
+                <div class="psa-kv">
+                  <span class="k">value</span>
+                  <b t-if="state.journey.money" t-esc="money(state.journey.number)"/>
+                  <b t-else="" t-esc="num(state.journey.value)"/>
+                </div>
+                <code class="psa-formula" t-if="state.journey.formula" t-esc="state.journey.formula"/>
+              </div>
+            </div>
+
+            <!-- step 4… — every formula hop to net pay -->
+            <t t-foreach="journeyHops" t-as="hop" t-key="hop.code">
+              <div class="psa-conn"><span/></div>
+              <div t-attf-class="psa-step hop {{ hop.is_net ? 'net' : '' }}"
+                   t-on-click="() => this.reanchor(hop.code)">
+                <div t-attf-class="psa-sign {{ hop.sign > 0 ? 'pos' : 'neg' }}">
+                  <t t-esc="hop.sign > 0 ? '+' : '−'"/>
+                </div>
+                <div class="psa-step-bd">
+                  <span class="psa-step-kicker" t-if="hop.is_net">Net pay</span>
+                  <span class="psa-step-kicker" t-else="">feeds into</span>
+                  <b><t t-esc="hop.code"/> — <t t-esc="hop.name"/></b>
+                  <div class="psa-kv">
+                    <span class="k">value</span>
+                    <b t-if="hop.money" t-esc="money(hop.number)"/>
+                    <b t-else="" t-esc="num(hop.value)"/>
+                    <span t-if="hop.confidence === 'review'" class="psa-flag">needs review</span>
+                    <span t-if="hop.net_role_detail" class="psa-flag">folded into a total</span>
+                  </div>
+                  <code class="psa-formula" t-if="hop.formula" t-esc="hop.formula"/>
+                </div>
+                <span class="psa-hop-go"><t t-out="ic('chevron', 14)"/></span>
+              </div>
+            </t>
+
+            <div t-if="state.journey.is_net" class="psa-j-tail">
+              This is net pay itself — everything above adds up to it.
+            </div>
+          </div>
+        </t>
+      </aside>
+
+    </t>
+  </div>
+</t>
+
+</templates>
