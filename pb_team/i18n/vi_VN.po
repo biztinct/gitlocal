@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -40,6 +40,7 @@ msgstr "Phê duyệt"
 #. module: pb_team
 #. odoo-javascript
 #: code:addons/pb_team/static/src/js/pb_team.js:0
+#: code:addons/pb_team/static/src/js/pb_team.js:118
 msgid "Approved"
 msgstr "Đã phê duyệt"
 
@@ -109,12 +110,14 @@ msgstr "Chưa có nhóm nào báo cáo cho bạn"
 #. module: pb_team
 #. odoo-javascript
 #: code:addons/pb_team/static/src/js/pb_team.js:0
+#: code:addons/pb_team/static/src/js/pb_team.js:168
 msgid "Not allowed"
 msgstr "Không được phép"
 
 #. module: pb_team
 #. odoo-javascript
 #: code:addons/pb_team/static/src/js/pb_team.js:0
+#: code:addons/pb_team/static/src/js/pb_team.js:160
 msgid "Not applied"
 msgstr "Không áp dụng"
 
@@ -164,12 +167,15 @@ msgstr "Từ chối"
 #. module: pb_team
 #. odoo-javascript
 #: code:addons/pb_team/static/src/js/pb_team.js:0
+#: code:addons/pb_team/static/src/js/pb_team.js:145
+#: code:addons/pb_team/static/src/js/pb_team.js:154
 msgid "Refused"
 msgstr "Đã từ chối"
 
 #. module: pb_team
 #. odoo-javascript
 #: code:addons/pb_team/static/src/js/pb_team.js:0
+#: code:addons/pb_team/static/src/js/pb_team.js:159
 msgid "Refused by a server guard · %s"
 msgstr "Bị người bảo vệ máy chủ từ chối · %s"
 
@@ -188,6 +194,7 @@ msgstr "Bỏ qua cấp độ"
 #. module: pb_team
 #. odoo-javascript
 #: code:addons/pb_team/static/src/js/pb_team.js:0
+#: code:addons/pb_team/static/src/js/pb_team.js:174
 msgid "Something went wrong."
 msgstr "Đã xảy ra lỗi."
 
@@ -208,6 +215,7 @@ msgstr "Thành viên nhóm"
 #. module: pb_team
 #. odoo-javascript
 #: code:addons/pb_team/static/src/js/pb_team.js:0
+#: code:addons/pb_team/static/src/js/pb_team.js:166
 msgid "The request could not be processed."
 msgstr "Yêu cầu không thể được xử lý."
 

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -339,7 +339,9 @@ msgid "Decommission this tenant"
 msgstr "Ngừng hoạt động đối tượng thuê này"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__decommissioned
+#: code:addons/pb_tenants/static/src/js/tenants.js:18
 msgid "Decommissioned"
 msgstr "Đã ngừng hoạt động"
 
@@ -419,7 +421,9 @@ msgid "Download"
 msgstr "Tải xuống"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__draft
+#: code:addons/pb_tenants/static/src/js/tenants.js:17
 msgid "Draft"
 msgstr "Nháp"
 
@@ -447,8 +451,10 @@ msgid "Enter a valid external hostname, e.g. payroll.acme.com."
 msgstr "Nhập tên máy chủ bên ngoài hợp lệ, ví dụ: bảng lương.acme.com."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__error
 #: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant_domain__state__error
+#: code:addons/pb_tenants/static/src/js/tenants.js:18
 msgid "Error"
 msgstr "Lỗi"
 
@@ -634,7 +640,9 @@ msgid "Last user login"
 msgstr "Đăng nhập người dùng cuối cùng"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__live
+#: code:addons/pb_tenants/static/src/js/tenants.js:17
 msgid "Live"
 msgstr "Trực tiếp"
 
@@ -867,7 +875,9 @@ msgid "Provision tenant"
 msgstr "Đối tượng thuê cung cấp"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_tenants.selection__pb_tenant__state__provisioning
+#: code:addons/pb_tenants/static/src/js/tenants.js:17
 msgid "Provisioning"
 msgstr "Cung cấp"
 
@@ -920,6 +930,7 @@ msgstr "Khôi phục mới nhất → dàn dựng"
 #. module: pb_tenants
 #. odoo-javascript
 #: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+#: code:addons/pb_tenants/static/src/js/tenants.js:260
 msgid "Restore to staging"
 msgstr "Khôi phục về giai đoạn"
 
@@ -1306,101 +1317,121 @@ msgid "users"
 msgstr "người dùng"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:13
 msgid "— pick later —"
 msgstr "— chọn sau —"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:13
 msgid "Vietnam"
 msgstr "Việt Nam"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:13
 msgid "Indonesia"
 msgstr "Indonesia"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:13
 msgid "India"
 msgstr "Ấn Độ"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:14
 msgid "Singapore"
 msgstr "Singapore"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:14
 msgid "Thailand"
 msgstr "Thái Lan"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:14
 msgid "Cambodia"
 msgstr "Campuchia"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:14
 msgid "Malaysia"
 msgstr "Malaysia"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:73
 msgid "Platform status refreshed."
 msgstr "Đã làm mới trạng thái nền tảng."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:86
 msgid "Copied"
 msgstr "Đã sao chép"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:91
 msgid "Copy failed — select and copy manually."
 msgstr "Sao chép không thành công — chọn và sao chép thủ công."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:130
 msgid "Checking availability…"
 msgstr "Đang kiểm tra tính khả dụng…"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:137
 msgid "Available"
 msgstr "Khả dụng"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:138
 msgid "Not available"
 msgstr "Không sẵn sàng"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:141
 msgid "Could not check — retry."
 msgstr "Không thể kiểm tra - thử lại."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:158
 msgid "Lost connection to the server — check your network and retry."
 msgstr "Mất kết nối với máy chủ — hãy kiểm tra mạng của bạn và thử lại."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:187
 msgid "Provisioning %(host)s …"
 msgstr "Đang cung cấp %(host)s …"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:197
 msgid "Step failed."
 msgstr "Bước không thành công."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:243
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:261
 msgid ""
 "This restores a copy of the backup into '%(database)s'. The live tenant is untouched. "
@@ -1411,53 +1442,63 @@ msgstr ""
 "tục?"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:262
 msgid "Restore copy"
 msgstr "Khôi phục bản sao"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:278
 msgid "Remove staging copy"
 msgstr "Xóa bản sao dàn dựng"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:279
 msgid "Drop the staging database '%(database)s'? The live tenant is untouched."
 msgstr ""
 "Bỏ cơ sở dữ liệu dàn dựng '%(database)s'? Người thuê nhà trực tiếp không bị ảnh hưởng."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:280
 msgid "Drop staging"
 msgstr "Bỏ dàn dựng"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:299
 msgid "Remove domain"
 msgstr "Xóa miền"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:300
 msgid "Detach %(hostname)s from this tenant? Its certificate and routing are removed."
 msgstr ""
 "Tách %(hostname)s khỏi đối tượng thuê này? Chứng chỉ và định tuyến của nó bị xóa."
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:301
 msgid "Remove"
 msgstr "Xóa"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:313
 msgid "Tenant decommissioned. Final backup: %(backup)s"
 msgstr "Người thuê đã ngừng hoạt động. Bản sao lưu cuối cùng: %(backup)s"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:313
 msgid "n/a"
 msgstr "n/a"
 
 #. module: pb_tenants
+#. odoo-javascript
 #: code:addons/pb_tenants/static/src/js/tenants.js:316
 msgid "Offboarding failed."
 msgstr "Tắt máy không thành công."

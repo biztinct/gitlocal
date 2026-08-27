@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,6 +16,7 @@ msgstr ""
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:231
 msgid "%(acked)s of %(total)s confirmed"
 msgstr "Đã xác nhận %(acked)s trên %(total)s"
 
@@ -38,6 +39,7 @@ msgstr ""
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:744
 msgid ""
 "%(published)s shifts published · %(notified)s people notified · %(blind)s with no way "
 "to reach them."
@@ -48,6 +50,7 @@ msgstr ""
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:748
 msgid "%(published)s shifts published · %(notified)s people notified."
 msgstr "Đã công bố %(published)s ca · đã báo cho %(notified)s người."
 
@@ -66,12 +69,14 @@ msgstr "%s được phép nghỉ phép vào ngày hôm đó."
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:821
 msgid "%s shifts copied forward."
 msgstr "Các ca dịch chuyển %s được sao chép về phía trước."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:742
 msgid "%s shifts published."
 msgstr "Các ca %s đã được công bố."
 
@@ -189,12 +194,14 @@ msgstr "Toàn công ty"
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:230
 msgid "Confirmed"
 msgstr "Đã xác nhận"
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:827
 msgid "Copy failed."
 msgstr "Sao chép không thành công."
 
@@ -213,60 +220,70 @@ msgstr "Sao chép tuần"
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:690
 msgid "Could not add that shift."
 msgstr "Không thể thêm ca đó."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:422
 msgid "Could not load coverage requirements."
 msgstr "Không thể tải các yêu cầu về mức độ phù hợp."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:865
 msgid "Could not load that person."
 msgstr "Không thể tải người đó."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:174
 msgid "Could not load the roster."
 msgstr "Không thể tải danh sách."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:530
 msgid "Could not load the shift library."
 msgstr "Không thể tải thư viện ca."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:506
 msgid "Could not remove that requirement."
 msgstr "Không thể loại bỏ yêu cầu đó."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:708
 msgid "Could not remove that shift."
 msgstr "Không thể xóa ca đó."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:377
 msgid "Could not remove the budget."
 msgstr "Không thể xóa ngân sách."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:491
 msgid "Could not save that requirement."
 msgstr "Không thể lưu yêu cầu đó."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:360
 msgid "Could not save the budget."
 msgstr "Không thể tiết kiệm ngân sách."
 
@@ -344,6 +361,7 @@ msgstr "Hợp đồng nhân viên"
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:348
 msgid "Enter a positive amount."
 msgstr "Nhập số tiền dương."
 
@@ -447,6 +465,7 @@ msgstr "Đang tải danh sách…"
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:873
 msgid "Loading…"
 msgstr "Đang tải…"
 
@@ -498,6 +517,7 @@ msgstr "Chưa đặt ngân sách"
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:904
 msgid ""
 "No employee matches this department or search. Clear the filter and the week fills up."
 msgstr ""
@@ -527,6 +547,7 @@ msgstr ""
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:903
 msgid "Nobody to schedule here"
 msgstr "Không có ai lên lịch ở đây"
 
@@ -561,6 +582,7 @@ msgstr "Chỉ"
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:580
 msgid "Only a scheduling manager can set the labour budget."
 msgstr "Chỉ người quản lý lịch trình mới có thể đặt ngân sách lao động."
 
@@ -584,6 +606,7 @@ msgstr ""
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:701
 msgid "Only draft shifts can be removed."
 msgstr "Chỉ có thể loại bỏ ca nháp."
 
@@ -627,12 +650,14 @@ msgstr "Công khai"
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:777
 msgid "Publish failed."
 msgstr "Xuất bản không thành công."
 
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:900
 msgid ""
 "Refresh to try again. If it keeps failing you may not have attendance-officer access."
 msgstr ""
@@ -742,6 +767,7 @@ msgstr "Mẫu ca"
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:683
 msgid "Shift added."
 msgstr "Đã thêm ca."
 
@@ -792,6 +818,7 @@ msgstr "Thứ Hai của tuần dự toán. Chuẩn hóa khi viết."
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:899
 msgid "The roster could not load"
 msgstr "Danh sách không thể tải"
 
@@ -826,6 +853,7 @@ msgstr "Đã có sẵn ngân sách lao động cho bộ phận đó và tuần."
 #. module: pb_schedule
 #. odoo-javascript
 #: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:592
 msgid "There is nobody to schedule in this department yet."
 msgstr "Chưa có ai lên lịch ở bộ phận này."
 

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-05 00:00+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -79,11 +79,13 @@ msgid "Indonesia BPJS Components"
 msgstr "Các thành phần BPJS của Indonesia"
 
 #. module: pb_hr_payroll_indonesia
+#. odoo-python
 #: code:addons/pb_hr_payroll_indonesia/models/hr_payslip_indonesia.py:50
 msgid "Indonesia tax computed successfully"
 msgstr "Thuế Indonesia được tính thành công"
 
 #. module: pb_hr_payroll_indonesia
+#. odoo-python
 #: code:addons/pb_hr_payroll_indonesia/models/hr_payslip_indonesia.py:60
 msgid "Error computing Indonesia tax: %s"
 msgstr "Lỗi tính thuế Indonesia: %s"

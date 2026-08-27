@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:48+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -52,6 +52,7 @@ msgstr "(không có email)"
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:302
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
@@ -70,6 +71,7 @@ msgstr "Điều chỉnh mỗi tháng"
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:18
 msgid "All"
 msgstr "Tất cả"
 
@@ -82,6 +84,7 @@ msgstr "Áp dụng"
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:20
 msgid "Approvals"
 msgstr "Phê duyệt"
 
@@ -110,6 +113,7 @@ msgstr "Xuất bảng điều khiển kiểm tra"
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:21
 msgid "Bank"
 msgstr "Ngân hàng"
 
@@ -203,24 +207,28 @@ msgstr "Xuất tệp"
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:239
 msgid "Exported %s rows — capped at %s (refine filters for the rest)."
 msgstr "Đã xuất các hàng %s — giới hạn ở %s (tinh chỉnh các bộ lọc cho phần còn lại)."
 
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:237
 msgid "Exported %s rows."
 msgstr "Đã xuất các hàng %s."
 
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:22
 msgid "Exports"
 msgstr "Xuất khẩu"
 
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:19
 msgid "Fields"
 msgstr "Trường"
 
@@ -291,6 +299,7 @@ msgstr "Phiên đăng nhập xuất hiện ở đây khi người dùng đăng n
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
 #: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:24
 msgid "Logins"
 msgstr "Đăng nhập"
 
@@ -351,6 +360,7 @@ msgstr "Phiếu lương → %(email)s"
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:23
 msgid "Payslips"
 msgstr "Phiếu lương"
 
@@ -369,6 +379,7 @@ msgstr "Thời gian lưu giữ phải là số ngày dương."
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:216
 msgid "Retention updated."
 msgstr "Đã cập nhật mức lưu giữ."
 
@@ -480,6 +491,7 @@ msgstr "Ngưỡng"
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
 #: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:267
 msgid "Today"
 msgstr "Hôm nay"
 
@@ -498,6 +510,7 @@ msgstr "Hãy thử mở rộng phạm vi ngày, xóa bộ lọc hoặc nguồn k
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:264
 msgid "Undated"
 msgstr "không ghi ngày tháng"
 
@@ -522,6 +535,7 @@ msgstr "Lúc"
 #. module: pb_audit
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/js/pb_audit.js:268
 msgid "Yesterday"
 msgstr "Hôm qua"
 

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -34,30 +34,35 @@ msgstr "Điều chỉnh bộ phận, tuần hoặc tìm kiếm ở trên."
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/timeline_lens.js:0
+#: code:addons/pb_time_hub/static/src/js/timeline_lens.js:104
 msgid "Business trip"
 msgstr "Chuyến công tác"
 
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:277
 msgid "Correction filed from the person drawer for %(date)s."
 msgstr "Bản chỉnh sửa được gửi từ ngăn kéo cá nhân cho %(date)s."
 
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:288
 msgid "Could not file a correction."
 msgstr "Không thể gửi bản sửa lỗi."
 
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:229
 msgid "Could not load that person."
 msgstr "Không thể tải người đó."
 
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/timeline_lens.js:0
+#: code:addons/pb_time_hub/static/src/js/timeline_lens.js:76
 msgid "Could not load the timeline."
 msgstr "Không thể tải dòng thời gian."
 
@@ -75,6 +80,7 @@ msgstr "Nhân viên"
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:122
 msgid "Exceptions"
 msgstr "Ngoại lệ"
 
@@ -86,6 +92,7 @@ msgstr "ID"
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:123
 msgid "Import"
 msgstr "Nhập"
 
@@ -98,6 +105,7 @@ msgstr "Đang tải tuần…"
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:238
 msgid "Loading…"
 msgstr "Đang tải…"
 
@@ -134,6 +142,7 @@ msgstr "Thường kỳ"
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/timeline_lens.js:0
+#: code:addons/pb_time_hub/static/src/js/timeline_lens.js:69
 msgid "Showing the first %s employees — narrow by department or search to see the rest."
 msgstr ""
 "Hiển thị nhân viên %s đầu tiên - thu hẹp theo bộ phận hoặc tìm kiếm để xem phần còn "
@@ -142,6 +151,7 @@ msgstr ""
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:223
 msgid "That employee is not available in this company."
 msgstr "Nhân viên đó không có mặt ở công ty này."
 
@@ -167,6 +177,7 @@ msgstr "Buồng lái Time Hub"
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:120
 msgid "Timeline"
 msgstr "Dòng thời gian"
 
@@ -179,10 +190,12 @@ msgstr "Tổng cộng"
 #. module: pb_time_hub
 #. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:121
 msgid "Week Grid"
 msgstr "Lưới tuần"
 
 #. module: pb_time_hub
+#. odoo-javascript
 #: code:addons/pb_time_hub/static/src/js/timeline_lens.js:106
 msgid "now"
 msgstr "bây giờ"

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -391,6 +391,7 @@ msgstr "%s không thành công."
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:159
 msgid "%s formula(s) have errors"
 msgstr "%s công thức bị lỗi"
 
@@ -1491,6 +1492,7 @@ msgstr "Tất cả cột là đã chọn bởi mặc định"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:154
 msgid "All formulas are valid!"
 msgstr "Tất cả công thức là Hợp lệ!"
 
@@ -1680,6 +1682,7 @@ msgstr ""
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:94
 msgid "Are you sure you want to delete column %s (%s)?"
 msgstr "Là bạn chắc chắn bạn muốn để Xóa cột %s (%s)?"
 
@@ -2443,6 +2446,7 @@ msgstr "Tham chiếu vòng tròn"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:346
 msgid "Clear Formula"
 msgstr "Xóa công thức"
 
@@ -2588,6 +2592,7 @@ msgstr "Lựa chọn cột"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:333
 msgid "Column Settings"
 msgstr "Cột Cài đặt"
 
@@ -2601,18 +2606,21 @@ msgstr "Cột Loại"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:38
 msgid "Column added successfully"
 msgstr "Thêm cột thành công"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:107
 msgid "Column deleted"
 msgstr "Cột đã xóa"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:68
 msgid "Column duplicated"
 msgstr "Cột đã nhân bản"
 
@@ -2658,8 +2666,10 @@ msgid "Column width in pixels"
 msgstr "Độ rộng cột tính bằng điểm ảnh"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__column_count
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:84
 msgid "Columns"
 msgstr "Cột"
 
@@ -3046,6 +3056,7 @@ msgstr "Cấu hình Mã phải được duy nhất mỗi Công ty!"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:251
 msgid "Configuration exported"
 msgstr "Cấu hình đã xuất"
 
@@ -3332,6 +3343,7 @@ msgstr "Kiểm soát xem dòng này có in trên phiếu lương hay không."
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:194
 msgid "Conversion failed"
 msgstr "Chuyển đổi Thất bại"
 
@@ -3360,6 +3372,7 @@ msgstr "Đã sao chép"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:351
 msgid "Copy"
 msgstr "Sao chép"
 
@@ -3880,10 +3893,18 @@ msgid "Data pull failed: %s"
 msgstr "Kéo dữ liệu không thành công: %s"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config_milestone__milestone_date
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_endpoint_field__source_data_type__date
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_endpoint_field_template__source_data_type__date
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__date
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:75
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:144
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:94
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:95
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:96
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:97
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:98
 msgid "Date"
 msgstr "Ngày"
 
@@ -4067,6 +4088,8 @@ msgstr "Xóa"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:93
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:338
 msgid "Delete Column"
 msgstr "Xóa Cột"
 
@@ -4526,6 +4549,7 @@ msgstr "Sao chép"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:334
 msgid "Duplicate Column"
 msgstr "Sao chép Cột"
 
@@ -4570,12 +4594,14 @@ msgstr "Mỗi thẻ hiển thị cột từ đã chọn Bảng tính"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:342
 msgid "Edit Formula"
 msgstr "Sửa Công thức"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:350
 msgid "Edit Value"
 msgstr "Sửa Giá trị"
 
@@ -5215,6 +5241,7 @@ msgstr "Giải thích quy tắc này tính toán gì..."
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:256
 msgid "Export failed"
 msgstr "Xuất Thất bại"
 
@@ -5263,6 +5290,7 @@ msgstr "Thất bại"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:47
 msgid "Failed to add column"
 msgstr "Thất bại để thêm cột"
 
@@ -5275,12 +5303,14 @@ msgstr "Thất bại để phân tích tệp: %s"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:116
 msgid "Failed to delete column"
 msgstr "Thất bại để Xóa cột"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:77
 msgid "Failed to duplicate column"
 msgstr "Thất bại để Sao chép cột"
 
@@ -5938,6 +5968,7 @@ msgstr "Công thức đã tạo lại"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:185
 msgid "Formulas converted to Python"
 msgstr "Công thức đã chuyển sang Python"
 
@@ -6942,12 +6973,14 @@ msgstr "Đầu vào: %s -> Đầu ra: %s"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:335
 msgid "Insert Column Left"
 msgstr "Chèn cột bên trái"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:336
 msgid "Insert Column Right"
 msgstr "Chèn cột bên phải"
 
@@ -7037,6 +7070,7 @@ msgstr "Không hợp lệ nhập nguồn"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/cell_editor.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/cell_editor.js:75
 msgid "Invalid number"
 msgstr "Số không hợp lệ"
 
@@ -9098,7 +9132,9 @@ msgid "Original row data from Excel as JSON"
 msgstr "Dữ liệu dòng gốc từ Excel dưới dạng JSON"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_snippet__category__other
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:84
 msgid "Other"
 msgstr "Khác"
 
@@ -9194,6 +9230,7 @@ msgstr "Tải dữ liệu lương trước đây"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:352
 msgid "Paste"
 msgstr "Dán"
 
@@ -9683,6 +9720,9 @@ msgstr "Vui lòng Chọn Cấu hình công thức đầu tiên."
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:55
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:85
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:124
 msgid "Please select a column first"
 msgstr "Vui lòng Chọn cột đầu tiên"
 
@@ -11856,12 +11896,14 @@ msgstr "Đồng bộ Bây giờ"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:286
 msgid "Sync completed"
 msgstr "Đồng bộ hoàn tất"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:295
 msgid "Sync failed: %s"
 msgstr "Đồng bộ Thất bại: %s"
 
@@ -12046,6 +12088,7 @@ msgstr "Kiểm tra kết nối"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:217
 msgid "Test execution failed"
 msgstr "Kiểm tra thực thi Thất bại"
 
@@ -12077,10 +12120,21 @@ msgid "Tests Failed"
 msgstr "Kiểm thử Thất bại"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_contract_advantage_template__value_type__text
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_endpoint_field__source_data_type__string
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_endpoint_field_template__source_data_type__string
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__string
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:72
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:141
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:71
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:72
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:73
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:74
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:75
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:76
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:77
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:78
 msgid "Text"
 msgstr "Văn bản"
 
@@ -12833,6 +12887,7 @@ msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
 #: code:addons/pb_hr_payroll_formula/static/src/js/cell_editor.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/cell_editor.js:91
 msgid "Unbalanced parentheses"
 msgstr "Dấu ngoặc không cân đối"
 
@@ -13051,6 +13106,7 @@ msgstr "Hợp lệ"
 #: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:343
 msgid "Validate"
 msgstr "Xác thực"
 
@@ -13111,6 +13167,7 @@ msgstr "Xác thực Trạng thái"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:171
 msgid "Validation failed"
 msgstr "Xác thực Thất bại"
 
@@ -13264,6 +13321,7 @@ msgstr "Số lượt xem"
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:344
 msgid "View Dependencies"
 msgstr "Xem Phụ thuộc"
 
@@ -14044,311 +14102,406 @@ msgid "⟳ Recompute All"
 msgstr "⟳ Tính lại tất cả"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:70
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:139
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:47
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:48
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:49
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:50
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:51
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:52
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:53
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:54
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:55
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:56
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:57
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:58
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:59
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:60
 msgid "Math"
 msgstr "Toán học"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:70
 msgid "Mathematical Functions"
 msgstr "Hàm toán học"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:71
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:140
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:63
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:64
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:65
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:66
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:67
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:68
 msgid "Logical"
 msgstr "Hợp lý"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:71
 msgid "Logical Functions"
 msgstr "Hàm logic"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:72
 msgid "Text Functions"
 msgstr "Chức năng văn bản"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:73
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:142
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:81
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:82
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:83
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:84
 msgid "Lookup"
 msgstr "tra cứu"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:73
 msgid "Lookup & Reference"
 msgstr "Tra cứu & Tham khảo"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:74
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:143
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:87
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:88
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:89
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:90
+#: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:91
 msgid "Statistical"
 msgstr "Thống kê"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:74
 msgid "Statistical Functions"
 msgstr "Hàm thống kê"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:75
 msgid "Date & Time Functions"
 msgstr "Chức năng ngày và giờ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:111
 msgid "Sum of values"
 msgstr "Tổng các giá trị"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:112
 msgid "Sum of range"
 msgstr "Tổng phạm vi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:115
 msgid "Conditional text"
 msgstr "Văn bản có điều kiện"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:116
 msgid "Avoid division by zero"
 msgstr "Tránh chia cho số 0"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:120
 msgid "Round to integer"
 msgstr "Làm tròn thành số nguyên"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:123
 msgid "Average of values"
 msgstr "Giá trị trung bình"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:126
 msgid "Exact match lookup"
 msgstr "Tra cứu kết quả khớp chính xác"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:129
 msgid "0 if error"
 msgstr "0 nếu có lỗi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:47
 msgid "Adds all numbers in a range"
 msgstr "Cộng tất cả các số trong một phạm vi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:48
 msgid "Returns the average of arguments"
 msgstr "Trả về giá trị trung bình của các đối số"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:49
 msgid "Returns the minimum value"
 msgstr "Trả về giá trị tối thiểu"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:50
 msgid "Returns the maximum value"
 msgstr "Trả về giá trị tối đa"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:51
 msgid "Returns absolute value"
 msgstr "Trả về giá trị tuyệt đối"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:52
 msgid "Rounds to specified digits"
 msgstr "Làm tròn đến các chữ số được chỉ định"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:53
 msgid "Rounds up to specified digits"
 msgstr "Làm tròn đến các chữ số được chỉ định"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:54
 msgid "Rounds down to specified digits"
 msgstr "Làm tròn xuống các chữ số được chỉ định"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:55
 msgid "Rounds up to nearest multiple"
 msgstr "Làm tròn lên bội số gần nhất"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:56
 msgid "Rounds down to nearest multiple"
 msgstr "Làm tròn xuống bội số gần nhất"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:57
 msgid "Returns number raised to power"
 msgstr "Trả về số được nâng lên lũy thừa"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:58
 msgid "Returns square root"
 msgstr "Trả về căn bậc hai"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:59
 msgid "Returns remainder after division"
 msgstr "Trả về số dư sau khi chia"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:60
 msgid "Rounds down to nearest integer"
 msgstr "Làm tròn xuống số nguyên gần nhất"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:63
 msgid "Conditional evaluation"
 msgstr "Đánh giá có điều kiện"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:64
 msgid "Returns TRUE if all conditions are true"
 msgstr "Trả về TRUE nếu tất cả điều kiện đều đúng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:65
 msgid "Returns TRUE if any condition is true"
 msgstr "Trả về TRUE nếu bất kỳ điều kiện nào là đúng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:66
 msgid "Reverses the logic"
 msgstr "Đảo ngược logic"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:67
 msgid "Returns value if no error"
 msgstr "Trả về giá trị nếu không có lỗi"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:68
 msgid "Multiple conditions"
 msgstr "Nhiều điều kiện"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:71
 msgid "Joins text strings"
 msgstr "Nối chuỗi văn bản"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:72
 msgid "Returns leftmost characters"
 msgstr "Trả về các ký tự ngoài cùng bên trái"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:73
 msgid "Returns rightmost characters"
 msgstr "Trả về các ký tự ngoài cùng bên phải"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:74
 msgid "Returns characters from middle"
 msgstr "Trả về các ký tự từ giữa"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:75
 msgid "Returns length of text"
 msgstr "Trả về độ dài của văn bản"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:76
 msgid "Converts to uppercase"
 msgstr "Chuyển đổi sang chữ hoa"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:77
 msgid "Converts to lowercase"
 msgstr "Chuyển đổi sang chữ thường"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:78
 msgid "Removes extra spaces"
 msgstr "Loại bỏ các khoảng trống thừa"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:81
 msgid "Vertical lookup"
 msgstr "Tra cứu dọc"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:82
 msgid "Horizontal lookup"
 msgstr "Tìm kiếm ngang"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:83
 msgid "Returns value at position"
 msgstr "Trả về giá trị tại vị trí"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:84
 msgid "Returns position of value"
 msgstr "Trả về vị trí của giá trị"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:87
 msgid "Counts numbers"
 msgstr "Đếm số"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:88
 msgid "Counts non-empty cells"
 msgstr "Đếm các ô không trống"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:89
 msgid "Counts cells matching criteria"
 msgstr "Đếm các ô phù hợp với tiêu chí"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:90
 msgid "Sums cells matching criteria"
 msgstr "Tính tổng các ô phù hợp với tiêu chí"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:91
 msgid "Averages cells matching criteria"
 msgstr "Tính trung bình các ô phù hợp với tiêu chí"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:94
 msgid "Returns current date"
 msgstr "Trả về ngày hiện tại"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:95
 msgid "Returns current date and time"
 msgstr "Trả về ngày và giờ hiện tại"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:96
 msgid "Returns year from date"
 msgstr "Trả về năm kể từ ngày"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:97
 msgid "Returns month from date"
 msgstr "Trả về tháng kể từ ngày"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:98
 msgid "Returns day from date"
 msgstr "Trả về ngày kể từ ngày"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:774
 msgid "%s batch(es) skipped without payslips."
 msgstr "(Các) lô %s bị bỏ qua mà không có phiếu lương."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:1572
 msgid ""
 "The category review needs the Formula Studio, which is not installed on this database."
@@ -14357,17 +14510,20 @@ msgstr ""
 "sở dữ liệu này."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:1719
 msgid "... and %d more. Check the list for all errors."
 msgstr "... và %d hơn thế nữa. Kiểm tra danh sách cho tất cả các lỗi."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1277
 msgid "Your sheet files this under \"%(band)s\" — the formula makes it %(role)s."
 msgstr ""
 "Trang tính của bạn lưu thông tin này vào \"%(band)s\" — công thức tạo thành %(role)s."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1275
 msgid ""
 "Your sheet files this under \"%(band)s\" — but it is a count of hours or days, not "
@@ -14377,6 +14533,7 @@ msgstr ""
 " chứ không phải tiền."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:658
 msgid ""
 "Counted in hours or days, not money — so it belongs with the information on a payslip "
@@ -14386,46 +14543,55 @@ msgstr ""
 "phiếu lương chứ không phải tiền lương. %(reason)s"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1249
 msgid "Earning"
 msgstr "Thu nhập"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1250
 msgid "Deduction"
 msgstr "Giảm trừ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1251
 msgid "Net pay"
 msgstr "Lương thực nhận"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1254
 msgid "Both at once"
 msgstr "Cả hai cùng một lúc"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1290
 msgid "Net"
 msgstr "Thực lãnh"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1291
 msgid "Basic"
 msgstr "Cơ sở"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1291
 msgid "Gross"
 msgstr "Tổng thu nhập"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:1292
 msgid "Allowance"
 msgstr "Phụ cấp"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:1010
 msgid ""
 "Cannot proceed. The following columns are required by main sheet formulas but are not "
@@ -14435,11 +14601,13 @@ msgstr ""
 "chính nhưng không được chọn:"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:1013
 msgid "Please select these columns to continue."
 msgstr "Vui lòng chọn các cột này để tiếp tục."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:3087
 msgid ""
 "⚠ %d constant(s) had non-numeric values and were imported as 0 — set them manually: %s"

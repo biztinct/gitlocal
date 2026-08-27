@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -44,6 +44,7 @@ msgstr "%(a)s và %(b)s đều muốn có mã “%(code)s”."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:359
 msgid "%(base)s — read from the first %(read)s of %(all)s"
 msgstr "%(base)s - đọc từ %(read)s đầu tiên của %(all)s"
 
@@ -94,6 +95,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:905
 msgid "%(cols)s columns · %(inputs)s inputs%(country)s"
 msgstr "Cột %(cols)s · Đầu vào %(inputs)s%(country)s"
 
@@ -110,12 +112,14 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:883
 msgid "%(feeds)s feeds · %(maps)s mappings · %(when)s"
 msgstr "Nguồn cấp dữ liệu %(feeds)s · Ánh xạ %(maps)s · %(when)s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:362
 msgid "%(fields)s · %(when)s"
 msgstr "%(fields)s · %(when)s"
 
@@ -128,6 +132,7 @@ msgstr "%(file)s · đọc %(when)s"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1421
 msgid "%(hint)s Showing the first %(shown)s of %(total)s."
 msgstr "%(hint)s Đang hiển thị %(shown)s giá trị đầu trong tổng số %(total)s."
 
@@ -150,12 +155,14 @@ msgstr "%(list)s … và %(n)s giá trị nữa"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:936
 msgid "%(maps)s mapped · %(when)s"
 msgstr "Đã ánh xạ %(maps)s · %(when)s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:827
 msgid "%(n)s %(dir)s"
 msgstr "%(n)s %(dir)s"
 
@@ -168,12 +175,14 @@ msgstr "Hợp đồng %(n)s có giá trị."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:370
 msgid "%(n)s expected fields · %(vendor)s catalogue · not yet synced"
 msgstr "Các trường dự kiến ​​%(n)s · Danh mục %(vendor)s · chưa được đồng bộ hóa"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:825
 msgid "%(n)s hidden by the search %(dir)s"
 msgstr "%(n)s bị ẩn bởi tìm kiếm %(dir)s"
 
@@ -192,6 +201,7 @@ msgstr "%(name)s nay đi tới %(dest)s thay vì hợp đồng."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1739
 msgid "%(rows)s row(s) loaded, %(matched)s matched. Nothing is committed yet."
 msgstr "Đã tải (các) hàng %(rows)s, %(matched)s đã khớp. Chưa có gì được cam kết."
 
@@ -204,18 +214,21 @@ msgstr "%(scheme)s — %(file)s"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:195
 msgid "%(shown)s of %(all)s"
 msgstr "%(shown)s của %(all)s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:938
 msgid "%(type)s · %(maps)s mapped · %(when)s"
 msgstr "%(type)s · %(maps)s được ánh xạ · %(when)s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:356
 msgid "%(values)s values across %(slips)s payslips"
 msgstr "Giá trị %(values)s trên các phiếu lương %(slips)s"
 
@@ -241,6 +254,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1553
 msgid "%(wired)s of %(total)s components are fed by a column."
 msgstr "%(wired)s của các thành phần %(total)s được cung cấp bởi một cột."
 
@@ -301,6 +315,7 @@ msgstr "%s (bản sao)"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:366
 msgid "%s Payobook employee fields · this source has not told us its own"
 msgstr ""
 "%s Trường nhân viên Payobook · nguồn này chưa cho chúng tôi biết thông tin riêng của "
@@ -315,6 +330,7 @@ msgstr "Cột %s"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4394
 msgid "%s column(s) refiled"
 msgstr "Đã xếp lại %s cột"
 
@@ -327,6 +343,7 @@ msgstr "%s cột"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:152
 msgid "%s columns hidden"
 msgstr "%s cột đang bị ẩn"
 
@@ -339,12 +356,14 @@ msgstr "Thành phần %s được nối dây hai lần"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:177
 msgid "%s components"
 msgstr "Linh kiện %s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:478
 msgid "%s components are bound to columns of this file"
 msgstr "Các thành phần %s được liên kết với các cột của tệp này"
 
@@ -373,6 +392,7 @@ msgstr "Các thành phần %s được nối dây hai lần"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:179
 msgid "%s fallback"
 msgstr "Dự phòng %s"
 
@@ -392,6 +412,11 @@ msgstr "Dây cấp nguồn %s không được đọc"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:231
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:354
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:362
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:363
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:375
 msgid "%s fields"
 msgstr "Các trường %s"
 
@@ -404,6 +429,7 @@ msgstr "%s không có công thức"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:407
 msgid "%s input columns"
 msgstr "Cột đầu vào %s"
 
@@ -440,12 +466,14 @@ msgstr "%s hiện được giữ trên hợp đồng dưới dạng chữ."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1822
 msgid "%s kept on the contract, %s left as reference."
 msgstr "%s cột được giữ trên hợp đồng, %s cột để làm tham chiếu."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:575
 msgid "%s lost their target"
 msgstr "%s mất mục tiêu"
 
@@ -485,6 +513,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:183
 msgid "%s need attention"
 msgstr "%s cần được chú ý"
 
@@ -497,26 +526,30 @@ msgstr "%s không được gửi"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:377
 msgid "%s not sent last sync"
 msgstr "%s không được gửi lần đồng bộ hóa cuối cùng"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:567
 msgid "%s outputs unread"
 msgstr "Đầu ra %s chưa đọc"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:571
 msgid "%s read a field not seen"
 msgstr "%s đọc một trường không nhìn thấy"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:564
 msgid "%s rules"
-msgstr "Quy tắc %s"
+msgstr "%s quy tắc"
 
 #. module: pb_formula_studio
 #. odoo-python
@@ -545,18 +578,22 @@ msgstr "Nguồn %s không còn tồn tại"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1277
 msgid "%s suggestion(s) on the board — accept the ones that look right."
 msgstr "(Các) gợi ý %s trên bảng - chấp nhận những gợi ý có vẻ đúng."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:178
 msgid "%s wired"
 msgstr "%s có dây"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:226
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:481
 msgid "%s wires into this scheme"
 msgstr "Dây %s vào sơ đồ này"
 
@@ -669,12 +706,14 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:152
 msgid "1 column hidden"
 msgstr "1 cột đang bị ẩn"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:177
 msgid "1 component"
 msgstr "1 thành phần"
 
@@ -691,24 +730,28 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:477
 msgid "1 component is bound to a column of this file"
 msgstr "1 thành phần được liên kết với một cột của tệp này"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:179
 msgid "1 fallback"
 msgstr "1 dự phòng"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:231
 msgid "1 field"
 msgstr "1 trường"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:574
 msgid "1 lost its target"
 msgstr "1 mất mục tiêu"
 
@@ -721,36 +764,43 @@ msgstr "1 trường được ánh xạ. Nó ghi bản ghi khi nhập và đượ
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:182
 msgid "1 needs attention"
 msgstr "1 cần chú ý"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:566
 msgid "1 output unread"
 msgstr "1 đầu ra chưa đọc"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:570
 msgid "1 reads a field not seen"
 msgstr "1 đọc một trường không nhìn thấy"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:564
 msgid "1 rule"
 msgstr "1 quy tắc"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:225
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:480
 msgid "1 wire into this scheme"
 msgstr "1 dây vào sơ đồ này"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:178
 msgid "1 wired"
 msgstr "1 có dây"
 
@@ -831,6 +881,7 @@ msgstr "Một ngân sách cần một cái tên."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:60
 msgid "A code or note carried along."
 msgstr "Một mã hoặc ghi chú đi kèm."
 
@@ -974,6 +1025,7 @@ msgstr "Chấp nhận như mong đợi"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1306
 msgid "Accepted %s high-confidence mapping(s)."
 msgstr "(Các) ánh xạ có độ tin cậy cao %s được chấp nhận."
 
@@ -1009,12 +1061,14 @@ msgstr "Kế toán"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1476
 msgid "Actions for %s"
 msgstr "Thao tác cho %s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1515
 msgid "Activate"
 msgstr "Kích hoạt"
 
@@ -1099,6 +1153,7 @@ msgstr "Thêm nguồn"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:605
 msgid "Added here"
 msgstr "Đã thêm vào đây"
 
@@ -1159,6 +1214,8 @@ msgstr "Tất cả các cấu hình được căn chỉnh"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:319
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:890
 msgid "All feeds"
 msgstr "Tất cả nguồn cấp dữ liệu"
 
@@ -1190,6 +1247,7 @@ msgstr "Đã được chương trình này sử dụng"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:119
 msgid "Also arrived from"
 msgstr "Cũng đến từ"
 
@@ -1349,6 +1407,7 @@ msgstr "Arial"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1207
 msgid "Ask PayAI"
 msgstr "Hỏi PayAI"
 
@@ -1435,6 +1494,7 @@ msgstr "Trở lại cuộc hành trình"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:49
 msgid "Bank"
 msgstr "Ngân hàng"
 
@@ -1444,6 +1504,9 @@ msgstr "Ngân hàng"
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:910
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:963
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:60
 msgid "Bank account"
 msgstr "Tài khoản ngân hàng"
 
@@ -1567,6 +1630,7 @@ msgstr "Phân nhánh: %s"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1198
 msgid "Branches"
 msgstr "Chi nhánh"
 
@@ -1662,12 +1726,17 @@ msgstr "CODE"
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:329
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:911
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:964
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:61
 msgid "Calculated"
 msgstr "Đã tính toán"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:295
 msgid "Calculated here"
 msgstr "Đã tính ở đây"
 
@@ -1698,6 +1767,7 @@ msgstr "Luồng tính toán · ="
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3843
 msgid "Cambodia"
 msgstr "Campuchia"
 
@@ -1734,12 +1804,14 @@ msgstr "Thẻ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1102
 msgid "Cards view"
 msgstr "Chế độ xem thẻ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:135
 msgid "Carry a mid-cycle advance's components into the end-cycle run."
 msgstr "Mang các thành phần của đợt tạm ứng giữa chu kỳ vào đợt chạy cuối chu kỳ."
 
@@ -1919,6 +1991,7 @@ msgstr "Xóa tìm kiếm"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:286
 msgid "Clear the search and show these again"
 msgstr "Xóa tìm kiếm và hiển thị lại những điều này"
 
@@ -2303,6 +2376,7 @@ msgstr "Kết nối hệ thống nhân sự và các trường của nó xuất 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:251
 msgid "Connected"
 msgstr "Đã kết nối"
 
@@ -2313,30 +2387,38 @@ msgstr "Đã kết nối"
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:327
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:905
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:958
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:55
 msgid "Connected system"
 msgstr "Hệ thống được kết nối"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:252
 msgid "Connecting"
 msgstr "Đang kết nối"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:253
 msgid "Connection error"
 msgstr "Lỗi kết nối"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:435
 msgid "Constant"
 msgstr "Hằng số"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/grid/formula_bar.js:36
 msgid "Constant value"
 msgstr "Giá trị không đổi"
 
@@ -2361,6 +2443,7 @@ msgstr "Nội dung"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5396
 msgid "Content could not be saved."
 msgstr "Không thể lưu nội dung."
 
@@ -2377,6 +2460,8 @@ msgstr "Tiếp tục"
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
 #: code:addons/pb_formula_studio/static/src/xml/mapping_studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:48
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1458
 msgid "Contract"
 msgstr "Hợp đồng"
 
@@ -2388,6 +2473,10 @@ msgstr "Hợp đồng"
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:328
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:907
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:960
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:57
 msgid "Contract component"
 msgstr "Thành phần hợp đồng"
 
@@ -2415,6 +2504,9 @@ msgstr "Thành phần hợp đồng"
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:909
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:962
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:59
 msgid "Contract record"
 msgstr "Hồ sơ hợp đồng"
 
@@ -2461,6 +2553,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4398
 msgid "Could not apply the reclassification."
 msgstr "Không thể áp dụng việc phân loại lại."
 
@@ -2473,6 +2566,7 @@ msgstr "Không thể lưu trữ \"%(name)s\": %(err)s"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1201
 msgid "Could not connect those two."
 msgstr "Không thể kết nối hai cái đó."
 
@@ -2854,6 +2948,7 @@ msgstr "Phòng ban"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:462
 msgid "Departments with employees"
 msgstr "Các phòng ban có nhân viên"
 
@@ -2872,6 +2967,7 @@ msgstr "Mũi tên phụ thuộc"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1187
 msgid "Dependency map"
 msgstr "Bản đồ phụ thuộc"
 
@@ -3065,6 +3161,9 @@ msgstr "Tải xuống mẫu được xây dựng từ sơ đồ này"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2032
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3850
 msgid "Draft"
 msgstr "Nháp"
 
@@ -3224,18 +3323,21 @@ msgstr "Hiệu quả"
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
 #: code:addons/pb_formula_studio/static/src/xml/mapping_studio.xml:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1458
 msgid "Employee"
 msgstr "Nhân viên"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:486
 msgid "Employee & contract fields"
 msgstr "Trường nhân viên & hợp đồng"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:129
 msgid "Employee & contract ⇆"
 msgstr "Nhân viên & hợp đồng ⇆"
 
@@ -3274,6 +3376,7 @@ msgstr "Tên nhân viên"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:48
 msgid "Employee profile"
 msgstr "Hồ sơ nhân viên"
 
@@ -3284,12 +3387,17 @@ msgstr "Hồ sơ nhân viên"
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:329
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:908
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:961
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:58
 msgid "Employee record"
 msgstr "hồ sơ nhân viên"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:461
 msgid "Employee segments"
 msgstr "Phân khúc nhân viên"
 
@@ -3345,12 +3453,14 @@ msgstr "Cuối kỳ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:495
 msgid "End-cycle configuration"
 msgstr "Cấu hình cuối chu kỳ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:494
 msgid "End-cycle scheme"
 msgstr "Sơ đồ cuối chu kỳ"
 
@@ -3431,6 +3541,7 @@ msgstr "Mỗi thành phần có số liệu thực tế đều có một dòng n
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:891
 msgid "Every field this connector has ever delivered"
 msgstr "Mọi lĩnh vực mà trình kết nối này từng cung cấp"
 
@@ -3455,6 +3566,7 @@ msgstr "Mỗi ô được tính toán lại đều khớp với kết quả lị
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:440
 msgid "Every source"
 msgstr "Mỗi nguồn"
 
@@ -3485,6 +3597,7 @@ msgstr "Lệnh thực hiện"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1185
 msgid "Execution replay"
 msgstr "Phát lại thực hiện"
 
@@ -3597,24 +3710,28 @@ msgstr "Nguồn cấp dữ liệu"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:474
 msgid "Feeds %s components"
 msgstr "Cung cấp các thành phần %s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:55
 msgid "Feeds & files"
 msgstr "Nguồn cấp dữ liệu & tập tin"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:474
 msgid "Feeds 1 component"
 msgstr "Nguồn cấp dữ liệu 1 thành phần"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:55
 msgid "Feeds the calculation."
 msgstr "Tham gia vào phép tính lương."
 
@@ -3627,6 +3744,7 @@ msgstr "Cung cấp các thành phần này"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:269
 msgid "Feeds: %s"
 msgstr "Nguồn cấp dữ liệu: %s"
 
@@ -3634,12 +3752,14 @@ msgstr "Nguồn cấp dữ liệu: %s"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:112
 msgid "Fell back to"
 msgstr "rơi trở lại"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:260
 msgid "Field not seen"
 msgstr "Trường không được nhìn thấy"
 
@@ -3699,6 +3819,11 @@ msgstr "Phù hợp với cửa sổ"
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:296
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:330
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:911
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:964
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:62
 msgid "Fixed value"
 msgstr "Giá trị cố định"
 
@@ -3751,6 +3876,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/grid_studio.xml:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:435
 msgid "Formula"
 msgstr "Công thức"
 
@@ -3763,6 +3889,7 @@ msgstr "Công thức/giá trị"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
 #: model:ir.actions.client,name:pb_formula_studio.action_pb_formula_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4462
 msgid "Formula Studio"
 msgstr "Xưởng công thức"
 
@@ -3806,6 +3933,7 @@ msgstr "Từ phiếu lương"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:298
 msgid "From the contract"
 msgstr "Từ hợp đồng"
 
@@ -3824,6 +3952,7 @@ msgstr "Đầy đủ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3847
 msgid "Full & Final"
 msgstr "Quyết toán thôi việc"
 
@@ -3887,6 +4016,7 @@ msgstr "Gruzia"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1872
 msgid "Give the template a name."
 msgstr "Đặt tên cho mẫu."
 
@@ -3905,6 +4035,7 @@ msgstr "Lưới"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1103
 msgid "Grid view"
 msgstr "Chế độ xem lưới"
 
@@ -3959,6 +4090,7 @@ msgstr "Ẩn các thành phần lương"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1115
 msgid "Hide people & data columns"
 msgstr "Ẩn các cột nhân sự & dữ liệu"
 
@@ -3977,6 +4109,7 @@ msgstr "Lịch sử"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1504
 msgid "How %s is worked out"
 msgstr "%s được thực hiện như thế nào"
 
@@ -4010,6 +4143,7 @@ msgstr "Xác định ngân hàng khi tên gọi chưa rõ ràng"
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:47
 msgid "Identity"
 msgstr "Định danh"
 
@@ -4028,6 +4162,7 @@ msgstr "Bỏ qua"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5137
 msgid "Image inserted. Use the alignment and size controls to position it."
 msgstr "Đã chèn hình ảnh. Sử dụng các điều khiển căn chỉnh và kích thước để định vị nó."
 
@@ -4094,12 +4229,14 @@ msgstr "Bố cục tài liệu đã nhập đang hoạt động"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4607
 msgid "Imported template deleted. Your section template is now active."
 msgstr "Đã xóa mẫu đã nhập. Mẫu phần của bạn hiện đang hoạt động."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1115
 msgid "Include people & data columns"
 msgstr "Bao gồm các cột nhân sự & dữ liệu"
 
@@ -4112,12 +4249,14 @@ msgstr "Thu nhập từ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3842
 msgid "India"
 msgstr "Ấn Độ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3842
 msgid "Indonesia"
 msgstr "Indonesia"
 
@@ -4130,6 +4269,7 @@ msgstr "Kế thừa"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:435
 msgid "Input"
 msgstr "Đầu vào"
 
@@ -4247,6 +4387,7 @@ msgstr "Công việc & tổ chức"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
 #: code:addons/pb_formula_studio/static/src/xml/mapping_studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:108
 msgid "Journey"
 msgstr "Hành trình"
 
@@ -4319,6 +4460,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1109
 msgid "Keyboard shortcuts"
 msgstr "Phím tắt"
 
@@ -4368,6 +4510,7 @@ msgstr "Lần chạy cuối cùng được sử dụng"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:114
 msgid "Last run used a different source"
 msgstr "Lần chạy cuối cùng đã sử dụng một nguồn khác"
 
@@ -4392,6 +4535,7 @@ msgstr "Cấu trúc bảng lương kế thừa"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1202
 msgid "Legislation"
 msgstr "pháp luật"
 
@@ -4520,6 +4664,7 @@ msgstr "biểu tượng"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:249
 msgid "Lost target"
 msgstr "Mất mục tiêu"
 
@@ -4550,6 +4695,7 @@ msgstr "Chuyển thành thành phần dạng chữ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3843
 msgid "Malaysia"
 msgstr "Malaysia"
 
@@ -4588,6 +4734,7 @@ msgstr "Ánh xạ các cột đã nhập từ %s vào đầu vào của lược 
 #: code:addons/pb_formula_studio/static/src/xml/mapping_studio.xml:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 #: model:ir.actions.client,name:pb_formula_studio.action_pb_mapping_studio
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1192
 msgid "Mapping"
 msgstr "Ánh xạ"
 
@@ -4712,6 +4859,7 @@ msgstr "Được hợp nhất từ %s"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:134
 msgid "Mid ↔ End cycle"
 msgstr "Giữa ↔ Cuối chu kỳ"
 
@@ -4724,12 +4872,14 @@ msgstr "Giữa kỳ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:466
 msgid "Mid-cycle configuration"
 msgstr "Cấu hình giữa chu kỳ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:465
 msgid "Mid-cycle scheme"
 msgstr "Sơ đồ giữa chu kỳ"
 
@@ -4845,7 +4995,9 @@ msgstr "Tường thuật"
 
 #. module: pb_formula_studio
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:114
 msgid "Needs review"
 msgstr "Cần xem xét"
 
@@ -4925,12 +5077,14 @@ msgstr "Kế tiếp"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/grid_studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2825
 msgid "No"
 msgstr "Không"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1949
 msgid "No HR system is connected yet — connect one in Integrations."
 msgstr ""
 "Chưa có hệ thống nhân sự nào được kết nối - hãy kết nối một hệ thống trong Tích hợp."
@@ -5041,6 +5195,7 @@ msgstr "Không có cấu hình nào phù hợp"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:311
 msgid "No connector"
 msgstr "Không có đầu nối"
 
@@ -5096,6 +5251,7 @@ msgstr "Không có trường nào phù hợp với điều đó."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1950
 msgid "No file has been uploaded yet. Import one, then map its columns here."
 msgstr ""
 "Chưa có tập tin nào được tải lên. Nhập một cái rồi ánh xạ các cột của nó vào đây."
@@ -5109,6 +5265,7 @@ msgstr "Chưa có tập tin nào được đọc"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:455
 msgid "No file yet"
 msgstr "Chưa có tập tin nào"
 
@@ -5305,6 +5462,7 @@ msgstr "Chưa có mẫu nào được lưu cho bảng này. Đi dây bảng và 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:325
 msgid "No scheme"
 msgstr "Không có kế hoạch"
 
@@ -5326,12 +5484,16 @@ msgstr "Chưa có đoạn trích nào."
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:330
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:63
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:64
 msgid "No source"
 msgstr "Không có nguồn"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:106
 msgid "No source chosen"
 msgstr "Không có nguồn nào được chọn"
 
@@ -5348,6 +5510,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1278
 msgid "No suggestions could be found for this pair."
 msgstr "Không tìm thấy gợi ý nào cho cặp này."
 
@@ -5376,6 +5539,7 @@ msgstr "Không có công cụ nào phù hợp “"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:557
 msgid "No transformation rules yet"
 msgstr "Chưa có quy tắc chuyển đổi"
 
@@ -5424,6 +5588,7 @@ msgstr "Không áp dụng"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:254
 msgid "Not connected"
 msgstr "Không được kết nối"
 
@@ -5466,6 +5631,7 @@ msgstr "Ghi chú"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4388
 msgid "Nothing accepted — nothing changed."
 msgstr "Chưa chấp nhận mục nào — không có gì thay đổi."
 
@@ -5493,6 +5659,7 @@ msgstr "Chưa có gì phụ thuộc vào điều này."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:299
 msgid "Nothing feeds it"
 msgstr "Không có gì nuôi sống nó"
 
@@ -5549,6 +5716,7 @@ msgstr "Không có gì phù hợp với điều đó."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:268
 msgid "Nothing reads this rule's output."
 msgstr "Không có gì đọc đầu ra của quy tắc này."
 
@@ -5658,6 +5826,8 @@ msgstr "ưu đãi"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1107
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1188
 msgid "Offer calculator"
 msgstr "Máy tính ưu đãi"
 
@@ -5708,6 +5878,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:772
 msgid "One end of this wire is hidden by the search."
 msgstr "Một đầu của sợi dây này được ẩn đi khi tìm kiếm."
 
@@ -5899,6 +6070,7 @@ msgstr "Biến thể mở"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:276
 msgid "Opens %s, already on this."
 msgstr "Mở %s, đã có trên này."
 
@@ -5983,12 +6155,14 @@ msgstr "Dán"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1208
 msgid "Pay columns are shown so you can see it."
 msgstr "Các cột thanh toán được hiển thị để bạn có thể nhìn thấy."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1745
 msgid "Pay data load"
 msgstr "Trả tiền tải dữ liệu"
 
@@ -6001,6 +6175,7 @@ msgstr "Kỳ lương"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:58
 msgid "Pay run"
 msgstr "Kỳ lương"
 
@@ -6025,6 +6200,7 @@ msgstr "PayAI đang suy nghĩ…"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:59
 msgid "Payment details."
 msgstr "Thông tin thanh toán."
 
@@ -6055,6 +6231,8 @@ msgstr "Hồ sơ sổ lương"
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:47
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:50
 msgid "Payroll"
 msgstr "Bảng lương"
 
@@ -6090,6 +6268,7 @@ msgstr "Nhật ký tiền lương"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:490
 msgid "Payroll schemes"
 msgstr "Chế độ trả lương"
 
@@ -6104,6 +6283,7 @@ msgstr "Phiếu lương"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1191
 msgid "Payslip Studio"
 msgstr "Xưởng phiếu lương"
 
@@ -6183,6 +6363,7 @@ msgstr "Cá nhân Thu nhập Thuế"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:57
 msgid "Personal details kept on the employee."
 msgstr "Thông tin cá nhân lưu trên hồ sơ nhân viên."
 
@@ -6197,6 +6378,7 @@ msgstr "Chọn ngân sách và kỳ lương, sau đó nhấn So sánh."
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1667
 msgid "Pick a payroll scheme first."
 msgstr "Chọn một kế hoạch trả lương đầu tiên."
 
@@ -6221,12 +6403,14 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:945
 msgid "Pick the feed"
 msgstr "Chọn nguồn cấp dữ liệu"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1493
 msgid "Pick the field on the right. What the contract already holds is kept as history."
 msgstr ""
 "Hãy chọn trường ở cột bên phải. Những gì hợp đồng đang lưu vẫn được giữ làm lịch sử."
@@ -6234,24 +6418,28 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1594
 msgid "Pick the payroll scheme this file belongs to first."
 msgstr "Chọn sơ đồ trả lương mà tệp này thuộc về trước tiên."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:946
 msgid "Pick the payroll scheme you are mapping TO"
 msgstr "Chọn chương trình trả lương mà bạn đang ánh xạ tới"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:944
 msgid "Pick the system you are mapping FROM"
 msgstr "Chọn hệ thống bạn đang lập bản đồ TỪ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:947
 msgid "Pick the uploaded file"
 msgstr "Chọn tập tin đã tải lên"
 
@@ -6316,6 +6504,8 @@ msgstr "Xem trước"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1811
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1314
 msgid "Preview failed"
 msgstr "Xem trước không thành công"
 
@@ -6352,6 +6542,8 @@ msgstr "Chủ đạo"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1120
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1197
 msgid "Problems"
 msgstr "Vấn đề"
 
@@ -6453,6 +6645,7 @@ msgstr "Bảng tỷ lệ và khung (PIT, v.v.)"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1193
 msgid "Rate tables"
 msgstr "Bảng xếp hạng"
 
@@ -6483,6 +6676,7 @@ msgstr "Các cạnh có thể tiếp cận"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1620
 msgid "Read %(n)s column heading(s) from %(file)s. No data was imported."
 msgstr "Đọc (các) tiêu đề cột %(n)s từ %(file)s. Không có dữ liệu nào được nhập."
 
@@ -6525,6 +6719,7 @@ msgstr "Đọc theo thứ tự sau: %s"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:297
 msgid "Read off a record"
 msgstr "Đọc một bản ghi"
 
@@ -6638,6 +6833,7 @@ msgstr "Tài liệu được xây dựng lại"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:49
 msgid "Reference"
 msgstr "Tham chiếu"
 
@@ -6668,6 +6864,7 @@ msgstr "Tạo lại công thức"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3846
 msgid "Regular"
 msgstr "Thường kỳ"
 
@@ -6711,6 +6908,7 @@ msgstr "Phát hành v%s"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1203
 msgid "Releases"
 msgstr "phát hành"
 
@@ -7085,6 +7283,10 @@ msgstr "Làm tròn (số thập phân)"
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:328
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:906
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:959
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:56
 msgid "Rule output"
 msgstr "Đầu ra quy tắc"
 
@@ -7208,6 +7410,7 @@ msgstr "Lưu bảng này làm mẫu"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1881
 msgid "Saved “%(name)s” — %(n)s wire(s)."
 msgstr "Đã lưu “%(name)s” — (các) dây %(n)s."
 
@@ -7220,6 +7423,7 @@ msgstr "Đang lưu…"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:133
 msgid "Say which payroll scheme pays each part of the workforce."
 msgstr ""
 "Cho biết chương trình trả lương nào trả cho từng bộ phận của lực lượng lao động."
@@ -7237,6 +7441,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:56
 msgid "Says which employee the row belongs to."
 msgstr "Cho biết dòng này thuộc về nhân viên nào."
 
@@ -7267,12 +7472,14 @@ msgstr "Công thức kịch bản không hợp lệ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:57
 msgid "Scheme"
 msgstr "sơ đồ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:132
 msgid "Scheme assignment"
 msgstr "Phân công Đề án"
 
@@ -7345,6 +7552,7 @@ msgstr "Phần không được tìm thấy trong cấu hình này."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4608
 msgid "Section template deleted. Components are ready in the Unplaced tray."
 msgstr "Đã xóa mẫu phần. Các thành phần đã sẵn sàng trong khay Unplaced."
 
@@ -7401,6 +7609,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5148
 msgid "Select an image in the document first."
 msgstr "Trước tiên hãy chọn một hình ảnh trong tài liệu."
 
@@ -7475,6 +7684,7 @@ msgstr "Thiết lập tính lương trong 5 bước nhanh chóng."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1108
 msgid "Settings"
 msgstr "Cài đặt"
 
@@ -7525,12 +7735,14 @@ msgstr "Trình diễn"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1407
 msgid "Show all %(n)s values for %(label)s"
 msgstr "Xem toàn bộ %(n)s giá trị của %(label)s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1112
 msgid "Show every column"
 msgstr "Hiển thị mọi cột"
 
@@ -7579,6 +7791,7 @@ msgstr "Hiển thị đường dẫn"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1112
 msgid "Show payroll columns only"
 msgstr "Chỉ hiển thị cột bảng lương"
 
@@ -7664,6 +7877,7 @@ msgstr "Vì cấu hình đã được tạo"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3842
 msgid "Singapore"
 msgstr "Singapore"
 
@@ -7758,6 +7972,10 @@ msgstr "Tách ô đã hợp nhất"
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:327
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:905
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:958
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:54
 msgid "Spreadsheet"
 msgstr "Bảng tính"
 
@@ -7770,6 +7988,7 @@ msgstr "Cột bảng tính"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:124
 msgid "Spreadsheet columns → Scheme"
 msgstr "Cột bảng tính → Lược đồ"
 
@@ -7880,6 +8099,7 @@ msgstr "Đề xuất ánh xạ"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1282
 msgid "Suggestions could not be computed."
 msgstr "Không thể tính toán các đề xuất."
 
@@ -7904,18 +8124,21 @@ msgstr "Hệ thống"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:112
 msgid "System fields → Scheme"
 msgstr "Trường hệ thống → Lược đồ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:54
 msgid "Systems"
 msgstr "Hệ thống"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:441
 msgid "Systems, files and records"
 msgstr "Hệ thống, tập tin và hồ sơ"
 
@@ -8002,6 +8225,7 @@ msgstr "Mẫu"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4766
 msgid "Template applied: %s fields placed, %s sections created."
 msgstr "Đã áp dụng mẫu: Đã đặt các trường %s, đã tạo các phần %s."
 
@@ -8048,6 +8272,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_roles.js:58
 msgid "Terms kept on the contract."
 msgstr "Điều khoản lưu trên hợp đồng lao động."
 
@@ -8137,6 +8362,7 @@ msgstr "Kiểu văn bản"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3843
 msgid "Thailand"
 msgstr "Thái Lan"
 
@@ -8150,6 +8376,8 @@ msgstr "Cảm ơn bạn - việc đăng xuất của bạn đã được ghi l�
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1513
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1518
 msgid "That change could not be saved."
 msgstr "Không lưu được thay đổi này."
 
@@ -8172,18 +8400,21 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1644
 msgid "That file could not be forgotten."
 msgstr "Tập tin đó không thể bị lãng quên."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1734
 msgid "That file could not be loaded as a pay run."
 msgstr "Không thể tải tệp đó dưới dạng một kỳ lương."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1604
 msgid "That file could not be opened."
 msgstr "Tập tin đó không thể mở được."
 
@@ -8226,6 +8457,7 @@ msgstr "Không thể đọc lại cấu trúc này. Không có gì bị thay đ�
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1903
 msgid "That template could not be applied."
 msgstr "Không thể áp dụng mẫu đó."
 
@@ -8234,24 +8466,29 @@ msgstr "Không thể áp dụng mẫu đó."
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1675
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1694
 msgid "That template could not be built."
 msgstr "Mẫu đó không thể được xây dựng."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1914
 msgid "That template could not be deleted."
 msgstr "Mẫu đó không thể xóa được."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1885
 msgid "That template could not be saved."
 msgstr "Không thể lưu mẫu đó."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1075
 msgid "That wire could not be removed."
 msgstr "Dây đó không thể tháo ra được."
 
@@ -8280,6 +8517,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1419
 msgid "The code beside a value is what the file must contain."
 msgstr "Mã bên cạnh mỗi giá trị chính là nội dung tệp phải chứa."
 
@@ -8305,6 +8543,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:271
 msgid "The connectors and schemes could not be read."
 msgstr "Không thể đọc được các kết nối và sơ đồ."
 
@@ -8351,6 +8590,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1649
 msgid "The file was forgotten. Every wire you drew is still here."
 msgstr "Tập tin đã bị lãng quên. Mọi sợi dây bạn đã vẽ vẫn còn ở đây."
 
@@ -8373,12 +8613,14 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5139
 msgid "The image could not be read."
 msgstr "Không thể đọc được hình ảnh."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5123
 msgid "The image could not be uploaded."
 msgstr "Không thể tải lên hình ảnh."
 
@@ -8419,12 +8661,14 @@ msgstr "Cha mẹ đã thay đổi thành phần này sau khi nhánh bị cắt"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4647
 msgid "The payslip could not be analysed."
 msgstr "Không thể phân tích phiếu lương."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4649
 msgid ""
 "The payslip could not be analysed. Check the Document OCR configuration and try again."
 msgstr "Không thể phân tích phiếu lương. Hãy kiểm tra cấu hình Document OCR và thử lại."
@@ -8448,6 +8692,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:491
 msgid "The scheme that pays each segment"
 msgstr "Chương trình thanh toán cho từng phân khúc"
 
@@ -8466,12 +8711,14 @@ msgstr "bảng tính"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4770
 msgid "The template could not be applied."
 msgstr "Không thể áp dụng mẫu này."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4612
 msgid "The template could not be deleted."
 msgstr "Không thể xóa mẫu này."
 
@@ -8530,24 +8777,28 @@ msgstr "Không có thay đổi nào được phát hành kể từ cột mốc c
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5172
 msgid "There is no compatible cell to merge below."
 msgstr "Không có ô tương thích để hợp nhất bên dưới."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5168
 msgid "There is no compatible cell to merge on the right."
 msgstr "Không có ô tương thích để hợp nhất ở bên phải."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1948
 msgid "There is no payroll scheme on this database yet."
 msgstr "Chưa có kế hoạch trả lương trên cơ sở dữ liệu này."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1959
 msgid "There is nothing to map on this board."
 msgstr "Không có gì để lập bản đồ trên bảng này."
 
@@ -8560,6 +8811,7 @@ msgstr "Không có gì để đặt lại."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:392
 msgid ""
 "These are the fields %(vendor)s is expected to deliver. Map them now — the first sync "
 "will confirm them."
@@ -8643,6 +8895,7 @@ msgstr "Đường cơ sở này được lấy từ đầu ra động cơ hiện
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:462
 msgid "This belongs to that system."
 msgstr "Cái này thuộc về hệ thống đó."
 
@@ -8691,12 +8944,14 @@ msgstr "Điều này không thể hoàn tác được."
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5176
 msgid "This cell is not merged."
 msgstr "Ô này không được hợp nhất."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1234
 msgid "This column already has a destination."
 msgstr "Cột này đã có nơi lưu trữ."
 
@@ -8765,6 +9020,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:664
 msgid "This component is produced by the scheme, not imported into it."
 msgstr "Thành phần này được sản xuất bởi chương trình, không được nhập vào nó."
 
@@ -8986,6 +9242,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:818
 msgid "This rule's output feeds this component."
 msgstr "Đầu ra của quy tắc này cung cấp thành phần này."
 
@@ -8998,6 +9255,7 @@ msgstr "Đề án này"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:471
 msgid "This scheme does not read this connection on a system run."
 msgstr "Lược đồ này không đọc kết nối này khi chạy hệ thống."
 
@@ -9010,6 +9268,7 @@ msgstr "Chương trình này không có thành phần nào để cấp dữ li�
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1951
 msgid "This scheme has no mid-cycle/end-cycle twin to carry values into."
 msgstr "Sơ đồ này không có bản sao giữa chu kỳ/cuối chu kỳ để mang các giá trị vào."
 
@@ -9023,6 +9282,7 @@ msgstr "Lược đồ này không có biến thể nào để đẩy tới."
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:109
 msgid "This scheme has not been run yet"
 msgstr "Kế hoạch này chưa được thực hiện"
 
@@ -9112,24 +9372,30 @@ msgstr "Loại biến đổi này chỉ có thể được chỉnh sửa ở d�
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:816
 msgid "This wire's component is no longer on the scheme."
 msgstr "Thành phần của dây này không còn có trong sơ đồ nữa."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1780
 msgid "Those columns could not be read."
 msgstr "Không đọc được các cột đó."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1808
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1813
 msgid "Those columns could not be saved."
 msgstr "Không lưu được các cột đó."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1612
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1630
 msgid "Those headings could not be read."
 msgstr "Những tiêu đề đó không thể đọc được."
 
@@ -9179,6 +9445,8 @@ msgstr "Biến đổi trên dây"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:56
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:121
 msgid "Transformations"
 msgstr "chuyển đổi"
 
@@ -9255,6 +9523,7 @@ msgstr "Gạch chân"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1086
 msgid "Undo"
 msgstr "Hoàn tác"
 
@@ -9353,6 +9622,7 @@ msgstr "chưa được đặt ·"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:254
 msgid "Unread output"
 msgstr "Đầu ra chưa đọc"
 
@@ -9461,6 +9731,7 @@ msgstr "Thay vào đó hãy sử dụng bảng tính"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1541
 msgid "Use “%s”"
 msgstr "Sử dụng “%s”"
 
@@ -9469,6 +9740,7 @@ msgstr "Sử dụng “%s”"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:646
 msgid "Use “%s” as a spreadsheet column"
 msgstr "Sử dụng “%s” làm cột bảng tính"
 
@@ -9496,12 +9768,15 @@ msgstr "VI"
 #: code:addons/pb_formula_studio/static/src/xml/command_layer.xml:0
 #: code:addons/pb_formula_studio/static/src/xml/grid_studio.xml:0
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:486
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:1131
 msgid "Valid"
 msgstr "Hợp lệ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1515
 msgid "Validate"
 msgstr "Xác thực"
 
@@ -9554,6 +9829,7 @@ msgstr "Chỉ dành cho biến thể:"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1199
 msgid "Variants"
 msgstr "Biến thể"
 
@@ -9590,6 +9866,7 @@ msgstr "Không tìm thấy phiên bản"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3842
 msgid "Vietnam"
 msgstr "Việt Nam"
 
@@ -9672,6 +9949,7 @@ msgstr "Có gì bên trong"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1186
 msgid "What-if"
 msgstr "Chuyện gì xảy ra nếu"
 
@@ -9767,18 +10045,21 @@ msgstr "Đấu dây đầu ra của nó tới một thành phần…"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1082
 msgid "Wire removed"
 msgstr "Đã tháo dây"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:125
 msgid "Wire the columns of an uploaded file onto a scheme's inputs."
 msgstr "Nối các cột của tệp đã tải lên vào đầu vào của lược đồ."
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:113
 msgid "Wire the fields an HR system's API delivers onto a scheme's inputs."
 msgstr "Kết nối các trường mà API của hệ thống nhân sự phân phối vào đầu vào của sơ đồ."
 
@@ -9786,12 +10067,14 @@ msgstr "Kết nối các trường mà API của hệ thống nhân sự phân p
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
 #: code:addons/pb_formula_studio/static/src/xml/transform_flow_board.xml:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:291
 msgid "Wire this output to a component…"
 msgstr "Nối đầu ra này với một thành phần…"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:294
 msgid "Wired to a source"
 msgstr "Có dây tới một nguồn"
 
@@ -9815,12 +10098,14 @@ msgstr "Viết bình luận…"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:487
 msgid "Written on import · read back on a pay run"
 msgstr "Được viết khi nhập · đọc lại khi tính lương"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/grid_studio.xml:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2825
 msgid "Yes"
 msgstr "Có"
 
@@ -10010,6 +10295,7 @@ msgstr "một bảng tính"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:823
 msgid "above"
 msgstr "ở trên"
 
@@ -10040,6 +10326,7 @@ msgstr "đã thêm"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:344
 msgid "added by an adjustment"
 msgstr "được thêm vào bằng một sự điều chỉnh"
 
@@ -10122,6 +10409,7 @@ msgstr "trước đây"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:823
 msgid "below"
 msgstr "bên dưới"
 
@@ -10530,7 +10818,10 @@ msgstr "luyện tập"
 
 #. module: pb_formula_studio
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5600
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5631
 msgid "existing payroll data"
 msgstr "dữ liệu bảng lương hiện có"
 
@@ -10549,6 +10840,7 @@ msgstr "được cho ăn theo một quy tắc"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:343
 msgid "fell back"
 msgstr "ngã lại"
 
@@ -10706,6 +10998,7 @@ msgstr "không đi tới đâu — được nhập, đọc một lần rồi b�
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:116
 msgid "last run matched"
 msgstr "lần chạy cuối cùng khớp"
 
@@ -10828,6 +11121,10 @@ msgstr "mạng lưới"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:202
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:204
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:415
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:417
 msgid "never synced"
 msgstr "chưa bao giờ được đồng bộ hóa"
 
@@ -10864,6 +11161,7 @@ msgstr "không áp dụng"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:119
 msgid "not used"
 msgstr "không được sử dụng"
 
@@ -11047,12 +11345,14 @@ msgstr "sử dụng"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:239
 msgid "reads %s fields"
 msgstr "đọc các trường %s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:238
 msgid "reads 1 field"
 msgstr "đọc 1 trường"
 
@@ -11186,6 +11486,8 @@ msgstr "gợi ý"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:208
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:421
 msgid "synced %sd ago"
 msgstr "đã đồng bộ hóa %sd trước đây"
 
@@ -11193,6 +11495,8 @@ msgstr "đã đồng bộ hóa %sd trước đây"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:207
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:420
 msgid "synced %sh ago"
 msgstr "đã đồng bộ hóa %sh trước đây"
 
@@ -11200,6 +11504,8 @@ msgstr "đã đồng bộ hóa %sh trước đây"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:206
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:419
 msgid "synced <1h ago"
 msgstr "đã đồng bộ hóa <1h trước"
 
@@ -11212,24 +11518,28 @@ msgstr "văn bản"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:274
 msgid "the Employee & contract tab"
 msgstr "tab Nhân viên & hợp đồng"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:273
 msgid "the Spreadsheet tab"
 msgstr "tab Bảng tính"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:271
 msgid "the System fields tab"
 msgstr "tab Trường hệ thống"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:272
 msgid "the Transformations tab"
 msgstr "tab Chuyển đổi"
 
@@ -11266,6 +11576,7 @@ msgstr "biến thể này"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:343
 msgid "through the wiring"
 msgstr "thông qua hệ thống dây điện"
 
@@ -11391,6 +11702,7 @@ msgstr "chưa được xác minh"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:344
 msgid "used a default"
 msgstr "đã sử dụng mặc định"
 
@@ -11812,251 +12124,319 @@ msgid "＋ Row ↓"
 msgstr "＋ Hàng ↓"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:69
 msgid "Grid navigation"
 msgstr "Điều hướng lưới"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:70
 msgid "Move between cells"
 msgstr "Di chuyển giữa các ô"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:71
 msgid "Next column · Shift+Tab for previous"
 msgstr "Cột tiếp theo · Shift+Tab cho cột trước"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:72
 msgid "Extend the column selection"
 msgstr "Mở rộng lựa chọn cột"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:73
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:74
 msgid "Edit the focused formula cell"
 msgstr "Chỉnh sửa ô công thức tập trung"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:76
 msgid "Grid editing"
 msgstr "Chỉnh sửa lưới"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:77
 msgid "Start typing to edit a formula cell"
 msgstr "Bắt đầu nhập để chỉnh sửa ô công thức"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:78
 msgid "Save the edit"
 msgstr "Lưu chỉnh sửa"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:79
 msgid "Cancel the edit · clear selection"
 msgstr "Hủy chỉnh sửa · xóa lựa chọn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:80
 msgid "Undo the last saved formula"
 msgstr "Hoàn tác công thức đã lưu cuối cùng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:82
 msgid "Drag-fill"
 msgstr "Kéo điền"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:83
 msgid "Confirm the proposed fill"
 msgstr "Xác nhận điền được đề xuất"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:84
 msgid "Cancel the fill"
 msgstr "Hủy điền"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:763
 msgid "— %(sample)s: %(code)s"
 msgstr "— %(sample)s: %(code)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:765
 msgid "%(count)s sample tests failing%(detail)s"
 msgstr "Các thử nghiệm mẫu %(count)s không thành công%(detail)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:766
 msgid "Tests failing"
 msgstr "Kiểm tra thất bại"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:798
 msgid "Could not save formula"
 msgstr "Không thể lưu công thức"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:817
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:820
 msgid "Bulk update failed"
 msgstr "Cập nhật hàng loạt không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:818
 msgid "Updated %(count)s components"
 msgstr "Các thành phần %(count)s được cập nhật"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:838
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:839
 msgid "Reorder failed"
 msgstr "Sắp xếp lại không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:847
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:849
 msgid "Grouping failed"
 msgstr "Nhóm không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:848
 msgid "Columns grouped by category"
 msgstr "Các cột được nhóm theo danh mục"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:858
 msgid "Fill failed"
 msgstr "Điền không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:859
 msgid "Filled %(count)s columns"
 msgstr "Đã điền các cột %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:888
 msgid "Paste failed"
 msgstr "Dán không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:890
 msgid "Pasted %(count)s formulas"
 msgstr "Đã dán công thức %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:933
 msgid "You can pin up to 2 extra sample rows"
 msgstr "Bạn có thể ghim tối đa 2 hàng mẫu bổ sung"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:936
 msgid "Add more sample data to pin another row"
 msgstr "Thêm nhiều dữ liệu mẫu hơn để ghim một hàng khác"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1002
 msgid "A snippet needs a name and a body"
 msgstr "Đoạn mã cần có tên và nội dung"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1010
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1015
 msgid "Could not save snippet"
 msgstr "Không thể lưu đoạn trích"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1013
 msgid "Snippet saved"
 msgstr "Đã lưu đoạn mã"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1025
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1029
 msgid "Could not delete snippet"
 msgstr "Không thể xóa đoạn trích"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1073
 msgid "Replace failed"
 msgstr "Thay thế không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1102
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1103
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1104
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1105
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1106
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1108
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1109
 msgid "Views"
 msgstr "Lượt xem"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1104
 msgid "Tests view"
 msgstr "Chế độ xem thử nghiệm"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1105
 msgid "Compare periods"
 msgstr "So sánh thời gian"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1106
 msgid "Compare vs budget"
 msgstr "So sánh với ngân sách"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1107
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1116
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1117
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1118
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1119
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1120
 msgid "Actions"
 msgstr "Hành động"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1116
 msgid "New component"
 msgstr "Thành phần mới"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1117
 msgid "Import from Excel…"
 msgstr "Nhập từ Excel…"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1118
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1323
 msgid "Find & replace"
 msgstr "Tìm và thay thế"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1119
 msgid "Release preview"
 msgstr "Xem trước bản phát hành"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1184
 msgid "Analyze"
 msgstr "Phân tích"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1185
 msgid "Watch a payslip compute step by step"
 msgstr "Xem cách tính phiếu lương theo từng bước"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1186
 msgid "Slide a rate and project the payroll cost"
 msgstr "Trượt tỷ lệ và dự kiến chi phí tiền lương"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1187
 msgid "The whole configuration as a graph"
 msgstr "Toàn bộ cấu hình dưới dạng biểu đồ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1188
 msgid "Type hypothetical inputs, see the full breakdown"
 msgstr "Nhập thông tin đầu vào giả định, xem thông tin chi tiết đầy đủ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1190
 msgid "Design"
 msgstr "Thiết kế"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1191
 msgid "Design the payslip layout"
 msgstr "Thiết kế bố cục phiếu lương"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1192
 msgid ""
 "Open the mapping board on this scheme — spreadsheet columns, system fields, employee "
@@ -12066,57 +12446,68 @@ msgstr ""
 " hợp đồng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1193
 msgid "PIT brackets and other rate tables"
 msgstr "Dấu ngoặc thuế TNCN và các bảng thuế suất khác"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1194
 msgid "Export workbook"
 msgstr "Xuất sổ làm việc"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1194
 msgid "Download the config as a living Excel file with real formulas"
 msgstr "Tải config dưới dạng file Excel sống với công thức thực"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1196
 msgid "Govern"
 msgstr "quản lý"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1197
 msgid "Lint checks and rename-refactor"
 msgstr "Kiểm tra Lint và đổi tên-tái cấu trúc"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1198
 msgid "Fork this config, trial a change, merge back"
 msgstr "Phân nhánh cấu hình này, thử thay đổi, hợp nhất lại"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1199
 msgid "One master scheme, many synced variants"
 msgstr "Một sơ đồ tổng thể, nhiều biến thể được đồng bộ hóa"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1200
 msgid "Review classification"
 msgstr "Đánh giá phân loại"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1200
 msgid "Re-check what each column is for, and accept only the changes you agree with"
 msgstr ""
 "Kiểm tra lại mục đích của từng cột và chỉ chấp nhận những thay đổi mà bạn đồng ý"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1201
 msgid "Review categories"
 msgstr "Đánh giá danh mục"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1201
 msgid ""
 "Read the net-pay formula and file every component as an earning, a deduction, an "
@@ -12126,226 +12517,285 @@ msgstr ""
 " chi phí hoặc thông tin của người sử dụng lao động"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1202
 msgid "Roll a statutory change across every configuration"
 msgstr "Thực hiện thay đổi theo luật định trên mọi cấu hình"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1203
 msgid "Review and sign off formula changes"
 msgstr "Xem xét và ký tắt các thay đổi trong công thức"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1205
 msgid "Collaborate"
 msgstr "Cộng tác"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1206
 msgid "Share for review"
 msgstr "Chia sẻ để xem xét"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1206
 msgid "A read-only link for your client"
 msgstr "Một liên kết chỉ đọc cho khách hàng của bạn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1207
 msgid "Describe a rule in plain English and let AI draft it"
 msgstr "Mô tả một quy tắc bằng tiếng Anh đơn giản và để AI soạn thảo nó"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1322
 msgid "Command palette"
 msgstr "Bảng lệnh"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1324
 msgid "Keyboard shortcuts (this panel)"
 msgstr "Phím tắt (bảng này)"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1325
 msgid "Close palette · find · drawers"
 msgstr "Đóng bảng màu · tìm · ngăn kéo"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1327
 msgid "Command layer"
 msgstr "Lớp lệnh"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1338
 msgid "Could not create scenario"
 msgstr "Không thể tạo kịch bản"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1357
 msgid "Promote failed"
 msgstr "Quảng cáo không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1358
 msgid "Promoted into %(code)s"
 msgstr "Được thăng cấp thành %(code)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3850
 msgid "Testing"
 msgstr "Kiểm thử"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3850
 msgid "Validated"
 msgstr "Đã xác thực"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1515
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3851
 msgid "Active"
 msgstr "Đang hoạt động"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3851
 msgid "Archived"
 msgstr "Đã lưu trữ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1515
 msgid "Start testing"
 msgstr "Bắt đầu thử nghiệm"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1515
 msgid "Advance"
 msgstr "Nâng cao"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1853
 msgid "Could not sign off the release"
 msgstr "Không thể đăng xuất bản phát hành"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1854
 msgid "Release sealed · %(count)s components"
 msgstr "Phát hành kín · Linh kiện %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1859
 msgid "Sign-off failed"
 msgstr "Đăng xuất không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1916
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4042
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4049
 msgid "No historical payslips to simulate against"
 msgstr "Không có phiếu lương lịch sử nào để mô phỏng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1931
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4063
 msgid "Simulation failed"
 msgstr "Mô phỏng không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1941
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1949
 msgid "Rollback failed"
 msgstr "Khôi phục không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1942
 msgid "Rolled back · %(count)s components restored"
 msgstr "Đã khôi phục · Đã khôi phục các thành phần %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1967
 msgid "Clone failed"
 msgstr "Sao chép không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1968
 msgid "Cloned as “%(name)s”"
 msgstr "Được nhân bản thành “%(name)s”"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2032
 msgid "Published"
 msgstr "Đã đăng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2032
 msgid "Superseded"
 msgstr "Đã thay thế"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2055
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2059
 msgid "Apply failed"
 msgstr "Áp dụng không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2056
 msgid "Applied · %(count)s values updated"
 msgstr "Đã áp dụng · Đã cập nhật giá trị %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2071
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2075
 msgid "Roll-out failed"
 msgstr "Ra mắt không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2072
 msgid "Rolled out to %(configs)s configurations · %(values)s values updated"
 msgstr "Đã triển khai cho cấu hình %(configs)s · Đã cập nhật giá trị %(values)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2117
 msgid "Could not create branch"
 msgstr "Không thể tạo chi nhánh"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2118
 msgid "Branch “%(name)s” created"
 msgstr "Đã tạo nhánh “%(name)s”"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2121
 msgid "Branch creation failed"
 msgstr "Tạo chi nhánh không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2153
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2159
 msgid "Merge failed"
 msgstr "Hợp nhất không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2165
 msgid "Discard failed"
 msgstr "Hủy không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2166
 msgid "Branch “%(name)s” discarded"
 msgstr "Nhánh “%(name)s” bị loại bỏ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2199
 msgid "Could not create variant"
 msgstr "Không thể tạo biến thể"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2200
 msgid "Variant “%(name)s” created"
 msgstr "Đã tạo biến thể “%(name)s”"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2203
 msgid "Variant creation failed"
 msgstr "Tạo biến thể không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2238
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2242
 msgid "Sync failed"
 msgstr "Đồng bộ hóa không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2239
 msgid "Synced %(components)s components · %(overrides)s overrides kept"
 msgstr ""
@@ -12353,391 +12803,478 @@ msgstr ""
 "giữ nguyên"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2251
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2255
 msgid "Push failed"
 msgstr "Đẩy không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2252
 msgid "Pushed to %(variants)s variants · %(updates)s updates"
 msgstr "Đã đẩy lên các biến thể %(variants)s · Cập nhật %(updates)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2262
 msgid "Could not change override"
 msgstr "Không thể thay đổi ghi đè"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2264
 msgid "“%(name)s” protected from sync"
 msgstr "“%(name)s” được bảo vệ khỏi đồng bộ hóa"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2265
 msgid "“%(name)s” now inherits from master"
 msgstr "“%(name)s” hiện được kế thừa từ chủ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2272
 msgid "Detach failed"
 msgstr "Tách không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2273
 msgid "“%(name)s” detached — now a standalone configuration"
 msgstr "“%(name)s” đã được tách ra - hiện là cấu hình độc lập"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2303
 msgid "Could not create link"
 msgstr "Không thể tạo liên kết"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2304
 msgid "Review link created"
 msgstr "Liên kết đánh giá đã được tạo"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2308
 msgid "Failed to create link"
 msgstr "Không tạo được liên kết"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2315
 msgid "Link copied to clipboard"
 msgstr "Đã sao chép liên kết vào bảng nhớ tạm"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2322
 msgid "Revoke failed"
 msgstr "Thu hồi không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2323
 msgid "Link revoked"
 msgstr "Đã thu hồi liên kết"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
 msgid "Viewed"
 msgstr "Đã xem"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
 msgid "Signed off"
 msgstr "Đã đăng xuất"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
 msgid "Revoked"
 msgstr "Đã thu hồi"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
 msgid "Expired"
 msgstr "Đã hết hạn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2553
 msgid "Could not open the component."
 msgstr "Không thể mở thành phần."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2650
 msgid "Could not save component"
 msgstr "Không thể lưu thành phần"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2656
 msgid "Component saved"
 msgstr "Đã lưu thành phần"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2825
 msgid "if"
 msgstr "nếu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3070
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3790
 msgid "Action blocked"
 msgstr "Hành động bị chặn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3071
 msgid "Now %(state)s"
 msgstr "Bây giờ %(state)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3076
 msgid "Validation complete"
 msgstr "Xác thực hoàn tất"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3076
 msgid "Validation failed"
 msgstr "Xác thực Thất bại"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3081
 msgid "%(passed)s/%(total)s tests passed"
 msgstr "Đã vượt qua các bài kiểm tra %(passed)s/%(total)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3082
 msgid "Test run failed"
 msgstr "Chạy thử không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3097
 msgid "Could not load settings."
 msgstr "Không thể tải cài đặt."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3105
 msgid "Could not generate sample"
 msgstr "Không thể tạo mẫu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3106
 msgid "Sample data generated"
 msgstr "Dữ liệu mẫu được tạo"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3142
 msgid "Pick two periods to compare"
 msgstr "Chọn hai thời kỳ để so sánh"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3143
 msgid "Pick two different periods"
 msgstr "Chọn hai thời kỳ khác nhau"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3154
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3170
 msgid "Comparison failed"
 msgstr "So sánh không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3212
 msgid "Could not narrate this comparison"
 msgstr "Không thể thuật lại sự so sánh này"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3214
 msgid "Narration failed"
 msgstr "Tường thuật không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3225
 msgid "Narrative copied"
 msgstr "Tường thuật được sao chép"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3251
 msgid "Pick or create a budget first"
 msgstr "Chọn hoặc tạo ngân sách trước"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3252
 msgid "Pick a payrun to measure against"
 msgstr "Chọn một kỳ lương để đo lường"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3262
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3277
 msgid "Budget comparison failed"
 msgstr "So sánh ngân sách không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3287
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3300
 msgid "Could not open the budget editor"
 msgstr "Không thể mở trình chỉnh sửa ngân sách"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3318
 msgid "Pick a payrun to seed from"
 msgstr "Chọn một kỳ lương để bắt đầu từ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3325
 msgid "Amounts seeded from the payrun"
 msgstr "Số tiền được chọn từ kỳ lương"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3327
 msgid "Could not seed from that payrun"
 msgstr "Không thể bắt đầu từ kỳ lương đó"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3341
 msgid "Amounts seeded from the on-screen comparison"
 msgstr "Số tiền được chọn từ so sánh trên màn hình"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3346
 msgid "A budget needs a name"
 msgstr "Ngân sách cần có tên"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3362
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3369
 msgid "Could not save budget"
 msgstr "Không thể tiết kiệm ngân sách"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3367
 msgid "Budget saved"
 msgstr "Đã lưu ngân sách"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3377
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3383
 msgid "Could not delete budget"
 msgstr "Không thể xóa ngân sách"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3381
 msgid "Budget deleted"
 msgstr "Đã xóa ngân sách"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3457
 msgid "Could not load that sample"
 msgstr "Không thể tải mẫu đó"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3490
 msgid "Offer summary copied"
 msgstr "Đã sao chép tóm tắt ưu đãi"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3557
 msgid "Select at least one reachable edge."
 msgstr "Chọn ít nhất một cạnh có thể tiếp cận."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3562
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3644
 msgid "Could not generate"
 msgstr "Không thể tạo"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3565
 msgid "Boundary samples: %(summary)s"
 msgstr "Mẫu ranh giới: %(summary)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3577
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3583
 msgid "Could not confirm"
 msgstr "Không thể xác nhận"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3579
 msgid "Baseline confirmed"
 msgstr "Đường cơ sở đã được xác nhận"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3586
 msgid "%(count)s baselines confirmed"
 msgstr "Đã xác nhận đường cơ sở %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3595
 msgid "AI is unavailable."
 msgstr "AI không có sẵn."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3606
 msgid "Select at least one profile."
 msgstr "Chọn ít nhất một hồ sơ."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3610
 msgid "Could not add samples"
 msgstr "Không thể thêm mẫu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3611
 msgid "%(count)s AI profiles added"
 msgstr "Đã thêm hồ sơ AI %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3635
 msgid "Could not add sample"
 msgstr "Không thể thêm mẫu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3645
 msgid "%(count)s random samples added"
 msgstr "Đã thêm mẫu ngẫu nhiên %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3659
 msgid "Baseline saved"
 msgstr "Đã lưu đường cơ sở"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3685
 msgid "Tests run"
 msgstr "Chạy thử nghiệm"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3701
 msgid "Could not export template"
 msgstr "Không thể xuất mẫu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3709
 msgid "Template downloaded"
 msgstr "Đã tải mẫu xuống"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3717
 msgid "Could not export workbook"
 msgstr "Không thể xuất sổ làm việc"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3725
 msgid "Workbook downloaded"
 msgstr "Đã tải sổ làm việc xuống"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3737
 msgid "Could not import"
 msgstr "Không thể nhập"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3738
 msgid "%(count)s samples imported"
 msgstr "Mẫu %(count)s được nhập khẩu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3775
 msgid "Could not save settings"
 msgstr "Không thể lưu cài đặt"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3780
 msgid "Settings saved"
 msgstr "Đã lưu cài đặt"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3843
 msgid "Philippines"
 msgstr "Philippines"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3846
 msgid "Mid-cycle"
 msgstr "Giữa chu kỳ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3846
 msgid "End-cycle"
 msgstr "Cuối chu kỳ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3906
 msgid "Available in the full platform"
 msgstr "Có sẵn trong nền tảng đầy đủ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3907
 msgid ""
 "This functionality is available in the full Payobook platform. Please contact Payobook"
@@ -12747,187 +13284,231 @@ msgstr ""
 "sắp xếp một buổi trình diễn được cá nhân hóa."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3908
 msgid "Got it"
 msgstr "Hiểu rồi"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3996
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4009
 msgid "Restore failed"
 msgstr "Khôi phục không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3999
 msgid "Restored v%(version)s"
 msgstr "Đã khôi phục v%(version)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4143
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4152
 msgid "Could not apply the rewrite"
 msgstr "Không thể áp dụng tính năng viết lại"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4211
 msgid "Rename failed"
 msgstr "Đổi tên không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4293
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1832
 msgid "Save failed"
 msgstr "Lưu không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4294
 msgid "Rate table saved"
 msgstr "Đã lưu bảng giá"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4308
 msgid "Delete failed"
 msgstr "Xóa không thành công"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4309
 msgid "Rate table deleted"
 msgstr "Bảng giá đã bị xóa"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4419
 msgid "Review component categories"
 msgstr "Xem lại danh mục thành phần"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5489
 msgid "Formula applied to %(target)s"
 msgstr "Công thức áp dụng cho %(target)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5490
 msgid "Could not apply"
 msgstr "Không thể áp dụng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5492
 msgid "That would create a new component — open the editor to confirm name & code."
 msgstr ""
 "Điều đó sẽ tạo ra một thành phần mới — hãy mở trình chỉnh sửa để xác nhận tên và mã."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5527
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5542
 msgid "Give the configuration a name first."
 msgstr "Đặt tên cho cấu hình trước tiên."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5536
 msgid "Created “%(name)s” with %(count)s components"
 msgstr "Đã tạo “%(name)s” với các thành phần %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5538
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5547
 msgid "Could not create configuration"
 msgstr "Không thể tạo cấu hình"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5571
 msgid "Added %(count)s components"
 msgstr "Đã thêm các thành phần %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5572
 msgid "This configuration already has components."
 msgstr "Cấu hình này đã có thành phần."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5573
 msgid "Could not apply the starter."
 msgstr "Không thể áp dụng bộ khởi động."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5583
 msgid "Could not add a component."
 msgstr "Không thể thêm thành phần."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5596
 msgid "this configuration"
 msgstr "cấu hình này"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5620
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5625
 msgid "Could not archive configuration"
 msgstr "Không thể lưu trữ cấu hình"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5620
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5625
 msgid "Could not delete configuration"
 msgstr "Không thể xóa cấu hình"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5638
 msgid "Archived “%(name)s”"
 msgstr "Đã lưu trữ “%(name)s”"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5639
 msgid "Deleted “%(name)s”"
 msgstr "Đã xóa “%(name)s”"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5669
 msgid "Component deleted"
 msgstr "Đã xóa thành phần"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/grid/formula_bar.js:34
 msgid "Select a component"
 msgstr "Chọn một thành phần"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/grid/formula_bar.js:35
 msgid "Input — value comes from the data source"
 msgstr "Đầu vào - giá trị đến từ nguồn dữ liệu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/grid/formula_bar.js:37
 msgid "= formula"
 msgstr "= công thức"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:483
 msgid "This formula has an error."
 msgstr "Công thức này có lỗi."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:1131
 msgid "Invalid formula"
 msgstr "Công thức không hợp lệ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:313
 msgid "1 component can be read back off an employee or contract record"
 msgstr "1 thành phần có thể được đọc lại từ hồ sơ nhân viên hoặc hợp đồng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:315
 msgid "%s components can be read back off employee or contract records"
 msgstr "Các thành phần %s có thể được đọc lại từ hồ sơ nhân viên hoặc hợp đồng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:465
 msgid "1 mapped field. It writes the record on import and is read"
 msgstr "1 trường được ánh xạ. Nó ghi bản ghi khi nhập và được đọc"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:467
 msgid "%s mapped fields. They write the records on import and are"
 msgstr "Các trường được ánh xạ %s. Họ viết hồ sơ nhập khẩu và"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1063
 msgid "not sent"
 msgstr "không được gửi"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1064
 msgid ""
 "This feed has synced and did not carry this field. It may have been renamed or "
@@ -12937,36 +13518,43 @@ msgstr ""
 "đổi tên hoặc tắt tại nguồn."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1068
 msgid "computed"
 msgstr "tính toán"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1069
 msgid "Payobook computes this from the records this feed returns."
 msgstr "Payobook tính toán điều này từ các bản ghi mà nguồn cấp dữ liệu này trả về."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1070
 msgid "expected"
 msgstr "dự kiến"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1072
 msgid "Expected from the vendor's catalogue. %(note)s"
 msgstr "Dự kiến từ danh mục của nhà cung cấp. %(note)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1073
 msgid "Expected from the vendor's catalogue. The first sync will confirm it."
 msgstr "Dự kiến từ danh mục của nhà cung cấp. Đồng bộ hóa đầu tiên sẽ xác nhận nó."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1076
 msgid "Payobook field"
 msgstr "Trường Payobook"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1077
 msgid ""
 "This is one of Payobook's own employee fields, not a field this source has told us "
@@ -12976,11 +13564,13 @@ msgstr ""
 "nguồn này đã cho chúng tôi biết."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1080
 msgid "mapped elsewhere"
 msgstr "được ánh xạ ở nơi khác"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1081
 msgid ""
 "Shown because a mapping names it. It arrives on another feed, or on none this board "
@@ -12990,226 +13580,271 @@ msgstr ""
 "hoặc không có nguồn nào mà diễn đàn này biết đến."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1086
 msgid "All"
 msgstr "Tất cả"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1086
 msgid "Mapped"
 msgstr "Đã ánh xạ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1087
 msgid "Unmapped"
 msgstr "Chưa ánh xạ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1088
 msgid "Suggested"
 msgstr "Được đề xuất"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1241
 msgid "Both ends of this wire are hidden by the column filters."
 msgstr "Cả hai đầu của dây này đều bị các bộ lọc cột che khuất."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1763
 msgid "Direct copy"
 msgstr "Sao chép trực tiếp"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1764
 msgid "Multiply by"
 msgstr "Nhân với"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1765
 msgid "Divide by"
 msgstr "Chia cho"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1766
 msgid "Add"
 msgstr "Thêm"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1767
 msgid "Subtract"
 msgstr "Trừ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1768
 msgid "Round to decimals"
 msgstr "Làm tròn đến số thập phân"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1769
 msgid "Absolute value"
 msgstr "Giá trị tuyệt đối"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1770
 msgid "Default if empty"
 msgstr "Mặc định nếu trống"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:109
 msgid "The whole picture: which systems, feeds and files reach this"
 msgstr "Toàn cảnh: hệ thống, nguồn cấp dữ liệu và tệp nào đạt được điều này"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:122
 msgid "See what each transformation rule reads, what it computes,"
 msgstr "Xem mỗi quy tắc chuyển đổi đọc gì, nó tính toán những gì,"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:130
 msgid "Copy what a scheme computes onto employee and contract records —"
 msgstr "Sao chép những gì chương trình tính toán vào hồ sơ nhân viên và hợp đồng —"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:296
 msgid "The scheme this link named is not available to you —"
 msgstr "Chương trình có tên liên kết này không có sẵn cho bạn —"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:300
 msgid "The connector this link named is not available to you —"
 msgstr "Trình kết nối có tên liên kết này không có sẵn cho bạn -"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:303
 msgid "The feed this link named is no longer on this connector —"
 msgstr "Nguồn cấp dữ liệu có tên liên kết này không còn trên trình kết nối này nữa —"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1624
 msgid "That workbook is very wide — only the first"
 msgstr "Sổ làm việc đó rất rộng - chỉ là cuốn đầu tiên"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1689
 msgid "Template downloaded — one column per input component,"
 msgstr "Đã tải xuống mẫu - một cột cho mỗi thành phần đầu vào,"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1956
 msgid "This system has no transformation rules yet. A rule turns"
 msgstr "Hệ thống này chưa có quy tắc chuyển đổi. Một quy tắc biến"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:250
 msgid "A wire from this rule points at a component that is no longer there."
 msgstr "Một dây theo quy tắc này trỏ đến một thành phần không còn ở đó nữa."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:255
 msgid "This rule computes “%s” and no pay component takes it."
 msgstr "Quy tắc này tính toán “%s” và không có thành phần trả tiền nào lấy nó."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:261
 msgid "This rule reads a field this system is not known to deliver."
 msgstr "Quy tắc này đọc một trường mà hệ thống này không biết sẽ phân phối."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:274
 msgid "Which fields a rule reads is part of the rule itself —"
 msgstr "Những trường mà quy tắc đọc là một phần của chính quy tắc đó -"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:280
 msgid "Double-click to bring both ends of this line into view."
 msgstr "Bấm đúp để hiển thị cả hai đầu của dòng này."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:812
 msgid "This component is set to read this rule's output."
 msgstr "Thành phần này được thiết lập để đọc đầu ra của quy tắc này."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/review/category_review.js:94
 msgid "Here is what each component does to net pay."
 msgstr "Đây là những gì mỗi thành phần làm để trả lương ròng."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/review/category_review.js:96
 msgid "We read %(net)s. Here is what each component does to net pay."
 msgstr "Chúng tôi đọc %(net)s. Đây là những gì mỗi thành phần làm để trả lương ròng."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/review/category_review.js:112
 msgid "Certain"
 msgstr "Chắc chắn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/review/category_review.js:113
 msgid "Likely"
 msgstr "Có khả năng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/review/category_review.js:145
 msgid "%s component(s) refiled"
 msgstr "Đã tinh chỉnh (các) thành phần %s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/review/category_review.js:146
 msgid "Everything was already filed that way."
 msgstr "Mọi thứ đã được nộp theo cách đó."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/review/category_review.js:150
 msgid "Those categories could not be saved."
 msgstr "Không thể lưu những danh mục đó."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/review/category_review.js:166
 msgid "That component could not be set as net pay."
 msgstr "Không thể đặt thành phần đó làm lương ròng."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:53
 msgid "Pick a configuration first"
 msgstr "Chọn cấu hình trước"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:59
 msgid "Nothing to shadow"
 msgstr "Không có gì để che giấu"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:64
 msgid "Shadow run failed to start"
 msgstr "Chạy bóng không khởi động được"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:124
 msgid "PayAI named %(count)s clusters"
 msgstr "PayAI đặt tên là cụm %(count)s"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:125
 msgid "No AI naming available"
 msgstr "Không có khả năng đặt tên AI"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:133
 msgid "Tolerance must be valid JSON"
 msgstr "Dung sai phải là JSON hợp lệ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:139
 msgid "Re-compared with new tolerance"
 msgstr "So sánh lại với dung sai mới"
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1718
 msgid "Needs a decision"
 msgstr "Cần một quyết định"
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1719
 msgid ""
 "The formulas do not settle these, or your own column band says something different."
@@ -13218,147 +13853,176 @@ msgstr ""
 "điều gì đó khác."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1721
 msgid "Added to pay"
 msgstr "Đã thêm để thanh toán"
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1722
 msgid "Net pay adds these up."
 msgstr "Lương ròng cộng thêm những thứ này."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1723
 msgid "Taken off pay"
 msgstr "Bị trừ lương"
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1724
 msgid "Net pay subtracts these."
 msgstr "Lương ròng trừ đi những khoản này."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1725
 msgid "Employer cost"
 msgstr "Chi phí của người sử dụng lao động"
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1726
 msgid "Never reaches the employee — the company carries it on top of pay."
 msgstr "Không bao giờ đến tay nhân viên - công ty trả lương cao hơn."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1728
 msgid "The figure everything else adds up to."
 msgstr "Con số mọi thứ khác cộng lại."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1729
 msgid "Information"
 msgstr "Thông tin"
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1730
 msgid "Counts, references and working figures — not money paid or taken."
 msgstr ""
 "Số lượng, tài liệu tham khảo và số liệu làm việc - không phải tiền được trả hoặc nhận."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1876
 msgid "You do not have permission to change how components are filed."
 msgstr "Bạn không có quyền thay đổi cách sắp xếp các thành phần."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1897
 msgid "You do not have permission to change this salary structure."
 msgstr "Bạn không được phép thay đổi cơ cấu lương này."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1902
 msgid "That component is not part of this salary structure."
 msgstr "Thành phần đó không phải là một phần của cơ cấu tiền lương này."
 
 #. module: pb_formula_studio
+#. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1907
 msgid "Net"
 msgstr "Thực lãnh"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Reading the scheme's formulas…"
 msgstr "Đang đọc công thức của cấu hình…"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "This scheme could not be read."
 msgstr "Không thể đọc cấu hình này."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Nothing was changed. Try again from the salary structure."
 msgstr "Không có gì được thay đổi. Hãy thử lại từ cơ cấu tiền lương."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Component categories"
 msgstr "Danh mục thành phần"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Nothing here says which component is net pay."
 msgstr "Không có gì ở đây cho biết thành phần nào là lương ròng."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Net pay is"
 msgstr "Lương ròng là"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Read the scheme again"
 msgstr "Đọc lại cấu hình"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Ask a payroll manager to name the net-pay component."
 msgstr "Yêu cầu người quản lý tiền lương đặt tên cho thành phần lương ròng."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Everything already matches the formula."
 msgstr "Mọi thành phần đã khớp với công thức."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "are filed the way this scheme's own arithmetic reads them."
 msgstr "đã được phân loại theo phép tính của chính cấu hình này."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "to settle"
 msgstr "cần xử lý"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "already match"
 msgstr "đã khớp rồi"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Tick all"
 msgstr "Chọn tất cả"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Tick"
 msgstr "Chọn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "counted inside a total"
 msgstr "được tính trong một thành phần tổng"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid ""
 "You can read this, but changing how components are filed needs a payroll manager."
@@ -13367,6 +14031,7 @@ msgstr ""
 "quản lý bảng lương."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid ""
 "Name the net-pay component and this scheme can be read; skip and nothing changes."
@@ -13375,6 +14040,7 @@ msgstr ""
 "thay đổi."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Only ticked rows are written. Everything else keeps the category it has now."
 msgstr ""
@@ -13382,31 +14048,37 @@ msgstr ""
 "tại."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Nothing here needs changing."
 msgstr "Không có gì ở đây cần thay đổi."
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Skip for now"
 msgstr "Bỏ qua bây giờ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "selected"
 msgstr "đã chọn"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "'Company'"
 msgstr "'Công ty'"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "'— none —'"
 msgstr "'— không có —'"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid ""
 "would be refiled. Untick anything you disagree with — only ticked rows are written, "

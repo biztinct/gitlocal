@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:48+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -41,6 +41,7 @@ msgstr "Tài khoản"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_account_name
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:28
 msgid "Account Holder"
 msgstr "Chủ tài khoản"
 
@@ -48,6 +49,7 @@ msgstr "Chủ tài khoản"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_account_number
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:29
 msgid "Account Number"
 msgstr "Số tài khoản"
 
@@ -65,6 +67,7 @@ msgstr "Hành động Cần"
 #. module: pb_bank_ocr
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:227
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
@@ -138,12 +141,14 @@ msgstr "Phê duyệt với tư cách nhân sự"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__approved
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:223
 msgid "Approved"
 msgstr "Đã duyệt"
 
 #. module: pb_bank_ocr
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:159
 msgid "Approved — the employee bank master has been updated."
 msgstr "Đã phê duyệt - chủ ngân hàng nhân viên đã được cập nhật."
 
@@ -174,6 +179,7 @@ msgstr "Quay lại"
 #: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_bank_name
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:26
 msgid "Bank"
 msgstr "Ngân hàng"
 
@@ -254,6 +260,7 @@ msgstr "Ngân hàng TMCP Bảo Việt"
 #: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_bank_branch
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:27
 msgid "Branch"
 msgstr "Chi nhánh"
 
@@ -399,6 +406,7 @@ msgstr "Hoàn tất"
 #. module: pb_bank_ocr
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:160
 msgid "Done."
 msgstr "Xong."
 
@@ -411,6 +419,7 @@ msgstr "Ngân hàng TMCP Đông Á"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__draft
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:222
 msgid "Draft"
 msgstr "Nháp"
 
@@ -466,6 +475,7 @@ msgstr "Tài chính"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__finance_review
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:223
 msgid "Finance Review"
 msgstr "Tài chính xét duyệt"
 
@@ -516,6 +526,7 @@ msgstr "Nhân sự"
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__hr_review
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:222
 msgid "HR Review"
 msgstr "Nhân sự xét duyệt"
 
@@ -567,6 +578,7 @@ msgstr "Tôi đã xác minh đây không phải là mục tiêu thanh toán trù
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_iban
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:30
 msgid "IBAN"
 msgstr "IBAN"
 
@@ -664,6 +676,7 @@ msgstr "Ngân hàng TMCP Quân Đội"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__name_match_band__red
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:218
 msgid "Mismatch"
 msgstr "Không khớp"
 
@@ -898,12 +911,14 @@ msgstr "Ngân hàng TMCP Thịnh vượng và Tăng trưởng"
 #. module: pb_bank_ocr
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:199
 msgid "Provider OK"
 msgstr "Nhà cung cấp ổn"
 
 #. module: pb_bank_ocr
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:199
 msgid "Provider error"
 msgstr "Lỗi nhà cung cấp"
 
@@ -951,6 +966,7 @@ msgstr "Từ chối yêu cầu"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__refused
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:224
 msgid "Refused"
 msgstr "Đã từ chối"
 
@@ -965,6 +981,7 @@ msgstr "Yêu cầu"
 #. module: pb_bank_ocr
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:176
 msgid "Request refused."
 msgstr "Yêu cầu bị từ chối."
 
@@ -982,6 +999,7 @@ msgstr "Phụ trách Người dùng"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__name_match_band__amber
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:218
 msgid "Review"
 msgstr "Xem lại"
 
@@ -1004,6 +1022,7 @@ msgstr "SMS Giao lỗi"
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
 #: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_swift
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:31
 msgid "SWIFT / BIC"
 msgstr "SWIFT / BIC"
 
@@ -1090,6 +1109,7 @@ msgstr "mạnh mẽ"
 #. module: pb_bank_ocr
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:218
 msgid "Strong match"
 msgstr "Trận đấu mạnh mẽ"
 
@@ -1204,6 +1224,7 @@ msgstr "Xác thực"
 #. module: pb_bank_ocr
 #. odoo-javascript
 #: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:137
 msgid "Validated."
 msgstr "Đã xác thực."
 

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,6 +16,7 @@ msgstr ""
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:332
 msgid "%(staged)s staged · %(synced)s pulled · %(mapped)s mapped"
 msgstr "%(staged)s được dàn dựng · %(synced)s đã kéo · %(mapped)s được ánh xạ"
 
@@ -28,12 +29,14 @@ msgstr "Nguồn cấp dữ liệu thực thi %s cần có đường dẫn."
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:392
 msgid "%s expected fields"
 msgstr "Các trường dự kiến ​​%s"
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:440
 msgid "%s missing feeds added. Existing configuration was kept."
 msgstr "Đã thêm nguồn cấp dữ liệu bị thiếu %s. Cấu hình hiện tại được giữ nguyên."
 
@@ -52,6 +55,7 @@ msgstr "%s không được chứa thông tin xác thực."
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:338
 msgid "%s older rows are not tied to an exact feed"
 msgstr "Các hàng cũ hơn %s không được liên kết với nguồn cấp dữ liệu chính xác"
 
@@ -127,6 +131,7 @@ msgstr "Thêm ID khách hàng và bí mật"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:531
 msgid "Add a path to preview the URL"
 msgstr "Thêm đường dẫn để xem trước URL"
 
@@ -173,6 +178,7 @@ msgstr "Tất cả đường dẫn nguồn cấp dữ liệu tương đối đ�
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:570
 msgid "Allow pop-ups to connect Zoho."
 msgstr "Cho phép cửa sổ bật lên kết nối Zoho."
 
@@ -185,18 +191,21 @@ msgstr "Phân tích"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:41
 msgid "Attendance"
 msgstr "Chấm công"
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:35
 msgid "Attendance by employee/date"
 msgstr "Sự tham dự của nhân viên/ngày"
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:33
 msgid "Attendance summary"
 msgstr "Tóm tắt điểm danh"
 
@@ -243,6 +252,7 @@ msgstr "Quay lại trình kết nối"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:42
 msgid "Benefits"
 msgstr "Phúc lợi"
 
@@ -278,6 +288,7 @@ msgstr "Hủy bỏ"
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
 #: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:29
 msgid "Catalogue only"
 msgstr "Chỉ danh mục"
 
@@ -306,6 +317,7 @@ msgstr ""
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:430
 msgid "Checking the installed vendor catalogue…"
 msgstr "Đang kiểm tra danh mục nhà cung cấp đã cài đặt…"
 
@@ -349,12 +361,15 @@ msgstr "Loại khách hàng"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:630
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:635
 msgid "Configuration was not saved."
 msgstr "Cấu hình chưa được lưu."
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+#: code:addons/pb_import_advanced/static/src/js/sync_wizard.js:9
 msgid "Configure"
 msgstr "Cấu hình"
 
@@ -389,6 +404,7 @@ msgstr "Studio kết nối & nguồn cấp dữ liệu"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:628
 msgid "Connection and feeds saved."
 msgstr "Đã lưu kết nối và nguồn cấp dữ liệu."
 
@@ -409,12 +425,16 @@ msgstr "Đã kiểm tra kết nối"
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
 #: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
 #: model:ir.actions.client,name:pb_import_advanced.action_pb_import_connector_cockpit
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:248
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:678
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:721
 msgid "Connector"
 msgstr "Trình kết nối"
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:30
 msgid "Connector-defined operation"
 msgstr "Hoạt động do trình kết nối xác định"
 
@@ -433,6 +453,7 @@ msgstr "Hợp đồng"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:540
 msgid "Copied."
 msgstr "Đã sao chép."
 
@@ -505,12 +526,14 @@ msgstr "Thông tin xác thực"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:762
 msgid "Credentials saved."
 msgstr "Đã lưu thông tin xác thực."
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:43
 msgid "Custom / other"
 msgstr "Tùy chỉnh / khác"
 
@@ -529,6 +552,7 @@ msgstr "Dữ liệu để kéo"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:42
 msgid "Dependants"
 msgstr "Người phụ thuộc"
 
@@ -560,6 +584,8 @@ msgstr "Tên hiển thị"
 #: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
 #: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
 #: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/js/employee_wizard.js:9
+#: code:addons/pb_import_advanced/static/src/js/sync_wizard.js:9
 msgid "Done"
 msgstr "Hoàn tất"
 
@@ -584,12 +610,14 @@ msgstr "File nhân viên (.xlsx/.csv/.json)"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:31
 msgid "Employee master"
 msgstr "Bậc thầy nhân viên"
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:40
 msgid "Employee master data"
 msgstr "Dữ liệu chính của nhân viên"
 
@@ -651,6 +679,7 @@ msgstr "Danh mục nguồn cấp dữ liệu"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:441
 msgid "Feed catalogue is already complete. Nothing was overwritten."
 msgstr "Danh mục nguồn cấp dữ liệu đã hoàn tất. Không có gì bị ghi đè."
 
@@ -677,6 +706,7 @@ msgstr "Định nghĩa nguồn cấp dữ liệu"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:372
 msgid "Feed synced."
 msgstr "Nguồn cấp dữ liệu đã được đồng bộ hóa."
 
@@ -701,6 +731,7 @@ msgstr "Đang tìm nạp…"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:414
 msgid "Field list updated."
 msgstr "Danh sách trường được cập nhật."
 
@@ -749,12 +780,14 @@ msgstr "Phương thức HTTP"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:221
 msgid "Holds %s"
 msgstr "Giữ %s"
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:223
 msgid "Holds %s — not the selected period"
 msgstr "Giữ %s — không phải khoảng thời gian đã chọn"
 
@@ -829,6 +862,7 @@ msgstr ""
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:71
 msgid "Integrations"
 msgstr "Tích hợp"
 
@@ -853,6 +887,7 @@ msgstr "Đồng bộ hóa lần cuối"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:41
 msgid "Leave / time-off"
 msgstr "Nghỉ phép/nghỉ phép"
 
@@ -865,6 +900,7 @@ msgstr "Để trống để sử dụng lệnh gọi lại Payobook bên dưới
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:36
 msgid "Leave records"
 msgstr "Để lại hồ sơ"
 
@@ -941,6 +977,8 @@ msgstr "Nhập Excel nhiều trang"
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
 #: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:309
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:311
 msgid "Never synced"
 msgstr "Chưa bao giờ được đồng bộ hóa"
 
@@ -953,6 +991,7 @@ msgstr "Mới"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:520
 msgid "New feed"
 msgstr "Nguồn cấp dữ liệu mới"
 
@@ -999,6 +1038,7 @@ msgstr ""
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:416
 msgid "No field list was returned."
 msgstr "Không có danh sách trường nào được trả lại."
 
@@ -1035,6 +1075,7 @@ msgstr "phạm vi OAuth"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:585
 msgid "OAuth settings could not be saved."
 msgstr "Không thể lưu cài đặt OAuth."
 
@@ -1090,6 +1131,7 @@ msgstr "Tùy chọn"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:34
 msgid "Overtime requests"
 msgstr "Yêu cầu làm thêm giờ"
 
@@ -1183,6 +1225,8 @@ msgstr "Bảo tồn danh mục"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/js/employee_wizard.js:9
+#: code:addons/pb_import_advanced/static/src/js/sync_wizard.js:9
 msgid "Preview"
 msgstr "Xem trước"
 
@@ -1300,6 +1344,8 @@ msgstr "Kế thừa an toàn"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:32
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:40
 msgid "Salary / compensation"
 msgstr "Lương/thù lao"
 
@@ -1361,6 +1407,7 @@ msgstr "Đặt chính"
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
 #: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/js/employee_wizard.js:9
 msgid "Source"
 msgstr "Nguồn"
 
@@ -1397,18 +1444,21 @@ msgstr "Khoảng thời gian đồng bộ hóa phải nằm trong khoảng từ 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:315
 msgid "Synced %sd ago"
 msgstr "Đã đồng bộ hóa %sd trước đây"
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:314
 msgid "Synced %sh ago"
 msgstr "Đã đồng bộ hóa %sh trước đây"
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:313
 msgid "Synced <1h ago"
 msgstr "Đã đồng bộ hóa <1 giờ trước"
 
@@ -1452,6 +1502,7 @@ msgstr "Quy tắc mục tiêu"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:43
 msgid "Tax"
 msgstr "Thuế"
 
@@ -1464,6 +1515,8 @@ msgstr "An toàn mẫu"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:655
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:659
 msgid "Template was not restored."
 msgstr "Mẫu chưa được khôi phục."
 
@@ -1476,12 +1529,14 @@ msgstr "Kiểm tra kết nối"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:273
 msgid "That could not be opened."
 msgstr "Cái đó không thể mở được."
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:376
 msgid "That feed could not be synced."
 msgstr "Không thể đồng bộ hóa nguồn cấp dữ liệu đó."
 
@@ -1500,6 +1555,7 @@ msgstr "Nguồn cấp dữ liệu đó có giá trị cấu hình không đượ
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:421
 msgid "That field list could not be fetched."
 msgstr "Không thể tìm nạp danh sách trường đó."
 
@@ -1519,12 +1575,14 @@ msgstr ""
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:365
 msgid "The feed ran, but its records could not be staged."
 msgstr "Nguồn cấp dữ liệu đã chạy nhưng không thể sắp xếp các bản ghi của nó."
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:369
 msgid "The feed synced with some staging errors. Review the feed card."
 msgstr ""
 "Nguồn cấp dữ liệu được đồng bộ hóa với một số lỗi dàn dựng. Xem lại thẻ nguồn cấp dữ "
@@ -1533,6 +1591,7 @@ msgstr ""
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:445
 msgid "The installed feed catalogue could not be checked."
 msgstr "Không thể kiểm tra danh mục nguồn cấp dữ liệu đã cài đặt."
 
@@ -1559,12 +1618,14 @@ msgstr ""
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:766
 msgid "Those could not be saved."
 msgstr "Những điều đó không thể cứu được."
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:37
 msgid "Timesheets"
 msgstr "Bảng chấm công"
 
@@ -1657,6 +1718,7 @@ msgstr "Danh tính nhà cung cấp; sử dụng tên hiển thị cho từ ngữ
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:653
 msgid "Vendor template restored."
 msgstr "Mẫu nhà cung cấp được khôi phục."
 
@@ -1731,12 +1793,14 @@ msgstr "Khóa API Zoho"
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:613
 msgid "Zoho authorization did not complete."
 msgstr "Ủy quyền Zoho chưa hoàn tất."
 
 #. module: pb_import_advanced
 #. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:612
 msgid "Zoho is connected."
 msgstr "Zoho đã được kết nối."
 
@@ -1919,31 +1983,39 @@ msgstr ""
 "vào đó, hãy tạo một nguồn cấp dữ liệu mới để nguồn gốc hiện tại vẫn đúng."
 
 #. module: pb_import_advanced
+#. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:151
 msgid "Done."
 msgstr "Xong."
 
 #. module: pb_import_advanced
+#. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:154
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
 #. module: pb_import_advanced
+#. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/employee_wizard.js:70
+#: code:addons/pb_import_advanced/static/src/js/multisheet_wizard.js:55
+#: code:addons/pb_import_advanced/static/src/js/sync_wizard.js:50
 msgid "Step failed."
 msgstr "Bước không thành công."
 
 #. module: pb_import_advanced
+#. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/formula_wizard.js:86
 msgid "Import failed."
 msgstr "Nhập không thành công."
 
 #. module: pb_import_advanced
+#. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/multisheet_wizard.js:9
 msgid "Upload"
 msgstr "Tải lên"
 
 #. module: pb_import_advanced
+#. odoo-javascript
 #: code:addons/pb_import_advanced/static/src/js/multisheet_wizard.js:9
 msgid "Sheets"
 msgstr "Trang tính"

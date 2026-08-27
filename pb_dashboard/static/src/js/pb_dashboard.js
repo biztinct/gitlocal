@@ -164,6 +164,18 @@ export class PbDashboard extends Component {
         return _t("Good evening");
     }
 
+    companyEyebrow() {
+        return `${this.state.d.company} · ${_t("Payroll command centre")}`;
+    }
+
+    activeContractsLabel() {
+        return _t("%s active contracts", this.state.d.kpis.contracts);
+    }
+
+    rulesLabel() {
+        return _t("%s rules", this.state.d.formula.rules);
+    }
+
     // A tenant that has not started: nobody under contract, nothing computed,
     // nothing configured. Read during render, so OWL re-renders it when the
     // payload lands.

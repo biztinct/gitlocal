@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,18 +16,21 @@ msgstr ""
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:102
 msgid "All departments"
 msgstr "Tất cả phòng ban"
 
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:97
 msgid "All divisions"
 msgstr "Tất cả các bộ phận"
 
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:178
 msgid "Approved hours"
 msgstr "Số giờ đã duyệt"
 
@@ -50,6 +53,7 @@ msgstr ""
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:240
 msgid "Away today"
 msgstr "Hôm nay đi vắng"
 
@@ -62,6 +66,7 @@ msgstr "Bảng mạch được xây dựng trong"
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:181
 msgid "Bonus hours"
 msgstr "Giờ thưởng"
 
@@ -85,12 +90,14 @@ msgstr "Tên hiển thị"
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:162
 msgid "Employees paid"
 msgstr "Nhân viên được trả lương"
 
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:171
 msgid "Exceptions"
 msgstr "Ngoại lệ"
 
@@ -108,12 +115,14 @@ msgstr "ID"
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:231
 msgid "Joiners"
 msgstr "Thợ mộc"
 
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:231
 msgid "Leavers"
 msgstr "Người rời đi"
 
@@ -132,6 +141,7 @@ msgstr "So sánh chuyển động"
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:237
 msgid "Near the overtime ceiling"
 msgstr "Gần mức trần làm thêm giờ"
 
@@ -179,12 +189,14 @@ msgstr "Làm mới"
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:66
 msgid "Something went wrong."
 msgstr "Đã xảy ra lỗi."
 
 #. module: pb_workforce_insights
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:252
 msgid "The Analytics Explorer is not available."
 msgstr "Analytics Explorer không có sẵn."
 

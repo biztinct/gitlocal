@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -246,12 +246,14 @@ msgstr "Truy cập Bảng điều khiển"
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:420
 msgid "Access Request Required"
 msgstr "Truy cập Yêu cầu Bắt buộc"
 
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:458
 msgid "Access request sent successfully"
 msgstr "Truy cập yêu cầu sent thành công"
 
@@ -730,6 +732,7 @@ msgstr "Có thể chế độ xem bảng lương phân tích và báo cáo"
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:436
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -1533,6 +1536,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__state__error
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__zoho_connection_status__error
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__state__error
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:511
 msgid "Error"
 msgstr "Lỗi"
 
@@ -1692,6 +1696,7 @@ msgstr "Thất bại Bản ghi"
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:462
 msgid "Failed to send access request"
 msgstr "Thất bại để gửi truy cập yêu cầu"
 
@@ -2597,6 +2602,7 @@ msgstr "Chỉ CSV tệp là supported hiện tại"
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/control_panel_home_icon.js:0
+#: code:addons/pb_hr_payroll_base/static/src/js/control_panel_home_icon.js:80
 msgid "Open Dashboard"
 msgstr "Mở trang tổng quan"
 
@@ -3290,6 +3296,7 @@ msgstr "Gửi Notification"
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:428
 msgid "Send Request"
 msgstr "Gửi Yêu cầu"
 
@@ -4020,11 +4027,13 @@ msgid "📋 Setup Guide"
 msgstr "📋 Thiết lập Guide"
 
 #. module: pb_hr_payroll_base
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:459
 msgid "Your request for"
 msgstr "Yêu cầu của bạn cho"
 
 #. module: pb_hr_payroll_base
+#. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:465
 msgid "Error sending access request:"
 msgstr "Lỗi gửi yêu cầu truy cập:"

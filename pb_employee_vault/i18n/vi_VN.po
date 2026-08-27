@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:48+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -326,7 +326,9 @@ msgid "No document categories configured."
 msgstr "Không có danh mục tài liệu nào được định cấu hình."
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_employee_vault.selection__pb_employee_document__expiry_state__none
+#: code:addons/pb_employee_vault/static/src/js/employee_360.js:89
 msgid "No expiry"
 msgstr "Không hết hạn"
 
@@ -366,7 +368,9 @@ msgstr "Chỉ nhân sự mới có thể xác minh tài liệu."
 
 #. module: pb_employee_vault
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_employee_vault/models/pb_people_360.py:0
+#: code:addons/pb_employee_vault/static/src/js/employee_360.js:126
 msgid "Only JPG, PNG or PDF documents are accepted."
 msgstr "Chỉ các tài liệu JPG, PNG hoặc PDF được chấp nhận."
 
@@ -529,46 +533,55 @@ msgid "of"
 msgstr "của"
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:92
 msgid "Expired %(days)s days ago"
 msgstr "%(days)s đã hết hạn ngày trước"
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:93
 msgid "Expires today"
 msgstr "Hết hạn hôm nay"
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:94
 msgid "Expires in %(days)s days"
 msgstr "Hết hạn sau %(days)s ngày"
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:135
 msgid "Document uploaded."
 msgstr "Tài liệu đã được tải lên."
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:137
 msgid "Upload failed."
 msgstr "Tải lên thất bại."
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:156
 msgid "Could not update verification."
 msgstr "Không thể cập nhật xác minh."
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:163
 msgid "Document removed."
 msgstr "Đã xóa tài liệu."
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:165
 msgid "Could not delete this document."
 msgstr "Không thể xóa tài liệu này."
 
 #. module: pb_employee_vault
+#. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:177
 msgid "Could not load more history."
 msgstr "Không thể tải thêm lịch sử."

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -66,6 +66,7 @@ msgstr "ACB"
 #. module: pb_pay_delivery
 #. odoo-javascript
 #: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:199
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
@@ -104,6 +105,7 @@ msgstr "Bố cục tệp chuyển khoản ngân hàng"
 #. module: pb_pay_delivery
 #. odoo-javascript
 #: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:115
 msgid "Bank file generated."
 msgstr "Tệp ngân hàng được tạo."
 
@@ -226,6 +228,7 @@ msgstr "Giao hàng"
 #. module: pb_pay_delivery
 #. odoo-javascript
 #: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:143
 msgid "Delivery complete — %s sent, %s failed, %s skipped."
 msgstr "Đã gửi xong — %s đã gửi, %s không thành công, %s bị bỏ qua."
 
@@ -326,6 +329,7 @@ msgstr "Hàng bị loại trừ"
 #. odoo-javascript
 #: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 #: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_payslip_delivery__state__failed
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:182
 msgid "Failed"
 msgstr "Thất bại"
 
@@ -513,6 +517,7 @@ msgstr ""
 #. module: pb_pay_delivery
 #. odoo-javascript
 #: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:183
 msgid "No email"
 msgstr "Không có email"
 
@@ -732,6 +737,7 @@ msgstr "Đang gửi"
 #. odoo-javascript
 #: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 #: model:ir.model.fields.selection,name:pb_pay_delivery.selection__pb_payslip_delivery__state__sent
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:182
 msgid "Sent"
 msgstr "Đã gửi"
 

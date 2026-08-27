@@ -12,7 +12,7 @@
                          on screen naming where you are (W17). The greeting, the
                          run summary and both hero buttons stay — an embedded
                          mode that removed a figure or a door would be a fork. -->
-                    <div class="pbd-eyebrow" t-if="!props.embedded" t-esc="state.d.company + ' · Payroll command centre'"/>
+                    <div class="pbd-eyebrow" t-if="!props.embedded" t-esc="companyEyebrow()"/>
                     <h1><t t-esc="greeting()"/>, <t t-esc="state.d.user"/></h1>
                     <div class="pbd-sub" t-if="isEmpty">No payroll data yet — let's get you set up</div>
                     <div class="pbd-sub" t-else="">
@@ -66,10 +66,10 @@
 
             <!-- KPI strip -->
             <div class="pbd-kpis" data-coach="dash-kpis">
-                <div class="pbd-kpi k-indigo"><div class="kl">Headcount <t t-out="icon('users',15)"/></div><div class="kv" t-esc="state.d.kpis.headcount"/><div class="ks" t-esc="state.d.kpis.contracts + ' active contracts'"/></div>
+                <div class="pbd-kpi k-indigo"><div class="kl">Headcount <t t-out="icon('users',15)"/></div><div class="kv" t-esc="state.d.kpis.headcount"/><div class="ks" t-esc="activeContractsLabel()"/></div>
                 <div class="pbd-kpi k-green"><div class="kl">Monthly payroll <t t-out="icon('wallet',15)"/></div><div class="kv" t-esc="money(state.d.kpis.payroll)"/><div class="ks">personnel cost</div></div>
                 <div class="pbd-kpi k-amber"><div class="kl">Pending approval <t t-out="icon('clock',15)"/></div><div class="kv" t-esc="state.d.kpis.pending"/><div class="ks">awaiting sign-off</div></div>
-                <div class="pbd-kpi k-cyan"><div class="kl">Active configs <t t-out="icon('calculator',15)"/></div><div class="kv" t-esc="state.d.formula.active"/><div class="ks" t-esc="state.d.formula.rules + ' rules'"/></div>
+                <div class="pbd-kpi k-cyan"><div class="kl">Active configs <t t-out="icon('calculator',15)"/></div><div class="kv" t-esc="state.d.formula.active"/><div class="ks" t-esc="rulesLabel()"/></div>
             </div>
 
             <!-- Cockpit cards -->

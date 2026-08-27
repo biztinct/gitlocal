@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,12 +16,14 @@ msgstr ""
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:336
 msgid "%s KB"
 msgstr "%s KB"
 
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:210
 msgid "%s employees picked — the filing covers exactly these."
 msgstr "Nhân viên %s đã chọn - hồ sơ bao gồm chính xác những điều này."
 
@@ -38,6 +40,7 @@ msgstr ""
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:326
 msgid "%s produced %s file(s) — download them below."
 msgstr "%s đã tạo (các) tệp %s - tải chúng xuống bên dưới."
 
@@ -56,6 +59,7 @@ msgstr "Thay đổi"
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:52
 msgid "Choose the filing"
 msgstr "Chọn hồ sơ"
 
@@ -95,6 +99,7 @@ msgstr "Hồ sơ cho quốc gia này không có sẵn trên cơ sở dữ liệu
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
 #: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
 #: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:54
 msgid "Generate"
 msgstr "Tạo"
 
@@ -124,6 +129,7 @@ msgstr ""
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:312
 msgid "Generating the filing…"
 msgstr "Đang tạo hồ sơ…"
 
@@ -132,6 +138,7 @@ msgstr "Đang tạo hồ sơ…"
 #: code:addons/pb_govt_reports/static/src/js/govt_reports.js:0
 #: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
 #: model:ir.actions.client,name:pb_govt_reports.action_pb_govt_reports
+#: code:addons/pb_govt_reports/static/src/js/govt_reports.js:98
 msgid "Government Reports"
 msgstr "Báo cáo chính phủ"
 
@@ -162,6 +169,7 @@ msgstr ""
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
 #: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
 #: code:addons/pb_govt_reports/static/src/xml/govt_reports.xml:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:148
 msgid "Loading filings…"
 msgstr "Đang tải hồ sơ…"
 
@@ -189,6 +197,7 @@ msgstr ""
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:165
 msgid "Preparing the filing…"
 msgstr "Đang chuẩn bị hồ sơ…"
 
@@ -201,6 +210,7 @@ msgstr "Xóa"
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:294
 msgid "Saving…"
 msgstr "Đang lưu…"
 
@@ -208,6 +218,7 @@ msgstr "Đang lưu…"
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
 #: code:addons/pb_govt_reports/static/src/xml/filing_flow.xml:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:53
 msgid "Scope"
 msgstr "Phạm vi"
 
@@ -244,6 +255,7 @@ msgstr ""
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:327
 msgid "This filing"
 msgstr "Hồ sơ này"
 
@@ -268,6 +280,7 @@ msgstr "Hồ sơ này đã hết hạn. Bắt đầu lại."
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:222
 msgid "This filing ran and produced no file."
 msgstr "Tệp này đã chạy và không tạo ra tệp nào."
 
@@ -280,6 +293,7 @@ msgstr "Hành động nộp đơn này không phải là một bước tạo ra.
 #. module: pb_govt_reports
 #. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:0
+#: code:addons/pb_govt_reports/static/src/js/filing_flow.js:136
 msgid "This step could not be completed."
 msgstr "Bước này không thể hoàn thành."
 
@@ -312,16 +326,19 @@ msgid "parameters"
 msgstr "thông số"
 
 #. module: pb_govt_reports
+#. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:203
 msgid "%s further parameters belong to the other filings of this"
 msgstr "Các tham số khác của %s thuộc về các hồ sơ khác của điều này"
 
 #. module: pb_govt_reports
+#. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:211
 msgid "Leave empty to cover everyone in range, narrowed by the"
 msgstr "Để trống để bao quát mọi người trong phạm vi, bị thu hẹp bởi"
 
 #. module: pb_govt_reports
+#. odoo-javascript
 #: code:addons/pb_govt_reports/static/src/js/filing_flow.js:219
 msgid "Generated %s file(s). Nothing has been sent anywhere —"
 msgstr "Đã tạo (các) tệp %s. Không có gì được gửi đi bất cứ đâu -"

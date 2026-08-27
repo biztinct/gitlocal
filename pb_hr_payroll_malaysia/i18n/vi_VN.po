@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-05 00:00+0000\n"
-"PO-Revision-Date: 2026-08-27 20:49+1000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -74,11 +74,13 @@ msgid "Malaysia Insurance Components"
 msgstr "Linh kiện bảo hiểm Malaysia"
 
 #. module: pb_hr_payroll_malaysia
+#. odoo-python
 #: code:addons/pb_hr_payroll_malaysia/models/hr_payslip_malaysia.py:50
 msgid "Malaysia tax computed successfully"
 msgstr "Thuế Malaysia được tính thành công"
 
 #. module: pb_hr_payroll_malaysia
+#. odoo-python
 #: code:addons/pb_hr_payroll_malaysia/models/hr_payslip_malaysia.py:60
 msgid "Error computing Malaysia tax: %s"
 msgstr "Lỗi tính thuế Malaysia: %s"
