@@ -39,6 +39,10 @@ from . import test_rule_composer
 # table (`test_column_role_classifier.py`) is deliberately NOT imported here: it runs
 # under a bare python3 and needs no database.
 from . import test_column_roles
+# VALUEKIND — same split as the roles above: the ladder itself is a pure-Python
+# table (`test_value_kind_classifier.py`, deliberately NOT imported here), and
+# what the ladder's answer touches is asserted with a database.
+from . import test_value_kinds
 # COLROLES P3 — bank destinations, the mapping's two shapes, the input exclusion.
 # The pure sanitizer table (`test_bank_account_util.py`) is likewise NOT imported.
 from . import test_bank_destinations

@@ -8,6 +8,8 @@ import logging
 
 from ..formula_engine import excel_semantics
 from . import component_code
+from . import formula_operand_context
+from . import value_kind_classifier
 
 _logger = logging.getLogger(__name__)
 
@@ -21,6 +23,9 @@ VERSIONED_FIELDS = {
     # structure is understood to DO, so it earns a version row like any other
     # structural edit.
     'column_role',
+    # VALUEKIND — changing a component from money to text changes how every
+    # future run STORES it, not just how a screen shows it. Same class of edit.
+    'value_kind',
     # B4: statutory constant values are versioned too, so applying a
     # legislation pack (or any rate/cap edit) leaves an F7 audit trail.
     'constant_value',
@@ -630,6 +635,59 @@ class HrFormulaRule(models.Model):
         help="This contract component holds text (a grade, a reference, a note) "
              "rather than an amount, so it is stored and compared as text."
     )
+
+    # ==========================================
+    # VALUE KIND (VALUEKIND)
+    # ==========================================
+    # `column_role` says what a column is FOR; this says what its value IS. They
+    # are different questions and they disagree usefully: an Employee Code is an
+    # identity column holding an identifier, an Insurance Book Number is a
+    # payroll column holding one too.
+    #
+    # Load-bearing, NOT cosmetic. Everything that used to reach `float()` here
+    # reached it by GUESSING, and the guess's failure mode was destruction — an
+    # unparseable value became the wire's `default_value`, i.e. 0.0. ABM's
+    # `LOCATION` is read by `IF(F5="La Nga", …)` and arrived as `0.0`, so the
+    # comparison was false for every employee on every run, in silence.
+    value_kind = fields.Selection([
+        ('money', 'Money'),
+        ('quantity', 'Quantity'),
+        ('rate', 'Rate'),
+        ('identifier', 'Identifier'),
+        ('text', 'Text'),
+        ('date', 'Date'),
+        ('boolean', 'Yes / No'),
+    ], string='Value Kind', default='money', required=True,
+        help="What this component's value IS. Decides whether it is stored as a "
+             "number or kept as it arrived, and how it is displayed.")
+
+    value_kind_source = fields.Selection([
+        ('auto', 'Auto-classified'),
+        ('user', 'Set by a person'),
+    ], string='Value Kind Source', default='auto', required=True,
+        help="Whether the value kind was worked out automatically or chosen by "
+             "a person. A person's choice is never overwritten.")
+
+    value_kind_reason = fields.Char(
+        string='Value Kind Reason',
+        help="Why this value kind was chosen.")
+
+    # How the scheme's formulas USE this component: `REF:context` pairs, e.g.
+    # `F:strcmp`. Deliberately SEPARATE from `formula_dependencies`, which feeds
+    # the engine's topological order and whose output must not move (C18.115) —
+    # and which answers a different question anyway: `IF(F5="La Nga", …)` and
+    # `X5/AB5` both produce a bare reference, and only the operator tells them
+    # apart.
+    formula_operand_roles = fields.Char(
+        string='Operand Roles',
+        compute='_compute_formula_operand_roles', store=True,
+        help="How this component's own formula uses each column it names.")
+
+    @api.depends('excel_formula')
+    def _compute_formula_operand_roles(self):
+        for record in self:
+            record.formula_operand_roles = formula_operand_context.serialize(
+                formula_operand_context.operand_contexts(record.excel_formula or ''))
 
     is_visible_in_grid = fields.Boolean(
         string='Visible in Grid',
@@ -1565,6 +1623,13 @@ class HrFormulaRule(models.Model):
         # already marked 'user'.
         if vals and 'column_role' in vals and 'column_role_source' not in vals:
             vals = dict(vals, column_role_source='user')
+
+        # VALUEKIND — the same contract, for the same reason. Every automatic
+        # writer (the classifier RPC, the migration) passes `value_kind_source`
+        # itself; anything else setting `value_kind` is a person, and a person's
+        # answer must survive the next re-classification pass.
+        if vals and 'value_kind' in vals and 'value_kind_source' not in vals:
+            vals = dict(vals, value_kind_source='user')
 
         tracked = VERSIONED_FIELDS & set(vals or {})
         if (tracked

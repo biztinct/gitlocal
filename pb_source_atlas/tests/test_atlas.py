@@ -371,6 +371,41 @@ class TestSourceAtlas(TransactionCase):
     # ==================================================================
     # 8 — below the officer tier, the door is closed
     # ==================================================================
+    # ==================================================================
+    # 9 — VALUEKIND: a cell knows what its value IS, not just where it came from
+    # ==================================================================
+    def test_09_every_cell_carries_its_value_kind(self):
+        """`cell['kind']` says how the LANE was established; `cell['t']` says
+        what the VALUE is. The grid formats on the second one — without it
+        `num()` groups any JS number and an employee code of 11450 renders as
+        "11,450", a name nobody has.
+        """
+        grid = self.Atlas.get_grid(self.payrun.id, offset=0, limit=2)
+        allowed = {'money', 'quantity', 'rate', 'identifier', 'text', 'date',
+                   'boolean'}
+        seen = set()
+        for row in grid['rows']:
+            for code, cell in row['cells'].items():
+                self.assertIn('t', cell, "cell %s carries no value kind" % code)
+                seen.add(cell['t'])
+        self.assertTrue(seen <= allowed, "unknown value kind(s): %s" % (seen,))
+
+    def test_09b_an_unclassified_scheme_still_renders_as_money(self):
+        """Neutrality — `value_kind` defaults to money, so a scheme nobody has
+        classified reaches the client exactly as it did before this field."""
+        components = self.Atlas._atlas_components(
+            self.payrun.slip_ids.mapped('formula_config_id').ids)
+        self.assertTrue(components)
+        for code, meta in components.items():
+            self.assertTrue(meta.get('kind'), "%s has no value kind" % code)
+
+    def test_09c_the_journey_drawer_carries_the_kind_too(self):
+        slip = self.payrun.slip_ids[0]
+        journey = self.Atlas.get_journey(self.payrun.id, slip.id, 'BASESAL')
+        self.assertTrue(journey.get('kind'))
+        for hop in journey.get('hops') or []:
+            self.assertTrue(hop.get('kind'), "a hop with no value kind")
+
     def test_08_refuses_below_officer(self):
         # The outsider is BORROWED, never created. `payobook_template` has no
         # active member of base.group_system, so `res.users.create` there dies

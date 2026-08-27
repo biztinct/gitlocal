@@ -211,7 +211,8 @@ class PbSourceAtlasDownload(models.AbstractModel):
                 if not cell:
                     sheet.write_blank(index, col, None, fmt['text'])
                     continue
-                self._atlas_write_value(sheet, index, col, cell[0], fmt)
+                self._atlas_write_value(sheet, index, col, cell[0], fmt,
+                                        kind=components[key].get('kind'))
 
     @api.model
     def _atlas_sheet_sources(self, book, fmt, used, rows, by_employee, wanted,
@@ -367,7 +368,15 @@ class PbSourceAtlasDownload(models.AbstractModel):
         return batches
 
     @staticmethod
-    def _atlas_write_value(sheet, row, col, value, fmt):
+    def _atlas_write_value(sheet, row, col, value, fmt, kind=None):
+        # VALUEKIND — an identifier goes in as a STRING even when it is all
+        # digits, because `write_number` is how a bank account loses its leading
+        # zeros the moment somebody opens the workbook. Same reason the grid
+        # renders it verbatim.
+        if kind in ('identifier', 'text', 'date', 'boolean') and \
+                value is not None and value is not False:
+            sheet.write_string(row, col, str(value)[:2000], fmt['text'])
+            return
         if value is None or value is False:
             sheet.write_blank(row, col, None, fmt['text'])
         elif isinstance(value, bool):

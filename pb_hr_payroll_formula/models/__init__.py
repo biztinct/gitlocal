@@ -4,6 +4,13 @@
 # is loadable as `odoo.addons.pb_hr_payroll_formula.models.column_role_classifier`
 # from wizards, the import batch, the migration and the studio RPC alike.
 from . import column_role_classifier
+# VALUEKIND — two more plain-Python modules, same reason. `formula_operand_context`
+# answers "which operator does a formula apply to this reference" (the signal that
+# tells `X5/AB5` from `IF(F5="La Nga", …)`); `value_kind_classifier` turns that,
+# plus the column role and the observed values, into "what IS this value".
+# Order matters only in that the classifier imports the context module.
+from . import formula_operand_context
+from . import value_kind_classifier
 # COLROLES P3 — same shape as the classifier: plain Python, no model, so the batch
 # and the pure test table share one definition of "what is this account number".
 from . import bank_account_util

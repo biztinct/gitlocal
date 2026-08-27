@@ -242,6 +242,13 @@ class PbSourceAtlas(models.AbstractModel):
                     'default_value': rule.default_value or 0.0,
                     'constant_value': rule.constant_value or 0.0,
                     'formula': rule.excel_formula or '',
+                    # VALUEKIND — what the value IS, so the grid can show an
+                    # employee code as `11450` rather than `11,450` and a
+                    # joining date in the reader's own date format. `money`
+                    # here is the field's own default, so a scheme that has
+                    # never been classified renders exactly as it did before.
+                    'kind': getattr(rule, 'value_kind', '') or 'money',
+                    'kind_reason': getattr(rule, 'value_kind_reason', '') or '',
                 }
         return meta
 
@@ -538,6 +545,12 @@ class PbSourceAtlas(models.AbstractModel):
                     'k': key or '',
                     'via': via or '',
                     'kind': kind,
+                    # `kind` above is how the LANE was established (recorded vs
+                    # declared) and predates this field — `t` is what the VALUE
+                    # is. Two different questions that both wanted the word
+                    # "kind"; the short name keeps the payload small, since this
+                    # rides on every cell of a 40 x 95 window.
+                    't': component.get('kind') or 'money',
                 }
             rows.append({
                 'slip_id': slip.id,
@@ -597,6 +610,8 @@ class PbSourceAtlas(models.AbstractModel):
             'number': self._atlas_number(raw_value),
             'money': bool(component and component['money']),
             'quantity': bool(component and component['quantity']),
+            'kind': (component or {}).get('kind') or 'money',
+            'kind_reason': (component or {}).get('kind_reason') or '',
             'net_role': component['net_role'] if component else '',
             'net_role_reason': component['net_role_reason'] if component else '',
             'band': component['band'] if component else '',
@@ -955,6 +970,7 @@ class PbSourceAtlas(models.AbstractModel):
                 'number': self._atlas_number(value),
                 'is_net': target_id == net_rule.id,
                 'money': bool(meta.get('money')),
+                'kind': meta.get('kind') or 'money',
             })
         if len(hops) >= _HOP_CAP:
             journey['warnings'].append(_(
