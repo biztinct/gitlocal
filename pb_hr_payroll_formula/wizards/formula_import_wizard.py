@@ -299,6 +299,11 @@ class FormulaImportWizard(models.TransientModel):
             'sticky': False,
         }
         next_action = self.config_id.studio_people_mapping_action(created_rules)
+        # NETROLE P2 — the last thing an import does is ask what each component
+        # turned out to BE. The review carries the people-mapping chain through
+        # and dispatches it on close, so nothing that used to happen stops.
+        next_action = self.config_id.category_review_action(
+            next_action=next_action) or next_action
         if next_action:
             params['next'] = next_action
         return {

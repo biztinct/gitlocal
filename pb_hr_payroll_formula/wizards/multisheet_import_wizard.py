@@ -3092,6 +3092,11 @@ class MultiSheetImportWizard(models.TransientModel):
             next_action = (self.config_id.studio_people_mapping_action(touched)
                            or self.config_id.get_formview_action())
             next_action['target'] = 'current'
+            # NETROLE P2 — same finish line, same question: what did these
+            # columns turn out to be? The review chains whatever was going to
+            # happen next and dispatches it on close.
+            next_action = self.config_id.category_review_action(
+                next_action=next_action) or next_action
 
             return {
                 'type': 'ir.actions.client',

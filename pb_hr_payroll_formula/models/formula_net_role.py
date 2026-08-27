@@ -38,6 +38,7 @@ rewrite a person's category choices behind their back.
 
 import logging
 import re
+import unicodedata
 
 from odoo import _, api, fields, models
 
@@ -366,6 +367,182 @@ def _collect_function(node, sign, derived, confidence, out):
 
 
 # ---------------------------------------------------------------------------
+# NETROLE P2 — what a component is MEASURED IN
+#
+# The sign walk above is right about `ACTUWORKHOUR`: it sits in the numerator of
+# `=ROUND(U5/AB5*AC5,0)`, which is added into gross, which is added into net pay.
+# It genuinely is on a positive path. What it is NOT is money — it is a count of
+# hours, and "Allowance" is the wrong shelf for a count. Every one of ABM's ten
+# hour columns is a `detail` (each is folded into the amount it drives), so no
+# total moves either way; the shelf is the whole of the problem, and the fix
+# therefore belongs where the shelf is chosen — the SUGGESTION — and not in the
+# walk, which has nothing to be sorry about.
+#
+# Two signals, in this order:
+#
+# 1. The label says so. "Standard Working Hour", "OT 1.5 Hours", "Number of
+#    Dependents". Word-boundary matching on an accent-folded label, and a MONEY
+#    word anywhere in the label vetoes the whole thing — "Overtime Hours Amount"
+#    is money that is *derived from* hours.
+# 2. The arithmetic says so. `$U5/$AB5*BC5*210%` reads "the hourly rate, times
+#    BC5, times 210%": once `AB5` is known to be hours, whatever MULTIPLIES the
+#    rate built by dividing BY it counts the same units. That is how the three
+#    night-shift columns — named "OT Night shift week day", with no unit word
+#    anywhere — are recognised. Position is load-bearing: factors BEFORE the
+#    divisor are the money being spread (`U5` is the base salary, and calling it
+#    a count would be a catastrophe), factors AFTER it are the count.
+# ---------------------------------------------------------------------------
+
+#: Unit words. Matched with word boundaries on the folded label, so "Holiday"
+#: is not a "day" and "Monday" is not either.
+_QUANTITY_WORDS = frozenset((
+    'hour', 'hours', 'hr', 'hrs', 'day', 'days', 'shifts', 'count', 'counts',
+    'qty', 'quantity', 'quantities', 'headcount', 'times',
+    # Vietnamese, accent-folded: giờ / ngày
+    'gio', 'ngay',
+))
+
+#: Phrases that mean "a number of things" whatever follows them.
+_QUANTITY_PHRASES = (
+    'number of', 'no of', 'nos of', 'so luong', 'so ngay', 'so gio', 'so cong',
+    'ngay cong', 'gio cong',
+)
+
+#: A money word anywhere in the label vetoes the unit words. A component that
+#: says "Amount" is the money the hours produced, not the hours. Kept to words
+#: that can only mean money — "total" is NOT one of them, because "Total Working
+#: Hours" is a count and vetoing it would be the very bug this fixes.
+_MONEY_WORDS = frozenset((
+    'amount', 'amt', 'salary', 'wage', 'wages', 'pay', 'payment', 'allowance',
+    'allowances', 'bonus', 'income', 'cost', 'fee', 'fees', 'tax', 'insurance',
+    'ins', 'deduction', 'contribution', 'net', 'gross', 'subsidy', 'refund',
+    'reimbursement', 'value',
+    # Vietnamese, accent-folded: tiền / lương / thưởng / thuế / phí
+    'tien', 'luong', 'thuong', 'thue', 'phi',
+))
+
+#: Vietnamese money terms that are two words ("phụ cấp", "trợ cấp").
+_MONEY_PHRASES = ('phu cap', 'tro cap', 'muc luong', 'tien luong')
+
+#: Codes are squashed, so word boundaries are useless on them. Only markers
+#: strong enough to survive that are consulted (`STANWORKHOUR`, `OT15HOURS`).
+_QUANTITY_CODE_MARKERS = ('HOUR', 'HRS')
+
+_NON_WORD_RE = re.compile(r'[^0-9a-z]+')
+
+
+def _fold_label(text):
+    """Lower-case, accent-stripped, punctuation-flattened. `đ` does not
+    decompose under NFD, so it is mapped by hand (same fix as the column-role
+    classifier's `strip_accents`)."""
+    if not text:
+        return ''
+    text = str(text).replace('đ', 'd').replace('Đ', 'd')
+    decomposed = unicodedata.normalize('NFD', text)
+    stripped = ''.join(ch for ch in decomposed
+                       if unicodedata.category(ch) != 'Mn')
+    return _NON_WORD_RE.sub(' ', stripped.lower()).strip()
+
+
+def looks_like_a_quantity(name, code=''):
+    """True when this component's LABEL says it counts something.
+
+    Deliberately conservative: one money word anywhere and the answer is no.
+    A wrongly-flagged count is a suggestion somebody unticks; a wrongly-flagged
+    payment would move real money off the earnings shelf.
+    """
+    folded = _fold_label(name)
+    words = set(folded.split())
+    if words & _MONEY_WORDS or any(p in folded for p in _MONEY_PHRASES):
+        return False
+    if words & _QUANTITY_WORDS:
+        return True
+    if any(phrase in folded for phrase in _QUANTITY_PHRASES):
+        return True
+    upper = (code or '').upper()
+    return any(marker in upper for marker in _QUANTITY_CODE_MARKERS)
+
+
+def _single_ref_token(node):
+    """The token of a node that is exactly one reference, else None."""
+    return node[1] if node and node[0] == 'ref' else None
+
+
+def collect_rate_multiplicands(node, out=None):
+    """``[(divisor_tokens, multiplicand_tokens)]`` for every product in an AST.
+
+    One entry per `mul` node: the tokens that appear UNDER the division bar, and
+    the single-reference tokens that multiply the product AFTER the first
+    division. `A/B*C*D` yields `(['B'], ['C', 'D'])`; `A*B/C` yields
+    `(['C'], [])`, because nothing multiplies the quotient.
+    """
+    if out is None:
+        out = []
+    if not node:
+        return out
+    kind = node[0]
+    if kind == 'mul':
+        divisors, later = [], []
+        seen_divisor = False
+        for is_div, sub in node[1]:
+            token = _single_ref_token(sub)
+            if is_div:
+                seen_divisor = True
+                if token:
+                    divisors.append(token)
+            elif seen_divisor and token:
+                later.append(token)
+            collect_rate_multiplicands(sub, out)
+        if divisors:
+            out.append((divisors, later))
+        return out
+    if kind == 'add':
+        for _sign, sub in node[1]:
+            collect_rate_multiplicands(sub, out)
+    elif kind in ('neg', 'opaque'):
+        collect_rate_multiplicands(node[1], out)
+    elif kind == 'cmp':
+        collect_rate_multiplicands(node[1], out)
+        collect_rate_multiplicands(node[2], out)
+    elif kind == 'func':
+        for arg in node[2]:
+            collect_rate_multiplicands(arg, out)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# NETROLE P2 — the band the user's own colour coding wrote above the column
+# ---------------------------------------------------------------------------
+#: (kind, markers) consulted IN ORDER — "Employer deductions" is an employer
+#: band, and a band saying both "allowance" and "deduction" is a deduction band.
+_BAND_KINDS = (
+    ('employer_cost', ('employer', 'company cost', 'cost to company',
+                       'cong ty dong', 'chi phi cong ty', 'nguoi su dung lao dong')),
+    ('deduction', ('deduction', 'withhold', 'khau tru', 'giam tru', 'cac khoan tru')),
+    ('earning', ('earning', 'income', 'allowance', 'bonus', 'salary', 'wage',
+                 'gross', 'payment', 'thu nhap', 'phu cap', 'tro cap', 'luong',
+                 'thuong', 'cac khoan cong')),
+    ('info', ('information', 'info', 'reference', 'detail', 'profile',
+              'thong tin', 'tham chieu')),
+)
+
+
+def band_kind(component_type):
+    """What the merged band above the column claims this component is, or None.
+
+    This is the USER's own coding — the colour/heading they grouped their
+    spreadsheet with. It is never the answer; it is the other opinion.
+    """
+    folded = _fold_label(component_type)
+    if not folded:
+        return None
+    for kind, markers in _BAND_KINDS:
+        if any(marker in folded for marker in markers):
+            return kind
+    return None
+
+
+# ---------------------------------------------------------------------------
 # The classifier
 # ---------------------------------------------------------------------------
 
@@ -379,6 +556,8 @@ class NetRoleClassification:
         self.details = {}
         self.reasons = {}
         self.confidences = {}
+        #: NETROLE P2 — rule ids that count something rather than pay it.
+        self.quantities = set()
 
 
 class HrFormulaRuleNetRole(models.Model):
@@ -473,17 +652,41 @@ class HrFormulaConfigNetRole(models.Model):
                 suggested = config._net_role_category_code(
                     rule, role, classification, aggregates)
                 current = rule.category_id.code or ''
+                quantity = role != 'net' and rule.id in classification.quantities
+                reason = classification.reasons.get(rule.id) or ''
+                if quantity:
+                    reason = _(
+                        "Counted in hours or days, not money — so it belongs "
+                        "with the information on a payslip rather than with "
+                        "pay. %(reason)s", reason=reason)
+                band = rule.component_type or ''
+                kind = band_kind(band)
+                conflict = config._net_role_band_conflict(kind, role, quantity)
                 suggestions.append({
                     'rule_id': rule.id,
                     'code': rule.code or '',
                     'name': rule.name or '',
                     'current_category': current,
+                    'current_category_name': rule.category_id.name or '',
                     'suggested_category_code': suggested,
+                    'suggested_category_name': config._net_role_category_name(suggested),
                     'role': role,
+                    'role_label': config._net_role_word(role),
                     'detail': classification.details.get(rule.id, False),
-                    'reason': classification.reasons.get(rule.id) or '',
+                    'reason': reason,
                     'confidence': classification.confidences.get(rule.id) or REVIEW,
                     'agrees': bool(current) and current == suggested,
+                    # NETROLE P2 — everything the review popup needs to hold two
+                    # opinions at once: ours, and the one the user's own
+                    # spreadsheet band already stated.
+                    'changes': bool(suggested) and current != suggested,
+                    'quantity': quantity,
+                    'band': band,
+                    'band_kind': kind or '',
+                    'band_conflict': conflict,
+                    'band_conflict_text': (
+                        config._net_role_band_conflict_text(band, role, quantity)
+                        if conflict else ''),
                 })
         return suggestions
 
@@ -659,6 +862,7 @@ class HrFormulaConfigNetRole(models.Model):
         all_signs = self._net_role_all_signs(net_rule.id, incoming)
 
         classification = NetRoleClassification(rules, net_rule)
+        classification.quantities = self._net_role_quantity_ids(rules)
         for rule in rules:
             if rule.id == net_rule.id:
                 classification.roles[rule.id] = 'net'
@@ -990,9 +1194,112 @@ class HrFormulaConfigNetRole(models.Model):
                 aggregates.add(rule.id)
         return aggregates
 
+    # ------------------------------------------------------------------
+    # NETROLE P2 — counts, bands, and the words for both
+    # ------------------------------------------------------------------
+    #: The propagation below is a fixpoint over one scheme's products; a handful
+    #: of rounds is generous (ABM's real scheme settles in two).
+    _NET_ROLE_QUANTITY_ROUNDS = 12
+
+    def _net_role_quantity_ids(self, rules):
+        """Rule ids that COUNT something — hours, days, headcount — not money.
+
+        Seeded from the labels, then grown through the arithmetic: whatever
+        multiplies a rate that was built by dividing BY a count is counted in
+        the same units. See the module header for why position matters.
+        """
+        self.ensure_one()
+        by_code, by_letter, _by_index = self._net_role_resolvers(rules)
+        quantities = {rule.id for rule in rules
+                      if looks_like_a_quantity(rule.name, rule.code)}
+
+        def resolve(tokens):
+            found = set()
+            for token in tokens:
+                rule = self._net_role_resolve_token(token, by_code, by_letter)
+                if rule:
+                    found.add(rule.id)
+            return found
+
+        products = []
+        for rule in rules:
+            if rule.column_type != 'formula' or not rule.excel_formula:
+                continue
+            ast, _complete = parse_excel_expression(rule.excel_formula)
+            for divisors, later in collect_rate_multiplicands(ast):
+                divisor_ids = resolve(divisors) - {rule.id}
+                later_ids = resolve(later) - {rule.id}
+                if divisor_ids and later_ids:
+                    products.append((divisor_ids, later_ids))
+
+        for _round in range(self._NET_ROLE_QUANTITY_ROUNDS):
+            changed = False
+            for divisor_ids, later_ids in products:
+                if divisor_ids & quantities and not later_ids <= quantities:
+                    quantities |= later_ids
+                    changed = True
+            if not changed:
+                break
+        return quantities
+
+    @api.model
+    def _net_role_word(self, role):
+        """One word for a role, for a "band says X, formula says Y" sentence."""
+        return {
+            'earning': _("Earning"),
+            'deduction': _("Deduction"),
+            'net': _("Net pay"),
+            'employer_cost': _("Employer cost"),
+            'info': _("Information"),
+            'mixed': _("Both at once"),
+        }.get(role or '', _("Information"))
+
+    def _net_role_band_conflict(self, kind, role, quantity=False):
+        """Does the user's own band contradict what the formulas say?
+
+        `mixed` never contradicts anything — nothing in the scheme decided it,
+        so the band is the only opinion there is.
+        """
+        if not kind:
+            return False
+        if quantity:
+            return kind != 'info'
+        if role == 'mixed':
+            return False
+        if role == 'net':
+            return kind == 'deduction'
+        return kind != role
+
+    def _net_role_band_conflict_text(self, band, role, quantity=False):
+        if quantity:
+            return _("Your sheet files this under \"%(band)s\" — but it is a "
+                     "count of hours or days, not money.", band=band)
+        return _("Your sheet files this under \"%(band)s\" — the formula makes "
+                 "it %(role)s.", band=band, role=self._net_role_word(role).lower())
+
+    def _net_role_category_name(self, code):
+        """The label a category code wears on screen. Reads only — creating the
+        category here would make a SUGGESTION write something (C7 / test 9)."""
+        if not code:
+            return ''
+        category = self.env['hr.salary.rule.category'].search(
+            [('code', '=', code)], limit=1)
+        if category:
+            return category.name
+        return {
+            'NET': _("Net"), 'DED': _("Deduction"), 'COMP': _("Employer cost"),
+            'OTH': _("Other"), 'BASIC': _("Basic"), 'GROSS': _("Gross"),
+            'ALW': _("Allowance"),
+        }.get(code, code)
+
     def _net_role_category_code(self, rule, role, classification, aggregates):
         if role == 'net':
             return 'NET'
+        # NETROLE P2 — a count of hours is on a positive path to net pay and is
+        # still not an allowance. The walk is right about the sign and wrong
+        # about the shelf, so the correction lives here and not in the walk.
+        if rule.id in classification.quantities:
+            return 'OTH'
         if role == 'deduction':
             return 'DED'
         if role == 'employer_cost':
