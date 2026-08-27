@@ -4,7 +4,6 @@ from odoo.addons.portal.controllers.portal import CustomerPortal, pager as porta
 from odoo.exceptions import AccessError, MissingError
 from collections import OrderedDict
 from odoo.http import request
-from pudb import set_trace
 
 class CustomerPortal(CustomerPortal):
 

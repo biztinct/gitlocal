@@ -3,7 +3,6 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from pudb import set_trace
 
 class HrContractAdvantage(models.Model):
     _name = "hr.contract.advantage"

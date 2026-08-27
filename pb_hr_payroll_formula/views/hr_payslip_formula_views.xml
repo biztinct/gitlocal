@@ -7,11 +7,17 @@
         <field name="arch" type="xml">
             <xpath expr="//form/header" position="inside">
                 <field name="calculation_method" invisible="1"/>
+                <field name="struct_id" invisible="1"/>
+                <!-- Also offered on a payslip NOT yet marked as formula but with
+                     no salary structure either: that is the payslip showing 0.00
+                     the button exists to repair, and hiding it there left the
+                     screen with no remedy at all. `action_recompute_formula_lines`
+                     resolves the scheme and sets both fields as it goes. -->
                 <button name="action_recompute_formula_lines"
                         type="object"
                         string="Recompute Formulas"
                         class="oe_highlight"
-                        invisible="calculation_method != 'formula'"/>
+                        invisible="calculation_method != 'formula' and struct_id"/>
             </xpath>
             <!-- Formula-computed payslips carry no salary structure (they compute
                  via the formula engine), yet the native form marks struct_id
