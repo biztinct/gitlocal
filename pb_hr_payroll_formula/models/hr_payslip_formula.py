@@ -555,6 +555,9 @@ class HrPayslipFormula(models.Model):
                 'employee_id': self.employee_id.id,
                 'report_visible': rule.report_visible or False,
                 'component_type': rule.component_type or False,
+                # NETROLE — same copy the batch producer makes, for the same
+                # reason: the run's totals must count each dong once.
+                'component_detail': bool(rule.net_role_detail),
             }
             lines_to_create.append(line_data)
 

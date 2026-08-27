@@ -75,3 +75,7 @@ from . import test_import_identity
 # A payslip with no salary structure computes through its scheme instead of
 # through silence — the ABM June 2026 "146 employees, 0.00" defect.
 from . import test_structureless_payslip
+
+# NETROLE — a component's category comes from what net pay does with it:
+# the signed-graph classifier, its parser, details, and employer cost.
+from . import test_net_role_classifier

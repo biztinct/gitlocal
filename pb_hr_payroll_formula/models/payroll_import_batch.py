@@ -3459,6 +3459,9 @@ class HrPayrollImportBatch(models.Model):
                 'salary_rule_id': salary_rule.id if salary_rule else False,
                 'report_visible': rule.report_visible or False,
                 'component_type': rule.component_type or False,
+                # NETROLE — a component folded into a roll-up is carried on the
+                # line so the run's totals can skip it without losing the line.
+                'component_detail': bool(rule.net_role_detail),
             }
 
             line_vals_list.append(line_vals)
