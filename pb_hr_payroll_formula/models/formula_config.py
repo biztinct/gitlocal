@@ -1503,6 +1503,90 @@ class HrFormulaConfig(models.Model):
         }
 
     # ==========================================
+    # NETROLE P2 — the import ends with a category conversation
+    # ==========================================
+    # An Excel scheme arrives with every component on the same shelf, and until
+    # now the only thing that ever moved one was a person opening each row. The
+    # formulas already say what each component does to net pay (NETROLE Phase 1);
+    # this is where that reading is offered — as a question, at the moment the
+    # import finishes, never as a silent write.
+    def category_review_action(self, next_action=None):
+        """Classify this scheme and return the review action — or None.
+
+        None means "say nothing": the studio is not installed, the
+        classification failed, or every component is already filed the way the
+        formulas read it. In all three cases the caller's existing chain is
+        byte-identical to what it was before this method existed.
+
+        A classification failure must NEVER fail an import (C7 says log it), so
+        every step here is guarded. The one failure that DOES open the review is
+        a scheme with no net-pay component: that is not an error to swallow, it
+        is the one question only a person can answer.
+        """
+        self.ensure_one()
+        try:
+            summary = (self.classify_net_roles() or {}).get(self.id) or {}
+        except Exception:
+            _logger.exception(
+                "NETROLE: could not classify configuration %s after import; "
+                "the import itself is unaffected", self.id)
+            return None
+        action = self.env.ref('pb_formula_studio.action_pb_category_review',
+                              raise_if_not_found=False)
+        if not action:
+            return None
+        if summary.get('error'):
+            worth_asking = bool(self.rule_ids)
+        else:
+            try:
+                suggestions = self.suggest_categories()
+            except Exception:
+                _logger.exception(
+                    "NETROLE: could not build category suggestions for "
+                    "configuration %s", self.id)
+                return None
+            worth_asking = any(
+                row.get('changes') or row.get('band_conflict')
+                or row.get('confidence') == 'review'
+                for row in suggestions)
+        if not worth_asking:
+            return None
+        params = {'config_id': self.id}
+        if next_action:
+            params['next_action'] = next_action
+        return {
+            'type': 'ir.actions.client',
+            'tag': action.tag,
+            'name': action.name,
+            'target': 'current',
+            'params': params,
+            'context': {'config_id': self.id},
+        }
+
+    def action_open_category_review(self):
+        """Reopen the review any time, from the structure itself."""
+        self.ensure_one()
+        action = self.env.ref('pb_formula_studio.action_pb_category_review',
+                              raise_if_not_found=False)
+        if not action:
+            raise UserError(_(
+                "The category review needs the Formula Studio, which is not "
+                "installed on this database."))
+        try:
+            self.classify_net_roles()
+        except Exception:
+            _logger.exception("NETROLE: classification failed for config %s",
+                              self.id)
+        return {
+            'type': 'ir.actions.client',
+            'tag': action.tag,
+            'name': action.name,
+            'target': 'current',
+            'params': {'config_id': self.id},
+            'context': {'config_id': self.id},
+        }
+
+    # ==========================================
     # GENERATE SAMPLE DATA
     # ==========================================
     def action_generate_sample_data(self):

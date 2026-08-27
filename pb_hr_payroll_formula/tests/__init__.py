@@ -79,3 +79,8 @@ from . import test_structureless_payslip
 # NETROLE — a component's category comes from what net pay does with it:
 # the signed-graph classifier, its parser, details, and employer cost.
 from . import test_net_role_classifier
+
+# NETROLE P2 — an hours count is on a positive path to net pay and is still not
+# an allowance: the quantity gate, the band signal, and the shelf that moves
+# while the walk stays exactly where Phase 1 left it.
+from . import test_net_role_quantity
