@@ -1,13 +1,12 @@
-# Translation of Odoo Server.
-# This file contains the translation of the following modules:
-# * pb_wf_kit
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: pb_wf_kit\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 00:00+0000\n"
-"PO-Revision-Date: 2026-08-17 00:00+0000\n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,7 +15,18 @@ msgstr ""
 
 #. module: pb_wf_kit
 #. odoo-javascript
-#: code:addons/pb_wf_kit/static/src/js/wf_context_bar.js:0
+#: code:addons/pb_wf_kit/static/src/js/wf_command_palette.js:0
+msgid "Actions"
+msgstr "Hành động"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Actual"
+msgstr "Thực tế"
+
+#. module: pb_wf_kit
+#. odoo-javascript
 #: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
 msgid "All departments"
 msgstr "Tất cả phòng ban"
@@ -24,38 +34,8 @@ msgstr "Tất cả phòng ban"
 #. module: pb_wf_kit
 #. odoo-javascript
 #: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
-msgid "Department"
-msgstr "Phòng ban"
-
-#. module: pb_wf_kit
-#. odoo-javascript
-#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
-msgid "Previous week"
-msgstr "Tuần trước"
-
-#. module: pb_wf_kit
-#. odoo-javascript
-#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
-msgid "Next week"
-msgstr "Tuần sau"
-
-#. module: pb_wf_kit
-#. odoo-javascript
-#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
-msgid "Today"
-msgstr "Hôm nay"
-
-#. module: pb_wf_kit
-#. odoo-javascript
-#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
-msgid "Find a person…"
-msgstr "Tìm nhân viên…"
-
-#. module: pb_wf_kit
-#. odoo-javascript
-#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
-msgid "Find a person"
-msgstr "Tìm nhân viên"
+msgid "Business trip"
+msgstr "Chuyến công tác"
 
 #. module: pb_wf_kit
 #. odoo-javascript
@@ -66,8 +46,44 @@ msgstr "Bỏ chọn nhân viên"
 #. module: pb_wf_kit
 #. odoo-javascript
 #: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
-msgid "Filter…"
-msgstr "Lọc…"
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Command palette"
+msgstr "Bảng lệnh"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "ESC"
+msgstr "ESC"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Entered"
+msgstr "Đã nhập"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "File correction"
+msgstr "Chỉnh sửa tập tin"
 
 #. module: pb_wf_kit
 #. odoo-javascript
@@ -78,5 +94,202 @@ msgstr "Lọc"
 #. module: pb_wf_kit
 #. odoo-javascript
 #: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
-msgid "Close"
-msgstr "Đóng"
+msgid "Filter…"
+msgstr "Lọc…"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Find a person"
+msgstr "Tìm nhân viên"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Find a person…"
+msgstr "Tìm nhân viên…"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Full profile"
+msgstr "Hồ sơ đầy đủ"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/js/wf_command_palette.js:0
+msgid "Lenses"
+msgstr "Ống kính"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Next day"
+msgstr "Ngày hôm sau"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Next week"
+msgstr "Tuần sau"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "No overtime or shift compliance recorded this week."
+msgstr ""
+"Không có sự tuân thủ làm thêm giờ hoặc thay đổi nào được ghi nhận trong tuần này."
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid ""
+"Nobody matched. Names are matched exactly, accents included —\n"
+"              try \"Bùi Anh\" rather than \"Bui Anh\"."
+msgstr ""
+"Nobody matched. Names are matched exactly, accents included —\n"
+"              try \"Bùi Anh\" rather than \"Bui Anh\"."
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Nothing matches that."
+msgstr "Không có gì phù hợp với điều đó."
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "On shift"
+msgstr "Theo ca"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "On time"
+msgstr "Đúng giờ"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/js/wf_command_palette.js:0
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Previous day"
+msgstr "Ngày hôm trước"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Previous week"
+msgstr "Tuần trước"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Public holiday"
+msgstr "Ngày nghỉ lễ"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/js/wf_command_palette.js:0
+msgid "Recent"
+msgstr "Gần đây"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Sched"
+msgstr "đã lên lịch"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Scheduled"
+msgstr "Theo lịch"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Search people, lenses, actions"
+msgstr "Tìm kiếm người, ống kính, hành động"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Search people, lenses, actions…"
+msgstr "Tìm kiếm người, ống kính, hành động…"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Searching…"
+msgstr "Đang tìm kiếm…"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "close"
+msgstr "đóng"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "esc"
+msgstr "thoát"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "h"
+msgstr "h"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "move"
+msgstr "di chuyển"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "open"
+msgstr "mở"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "·H"
+msgstr "·H"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "·T"
+msgstr "·T"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Δ"
+msgstr "Δ"
+
+#. module: pb_wf_kit
+#. odoo-javascript
+#: code:addons/pb_wf_kit/static/src/xml/wf_kit.xml:0
+msgid "Δ week"
+msgstr "Δ tuần"

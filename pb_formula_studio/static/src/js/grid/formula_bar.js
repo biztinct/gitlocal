@@ -1,5 +1,6 @@
 /** @odoo-module **/
 import { Component, useState, useRef, onMounted, onPatched } from "@odoo/owl";
+import { _t } from "@web/core/l10n/translation";
 
 // Always-visible formula bar (T2.3). Shows the focused component's =formula,
 // editable with the SAME validate/save round-trip as the in-cell overlay (both
@@ -30,10 +31,10 @@ export class FormulaBar extends Component {
     }
     get placeholder() {
         const f = this.props.focused;
-        if (!f) return "Select a component";
-        if (f.type === "input") return "Input — value comes from the data source";
-        if (f.type === "constant") return "Constant value";
-        return "= formula";
+        if (!f) return _t("Select a component");
+        if (f.type === "input") return _t("Input — value comes from the data source");
+        if (f.type === "constant") return _t("Constant value");
+        return _t("= formula");
     }
     _formulaOf(f) { return (f && f.type === "formula") ? (f.excel_formula || "") : ""; }
 

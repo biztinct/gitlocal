@@ -1,0 +1,315 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_palette.js:0
+msgid "Admin"
+msgstr "Quản trị viên"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Companies & Tenants"
+msgstr "Công ty & Người thuê nhà"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Configurations, components and shadow runs — the calculation itself."
+msgstr "Cấu hình, thành phần và chạy bóng — bản thân việc tính toán."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Connectors, their field mappings and everything they have pulled."
+msgstr "Trình kết nối, bản đồ trường của họ và mọi thứ họ đã kéo."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Contribution rates, ceilings, tax brackets and actuals."
+msgstr "Tỷ lệ đóng góp, mức trần, khung thuế và số liệu thực tế."
+
+#. module: pb_settings
+#: model:ir.model.fields,field_description:pb_settings.field_pb_settings__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Each rail entry, the surface behind it and who may see it."
+msgstr "Mỗi lối vào đường ray, bề mặt đằng sau nó và ai có thể nhìn thấy nó."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Every configuration, its columns and its formulas, full screen."
+msgstr "Mọi cấu hình, cột và công thức của nó, toàn màn hình."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Every internal user and the groups their access comes from."
+msgstr "Mọi người dùng nội bộ và các nhóm mà họ truy cập đều đến từ đó."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Formula Engine"
+msgstr "Bộ máy công thức"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Formula Studio"
+msgstr "Xưởng công thức"
+
+#. module: pb_settings
+#: model:ir.model.fields,field_description:pb_settings.field_pb_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Insurance & Tax"
+msgstr "Bảo hiểm & Thuế"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Insurance policies, tax tables and dependent relief."
+msgstr "Chính sách bảo hiểm, bảng thuế và cứu trợ người phụ thuộc."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Integrations"
+msgstr "Tích hợp"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Legal entities, their currency and their working calendar."
+msgstr "Các pháp nhân, tiền tệ và lịch làm việc của họ."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/xml/settings_hub.xml:0
+msgid "Loading settings…"
+msgstr "Đang tải cài đặt…"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Mapping"
+msgstr "Ánh xạ"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Navigation"
+msgstr "Điều hướng"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Nothing here is available to you."
+msgstr "Không có gì ở đây có sẵn cho bạn."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/xml/settings_hub.xml:0
+msgid "Open"
+msgstr "Mở"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Pay structures, their salary rules and category make-up."
+msgstr "Cơ cấu trả lương, quy tắc lương và thành phần danh mục của họ."
+
+#. module: pb_settings
+#: model:ir.model,name:pb_settings.model_pb_settings
+msgid "Payobook settings hub"
+msgstr "Trung tâm cài đặt Payobook"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Payroll defaults"
+msgstr "Mặc định về bảng lương"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Payroll settings"
+msgstr "Cài đặt bảng lương"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Roles & Access"
+msgstr "Vai trò & Quyền truy cập"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Salary Structures"
+msgstr "Cấu trúc lương"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/xml/settings_hub.xml:0
+msgid "Search surfaces and actions"
+msgstr "Tìm kiếm bề mặt và hành động"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/xml/settings_hub.xml:0
+msgid "Search surfaces, actions…"
+msgstr "Giao diện tìm kiếm, hành động…"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+#: code:addons/pb_settings/static/src/js/settings_palette.js:0
+#: code:addons/pb_settings/static/src/xml/settings_hub.xml:0
+#: model:ir.actions.client,name:pb_settings.action_pb_settings_hub
+#: model:pb.sidebar.item,name:pb_settings.item_settings
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/xml/settings_hub.xml:0
+msgid "Settings categories"
+msgstr "Danh mục cài đặt"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid ""
+"Settings collects the surfaces that change how payroll is configured. Your account "
+"holds none of the groups that may change them."
+msgstr ""
+"Cài đặt thu thập các bề mặt thay đổi cách cấu hình bảng lương. Tài khoản của bạn không"
+" chứa nhóm nào có thể thay đổi chúng."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Sidebar items"
+msgstr "Các mục thanh bên"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Sidebar sections"
+msgstr "Phần thanh bên"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Statutory"
+msgstr "Biên chế"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Structures, rules and the employees each one covers."
+msgstr "Cấu trúc, quy tắc và nhân viên mỗi người bao gồm."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Tenant Mission Control — one platform, many databases."
+msgstr "Kiểm soát nhiệm vụ của người thuê - một nền tảng, nhiều cơ sở dữ liệu."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Tenants"
+msgstr "Người thuê nhà"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "The blocks the rail entries are grouped into."
+msgstr "Các khối mà các mục đường sắt được nhóm lại thành."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "The native payroll configuration form — use the crumb to come back."
+msgstr "Biểu mẫu cấu hình bảng lương gốc — sử dụng mẩu tin để quay lại."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "The only home for connectors — Import deep-links into it."
+msgstr "Ngôi nhà duy nhất cho các trình kết nối — Nhập các liên kết sâu vào đó."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "The organisational scope everything else is measured in."
+msgstr "Phạm vi tổ chức, mọi thứ khác đều được đo lường."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "The payroll settings screen, reachable in the product at last."
+msgstr "Cuối cùng, màn hình cài đặt bảng lương có thể truy cập được trong sản phẩm."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Users & permission groups"
+msgstr "Người dùng và nhóm quyền"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "What the left rail offers, and in what order."
+msgstr "Đường ray bên trái cung cấp những gì và theo thứ tự nào."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Who may see and do what, across the whole product."
+msgstr "Ai có thể xem và làm gì trên toàn bộ sản phẩm."
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid ""
+"Wire any source — API feeds, spreadsheets, employee records — onto your payroll "
+"schemes."
+msgstr ""
+"Kết nối bất kỳ nguồn nào — nguồn cấp dữ liệu API, bảng tính, hồ sơ nhân viên — vào hệ "
+"thống trả lương của bạn."
+
+#: pb_settings/static/src/js/settings_hub.js:442
+msgid "Settings collects the surfaces that change how payroll is"
+msgstr "Cài đặt thu thập các bề mặt thay đổi cách tính lương"

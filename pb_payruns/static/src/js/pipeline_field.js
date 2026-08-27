@@ -3,13 +3,14 @@
 import { Component } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
+import { _t } from "@web/core/l10n/translation";
 
 const STAGES = [
-    { key: "draft", label: "Draft" },
-    { key: "level0", label: "Officer review" },
-    { key: "level1", label: "HR review" },
-    { key: "level2", label: "Finance approval" },
-    { key: "done", label: "Done" },
+    { key: "draft", label: _t("Draft") },
+    { key: "level0", label: _t("Officer review") },
+    { key: "level1", label: _t("HR review") },
+    { key: "level2", label: _t("Finance approval") },
+    { key: "done", label: _t("Done") },
 ];
 const INDEX = { draft: 0, level0: 1, level1: 2, level2: 3, done: 4 };
 

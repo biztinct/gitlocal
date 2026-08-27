@@ -1,169 +1,17 @@
-# Translation of Odoo Server.
-# This file contains the translation of the following modules:
-# * pb_approval
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: pb_approval\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-25 00:00+0000\n"
-"PO-Revision-Date: 2026-07-25 00:00+0000\n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-
-#. module: pb_approval
-#: model:ir.actions.client,name:pb_approval.action_pb_approval
-msgid "Approvals"
-msgstr "Phê duyệt"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Loading approvals…"
-msgstr "Đang tải danh sách phê duyệt…"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Payroll"
-msgstr "Tiền lương"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Approval Pipeline"
-msgstr "Quy Trình Phê Duyệt"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Officer review → HR review → Finance approval"
-msgstr "Chuyên viên duyệt → Nhân sự duyệt → Tài chính phê duyệt"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "awaiting you"
-msgstr "đang chờ bạn"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Refresh"
-msgstr "Làm mới"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "at Officer review"
-msgstr "chờ chuyên viên duyệt"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "at HR review"
-msgstr "chờ nhân sự duyệt"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "at Finance approval"
-msgstr "chờ tài chính phê duyệt"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "net at stake"
-msgstr "thực nhận đang chờ duyệt"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Nothing awaiting approval."
-msgstr "Không có đợt lương nào chờ phê duyệt."
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Submitted pay runs land here for Officer, HR and Finance sign-off."
-msgstr ""
-"Các đợt lương đã gửi sẽ xuất hiện ở đây để chuyên viên, nhân sự và tài chính "
-"ký duyệt."
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "No runs here."
-msgstr "Chưa có đợt lương nào."
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "payslips"
-msgstr "phiếu lương"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "net total"
-msgstr "tổng thực nhận"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Approve"
-msgstr "Phê duyệt"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Reject"
-msgstr "Từ chối"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Recently decided"
-msgstr "Vừa xử lý"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Reason (required)"
-msgstr "Lý do (bắt buộc)"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Why is this pay run being sent back?"
-msgstr "Vì sao đợt lương này bị trả lại?"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "All payslips in this run will be cancelled."
-msgstr "Toàn bộ phiếu lương trong đợt này sẽ bị hủy."
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Cancel"
-msgstr "Hủy bỏ"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/xml/approval.xml:0
-msgid "Reject run"
-msgstr "Từ chối đợt lương"
-
-#. module: pb_approval
-#. odoo-javascript
-#: code:addons/pb_approval/static/src/js/approval.js:0
-msgid "Waits on %s"
-msgstr "Chờ %s"
 
 #. module: pb_approval
 #. odoo-javascript
@@ -178,66 +26,44 @@ msgid "%s rejected."
 msgstr "Đã từ chối %s."
 
 #. module: pb_approval
-#. odoo-python
 #. odoo-javascript
-#: code:addons/pb_approval/models/pb_approval.py:0
-#: code:addons/pb_approval/static/src/js/approval.js:0
-msgid "Please give a reason for rejecting this pay run."
-msgstr "Vui lòng nhập lý do từ chối đợt lương này."
-
-#. module: pb_approval
-#. odoo-python
-#. odoo-javascript
-#: code:addons/pb_approval/models/pb_approval.py:0
 #: code:addons/pb_approval/static/src/js/approval.js:0
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
 #. module: pb_approval
-#. odoo-python
-#: code:addons/pb_approval/models/pb_approval.py:0
-msgid ""
-"You are not allowed to open Approvals. This requires a Payroll Officer, "
-"Payroll Manager or Final Approver role."
-msgstr ""
-"Bạn không có quyền mở màn hình Phê duyệt. Cần vai trò Chuyên viên tiền lương, "
-"Quản lý tiền lương hoặc Người phê duyệt cuối."
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "All payslips in this run will be cancelled."
+msgstr "Toàn bộ phiếu lương trong đợt này sẽ bị hủy."
 
 #. module: pb_approval
-#. odoo-python
-#: code:addons/pb_approval/models/pb_approval.py:0
-msgid "Officer review"
-msgstr "Chuyên viên duyệt"
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Approval Pipeline"
+msgstr "Quy Trình Phê Duyệt"
 
 #. module: pb_approval
-#. odoo-python
-#: code:addons/pb_approval/models/pb_approval.py:0
-msgid "Payroll Officer"
-msgstr "Chuyên viên tiền lương"
+#: model:ir.actions.client,name:pb_approval.action_pb_approval
+msgid "Approvals"
+msgstr "Phê duyệt"
 
 #. module: pb_approval
-#. odoo-python
-#: code:addons/pb_approval/models/pb_approval.py:0
-msgid "HR review"
-msgstr "Nhân sự duyệt"
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Approve"
+msgstr "Phê duyệt"
 
 #. module: pb_approval
-#. odoo-python
-#: code:addons/pb_approval/models/pb_approval.py:0
-msgid "HR Manager"
-msgstr "Quản lý nhân sự"
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
 
 #. module: pb_approval
-#. odoo-python
-#: code:addons/pb_approval/models/pb_approval.py:0
-msgid "Finance approval"
-msgstr "Tài chính phê duyệt"
-
-#. module: pb_approval
-#. odoo-python
-#: code:addons/pb_approval/models/pb_approval.py:0
-msgid "Finance / GM"
-msgstr "Tài chính / Tổng giám đốc"
+#: model:ir.model.fields,field_description:pb_approval.field_pb_approval__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
 
 #. module: pb_approval
 #. odoo-python
@@ -248,8 +74,145 @@ msgstr "Hoàn tất"
 #. module: pb_approval
 #. odoo-python
 #: code:addons/pb_approval/models/pb_approval.py:0
+msgid "Finance / GM"
+msgstr "Tài chính / Tổng giám đốc"
+
+#. module: pb_approval
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
+msgid "Finance approval"
+msgstr "Tài chính phê duyệt"
+
+#. module: pb_approval
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
+msgid "HR Manager"
+msgstr "Quản lý nhân sự"
+
+#. module: pb_approval
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
+msgid "HR review"
+msgstr "Nhân sự duyệt"
+
+#. module: pb_approval
+#: model:ir.model.fields,field_description:pb_approval.field_pb_approval__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Loading approvals…"
+msgstr "Đang tải danh sách phê duyệt…"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "No runs here."
+msgstr "Chưa có đợt lương nào."
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Nothing awaiting approval."
+msgstr "Không có đợt lương nào chờ phê duyệt."
+
+#. module: pb_approval
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
+msgid "Officer review"
+msgstr "Chuyên viên duyệt"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Officer review → HR review → Finance approval"
+msgstr "Chuyên viên duyệt → Nhân sự duyệt → Tài chính phê duyệt"
+
+#. module: pb_approval
+#: model:ir.model,name:pb_approval.model_pb_approval
+msgid "Payobook Approval cockpit data"
+msgstr "Dữ liệu buồng lái phê duyệt Payobook"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Payroll"
+msgstr "Tiền lương"
+
+#. module: pb_approval
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
+msgid "Payroll Officer"
+msgstr "Chuyên viên tiền lương"
+
+#. module: pb_approval
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
+#: code:addons/pb_approval/static/src/js/approval.js:0
+msgid "Please give a reason for rejecting this pay run."
+msgstr "Vui lòng nhập lý do từ chối đợt lương này."
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Reason (required)"
+msgstr "Lý do (bắt buộc)"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Recently decided"
+msgstr "Vừa xử lý"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Reject"
+msgstr "Từ chối"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Reject run"
+msgstr "Từ chối đợt lương"
+
+#. module: pb_approval
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
 msgid "Rejected"
 msgstr "Đã từ chối"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Submitted pay runs land here for Officer, HR and Finance sign-off."
+msgstr ""
+"Các đợt lương đã gửi sẽ xuất hiện ở đây để chuyên viên, nhân sự và tài chính ký duyệt."
+
+#. module: pb_approval
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
+msgid ""
+"The action failed on the server — the run was left unchanged. Ask an administrator to "
+"check the log."
+msgstr ""
+"Hành động không thành công trên máy chủ - quá trình chạy không thay đổi. Yêu cầu quản "
+"trị viên kiểm tra nhật ký."
+
+#. module: pb_approval
+#. odoo-python
+#: code:addons/pb_approval/models/pb_approval.py:0
+msgid "This pay run is not awaiting approval."
+msgstr "Đợt lương này không ở trạng thái chờ phê duyệt."
 
 #. module: pb_approval
 #. odoo-python
@@ -258,7 +221,65 @@ msgid "This pay run no longer exists."
 msgstr "Đợt lương này không còn tồn tại."
 
 #. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/js/approval.js:0
+msgid "Waits on %s"
+msgstr "Chờ %s"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "Why is this pay run being sent back?"
+msgstr "Vì sao đợt lương này bị trả lại?"
+
+#. module: pb_approval
 #. odoo-python
 #: code:addons/pb_approval/models/pb_approval.py:0
-msgid "This pay run is not awaiting approval."
-msgstr "Đợt lương này không ở trạng thái chờ phê duyệt."
+msgid ""
+"You are not allowed to open Approvals. This requires a Payroll Officer, Payroll "
+"Manager or Final Approver role."
+msgstr ""
+"Bạn không có quyền mở màn hình Phê duyệt. Cần vai trò Chuyên viên tiền lương, Quản lý "
+"tiền lương hoặc Người phê duyệt cuối."
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "at Finance approval"
+msgstr "chờ tài chính phê duyệt"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "at HR review"
+msgstr "chờ nhân sự duyệt"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "at Officer review"
+msgstr "chờ chuyên viên duyệt"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "awaiting you"
+msgstr "đang chờ bạn"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "net at stake"
+msgstr "thực nhận đang chờ duyệt"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "net total"
+msgstr "tổng thực nhận"
+
+#. module: pb_approval
+#. odoo-javascript
+#: code:addons/pb_approval/static/src/xml/approval.xml:0
+msgid "payslips"
+msgstr "phiếu lương"

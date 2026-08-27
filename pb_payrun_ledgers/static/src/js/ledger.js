@@ -28,10 +28,10 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 
 const DATE_CHIPS = [
-    { id: "all", label: "All time" },
-    { id: "month", label: "This month" },
-    { id: "year", label: "This year" },
-    { id: "custom", label: "Custom" },
+    { id: "all", label: _t("All time") },
+    { id: "month", label: _t("This month") },
+    { id: "year", label: _t("This year") },
+    { id: "custom", label: _t("Custom") },
 ];
 
 // One generic ledger cockpit rendered from a backend descriptor. Each screen is

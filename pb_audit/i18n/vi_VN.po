@@ -1,0 +1,556 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "% change"
+msgstr "% thay đổi"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "%(field)s on %(rec)s"
+msgstr "%(field)s trên %(rec)s"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "%(model)s #%(rid)s"
+msgstr "%(model)s #%(rid)s"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "%(n)s records"
+msgstr "Bản ghi %(n)s"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "(deleted contract)"
+msgstr "(đã xóa hợp đồng)"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "(no email)"
+msgstr "(không có email)"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Action failed."
+msgstr "Thao tác không thành công."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Actor"
+msgstr "diễn viên"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Adjustments per month"
+msgstr "Điều chỉnh mỗi tháng"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Apply"
+msgstr "Áp dụng"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_audit
+#: model:pb.sidebar.item,name:pb_audit.item_audit_console
+msgid "Audit"
+msgstr "Kiểm tra"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+#: model:ir.actions.client,name:pb_audit.action_pb_audit
+msgid "Audit & Compliance"
+msgstr "Kiểm toán & Tuân thủ"
+
+#. module: pb_audit
+#: model:ir.model,name:pb_audit.model_pb_audit_console
+msgid "Audit & Compliance Console"
+msgstr "Bảng điều khiển Kiểm tra & Tuân thủ"
+
+#. module: pb_audit
+#: model:ir.model,name:pb_audit.model_pb_audit_export
+msgid "Audit Console Export"
+msgstr "Xuất bảng điều khiển kiểm tra"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "Bank account · %(src)s"
+msgstr "Tài khoản ngân hàng · %(src)s"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "Bank file · %(period)s"
+msgstr "Hồ sơ ngân hàng · %(period)s"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "By me"
+msgstr "Bởi tôi"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_audit
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_export__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_audit
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_export__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_audit
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_console__display_name
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_export__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Each source governs its own retention."
+msgstr "Mỗi nguồn chi phối việc lưu giữ riêng của mình."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Events today"
+msgstr "Sự kiện hôm nay"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Every change, approval, delivery and login — one read-only trail."
+msgstr "Mọi thay đổi, phê duyệt, phân phối và đăng nhập — một đường dẫn chỉ đọc."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Export"
+msgstr "Xuất"
+
+#. module: pb_audit
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_export__export_file
+msgid "Export File"
+msgstr "Xuất tệp"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Exported %s rows — capped at %s (refine filters for the rest)."
+msgstr "Đã xuất các hàng %s — giới hạn ở %s (tinh chỉnh các bộ lọc cho phần còn lại)."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Exported %s rows."
+msgstr "Đã xuất các hàng %s."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Exports"
+msgstr "Xuất khẩu"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Fields"
+msgstr "Trường"
+
+#. module: pb_audit
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_export__export_filename
+msgid "Filename"
+msgstr "Tên tệp"
+
+#. module: pb_audit
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_console__id
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_export__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Last 7 days"
+msgstr "7 ngày qua"
+
+#. module: pb_audit
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_export__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_audit
+#: model:ir.model.fields,field_description:pb_audit.field_pb_audit_export__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Last:"
+msgstr "Cuối cùng:"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Load older events"
+msgstr "Tải các sự kiện cũ hơn"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Loading the compliance ledger…"
+msgstr "Đang tải sổ cái tuân thủ…"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Login lens"
+msgstr "Ống kính đăng nhập"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Login sessions appear here as users sign in."
+msgstr "Phiên đăng nhập xuất hiện ở đây khi người dùng đăng nhập."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Logins"
+msgstr "Đăng nhập"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "No events match these filters"
+msgstr "Không có sự kiện nào khớp với các bộ lọc này"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "No recorded activity yet."
+msgstr "Chưa có hoạt động nào được ghi lại."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "No salary adjustments in range"
+msgstr "Không có sự điều chỉnh lương trong phạm vi"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "No sessions in range"
+msgstr "Không có phiên nào trong phạm vi"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Old"
+msgstr "Cũ"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Oldest entry:"
+msgstr "Mục nhập cũ nhất:"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Open source record"
+msgstr "Bản ghi nguồn mở"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "Payslip → %(email)s"
+msgstr "Phiếu lương → %(email)s"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Retention"
+msgstr "giữ lại"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "Retention must be a positive number of days."
+msgstr "Thời gian lưu giữ phải là số ngày dương."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Retention updated."
+msgstr "Đã cập nhật mức lưu giữ."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Salary lens"
+msgstr "Lăng kính tiền lương"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Salary only"
+msgstr "Chỉ có lương"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Search actor, employee, value…"
+msgstr "Tìm kiếm tác nhân, nhân viên, giá trị…"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "Session started"
+msgstr "Phiên đã bắt đầu"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid ""
+"Sessions are recorded at login only — logouts are not logged, so no session-duration "
+"data is shown."
+msgstr ""
+"Các phiên chỉ được ghi lại khi đăng nhập — các lần đăng xuất không được ghi lại, do đó"
+" không có dữ liệu về thời lượng phiên được hiển thị."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid ""
+"Showing the most recent matches only — narrow the date range or filters to reach older"
+" events."
+msgstr ""
+"Chỉ hiển thị các kết quả phù hợp gần đây nhất — thu hẹp phạm vi ngày hoặc bộ lọc để "
+"tiếp cận các sự kiện cũ hơn."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid ""
+"Showing the most recent wage changes only — narrow the date range for older ones."
+msgstr ""
+"Chỉ hiển thị những thay đổi về lương gần đây nhất - thu hẹp phạm vi ngày cho những "
+"thay đổi cũ hơn."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Sources"
+msgstr "Nguồn"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Stream"
+msgstr "Truyền phát"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "System"
+msgstr "Hệ thống"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid ""
+"The Audit & Compliance console is restricted to Payroll Managers and administrators."
+msgstr ""
+"Bảng điều khiển Kiểm tra & Tuân thủ được giới hạn cho Người quản lý tiền lương và quản"
+" trị viên."
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/wizards/audit_export.py:0
+msgid "The xlsxwriter library is required for Excel export (pip install xlsxwriter)."
+msgstr "Cần có thư viện xlsxwriter để xuất Excel (pip install xlsxwriter)."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Thresholds"
+msgstr "Ngưỡng"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Top actors"
+msgstr "Diễn viên hàng đầu"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Try widening the date range, clearing filters, or a different source."
+msgstr "Hãy thử mở rộng phạm vi ngày, xóa bộ lọc hoặc nguồn khác."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Undated"
+msgstr "không ghi ngày tháng"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Values hidden for your role."
+msgstr "Giá trị ẩn cho vai trò của bạn."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "Wage changes on contracts appear here as they happen."
+msgstr "Những thay đổi về lương trong hợp đồng xuất hiện ở đây khi chúng diễn ra."
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "When"
+msgstr "Lúc"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "Yesterday"
+msgstr "Hôm qua"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "not installed"
+msgstr "chưa được cài đặt"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "sessions"
+msgstr "phiên"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "unavailable"
+msgstr "không có sẵn"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
+msgid "· 30 days"
+msgstr "· 30 ngày"

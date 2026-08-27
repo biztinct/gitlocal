@@ -2,10 +2,11 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.import.employee.wizard";
-const STEPS = ["Source", "Preview", "Done"];
+const STEPS = [_t("Source"), _t("Preview"), _t("Done")];
 
 export class EmployeeWizard extends Component {
     static template = "pb_import_advanced.EmployeeWizard";
@@ -66,7 +67,7 @@ export class EmployeeWizard extends Component {
             if (res.error) this.notif.add(res.error, { type: "warning" });
             else if (nextStep) this.state.step = nextStep;
         } catch (e) {
-            this.notif.add((e && e.message && e.message.toString()) || "Step failed.", { type: "danger" });
+            this.notif.add((e && e.message && e.message.toString()) || _t("Step failed."), { type: "danger" });
         } finally { this.state.loading = false; }
     }
     toPreview() { return this._run(this.orm.call(MODEL, "create_and_preview", [this.state.form]), "Loading preview…", 2); }

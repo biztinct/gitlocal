@@ -2,6 +2,7 @@
 
 import { Component, useRef, useState, onMounted, onWillUnmount, onPatched } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 
 /**
  * ChartRenderer — Reusable OWL component that renders a Chart.js chart
@@ -33,12 +34,12 @@ export class ChartRenderer extends Component {
         });
 
         this.chartTypes = [
-            { type: "bar", label: "Bar", icon: "fa fa-bar-chart" },
-            { type: "line", label: "Line", icon: "fa fa-line-chart" },
-            { type: "pie", label: "Pie", icon: "fa fa-pie-chart" },
-            { type: "doughnut", label: "Doughnut", icon: "fa fa-circle-o-notch" },
-            { type: "radar", label: "Radar", icon: "fa fa-bullseye" },
-            { type: "polarArea", label: "Polar", icon: "fa fa-compass" },
+            { type: "bar", label: _t("Bar"), icon: "fa fa-bar-chart" },
+            { type: "line", label: _t("Line"), icon: "fa fa-line-chart" },
+            { type: "pie", label: _t("Pie"), icon: "fa fa-pie-chart" },
+            { type: "doughnut", label: _t("Doughnut"), icon: "fa fa-circle-o-notch" },
+            { type: "radar", label: _t("Radar"), icon: "fa fa-bullseye" },
+            { type: "polarArea", label: _t("Polar"), icon: "fa fa-compass" },
         ];
         this._resizeObserver = null;
 

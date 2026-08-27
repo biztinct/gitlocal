@@ -3,13 +3,14 @@
 import { Component, useState, onWillStart, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 
-const STATE_LABEL = { draft: "Draft", verify: "Waiting", level1: "HR Manager pending",
-                      level2: "GM pending", done: "Done", cancel: "Rejected" };
+const STATE_LABEL = { draft: _t("Draft"), verify: _t("Waiting"), level1: _t("HR Manager pending"),
+                      level2: _t("GM pending"), done: _t("Done"), cancel: _t("Rejected") };
 const STATE_CLASS = { draft: "s-draft", verify: "s-draft", level1: "s-amber",
                       level2: "s-indigo", done: "s-green", cancel: "s-red" };
-const NEXT_LABEL = { draft: "Submit for HR review", level1: "HR approve → GM", level2: "GM approve → Done" };
-const STATUS_FLOW = [["draft", "Draft"], ["level1", "HR Manager pending"], ["level2", "GM pending"], ["done", "Done"]];
+const NEXT_LABEL = { draft: _t("Submit for HR review"), level1: _t("HR approve → GM"), level2: _t("GM approve → Done") };
+const STATUS_FLOW = [["draft", _t("Draft")], ["level1", _t("HR Manager pending")], ["level2", _t("GM pending")], ["done", _t("Done")]];
 
 export class PayslipReview extends Component {
     static template = "pb_payslip_review.PayslipReview";
@@ -62,7 +63,7 @@ export class PayslipReview extends Component {
 
     async advance(id) {
         const res = await this.orm.call("pb.payslip.review", "advance_state", [id]);
-        if (!res.ok) { this.notif.add(res.msg || "Action blocked", { type: "warning" }); }
+        if (!res.ok) { this.notif.add(res.msg || _t("Action blocked"), { type: "warning" }); }
         // refresh the row + detail + totals
         const d = await this.orm.call("pb.payslip.review", "get_review_data", [this.state.runId]);
         this.state.slips = d.slips; this.state.totals = d.totals; this.state.run = d.run;

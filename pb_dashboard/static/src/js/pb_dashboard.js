@@ -3,6 +3,7 @@
 import { Component, useState, onWillStart, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 
 const ICONS = {
     users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
@@ -48,42 +49,42 @@ const ICONS = {
 const ACTIVATION = {
     meet: {
         icon: "compass",
-        title: "Meet Payobook",
-        desc: "A 2-minute tour. I drive, you watch.",
-        cta: "Watch the tour",
+        title: _t("Meet Payobook"),
+        desc: _t("A 2-minute tour. I drive, you watch."),
+        cta: _t("Watch the tour"),
         // LEARNOS Phase 6. What the button says when the walkthrough is
         // half-taken. Only the two learning rows can be half-taken: the other
         // three are database facts, which are true or not.
-        resume: "Pick up where you left off",
+        resume: _t("Pick up where you left off"),
         run: (self) => self.scenario(SC_WELCOME, "watch"),
     },
     employee: {
         icon: "user-plus",
-        title: "Add your first employee",
-        desc: "A name, a contract, a salary. That is all it takes.",
-        cta: "Add employee",
+        title: _t("Add your first employee"),
+        desc: _t("A name, a contract, a salary. That is all it takes."),
+        cta: _t("Add employee"),
         run: (self) => self.open(ACT_EMPLOYEES),
     },
     import: {
         icon: "upload",
-        title: "Bring in your payroll Excel",
-        desc: "Already have a sheet? Bring everyone in at once.",
-        cta: "Import data",
+        title: _t("Bring in your payroll Excel"),
+        desc: _t("Already have a sheet? Bring everyone in at once."),
+        cta: _t("Import data"),
         run: (self) => self.open(ACT_IMPORT),
     },
     practice: {
         icon: "play",
-        title: "Run a practice payroll",
-        desc: "On a made-up company. Nothing here is real.",
-        cta: "Try it",
-        resume: "Pick up where you left off",
+        title: _t("Run a practice payroll"),
+        desc: _t("On a made-up company. Nothing here is real."),
+        cta: _t("Try it"),
+        resume: _t("Pick up where you left off"),
         run: (self) => self.scenario(SC_PAYRUN, "try"),
     },
     real: {
         icon: "zap",
-        title: "Run your first real payroll",
-        desc: "Your own data, with the guide beside you. You press every button.",
-        cta: "Start",
+        title: _t("Run your first real payroll"),
+        desc: _t("Your own data, with the guide beside you. You press every button."),
+        cta: _t("Start"),
         // Do-mode walks the REAL wizard and never presses anything itself.
         // With no guide on this database the honest fallback is the wizard,
         // which is where the step ends up either way.
@@ -158,9 +159,9 @@ export class PbDashboard extends Component {
     // Local browser time — the server's clock is not the reader's.
     greeting() {
         const h = new Date().getHours();
-        if (h < 12) return "Good morning";
-        if (h < 18) return "Good afternoon";
-        return "Good evening";
+        if (h < 12) return _t("Good morning");
+        if (h < 18) return _t("Good afternoon");
+        return _t("Good evening");
     }
 
     // A tenant that has not started: nobody under contract, nothing computed,
@@ -225,7 +226,7 @@ export class PbDashboard extends Component {
     open(xmlid) {
         if (!xmlid) return;
         Promise.resolve(this.action.doAction(xmlid, { clearBreadcrumbs: true })).catch(() => {
-            this.notification.add("That screen is not installed on this database.", {
+            this.notification.add(_t("That screen is not installed on this database."), {
                 type: "warning",
             });
         });
@@ -258,14 +259,14 @@ export class PbDashboard extends Component {
      */
     openInsights() {
         const back = {
-            label: "Home", tag: "", xmlid: "pb_home_hub.action_pb_home_hub",
+            label: _t("Home"), tag: "", xmlid: "pb_home_hub.action_pb_home_hub",
             lens: "", lensKey: "pb_lens", context: {},
         };
         Promise.resolve(this.action.doAction(
             "pb_insights_hub.action_pb_insights_hub",
             { additionalContext: { pb_back: back }, clearBreadcrumbs: true },
         )).catch(() => {
-            this.notification.add("That screen is not installed on this database.", {
+            this.notification.add(_t("That screen is not installed on this database."), {
                 type: "warning",
             });
         });
@@ -288,7 +289,7 @@ export class PbDashboard extends Component {
             if (fallback) {
                 this.open(fallback);
             } else {
-                this.notification.add("The guided tour is not installed on this database.", {
+                this.notification.add(_t("The guided tour is not installed on this database."), {
                     type: "warning",
                 });
             }

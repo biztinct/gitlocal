@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.import.batch.cockpit";
@@ -11,7 +12,7 @@ const LINE_CLS = {
 };
 // line-table quick filters
 const LINE_FILTERS = ["all", "matched", "new", "errors"];
-const LINE_FILTER_LABEL = { all: "All", matched: "Matched", new: "New", errors: "Needs attention" };
+const LINE_FILTER_LABEL = { all: _t("All"), matched: _t("Matched"), new: _t("New"), errors: _t("Needs attention") };
 
 export class BatchCockpit extends Component {
     static template = "pb_import_batch.BatchCockpit";
@@ -79,7 +80,7 @@ export class BatchCockpit extends Component {
                 if (res.error) this.notif.add(res.error, { type: "warning" });
             }
         } catch (e) {
-            this.notif.add((e && e.message && e.message.toString()) || "Action failed.", { type: "danger" });
+            this.notif.add((e && e.message && e.message.toString()) || _t("Action failed."), { type: "danger" });
         } finally {
             this.state.busy = false;
         }

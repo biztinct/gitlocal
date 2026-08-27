@@ -37,12 +37,12 @@ import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 import { RuleComposer } from "@pb_integrations/js/rule_composer";
 
 const STATUS_CHIPS = [
-    { id: "all", label: "All" }, { id: "connected", label: "Connected" },
-    { id: "error", label: "Error" }, { id: "disconnected", label: "Disconnected" },
+    { id: "all", label: _t("All") }, { id: "connected", label: _t("Connected") },
+    { id: "error", label: _t("Error") }, { id: "disconnected", label: _t("Disconnected") },
 ];
 const RECENCY_CHIPS = [
-    { id: "all", label: "Any time" }, { id: "1h", label: "Synced ≤1h" },
-    { id: "1d", label: "Synced ≤1d" }, { id: "old", label: "Older" }, { id: "never", label: "Never" },
+    { id: "all", label: _t("Any time") }, { id: "1h", label: _t("Synced ≤1h") },
+    { id: "1d", label: _t("Synced ≤1d") }, { id: "old", label: _t("Older") }, { id: "never", label: _t("Never") },
 ];
 
 /**
@@ -147,10 +147,10 @@ export class PbIntegrations extends Component {
     }
     syncLabel(c) {
         const h = this._hoursSince(c.last_sync);
-        if (h === null) return "Never synced";
-        if (h < 1) return "Synced <1h ago";
-        if (h < 24) return "Synced " + Math.round(h) + "h ago";
-        return "Synced " + Math.round(h / 24) + "d ago";
+        if (h === null) return _t("Never synced");
+        if (h < 1) return _t("Synced <1h ago");
+        if (h < 24) return _t("Synced %(hours)s hours ago", { hours: Math.round(h) });
+        return _t("Synced %(days)s days ago", { days: Math.round(h / 24) });
     }
     _matchStatus(c, st) { return st === "all" ? true : c.status === st; }
     _matchRecency(c) {

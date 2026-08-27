@@ -1060,35 +1060,32 @@ export class MappingCanvas extends Component {
     provChip(it) {
         if (!it || !it.prov) { return null; }
         if (it.drift) {
-            return { label: "not sent", tone: "warn",
-                     hint: "This feed has synced, and did not carry this field. "
-                           + "It may have been renamed or switched off at the source." };
+            return { label: _t("not sent"), tone: "warn",
+                     hint: _t("This feed has synced and did not carry this field. It may have been renamed or switched off at the source.") };
         }
         if (it.prov === "catalog") {
             return it.provKind === "computed"
-                ? { label: "computed", tone: "calc",
-                    hint: it.note || "Payobook computes this from the records this feed returns." }
-                : { label: "expected", tone: "exp",
+                ? { label: _t("computed"), tone: "calc",
+                    hint: it.note || _t("Payobook computes this from the records this feed returns.") }
+                : { label: _t("expected"), tone: "exp",
                     hint: it.note
-                          ? `Expected from the vendor's catalogue. ${it.note}`
-                          : "Expected from the vendor's catalogue. The first sync will confirm it." };
+                          ? _t("Expected from the vendor's catalogue. %(note)s", { note: it.note })
+                          : _t("Expected from the vendor's catalogue. The first sync will confirm it.") };
         }
         if (it.prov === "odoo") {
-            return { label: "Payobook field", tone: "odoo",
-                     hint: "This is one of Payobook's own employee fields, not a "
-                           + "field this source has told us about." };
+            return { label: _t("Payobook field"), tone: "odoo",
+                     hint: _t("This is one of Payobook's own employee fields, not a field this source has told us about.") };
         }
         if (it.prov === "mapping") {
-            return { label: "mapped elsewhere", tone: "odoo",
-                     hint: "Shown because a mapping names it. It arrives on another "
-                           + "feed, or on none this board knows about." };
+            return { label: _t("mapped elsewhere"), tone: "odoo",
+                     hint: _t("Shown because a mapping names it. It arrives on another feed, or on none this board knows about.") };
         }
         return null;
     }
     filterChips(side) {
-        const chips = [{ v: "all", l: "All" }, { v: "mapped", l: "Mapped" },
-                       { v: "unmapped", l: "Unmapped" }];
-        if (this.hasSuggestions) { chips.push({ v: "suggested", l: "Suggested" }); }
+        const chips = [{ v: "all", l: _t("All") }, { v: "mapped", l: _t("Mapped") },
+                       { v: "unmapped", l: _t("Unmapped") }];
+        if (this.hasSuggestions) { chips.push({ v: "suggested", l: _t("Suggested") }); }
         return chips;
     }
 
@@ -1241,7 +1238,7 @@ export class MappingCanvas extends Component {
         const r = this.ui.reveal;
         if (!r) { return ""; }
         if (r.sides.length === 2) {
-            return "Both ends of this wire are hidden by the column filters.";
+            return _t("Both ends of this wire are hidden by the column filters.");
         }
         return r.sides[0] === "left"
             ? "The source end of this wire is hidden by this column's filter."
@@ -1763,14 +1760,14 @@ export class MappingCanvas extends Component {
     }
     get tfTypeOptions() {
         return [
-            { v: "direct", l: "Direct copy" },
-            { v: "multiply", l: "Multiply by" },
-            { v: "divide", l: "Divide by" },
-            { v: "add", l: "Add" },
-            { v: "subtract", l: "Subtract" },
-            { v: "round", l: "Round to decimals" },
-            { v: "abs", l: "Absolute value" },
-            { v: "default_if_empty", l: "Default if empty" },
+            { v: "direct", l: _t("Direct copy") },
+            { v: "multiply", l: _t("Multiply by") },
+            { v: "divide", l: _t("Divide by") },
+            { v: "add", l: _t("Add") },
+            { v: "subtract", l: _t("Subtract") },
+            { v: "round", l: _t("Round to decimals") },
+            { v: "abs", l: _t("Absolute value") },
+            { v: "default_if_empty", l: _t("Default if empty") },
         ];
     }
     openTransform(g) {
@@ -1811,7 +1808,7 @@ export class MappingCanvas extends Component {
             };
             let res;
             try { res = await this.props.onTransformPreview(this._tfRef, draft); }
-            catch (e) { res = { ok: false, error: "Preview failed" }; }
+            catch (e) { res = { ok: false, error: _t("Preview failed") }; }
             if (token !== this._tfToken) return;      // superseded — drop
             this.ui.tfPreview = (res && res.ok)
                 ? { sample: res.sample, result: res.result, error: null, loading: false }
@@ -1832,7 +1829,7 @@ export class MappingCanvas extends Component {
         };
         let res;
         try { res = await this.props.onTransformSave(this._tfRef, vals); }
-        catch (e) { res = { ok: false, msg: "Save failed" }; }
+        catch (e) { res = { ok: false, msg: _t("Save failed") }; }
         this.ui.tfSaving = false;
         if (res && res.ok === false) {
             this.ui.tfPreview = { ...this.ui.tfPreview, error: res.msg || "Save failed" };

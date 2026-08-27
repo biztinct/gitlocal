@@ -4,6 +4,7 @@ import { Component, useState, onMounted, onWillUnmount, markup } from "@odoo/owl
 import { useService, useBus } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { _t } from "@web/core/l10n/translation";
 import {
     applySidebarMode,
     clearSidebarMode,
@@ -228,11 +229,10 @@ export class PbSidebar extends Component {
     toggleSection(section) {
         if (section.restricted) {
             this.dialog.add(AlertDialog, {
-                title: "Available in the full platform",
+                title: _t("Available in the full platform"),
                 body: section.restriction_reason ||
-                    "This functionality is available in the full Payobook platform. " +
-                    "Please contact Payobook to arrange a personalised demonstration.",
-                confirmLabel: "Got it",
+                    _t("This functionality is available in the full Payobook platform. Please contact Payobook to arrange a personalised demonstration."),
+                confirmLabel: _t("Got it"),
             });
             return;
         }
@@ -270,11 +270,10 @@ export class PbSidebar extends Component {
     onItemClick(item) {
         if (item.restricted) {
             this.dialog.add(AlertDialog, {
-                title: "Available in the full platform",
+                title: _t("Available in the full platform"),
                 body: item.restriction_reason ||
-                    "This functionality is available in the full Payobook platform. " +
-                    "Please contact Payobook to arrange a personalised demonstration.",
-                confirmLabel: "Got it",
+                    _t("This functionality is available in the full Payobook platform. Please contact Payobook to arrange a personalised demonstration."),
+                confirmLabel: _t("Got it"),
             });
             return;
         }

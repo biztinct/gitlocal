@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.people.contract.wizard";
@@ -51,7 +52,7 @@ export class ContractWizard extends Component {
             if (res.error) { this.notif.add(res.error, { type: "danger" }); return; }
             this.state.result = res;
         } catch (e) {
-            this.notif.add((e && e.message && e.message.toString()) || "Failed.", { type: "danger" });
+            this.notif.add((e && e.message && e.message.toString()) || _t("Failed."), { type: "danger" });
         } finally { this.state.loading = false; }
     }
     openContract() {

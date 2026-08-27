@@ -12,6 +12,7 @@
 import { Component, useState, onWillStart, onMounted, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic, CAT_ICON } from "@pb_employee_vault/js/pev_icons";
 
 const MODEL = "pb.people";
@@ -85,12 +86,12 @@ export class Employee360Drawer extends Component {
         return "muted";
     }
     expiryLabel(doc) {
-        if (!doc.expiry_date) return "No expiry";
+        if (!doc.expiry_date) return _t("No expiry");
         const d = doc.days_to_expiry;
         if (d === null || d === undefined) return doc.expiry_date;
-        if (d < 0) return `Expired ${Math.abs(d)}d ago`;
-        if (d === 0) return "Expires today";
-        return `Expires in ${d}d`;
+        if (d < 0) return _t("Expired %(days)s days ago", { days: Math.abs(d) });
+        if (d === 0) return _t("Expires today");
+        return _t("Expires in %(days)s days", { days: d });
     }
     docsByCategory() {
         const groups = {};
@@ -122,7 +123,7 @@ export class Employee360Drawer extends Component {
     async uploadFile(catId, file) {
         const OK = ["image/png", "image/jpeg", "application/pdf"];
         if (!OK.includes(file.type)) {
-            this.notif.add("Only JPG, PNG or PDF documents are accepted.", { type: "danger" });
+            this.notif.add(_t("Only JPG, PNG or PDF documents are accepted."), { type: "danger" });
             return;
         }
         this.state.uploading = true;
@@ -131,9 +132,9 @@ export class Employee360Drawer extends Component {
             const b64 = String(dataUrl).split(",")[1] || "";
             const payload = { name: file.name, title: file.name.replace(/\.[^.]+$/, ""), mime: file.type, data: b64 };
             this.state.d = await this.orm.call(MODEL, "vault_upload", [Number(this.props.empId), catId, payload]);
-            this.notif.add("Document uploaded.", { type: "success" });
+            this.notif.add(_t("Document uploaded."), { type: "success" });
         } catch (e) {
-            this.notif.add(this._err(e, "Upload failed."), { type: "danger" });
+            this.notif.add(this._err(e, _t("Upload failed.")), { type: "danger" });
         } finally {
             this.state.uploading = false;
         }
@@ -152,16 +153,16 @@ export class Employee360Drawer extends Component {
         try {
             this.state.d = await this.orm.call(MODEL, "vault_verify", [doc.id, flag]);
         } catch (e) {
-            this.notif.add(this._err(e, "Could not update verification."), { type: "danger" });
+            this.notif.add(this._err(e, _t("Could not update verification.")), { type: "danger" });
         } finally { this.state.busy = false; }
     }
     async del(doc) {
         this.state.busy = true;
         try {
             this.state.d = await this.orm.call(MODEL, "vault_delete", [doc.id]);
-            this.notif.add("Document removed.", { type: "success" });
+            this.notif.add(_t("Document removed."), { type: "success" });
         } catch (e) {
-            this.notif.add(this._err(e, "Could not delete this document."), { type: "danger" });
+            this.notif.add(this._err(e, _t("Could not delete this document.")), { type: "danger" });
         } finally { this.state.busy = false; }
     }
 
@@ -173,7 +174,7 @@ export class Employee360Drawer extends Component {
             const merged = (this.d.timeline || []).concat(res.items || []);
             this.state.d = Object.assign({}, this.state.d, { timeline: merged, timeline_shown: res.shown, timeline_total: res.total });
         } catch (e) {
-            this.notif.add(this._err(e, "Could not load more history."), { type: "danger" });
+            this.notif.add(this._err(e, _t("Could not load more history.")), { type: "danger" });
         } finally { this.state.busy = false; }
     }
     get hasMoreTimeline() {

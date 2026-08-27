@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.contracts";
@@ -44,9 +45,9 @@ export class PbContractDetail extends Component {
             const res = await this.orm.call(MODEL, "run_contract_action", [this.cid, method]);
             this.state.d = res;
             if (res.error) this.notif.add(res.error, { type: "warning" });
-            else this.notif.add("Done.", { type: "success" });
+            else this.notif.add(_t("Done."), { type: "success" });
         } catch (e) {
-            this.notif.add((e && e.message && e.message.toString()) || "Action failed.", { type: "danger" });
+            this.notif.add((e && e.message && e.message.toString()) || _t("Action failed."), { type: "danger" });
         } finally { this.state.busy = false; }
     }
     renew() {

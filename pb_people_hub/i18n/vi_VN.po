@@ -1,0 +1,179 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Compensation Cycles"
+msgstr "Chu kỳ bồi thường"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/people_hub.js:0
+#: code:addons/pb_people_hub/static/src/js/people_hub_palette.js:0
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Employee Forecasts"
+msgstr "Dự báo nhân viên"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/people_hub.js:0
+#: code:addons/pb_people_hub/static/src/js/people_hub_palette.js:0
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/people_hub_palette.js:0
+msgid "Employees & contracts"
+msgstr "Nhân viên & hợp đồng"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Increase rules, the configuration they run on, and their results."
+msgstr "Tăng các quy tắc, cấu hình mà chúng chạy và kết quả của chúng."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/xml/people_hub.xml:0
+msgid "Loading planning…"
+msgstr "Đang tải kế hoạch…"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Mark which salary components a planning run may move."
+msgstr ""
+"Đánh dấu những thành phần lương nào trong quá trình lập kế hoạch có thể thay đổi."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Merit Matrix"
+msgstr "Ma trận công đức"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/xml/people_hub.xml:0
+msgid "Open"
+msgstr "Mở"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Pay Grades"
+msgstr "Trả điểm"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/people_hub.js:0
+#: code:addons/pb_people_hub/static/src/js/people_hub_palette.js:0
+#: model:ir.actions.client,name:pb_people_hub.action_pb_people_hub
+#: model:pb.sidebar.item,name:pb_people_hub.item_people
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Per-employee projections, pivoted and graphed."
+msgstr "Các dự báo cho mỗi nhân viên, được xoay vòng và vẽ đồ thị."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Performance against position in band, and what each cell awards."
+msgstr "Hiệu suất so với vị trí trong ban nhạc và những gì từng tế bào đạt được."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/people_hub.js:0
+msgid "Plan"
+msgstr "Kế hoạch"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Planning Dashboard"
+msgstr "Trang tổng quan lập kế hoạch"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Planning Scenarios"
+msgstr "Kịch bản quy hoạch"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid ""
+"Planning scenarios, forecasts, pay grades and merit matrices are read by the Workforce"
+" Planning roles. Your account holds none of them."
+msgstr ""
+"Các kịch bản lập kế hoạch, dự báo, xếp hạng lương và ma trận thành tích đều được đọc "
+"bởi các vai trò Lập kế hoạch lực lượng lao động. Tài khoản của bạn không chứa chúng."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Scenario headlines, labour analytics and the compensation view."
+msgstr "Tiêu đề kịch bản, phân tích lao động và chế độ xem lương thưởng."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Tag Formula Components"
+msgstr "Thành phần công thức thẻ"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "The bands a salary is measured against."
+msgstr "Các mức lương được đo lường dựa vào."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/xml/people_hub.xml:0
+msgid "The planning screens, unchanged. Each one opens where it always did."
+msgstr "Các màn hình quy hoạch, không thay đổi. Mỗi cái mở ra ở nơi nó luôn làm."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "The review periods a scenario is proposed and approved inside."
+msgstr "Giai đoạn xem xét một kịch bản được đề xuất và phê duyệt bên trong."
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/people_hub_palette.js:0
+#: code:addons/pb_people_hub/static/src/xml/people_hub.xml:0
+msgid "Workforce Planning"
+msgstr "Lập kế hoạch lực lượng lao động"
+
+#. module: pb_people_hub
+#. odoo-javascript
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:0
+msgid "Workforce Planning is not open to you."
+msgstr "Lập kế hoạch lực lượng lao động không dành cho bạn."
+
+#: pb_people_hub/static/src/js/plan_launcher.js:241
+msgid "Planning scenarios, forecasts, pay grades and merit"
+msgstr "Lập kế hoạch kịch bản, dự báo, trả điểm và bằng khen"

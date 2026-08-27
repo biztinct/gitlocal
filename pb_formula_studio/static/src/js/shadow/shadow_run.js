@@ -3,6 +3,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 
 const CHUNK = 50;
 
@@ -49,18 +50,18 @@ export class PbShadowRun extends Component {
     // ---- launch + drive a full run ----
     async launchRun() {
         const cfg = this.state.launch.config_id;
-        if (!cfg) { this.notif.add("Pick a configuration first", { type: "warning" }); return; }
+        if (!cfg) { this.notif.add(_t("Pick a configuration first"), { type: "warning" }); return; }
         this.state.busy = true;
         this.state.progress = { done: 0, total: 0, phase: "Seeding from payslips…" };
         try {
             const seed = await this.orm.call("hr.formula.shadow.run", "create_from_payslips",
                 [cfg, this.state.launch.limit || null]);
-            if (!seed.ok) { this.notif.add(seed.msg || "Nothing to shadow", { type: "danger" }); return; }
+            if (!seed.ok) { this.notif.add(seed.msg || _t("Nothing to shadow"), { type: "danger" }); return; }
             await this.computeRun(seed.run_id);
             await this.loadOverview();
             await this.openRun(seed.run_id);
         } catch (e) {
-            this.notif.add("Shadow run failed to start", { type: "danger" });
+            this.notif.add(_t("Shadow run failed to start"), { type: "danger" });
         } finally {
             this.state.busy = false;
             this.state.progress = null;
@@ -119,7 +120,9 @@ export class PbShadowRun extends Component {
         try {
             const r = await this.orm.call("hr.formula.shadow.run", "name_clusters_ai",
                 [this.state.detail.id]);
-            this.notif.add(r.named ? `PayAI named ${r.named} cluster(s)` : "No AI naming available",
+            this.notif.add(r.named
+                ? _t("PayAI named %(count)s clusters", { count: r.named })
+                : _t("No AI naming available"),
                 { type: r.named ? "success" : "info" });
             await this.openRun(this.state.detail.id);
         } finally { this.state.busy = false; }
@@ -127,13 +130,13 @@ export class PbShadowRun extends Component {
     async applyTolerance() {
         let tol;
         try { tol = JSON.parse(this.state.tolDraft || "{}"); }
-        catch (e) { this.notif.add("Tolerance must be valid JSON", { type: "danger" }); return; }
+        catch (e) { this.notif.add(_t("Tolerance must be valid JSON"), { type: "danger" }); return; }
         this.state.busy = true;
         try {
             await this.orm.call("hr.formula.shadow.run", "write",
                 [[this.state.detail.id], { tolerance_json: JSON.stringify(tol) }]);
             await this.orm.call("hr.formula.shadow.run", "action_recompare", [[this.state.detail.id]]);
-            this.notif.add("Re-compared with new tolerance", { type: "success" });
+        this.notif.add(_t("Re-compared with new tolerance"), { type: "success" });
             await this.openRun(this.state.detail.id);
         } finally { this.state.busy = false; }
     }

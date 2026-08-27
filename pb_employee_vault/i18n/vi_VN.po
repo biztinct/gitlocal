@@ -1,0 +1,565 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_document.py:0
+msgid "A '%s' document requires an expiry date."
+msgstr "Tài liệu '%s' yêu cầu ngày hết hạn."
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__active
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__category_id
+msgid "Category"
+msgstr "Danh mục"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Changes to this employee will appear here from now on."
+msgstr "Những thay đổi đối với nhân viên này sẽ xuất hiện ở đây kể từ bây giờ."
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Cost centre"
+msgstr "Trung tâm chi phí"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__create_uid
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__create_date
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_employee_vault
+#: model:pb.employee.document.category,name:pb_employee_vault.cat_certificate
+msgid "Degree / Certificate"
+msgstr "Bằng cấp/Chứng chỉ"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_employee_vault.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_employee_vault.field_hr_version__display_name
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__display_name
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__display_name
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_timeline__display_name
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_people__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/pb_people_360.py:0
+msgid "Document"
+msgstr "Tài liệu"
+
+#. module: pb_employee_vault
+#: model:ir.actions.act_window,name:pb_employee_vault.action_document_category
+#: model:ir.ui.menu,name:pb_employee_vault.menu_document_category
+#: model_terms:ir.ui.view,arch_db:pb_employee_vault.view_document_category_list
+msgid "Document Categories"
+msgstr "Danh mục tài liệu"
+
+#. module: pb_employee_vault
+#: model_terms:ir.ui.view,arch_db:pb_employee_vault.view_document_category_form
+msgid "Document Category"
+msgstr "Danh mục tài liệu"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_document.py:0
+msgid "Document expiring: %s"
+msgstr "Tài liệu hết hạn: %s"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/pb_people_360.py:0
+msgid "Document not found."
+msgstr "Không tìm thấy tài liệu."
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_document.py:0
+msgid "Document verification is HR testimony and cannot be set directly: %s."
+msgstr "Xác minh tài liệu là lời khai của nhân sự và không thể đặt trực tiếp: %s."
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Documents"
+msgstr "Tài liệu"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,help:pb_employee_vault.field_pb_employee_document_category__requires_expiry
+msgid ""
+"Documents in this category must carry an expiry date (work permits, health checks, "
+"IDs)."
+msgstr ""
+"Các tài liệu thuộc loại này phải có thời hạn sử dụng (giấy phép lao động, giấy khám "
+"sức khỏe, CMND)."
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Drop a file or click to upload"
+msgstr "Thả một tập tin hoặc nhấp để tải lên"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_employee_vault
+#: model:ir.model,name:pb_employee_vault.model_hr_employee
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_employee_vault
+#: model:ir.model,name:pb_employee_vault.model_pb_employee_timeline
+msgid "Employee 360 Timeline"
+msgstr "Dòng thời gian 360 của nhân viên"
+
+#. module: pb_employee_vault
+#: model:ir.model,name:pb_employee_vault.model_hr_contract
+#: model:ir.model,name:pb_employee_vault.model_hr_version
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_employee_vault
+#: model:ir.model,name:pb_employee_vault.model_pb_employee_document
+#: model_terms:ir.ui.view,arch_db:pb_employee_vault.view_employee_document_form
+msgid "Employee Document"
+msgstr "Tài liệu nhân viên"
+
+#. module: pb_employee_vault
+#: model:ir.model,name:pb_employee_vault.model_pb_employee_document_category
+msgid "Employee Document Category"
+msgstr "Danh mục tài liệu nhân viên"
+
+#. module: pb_employee_vault
+#: model_terms:ir.ui.view,arch_db:pb_employee_vault.view_employee_document_list
+msgid "Employee Documents"
+msgstr "Tài liệu nhân viên"
+
+#. module: pb_employee_vault
+#: model:ir.ui.menu,name:pb_employee_vault.menu_employee_vault_root
+msgid "Employee Vault"
+msgstr "Kho tiền nhân viên"
+
+#. module: pb_employee_vault
+#: model:ir.actions.server,name:pb_employee_vault.cron_pb_employee_document_expiry_ir_actions_server
+msgid "Employee Vault: document expiry check"
+msgstr "Vault nhân viên: kiểm tra hết hạn tài liệu"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/pb_people_360.py:0
+msgid "Employee not found."
+msgstr "Không tìm thấy nhân viên."
+
+#. module: pb_employee_vault
+#: model:ir.model.fields.selection,name:pb_employee_vault.selection__pb_employee_document__expiry_state__expired
+msgid "Expired"
+msgstr "Đã hết hạn"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__expiry_date
+msgid "Expires"
+msgstr "Hết hạn"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields.selection,name:pb_employee_vault.selection__pb_employee_document__expiry_state__soon
+msgid "Expiring soon"
+msgstr "Sắp hết hạn"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__expiry_state
+msgid "Expiry"
+msgstr "Hết hạn"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__attachment_id
+msgid "File"
+msgstr "Tệp"
+
+#. module: pb_employee_vault
+#: model:pb.employee.document.category,name:pb_employee_vault.cat_health_check
+msgid "Health Check"
+msgstr "Kiểm tra sức khỏe"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_employee_vault.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_employee_vault.field_hr_version__id
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__id
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__id
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_timeline__id
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_people__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_employee_vault
+#: model:pb.employee.document.category,name:pb_employee_vault.cat_id_document
+msgid "ID Document"
+msgstr "Giấy tờ tùy thân"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Insurance"
+msgstr "Bảo hiểm"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__issue_date
+msgid "Issued"
+msgstr "Đã phát hành"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "JPG · PNG · PDF"
+msgstr "JPG · PNG · PDF"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Joined"
+msgstr "Đã tham gia"
+
+#. module: pb_employee_vault
+#: model:pb.employee.document.category,name:pb_employee_vault.cat_labor_contract
+msgid "Labor Contract"
+msgstr "Hợp đồng lao động"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__write_uid
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__write_date
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Load more"
+msgstr "Tải thêm"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Monthly wage"
+msgstr "Lương hàng tháng"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "No document categories configured."
+msgstr "Không có danh mục tài liệu nào được định cấu hình."
+
+#. module: pb_employee_vault
+#: model:ir.model.fields.selection,name:pb_employee_vault.selection__pb_employee_document__expiry_state__none
+msgid "No expiry"
+msgstr "Không hết hạn"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "No history yet."
+msgstr "Chưa có lịch sử."
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_employee_vault
+#: model_terms:ir.ui.view,arch_db:pb_employee_vault.view_employee_document_form
+msgid "Note…"
+msgstr "Lưu ý…"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/pb_people_360.py:0
+msgid "Only HR can open the Employee 360 vault."
+msgstr "Chỉ bộ phận nhân sự mới có thể mở kho dữ liệu của Nhân viên 360."
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_document.py:0
+msgid "Only HR can revoke a document's verification."
+msgstr "Chỉ bộ phận nhân sự mới có thể thu hồi xác minh của tài liệu."
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_document.py:0
+msgid "Only HR can verify a document."
+msgstr "Chỉ nhân sự mới có thể xác minh tài liệu."
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/pb_people_360.py:0
+msgid "Only JPG, PNG or PDF documents are accepted."
+msgstr "Chỉ các tài liệu JPG, PNG hoặc PDF được chấp nhận."
+
+#. module: pb_employee_vault
+#: model:pb.employee.document.category,name:pb_employee_vault.cat_other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_employee_vault
+#: model:ir.model,name:pb_employee_vault.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr "Dữ liệu buồng lái của Payobook People"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Profile"
+msgstr "Hồ sơ"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__requires_expiry
+msgid "Requires Expiry Date"
+msgstr "Yêu cầu ngày hết hạn"
+
+#. module: pb_employee_vault
+#: model_terms:ir.ui.view,arch_db:pb_employee_vault.view_employee_document_form
+msgid "Revoke verification"
+msgstr "Thu hồi xác minh"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document_category__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Structure"
+msgstr "Cấu trúc"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Tax"
+msgstr "Thuế"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Tenure"
+msgstr "nhiệm kỳ"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_document.py:0
+msgid "The document '%s' (%s) expires on %s."
+msgstr "Tài liệu '%s' (%s) hết hạn vào %s."
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Timeline"
+msgstr "Dòng thời gian"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__name
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Unverify"
+msgstr "Hủy xác minh"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Uploading…"
+msgstr "Đang tải lên…"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields.selection,name:pb_employee_vault.selection__pb_employee_document__expiry_state__valid
+msgid "Valid"
+msgstr "Hợp lệ"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__verified
+msgid "Verified"
+msgstr "Đã xác minh"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__verified_at
+msgid "Verified At"
+msgstr "Đã xác minh tại"
+
+#. module: pb_employee_vault
+#: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__verified_by
+msgid "Verified By"
+msgstr "Được xác minh bởi"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_employee_vault.view_employee_document_form
+msgid "Verify"
+msgstr "Xác minh"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "View"
+msgstr "Chế độ xem"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Visible to payroll managers only"
+msgstr "Chỉ hiển thị với người quản lý tiền lương"
+
+#. module: pb_employee_vault
+#: model:pb.employee.document.category,name:pb_employee_vault.cat_work_permit
+msgid "Work Permit"
+msgstr "Giấy phép LĐ"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_document.py:0
+msgid "You can only attach a file you uploaded yourself."
+msgstr "Bạn chỉ có thể đính kèm tệp do chính bạn tải lên."
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/pb_people_360.py:0
+msgid "document"
+msgstr "tài liệu"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "expiry required"
+msgstr "yêu cầu hết hạn"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "of"
+msgstr "của"
+
+#: pb_employee_vault/static/src/js/employee_360.js:92
+msgid "Expired %(days)s days ago"
+msgstr "%(days)s đã hết hạn ngày trước"
+
+#: pb_employee_vault/static/src/js/employee_360.js:93
+msgid "Expires today"
+msgstr "Hết hạn hôm nay"
+
+#: pb_employee_vault/static/src/js/employee_360.js:94
+msgid "Expires in %(days)s days"
+msgstr "Hết hạn sau %(days)s ngày"
+
+#: pb_employee_vault/static/src/js/employee_360.js:135
+msgid "Document uploaded."
+msgstr "Tài liệu đã được tải lên."
+
+#: pb_employee_vault/static/src/js/employee_360.js:137
+msgid "Upload failed."
+msgstr "Tải lên thất bại."
+
+#: pb_employee_vault/static/src/js/employee_360.js:156
+msgid "Could not update verification."
+msgstr "Không thể cập nhật xác minh."
+
+#: pb_employee_vault/static/src/js/employee_360.js:163
+msgid "Document removed."
+msgstr "Đã xóa tài liệu."
+
+#: pb_employee_vault/static/src/js/employee_360.js:165
+msgid "Could not delete this document."
+msgstr "Không thể xóa tài liệu này."
+
+#: pb_employee_vault/static/src/js/employee_360.js:177
+msgid "Could not load more history."
+msgstr "Không thể tải thêm lịch sử."

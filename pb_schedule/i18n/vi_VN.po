@@ -1,0 +1,1010 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "%(acked)s of %(total)s confirmed"
+msgstr "Đã xác nhận %(acked)s trên %(total)s"
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid "%(name)s already has a shift that overlaps %(a)s–%(b)s on this day."
+msgstr "%(name)s đã có ca làm việc chồng lên %(a)s–%(b)s vào ngày này."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid ""
+"%(name)s has used %(used).1f of %(cap).1f overtime hours this month. Overflow becomes "
+"bonus hours."
+msgstr ""
+"%(name)s đã sử dụng %(used).1f trong số %(cap).1f số giờ làm thêm trong tháng này. "
+"Tràn quá mức sẽ trở thành giờ thưởng."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid ""
+"%(published)s shifts published · %(notified)s people notified · %(blind)s with no way "
+"to reach them."
+msgstr ""
+"Đã công bố %(published)s ca · đã báo cho %(notified)s người · %(blind)s người không có"
+" kênh liên lạc."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "%(published)s shifts published · %(notified)s people notified."
+msgstr "Đã công bố %(published)s ca · đã báo cho %(notified)s người."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid "%s has a leave request awaiting approval that day."
+msgstr "%s có đơn xin nghỉ phép đang chờ phê duyệt vào ngày hôm đó."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid "%s is on approved leave that day."
+msgstr "%s được phép nghỉ phép vào ngày hôm đó."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "%s shifts copied forward."
+msgstr "Các ca dịch chuyển %s được sao chép về phía trước."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "%s shifts published."
+msgstr "Các ca %s đã được công bố."
+
+#. module: pb_schedule
+#: model:ir.model.constraint,message:pb_schedule.constraint_hr_shift_coverage_requirement_headcount_positive
+msgid "A coverage requirement cannot be negative."
+msgstr "Yêu cầu bảo hiểm không thể âm."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/shift_coverage.py:0
+msgid ""
+"A coverage requirement needs either a weekday (the standing rule) or a specific date "
+"(the exception) — exactly one of them."
+msgstr ""
+"Yêu cầu bảo hiểm cần một ngày trong tuần (quy tắc thường trực) hoặc một ngày cụ thể "
+"(ngoại lệ) - chính xác là một trong số đó."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_budget.py:0
+msgid "A labour budget cannot be negative."
+msgstr "Ngân sách lao động không thể âm."
+
+#. module: pb_schedule
+#: model:ir.model.fields,help:pb_schedule.field_hr_shift_coverage_requirement__date
+msgid "A one-off requirement. When both exist, the date wins."
+msgstr "Một yêu cầu một lần. Khi cả hai tồn tại, ngày thắng."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"A weekday row is the standing rule; a date row is the exception and\n"
+"            wins for that day. A row with no shift states a whole-day total.\n"
+"            Departments with a rule of their own are not also subject to the\n"
+"            company-wide one."
+msgstr ""
+"Hàng ngày trong tuần là quy tắc thường trực; một hàng ngày là ngoại lệ và\n"
+"            chiến thắng cho ngày hôm đó. Một hàng không có ca cho biết tổng cộng cả ngày.\n"
+"            Các phòng ban có quy định riêng cũng không phải tuân theo\n"
+"            toàn công ty."
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Actual so far"
+msgstr "Thực tế cho đến nay"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Add a shift"
+msgstr "Thêm ca"
+
+#. module: pb_schedule
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Afternoon"
+msgstr "Buổi chiều"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "An attendance or payroll manager can set one."
+msgstr "Người quản lý chấm công hoặc tính lương có thể thiết lập một."
+
+#. module: pb_schedule
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Budget"
+msgstr "Ngân sách"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__company_id
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_schedule
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_schedule/models/shift_coverage.py:0
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Company-wide"
+msgstr "Toàn công ty"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Copy failed."
+msgstr "Sao chép không thành công."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Copy shifts"
+msgstr "Sao chép ca"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Copy week"
+msgstr "Sao chép tuần"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not add that shift."
+msgstr "Không thể thêm ca đó."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not load coverage requirements."
+msgstr "Không thể tải các yêu cầu về mức độ phù hợp."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not load that person."
+msgstr "Không thể tải người đó."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not load the roster."
+msgstr "Không thể tải danh sách."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not load the shift library."
+msgstr "Không thể tải thư viện ca."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not remove that requirement."
+msgstr "Không thể loại bỏ yêu cầu đó."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not remove that shift."
+msgstr "Không thể xóa ca đó."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not remove the budget."
+msgstr "Không thể xóa ngân sách."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not save that requirement."
+msgstr "Không thể lưu yêu cầu đó."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Could not save the budget."
+msgstr "Không thể tiết kiệm ngân sách."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Coverage"
+msgstr "Mức độ bao phủ"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__create_uid
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__create_date
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_schedule
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Crosses midnight"
+msgstr "Vượt qua nửa đêm"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__department_id
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__display_name
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_planning_grid__display_name
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Edit"
+msgstr "Sửa"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Edit coverage requirements"
+msgstr "Chỉnh sửa yêu cầu bảo hiểm"
+
+#. module: pb_schedule
+#: model:ir.model,name:pb_schedule.model_hr_contract
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Enter a positive amount."
+msgstr "Nhập số tiền dương."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"Every shift in the current span is recreated as a DRAFT on the\n"
+"                matching day of the next one. Nothing is published — and every\n"
+"                target is checked first: anyone who would land on approved\n"
+"                leave, on a shift they already have, or on a night they are\n"
+"                barred from is SKIPPED and listed."
+msgstr ""
+"Mọi ca trong khoảng thời gian hiện tại được tạo lại dưới dạng BẢN NHÁP trên\n"
+"                ngày phù hợp của ngày tiếp theo. Không có gì được công bố - và mọi\n"
+"                mục tiêu được kiểm tra đầu tiên: bất kỳ ai hạ cánh trên đã được phê duyệt\n"
+"                rời đi, theo ca họ đã có, hoặc vào một đêm họ\n"
+"                bị cấm bị BỎ QUA và được liệt kê."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Every weekday"
+msgstr "Mỗi ngày trong tuần"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Fortnight"
+msgstr "Hai tuần"
+
+#. module: pb_schedule
+#: model:ir.model.fields.selection,name:pb_schedule.selection__hr_shift_coverage_requirement__weekday__4
+msgid "Friday"
+msgstr "Thứ Sáu"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__id
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_planning_grid__id
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__amount
+msgid "Labour budget"
+msgstr "Ngân sách lao động"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Labour budget amount"
+msgstr "Số ngân sách lao động"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__write_uid
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__write_date
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid "Leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_schedule
+#: model:ir.model.fields,help:pb_schedule.field_pb_schedule_budget__department_id
+msgid "Leave empty for a company-wide budget."
+msgstr "Để trống cho ngân sách toàn công ty."
+
+#. module: pb_schedule
+#: model:ir.model.fields,help:pb_schedule.field_hr_shift_coverage_requirement__department_id
+msgid ""
+"Leave empty for a company-wide requirement. A department with a requirement of its own"
+" is not also subject to the company one."
+msgstr ""
+"Để trống cho yêu cầu toàn công ty. Một bộ phận có yêu cầu riêng thì cũng không phải "
+"tuân theo yêu cầu của công ty."
+
+#. module: pb_schedule
+#: model:ir.model.fields,help:pb_schedule.field_hr_shift_coverage_requirement__template_id
+msgid "Leave empty to state a requirement for the whole day."
+msgstr "Để trống để nêu yêu cầu cho cả ngày."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Loading the roster…"
+msgstr "Đang tải danh sách…"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_schedule
+#: model:ir.model.fields.selection,name:pb_schedule.selection__hr_shift_coverage_requirement__weekday__0
+msgid "Monday"
+msgstr "Thứ Hai"
+
+#. module: pb_schedule
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Morning"
+msgstr "Buổi sáng"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "New requirement"
+msgstr "Yêu cầu mới"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "New template"
+msgstr "Mẫu mới"
+
+#. module: pb_schedule
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Night"
+msgstr "Đêm"
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid ""
+"Night work is not permitted for workers under 18 (Vietnam Labor Code). %(name)s cannot"
+" be assigned the %(shift)s shift, which falls in the %(a)02.0f:00–%(b)02.0f:00 night "
+"window."
+msgstr ""
+"Không được phép làm đêm đối với người lao động dưới 18 tuổi (Bộ luật Lao động Việt "
+"Nam). %(name)s không thể được xếp ca %(shift)s, vốn nằm trong khung giờ đêm "
+"%(a)02.0f:00–%(b)02.0f:00."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "No budget set"
+msgstr "Chưa đặt ngân sách"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid ""
+"No employee matches this department or search. Clear the filter and the week fills up."
+msgstr ""
+"Không có nhân viên nào phù hợp với bộ phận này hoặc tìm kiếm. Xóa bộ lọc và tuần sẽ "
+"đầy."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"No shift templates yet. Create one and every square on the roster\n"
+"              can offer it."
+msgstr ""
+"Chưa có mẫu ca làm việc nào. Tạo một và mọi ô vuông trên danh sách\n"
+"              có thể cung cấp nó."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"No shift templates yet. Create one from Schedule's templates drawer\n"
+"              and it appears here."
+msgstr ""
+"Chưa có mẫu ca làm việc nào. Tạo một mẫu từ ngăn mẫu của Lịch trình\n"
+"              và nó xuất hiện ở đây."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Nobody to schedule here"
+msgstr "Không có ai lên lịch ở đây"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Nothing had to be refused — every shift landed."
+msgstr "Không có gì phải từ chối - mọi ca đều đổ bộ."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"Nothing stated yet, so the roster shows no coverage marks at all —\n"
+"              an absent rule is not a requirement of zero."
+msgstr ""
+"Chưa có gì được nêu rõ, vì vậy danh sách không có dấu hiệu bảo hiểm nào cả -\n"
+"              một quy tắc vắng mặt không phải là một yêu cầu bằng không."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "One specific date"
+msgstr "Một ngày cụ thể"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Only"
+msgstr "Chỉ"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Only a scheduling manager can set the labour budget."
+msgstr "Chỉ người quản lý lịch trình mới có thể đặt ngân sách lao động."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/shift_coverage.py:0
+msgid ""
+"Only an attendance manager or a payroll manager can change coverage requirements."
+msgstr ""
+"Chỉ người quản lý điểm danh hoặc người quản lý tiền lương mới có thể thay đổi các yêu "
+"cầu bảo hiểm."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_budget.py:0
+msgid "Only an attendance manager or a payroll manager can set a labour budget."
+msgstr ""
+"Chỉ người quản lý chấm công hoặc người quản lý tiền lương mới có thể thiết lập ngân "
+"sách lao động."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Only draft shifts can be removed."
+msgstr "Chỉ có thể loại bỏ ca nháp."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Open shift"
+msgstr "Ca mở"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Open shifts"
+msgstr "Ca mở"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Overlapping shift"
+msgstr "Ca chồng chéo"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__required_headcount
+msgid "People needed"
+msgstr "Người cần thiết"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Publish"
+msgstr "Công khai"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Publish failed."
+msgstr "Xuất bản không thành công."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid ""
+"Refresh to try again. If it keeps failing you may not have attendance-officer access."
+msgstr ""
+"Hãy làm mới để thử lại. Nếu nó vẫn không thành công, bạn có thể không có quyền truy "
+"cập của nhân viên chấm công."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Reload the roster"
+msgstr "Tải lại danh sách"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Repeat this roster forward"
+msgstr "Lặp lại danh sách này về phía trước"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Roster span"
+msgstr "Khoảng danh sách"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Rule type"
+msgstr "Loại quy tắc"
+
+#. module: pb_schedule
+#: model:ir.model.fields.selection,name:pb_schedule.selection__hr_shift_coverage_requirement__weekday__5
+msgid "Saturday"
+msgstr "Thứ Bảy"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Save rule"
+msgstr "Lưu quy tắc"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+#: model:ir.actions.client,name:pb_schedule.action_pb_schedule
+msgid "Schedule"
+msgstr "Lịch trình"
+
+#. module: pb_schedule
+#: model:ir.model,name:pb_schedule.model_pb_schedule_budget
+msgid "Schedule Labour Budget"
+msgstr "Lập kế hoạch ngân sách lao động"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Scheduled"
+msgstr "Theo lịch"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Scheduled cost"
+msgstr "Chi phí dự kiến"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Set budget"
+msgstr "Đặt ngân sách"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__template_id
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Shift"
+msgstr "Ca làm việc"
+
+#. module: pb_schedule
+#: model:ir.model,name:pb_schedule.model_hr_shift_coverage_requirement
+msgid "Shift Coverage Requirement"
+msgstr "Yêu cầu bảo hiểm theo ca"
+
+#. module: pb_schedule
+#: model:ir.model,name:pb_schedule.model_hr_shift_planning_grid
+msgid "Shift Planning Grid API"
+msgstr "API lưới lập kế hoạch thay đổi"
+
+#. module: pb_schedule
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Shift Templates"
+msgstr "Mẫu ca"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "Shift added."
+msgstr "Đã thêm ca."
+
+#. module: pb_schedule
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Shift type"
+msgstr "Kiểu ca"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Show required vs scheduled on every day"
+msgstr "Hiển thị yêu cầu so với lịch trình hàng ngày"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_schedule
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__date
+msgid "Specific date"
+msgstr "Ngày cụ thể"
+
+#. module: pb_schedule
+#: model:ir.model.fields.selection,name:pb_schedule.selection__hr_shift_coverage_requirement__weekday__6
+msgid "Sunday"
+msgstr "Chủ nhật"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Templates"
+msgstr "Các mẫu"
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid "That coverage requirement is not available in this company."
+msgstr "Yêu cầu bảo hiểm đó không có sẵn ở công ty này."
+
+#. module: pb_schedule
+#: model:ir.model.fields,help:pb_schedule.field_pb_schedule_budget__week_start
+msgid "The Monday of the budgeted week. Normalized on write."
+msgstr "Thứ Hai của tuần dự toán. Chuẩn hóa khi viết."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "The roster could not load"
+msgstr "Danh sách không thể tải"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "The shift library"
+msgstr "Thư viện ca"
+
+#. module: pb_schedule
+#: model:ir.model.fields,help:pb_schedule.field_hr_shift_coverage_requirement__weekday
+msgid "The standing rule. Leave empty and set a date for a one-off."
+msgstr "Quy tắc đứng. Để trống và đặt ngày cho một lần."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_budget.py:0
+msgid "There is already a company-wide labour budget for the week of %s."
+msgstr "Hiện đã có ngân sách lao động toàn công ty cho tuần %s."
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/shift_coverage.py:0
+msgid "There is already a coverage requirement for that scope, day and shift."
+msgstr "Hiện đã có yêu cầu về phạm vi bảo hiểm cho phạm vi, ngày và ca đó."
+
+#. module: pb_schedule
+#: model:ir.model.constraint,message:pb_schedule.constraint_pb_schedule_budget_scope_week_uniq
+msgid "There is already a labour budget for that department and week."
+msgstr "Đã có sẵn ngân sách lao động cho bộ phận đó và tuần."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/js/pb_schedule.js:0
+msgid "There is nobody to schedule in this department yet."
+msgstr "Chưa có ai lên lịch ở bộ phận này."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "This department only"
+msgstr "Bộ phận này chỉ"
+
+#. module: pb_schedule
+#: model:ir.model.fields.selection,name:pb_schedule.selection__hr_shift_coverage_requirement__weekday__3
+msgid "Thursday"
+msgstr "Thứ năm"
+
+#. module: pb_schedule
+#: model:ir.model.fields.selection,name:pb_schedule.selection__hr_shift_coverage_requirement__weekday__1
+msgid "Tuesday"
+msgstr "Thứ Ba"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Unassigned"
+msgstr "Chưa phân bổ"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Usage counted over"
+msgstr "Việc sử dụng được tính hết"
+
+#. module: pb_schedule
+#: model:ir.model.fields.selection,name:pb_schedule.selection__hr_shift_coverage_requirement__weekday__2
+msgid "Wednesday"
+msgstr "Thứ Tư"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+#: model:ir.model.fields,field_description:pb_schedule.field_pb_schedule_budget__week_start
+msgid "Week"
+msgstr "Tuần"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Week of"
+msgstr "Tuần của"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+#: model:ir.model.fields,field_description:pb_schedule.field_hr_shift_coverage_requirement__weekday
+msgid "Weekday"
+msgstr "Ngày thường"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"Weekly. The strip compares it against the scheduled cost of this\n"
+"              span; leaving it unset simply hides the comparison."
+msgstr ""
+"Hàng tuần. Dải này so sánh nó với chi phí dự kiến của việc này\n"
+"              nhịp; để nó không được đặt chỉ đơn giản là ẩn sự so sánh."
+
+#. module: pb_schedule
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_schedule/models/shift_coverage.py:0
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "Whole day"
+msgstr "Cả ngày"
+
+#. module: pb_schedule
+#: model_terms:ir.ui.view,arch_db:pb_schedule.view_shift_template_search
+msgid "Work schedule"
+msgstr "lịch làm việc"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "act"
+msgstr "hành động"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "conflicts"
+msgstr "xung đột"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "considered"
+msgstr "xem xét"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "copied"
+msgstr "sao chép"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "h"
+msgstr "h"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "h ·"
+msgstr "h ·"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "open"
+msgstr "mở"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"people (the roster shows\n"
+"              everyone with a shift first). Narrow by department or search to\n"
+"              see the rest."
+msgstr ""
+"mọi người (danh sách cho thấy\n"
+"              mọi người có ca làm việc trước). Thu hẹp theo bộ phận hoặc tìm kiếm\n"
+"              xem phần còn lại."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "published"
+msgstr "được xuất bản"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"scheduled people have no wage on\n"
+"                a running contract, so their hours are not in the cost."
+msgstr ""
+"những người theo lịch trình không có lương\n"
+"                một hợp đồng đang chạy, vì vậy số giờ của họ không được tính vào chi phí."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "shifts"
+msgstr "ca"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "skipped"
+msgstr "bỏ qua"
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid ""
+"weeks in this span are\n"
+"                  budgeted — the comparison is partial."
+msgstr ""
+"số tuần trong khoảng thời gian này là\n"
+"                  ngân sách - sự so sánh là một phần."
+
+#. module: pb_schedule
+#. odoo-javascript
+#: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
+msgid "· overnight"
+msgstr "· qua đêm"

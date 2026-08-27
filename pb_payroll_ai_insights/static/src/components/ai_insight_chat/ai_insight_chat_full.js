@@ -4,6 +4,7 @@ import { Component, useState, useRef, onMounted } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
+import { _t } from "@web/core/l10n/translation";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
 
 /**
@@ -139,9 +140,9 @@ export class AiInsightChatFull extends Component {
                 args: [chartConfig],
                 kwargs: {},
             });
-            this.notification.add("Chart pinned to dashboard! 📌", { type: "success" });
+            this.notification.add(_t("Chart pinned to dashboard! 📌"), { type: "success" });
         } catch (error) {
-            this.notification.add("Failed to pin chart", { type: "danger" });
+            this.notification.add(_t("Failed to pin chart"), { type: "danger" });
         }
     }
 

@@ -2,17 +2,18 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted" };
 const STATUS_CHIPS = [
-    { id: "all", label: "All" }, { id: "draft", label: "Draft" },
-    { id: "open", label: "Running" }, { id: "expiring", label: "Expiring soon" },
-    { id: "close", label: "Expired" }, { id: "cancel", label: "Cancelled" },
+    { id: "all", label: _t("All") }, { id: "draft", label: _t("Draft") },
+    { id: "open", label: _t("Running") }, { id: "expiring", label: _t("Expiring soon") },
+    { id: "close", label: _t("Expired") }, { id: "cancel", label: _t("Cancelled") },
 ];
 const DATE_CHIPS = [
-    { id: "all", label: "All time" }, { id: "month", label: "Started this month" },
-    { id: "year", label: "Started this year" }, { id: "custom", label: "Custom" },
+    { id: "all", label: _t("All time") }, { id: "month", label: _t("Started this month") },
+    { id: "year", label: _t("Started this year") }, { id: "custom", label: _t("Custom") },
 ];
 
 export class PbContracts extends Component {

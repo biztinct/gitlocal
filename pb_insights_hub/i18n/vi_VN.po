@@ -1,0 +1,78 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub_palette.js:0
+msgid "Analytics"
+msgstr "Phân tích"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub_palette.js:0
+msgid "Analytics Explorer"
+msgstr "Trình khám phá phân tích"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
+msgid "Explorer"
+msgstr "Nhà thám hiểm"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
+#: code:addons/pb_insights_hub/static/src/js/insights_hub_palette.js:0
+#: model:pb.sidebar.item,name:pb_insights_hub.item_insights
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub_palette.js:0
+#: model:ir.actions.client,name:pb_insights_hub.action_pb_insights_hub
+msgid "Insights Hub"
+msgstr "Trung tâm thông tin chi tiết"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub_palette.js:0
+msgid "Insights Pulse"
+msgstr "Thông tin chi tiết"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
+#: code:addons/pb_insights_hub/static/src/js/insights_hub_palette.js:0
+msgid "Payroll Report"
+msgstr "Báo cáo lương"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
+msgid "Pulse"
+msgstr "Xung"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
+msgid "Workforce"
+msgstr "Lực lượng lao động"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub_palette.js:0
+msgid "Workforce Insights"
+msgstr "Thông tin chi tiết về lực lượng lao động"

@@ -1,0 +1,1633 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_tree
+msgid "# Roles"
+msgstr "# Vai trò"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_kanban
+msgid "<span class=\"pb-capability-card__stat-label\">Budget</span>"
+msgstr "<span class=\"pb-capability-card__stat-label\">Ngân sách</span>"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_kanban
+msgid "<span class=\"pb-capability-card__stat-label\">Critical</span>"
+msgstr "<span class=\"pb-capability-card__stat-label\">Nghiêm trọng</span>"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_kanban
+msgid "<span class=\"pb-capability-card__stat-label\">Planned FTE</span>"
+msgstr "<span class=\"pb-capability-card__stat-label\">FTE</span> theo kế hoạch"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_kanban
+msgid "<span class=\"pb-capability-card__stat-label\">Roles</span>"
+msgstr "<span class=\"pb-capability-card__stat-label\">Vai trò</span>"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_kanban
+msgid "<span class=\"pb-role-card__label\">Gap</span>"
+msgstr "<span class=\"pb-role-card__label\">Thiếu hụt</span>"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_kanban
+msgid "<span class=\"pb-role-card__label\">Target</span>"
+msgstr "<span class=\"pb-role-card__label\">Mục tiêu</span>"
+
+#. module: pb_hr_payroll_demand
+#: model:res.groups,comment:pb_hr_payroll_demand.group_pb_workforce_user
+msgid "Access to workforce dashboards and read access to plans."
+msgstr ""
+"Truy cập vào bảng điều khiển lực lượng lao động và quyền truy cập đọc vào các kế "
+"hoạch."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_needaction
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_needaction
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_needaction
+msgid "Action Needed"
+msgstr "Hành động Cần"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__active
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Active Plans"
+msgstr "Kế hoạch hoạt động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_exception_decoration
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_exception_decoration
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Hoạt động Ngoại lệ Trang trí"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_state
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_state
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_state
+msgid "Activity State"
+msgstr "Hoạt động Trạng thái"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_type_icon
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_type_icon
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Hoạt động Loại Biểu tượng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__actual_cost
+msgid "Actual Cost"
+msgstr "Chi phí thực tế"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__actual_employees
+msgid "Actual Employees"
+msgstr "Nhân viên thực tế"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__actual_spend
+msgid "Actual Spend"
+msgstr "Chi tiêu thực tế"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__actual_cost
+msgid "Actual spend for the month."
+msgstr "Chi tiêu thực tế trong tháng."
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+msgid "All Capabilities"
+msgstr "Tất cả khả năng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.ui.menu,name:pb_hr_payroll_demand.menu_pb_workforce_demand_plans
+msgid "All Plans"
+msgstr "Tất cả các gói"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+msgid "All Roles"
+msgstr "Tất cả vai trò"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+msgid "All Years"
+msgstr "Tất cả các năm"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_form
+msgid "Analytics"
+msgstr "Phân tích"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role_kpi__frequency__annual
+msgid "Annual"
+msgstr "hàng năm"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Annual Cost"
+msgstr "Chi phí hàng năm"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+msgid "Approve"
+msgstr "Phê duyệt"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__state__approved
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__state__approved
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__approved_budget
+msgid "Approved Budget"
+msgstr "Ngân sách được phê duyệt"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "April"
+msgstr "Tháng 4"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+msgid "Archive"
+msgstr "Lưu trữ"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__state__archived
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__state__archived
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_attachment_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_attachment_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_attachment_count
+msgid "Attachment Count"
+msgstr "Tệp đính kèm Số lượng"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "August"
+msgstr "Tháng 8"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__escalation_needed
+msgid "Automatically flagged if spend variance is over threshold."
+msgstr "Tự động gắn cờ nếu chênh lệch chi tiêu vượt quá ngưỡng."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_demand__average
+msgid "Average Demand"
+msgstr "Nhu cầu trung bình"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__salary_average
+msgid "Average Monthly Cost"
+msgstr "Chi phí trung bình hàng tháng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__capacity_per_resource
+msgid "Average monthly capacity per resource (projects or outputs)."
+msgstr "Công suất trung bình hàng tháng trên mỗi nguồn lực (dự án hoặc đầu ra)."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__operator_capacity_per_shift
+msgid "Average throughput an operator can handle per shift."
+msgstr "Thông lượng trung bình mà người vận hành có thể xử lý trong mỗi ca."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__planned_budget
+msgid "Budget Cap"
+msgstr "Giới hạn ngân sách"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_quadrant__build
+msgid "Build"
+msgstr "xây dựng"
+
+#. module: pb_hr_payroll_demand
+#: model:res.groups,comment:pb_hr_payroll_demand.group_pb_workforce_manager
+msgid "Can edit capabilities, roles, and demand plans."
+msgstr "Có thể chỉnh sửa khả năng, vai trò và kế hoạch nhu cầu."
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.actions.act_window,name:pb_hr_payroll_demand.action_pb_workforce_capability
+#: model:ir.ui.menu,name:pb_hr_payroll_demand.menu_pb_workforce_capabilities
+msgid "Capabilities"
+msgstr "Khả năng"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__capability_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__capability_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+msgid "Capability"
+msgstr "Khả năng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.ui.menu,name:pb_hr_payroll_demand.menu_pb_workforce_catalog
+msgid "Capability Catalog"
+msgstr "Danh mục năng lực"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__owner_id
+msgid "Capability Owner"
+msgstr "Chủ sở hữu năng lực"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__capability_type
+msgid "Capability Type"
+msgstr "Loại năng lực"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.module.category,description:pb_hr_payroll_demand.module_category_pb_workforce
+msgid "Capability mapping and demand planning workspace"
+msgstr "Không gian làm việc lập bản đồ năng lực và lập kế hoạch nhu cầu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__capacity_per_resource
+msgid "Capacity Per Resource"
+msgstr "Công suất trên mỗi tài nguyên"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__narrative
+msgid "Capture assumptions, dependencies, or mitigation plans."
+msgstr "Nắm bắt các giả định, sự phụ thuộc hoặc kế hoạch giảm thiểu."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__note
+msgid "Capture context, priority, and upcoming initiatives."
+msgstr "Nắm bắt bối cảnh, mức độ ưu tiên và các sáng kiến sắp tới."
+
+#. module: pb_hr_payroll_demand
+#: model:hr.skill,name:pb_hr_payroll_demand.hr_skill_change_enablement
+msgid "Change Enablement"
+msgstr "Thay đổi kích hoạt"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__proficiency_notes
+msgid "Clarify proficiency expectations or certifications required."
+msgstr "Làm rõ các kỳ vọng về trình độ hoặc các chứng nhận cần thiết."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__color
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__color
+msgid "Color"
+msgstr "Màu sắc"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__company_currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__company_currency_id
+msgid "Company Currency"
+msgstr "Tiền tệ của công ty"
+
+#. module: pb_hr_payroll_demand
+#: model:hr.skill,name:pb_hr_payroll_demand.hr_skill_compensation_design
+msgid "Compensation Design"
+msgstr "Thiết kế đền bù"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__mission
+msgid "Concise purpose statement for the role."
+msgstr "Tuyên bố mục đích ngắn gọn cho vai trò này."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__employee_cost_unit
+msgid "Cost per Employee"
+msgstr "Chi phí trên mỗi nhân viên"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_criticality__critical
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_form
+msgid "Critical"
+msgstr "Quan trọng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__critical_role_count
+msgid "Critical Role Count"
+msgstr "Số lượng vai trò quan trọng"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_tree
+msgid "Critical Roles"
+msgstr "Vai trò quan trọng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__headcount_current
+msgid "Current Headcount"
+msgstr "Số lượng nhân viên hiện tại"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+msgid "Current Year"
+msgstr "Năm nay"
+
+#. module: pb_hr_payroll_demand
+#: model:hr.skill,name:pb_hr_payroll_demand.hr_skill_data_storytelling
+msgid "Data Storytelling"
+msgstr "Kể chuyện dữ liệu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__last_review_date
+msgid "Date of the most recent portfolio review for this capability."
+msgstr "Ngày xem xét danh mục đầu tư gần đây nhất cho khả năng này."
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "December"
+msgstr "Tháng 12"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__demand_per_shift
+msgid "Demand Per Shift"
+msgstr "Nhu cầu mỗi ca"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.ui.menu,name:pb_hr_payroll_demand.menu_pb_workforce_root
+msgid "Demand Planning"
+msgstr "Lập kế hoạch nhu cầu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.actions.act_window,name:pb_hr_payroll_demand.action_pb_workforce_demand_plan
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__demand_plan_ids
+#: model:ir.ui.menu,name:pb_hr_payroll_demand.menu_pb_workforce_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Demand Plans"
+msgstr "Kế hoạch nhu cầu"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_role.py:0
+msgid "Demand Plans - %s"
+msgstr "Kế hoạch nhu cầu - %s"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__description
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__description
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__description
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__description
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__description
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_form
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__state__draft
+msgid "Design"
+msgstr "Thiết kế"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_capability__maturity__developing
+msgid "Developing"
+msgstr "Đang phát triển"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__headcount_gap
+msgid "Difference between target and current headcount."
+msgstr "Sự khác biệt giữa mục tiêu và số lượng nhân viên hiện tại."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__state__draft
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_capability__maturity__emerging
+msgid "Emerging"
+msgstr "mới nổi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__employee_cost
+msgid "Employee Cost"
+msgstr "Chi phí nhân viên"
+
+#. module: pb_hr_payroll_demand
+#: model:hr.skill,name:pb_hr_payroll_demand.hr_skill_employee_relations
+msgid "Employee Relations Strategy"
+msgstr "Chiến lược quan hệ nhân viên"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+msgid "Employees Needed"
+msgstr "Cần tuyển nhân viên"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__employees_required
+msgid "Employees Required"
+msgstr "Cần có nhân viên"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_capability__capability_type__enabler
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_search
+msgid "Enabler"
+msgstr "Người kích hoạt"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__escalation_needed
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+msgid "Escalation Needed"
+msgstr "Cần leo thang"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__total_annual_cost
+msgid "Estimated Annual Cost"
+msgstr "Chi phí ước tính hàng năm"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "February"
+msgstr "Tháng 2"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_subactivity__is_automation_candidate
+msgid "Flag subactivities that could benefit from automation or offshoring."
+msgstr "Gắn cờ các hoạt động phụ có thể được hưởng lợi từ tự động hóa hoặc thuê ngoài."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__focus_area_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Focus Areas"
+msgstr "Lĩnh vực trọng tâm"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__focus_level
+msgid "Focus Level"
+msgstr "Mức độ lấy nét"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_follower_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_follower_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_partner_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_partner_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Partners)"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__activity_type_icon
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_type_icon
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Phông chữ tuyệt vời biểu tượng e.g. fa-tasks"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__frequency
+msgid "Frequency"
+msgstr "Tần suất"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__fte_per_month
+msgid "Fte Per Month"
+msgstr "Fte mỗi tháng"
+
+#. module: pb_hr_payroll_demand
+#: model:res.groups,comment:pb_hr_payroll_demand.group_pb_workforce_admin
+msgid "Full control over workforce demand workspace."
+msgstr "Kiểm soát hoàn toàn không gian làm việc theo yêu cầu của lực lượng lao động."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_subactivity__focus_level__grow
+msgid "Grow"
+msgstr "Phát triển"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__has_message
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__has_message
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__has_message
+msgid "Has Message"
+msgstr "Có Thông báo"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__headcount_gap
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Headcount Gap"
+msgstr "Khoảng cách về số lượng nhân viên"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_business_impact__high
+msgid "High Impact"
+msgstr "Tác động cao"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_volume__high
+msgid "High Volume"
+msgstr "Âm lượng cao"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__plan_type__hybrid
+msgid "Hybrid"
+msgstr "lai"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_exception_icon
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_exception_icon
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__activity_exception_icon
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_exception_icon
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng để cho biết ngoại lệ hoạt động."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__message_needaction
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_needaction
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu đã chọn, mới thông báo yêu cầu của bạn chú ý."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__message_has_error
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__message_has_sms_error
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_has_error
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_has_sms_error
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__message_has_error
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu đã chọn, một số thông báo có giao lỗi."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_criticality__important
+msgid "Important"
+msgstr "Quan trọng"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__state__review
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+msgid "In Review"
+msgstr "Đang xem xét"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__is_automation_candidate
+msgid "Is Automation Candidate"
+msgstr "Là ứng viên tự động hóa"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_is_follower
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_is_follower
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_is_follower
+msgid "Is Follower"
+msgstr "Là Follower"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "January"
+msgstr "Tháng 1"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "July"
+msgstr "Tháng 7"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "June"
+msgstr "Tháng 6"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "KPIs"
+msgstr "KPI"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__kpi_ids
+msgid "Key Performance Indicators"
+msgstr "Các chỉ số hiệu suất chính"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__skill_ids
+msgid "Key Skills"
+msgstr "Kỹ năng chính"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__last_calculated
+msgid "Last Calculated"
+msgstr "Tính toán lần cuối"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__last_review_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__last_review_date
+msgid "Last Review Date"
+msgstr "Ngày đánh giá lần cuối"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__last_review_by
+msgid "Last Reviewed By"
+msgstr "Đánh giá lần cuối bởi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_business_impact__low
+msgid "Low Impact"
+msgstr "Tác động thấp"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_volume__low
+msgid "Low Volume"
+msgstr "Âm lượng thấp"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "March"
+msgstr "Tháng 3"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Mark Reviewed"
+msgstr "Đánh dấu đã đánh giá"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_capability__maturity__mature
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_search
+msgid "Mature"
+msgstr "Trưởng thành"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__maturity
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_search
+msgid "Maturity"
+msgstr "Kỳ hạn"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "May"
+msgstr "Th5"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_volume__medium
+msgid "Medium Volume"
+msgstr "Âm lượng trung bình"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_has_error
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_has_error
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_has_error
+msgid "Message Delivery error"
+msgstr "Thông báo Giao lỗi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_ids
+msgid "Messages"
+msgstr "Thông báo"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_criticality__minimal
+msgid "Minimal"
+msgstr "Tối thiểu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_demand__minimal
+msgid "Minimal Demand"
+msgstr "Nhu cầu tối thiểu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_effort_to_find__minimal
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_scarcity__minimal
+msgid "Minimal Effort"
+msgstr "Nỗ lực tối thiểu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_business_impact__medium
+msgid "Moderate Impact"
+msgstr "Tác động vừa phải"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__month
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__month_index
+msgid "Month Index"
+msgstr "Chỉ số tháng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role_kpi__frequency__monthly
+msgid "Monthly"
+msgstr "Hàng tháng"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Monthly Demand & Spend"
+msgstr "Nhu cầu và chi tiêu hàng tháng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__monthly_line_ids
+msgid "Monthly Plan"
+msgstr "Gói hàng tháng"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+msgid "Monthly Planning"
+msgstr "Lập kế hoạch hàng tháng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__employee_cost_unit
+msgid "Monthly cost per FTE / operator."
+msgstr "Chi phí hàng tháng cho mỗi FTE/nhà điều hành."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "My Hoạt động Hạn chót"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__name
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__narrative
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__comment
+msgid "Narrative"
+msgstr "Tường thuật"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+msgid "Narrative & Notes"
+msgstr "Tường thuật & Ghi chú"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_search
+msgid "Needs Review"
+msgstr "Cần xem xét"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Tiếp theo Hoạt động Calendar Sự kiện"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Tiếp theo Hoạt động Hạn chót"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_summary
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_summary
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tiếp theo Hoạt động Tóm tắt"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_type_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_type_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tiếp theo Hoạt động Loại"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__next_review_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__next_review_date
+msgid "Next Review Date"
+msgstr "Ngày đánh giá tiếp theo"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "No significant variance detected."
+msgstr "Không có sự khác biệt đáng kể được phát hiện."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "November"
+msgstr "Tháng 11"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số của Hành động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số của lỗi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__message_needaction_counter
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_needaction_counter
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số của thông báo yêu cầu hành động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__message_has_error_counter
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_has_error_counter
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số của thông báo với giao lỗi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__target_projects
+msgid "Number of projects, releases, or large initiatives to deliver."
+msgstr "Số lượng dự án, bản phát hành hoặc sáng kiến lớn cần thực hiện."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__shifts_per_employee
+msgid "Number of shifts one employee can cover per month."
+msgstr "Số ca làm việc mà một nhân viên có thể đảm nhiệm mỗi tháng."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__shifts_per_month
+msgid "Number of shifts the role needs to cover each month."
+msgstr "Số ca mà vai trò cần đảm nhiệm mỗi tháng."
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "October"
+msgstr "Tháng 10"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__vision_statement
+msgid "One line statement describing what success for this capability looks like."
+msgstr "Tuyên bố một dòng mô tả mức độ thành công của khả năng này."
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Open Demand Plans"
+msgstr "Kế hoạch nhu cầu mở"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+msgid "Open Gap"
+msgstr "Khoảng cách mở"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__operator_capacity_per_shift
+msgid "Operator Capacity Per Shift"
+msgstr "Công suất của người vận hành trên mỗi ca"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__vision_statement
+msgid "Outcome Statement"
+msgstr "Báo cáo kết quả"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+msgid "Owner"
+msgstr "Người phụ trách"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role_kpi__frequency__per_event
+msgid "Per Event"
+msgstr "Mỗi sự kiện"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__plan_id
+msgid "Plan"
+msgstr "Kế hoạch"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__owner_id
+msgid "Plan Owner"
+msgstr "Chủ sở hữu gói"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__plan_type
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__plan_type
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+msgid "Plan Type"
+msgstr "Loại kế hoạch"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__total_employee_cost
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+msgid "Planned Cost"
+msgstr "Chi phí dự kiến"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__total_fte
+msgid "Planned FTE"
+msgstr "FTE dự kiến"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__planned_fte
+msgid "Planned Fte"
+msgstr "Kế hoạch Fte"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__total_headcount
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+msgid "Planned Headcount"
+msgstr "Số lượng nhân viên dự kiến"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_capability__capability_type__primary
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_search
+msgid "Primary"
+msgstr "Chủ đạo"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__primary_role_count
+msgid "Primary Role Count"
+msgstr "Số lượng vai trò chính"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__proficiency_notes
+msgid "Proficiency Notes"
+msgstr "Ghi chú thành thạo"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__plan_type__project
+msgid "Project & Outcome Based"
+msgstr "Dựa trên Dự án & Kết quả"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_quadrant__protect
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+msgid "Protect"
+msgstr "Bảo vệ"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__comment
+msgid "Provide context, risks, or assumptions for this role."
+msgstr "Cung cấp bối cảnh, rủi ro hoặc giả định cho vai trò này."
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+msgid "Quadrant"
+msgstr "Góc phần tư"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role_kpi__frequency__quarterly
+msgid "Quarterly"
+msgstr "Hàng quý"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__state__ready
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+msgid "Ready"
+msgstr "Sẵn sàng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__code
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__skill_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Required Skills"
+msgstr "Kỹ năng cần thiết"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Reset to Draft"
+msgstr "Đặt lại để Nháp"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__activity_user_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_user_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__activity_user_id
+msgid "Responsible User"
+msgstr "Phụ trách Người dùng"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__role_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__role_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__role_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Role"
+msgstr "Vai trò"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__code
+msgid "Role Code"
+msgstr "Mã vai trò"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__mission
+msgid "Role Mission"
+msgstr "Vai trò Nhiệm vụ"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_form
+msgid "Role Overview"
+msgstr "Tổng quan về vai trò"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__manager_id
+msgid "Role Owner"
+msgstr "Chủ sở hữu vai trò"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Role Segmentation"
+msgstr "Phân đoạn vai trò"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.actions.act_window,name:pb_hr_payroll_demand.action_pb_workforce_role
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__role_ids
+#: model:ir.ui.menu,name:pb_hr_payroll_demand.menu_pb_workforce_roles
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_form
+msgid "Roles"
+msgstr "Vai trò"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Roles Covered"
+msgstr "Vai trò được bảo hiểm"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_capability.py:0
+msgid "Roles for %s"
+msgstr "Vai trò của %s"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_subactivity__focus_level__run
+msgid "Run"
+msgstr "Chạy"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS Giao lỗi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_capability__capability_type__secondary
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_search
+msgid "Secondary"
+msgstr "Trung học"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__segmentation_business_impact
+msgid "Segmentation Business Impact"
+msgstr "Phân khúc tác động kinh doanh"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__segmentation_criticality
+msgid "Segmentation Criticality"
+msgstr "Mức độ quan trọng của phân khúc"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__segmentation_demand
+msgid "Segmentation Demand"
+msgstr "Phân khúc nhu cầu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__segmentation_effort_to_find
+msgid "Segmentation Effort To Find"
+msgstr "Nỗ lực phân khúc để tìm"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__segmentation_quadrant
+msgid "Segmentation Quadrant"
+msgstr "Phần tư phân khúc"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__segmentation_scarcity
+msgid "Segmentation Scarcity"
+msgstr "Phân khúc khan hiếm"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__segmentation_volume
+msgid "Segmentation Volume"
+msgstr "Khối lượng phân khúc"
+
+#. module: pb_hr_payroll_demand
+#. odoo-python
+#: code:addons/pb_hr_payroll_demand/models/workforce_demand_plan.py:0
+msgid "September"
+msgstr "Tháng 9"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__sequence
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__sequence
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__sequence
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_subactivity__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_demand_plan__plan_type__shift
+msgid "Shift & Hourly Based"
+msgstr "Theo ca & theo giờ"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__shifts_per_employee
+msgid "Shifts Per Employee"
+msgstr "Ca làm việc trên mỗi nhân viên"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__shifts_per_month
+msgid "Shifts Per Month"
+msgstr "Ca mỗi tháng"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__code
+msgid "Short code used when referencing the capability in dashboards."
+msgstr "Mã ngắn được sử dụng khi tham chiếu chức năng trong bảng thông tin."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__code
+msgid "Short unique identifier for integrations and dashboards."
+msgstr "Mã định danh duy nhất ngắn gọn cho tiện ích tích hợp và trang tổng quan."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_demand__significant
+msgid "Significant Demand"
+msgstr "Nhu cầu đáng kể"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_effort_to_find__extreme
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_scarcity__significant
+msgid "Significant Effort"
+msgstr "nỗ lực đáng kể"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_effort_to_find__some
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_scarcity__moderate
+msgid "Some Effort"
+msgstr "Một số nỗ lực"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__state
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__state
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Status Overview"
+msgstr "Tổng quan về trạng thái"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__activity_state
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_state
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên trên hoạt động\n"
+"Quá hạn: Đến hạn ngày là đã đã vượt\n"
+"Hôm nay: Hoạt động ngày là hôm nay\n"
+"Planned: Tương lai hoạt động."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__note
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_form
+msgid "Strategic Notes"
+msgstr "Ghi chú chiến lược"
+
+#. module: pb_hr_payroll_demand
+#: model:hr.skill,name:pb_hr_payroll_demand.hr_skill_workforce_planning
+msgid "Strategic Workforce Planning"
+msgstr "Lập kế hoạch lực lượng lao động chiến lược"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_quadrant__streamline
+msgid "Streamline"
+msgstr "Hợp lý hóa"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__subactivity_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_form
+msgid "Subactivities"
+msgstr "Hoạt động phụ"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__maturity
+msgid "Subjective view of how established or modern the capability is today."
+msgstr "Quan điểm chủ quan về mức độ hình thành và hiện đại của năng lực ngày nay."
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+msgid "Submit"
+msgstr "Gửi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_focus__success_metric
+msgid "Success Metric"
+msgstr "Chỉ số thành công"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__headcount_target
+msgid "Target Headcount"
+msgstr "Số lượng mục tiêu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__target_output
+msgid "Target Output"
+msgstr "Đầu ra mục tiêu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__target_projects
+msgid "Target Projects"
+msgstr "Dự án mục tiêu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__target_value
+msgid "Target Value"
+msgstr "Giá trị mục tiêu"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__target_output
+msgid "Target quantity or deliverable count for the month."
+msgstr "Số lượng mục tiêu hoặc số lượng có thể giao được trong tháng."
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Total Planned Cost"
+msgstr "Tổng chi phí dự kiến"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_role__segmentation_quadrant__transform
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_subactivity__focus_level__transform
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_role_search
+msgid "Transform"
+msgstr "chuyển đổi"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields.selection,name:pb_hr_payroll_demand.selection__pb_workforce_capability__maturity__transform
+msgid "Transformational"
+msgstr "chuyển đổi"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_capability_search
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__activity_exception_decoration
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__activity_exception_decoration
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role_kpi__unit_of_measure
+msgid "Unit"
+msgstr "Đơn vị"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Variance"
+msgstr "Phương sai"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__variance_amount
+msgid "Variance Amount"
+msgstr "Số tiền chênh lệch"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__variance_cost
+msgid "Variance Cost"
+msgstr "Chi phí chênh lệch"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_line__variance_headcount
+msgid "Variance Headcount"
+msgstr "Số lượng phương sai"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__variance_percent
+msgid "Variance Percent"
+msgstr "Phần trăm phương sai"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Variance Watchlist"
+msgstr "Danh sách theo dõi phương sai"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_line__demand_per_shift
+msgid "Volume per shift (units, tickets, calls, etc.)."
+msgstr "Khối lượng mỗi ca (đơn vị, vé, cuộc gọi, v.v.)."
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_capability__website_message_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__website_message_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_role__website_message_ids
+msgid "Website Messages"
+msgstr "Trang web Thông báo"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_capability__website_message_ids
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_demand_plan__website_message_ids
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role__website_message_ids
+msgid "Website communication history"
+msgstr "Trang web giao tiếp history"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model.fields,help:pb_hr_payroll_demand.field_pb_workforce_role_focus__success_metric
+msgid "What good looks like for this focus area."
+msgstr "Khu vực trọng tâm này sẽ trông như thế nào."
+
+#. module: pb_hr_payroll_demand
+#: model:res.groups.privilege,name:pb_hr_payroll_demand.res_groups_privilege_workforce
+msgid "Workforce"
+msgstr "Lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:res.groups,name:pb_hr_payroll_demand.group_pb_workforce_admin
+msgid "Workforce Architect"
+msgstr "Kiến trúc sư lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model,name:pb_hr_payroll_demand.model_pb_workforce_capability
+msgid "Workforce Capability"
+msgstr "Năng lực lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+msgid "Workforce Demand Hub"
+msgstr "Trung tâm nhu cầu lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model,name:pb_hr_payroll_demand.model_pb_workforce_demand_plan
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_form
+msgid "Workforce Demand Plan"
+msgstr "Kế hoạch nhu cầu lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model,name:pb_hr_payroll_demand.model_pb_workforce_demand_line
+msgid "Workforce Demand Plan Line"
+msgstr "Đường dây kế hoạch nhu cầu lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:res.groups,name:pb_hr_payroll_demand.group_pb_workforce_manager
+msgid "Workforce Manager"
+msgstr "Người quản lý lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:res.groups,name:pb_hr_payroll_demand.group_pb_workforce_user
+msgid "Workforce Planner"
+msgstr "Người lập kế hoạch lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:hr.skill.type,name:pb_hr_payroll_demand.hr_skill_type_workforce
+#: model:ir.module.category,name:pb_hr_payroll_demand.module_category_pb_workforce
+msgid "Workforce Planning"
+msgstr "Lập kế hoạch lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_pivot
+msgid "Workforce Plans Pivot"
+msgstr "Kế hoạch lực lượng lao động Pivot"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model,name:pb_hr_payroll_demand.model_pb_workforce_role_focus
+msgid "Workforce Role Focus Area"
+msgstr "Lĩnh vực tập trung vào vai trò của lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model,name:pb_hr_payroll_demand.model_pb_workforce_role_kpi
+msgid "Workforce Role KPI"
+msgstr "KPI vai trò lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model,name:pb_hr_payroll_demand.model_pb_workforce_role
+msgid "Workforce Role Profile"
+msgstr "Hồ sơ vai trò lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_graph
+msgid "Workforce Spend"
+msgstr "Chi tiêu lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#: model:ir.model,name:pb_hr_payroll_demand.model_pb_workforce_subactivity
+msgid "Workforce Subactivity"
+msgstr "Hoạt động phụ của lực lượng lao động"
+
+#. module: pb_hr_payroll_demand
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_demand.field_pb_workforce_demand_plan__year
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_demand.view_pb_workforce_demand_plan_search
+msgid "Year"
+msgstr "Năm"

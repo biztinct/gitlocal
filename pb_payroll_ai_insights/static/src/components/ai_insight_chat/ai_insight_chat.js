@@ -4,6 +4,7 @@ import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
+import { _t } from "@web/core/l10n/translation";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
 
 // LEARNOS Phase 6. A ceiling on one held press, and where the read-aloud
@@ -244,7 +245,7 @@ export class AiInsightChat extends Component {
             this.state.messages = [];
             this.state.sessionId = null;
             this.state.showSuggestions = true;
-            this.notification.add("Chat history cleared", { type: "info" });
+        this.notification.add(_t("Chat history cleared"), { type: "info" });
         } catch (error) {
             console.error("Clear history error:", error);
         }
@@ -261,10 +262,10 @@ export class AiInsightChat extends Component {
                 args: [chartConfig],
                 kwargs: {},
             });
-            this.notification.add("Chart pinned to dashboard!", { type: "success" });
+            this.notification.add(_t("Chart pinned to dashboard!"), { type: "success" });
         } catch (error) {
             console.error("Pin to dashboard error:", error);
-            this.notification.add("Failed to pin chart", { type: "danger" });
+            this.notification.add(_t("Failed to pin chart"), { type: "danger" });
         }
     }
 

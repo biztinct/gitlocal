@@ -1,497 +1,2244 @@
-# Translation of Odoo Server.
-# This file contains the translation of the following modules:
-# * pb_hr_workforce
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: pb_hr_workforce\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 00:00+0000\n"
-"PO-Revision-Date: 2026-02-24 00:00+0000\n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Weekday"
-msgstr "Ngày thường"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Extra hours on regular work days"
-msgstr "Giờ làm thêm vào ngày thường"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Weekend"
-msgstr "Cuối tuần"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Holiday"
-msgstr "Ngày lễ"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "All hours on public holidays"
-msgstr "Tất cả giờ vào ngày lễ"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Night Shift"
-msgstr "Ca đêm"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Hours within night time window"
-msgstr "Giờ trong khung thời gian đêm"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Extended"
-msgstr "Kéo dài"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "OT exceeding daily max cap"
-msgstr "Tăng ca vượt mức tối đa trong ngày"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Every day"
-msgstr "Mỗi ngày"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "No days selected"
-msgstr "Chưa chọn ngày"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Please enter a rule name"
-msgstr "Vui lòng nhập tên quy tắc"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Rule updated"
-msgstr "Đã cập nhật quy tắc"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Rule created"
-msgstr "Đã tạo quy tắc"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
-#, python-format
-msgid "Rule deleted"
-msgstr "Đã xóa quy tắc"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/workforce_dashboard.js:0
-#, python-format
-msgid "Total Hours"
-msgstr "Tổng giờ"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/workforce_dashboard.js:0
-#, python-format
-msgid "OT Hours"
-msgstr "Giờ tăng ca"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_live.js:0
-#, python-format
-msgid "Attendance data refreshed"
-msgstr "Đã làm mới dữ liệu chấm công"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
-#, python-format
-msgid "Failed to load payroll report"
-msgstr "Không thể tải báo cáo lương"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Copy shifts to next week"
-msgstr "Sao chép ca sang tuần sau"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Shift conflict detected"
-msgstr "Phát hiện trùng ca"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Failed to load shift grid"
-msgstr "Không thể tải lưới ca"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Employee is on leave this day"
-msgstr "Nhân viên nghỉ phép ngày này"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Shift created"
-msgstr "Đã tạo ca"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Failed to create shift"
-msgstr "Không thể tạo ca"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Shift deleted"
-msgstr "Đã xóa ca"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Cannot delete this shift"
-msgstr "Không thể xóa ca này"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Publish failed"
-msgstr "Xuất bản thất bại"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
-#, python-format
-msgid "Copy failed"
-msgstr "Sao chép thất bại"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_timecard.js:0
-#, python-format
-msgid "With hours only"
-msgstr "Chỉ hiển thị giờ"
-
-# --- Weekly Entry cockpit (Phase B) ---
-
-#. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "Showing the first 200 employees. Narrow by department to see the rest."
-msgstr "Đang hiển thị 200 nhân viên đầu tiên. Lọc theo phòng ban để xem thêm."
+msgid ""
+"%(h)s h past the monthly ceiling of %(cap)s h. The excess is recorded as bonus hours, "
+"not overtime pay — you can still enter it."
+msgstr ""
+"%(h)s h đã vượt mức trần hàng tháng của %(cap)s h. Phần vượt quá được ghi là số giờ "
+"thưởng chứ không phải tiền làm thêm giờ - bạn vẫn có thể nhập số tiền đó."
 
 #. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "%(name)s exceeds the monthly overtime cap of %(cap)s h. Submit anyway?"
-msgstr "%(name)s vượt mức trần làm thêm giờ hằng tháng là %(cap)s giờ. Vẫn gửi?"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
 msgid "%(name)s exceeds the annual overtime cap of %(cap)s h. Submit anyway?"
 msgstr "%(name)s vượt mức trần làm thêm giờ hằng năm là %(cap)s giờ. Vẫn gửi?"
 
 #. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "cell(s) could not be saved — see the highlighted cells."
-msgstr "ô không thể lưu — xem các ô được đánh dấu."
+msgid "%(name)s exceeds the monthly overtime cap of %(cap)s h. Submit anyway?"
+msgstr "%(name)s vượt mức trần làm thêm giờ hằng tháng là %(cap)s giờ. Vẫn gửi?"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "Saved."
-msgstr "Đã lưu."
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "%d records"
+msgstr "Bản ghi %d"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "employee"
-msgstr "nhân viên"
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "%s OT already %s."
+msgstr "%s OT đã là %s."
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "overtime request(s) submitted."
-msgstr "yêu cầu làm thêm giờ đã được gửi."
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "%s overtime request(s) %s."
+msgstr "%s yêu cầu làm thêm giờ %s."
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "Submit failed."
-msgstr "Gửi thất bại."
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__time_from
+msgid "24h format. E.g. 22.0 = 10:00 PM"
+msgstr "định dạng 24h. Ví dụ. 22.0 = 10:00 tối"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "overtime request(s) approved."
-msgstr "yêu cầu làm thêm giờ đã được duyệt."
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__time_to
+msgid "24h format. E.g. 6.0 = 6:00 AM"
+msgstr "định dạng 24h. Ví dụ. 6.0 = 6 giờ sáng"
 
 #. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid ""
+"<b>Extended OT:</b> When OT hours exceed the <b>max OT hours/day</b>, the remaining "
+"hours escalate to this rule."
+msgstr ""
+"<b>Extends OT:</b> Khi số giờ OT vượt quá <b>max số giờ OT/ngày</b>, số giờ còn lại sẽ"
+" tăng dần theo quy tắc này."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "<b>Holiday OT:</b> ALL hours on public holidays are overtime at this rate."
+msgstr ""
+"<b>Hngày lễ OT:</b> TẤT CẢ các giờ vào ngày nghỉ lễ đều là giờ làm thêm ở mức này."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid ""
+"<b>Night Premium:</b> Hours falling within the <b>time window</b> (e.g. 10 PM – 6 AM) "
+"earn the night premium."
+msgstr ""
+"<b>Night Premium:</b> Số giờ nằm trong khung thời gian <b></b> (ví dụ: 10 giờ tối - 6 "
+"giờ sáng) sẽ nhận được phí thưởng đêm."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid ""
+"<b>Weekday OT:</b> Hours worked beyond the <b>threshold</b> on applicable weekdays "
+"become overtime."
+msgstr ""
+"<b>Ngày trong tuần OT:</b> Số giờ làm việc vượt quá <b>threshold</b> vào các ngày "
+"trong tuần áp dụng sẽ trở thành giờ làm thêm."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "<b>Weekend OT:</b> ALL hours on Saturday/Sunday are overtime at this rate."
+msgstr ""
+"<b>OT cuối tuần:</b> TẤT CẢ các giờ vào Thứ Bảy/Chủ Nhật đều là giờ làm thêm ở mức "
+"này."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid ""
+"<strong>🔍 Classification Logic:</strong>\n"
+"                        The Timecard system automatically classifies each attendance record\n"
+"                        into regular or overtime hours using this rule's configuration:"
+msgstr ""
+"<strong>🔍 Logic phân loại:</strong>\n"
+"                        Hệ thống Timecard tự động phân loại từng hồ sơ điểm danh\n"
+"                        thành giờ thông thường hoặc làm thêm giờ bằng cách sử dụng cấu hình của quy tắc này:"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__compliance_status__absent
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Absent"
+msgstr "Vắng mặt"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__absent_today
+msgid "Absent Today"
+msgstr "Vắng mặt Hôm nay"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_needaction
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_needaction
+msgid "Action Needed"
+msgstr "Hành động Cần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Action failed."
+msgstr "Thao tác không thành công."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__active
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__active
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_exception_decoration
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Hoạt động Ngoại lệ Trang trí"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_state
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_state
+msgid "Activity State"
+msgstr "Hoạt động Trạng thái"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_type_icon
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Hoạt động Loại Biểu tượng"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Actual Attendance"
+msgstr "Tham dự thực tế"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__actual_check_in
+msgid "Actual Check-In"
+msgstr "Nhận phòng thực tế"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__actual_check_out
+msgid "Actual Check-Out"
+msgstr "Trả phòng thực tế"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__actual_hours
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__actual_hours
+msgid "Actual Hours"
+msgstr "Số giờ thực tế"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_form
+msgid "Additional notes about this shift..."
+msgstr "Ghi chú bổ sung về sự thay đổi này..."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Additional notes..."
+msgstr "Ghi chú bổ sung..."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_template__shift_type__afternoon
+msgid "Afternoon"
+msgstr "Buổi chiều"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
+msgid "Already submitted or approved — locked."
+msgstr "Đã gửi hoặc phê duyệt — đã khóa."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Also past this employee's annual ceiling of %s h."
+msgstr "Đồng thời, nhân viên này cũng đã vượt qua mức trần hàng năm %s h."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__annual_cap
+msgid "Annual OT Cap (h)"
+msgstr "Giới hạn OT hàng năm (h)"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__annual_cap_special
+msgid "Annual OT Cap — Special Sector (h)"
+msgstr "Giới hạn OT hàng năm — Lĩnh vực đặc biệt (h)"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_pb_ot_ceiling__annual_cap_special
+msgid ""
+"Annual cap applied to employees flagged as special-sector (higher statutory ceiling)."
+msgstr ""
+"Giới hạn hàng năm áp dụng cho nhân viên được gắn cờ là lĩnh vực đặc biệt (mức trần "
+"theo luật định cao hơn)."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__applicable_days_display
+msgid "Applicable Days"
+msgstr "Ngày áp dụng"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "Applicable Days of the Week"
+msgstr "Các ngày áp dụng trong tuần"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__time_from
+msgid "Applies From"
+msgstr "Áp dụng từ"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_list
+msgid "Applies On"
+msgstr "Áp dụng vào"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__time_to
+msgid "Applies To"
+msgstr "Áp dụng cho"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Apply"
+msgstr "Áp dụng"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
 msgid "Approval failed."
 msgstr "Duyệt thất bại."
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "Overtime ceiling exceeded"
-msgstr "Vượt mức trần làm thêm giờ"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "Submit anyway"
-msgstr "Vẫn gửi"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "Cancel"
-msgstr "Hủy"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
-#, python-format
-msgid "No employees with entries this week — adjust the department or week."
-msgstr "Không có nhân viên nào có dữ liệu trong tuần này — điều chỉnh phòng ban hoặc tuần."
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Weekly Entry"
-msgstr "Nhập liệu theo tuần"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "All departments"
-msgstr "Tất cả phòng ban"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Previous week"
-msgstr "Tuần trước"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Today"
-msgstr "Hôm nay"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Next week"
-msgstr "Tuần sau"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Toggle overtime ceilings"
-msgstr "Bật/tắt mức trần làm thêm giờ"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Ceilings"
-msgstr "Mức trần"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Overtime ceilings"
-msgstr "Mức trần làm thêm giờ"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "This month"
-msgstr "Tháng này"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "This year"
-msgstr "Năm nay"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Click a cell to see an employee's overtime budget."
-msgstr "Nhấp vào một ô để xem hạn mức làm thêm giờ của nhân viên."
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Closest to the monthly cap"
-msgstr "Gần chạm trần hằng tháng nhất"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "OT request"
-msgstr "Yêu cầu OT"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "h drafted"
-msgstr "giờ nháp"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "awaiting approval"
-msgstr "đang chờ duyệt"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Approve"
-msgstr "Duyệt"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
-msgid "Submit all"
-msgstr "Gửi tất cả"
-
-# ==== Phase K — Overtime Desk (pb_ot_desk) ====
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Overtime Desk"
-msgstr "Bàn Làm Thêm Giờ"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Approve overtime &amp; manage limits"
-msgstr "Duyệt làm thêm giờ & quản lý hạn mức"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "pending approvals"
-msgstr "chờ duyệt"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "near/over ceiling"
-msgstr "gần/vượt trần"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "bonus hours this month"
-msgstr "giờ thưởng tháng này"
-
-#. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 msgid "Approval queue"
 msgstr "Hàng chờ duyệt"
 
 #. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Queue clear"
-msgstr "Hàng chờ trống"
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Approve"
+msgstr "Duyệt"
 
 #. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Approve overtime & manage limits"
+msgstr "Phê duyệt làm thêm giờ và quản lý giới hạn"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__state__approved
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__total_hours
+msgid "Approved (within cap) + bonus (overflow)."
+msgstr "Đã phê duyệt (trong giới hạn) + tiền thưởng (tràn)."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__approved_hours
+msgid "Approved Hours"
+msgstr "Số giờ được phê duyệt"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "Approving overtime is restricted to attendance managers."
+msgstr "Việc phê duyệt làm thêm giờ được giới hạn ở người quản lý chấm công."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Assignment"
+msgstr "Phân công"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_attachment_count
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_attachment_count
+msgid "Attachment Count"
+msgstr "Tệp đính kèm Số lượng"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_attendance
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_attendance_timecard
+msgid "Attendance Timecard API"
+msgstr "API thẻ chấm công"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__avg_hours_week
+msgid "Avg Hours Week"
+msgstr "Số giờ trung bình trong tuần"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__biweekly_cap
+msgid "Bi-weekly OT Cap (h)"
+msgstr "Giới hạn OT hai tuần một lần (h)"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Bonus"
+msgstr "Thưởng"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__bonus_hours
 msgid "Bonus Hours"
 msgstr "Giờ Thưởng"
 
 #. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 msgid "Bonus Hours review"
 msgstr "Rà soát Giờ Thưởng"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Overtime beyond the ceilings — payroll-manager view"
-msgstr "Làm thêm vượt trần — chế độ xem cho quản lý bảng lương"
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Bonus Hours review is restricted to payroll managers."
+msgstr "Rà soát Giờ Thưởng chỉ dành cho quản lý bảng lương."
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Export CSV"
-msgstr "Xuất CSV"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Group by"
-msgstr "Nhóm theo"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Overtime rules &amp; ceilings"
-msgstr "Quy tắc & trần làm thêm giờ"
-
-#. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Refuse overtime"
-msgstr "Từ chối làm thêm giờ"
-
-#. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
-msgid "Refuse"
-msgstr "Từ chối"
+msgid "Bonus hours review is restricted to payroll and attendance managers."
+msgstr ""
+"Việc xem xét số giờ thưởng được giới hạn đối với người quản lý bảng lương và điểm "
+"danh."
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
-msgid "approved"
-msgstr "đã duyệt"
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__break_duration
+msgid "Break Duration (hrs)"
+msgstr "Thời gian nghỉ (giờ)"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
-msgid "refused"
-msgstr "đã từ chối"
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Cancel"
+msgstr "Hủy"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
-msgid "Employee"
-msgstr "Nhân viên"
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
-msgid "Department"
-msgstr "Phòng ban"
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Ceilings"
+msgstr "Mức trần"
 
 #. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__chart_data
+msgid "Chart Data"
+msgstr "Dữ liệu biểu đồ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_template__is_overnight
+msgid "Check if shift crosses midnight"
+msgstr "Kiểm tra xem ca làm việc có vượt qua nửa đêm không"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "Classification"
+msgstr "Phân loại"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Click a cell to see an employee's overtime budget."
+msgstr "Nhấp vào một ô để xem hạn mức làm thêm giờ của nhân viên."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Closest to the monthly cap"
+msgstr "Gần chạm trần hằng tháng nhất"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__color
+msgid "Color"
+msgstr "Màu sắc"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__color
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__color
+msgid "Color Index"
+msgstr "Chỉ mục màu"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Complete"
+msgstr "Hoàn thành"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__state__completed
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Completed"
+msgstr "Hoàn tất"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Compliance"
+msgstr "Tuân thủ"
+
+#. module: pb_hr_workforce
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_workforce_config
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Could not be saved."
+msgstr "Không thể lưu được."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__country_id
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_timecard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_weekentry__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_payroll_report_api__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning_grid__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_timecard__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_weekentry__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_payroll_report_api__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning_grid__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Custom range"
+msgstr "Phạm vi tùy chỉnh"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__daily_cap
+msgid "Daily OT Cap (h)"
+msgstr "Giới hạn OT hàng ngày (h)"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__date
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 msgid "Day"
 msgstr "Ngày"
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
-msgid "Week"
-msgstr "Tuần"
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request.py:0
+msgid ""
+"Deciding an overtime request needs the attendance officer/manager role or line "
+"management of %s."
+msgstr ""
+"Việc quyết định yêu cầu làm thêm giờ cần có vai trò của nhân viên chấm công/quản lý "
+"hoặc quản lý tuyến của %s."
 
 #. module: pb_hr_workforce
+#. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__department_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__department_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__department_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Dept"
+msgstr "Phòng"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__note
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "Device/kiosk punch — edit on the attendance form."
+msgstr "Cú đấm thiết bị/kiosk - chỉnh sửa trên biểu mẫu chấm công."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_timecard__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_weekentry__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_payroll_report_api__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning_grid__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_desk__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__state__draft
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__compliance_status__early_leave
+msgid "Early Leave"
+msgstr "Về sớm"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "Effective Rate"
+msgstr "Tỷ lệ hiệu quả"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model,name:pb_hr_workforce.model_hr_employee
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__employee_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__employee_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Employee not found."
+msgstr "Không tìm thấy nhân viên."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__end_datetime
+msgid "End"
+msgstr "Kết thúc"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__end_hour
+msgid "End Time"
+msgstr "Kết thúc Thời gian"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/shift_template.py:0
+msgid "End time must be after start time (or mark as overnight shift)"
+msgstr "Thời gian kết thúc phải sau thời gian bắt đầu (hoặc đánh dấu là ca đêm)"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/shift_template.py:0
+msgid "End time must be between 0:00 and 23:59"
+msgstr "Thời gian kết thúc phải nằm trong khoảng từ 0:00 đến 23:59"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "Entered via Weekly Entry grid"
+msgstr "Đã nhập qua lưới Mục nhập hàng tuần"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance__pb_entry_source
+msgid "Entry Source"
+msgstr "Nguồn đầu vào"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Export CSV"
+msgstr "Xuất CSV"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Exported %s rows (capped at %s — narrow the filters)."
+msgstr "Đã xuất các hàng %s (giới hạn ở %s - thu hẹp các bộ lọc)."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Exported %s rows."
+msgstr "Đã xuất các hàng %s."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_config__overtime_type__extended
+msgid "Extended Overtime (>8hrs OT)"
+msgstr "Làm thêm giờ kéo dài (>8 giờ OT)"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "Failed to load payroll report"
+msgstr "Không thể tải báo cáo lương"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Filters"
+msgstr "Bộ lọc"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_template__shift_type__flexible
+msgid "Flexible"
+msgstr "Linh hoạt"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_follower_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_partner_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Partners)"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__activity_type_icon
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Phông chữ tuyệt vời biểu tượng e.g. fa-tasks"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__apply_friday
+msgid "Fri"
+msgstr "Thứ sáu"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__date_from
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Group by"
+msgstr "Nhóm theo"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__has_message
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__has_message
+msgid "Has Message"
+msgstr "Có Thông báo"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Hours must be between 0 and 24."
+msgstr "Giờ phải nằm trong khoảng từ 0 đến 24."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__threshold_hours
+msgid ""
+"Hours worked per day after which overtime begins. E.g. 8 = OT starts after 8 hours of "
+"regular work."
+msgstr ""
+"Số giờ làm việc mỗi ngày sau đó bắt đầu làm thêm giờ. Ví dụ. 8 = OT bắt đầu sau 8 giờ "
+"làm việc bình thường."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "How The System Classifies Attendance"
+msgstr "Cách hệ thống phân loại sự tham dự"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_timecard__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_weekentry__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_payroll_report_api__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning_grid__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_desk__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_exception_icon
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__activity_exception_icon
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng để cho biết ngoại lệ hoạt động."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__message_needaction
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu đã chọn, mới thông báo yêu cầu của bạn chú ý."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__message_has_error
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__message_has_sms_error
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__message_has_error
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu đã chọn, một số thông báo có giao lỗi."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_is_follower
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_is_follower
+msgid "Is Follower"
+msgstr "Là Follower"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_timecard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_weekentry__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_payroll_report_api__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning_grid__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_timecard__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance_weekentry__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_payroll_report_api__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning_grid__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__compliance_status__late
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Late"
+msgstr "Trễ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_pb_ot_ceiling__company_id
+msgid "Leave blank for a global fallback cap set."
+msgstr "Để trống cho bộ giới hạn dự phòng toàn cầu."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__country_id
+msgid "Leave blank for global rules"
+msgstr "Để trống cho các quy tắc chung"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "Legal reference (e.g. Vietnam Labor Code Art. 98)..."
+msgstr "Tài liệu tham khảo pháp luật (ví dụ Bộ luật Lao động Việt Nam Điều 98)..."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_template__resource_calendar_id
+msgid "Link to resource calendar for this shift pattern"
+msgstr "Liên kết tới lịch tài nguyên cho mẫu ca làm việc này"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Loading Overtime Desk…"
+msgstr "Đang tải bảng làm thêm giờ…"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "M"
+msgstr "M"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__manager_id
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__max_hours_per_day
+msgid "Max OT Hours/Day"
+msgstr "Số giờ OT tối đa/Ngày"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__max_hours_per_month
+msgid "Max OT Hours/Month"
+msgstr "Số giờ OT tối đa/tháng"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_pb_ot_ceiling__biweekly_cap
+msgid ""
+"Maximum OT hours across an odd-week-anchored fortnight (weeks 1-2, 3-4, …). 0 = not "
+"enforced."
+msgstr ""
+"Số giờ OT tối đa trong hai tuần cố định theo tuần lẻ (tuần 1-2, 3-4, …). 0 = không "
+"được thực thi."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_pb_ot_ceiling__daily_cap
+msgid "Maximum OT hours in a single day before overflow-to-bonus. 0 = not enforced."
+msgstr ""
+"Số giờ OT tối đa trong một ngày trước khi chuyển sang thưởng. 0 = không được thực thi."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_pb_ot_ceiling__weekly_cap
+msgid "Maximum OT hours in an ISO week (Mon–Sun). 0 = not enforced."
+msgstr ""
+"Số giờ OT tối đa trong một tuần ISO (Thứ Hai–Chủ Nhật). 0 = không được thực thi."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__max_hours_per_day
+msgid "Maximum overtime hours allowed per day"
+msgstr "Số giờ làm thêm tối đa được phép mỗi ngày"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__max_hours_per_month
+msgid "Maximum overtime hours allowed per month"
+msgstr "Số giờ làm thêm tối đa được phép mỗi tháng"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_has_error
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_has_error
+msgid "Message Delivery error"
+msgstr "Thông báo Giao lỗi"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_ids
+msgid "Messages"
+msgstr "Thông báo"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Min bonus (h)"
+msgstr "Tiền thưởng tối thiểu (h)"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__apply_monday
+msgid "Mon"
+msgstr "Thứ 2"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
 msgid "Month"
 msgstr "Tháng"
 
 #. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__monthly_cap
+msgid "Monthly OT Cap (h)"
+msgstr "Giới hạn OT hàng tháng (h)"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_template__shift_type__morning
+msgid "Morning"
+msgstr "Buổi sáng"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Multiple attendance records — edit on the attendance form."
+msgstr "Nhiều bản ghi điểm danh - chỉnh sửa trên biểu mẫu điểm danh."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__rate_multiplier
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__rate_multiplier
+msgid "Multiplier applied to base hourly rate. E.g. 1.5 = 150%"
+msgstr "Hệ số nhân áp dụng cho mức lương cơ bản theo giờ. Ví dụ. 1,5 = 150%"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "My Hoạt động Hạn chót"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_my_overtime
+msgid "My Overtime"
+msgstr "Tăng ca của tôi"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+msgid "My Requests"
+msgstr "Đơn của tôi"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_my_shifts
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_my_shifts
+msgid "My Shifts"
+msgstr "ca của tôi"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__display_name_computed
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Next"
+msgstr "Kế tiếp"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Tiếp theo Hoạt động Calendar Sự kiện"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Tiếp theo Hoạt động Hạn chót"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_summary
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tiếp theo Hoạt động Tóm tắt"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_type_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tiếp theo Hoạt động Loại"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__night
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_template__shift_type__night
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_kanban
+msgid "Night"
+msgstr "Đêm"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_config__overtime_type__night
+msgid "Night Shift Premium"
+msgstr "Ca đêm cao cấp"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "No bonus hours"
+msgstr "Không có giờ thưởng"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "No employees with entries this week — adjust the department or week."
+msgstr ""
+"Không có nhân viên nào có dữ liệu trong tuần này — điều chỉnh phòng ban hoặc tuần."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "No longer exists."
+msgstr "Không còn tồn tại."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "No overflow OT matched these filters."
+msgstr "Không có OT tràn nào phù hợp với các bộ lọc này."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "No overtime requests are waiting for approval."
+msgstr "Không có yêu cầu làm thêm giờ đang chờ phê duyệt."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Not a grid entry — edit on the attendance form."
+msgstr "Không phải mục nhập dạng lưới — chỉnh sửa trên biểu mẫu chấm công."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__note
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__note
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số của Hành động"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số của lỗi"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__message_needaction_counter
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số của thông báo yêu cầu hành động"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__message_has_error_counter
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số của thông báo với giao lỗi"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_list
+msgid "OT After (hrs)"
+msgstr "OT Sau (giờ)"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "OT Begins After (hrs)"
+msgstr "OT Bắt đầu Sau (giờ)"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__overtime_config_id
+msgid "OT Rule"
+msgstr "Quy tắc Cựu Ước"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_overtime_to_approve
+msgid "OT To Approve"
+msgstr "OT để phê duyệt"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+msgid "OT Type"
+msgstr "Loại OT"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__bonus_hours
+msgid ""
+"OT hours beyond the ceiling allowance. Paid via the BONHRS input if the config uses "
+"it; outside the OT caps by definition."
+msgstr ""
+"Số giờ OT vượt quá mức phụ cấp trần. Được thanh toán qua đầu vào BONHRS nếu cấu hình "
+"sử dụng nó; ngoài giới hạn OT theo định nghĩa."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "OT request"
+msgstr "Yêu cầu OT"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "OT type"
+msgstr "loại OT"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__compliance_status__on_time
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "On Time"
+msgstr "Đúng giờ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "On an authorized business trip — attendance is automatic here."
+msgstr ""
+"Trong một chuyến công tác được ủy quyền - việc tham dự ở đây được thực hiện tự động."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request.py:0
+msgid "Only the requester or an overtime decider can reset %s to draft."
+msgstr ""
+"Chỉ người yêu cầu hoặc người quyết định làm thêm giờ mới có thể đặt lại %s thành bản "
+"nháp."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Org-wide queue · ceiling context · bonus-hours overflow"
+msgstr "Hàng đợi trên toàn tổ chức · bối cảnh trần · tràn giờ thưởng"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__ot_hours_month
+msgid "Ot Hours Month"
+msgstr "Giờ làm việc Tháng"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Over the ceiling — review exceptions →"
+msgstr "Trên trần — xem xét các trường hợp ngoại lệ →"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__is_overnight
+msgid "Overnight Shift"
+msgstr "Ca qua đêm"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.actions.client,name:pb_hr_workforce.action_pb_ot_desk
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__compliance_status__overtime
+#: model:pb.sidebar.item,name:pb_hr_workforce.item_wf_ot_desk
+msgid "Overtime"
+msgstr "Làm Thêm Giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__threshold_hours
+msgid "Overtime After (hrs)"
+msgstr "Làm thêm giờ sau (giờ)"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_pivot
+msgid "Overtime Analysis"
+msgstr "Phân tích làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_pb_ot_ceiling_form
+msgid "Overtime Caps (hours) — 0 = not enforced"
+msgstr "Giới hạn làm thêm giờ (giờ) - 0 = không được thực thi"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_pb_ot_ceiling
+msgid "Overtime Ceiling Configuration"
+msgstr "Cấu hình trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_pb_ot_ceiling
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_ot_ceiling_config
+msgid "Overtime Ceilings"
+msgstr "Mức trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_pb_ot_desk
+msgid "Overtime Desk Cockpit"
+msgstr "Bàn làm thêm giờ Buồng lái"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Overtime Details"
+msgstr "Chi tiết làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_overtime_config
+msgid "Overtime Rate Configuration"
+msgstr "Cấu hình tỷ lệ làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_overtime_request
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Overtime Request"
+msgstr "Yêu cầu làm thêm giờ"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request.py:0
+msgid "Overtime Request to Approve: %s"
+msgstr "Yêu cầu phê duyệt ngoài giờ: %s"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_overtime_request
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_list
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+msgid "Overtime Requests"
+msgstr "Yêu cầu làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "Overtime Rule"
+msgstr "Quy tắc làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_overtime_config
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_list
+msgid "Overtime Rules"
+msgstr "Quy tắc tăng ca"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__overtime_type
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__overtime_type
+msgid "Overtime Type"
+msgstr "Loại làm thêm giờ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Overtime beyond the ceilings — payroll-manager view"
+msgstr "Làm thêm vượt trần — chế độ xem cho quản lý bảng lương"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Overtime ceiling exceeded"
+msgstr "Vượt mức trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Overtime ceilings"
+msgstr "Mức trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Overtime rules & ceilings"
+msgstr "Quy định và mức trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request.py:0
+msgid ""
+"Overtime state and hours feed payroll and can only change through the overtime "
+"actions, not directly: %s."
+msgstr ""
+"Trạng thái làm thêm giờ và số giờ cung cấp bảng lương và chỉ có thể thay đổi thông qua"
+" các hành động làm thêm giờ chứ không phải trực tiếp: %s."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Overtime this month"
+msgstr "Làm thêm giờ trong tháng này"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.client,name:pb_hr_workforce.action_payroll_report_dashboard
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_payroll_report
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_hr_payslip_run_form_inherit_workforce
+msgid "Payroll Report"
+msgstr "Báo cáo lương"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_payroll_report_api
+msgid "Payroll Report API"
+msgstr "API báo cáo bảng lương"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Phiếu lương Đợt"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__compliance_status__pending
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__pending_leaves
+msgid "Pending Leaves"
+msgstr "Lá chờ xử lý"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__pending_ot_requests
+msgid "Pending Ot Requests"
+msgstr "Yêu cầu đang chờ xử lý"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__planned_hours
+msgid "Planned Hours"
+msgstr "Số giờ theo kế hoạch"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__planned_hours
+msgid "Planned OT Hours"
+msgstr "Số giờ OT theo kế hoạch"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__presence_rate
+msgid "Presence Rate"
+msgstr "Tỷ lệ hiện diện"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__present_today
+msgid "Present Today"
+msgstr "Hiện tại hôm nay"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Prev"
+msgstr "Trước đó"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__holiday
+msgid "Public Holiday"
+msgstr "Nghỉ lễ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_config__overtime_type__holiday
+msgid "Public Holiday Overtime"
+msgstr "Làm Thêm Giờ Ngày Lễ"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Publish"
+msgstr "Công khai"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_planning__state__published
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Published"
+msgstr "Đã đăng"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Queue clear"
+msgstr "Hàng chờ trống"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__rate_multiplier
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_list
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_list
+msgid "Rate"
+msgstr "Hệ số"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__rate_display
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__rate_display
+msgid "Rate Display"
+msgstr "Hiển thị tỷ lệ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__rate_multiplier
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Rate Multiplier"
+msgstr "Hệ số tỷ lệ"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_config.py:0
+msgid "Rate multiplier must be at least 1.0 (100%)"
+msgstr "Hệ số tỷ lệ phải ít nhất là 1,0 (100%)"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "Rates & Limits"
+msgstr "Giá & Giới hạn"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__reason
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Reason (optional)…"
+msgstr "Lý do (tùy chọn)…"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__name
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__name
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Refuse"
+msgstr "Từ chối"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Refuse overtime"
+msgstr "Từ chối làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__state__refused
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Refused"
+msgstr "Đã từ chối"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Refusing"
+msgstr "từ chối"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "Reg"
+msgstr "Đăng ký"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "Regular hours"
+msgstr "Giờ thông thường"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "Regular work hours per day. Overtime kicks in after this threshold."
+msgstr "Giờ làm việc cố định hàng ngày. Làm thêm giờ bắt đầu sau ngưỡng này."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Request Details"
+msgstr "Yêu cầu chi tiết"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__requires_approval
+msgid "Requires Approval"
+msgstr "Yêu cầu phê duyệt"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Reset"
+msgstr "Đặt lại"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Reset to Draft"
+msgstr "Đặt lại để Nháp"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__activity_user_id
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__activity_user_id
+msgid "Responsible User"
+msgstr "Phụ trách Người dùng"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__name
+msgid "Rule Name"
+msgstr "Quy tắc Tên"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS Giao lỗi"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__apply_saturday
+msgid "Sat"
+msgstr "Thứ 7"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Schedule"
+msgstr "Lịch trình"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Select all"
+msgstr "Chọn tất cả"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__sequence
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_attendance__pb_entry_source
+msgid ""
+"Set when a record is created by the Weekly Entry grid; blank for device/kiosk/manual "
+"punches which the grid must never overwrite."
+msgstr ""
+"Đặt thời điểm một bản ghi được tạo bởi lưới Mục nhập hàng tuần; trống cho các cú đấm "
+"thiết bị/kiosk/thủ công mà lưới không bao giờ được ghi đè."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Shift"
+msgstr "Ca làm việc"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_pivot
+msgid "Shift Analysis"
+msgstr "Phân tích sự thay đổi"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_form
+msgid "Shift Assignment"
+msgstr "Phân công ca"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_list
+msgid "Shift Assignments"
+msgstr "Bài tập theo ca"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_calendar
+msgid "Shift Calendar"
+msgstr "Lịch ca"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__shift_compliance_rate
+msgid "Shift Compliance Rate"
+msgstr "Tỷ lệ tuân thủ ca"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_form
+msgid "Shift Details"
+msgstr "Chi tiết ca làm việc"
+
+#. module: pb_hr_workforce
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_shift_planning_list
+msgid "Shift List"
+msgstr "Danh sách ca"
+
+#. module: pb_hr_workforce
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_shift_management
+msgid "Shift Management"
+msgstr "Quản lý ca"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__name
+msgid "Shift Name"
+msgstr "Tên ca"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_shift_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_shift_planning_no_filter
+#: model:ir.model,name:pb_hr_workforce.model_hr_shift_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Shift Planning"
+msgstr "Kế hoạch ca"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_shift_planning_grid
+msgid "Shift Planning Grid API"
+msgstr "API lưới lập kế hoạch thay đổi"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_shift_template
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__shift_template_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_form
+msgid "Shift Template"
+msgstr "Mẫu ca"
+
+#. module: pb_hr_workforce
+#: model:ir.actions.act_window,name:pb_hr_workforce.action_shift_template
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_shift_templates
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_shift_templates_config
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_list
+msgid "Shift Templates"
+msgstr "Mẫu ca"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__shift_type
+msgid "Shift Type"
+msgstr "Loại ca"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_template__end_hour
+msgid "Shift end time (24h format, e.g. 17.0 = 17:00)"
+msgstr "Thời gian kết thúc ca (định dạng 24h, ví dụ: 17.0 = 17:00)"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/shift_planning_grid.py:0
+msgid "Shift planning is restricted to attendance officers."
+msgstr "Lập kế hoạch thay đổi được giới hạn cho các nhân viên tham dự."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_template__start_hour
+msgid "Shift start time (24h format, e.g. 8.0 = 08:00)"
+msgstr "Thời gian bắt đầu ca (định dạng 24h, ví dụ 8.0 = 08:00)"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Showing the first 200 employees. Narrow by department to see the rest."
+msgstr "Đang hiển thị 200 nhân viên đầu tiên. Lọc theo phòng ban để xem thêm."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_employee__pb_ot_special_sector
+msgid "Special-Sector OT Ceiling"
+msgstr "Trần OT dành cho ngành đặc biệt"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_template__shift_type__split
+msgid "Split Shift"
+msgstr "Chia ca"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__start_datetime
+msgid "Start"
+msgstr "Bắt đầu"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__start_hour
+msgid "Start Time"
+msgstr "Bắt đầu Thời gian"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/shift_template.py:0
+msgid "Start time must be between 0:00 and 23:59"
+msgstr "Thời gian bắt đầu phải từ 0:00 đến 23:59"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__state
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__compliance_status
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__activity_state
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên trên hoạt động\n"
+"Quá hạn: Đến hạn ngày là đã đã vượt\n"
+"Hôm nay: Hoạt động ngày là hôm nay\n"
+"Planned: Tương lai hoạt động."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+msgid "Submit"
+msgstr "Gửi"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Submit all"
+msgstr "Gửi tất cả"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Submit anyway"
+msgstr "Vẫn gửi"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Submit failed."
+msgstr "Gửi thất bại."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__state__submitted
+msgid "Submitted"
+msgstr "Đã gửi"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "Summary"
+msgstr "Bản tóm tắt"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__apply_sunday
+msgid "Sun"
+msgstr "CN"
+
+#. module: pb_hr_workforce
+#. odoo-python
 #: code:addons/pb_hr_workforce/models/ot_desk.py:0
 msgid "The Overtime Desk is restricted to attendance managers."
 msgstr "Bàn Làm Thêm Giờ chỉ dành cho quản lý chấm công."
 
 #. module: pb_hr_workforce
-#: code:addons/pb_hr_workforce/models/ot_desk.py:0
-msgid "Bonus Hours review is restricted to payroll managers."
-msgstr "Rà soát Giờ Thưởng chỉ dành cho quản lý bảng lương."
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "This Month"
+msgstr "Này Tháng"
 
-# ==== Workforce P2 §3.10 — hero/eyebrow titles match the rail ====
-# W7/C18.74: Odoo 19 needs BOTH the `#. module:` line and an
-# `#. odoo-javascript` / `#. odoo-python` marker, or the entry is not loaded.
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "This cell changed since you loaded it — refresh and retry."
+msgstr "Ô này đã thay đổi kể từ khi bạn tải nó - hãy làm mới và thử lại."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "This overtime type doesn't apply on this day."
+msgstr "Loại làm thêm giờ này không áp dụng vào ngày này."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__apply_monday
+msgid "This rule applies on Mondays"
+msgstr "Quy tắc này áp dụng vào thứ Hai"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "This year"
+msgstr "Năm nay"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__apply_thursday
+msgid "Thu"
+msgstr "Thứ 5"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__time_display
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_list
+msgid "Time Window"
+msgstr "Cửa sổ thời gian"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_form
+msgid "Timing"
+msgstr "Thời gian"
 
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
-msgid "Overtime"
-msgstr "Làm Thêm Giờ"
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__date_to
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "To"
+msgstr "Để"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+msgid "To Approve"
+msgstr "Cần phê duyệt"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Toggle overtime ceilings"
+msgstr "Bật/tắt mức trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_workforce_dashboard__total_employees
+msgid "Total Employees"
+msgstr "Tổng Nhân viên"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__total_hours
+msgid "Total Hours"
+msgstr "Tổng giờ"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__apply_tuesday
+msgid "Tue"
+msgstr "Thứ 3"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__activity_exception_decoration
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Unknown action."
+msgstr "Hành động không xác định."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "Unknown measure."
+msgstr "Biện pháp không xác định."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__website_message_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__website_message_ids
+msgid "Website Messages"
+msgstr "Trang web Thông báo"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_request__website_message_ids
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_shift_planning__website_message_ids
+msgid "Website communication history"
+msgstr "Trang web giao tiếp history"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_config__apply_wednesday
+msgid "Wed"
+msgstr "Thứ 4"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Week"
+msgstr "Tuần"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Week %s"
+msgstr "Tuần %s"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_attendance__pb_entry_source__grid
+msgid "Week grid"
+msgstr "Lưới tuần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__weekday
+msgid "Weekday"
+msgstr "Ngày thường"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_config__overtime_type__weekday
+msgid "Weekday Overtime"
+msgstr "Làm thêm giờ trong tuần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__weekend
+msgid "Weekend"
+msgstr "Cuối tuần"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_config__overtime_type__weekend
+msgid "Weekend Overtime"
+msgstr "Làm thêm cuối tuần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+#: model:ir.actions.client,name:pb_hr_workforce.action_pb_attendance_weekgrid
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_attendance_weekgrid
+#: model:pb.sidebar.item,name:pb_hr_workforce.item_wf_weekentry
+msgid "Weekly Entry"
+msgstr "Nhập liệu theo tuần"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_attendance_weekentry
+msgid "Weekly Entry Grid API"
+msgstr "API lưới mục nhập hàng tuần"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "Weekly Entry is restricted to attendance officers."
+msgstr "Sự tham gia hàng tuần được giới hạn cho các nhân viên tham dự."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__weekly_cap
+msgid "Weekly OT Cap (h)"
+msgstr "Giới hạn OT hàng tuần (h)"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "When Does This Rule Apply?"
+msgstr "Khi nào quy tắc này được áp dụng?"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_employee__pb_ot_special_sector
+msgid ""
+"When set, this employee is subject to the higher special-sector annual overtime cap "
+"instead of the standard annual cap."
+msgstr ""
+"Khi được thiết lập, nhân viên này phải tuân theo giới hạn làm thêm giờ hàng năm trong "
+"lĩnh vực đặc biệt cao hơn thay vì giới hạn tiêu chuẩn hàng năm."
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,help:pb_hr_workforce.field_hr_overtime_config__applicable_days_display
+msgid "Which days of the week this rule applies to"
+msgstr "Những ngày nào trong tuần quy tắc này áp dụng cho"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__duration
+msgid "Work Duration (hrs)"
+msgstr "Thời lượng làm việc (giờ)"
+
+#. module: pb_hr_workforce
+#: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__resource_calendar_id
+msgid "Work Schedule"
+msgstr "Lịch làm việc"
+
+#. module: pb_hr_workforce
+#: model:ir.ui.menu,name:pb_hr_workforce.menu_workforce_root
+msgid "Workforce"
+msgstr "Lực lượng lao động"
+
+#. module: pb_hr_workforce
+#: model:ir.model,name:pb_hr_workforce.model_hr_workforce_dashboard
+msgid "Workforce Dashboard"
+msgstr "Bảng điều khiển lực lượng lao động"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Y"
+msgstr "Y"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request.py:0
+msgid "You cannot approve or refuse your own overtime (%s)."
+msgstr "Bạn không thể phê duyệt hoặc từ chối làm thêm giờ của chính mình (%s)."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "approval"
+msgstr "phê duyệt"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "approved"
+msgstr "đã duyệt"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "awaiting approval"
+msgstr "đang chờ duyệt"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "b"
+msgstr "b"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "bonus hours this month"
+msgstr "giờ thưởng tháng này"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "cell(s) could not be saved — see the highlighted cells."
+msgstr "ô không thể lưu — xem các ô được đánh dấu."
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_form
+msgid "e.g. Morning Shift"
+msgstr "ví dụ: Ca sáng"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_config_form
+msgid "e.g. Vietnam — Weekday OT"
+msgstr "ví dụ: Việt Nam — OT ngày trong tuần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "employee"
+msgstr "nhân viên"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "h"
+msgstr "h"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "h drafted"
+msgstr "giờ nháp"
+
+#. module: pb_hr_workforce
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_kanban
+msgid "hrs"
+msgstr "giờ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "month OT by type (h)"
+msgstr "tháng OT theo loại (h)"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "name…"
+msgstr "tên…"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "near/over ceiling"
+msgstr "gần/vượt trần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "overtime request(s) approved."
+msgstr "yêu cầu làm thêm giờ đã được duyệt."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+msgid "overtime request(s) submitted."
+msgstr "yêu cầu làm thêm giờ đã được gửi."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "page"
+msgstr "trang"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "pending approvals"
+msgstr "chờ duyệt"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "refused"
+msgstr "đã từ chối"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "request(s). Add an optional note."
+msgstr "(các) yêu cầu. Thêm ghi chú tùy chọn."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "requests"
+msgstr "yêu cầu"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "s"
+msgstr "s"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "scan capped at"
+msgstr "giới hạn quét ở"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "selected"
+msgstr "đã chọn"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "total bonus h"
+msgstr "tổng tiền thưởng h"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "— narrow filters"
+msgstr "- bộ lọc hẹp"
+
+#: pb_hr_workforce/static/src/js/attendance_weekgrid.js:330
+msgid "%(h)s h past the monthly ceiling of %(cap)s h. The excess is"
+msgstr "%(h)s h đã vượt mức trần hàng tháng của %(cap)s h. Phần dư thừa là"

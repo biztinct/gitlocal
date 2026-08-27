@@ -4,15 +4,16 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { _t } from "@web/core/l10n/translation";
 
 const STATE_CLS = { active: "ok", draft: "info", deprecated: "warn", archived: "muted" };
 const STATUS_CHIPS = [
-    { id: "all", label: "All" }, { id: "active", label: "Active" },
-    { id: "draft", label: "Draft" }, { id: "deprecated", label: "Deprecated" },
+    { id: "all", label: _t("All") }, { id: "active", label: _t("Active") },
+    { id: "draft", label: _t("Draft") }, { id: "deprecated", label: _t("Deprecated") },
 ];
 const DATE_CHIPS = [
-    { id: "all", label: "All time" }, { id: "month", label: "Updated this month" },
-    { id: "year", label: "Updated this year" }, { id: "custom", label: "Custom" },
+    { id: "all", label: _t("All time") }, { id: "month", label: _t("Updated this month") },
+    { id: "year", label: _t("Updated this year") }, { id: "custom", label: _t("Custom") },
 ];
 
 export class PbStructures extends Component {

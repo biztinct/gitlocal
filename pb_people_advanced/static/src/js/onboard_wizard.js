@@ -2,10 +2,11 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.people.onboard.wizard";
-const STEPS = ["Person", "Role", "Contract"];
+const STEPS = [_t("Person"), _t("Role"), _t("Contract")];
 
 export class OnboardWizard extends Component {
     static template = "pb_people_advanced.OnboardWizard";
@@ -52,10 +53,10 @@ export class OnboardWizard extends Component {
         try {
             const res = await this.orm.call(MODEL, "create_employee", [this.state.form]);
             if (res.error && !res.employee_id) { this.notif.add(res.error, { type: "danger" }); return; }
-            if (res.error) this.notif.add("Employee created; contract: " + res.error, { type: "warning" });
+            if (res.error) this.notif.add(_t("Employee created; contract: %(error)s", { error: res.error }), { type: "warning" });
             this.state.result = res;
         } catch (e) {
-            this.notif.add((e && e.message && e.message.toString()) || "Failed.", { type: "danger" });
+            this.notif.add((e && e.message && e.message.toString()) || _t("Failed."), { type: "danger" });
         } finally { this.state.loading = false; }
     }
     openEmployee() {
