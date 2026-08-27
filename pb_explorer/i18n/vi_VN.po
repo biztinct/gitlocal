@@ -1,0 +1,1008 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "%(a)s to %(b)s."
+msgstr "%(a)s đến %(b)s."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "%(dept)s net pay %(dir)s %(pct)s%%"
+msgstr "%(dept)s lương ròng %(dir)s %(pct)s%%"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "(deleted employee)"
+msgstr "(nhân viên đã bị xóa)"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ". Refresh in a moment."
+msgstr ". Làm mới trong giây lát."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Add filter"
+msgstr "Thêm bộ lọc"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Against the company trend."
+msgstr "Đi ngược lại xu hướng của công ty."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "All periods"
+msgstr "Tất cả các kỳ"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__amount
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__amount
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Analytics"
+msgstr "Phân tích"
+
+#. module: pb_explorer
+#: model:ir.actions.client,name:pb_explorer.action_pb_explorer
+msgid "Analytics Explorer"
+msgstr "Trình khám phá phân tích"
+
+#. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_fact_emp__basis__approved
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_fact_line__basis__approved
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_fact_run__basis__approved
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__asof_fallback_count
+msgid "As-of fallbacks"
+msgstr "Dự phòng"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Ask a question first."
+msgstr "Hãy đặt một câu hỏi trước."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Ask anything of your payroll — pick a measure, break it down,\n"
+"              spread it over time, then click any bar to see the people behind it."
+msgstr ""
+"Hãy hỏi bất cứ điều gì về bảng lương của bạn - chọn một thước đo, chia nhỏ nó ra,\n"
+"              lan truyền nó theo thời gian, sau đó nhấp vào bất kỳ thanh nào để xem những người đứng đằng sau nó."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Ask in plain English — “employer cost by department last quarter, retail only”"
+msgstr ""
+"Hỏi bằng tiếng Anh đơn giản - “chi phí của nhà tuyển dụng theo bộ phận trong quý "
+"trước, chỉ bán lẻ”"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__basis
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__basis
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__basis
+msgid "Basis"
+msgstr "cơ sở"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Behind the number"
+msgstr "Đằng sau con số"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__build_ms
+msgid "Build (ms)"
+msgstr "Bản dựng (ms)"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__built_on
+msgid "Built On"
+msgstr "Được xây dựng trên"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "By"
+msgstr "Bởi"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__category_id
+msgid "Category"
+msgstr "Danh mục"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__category_type
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__category_type
+msgid "Category Type"
+msgstr "Danh mục Loại"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Clear all"
+msgstr "Xóa tất cả"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Colour shows how far each cell sits from the typical value —\n"
+"                indigo is above, teal is below. Click any cell to see the people in it."
+msgstr ""
+"Màu sắc cho biết mỗi ô nằm cách giá trị điển hình bao xa —\n"
+"                màu chàm ở trên, màu xanh mòng két ở dưới. Bấm vào bất kỳ ô nào để xem những người trong đó."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Columns"
+msgstr "Cột"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__company_id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__company_id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Component"
+msgstr "Thành phần"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__component_name
+msgid "Component Name"
+msgstr "Tên thành phần"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_line__code
+msgid "Component code — the join key to budgets"
+msgstr "Mã thành phần - chìa khóa kết nối với ngân sách"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Component type"
+msgstr "Loại thành phần"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__create_uid
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__create_uid
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__create_date
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__create_date
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__cycle
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__cycle
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__cycle
+msgid "Cycle"
+msgstr "Chu kỳ"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_line__headcount
+msgid ""
+"DISTINCT employees AT THIS GRAIN ONLY. Never SUM this across components — use "
+"pb.fact.emp for headcount measures."
+msgstr ""
+"CHỈ CÓ nhân viên DISTINCT TẠI GRAIN NÀY. Never SUM this across components — use "
+"pb.fact.emp for headcount measures."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__date_end
+msgid "Date End"
+msgstr "Ngày kết thúc"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__date_start
+msgid "Date Start"
+msgstr "Ngày bắt đầu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__department_id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__dirty
+msgid "Dirty"
+msgstr "Bẩn"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer__display_name
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_builder__display_name
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__display_name
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__display_name
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__untyped_category_count
+msgid ""
+"Distinct salary-rule categories with no category_type. The platform defaults that "
+"field to 'allowance' (pb_hr_payroll_base/models/hr_payroll_structure_base.py:224), so "
+"an untyped category silently reads as an allowance — the count is surfaced so the "
+"number can be trusted or questioned."
+msgstr ""
+"Các danh mục quy tắc lương riêng biệt không có loại_loại. Nền tảng mặc định trường đó "
+"là 'phụ cấp' (pb_hr_payroll_base/models/hr_payroll_structure_base.py:224), do đó, danh"
+" mục chưa được nhập sẽ đọc thầm dưới dạng phụ cấp — số lượng được hiển thị để số này "
+"có thể được tin cậy hoặc đặt câu hỏi."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__division
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__division
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__division
+msgid "Division"
+msgstr "Phép chia"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__division_label
+msgid "Division Label"
+msgstr "Nhãn phân chia"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__emp_ids
+msgid "Emp"
+msgstr "NV"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__employee_count
+msgid "Employee Count"
+msgstr "Nhân viên Số lượng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Explain"
+msgstr "Giải thích"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Explorer"
+msgstr "Nhà thám hiểm"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Export"
+msgstr "Xuất"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Export CSV"
+msgstr "Xuất CSV"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Exported %s rows. %s more were left out by the row cap."
+msgstr "Đã xuất các hàng %s. %s nhiều hơn đã bị loại bỏ bởi giới hạn hàng."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__fact_line_count
+msgid "Fact Line Count"
+msgstr "Số dòng sự kiện"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__fact_run_id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__fact_run_id
+msgid "Fact Run"
+msgstr "Thực tế chạy"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__month
+msgid "First day of the run month"
+msgstr "Ngày đầu tiên của tháng chạy"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__cycle
+msgid "Formula config cycle_type: 'mid' / 'end' / ''"
+msgstr "Cấu hình công thức Cycle_type: 'mid' / 'end' / ''"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__headcount
+msgid "Headcount"
+msgstr "Số lượng nhân sự"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Heatmap"
+msgstr "Bản đồ nhiệt"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer__id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_builder__id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__job_id
+msgid "Job"
+msgstr "Chức vụ"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Joiners (%s)"
+msgstr "Người tham gia (%s)"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_line__component_name
+msgid "Label snapshot; fallback when rule_id is gone"
+msgstr "Ảnh chụp nhanh nhãn; dự phòng khi Rule_id không còn nữa"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__write_uid
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__write_uid
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__write_date
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__write_date
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Leavers (%s)"
+msgstr "Người rời đi (%s)"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__line_ids
+msgid "Line"
+msgstr "Dòng"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__line_count
+msgid "Line Count"
+msgstr "Số dòng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Lines"
+msgstr "Dòng"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_line__rule_id
+msgid "Live rule, for the translated display label"
+msgstr "Quy tắc trực tiếp cho nhãn hiển thị đã dịch"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Measure"
+msgstr "Đo lường"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__month
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__month
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__month
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Movement analysis"
+msgstr "Phân tích chuyển động"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__net_total
+msgid "Net Total"
+msgstr "Tổng số ròng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Next"
+msgstr "Kế tiếp"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Not enough to compare yet."
+msgstr "Vẫn chưa đủ để so sánh."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Nothing matched this combination."
+msgstr "Không có gì phù hợp với sự kết hợp này."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Over"
+msgstr "Kết thúc"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__run_id
+msgid "Pay Run"
+msgstr "Đợt lương"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Pay changes (%s stayed)"
+msgstr "Thay đổi thanh toán (%s ở lại)"
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_explorer
+msgid "Payobook Analytics Explorer — read-only query facade"
+msgstr "Payobook Analytics Explorer — mặt tiền truy vấn chỉ đọc"
+
+#. module: pb_explorer
+#: model:ir.actions.server,name:pb_explorer.cron_pb_explorer_build_ir_actions_server
+msgid "Payobook: build analytics facts"
+msgstr "Payobook: xây dựng dữ kiện phân tích"
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_fact_builder
+msgid "Payroll fact builder"
+msgstr "Người xây dựng thực tế tiền lương"
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_fact_line
+msgid "Payroll fact — component grain (T1)"
+msgstr "Thực tế tiền lương - hạt thành phần (T1)"
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_fact_emp
+msgid "Payroll fact — employee grain (T2)"
+msgstr "Thực tế tiền lương - hạt nhân viên (T2)"
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_fact_run
+msgid "Payroll fact — run header"
+msgstr "Thực tế về bảng lương - tiêu đề chạy"
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Phiếu lương Đợt"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__asof_fallback_count
+msgid ""
+"Payslips whose employee had no hr.version dated on or before the period end, so the "
+"EARLIEST version was used to resolve the department instead. Surfaced on the board."
+msgstr ""
+"Phiếu lương mà nhân viên của họ không có hr.version ngày vào hoặc trước ngày kết thúc "
+"kỳ, do đó, phiên bản SỚM NHẤT được sử dụng để giải quyết bộ phận thay thế. Nổi lên "
+"trên bảng."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Preparing the analytics workbench…"
+msgstr "Đang chuẩn bị bàn làm việc phân tích…"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Previous"
+msgstr "Trước đó"
+
+#. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_fact_emp__basis__provisional
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_fact_line__basis__provisional
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_fact_run__basis__provisional
+msgid "Provisional"
+msgstr "tạm thời"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__quarter
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__quarter
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__quarter
+msgid "Quarter"
+msgstr "Quý"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__rule_id
+msgid "Rule"
+msgstr "Quy định"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__run_id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__run_id
+msgid "Run"
+msgstr "Chạy"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__dirty
+msgid "Set by the hr.payslip.run write hook"
+msgstr "Được thiết lập bởi móc ghi hr.payslip.run"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Share"
+msgstr "Chia sẻ"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Something went wrong."
+msgstr "Đã xảy ra lỗi."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__source_line_count
+msgid "Source Line Count"
+msgstr "Số dòng nguồn"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__source_slip_count
+msgid "Source Slip Count"
+msgstr "Đếm phiếu nguồn"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__token
+msgid "Source fingerprint; a mismatch forces a rebuild"
+msgstr "Nguồn dấu vân tay; sự không phù hợp buộc phải xây dựng lại"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Stacked"
+msgstr "Chồng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Starting points"
+msgstr "Điểm xuất phát"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Table"
+msgstr "Bàn"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "The Analytics Explorer is restricted to payroll analytics managers."
+msgstr "Analytics Explorer bị hạn chế đối với người quản lý phân tích bảng lương."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid ""
+"The component filter does not apply to this breakdown — it covers all components."
+msgstr ""
+"Bộ lọc thành phần không áp dụng cho phân tích này — nó bao gồm tất cả các thành phần."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "The current period is still provisional."
+msgstr "Thời gian hiện tại vẫn là tạm thời."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"These two periods are not like-for-like (different cycle or\n"
+"                division), so part of the movement is simply that difference."
+msgstr ""
+"Hai thời kỳ này không giống nhau (chu kỳ khác nhau hoặc\n"
+"                phép chia), vậy nên một phần của chuyển động chỉ đơn giản là sự khác biệt đó."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__token
+msgid "Token"
+msgstr "Mã thông báo"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Total"
+msgstr "Tổng cộng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Trend"
+msgstr "Xu hướng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Try widening the filters or picking another period."
+msgstr "Hãy thử mở rộng bộ lọc hoặc chọn một khoảng thời gian khác."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid ""
+"Two comparable pay periods are needed to explain a movement — only %s is in scope."
+msgstr ""
+"Cần có hai kỳ lương tương đương để giải thích một chuyển động - chỉ có %s nằm trong "
+"phạm vi."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Unassigned"
+msgstr "Chưa phân bổ"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__untyped_category_count
+msgid "Untyped categories"
+msgstr "Danh mục chưa được gõ"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "What changed, and why"
+msgstr "Điều gì đã thay đổi và tại sao"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Where"
+msgstr "Ở đâu"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Worth %(amt)s last period, absent this one."
+msgstr "Trị giá %(amt)s kỳ trước, vắng mặt kỳ này."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Worth %(amt)s this period, absent last one."
+msgstr "Trị giá %(amt)s đợt này, đợt trước vắng mặt."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Worth a look"
+msgstr "Đáng xem"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__year
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__year
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__year
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "desc"
+msgstr "mô tả"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "dimensionlabel"
+msgstr "nhãn thứ nguyên"
+
+#. module: pb_explorer
+#: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__quarter
+msgid "e.g. '2026-Q2'"
+msgstr "ví dụ: '2026-Q2'"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "employees in both periods"
+msgstr "nhân viên trong cả hai thời kỳ"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "employees ·"
+msgstr "nhân viên ·"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "fell"
+msgstr "ngã"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "grainlabel"
+msgstr "nhãn hạt"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "in these figures:"
+msgstr "trong những hình này:"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "joined"
+msgstr "đã tham gia"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "label"
+msgstr "nhãn"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "left"
+msgstr "trái"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "more not charted"
+msgstr "nhiều hơn nữa không được xếp hạng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "ms"
+msgstr "cô"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "name"
+msgstr "tên"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"negative series omitted — a share\n"
+"                  chart cannot represent them. Switch to Columns to see them."
+msgstr ""
+"chuỗi tiêu cực bị bỏ qua - một phần\n"
+"                  biểu đồ không thể đại diện cho chúng. Chuyển sang Cột để xem chúng."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "net movement in"
+msgstr "chuyển động ròng trong"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "not included"
+msgstr "không bao gồm"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "nothing specific matched — showing the default view"
+msgstr "không có gì cụ thể phù hợp - hiển thị chế độ xem mặc định"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"pay period(s) are still being\n"
+"            prepared and are"
+msgstr ""
+"(các) kỳ lương vẫn đang được thực hiện\n"
+"            đã chuẩn bị và đang"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"payslips had no\n"
+"              org history for their period — earliest known placement used"
+msgstr ""
+"phiếu lương không có\n"
+"              lịch sử tổ chức trong thời kỳ của họ — vị trí được biết đến sớm nhất được sử dụng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"periods are still in progress —\n"
+"            their figures are provisional and may change on approval."
+msgstr ""
+"các giai đoạn vẫn đang được tiến hành -\n"
+"            số liệu của họ là tạm thời và có thể thay đổi khi được phê duyệt."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "periods ·"
+msgstr "kỳ ·"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "rose"
+msgstr "hoa hồng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "showing top"
+msgstr "hiển thị hàng đầu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "total"
+msgstr "tổng cộng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "unexplained — must be zero"
+msgstr "không giải thích được - phải bằng 0"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"untyped\n"
+"              component categories are counted as allowances"
+msgstr ""
+"chưa được gõ\n"
+"              các loại thành phần được tính là phụ cấp"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "— every choice is a chip below, edit any of them:"
+msgstr ""
+"— mọi lựa chọn đều là một con chip bên dưới, hãy chỉnh sửa bất kỳ lựa chọn nào trong "
+"số đó:"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid ""
+"“%(measure)s” cannot be broken down by “%(dim)s”. Headcount and job-level figures are "
+"counted per employee, while component-level figures are counted per pay component — "
+"one employee appears in many components, so combining them would count people more "
+"than once. Pick a component measure, or group by department or division instead."
+msgstr ""
+"“%(measure)s” không thể được chia nhỏ thành “%(dim)s”. Số lượng nhân viên và cấp độ "
+"công việc được tính cho mỗi nhân viên, trong khi số liệu ở cấp thành phần được tính "
+"cho mỗi thành phần trả lương — một nhân viên xuất hiện trong nhiều thành phần, do đó "
+"việc kết hợp chúng sẽ tính số người nhiều lần. Thay vào đó, hãy chọn một thước đo "
+"thành phần hoặc nhóm theo bộ phận hoặc bộ phận."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "“%s” is not a money total, so the movement below explains NET PAY."
+msgstr ""
+"“%s” không phải là tổng số tiền, vì vậy chuyển động bên dưới giải thích NET PAY."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "“%s” started being paid"
+msgstr "“%s” bắt đầu được thanh toán"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "“%s” stopped being paid"
+msgstr "“%s” đã ngừng thanh toán"

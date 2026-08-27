@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.statutory.wizard";
@@ -37,7 +38,7 @@ export class PolicyWizard extends Component {
         this.state.loading = true;
         try { const r = await this.orm.call(MODEL, "create_policy", [this.state.form]);
             if (r.error) { this.notif.add(r.error, { type: "danger" }); return; } this.state.result = r;
-        } catch (e) { this.notif.add("Failed.", { type: "danger" }); } finally { this.state.loading = false; }
+        } catch (e) { this.notif.add(_t("Failed."), { type: "danger" }); } finally { this.state.loading = false; }
     }
     openPolicy() { const id = this.state.result && this.state.result.policy_id; if (id) this.action.doAction({ type: "ir.actions.client", tag: "pb_policy_detail", name: "Policy", params: { policy_id: id } }); }
     close() { this.action.doAction("pb_statutory.action_pb_statutory", { clearBreadcrumbs: true }); }
@@ -71,7 +72,7 @@ export class TaxWizard extends Component {
         this.state.loading = true;
         try { const r = await this.orm.call(MODEL, "create_tax_table", [this.state.form]);
             if (r.error) { this.notif.add(r.error, { type: "danger" }); return; } this.state.result = r;
-        } catch (e) { this.notif.add("Failed.", { type: "danger" }); } finally { this.state.loading = false; }
+        } catch (e) { this.notif.add(_t("Failed."), { type: "danger" }); } finally { this.state.loading = false; }
     }
     openTax() { const id = this.state.result && this.state.result.tax_id; if (id) this.action.doAction({ type: "ir.actions.client", tag: "pb_tax_detail", name: "Tax table", params: { tax_id: id } }); }
     close() { this.action.doAction("pb_statutory.action_pb_statutory", { clearBreadcrumbs: true }); }

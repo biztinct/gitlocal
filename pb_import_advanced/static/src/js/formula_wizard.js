@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.import.formula.wizard";
@@ -82,7 +83,7 @@ export class FormulaWizard extends Component {
             this.state.result = res;
             if (res.error) this.notif.add(res.error, { type: "danger" });
         } catch (e) {
-            this.notif.add((e && e.message && e.message.toString()) || "Import failed.", { type: "danger" });
+            this.notif.add((e && e.message && e.message.toString()) || _t("Import failed."), { type: "danger" });
         } finally {
             this.state.loading = false;
         }

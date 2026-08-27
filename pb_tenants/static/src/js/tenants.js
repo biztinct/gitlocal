@@ -7,14 +7,15 @@ import { ConnectionLostError } from "@web/core/network/rpc";
 import { ic as kitIc } from "@pb_import_kit/js/import_icons";
 import { TIC, tic } from "@pb_tenants/js/pbtn_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { _t } from "@web/core/l10n/translation";
 
 const COUNTRIES = [
-    ["", "— pick later —"], ["VN", "Vietnam"], ["ID", "Indonesia"], ["IN", "India"],
-    ["SG", "Singapore"], ["TH", "Thailand"], ["KH", "Cambodia"], ["MY", "Malaysia"],
+    ["", _t("— pick later —")], ["VN", _t("Vietnam")], ["ID", _t("Indonesia")], ["IN", _t("India")],
+    ["SG", _t("Singapore")], ["TH", _t("Thailand")], ["KH", _t("Cambodia")], ["MY", _t("Malaysia")],
 ];
 const STATE_BADGE = {
-    live: ["ok", "Live"], provisioning: ["info", "Provisioning"], draft: ["muted", "Draft"],
-    error: ["err", "Error"], decommissioned: ["muted", "Decommissioned"],
+    live: ["ok", _t("Live")], provisioning: ["info", _t("Provisioning")], draft: ["muted", _t("Draft")],
+    error: ["err", _t("Error")], decommissioned: ["muted", _t("Decommissioned")],
 };
 
 export class PbTenants extends Component {
@@ -69,7 +70,7 @@ export class PbTenants extends Component {
     async recheckPlatform() {
         this.state.det.busy = "platform";
         try { await this.loadFleet(); } finally { this.state.det.busy = ""; }
-        this.notif.add("Platform status refreshed.", { type: "info" });
+        this.notif.add(_t("Platform status refreshed."), { type: "info" });
     }
 
     async refreshFleetHealth() {
@@ -82,12 +83,12 @@ export class PbTenants extends Component {
 
     openUrl(url) { window.open(url, "_blank"); }
 
-    async copy(text, label = "Copied") {
+    async copy(text, label = _t("Copied")) {
         try {
             await navigator.clipboard.writeText(text);
             this.notif.add(label + " — " + text, { type: "success" });
         } catch {
-            this.notif.add("Copy failed — select and copy manually.", { type: "warning" });
+            this.notif.add(_t("Copy failed — select and copy manually."), { type: "warning" });
         }
     }
 
@@ -126,18 +127,18 @@ export class PbTenants extends Component {
         const w = this.state.wiz;
         clearTimeout(this._slugTimer);
         if (!w.form.slug) { w.slug = { st: "idle", msg: "", url: "" }; return; }
-        w.slug = { st: "checking", msg: "Checking availability…", url: "" };
+        w.slug = { st: "checking", msg: _t("Checking availability…"), url: "" };
         this._slugTimer = setTimeout(async () => {
             const slug = w.form.slug;
             try {
                 const r = await this.orm.silent.call("pb.tenants", "check_slug", [slug]);
                 if (this.state.wiz.form.slug !== slug) { return; }
                 w.slug = r.ok
-                    ? { st: "ok", msg: "Available", url: r.url }
-                    : { st: "bad", msg: r.reason || "Not available", url: "" };
+                    ? { st: "ok", msg: _t("Available"), url: r.url }
+                    : { st: "bad", msg: r.reason || _t("Not available"), url: "" };
             } catch (e) {
                 if (this.state.wiz.form.slug !== slug) { return; }
-                w.slug = { st: "bad", msg: this.errText(e, "Could not check — retry."), url: "" };
+                w.slug = { st: "bad", msg: this.errText(e, _t("Could not check — retry.")), url: "" };
             }
         }, 350);
     }
@@ -154,7 +155,7 @@ export class PbTenants extends Component {
         console.error("pb_tenants RPC failed:", e);
         if (!e) { return fallback; }
         if (e instanceof ConnectionLostError || e.name === "ConnectionLostError") {
-            return "Lost connection to the server — check your network and retry.";
+            return _t("Lost connection to the server — check your network and retry.");
         }
         const raw = e.data?.message || e.message || e.data?.arguments?.[0] || "";
         const msg = String(raw).trim().split("\n")[0];
@@ -183,7 +184,7 @@ export class PbTenants extends Component {
             if (!w.tenantId) {
                 const res = await this.orm.silent.call("pb.tenants", "provision_start", [{ ...w.form }]);
                 w.tenantId = res.tenant_id;
-                w.console.push({ line: "Provisioning " + w.form.slug + "." + this.state.data.base_domain + " …", level: "info" });
+                w.console.push({ line: _t("Provisioning %(host)s …", { host: w.form.slug + "." + this.state.data.base_domain }), level: "info" });
             }
             for (const st of w.steps) {
                 if (st.state === "done") { continue; }
@@ -193,7 +194,7 @@ export class PbTenants extends Component {
                 st.ms = r.ms || 0;
                 if (!r.ok) {
                     st.state = "fail";
-                    w.error = r.error || "Step failed.";
+                    w.error = r.error || _t("Step failed.");
                     return;
                 }
                 st.state = "done";
@@ -239,7 +240,7 @@ export class PbTenants extends Component {
             if (okMsg) { this.notif.add(okMsg, { type: "success" }); }
             return d;
         } catch (e) {
-            this.notif.add((e && e.data && e.data.message) || "Action failed.", { type: "danger" });
+            this.notif.add((e && e.data && e.data.message) || _t("Action failed."), { type: "danger" });
         } finally {
             det.busy = "";
         }
@@ -256,10 +257,9 @@ export class PbTenants extends Component {
     restoreStaging(backupId) {
         const det = this.state.det;
         this.dialog.add(ConfirmationDialog, {
-            title: "Restore to staging",
-            body: "This restores a copy of the backup into '" + det.d.staging_db +
-                "'. The live tenant is untouched. Any existing staging copy is replaced. Continue?",
-            confirmLabel: "Restore copy",
+            title: _t("Restore to staging"),
+            body: _t("This restores a copy of the backup into '%(database)s'. The live tenant is untouched. Any existing staging copy is replaced. Continue?", { database: det.d.staging_db }),
+            confirmLabel: _t("Restore copy"),
             confirm: () => {
                 this._detCall("restore_staging", [det.id, backupId || null], "restore").then((r) => {
                     if (r && r.staging_url) {
@@ -275,9 +275,9 @@ export class PbTenants extends Component {
     dropStaging() {
         const det = this.state.det;
         this.dialog.add(ConfirmationDialog, {
-            title: "Remove staging copy",
-            body: "Drop the staging database '" + det.d.staging_db + "'? The live tenant is untouched.",
-            confirmLabel: "Drop staging",
+            title: _t("Remove staging copy"),
+            body: _t("Drop the staging database '%(database)s'? The live tenant is untouched.", { database: det.d.staging_db }),
+            confirmLabel: _t("Drop staging"),
             confirm: () => { det.restoreMsg = null; this._detCall("drop_staging", [det.id], "restore", "Staging removed."); },
             cancel: () => {},
         });
@@ -296,9 +296,9 @@ export class PbTenants extends Component {
 
     removeDomain(id, hostname) {
         this.dialog.add(ConfirmationDialog, {
-            title: "Remove domain",
-            body: "Detach " + hostname + " from this tenant? Its certificate and routing are removed.",
-            confirmLabel: "Remove",
+            title: _t("Remove domain"),
+            body: _t("Detach %(hostname)s from this tenant? Its certificate and routing are removed.", { hostname }),
+            confirmLabel: _t("Remove"),
             confirm: () => { this._detCall("domain_remove", [id], "domain", "Domain removed."); },
             cancel: () => {},
         });
@@ -310,10 +310,10 @@ export class PbTenants extends Component {
         det.busy = "offboard";
         try {
             const r = await this.orm.call("pb.tenants", "offboard", [det.id, det.confirm]);
-            this.notif.add("Tenant decommissioned. Final backup: " + (r.final_backup || "n/a"), { type: "success" });
+            this.notif.add(_t("Tenant decommissioned. Final backup: %(backup)s", { backup: r.final_backup || _t("n/a") }), { type: "success" });
             this.backToFleet();
         } catch (e) {
-            this.notif.add((e && e.data && e.data.message) || "Offboarding failed.", { type: "danger" });
+            this.notif.add((e && e.data && e.data.message) || _t("Offboarding failed."), { type: "danger" });
         } finally {
             det.busy = "";
         }

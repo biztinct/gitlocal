@@ -683,7 +683,7 @@ class WfpDashboard extends Component {
                 labels: trend.map(t => t.week),
                 datasets: [
                     {
-                        label: 'Hours Worked',
+                        label: _t('Hours Worked'),
                         data: trend.map(t => t.hours),
                         backgroundColor: CHART_COLORS.blueAlpha,
                         borderColor: CHART_COLORS.blue,
@@ -691,7 +691,7 @@ class WfpDashboard extends Component {
                         borderRadius: 6,
                     },
                     {
-                        label: 'Target',
+                        label: _t('Target'),
                         data: trend.map(t => t.target),
                         type: 'line',
                         borderColor: CHART_COLORS.orange,
@@ -723,7 +723,7 @@ class WfpDashboard extends Component {
             data: {
                 labels,
                 datasets: [{
-                    label: 'Check-ins',
+                    label: _t('Check-ins'),
                     data: values,
                     backgroundColor: labels.map((_, i) => CHART_COLORS.palette[i % CHART_COLORS.palette.length]),
                     borderRadius: 8,
@@ -744,7 +744,7 @@ class WfpDashboard extends Component {
                 labels: depts.map(d => d.name),
                 datasets: [
                     {
-                        label: 'Hours Worked',
+                        label: _t('Hours Worked'),
                         data: depts.map(d => d.hours),
                         backgroundColor: CHART_COLORS.blueAlpha,
                         borderColor: CHART_COLORS.blue,
@@ -752,7 +752,7 @@ class WfpDashboard extends Component {
                         borderRadius: 4,
                     },
                     {
-                        label: 'Target Hours',
+                        label: _t('Target Hours'),
                         data: depts.map(d => d.target),
                         backgroundColor: CHART_COLORS.orangeAlpha,
                         borderColor: CHART_COLORS.orange,
@@ -783,7 +783,7 @@ class WfpDashboard extends Component {
                 labels: otData.map(o => o.type),
                 datasets: [
                     {
-                        label: 'OT Hours',
+                        label: _t('OT Hours'),
                         data: otData.map(o => o.hours),
                         backgroundColor: [CHART_COLORS.blueAlpha, CHART_COLORS.orangeAlpha],
                         borderColor: [CHART_COLORS.blue, CHART_COLORS.orange],
@@ -792,7 +792,7 @@ class WfpDashboard extends Component {
                         yAxisID: 'y',
                     },
                     {
-                        label: 'OT Cost',
+                        label: _t('OT Cost'),
                         data: otData.map(o => o.cost),
                         type: 'line',
                         borderColor: CHART_COLORS.red,
@@ -830,7 +830,7 @@ class WfpDashboard extends Component {
                 labels: forecast.map(f => f.date),
                 datasets: [
                     {
-                        label: 'Upper Bound',
+                        label: _t('Upper Bound'),
                         data: forecast.map(f => f.upper),
                         borderColor: 'transparent',
                         backgroundColor: CHART_COLORS.blueAlpha,
@@ -838,7 +838,7 @@ class WfpDashboard extends Component {
                         pointRadius: 0,
                     },
                     {
-                        label: 'Projected Cost',
+                        label: _t('Projected Cost'),
                         data: forecast.map(f => f.projected),
                         borderColor: CHART_COLORS.blue,
                         backgroundColor: CHART_COLORS.blueAlpha,
@@ -849,7 +849,7 @@ class WfpDashboard extends Component {
                         tension: 0.3,
                     },
                     {
-                        label: 'Lower Bound',
+                        label: _t('Lower Bound'),
                         data: forecast.map(f => f.lower),
                         borderColor: 'transparent',
                         backgroundColor: CHART_COLORS.blueAlpha,
@@ -966,7 +966,7 @@ class WfpDashboard extends Component {
             data: {
                 labels: pipeline.map(p => p.stage),
                 datasets: [{
-                    label: 'Applicants',
+                    label: _t('Applicants'),
                     data: pipeline.map(p => p.count),
                     backgroundColor: pipeline.map((_, i) => {
                         const hue = 220 - (i * 30);
@@ -1011,7 +1011,7 @@ class WfpDashboard extends Component {
             data: {
                 labels: skills.slice(0, 12).map(s => s.skill),
                 datasets: [{
-                    label: 'Coverage %',
+                    label: _t('Coverage %'),
                     data: skills.slice(0, 12).map(s => s.coverage_pct),
                     backgroundColor: skills.slice(0, 12).map(s => {
                         if (s.coverage_pct >= 50) return CHART_COLORS.greenAlpha;
@@ -1125,7 +1125,7 @@ class WfpDashboard extends Component {
                 labels: months.map(m => m.period),
                 datasets: [
                     {
-                        label: 'Forecast',
+                        label: _t('Forecast'),
                         data: months.map(m => m.forecast_cost),
                         backgroundColor: CHART_COLORS.blueAlpha,
                         borderColor: CHART_COLORS.blue,
@@ -1134,7 +1134,7 @@ class WfpDashboard extends Component {
                         order: 2,
                     },
                     {
-                        label: 'Actual',
+                        label: _t('Actual'),
                         data: months.map(m => m.actual_cost),
                         backgroundColor: months.map(m =>
                             m.variance >= 0 ? CHART_COLORS.greenAlpha : CHART_COLORS.redAlpha
@@ -1147,7 +1147,7 @@ class WfpDashboard extends Component {
                         order: 1,
                     },
                     {
-                        label: 'Variance',
+                        label: _t('Variance'),
                         type: 'line',
                         data: months.map(m => m.variance),
                         borderColor: CHART_COLORS.orange,
@@ -1368,7 +1368,7 @@ class WfpDashboard extends Component {
             type: 'scatter',
             data: {
                 datasets: [{
-                    label: 'Employees',
+                    label: _t('Employees'),
                     data: points,
                     backgroundColor: points.map(p => {
                         const c = getColor(p.perf);
@@ -1423,7 +1423,7 @@ class WfpDashboard extends Component {
         if (!canvas || !waterfall) return;
         this._destroyChart('waterfall');
 
-        const labels = ['Current Total', '+ Base Δ', '+ Allowance Δ', '+ Employer Δ', 'Forecast Total'];
+        const labels = [_t('Current Total'), _t('+ Base Δ'), _t('+ Allowance Δ'), _t('+ Employer Δ'), _t('Forecast Total')];
         const d = waterfall.delta;
         const cumulative = [
             waterfall.current.total,
@@ -1449,14 +1449,14 @@ class WfpDashboard extends Component {
                 labels,
                 datasets: [
                     {
-                        label: 'Base',
+                        label: _t('Base'),
                         data: base,
                         backgroundColor: 'transparent',
                         borderWidth: 0,
                         stack: 'waterfall',
                     },
                     {
-                        label: 'Amount',
+                        label: _t('Amount'),
                         data: visible.map(v => Math.abs(v)),
                         backgroundColor: [
                             CHART_COLORS.blue,

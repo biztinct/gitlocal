@@ -1,0 +1,225 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Active, expiring and historical contracts across your workforce."
+msgstr ""
+"Các hợp đồng đang hoạt động, sắp hết hạn và có lịch sử trên lực lượng lao động của "
+"bạn."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+msgid "Advanced form"
+msgstr "Biểu mẫu nâng cao"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Avg wage"
+msgstr "Lương trung bình"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+msgid "Back to Contracts"
+msgstr "Quay lại Hợp đồng"
+
+#. module: pb_contracts
+#: model:ir.actions.client,name:pb_contracts.action_pb_contract_detail
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+#: model:ir.actions.client,name:pb_contracts.action_pb_contracts
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_contracts
+#: model:ir.model.fields,field_description:pb_contracts.field_pb_contracts__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Expired"
+msgstr "Đã hết hạn"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Expiring ≤30d"
+msgstr "Hết hạn 30d"
+
+#. module: pb_contracts
+#: model:ir.model.fields,field_description:pb_contracts.field_pb_contracts__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+msgid "Lifecycle"
+msgstr "Vòng đời"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Loading contracts…"
+msgstr "Đang tải hợp đồng…"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+msgid "Loading contract…"
+msgstr "Đang tải hợp đồng…"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Monthly wage"
+msgstr "Lương hàng tháng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "New contract"
+msgstr "Hợp đồng mới"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "No contracts match these filters."
+msgstr "Không có hợp đồng nào phù hợp với các bộ lọc này."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Open full contract list →"
+msgstr "Mở danh sách hợp đồng đầy đủ →"
+
+#. module: pb_contracts
+#: model:ir.model,name:pb_contracts.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr "Dữ liệu buồng lái hợp đồng Payobook"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Search employee, reference, structure…"
+msgstr "Tìm kiếm nhân viên, tài liệu tham khảo, cơ cấu…"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+msgid "Tenure"
+msgstr "nhiệm kỳ"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+msgid "To contract end"
+msgstr "Để kết thúc hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+msgid "Trial ends"
+msgstr "Hết thời gian dùng thử"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "d"
+msgstr "d"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "monthly"
+msgstr "hàng tháng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "of"
+msgstr "của"
+
+#: pb_contracts/static/src/js/contract_detail.js:48
+msgid "Done."
+msgstr "Xong."
+
+#: pb_contracts/static/src/js/contract_detail.js:50
+msgid "Action failed."
+msgstr "Thao tác không thành công."
+
+#: pb_contracts/static/src/js/contracts.js:10
+msgid "All"
+msgstr "Tất cả"
+
+#: pb_contracts/static/src/js/contracts.js:11
+msgid "Expiring soon"
+msgstr "Sắp hết hạn"
+
+#: pb_contracts/static/src/js/contracts.js:12
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#: pb_contracts/static/src/js/contracts.js:15
+msgid "All time"
+msgstr "Mọi lúc"
+
+#: pb_contracts/static/src/js/contracts.js:15
+msgid "Started this month"
+msgstr "Bắt đầu vào tháng này"
+
+#: pb_contracts/static/src/js/contracts.js:16
+msgid "Started this year"
+msgstr "Bắt đầu vào năm nay"
+
+#: pb_contracts/static/src/js/contracts.js:16
+msgid "Custom"
+msgstr "Tùy chỉnh"

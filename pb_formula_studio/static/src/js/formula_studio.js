@@ -66,22 +66,22 @@ const OPSYM = { "+": "+", "-": "−", "*": "×", "/": "÷", "^": "^" };
 // `paletteCommands` labels in `shortcutSections` (a binding-per-row), keeping the
 // ⌘F row honest against the real Find command.
 const SHORTCUT_GRID = [
-    { title: "Grid navigation", rows: [
-        { keys: ["←", "↑", "→", "↓"], label: "Move between cells" },
-        { keys: ["Tab"], label: "Next column · Shift+Tab for previous" },
-        { keys: ["Shift", "←/→"], label: "Extend the column selection" },
-        { keys: ["Enter"], label: "Edit the focused formula cell" },
-        { keys: ["F2"], label: "Edit the focused formula cell" },
+    { title: _t("Grid navigation"), rows: [
+        { keys: ["←", "↑", "→", "↓"], label: _t("Move between cells") },
+        { keys: ["Tab"], label: _t("Next column · Shift+Tab for previous") },
+        { keys: ["Shift", "←/→"], label: _t("Extend the column selection") },
+        { keys: ["Enter"], label: _t("Edit the focused formula cell") },
+        { keys: ["F2"], label: _t("Edit the focused formula cell") },
     ] },
-    { title: "Grid editing", rows: [
-        { keys: ["A–Z", "0–9"], label: "Start typing to edit a formula cell" },
-        { keys: ["Enter"], label: "Save the edit" },
-        { keys: ["Esc"], label: "Cancel the edit · clear selection" },
-        { keys: ["Ctrl", "Z"], label: "Undo the last saved formula" },
+    { title: _t("Grid editing"), rows: [
+        { keys: ["A–Z", "0–9"], label: _t("Start typing to edit a formula cell") },
+        { keys: ["Enter"], label: _t("Save the edit") },
+        { keys: ["Esc"], label: _t("Cancel the edit · clear selection") },
+        { keys: ["Ctrl", "Z"], label: _t("Undo the last saved formula") },
     ] },
-    { title: "Drag-fill", rows: [
-        { keys: ["Enter"], label: "Confirm the proposed fill" },
-        { keys: ["Esc"], label: "Cancel the fill" },
+    { title: _t("Drag-fill"), rows: [
+        { keys: ["Enter"], label: _t("Confirm the proposed fill") },
+        { keys: ["Esc"], label: _t("Cancel the fill") },
     ] },
 ];
 
@@ -760,10 +760,10 @@ export class PbFormulaStudio extends Component {
             const grew = prev && prev.failed !== undefined && tests.failed > prev.failed;
             if (wasClean || grew) {
                 const f = (tests.failures && tests.failures[0]) || null;
-                const detail = f ? ` — ${f.sample}: ${f.code}` : "";
+                const detail = f ? _t(" — %(sample)s: %(code)s", { sample: f.sample, code: f.code }) : "";
                 this.notif.add(
-                    `${tests.failed} sample test${tests.failed === 1 ? "" : "s"} failing${detail}`,
-                    { type: "danger", title: "Tests failing" });
+                    _t("%(count)s sample tests failing%(detail)s", { count: tests.failed, detail }),
+                    { type: "danger", title: _t("Tests failing") });
             }
         }
     }
@@ -795,7 +795,7 @@ export class PbFormulaStudio extends Component {
         const cfgId = this.state.config.id;
         const sampleId = this.state.preview.sample_id;
         const r = await this.orm.call("pb.formula.studio", "save_formula", [ruleId, formula]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not save formula", { type: "warning" }); return; }
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not save formula"), { type: "warning" }); return; }
         await this.load(cfgId);
         this._applyTests(r.tests);
         if (sampleId) {
@@ -814,10 +814,10 @@ export class PbFormulaStudio extends Component {
         const sampleId = this.state.preview.sample_id;
         try {
             const r = await this.orm.call("pb.formula.studio", "bulk_update_components", [ruleIds, vals]);
-            if (r && r.ok === false) { this.notif.add(r.msg || "Bulk update failed", { type: "warning" }); return; }
-            this.notif.add(`Updated ${(r && r.updated) || ruleIds.length} components`, { type: "success" });
+            if (r && r.ok === false) { this.notif.add(r.msg || _t("Bulk update failed"), { type: "warning" }); return; }
+            this.notif.add(_t("Updated %(count)s components", { count: (r && r.updated) || ruleIds.length }), { type: "success" });
         } catch (e) {
-            this.notif.add("Bulk update failed", { type: "warning" });
+            this.notif.add(_t("Bulk update failed"), { type: "warning" });
             return;
         }
         await this.load(cfgId);
@@ -835,8 +835,8 @@ export class PbFormulaStudio extends Component {
         const cfgId = this.state.config.id;
         try {
             const r = await this.orm.call("pb.formula.studio", "reorder_component", [cfgId, dragId, beforeId || false]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Reorder failed", { type: "warning" }); return; }
-        } catch (e) { this.notif.add("Reorder failed", { type: "danger" }); return; }
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Reorder failed"), { type: "warning" }); return; }
+        } catch (e) { this.notif.add(_t("Reorder failed"), { type: "danger" }); return; }
         await this.load(cfgId);
     }
     async gridGroupByCategory() {
@@ -844,9 +844,9 @@ export class PbFormulaStudio extends Component {
         const cfgId = this.state.config.id;
         try {
             const d = await this.orm.call("pb.formula.studio", "group_columns_by_category", [cfgId]);
-            if (d && d.ok === false) { this.notif.add("Grouping failed", { type: "warning" }); return; }
-            this.notif.add("Columns grouped by category", { type: "success" });
-        } catch (e) { this.notif.add("Grouping failed", { type: "danger" }); return; }
+            if (d && d.ok === false) { this.notif.add(_t("Grouping failed"), { type: "warning" }); return; }
+            this.notif.add(_t("Columns grouped by category"), { type: "success" });
+        } catch (e) { this.notif.add(_t("Grouping failed"), { type: "danger" }); return; }
         await this.load(cfgId);
     }
     async gridBulkSaveFormulas(items) {
@@ -855,8 +855,8 @@ export class PbFormulaStudio extends Component {
         let r;
         try {
             r = await this.orm.call("pb.formula.studio", "bulk_save_formulas", [items]);
-        } catch (e) { this.notif.add("Fill failed", { type: "warning" }); return; }
-        this.notif.add(`Filled ${items.length} column${items.length === 1 ? "" : "s"}`, { type: "success" });
+        } catch (e) { this.notif.add(_t("Fill failed"), { type: "warning" }); return; }
+        this.notif.add(_t("Filled %(count)s columns", { count: items.length }), { type: "success" });
         await this.load(cfgId);
         this._applyTests(r && r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
@@ -885,9 +885,9 @@ export class PbFormulaStudio extends Component {
         try {
             r = await this.orm.call("pb.formula.studio", "bulk_save_formulas",
                 [items, "bulk", "smart paste"]);
-        } catch (e) { this.notif.add("Paste failed", { type: "warning" }); return; }
+        } catch (e) { this.notif.add(_t("Paste failed"), { type: "warning" }); return; }
         const saved = (r && r.saved) != null ? r.saved : items.length;
-        this.notif.add(`Pasted ${saved} formula${saved === 1 ? "" : "s"}`, { type: "success" });
+        this.notif.add(_t("Pasted %(count)s formulas", { count: saved }), { type: "success" });
         await this.load(cfgId);
         this._applyTests(r && r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
@@ -930,10 +930,10 @@ export class PbFormulaStudio extends Component {
         const sid = this.state.preview.sample_id;
         if (!sid || this.state.pinnedSamples.includes(sid)) return;
         if (this.state.pinnedSamples.length >= 2) {
-            this.notif.add("You can pin up to 2 extra sample rows", { type: "info" }); return;
+            this.notif.add(_t("You can pin up to 2 extra sample rows"), { type: "info" }); return;
         }
         const nextActive = this.state.samples.find(s => s.id !== sid && !this.state.pinnedSamples.includes(s.id));
-        if (!nextActive) { this.notif.add("Add more sample data to pin another row", { type: "info" }); return; }
+        if (!nextActive) { this.notif.add(_t("Add more sample data to pin another row"), { type: "info" }); return; }
         const cfgId = this.state.config.id;
         // reuse the already-computed active values — no extra RPC for the pin itself
         this.state.pinnedSamples = [...this.state.pinnedSamples, sid];
@@ -999,7 +999,7 @@ export class PbFormulaStudio extends Component {
         const e = this.state.snipEdit;
         if (!e || this.state.snipBusy) return;
         if (!(e.name || "").trim() || !(e.body || "").trim()) {
-            this.notif.add("A snippet needs a name and a body", { type: "warning" }); return;
+            this.notif.add(_t("A snippet needs a name and a body"), { type: "warning" }); return;
         }
         this.state.snipBusy = true;
         try {
@@ -1007,12 +1007,12 @@ export class PbFormulaStudio extends Component {
                 id: e.id || false, name: e.name, category: e.category,
                 body: e.body, description: e.description,
             }]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not save snippet", { type: "warning" }); return; }
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not save snippet"), { type: "warning" }); return; }
             this.state.snippets = await this.orm.call("pb.formula.studio", "list_snippets", []);
             this.state.snipEdit = null;
-            this.notif.add("Snippet saved", { type: "success" });
+            this.notif.add(_t("Snippet saved"), { type: "success" });
         } catch (err) {
-            this.notif.add("Could not save snippet", { type: "danger" });
+            this.notif.add(_t("Could not save snippet"), { type: "danger" });
         } finally {
             this.state.snipBusy = false;
         }
@@ -1022,11 +1022,11 @@ export class PbFormulaStudio extends Component {
         this.state.snipBusy = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "delete_snippet", [s.id]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not delete snippet", { type: "warning" }); return; }
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not delete snippet"), { type: "warning" }); return; }
             this.state.snippets = await this.orm.call("pb.formula.studio", "list_snippets", []);
             if (this.state.snipEdit && this.state.snipEdit.id === s.id) this.state.snipEdit = null;
         } catch (err) {
-            this.notif.add("Could not delete snippet", { type: "danger" });
+            this.notif.add(_t("Could not delete snippet"), { type: "danger" });
         } finally {
             this.state.snipBusy = false;
         }
@@ -1070,7 +1070,7 @@ export class PbFormulaStudio extends Component {
         let r;
         try {
             r = await this.orm.call("pb.formula.studio", "bulk_save_formulas", [items, "bulk", note]);
-        } catch (e) { this.notif.add("Replace failed", { type: "warning" }); return { ok: false }; }
+        } catch (e) { this.notif.add(_t("Replace failed"), { type: "warning" }); return { ok: false }; }
         await this.load(cfgId);
         this._applyTests(r && r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
@@ -1099,25 +1099,25 @@ export class PbFormulaStudio extends Component {
     get paletteCommands() {
         const cmds = [];
         const add = (id, section, label, keywords, run, sublabel) => cmds.push({ id, section, label, keywords, run, sublabel });
-        add("view.cards", "Views", "Cards view", "cards components overview", () => this.setView("cards"));
-        add("view.grid", "Views", "Grid view", "grid spreadsheet table", () => this.setView("grid"));
-        add("view.test", "Views", "Tests view", "tests samples validate check", () => this.setView("test"));
-        add("view.compare", "Views", "Compare periods", "compare periods payrun delta difference month", () => this.openCompare());
-        add("view.budget", "Views", "Compare vs budget", "budget variance vs actual target plan compare", () => this.openCompareBudget());
-        add("act.offer", "Actions", "Offer calculator", "offer calculator hypothetical hire net breakdown simulate salary", () => this.openOfferCalc());
-        add("view.settings", "Views", "Settings", "settings configuration setup", () => this.setView("settings"));
-        add("view.shortcuts", "Views", "Keyboard shortcuts", "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
+        add("view.cards", _t("Views"), _t("Cards view"), "cards components overview", () => this.setView("cards"));
+        add("view.grid", _t("Views"), _t("Grid view"), "grid spreadsheet table", () => this.setView("grid"));
+        add("view.test", _t("Views"), _t("Tests view"), "tests samples validate check", () => this.setView("test"));
+        add("view.compare", _t("Views"), _t("Compare periods"), "compare periods payrun delta difference month", () => this.openCompare());
+        add("view.budget", _t("Views"), _t("Compare vs budget"), "budget variance vs actual target plan compare", () => this.openCompareBudget());
+        add("act.offer", _t("Actions"), _t("Offer calculator"), "offer calculator hypothetical hire net breakdown simulate salary", () => this.openOfferCalc());
+        add("view.settings", _t("Views"), _t("Settings"), "settings configuration setup", () => this.setView("settings"));
+        add("view.shortcuts", _t("Views"), _t("Keyboard shortcuts"), "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
         // COLROLES P2 — flip the lens without reaching for the sidebar control.
         add("view.lens", "Views",
             this.lensAll ? _t("Show payroll columns only") : _t("Show every column"),
             "lens payroll everything people data columns hide show identity bank",
             () => this.toggleLens(),
             this.lensAll ? _t("Hide people & data columns") : _t("Include people & data columns"));
-        if (this.state.canEdit) add("act.new", "Actions", "New component", "add new create column", () => this.addComponentQuick());
-        if (this.state.canEdit) add("act.import", "Actions", "Import from Excel…", "import excel upload spreadsheet workbook", () => this.importExcelInto());
-        add("act.find", "Actions", "Find & replace", "find search replace formula", () => this.openFind());
-        add("act.release", "Actions", "Release preview", "release sign-off bundle approve", () => this.openReleases());
-        add("act.problems", "Actions", "Problems", "problems lint errors warnings", () => this.openProblems());
+        if (this.state.canEdit) add("act.new", _t("Actions"), _t("New component"), "add new create column", () => this.addComponentQuick());
+        if (this.state.canEdit) add("act.import", _t("Actions"), _t("Import from Excel…"), "import excel upload spreadsheet workbook", () => this.importExcelInto());
+        add("act.find", _t("Actions"), _t("Find & replace"), "find search replace formula", () => this.openFind());
+        add("act.release", _t("Actions"), _t("Release preview"), "release sign-off bundle approve", () => this.openReleases());
+        add("act.problems", _t("Actions"), _t("Problems"), "problems lint errors warnings", () => this.openProblems());
         add("act.ai", "Actions", "PayAI assistant", "ai assistant copilot chat", () => this.openAI());
         if (this.selected) add("act.explain", "Actions", "Explain " + this.selected.code, "explain formula describe", () => this.openExplain());
         if (this.state.canEdit) add("act.snipmanage", "Actions", "Manage snippets…", "snippet library manage create edit delete", () => this.openSnipManage());
@@ -1181,30 +1181,30 @@ export class PbFormulaStudio extends Component {
         const cfg = this.state.config || {};
         const T = (key, name, desc, icon, accent, run, stat) => ({ key, name, desc, icon, accent, run, stat: stat || null });
         return [
-            { id: "analyze", label: "Analyze", tools: [
-                T("replay", "Execution replay", "Watch a payslip compute step by step", "replay", "blue", () => this.openReplay()),
-                T("whatif", "What-if", "Slide a rate and project the payroll cost", "whatif", "teal", () => this.openWhatif()),
-                T("depmap", "Dependency map", "The whole configuration as a graph", "depmap", "blue", () => this.openDepMap()),
-                T("offer", "Offer calculator", "Type hypothetical inputs, see the full breakdown", "offer", "green", () => this.openOfferCalc()),
+            { id: "analyze", label: _t("Analyze"), tools: [
+                T("replay", _t("Execution replay"), _t("Watch a payslip compute step by step"), "replay", "blue", () => this.openReplay()),
+                T("whatif", _t("What-if"), _t("Slide a rate and project the payroll cost"), "whatif", "teal", () => this.openWhatif()),
+                T("depmap", _t("Dependency map"), _t("The whole configuration as a graph"), "depmap", "blue", () => this.openDepMap()),
+                T("offer", _t("Offer calculator"), _t("Type hypothetical inputs, see the full breakdown"), "offer", "green", () => this.openOfferCalc()),
             ] },
-            { id: "design", label: "Design", tools: [
-                T("payslip", "Payslip Studio", "Design the payslip layout", "payslip", "indigo", () => this.openPayslip()),
-                T("mapping", "Mapping", "Open the mapping board on this scheme — spreadsheet columns, system fields, employee and contract records", "mapping", "pink", () => this.openMapping()),
-                T("rates", "Rate tables", "PIT brackets and other rate tables", "rates", "amber", () => this.openRates(), this.state.rateTables.length || null),
-                T("export", "Export workbook", "Download the config as a living Excel file with real formulas", "export", "teal", () => this.exportLivingWorkbook()),
+            { id: "design", label: _t("Design"), tools: [
+                T("payslip", _t("Payslip Studio"), _t("Design the payslip layout"), "payslip", "indigo", () => this.openPayslip()),
+                T("mapping", _t("Mapping"), _t("Open the mapping board on this scheme — spreadsheet columns, system fields, employee and contract records"), "mapping", "pink", () => this.openMapping()),
+                T("rates", _t("Rate tables"), _t("PIT brackets and other rate tables"), "rates", "amber", () => this.openRates(), this.state.rateTables.length || null),
+                T("export", _t("Export workbook"), _t("Download the config as a living Excel file with real formulas"), "export", "teal", () => this.exportLivingWorkbook()),
             ] },
-            { id: "govern", label: "Govern", tools: [
-                T("problems", "Problems", "Lint checks and rename-refactor", "problems", "rose", () => this.openProblems(), this.problemCount || null),
-                T("branches", "Branches", "Fork this config, trial a change, merge back", "branches", "blue", () => this.openBranches(), cfg.branch_count || null),
-                T("variants", "Variants", "One master scheme, many synced variants", "variants", "teal", () => this.openVariants(), cfg.variant_count || null),
-                T("reclassify", "Review classification", "Re-check what each column is for, and accept only the changes you agree with", "reclassify", "teal", () => this.openReclassify()),
-                T("categories", "Review categories", "Read the net-pay formula and file every component as an earning, a deduction, an employer cost or information", "categories", "green", () => this.openCategoryReview()),
-                T("legislation", "Legislation", "Roll a statutory change across every configuration", "legislation", "amber", () => this.openLegislation()),
-                T("releases", "Releases", "Review and sign off formula changes", "releases", "green", () => this.openReleases()),
+            { id: "govern", label: _t("Govern"), tools: [
+                T("problems", _t("Problems"), _t("Lint checks and rename-refactor"), "problems", "rose", () => this.openProblems(), this.problemCount || null),
+                T("branches", _t("Branches"), _t("Fork this config, trial a change, merge back"), "branches", "blue", () => this.openBranches(), cfg.branch_count || null),
+                T("variants", _t("Variants"), _t("One master scheme, many synced variants"), "variants", "teal", () => this.openVariants(), cfg.variant_count || null),
+                T("reclassify", _t("Review classification"), _t("Re-check what each column is for, and accept only the changes you agree with"), "reclassify", "teal", () => this.openReclassify()),
+                T("categories", _t("Review categories"), _t("Read the net-pay formula and file every component as an earning, a deduction, an employer cost or information"), "categories", "green", () => this.openCategoryReview()),
+                T("legislation", _t("Legislation"), _t("Roll a statutory change across every configuration"), "legislation", "amber", () => this.openLegislation()),
+                T("releases", _t("Releases"), _t("Review and sign off formula changes"), "releases", "green", () => this.openReleases()),
             ] },
-            { id: "collab", label: "Collaborate", tools: [
-                T("share", "Share for review", "A read-only link for your client", "share", "blue", () => this.openShare()),
-                T("payai", "Ask PayAI", "Describe a rule in plain English and let AI draft it", "payai", "indigo", () => this.openAI()),
+            { id: "collab", label: _t("Collaborate"), tools: [
+                T("share", _t("Share for review"), _t("A read-only link for your client"), "share", "blue", () => this.openShare()),
+                T("payai", _t("Ask PayAI"), _t("Describe a rule in plain English and let AI draft it"), "payai", "indigo", () => this.openAI()),
             ] },
         ];
     }
@@ -1319,12 +1319,12 @@ export class PbFormulaStudio extends Component {
     get shortcutSections() {
         const find = this.paletteCommands.find(c => c.id === "act.find");
         const cmd = [
-            { keys: ["⌘/Ctrl", "K"], label: "Command palette" },
-            { keys: ["⌘/Ctrl", "F"], label: (find && find.label) || "Find & replace" },
-            { keys: ["?"], label: "Keyboard shortcuts (this panel)" },
-            { keys: ["Esc"], label: "Close palette · find · drawers" },
+            { keys: ["⌘/Ctrl", "K"], label: _t("Command palette") },
+            { keys: ["⌘/Ctrl", "F"], label: (find && find.label) || _t("Find & replace") },
+            { keys: ["?"], label: _t("Keyboard shortcuts (this panel)") },
+            { keys: ["Esc"], label: _t("Close palette · find · drawers") },
         ];
-        return [{ title: "Command layer", rows: cmd }, ...SHORTCUT_GRID];
+        return [{ title: _t("Command layer"), rows: cmd }, ...SHORTCUT_GRID];
     }
 
     // ---- F14 scenario columns (what-if overlays) ----
@@ -1335,7 +1335,7 @@ export class PbFormulaStudio extends Component {
     async gridScenarioCreate(ruleId) {
         if (this._lockedNotice()) return null;
         const r = await this.orm.call("pb.formula.studio", "create_scenario", [ruleId]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not create scenario", { type: "warning" }); return null; }
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not create scenario"), { type: "warning" }); return null; }
         await this.reloadScenarios();
         return r.scenario;
     }
@@ -1354,8 +1354,8 @@ export class PbFormulaStudio extends Component {
         const cfgId = this.state.config.id;
         const sampleId = this.state.preview.sample_id;
         const r = await this.orm.call("pb.formula.studio", "promote_scenario", [sid]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Promote failed", { type: "warning" }); return { ok: false }; }
-        this.notif.add(`Promoted into ${r.code}`, { type: "success" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Promote failed"), { type: "warning" }); return { ok: false }; }
+        this.notif.add(_t("Promoted into %(code)s", { code: r.code }), { type: "success" });
         await this.load(cfgId);   // the rule changed → refresh grid + scenarios + version history
         this._applyTests(r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
@@ -1511,8 +1511,8 @@ export class PbFormulaStudio extends Component {
         return (v === undefined) ? "—" : this.fmtTyped(this.byCol(col), v);
     }
     stageCls() { return { draft: "draft", testing: "testing", validated: "validated", active: "active", archived: "muted" }[this.state.config.state] || "muted"; }
-    stageLabel() { return { draft: "Draft", testing: "Testing", validated: "Validated", active: "Active", archived: "Archived" }[this.state.config.state] || this.state.config.state; }
-    nextLabel() { return { draft: "Start testing", testing: "Validate", validated: "Activate", active: "Active" }[this.state.config.state] || "Advance"; }
+    stageLabel() { return { draft: _t("Draft"), testing: _t("Testing"), validated: _t("Validated"), active: _t("Active"), archived: _t("Archived") }[this.state.config.state] || this.state.config.state; }
+    nextLabel() { return { draft: _t("Start testing"), testing: _t("Validate"), validated: _t("Activate"), active: _t("Active") }[this.state.config.state] || _t("Advance"); }
     isDeduction(c) { return c.group === "Deductions"; }
     // A component that reduces the total: grouped as a Deduction OR whose own
     // formula is defined as a negative value (e.g. Loan Repayment = "=-F2", which
@@ -1850,13 +1850,13 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "release_approve",
                 [this.state.config.id, this.state.releaseNarrative]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not sign off the release", { type: "warning" }); return; }
-            this.notif.add(`Release sealed · ${r.change_count} component${r.change_count === 1 ? "" : "s"}`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not sign off the release"), { type: "warning" }); return; }
+            this.notif.add(_t("Release sealed · %(count)s components", { count: r.change_count }), { type: "success" });
             await this._loadReleasePreview();
             await this._loadReleaseList();
             this.state.releaseTab = "history";
         } catch (e) {
-            this.notif.add("Sign-off failed", { type: "danger" });
+            this.notif.add(_t("Sign-off failed"), { type: "danger" });
         } finally {
             this.state.releaseBusy = false;
         }
@@ -1913,7 +1913,7 @@ export class PbFormulaStudio extends Component {
             const prep = await this.orm.call("pb.formula.studio", "rollback_simulate_prepare",
                 [d.release.id, null], {}, { silent: true });
             if (!prep || prep.ok === false || !prep.sim_id) {
-                this.notif.add((prep && prep.msg) || "No historical payslips to simulate against", { type: "warning" });
+                this.notif.add((prep && prep.msg) || _t("No historical payslips to simulate against"), { type: "warning" });
                 return;
             }
             this.state.rollbackSimId = prep.sim_id;
@@ -1928,7 +1928,7 @@ export class PbFormulaStudio extends Component {
             const res = await this.orm.call("pb.formula.studio", "simulate_result", [prep.sim_id], {}, { silent: true });
             if (this.state.rollbackOpen) this.state.rollbackSimResult = (res && res.result) || null;
         } catch (e) {
-            this.notif.add("Simulation failed", { type: "danger" });
+            this.notif.add(_t("Simulation failed"), { type: "danger" });
         } finally { this.state.rollbackSimBusy = false; }
     }
     async applyRollback() {
@@ -1938,15 +1938,15 @@ export class PbFormulaStudio extends Component {
         this.state.rollbackApplying = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "rollback_apply", [d.release.id]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Rollback failed", { type: "danger" }); return; }
-            this.notif.add(`Rolled back · ${r.restored} component${r.restored === 1 ? "" : "s"} restored`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Rollback failed"), { type: "danger" }); return; }
+            this.notif.add(_t("Rolled back · %(count)s components restored", { count: r.restored }), { type: "success" });
             this.closeRollback();
             await this.load(this.state.config.id);   // formulas/constants changed everywhere
             this._applyTests(r.tests);
             await this._loadReleasePreview();
             await this._loadReleaseList();
         } catch (e) {
-            this.notif.add("Rollback failed", { type: "danger" });
+            this.notif.add(_t("Rollback failed"), { type: "danger" });
         } finally { this.state.rollbackApplying = false; }
     }
 
@@ -1964,8 +1964,8 @@ export class PbFormulaStudio extends Component {
         this.state.csCloningId = card.id;
         try {
             const r = await this.orm.call("pb.formula.studio", "bureau_clone", [card.id]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Clone failed", { type: "warning" }); return; }
-            this.notif.add(`Cloned as “${r.name}”`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Clone failed"), { type: "warning" }); return; }
+            this.notif.add(_t("Cloned as “%(name)s”", { name: r.name }), { type: "success" });
             await this._loadCsBoard();
         } finally { this.state.csCloningId = null; }
     }
@@ -2029,7 +2029,7 @@ export class PbFormulaStudio extends Component {
             this.state.legisCoverage = cov;
         } catch (e) { /* keep the panes empty */ }
     }
-    legisStateLabel(s) { return { draft: "Draft", published: "Published", superseded: "Superseded" }[s] || s; }
+    legisStateLabel(s) { return { draft: _t("Draft"), published: _t("Published"), superseded: _t("Superseded") }[s] || s; }
     // format a statutory value by its number_format (percentage ×100, else ₫)
     legisVal(fmt, v) {
         if (v === null || v === undefined || isNaN(v)) return "—";
@@ -2052,11 +2052,11 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "legislation_apply",
                 [this.state.legisSel, configId]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Apply failed", { type: "warning" }); return; }
-            this.notif.add(`Applied · ${r.total_changed} value${r.total_changed === 1 ? "" : "s"} updated`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Apply failed"), { type: "warning" }); return; }
+            this.notif.add(_t("Applied · %(count)s values updated", { count: r.total_changed }), { type: "success" });
             await this.legisSelect(this.state.legisSel);
             await this._afterLegisApply(configId);
-        } catch (e) { this.notif.add("Apply failed", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Apply failed"), { type: "danger" }); }
         finally { this.state.legisApplying = false; }
     }
     async legisApplyAll() {
@@ -2068,11 +2068,11 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "legislation_apply",
                 [this.state.legisSel, false, ids]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Roll-out failed", { type: "warning" }); return; }
-            this.notif.add(`Rolled out to ${r.configs_touched} config${r.configs_touched === 1 ? "" : "s"} · ${r.total_changed} values updated`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Roll-out failed"), { type: "warning" }); return; }
+            this.notif.add(_t("Rolled out to %(configs)s configurations · %(values)s values updated", { configs: r.configs_touched, values: r.total_changed }), { type: "success" });
             await this.legisSelect(this.state.legisSel);
             await this._afterLegisApply(null);
-        } catch (e) { this.notif.add("Roll-out failed", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Roll-out failed"), { type: "danger" }); }
         finally { this.state.legisApplying = false; }
     }
     async _afterLegisApply(configId) {
@@ -2114,11 +2114,11 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "branch_create",
                 [this.branchParentId, this.state.branchNewName, this.state.branchNewNote]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not create branch", { type: "warning" }); return; }
-            this.notif.add(`Branch “${r.name}” created`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not create branch"), { type: "warning" }); return; }
+            this.notif.add(_t("Branch “%(name)s” created", { name: r.name }), { type: "success" });
             this.state.branchNewName = ""; this.state.branchNewNote = "";
             await this._loadBranches();
-        } catch (e) { this.notif.add("Branch creation failed", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Branch creation failed"), { type: "danger" }); }
         finally { this.state.branchCreating = false; }
     }
     async toggleBranchDiff(b) {
@@ -2150,20 +2150,20 @@ export class PbFormulaStudio extends Component {
         this.state.branchBusy = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "branch_merge", [b.id]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Merge failed", { type: "warning" }); return; }
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Merge failed"), { type: "warning" }); return; }
             let msg = `Merged ${r.merged} change${r.merged === 1 ? "" : "s"} into ${r.parent_name}`;
             if (r.conflicts) msg += ` · ${r.conflicts} conflict${r.conflicts === 1 ? "" : "s"} (branch won)`;
             this.notif.add(msg, { type: "success" });
             this.state.branchExpandId = null; this.state.branchDiff = null;
             await this._loadBranches();
-        } catch (e) { this.notif.add("Merge failed", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Merge failed"), { type: "danger" }); }
         finally { this.state.branchBusy = false; }
     }
     async discardBranch(b) {
         if (this._lockedNotice()) return;
         const r = await this.orm.call("pb.formula.studio", "branch_discard", [b.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Discard failed", { type: "warning" }); return; }
-        this.notif.add(`Branch “${b.name}” discarded`, { type: "info" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Discard failed"), { type: "warning" }); return; }
+        this.notif.add(_t("Branch “%(name)s” discarded", { name: b.name }), { type: "info" });
         if (this.state.branchExpandId === b.id) { this.state.branchExpandId = null; this.state.branchDiff = null; }
         await this._loadBranches();
     }
@@ -2196,11 +2196,11 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "variant_create",
                 [this.variantMasterId, this.state.variantNewName]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not create variant", { type: "warning" }); return; }
-            this.notif.add(`Variant “${r.name}” created`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not create variant"), { type: "warning" }); return; }
+            this.notif.add(_t("Variant “%(name)s” created", { name: r.name }), { type: "success" });
             this.state.variantNewName = "";
             await this._loadVariants();
-        } catch (e) { this.notif.add("Variant creation failed", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Variant creation failed"), { type: "danger" }); }
         finally { this.state.variantCreating = false; }
     }
     async toggleVariantDiff(v) {
@@ -2235,11 +2235,11 @@ export class PbFormulaStudio extends Component {
         this.state.variantSyncing = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "variant_sync", [v.id]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Sync failed", { type: "warning" }); return; }
-            this.notif.add(`Synced ${r.synced} component${r.synced === 1 ? "" : "s"} · ${r.preserved} override${r.preserved === 1 ? "" : "s"} kept`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Sync failed"), { type: "warning" }); return; }
+            this.notif.add(_t("Synced %(components)s components · %(overrides)s overrides kept", { components: r.synced, overrides: r.preserved }), { type: "success" });
             await this._refreshVariantDiff(v);
             await this._loadVariants();
-        } catch (e) { this.notif.add("Sync failed", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Sync failed"), { type: "danger" }); }
         finally { this.state.variantSyncing = false; }
     }
     async pushToVariants() {
@@ -2248,27 +2248,29 @@ export class PbFormulaStudio extends Component {
         this.state.variantSyncing = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "variant_push", [this.variantMasterId]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Push failed", { type: "warning" }); return; }
-            this.notif.add(`Pushed to ${r.variants} variant${r.variants === 1 ? "" : "s"} · ${r.total_synced} update${r.total_synced === 1 ? "" : "s"}`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Push failed"), { type: "warning" }); return; }
+            this.notif.add(_t("Pushed to %(variants)s variants · %(updates)s updates", { variants: r.variants, updates: r.total_synced }), { type: "success" });
             this.state.variantExpandId = null; this.state.variantDiff = null;
             await this._loadVariants();
-        } catch (e) { this.notif.add("Push failed", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Push failed"), { type: "danger" }); }
         finally { this.state.variantSyncing = false; }
     }
     async toggleOverride(v, row) {
         if (this._lockedNotice()) return;
         const turnOn = !row.overridden;
         const r = await this.orm.call("pb.formula.studio", "variant_toggle_override", [v.id, row.code, turnOn]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not change override", { type: "warning" }); return; }
-        this.notif.add(turnOn ? `“${row.name}” protected from sync` : `“${row.name}” now inherits from master`, { type: "info" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not change override"), { type: "warning" }); return; }
+        this.notif.add(turnOn
+            ? _t("“%(name)s” protected from sync", { name: row.name })
+            : _t("“%(name)s” now inherits from master", { name: row.name }), { type: "info" });
         await this._refreshVariantDiff(v);
         await this._loadVariants();
     }
     async detachVariant(v) {
         if (this._lockedNotice()) return;
         const r = await this.orm.call("pb.formula.studio", "variant_detach", [v.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Detach failed", { type: "warning" }); return; }
-        this.notif.add(`“${v.name}” detached — now a standalone config`, { type: "info" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Detach failed"), { type: "warning" }); return; }
+        this.notif.add(_t("“%(name)s” detached — now a standalone configuration", { name: v.name }), { type: "info" });
         if (this.state.variantExpandId === v.id) { this.state.variantExpandId = null; this.state.variantDiff = null; }
         await this._loadVariants();
     }
@@ -2298,31 +2300,31 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "create_review_share",
                 [this.state.config.id, this.state.shareNewRelease, this.state.shareNewClient, ""]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not create link", { type: "warning" }); return; }
-            this.notif.add("Review link created", { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not create link"), { type: "warning" }); return; }
+            this.notif.add(_t("Review link created"), { type: "success" });
             this.state.shareNewClient = "";
             await this._loadShares();
             this._copyShare(r.share);
-        } catch (e) { this.notif.add("Failed to create link", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Failed to create link"), { type: "danger" }); }
         finally { this.state.shareCreating = false; }
     }
     async _copyShare(s) {
         try {
             await navigator.clipboard.writeText(s.url);
             this.state.shareCopied = s.token;
-            this.notif.add("Link copied to clipboard", { type: "info" });
+            this.notif.add(_t("Link copied to clipboard"), { type: "info" });
         } catch (e) { /* clipboard unavailable — the field is selectable */ }
     }
     copyShare(s) { this._copyShare(s); }
     async revokeShare(s) {
         if (this._lockedNotice()) return;
         const r = await this.orm.call("pb.formula.studio", "revoke_review_share", [s.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Revoke failed", { type: "warning" }); return; }
-        this.notif.add("Link revoked", { type: "info" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Revoke failed"), { type: "warning" }); return; }
+        this.notif.add(_t("Link revoked"), { type: "info" });
         await this._loadShares();
     }
     shareStatusLabel(st) {
-        return { active: "Active", viewed: "Viewed", signed: "Signed off", revoked: "Revoked", expired: "Expired" }[st] || st;
+        return { active: _t("Active"), viewed: _t("Viewed"), signed: _t("Signed off"), revoked: _t("Revoked"), expired: _t("Expired") }[st] || st;
     }
 
     // ---- Dependency map (B9) — full-screen graph navigation ----
@@ -2548,7 +2550,7 @@ export class PbFormulaStudio extends Component {
         const rid = id || this.state.selectedId;
         if (!rid) return;
         const d = await this.orm.call("pb.formula.studio", "get_component_edit", [rid]);
-        if (!d || !d.ok) { this.notif.add("Could not open the component.", { type: "warning" }); return; }
+        if (!d || !d.ok) { this.notif.add(_t("Could not open the component."), { type: "warning" }); return; }
         delete d.ok;
         this.state.draft = d;
         this.state.editId = rid;
@@ -2645,13 +2647,13 @@ export class PbFormulaStudio extends Component {
             const r = await this.orm.call("pb.formula.studio", "save_component",
                 [this.state.editId, this.state.draft]);
             if (!r || !r.ok) {
-                const msg = (r && r.msg) ? r.msg : "Could not save component";
+                const msg = (r && r.msg) ? r.msg : _t("Could not save component");
                 this.notif.add(msg, { type: "warning" });
                 this.state.editError = msg;
                 if (this.draftType === "formula") this.state.liveValid = { valid: false, message: msg };
                 return;
             }
-            this.notif.add("Component saved", { type: "success" });
+            this.notif.add(_t("Component saved"), { type: "success" });
             const cid = this.state.config.id;
             this.cancelEdit();
             await this.load(cid);
@@ -2820,7 +2822,7 @@ export class PbFormulaStudio extends Component {
                 const ay = c.y + chh / 2, by = n.y - ph / 2, ax = c.x, bx = n.x;
                 const d = `M ${ax} ${ay} C ${ax} ${(ay + by) / 2} ${bx} ${(ay + by) / 2} ${bx} ${by}`;
                 edges.push({ d, color: this.nodeColor(c) });
-                if (n.kind === "if") { const lab = ci === 0 ? "if" : (ci === 1 ? "Yes" : "No"); labels.push({ text: lab, cls: ci === 1 ? "yes" : (ci === 2 ? "no" : ""), x: (ax + bx) / 2, y: (ay + by) / 2 }); }
+                if (n.kind === "if") { const lab = ci === 0 ? _t("if") : (ci === 1 ? _t("Yes") : _t("No")); labels.push({ text: lab, cls: ci === 1 ? "yes" : (ci === 2 ? "no" : ""), x: (ax + bx) / 2, y: (ay + by) / 2 }); }
                 eWalk(c);
             });
         };
@@ -3065,19 +3067,19 @@ export class PbFormulaStudio extends Component {
     // ---- lifecycle ----
     async advance() {
         const r = await this.orm.call("pb.formula.studio", "advance", [this.state.config.id]);
-        if (!r.ok) { this.notif.add(r.message || "Action blocked", { type: "warning" }); }
-        else { this.notif.add("Now " + (r.state || ""), { type: "success" }); }
+        if (!r.ok) { this.notif.add(r.message || _t("Action blocked"), { type: "warning" }); }
+        else { this.notif.add(_t("Now %(state)s", { state: r.state || "" }), { type: "success" }); }
         await this.load(this.state.config.id);
     }
     async runValidate() {
         const r = await this.orm.call("pb.formula.studio", "validate", [this.state.config.id]);
-        this.notif.add(r.ok ? "Validation complete" : (r.message || "Validation failed"), { type: r.ok ? "success" : "warning" });
+        this.notif.add(r.ok ? _t("Validation complete") : (r.message || _t("Validation failed")), { type: r.ok ? "success" : "warning" });
         await this.load(this.state.config.id);
     }
     async runTests() {
         const r = await this.orm.call("pb.formula.studio", "run_tests", [this.state.config.id]);
-        if (r.ok) this.notif.add(`${r.passed}/${r.total} tests passed`, { type: r.failed ? "warning" : "success" });
-        else this.notif.add(r.message || "Test run failed", { type: "danger" });
+        if (r.ok) this.notif.add(_t("%(passed)s/%(total)s tests passed", { passed: r.passed, total: r.total }), { type: r.failed ? "warning" : "success" });
+        else this.notif.add(r.message || _t("Test run failed"), { type: "danger" });
         await this.load(this.state.config.id);
     }
 
@@ -3092,7 +3094,7 @@ export class PbFormulaStudio extends Component {
     }
     async loadSettings() {
         const d = await this.orm.call("pb.formula.studio", "get_config_settings", [this.state.config.id]);
-        if (!d || !d.ok) { this.notif.add("Could not load settings.", { type: "warning" }); return; }
+        if (!d || !d.ok) { this.notif.add(_t("Could not load settings."), { type: "warning" }); return; }
         this.state.settings = d;
         this.state.setDraft = Object.assign({}, d.values);
     }
@@ -3100,8 +3102,8 @@ export class PbFormulaStudio extends Component {
     toggleCfgAdv() { this.state.cfgAdvOpen = !this.state.cfgAdvOpen; }
     async generateSampleData() {
         const r = await this.orm.call("pb.formula.studio", "cfg_generate_sample_data", [this.state.config.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not generate sample", { type: "warning" }); return; }
-        this.notif.add(r.notif || "Sample data generated", { type: "success" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not generate sample"), { type: "warning" }); return; }
+        this.notif.add(r.notif || _t("Sample data generated"), { type: "success" });
         if (r.settings && this.state.settings) { this.state.settings = r.settings; this.state.setDraft = Object.assign({}, r.settings.values); }
         await this.load(this.state.config.id);
     }
@@ -3137,8 +3139,8 @@ export class PbFormulaStudio extends Component {
         if (side === "a") this.state.cmpA = v; else this.state.cmpB = v;
     }
     async runCompare() {
-        if (!this.state.cmpA || !this.state.cmpB) { this.notif.add("Pick two periods to compare", { type: "warning" }); return; }
-        if (this.state.cmpA === this.state.cmpB) { this.notif.add("Pick two different periods", { type: "warning" }); return; }
+        if (!this.state.cmpA || !this.state.cmpB) { this.notif.add(_t("Pick two periods to compare"), { type: "warning" }); return; }
+        if (this.state.cmpA === this.state.cmpB) { this.notif.add(_t("Pick two different periods"), { type: "warning" }); return; }
         const CHUNK = 100;
         this.state.cmpBusy = true;
         this.state.cmpProgress = 0;
@@ -3149,7 +3151,7 @@ export class PbFormulaStudio extends Component {
             const prep = await this.orm.call("pb.formula.studio", "compare_prepare",
                 [this.state.config.id, this.state.cmpA, this.state.cmpB], {}, { silent: true });
             if (!prep || prep.ok === false || !prep.cmp_id) {
-                this.notif.add((prep && prep.msg) || "Comparison failed", { type: "warning" });
+                this.notif.add((prep && prep.msg) || _t("Comparison failed"), { type: "warning" });
                 return;
             }
             this.state.cmpId = prep.cmp_id;
@@ -3165,7 +3167,7 @@ export class PbFormulaStudio extends Component {
                 [prep.cmp_id], {}, { silent: true });
             if (this.state.view === "compare") this.state.cmpResult = (res && res.result) || null;
         } catch (e) {
-            this.notif.add("Comparison failed", { type: "danger" });
+            this.notif.add(_t("Comparison failed"), { type: "danger" });
         } finally { this.state.cmpBusy = false; }
     }
     cmpSetSort(key) {
@@ -3207,9 +3209,9 @@ export class PbFormulaStudio extends Component {
             const r = await this.orm.call("pb.formula.studio", "narrate_comparison",
                 [this.state.cmpId, this.state.cmpNarrateLang], {}, { silent: true });
             this.state.cmpNarrate = (r && r.ok) ? r : null;
-            if (!this.state.cmpNarrate) this.notif.add("Could not narrate this comparison", { type: "warning" });
+            if (!this.state.cmpNarrate) this.notif.add(_t("Could not narrate this comparison"), { type: "warning" });
         } catch (e) {
-            this.notif.add("Narration failed", { type: "warning" });
+            this.notif.add(_t("Narration failed"), { type: "warning" });
         } finally { this.state.cmpNarrateBusy = false; }
     }
     async setNarrateLang(lang) {
@@ -3220,7 +3222,7 @@ export class PbFormulaStudio extends Component {
     copyNarrate() {
         const t = ((this.state.cmpNarrate && this.state.cmpNarrate.blocks) || []).join("\n");
         if (t && navigator.clipboard) {
-            navigator.clipboard.writeText(t).then(() => this.notif.add("Narrative copied", { type: "success" }));
+            navigator.clipboard.writeText(t).then(() => this.notif.add(_t("Narrative copied"), { type: "success" }));
         }
     }
 
@@ -3246,8 +3248,8 @@ export class PbFormulaStudio extends Component {
     }
     onBudgetPick(ev) { this.state.budgetSel = parseInt(ev.target.value, 10) || null; }
     async runBudgetCompare() {
-        if (!this.state.budgetSel) { this.notif.add("Pick or create a budget first", { type: "warning" }); return; }
-        if (!this.state.cmpB) { this.notif.add("Pick a payrun to measure against", { type: "warning" }); return; }
+        if (!this.state.budgetSel) { this.notif.add(_t("Pick or create a budget first"), { type: "warning" }); return; }
+        if (!this.state.cmpB) { this.notif.add(_t("Pick a payrun to measure against"), { type: "warning" }); return; }
         const CHUNK = 100;
         this.state.cmpBusy = true;
         this.state.cmpProgress = 0;
@@ -3257,7 +3259,7 @@ export class PbFormulaStudio extends Component {
             const prep = await this.orm.call("pb.formula.studio", "budget_prepare",
                 [this.state.config.id, this.state.budgetSel, this.state.cmpB], {}, { silent: true });
             if (!prep || prep.ok === false || !prep.cmp_id) {
-                this.notif.add((prep && prep.msg) || "Budget comparison failed", { type: "warning" });
+                this.notif.add((prep && prep.msg) || _t("Budget comparison failed"), { type: "warning" });
                 return;
             }
             this.state.cmpId = prep.cmp_id;
@@ -3272,7 +3274,7 @@ export class PbFormulaStudio extends Component {
                 [prep.cmp_id], {}, { silent: true });
             if (this.state.view === "compare") this.state.cmpResult = (res && res.result) || null;
         } catch (e) {
-            this.notif.add("Budget comparison failed", { type: "danger" });
+            this.notif.add(_t("Budget comparison failed"), { type: "danger" });
         } finally { this.state.cmpBusy = false; }
     }
     // — editor overlay (manager-gated writes; reads open) —
@@ -3282,7 +3284,7 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "budget_get",
                 [this.state.config.id, budgetId || false]);
-            if (!r || !r.ok) { this.notif.add("Could not open the budget editor", { type: "warning" }); return; }
+            if (!r || !r.ok) { this.notif.add(_t("Could not open the budget editor"), { type: "warning" }); return; }
             const head = r.budget || {};
             this.state.budgetEdit = {
                 id: head.id || null,
@@ -3295,7 +3297,7 @@ export class PbFormulaStudio extends Component {
             this.state.budgetSeedRun = (this.state.cmpRuns[0] && this.state.cmpRuns[0].id) || null;
             this.state.budgetEditOpen = true;
         } catch (e) {
-            this.notif.add("Could not open the budget editor", { type: "danger" });
+            this.notif.add(_t("Could not open the budget editor"), { type: "danger" });
         } finally { this.state.budgetBusy = false; }
     }
     newBudget() { this.openBudgetEditor(null); }
@@ -3313,16 +3315,16 @@ export class PbFormulaStudio extends Component {
     onSeedRunPick(ev) { this.state.budgetSeedRun = parseInt(ev.target.value, 10) || null; }
     async seedBudgetFromRun() {
         const e = this.state.budgetEdit;
-        if (!e || !this.state.budgetSeedRun) { this.notif.add("Pick a payrun to seed from", { type: "warning" }); return; }
+        if (!e || !this.state.budgetSeedRun) { this.notif.add(_t("Pick a payrun to seed from"), { type: "warning" }); return; }
         this.state.budgetBusy = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "budget_seed_from_run",
                 [this.state.config.id, this.state.budgetSeedRun], {}, { silent: true });
             const amounts = (r && r.amounts) || {};
             for (const row of e.rows) row.amount = amounts[row.code] != null ? amounts[row.code] : row.amount;
-            this.notif.add("Amounts seeded from the payrun", { type: "success" });
+            this.notif.add(_t("Amounts seeded from the payrun"), { type: "success" });
         } catch (err) {
-            this.notif.add("Could not seed from that payrun", { type: "warning" });
+            this.notif.add(_t("Could not seed from that payrun"), { type: "warning" });
         } finally { this.state.budgetBusy = false; }
     }
     // seed from an on-screen PERIOD compare (client-side, no RPC) — uses the "after" sums
@@ -3336,12 +3338,12 @@ export class PbFormulaStudio extends Component {
         const bycode = {};
         for (const c of r.components) bycode[c.code] = c.sum_b;
         for (const row of e.rows) if (bycode[row.code] != null) row.amount = bycode[row.code];
-        this.notif.add("Amounts seeded from the on-screen comparison", { type: "success" });
+        this.notif.add(_t("Amounts seeded from the on-screen comparison"), { type: "success" });
     }
     async saveBudget() {
         const e = this.state.budgetEdit;
         if (!e || this.state.budgetBusy) return;
-        if (!(e.name || "").trim()) { this.notif.add("A budget needs a name", { type: "warning" }); return; }
+        if (!(e.name || "").trim()) { this.notif.add(_t("A budget needs a name"), { type: "warning" }); return; }
         const lines = {};
         for (const row of e.rows) {
             const v = String(row.amount ?? "").trim();
@@ -3357,14 +3359,14 @@ export class PbFormulaStudio extends Component {
                 id: e.id || false, config_id: this.state.config.id,
                 name: e.name, period_label: e.period_label, note: e.note, lines,
             }]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not save budget", { type: "warning" }); return; }
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not save budget"), { type: "warning" }); return; }
             await this._loadBudgets();
             this.state.budgetSel = r.budget.id;
             this.state.budgetEditOpen = false;
             this.state.budgetEdit = null;
-            this.notif.add("Budget saved", { type: "success" });
+            this.notif.add(_t("Budget saved"), { type: "success" });
         } catch (err) {
-            this.notif.add("Could not save budget", { type: "danger" });
+            this.notif.add(_t("Could not save budget"), { type: "danger" });
         } finally { this.state.budgetBusy = false; }
     }
     async deleteBudget(b) {
@@ -3372,13 +3374,13 @@ export class PbFormulaStudio extends Component {
         this.state.budgetBusy = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "budget_delete", [b.id]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not delete budget", { type: "warning" }); return; }
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not delete budget"), { type: "warning" }); return; }
             if (this.state.budgetSel === b.id) this.state.budgetSel = null;
             if (this.state.budgetEdit && this.state.budgetEdit.id === b.id) this.closeBudgetEditor();
             await this._loadBudgets();
-            this.notif.add("Budget deleted", { type: "success" });
+            this.notif.add(_t("Budget deleted"), { type: "success" });
         } catch (err) {
-            this.notif.add("Could not delete budget", { type: "danger" });
+            this.notif.add(_t("Could not delete budget"), { type: "danger" });
         } finally { this.state.budgetBusy = false; }
     }
     get budgetEditByGroup() {
@@ -3452,7 +3454,7 @@ export class PbFormulaStudio extends Component {
             const vals = (r && r.inputs) || {};
             for (const i of this.state.offerInputs) if (vals[i.code] != null) i.value = vals[i.code];
             this._offerRun();
-        } catch (e) { this.notif.add("Could not load that sample", { type: "warning" }); }
+        } catch (e) { this.notif.add(_t("Could not load that sample"), { type: "warning" }); }
     }
     get offerGroups() {
         const r = this.state.offerResult;
@@ -3485,7 +3487,7 @@ export class PbFormulaStudio extends Component {
         }
         if (r.net_code) { lines.push(""); lines.push("Net (" + r.net_code + "): " + money(r.net_value)); }
         const text = lines.join("\n");
-        if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => this.notif.add("Offer summary copied", { type: "success" }));
+        if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => this.notif.add(_t("Offer summary copied"), { type: "success" }));
     }
     offerMoney(v) { return (this.state.offerCurrency || "") + Math.round(v || 0).toLocaleString("en-US"); }
     offerVal(row) {
@@ -3552,15 +3554,15 @@ export class PbFormulaStudio extends Component {
     async runBoundaryGen() {
         const picks = (this.state.boundaryCands.candidates || [])
             .filter(c => c.reachable && this.state.boundaryPicks.includes(c.key));
-        if (!picks.length) { this.notif.add("Select at least one reachable edge.", { type: "warning" }); return; }
+        if (!picks.length) { this.notif.add(_t("Select at least one reachable edge."), { type: "warning" }); return; }
         this.state.boundaryBusy = true;
         const r = await this.orm.call("pb.formula.studio", "generate_boundary_samples",
             [this.state.config.id, picks, this.state.boundaryBase]);
         this.state.boundaryBusy = false;
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not generate", { type: "warning" }); return; }
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not generate"), { type: "warning" }); return; }
         this.state.boundaryResult = { created: r.created, skipped: r.skipped, capped: r.capped };
         const summary = `${r.created} created` + (r.skipped ? `, ${r.skipped} skipped` : "") + (r.capped ? `, ${r.capped} over cap` : "");
-        this.notif.add(`Boundary samples: ${summary}`, { type: r.created ? "success" : "info" });
+        this.notif.add(_t("Boundary samples: %(summary)s", { summary }), { type: r.created ? "success" : "info" });
         await this.loadTestData(true);   // refresh samples + coverage strip
         if (r.created) {
             const gen = this.state.test.samples.filter(s => s.source_type === "generated");
@@ -3572,16 +3574,16 @@ export class PbFormulaStudio extends Component {
     get hasUnconfirmed() { return (this.state.test.samples || []).some(s => s.expected_confirmed === false); }
     async confirmBaseline(id) {
         const r = await this.orm.call("pb.formula.studio", "confirm_sample_expected", [id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not confirm", { type: "warning" }); return; }
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not confirm"), { type: "warning" }); return; }
         this.state.testDetail = r; this._syncSampleVerdict(r); this._applyTests(r.tests);
-        this.notif.add("Baseline confirmed", { type: "success" });
+        this.notif.add(_t("Baseline confirmed"), { type: "success" });
     }
     async confirmAllBaselines() {
         const r = await this.orm.call("pb.formula.studio", "confirm_all_samples", [this.state.config.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not confirm", { type: "warning" }); return; }
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not confirm"), { type: "warning" }); return; }
         this.state.test.samples = r.samples; this._applyTests(r.tests);
         if (this.state.testSampleId) await this.loadSampleDetail(this.state.testSampleId);
-        this.notif.add(`${r.confirmed} baseline${r.confirmed === 1 ? "" : "s"} confirmed`, { type: "success" });
+        this.notif.add(_t("%(count)s baselines confirmed", { count: r.confirmed }), { type: "success" });
     }
     // W49 — AI-proposed profiles (LLM proposes inputs; engine computes the baseline)
     async openAiPanel() {
@@ -3590,7 +3592,7 @@ export class PbFormulaStudio extends Component {
         this.state.aiProps = null; this.state.aiPicks = []; this.state.aiRejected = [];
         const r = await this.orm.call("pb.formula.studio", "ai_propose_samples", [this.state.config.id]);
         this.state.aiBusy = false;
-        if (!r || !r.ok) { this.state.aiError = (r && r.reason) || "AI is unavailable."; this.state.aiProps = []; return; }
+        if (!r || !r.ok) { this.state.aiError = (r && r.reason) || _t("AI is unavailable."); this.state.aiProps = []; return; }
         this.state.aiProps = r.proposals || [];
         this.state.aiRejected = r.rejected || [];
         this.state.aiPicks = this.state.aiProps.map((_p, i) => i);   // all checked by default
@@ -3601,12 +3603,12 @@ export class PbFormulaStudio extends Component {
     }
     async acceptAiSamples() {
         const chosen = (this.state.aiProps || []).filter((_p, i) => this.state.aiPicks.includes(i));
-        if (!chosen.length) { this.notif.add("Select at least one profile.", { type: "warning" }); return; }
+        if (!chosen.length) { this.notif.add(_t("Select at least one profile."), { type: "warning" }); return; }
         this.state.aiBusy = true;
         const r = await this.orm.call("pb.formula.studio", "create_ai_samples", [this.state.config.id, chosen]);
         this.state.aiBusy = false;
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not add samples", { type: "warning" }); return; }
-        this.notif.add(`${r.created} AI profile${r.created === 1 ? "" : "s"} added`, { type: "success" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not add samples"), { type: "warning" }); return; }
+        this.notif.add(_t("%(count)s AI profiles added", { count: r.created }), { type: "success" });
         this.state.testGenOpen = false; this.state.genMode = null;
         await this.loadTestData(true);
         const gen = this.state.test.samples.filter(s => s.source_type === "generated");
@@ -3630,7 +3632,7 @@ export class PbFormulaStudio extends Component {
     async addManualSample() {
         this.state.testGenOpen = false;
         const r = await this.orm.call("pb.formula.studio", "add_manual_sample", [this.state.config.id]);
-        if (!r || !r.ok) { this.notif.add("Could not add sample", { type: "warning" }); return; }
+        if (!r || !r.ok) { this.notif.add(_t("Could not add sample"), { type: "warning" }); return; }
         this.state.test.samples = r.samples;
         await this.selectSample(r.sample_id);
         this.state.testInputsOpen = true;  // manual samples are about editing inputs
@@ -3639,8 +3641,8 @@ export class PbFormulaStudio extends Component {
         this.state.testGenOpen = false;
         const r = await this.orm.call("pb.formula.studio", "generate_random_samples",
             [this.state.config.id, this.state.randomCount, this.state.randomMin, this.state.randomMax]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not generate", { type: "warning" }); return; }
-        this.notif.add(`${this.state.randomCount} random samples added`, { type: "success" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not generate"), { type: "warning" }); return; }
+        this.notif.add(_t("%(count)s random samples added", { count: this.state.randomCount }), { type: "success" });
         this.state.test.samples = r.samples;
         const last = r.samples[r.samples.length - 1];
         if (last) await this.selectSample(last.id);
@@ -3654,7 +3656,7 @@ export class PbFormulaStudio extends Component {
     }
     async snapshotExpected() {
         const r = await this.orm.call("pb.formula.studio", "snapshot_expected", [this.state.testSampleId]);
-        if (r && r.ok) { this.state.testDetail = r; this._syncSampleVerdict(r); this.notif.add("Baseline saved", { type: "success" }); }
+        if (r && r.ok) { this.state.testDetail = r; this._syncSampleVerdict(r); this.notif.add(_t("Baseline saved"), { type: "success" }); }
     }
     async clearExpected() {
         const r = await this.orm.call("pb.formula.studio", "clear_expected", [this.state.testSampleId]);
@@ -3680,7 +3682,7 @@ export class PbFormulaStudio extends Component {
     }
     async runAllTests() {
         const r = await this.orm.call("pb.formula.studio", "cfg_run_tests", [this.state.config.id]);
-        this.notif.add((r && r.notif) || "Tests run", { type: "success" });
+        this.notif.add((r && r.notif) || _t("Tests run"), { type: "success" });
         await this.loadTestData(true);
     }
     // ---- jump from a test sample into the Cards (formula) view ----
@@ -3696,7 +3698,7 @@ export class PbFormulaStudio extends Component {
     // ---- Excel template export / import ----
     async exportTestTemplate() {
         const r = await this.orm.call("pb.formula.studio", "export_test_template", [this.state.config.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not export template", { type: "warning" }); return; }
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not export template"), { type: "warning" }); return; }
         const bin = atob(r.file_b64);
         const bytes = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -3704,7 +3706,7 @@ export class PbFormulaStudio extends Component {
         const a = document.createElement("a");
         a.href = url; a.download = r.filename; a.click();
         URL.revokeObjectURL(url);
-        this.notif.add("Template downloaded", { type: "success" });
+        this.notif.add(_t("Template downloaded"), { type: "success" });
     }
     // W41 — export the whole config as a *living* .xlsx (real Excel formulas,
     // one row per sample, rate tables on a reference sheet). Clones the
@@ -3712,7 +3714,7 @@ export class PbFormulaStudio extends Component {
     async exportLivingWorkbook() {
         if (this.state.empty) return;
         const r = await this.orm.call("pb.formula.studio", "export_living_workbook", [this.state.config.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not export workbook", { type: "warning" }); return; }
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not export workbook"), { type: "warning" }); return; }
         const bin = atob(r.file_b64);
         const bytes = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -3720,7 +3722,7 @@ export class PbFormulaStudio extends Component {
         const a = document.createElement("a");
         a.href = url; a.download = r.filename; a.click();
         URL.revokeObjectURL(url);
-        this.notif.add(r.note || "Workbook downloaded", { type: r.note ? "info" : "success" });
+        this.notif.add(r.note || _t("Workbook downloaded"), { type: r.note ? "info" : "success" });
     }
     triggerImport() { if (this.testFileRef.el) this.testFileRef.el.click(); }
     async onImportFile(ev) {
@@ -3732,8 +3734,8 @@ export class PbFormulaStudio extends Component {
             const r = await this.orm.call("pb.formula.studio", "import_test_samples",
                 [this.state.config.id, b64, file.name]);
             ev.target.value = "";  // allow re-importing the same file
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not import", { type: "warning" }); return; }
-            this.notif.add(`${r.count} sample${r.count === 1 ? "" : "s"} imported`, { type: "success" });
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not import"), { type: "warning" }); return; }
+            this.notif.add(_t("%(count)s samples imported", { count: r.count }), { type: "success" });
             this.state.test.samples = r.samples;
             if (r.first_id) await this.selectSample(r.first_id);
         };
@@ -3770,12 +3772,12 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "save_config_settings", [this.state.config.id, this.state.setDraft]);
             if (!r || !r.ok) {
-                const msg = (r && r.msg) ? r.msg : "Could not save settings";
+                const msg = (r && r.msg) ? r.msg : _t("Could not save settings");
                 this.state.settingsError = msg; this.notif.add(msg, { type: "warning" });
                 return;
             }
             if (this.state.settings) this.state.settings.status = r.status;
-            this.notif.add("Settings saved", { type: "success" });
+            this.notif.add(_t("Settings saved"), { type: "success" });
             await this.load(this.state.config.id);   // sync top bar / score / name
         } finally { this.state.settingsBusy = false; }
     }
@@ -3785,7 +3787,7 @@ export class PbFormulaStudio extends Component {
     }
     async _cfgLifecycle(method, okMsg) {
         const r = await this.orm.call("pb.formula.studio", method, [this.state.config.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Action blocked", { type: "warning" }); }
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Action blocked"), { type: "warning" }); }
         else { this.notif.add(r.notif || okMsg, { type: "success" }); }
         if (r && r.settings) { this.state.settings = r.settings; this.state.setDraft = Object.assign({}, r.settings.values); }
         else if (r && r.status && this.state.settings) { this.state.settings.status = r.status; }
@@ -3837,16 +3839,16 @@ export class PbFormulaStudio extends Component {
     get csCards() { return (this.state.csBoard && this.state.csBoard.cards) || []; }
     get csCanEdit() { return !!(this.state.csBoard && this.state.csBoard.can_edit); }
     csCountryLabel(cc) {
-        return { VN: "Vietnam", ID: "Indonesia", IN: "India", SG: "Singapore",
-                 MY: "Malaysia", TH: "Thailand", KH: "Cambodia", PH: "Philippines" }[cc] || cc;
+        return { VN: _t("Vietnam"), ID: _t("Indonesia"), IN: _t("India"), SG: _t("Singapore"),
+                 MY: _t("Malaysia"), TH: _t("Thailand"), KH: _t("Cambodia"), PH: _t("Philippines") }[cc] || cc;
     }
     csCycleLabel(ct) {
-        return { regular: "Regular", mid_cycle: "Mid-cycle", end_cycle: "End-cycle",
-                 full_final: "Full & Final" }[ct] || ct;
+        return { regular: _t("Regular"), mid_cycle: _t("Mid-cycle"), end_cycle: _t("End-cycle"),
+                 full_final: _t("Full & Final") }[ct] || ct;
     }
     csStateLabel(s) {
-        return { draft: "Draft", testing: "Testing", validated: "Validated",
-                 active: "Active", archived: "Archived" }[s] || s;
+        return { draft: _t("Draft"), testing: _t("Testing"), validated: _t("Validated"),
+                 active: _t("Active"), archived: _t("Archived") }[s] || s;
     }
     csRingStroke(score) { return (score >= 80) ? "#059669" : (score >= 50 ? "#D97706" : (score > 0 ? "#DC2626" : "#CBD5E1")); }
     // a card wants attention if it has hard errors or unreleased changes
@@ -3901,10 +3903,9 @@ export class PbFormulaStudio extends Component {
     _lockedNotice() {
         if (this.state.canEdit) return false;
         this.dialog.add(AlertDialog, {
-            title: "Available in the full platform",
-            body: "This functionality is available in the full Payobook platform. " +
-                "Please contact Payobook to arrange a personalised demonstration.",
-            confirmLabel: "Got it",
+            title: _t("Available in the full platform"),
+            body: _t("This functionality is available in the full Payobook platform. Please contact Payobook to arrange a personalised demonstration."),
+            confirmLabel: _t("Got it"),
         });
         return true;
     }
@@ -3992,10 +3993,10 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "restore_version", [ruleId, seq]);
             if (!r || !r.ok) {
-                this.notif.add((r && r.msg) || "Restore failed", { type: "danger" });
+                this.notif.add((r && r.msg) || _t("Restore failed"), { type: "danger" });
                 return;
             }
-            this.notif.add("Restored v" + seq, { type: "success" });
+            this.notif.add(_t("Restored v%(version)s", { version: seq }), { type: "success" });
             // reflect the new formula everywhere, then refresh the rail (the
             // restore itself is a new 'restore' version — history never rewrites)
             await this.load(this.state.config.id);
@@ -4005,7 +4006,7 @@ export class PbFormulaStudio extends Component {
             this.state.historyDiffRuns = null;
             await this._loadHistory(ruleId);
         } catch (e) {
-            this.notif.add("Restore failed", { type: "danger" });
+            this.notif.add(_t("Restore failed"), { type: "danger" });
         }
     }
 
@@ -4038,14 +4039,14 @@ export class PbFormulaStudio extends Component {
             const prep = await this.orm.call("pb.formula.studio", "simulate_prepare",
                 [this.state.config.id, overrides || {}, null], {}, { silent: true });
             if (!prep || prep.ok === false || !prep.sim_id) {
-                this.notif.add((prep && prep.msg) || "No historical payslips to simulate against", { type: "warning" });
+                this.notif.add((prep && prep.msg) || _t("No historical payslips to simulate against"), { type: "warning" });
                 this.state.simOpen = false;
                 return;
             }
             this.state.simId = prep.sim_id;
             const ids = prep.payslip_ids || [];
             if (!ids.length) {
-                this.notif.add("No historical payslips to simulate against", { type: "warning" });
+                this.notif.add(_t("No historical payslips to simulate against"), { type: "warning" });
                 this.state.simResult = { empty: true };
                 return;
             }
@@ -4059,7 +4060,7 @@ export class PbFormulaStudio extends Component {
                 [prep.sim_id], {}, { silent: true });
             if (this.state.simOpen) this.state.simResult = (res && res.result) || null;
         } catch (e) {
-            this.notif.add("Simulation failed", { type: "danger" });
+            this.notif.add(_t("Simulation failed"), { type: "danger" });
             this.state.simOpen = false;
         } finally {
             this.state.simBusy = false;
@@ -4139,7 +4140,7 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "simplify_apply", [s.rule_id]);
             if (!r || !r.ok) {
-                this.notif.add((r && r.msg) || "Could not apply the rewrite", { type: "danger" });
+                this.notif.add((r && r.msg) || _t("Could not apply the rewrite"), { type: "danger" });
                 return;
             }
             const t = r.tests || {};
@@ -4148,7 +4149,7 @@ export class PbFormulaStudio extends Component {
             await this.load(this.state.config.id);   // fresh formula + tables + problems
             await this._loadProblems();
         } catch (e) {
-            this.notif.add("Could not apply the rewrite", { type: "danger" });
+            this.notif.add(_t("Could not apply the rewrite"), { type: "danger" });
         } finally {
             this.state.simplifyBusy = null;
         }
@@ -4207,7 +4208,7 @@ export class PbFormulaStudio extends Component {
         this.state.renameErr = "";
         try {
             const r = await this.orm.call("pb.formula.studio", "rename_component", [id, code]);
-            if (!r || !r.ok) { this.state.renameErr = (r && r.msg) || "Rename failed"; return; }
+            if (!r || !r.ok) { this.state.renameErr = (r && r.msg) || _t("Rename failed"); return; }
             const n = (r.rewritten || []).length;
             this.notif.add(
                 r.msg + (n ? " · " + n + (n === 1 ? " formula" : " formulas") + " updated" : ""),
@@ -4289,8 +4290,8 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "save_rate_table",
                 [this.state.config.id, this.state.rateEdit]);
-            if (!r || !r.ok) { this.state.rateErr = (r && r.msg) || "Save failed"; return; }
-            this.notif.add("Rate table saved", { type: "success" });
+            if (!r || !r.ok) { this.state.rateErr = (r && r.msg) || _t("Save failed"); return; }
+            this.notif.add(_t("Rate table saved"), { type: "success" });
             await this.reloadRates();
             this.state.rateEdit = null;
             // BRACKET recompiles at compute — refresh preview so the grid/card reflect it
@@ -4304,8 +4305,8 @@ export class PbFormulaStudio extends Component {
     async deleteRateTable(t) {
         if (this._lockedNotice()) return;
         const r = await this.orm.call("pb.formula.studio", "delete_rate_table", [t.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Delete failed", { type: "warning" }); return; }
-        this.notif.add("Rate table deleted", { type: "success" });
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Delete failed"), { type: "warning" }); return; }
+        this.notif.add(_t("Rate table deleted"), { type: "success" });
         await this.reloadRates();
     }
     setPreviewIncome(ev) {
@@ -5485,10 +5486,10 @@ export class PbFormulaStudio extends Component {
         if (!p) return;
         if (p.target_id) {
             const r = await this.orm.call("pb.formula.studio", "apply_ai_formula", [p.target_id, p.formula]);
-            if (r.ok) { this.notif.add("Formula applied to " + (p.target_name || ""), { type: "success" }); }
-            else { this.notif.add(r.msg || "Could not apply", { type: "warning" }); }
+            if (r.ok) { this.notif.add(_t("Formula applied to %(target)s", { target: p.target_name || "" }), { type: "success" }); }
+            else { this.notif.add(r.msg || _t("Could not apply"), { type: "warning" }); }
         } else {
-            this.notif.add("That would create a new component — open the editor to confirm name & code.", { type: "info" });
+            this.notif.add(_t("That would create a new component — open the editor to confirm name & code."), { type: "info" });
         }
         this.state.aiProposal = null;
         this.state.aiOpen = false;
@@ -5523,7 +5524,7 @@ export class PbFormulaStudio extends Component {
     get wizardTpl() { return this.state.wizardTemplates.find(t => t.key === this.state.wizardForm.template) || {}; }
     wizardBack() { if (this.state.wizardStep > 1) this.state.wizardStep--; }
     wizardNext() {
-        if (this.state.wizardStep === 1 && !this.state.wizardForm.name.trim()) { this.notif.add("Give the configuration a name first.", { type: "warning" }); return; }
+        if (this.state.wizardStep === 1 && !this.state.wizardForm.name.trim()) { this.notif.add(_t("Give the configuration a name first."), { type: "warning" }); return; }
         if (this.state.wizardStep < 5) this.state.wizardStep++;
     }
     async wizardCreate() {
@@ -5532,18 +5533,18 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "create_config", [this.state.wizardForm]);
             if (r.ok) {
-                this.notif.add(`Created “${this.state.wizardForm.name}” with ${r.rule_count} components`, { type: "success" });
+                this.notif.add(_t("Created “%(name)s” with %(count)s components", { name: this.state.wizardForm.name, count: r.rule_count }), { type: "success" });
                 this.state.wizardOpen = false; this.state.selectedId = null; await this.load(r.config_id);
-            } else { this.notif.add("Could not create configuration", { type: "danger" }); }
+            } else { this.notif.add(_t("Could not create configuration"), { type: "danger" }); }
         } finally { this.state.wizardBusy = false; }
     }
     async importExcel() {
-        if (!this.state.wizardForm.name.trim()) { this.notif.add("Give the configuration a name first.", { type: "warning" }); this.state.wizardStep = 1; return; }
+        if (!this.state.wizardForm.name.trim()) { this.notif.add(_t("Give the configuration a name first."), { type: "warning" }); this.state.wizardStep = 1; return; }
         if (this.state.wizardBusy) return;
         this.state.wizardBusy = true;
         try {
             const r = await this.orm.call("pb.formula.studio", "create_config", [{ ...this.state.wizardForm, template: "blank" }]);
-            if (!r.ok) { this.notif.add("Could not create configuration", { type: "danger" }); return; }
+            if (!r.ok) { this.notif.add(_t("Could not create configuration"), { type: "danger" }); return; }
             this.state.wizardOpen = false;
             this.action.doAction(
                 { type: "ir.actions.act_window", name: "Import from Excel", res_model: "hr.formula.multisheet.import.wizard",
@@ -5567,9 +5568,9 @@ export class PbFormulaStudio extends Component {
         try {
             const cid = this.state.config.id;
             const r = await this.orm.call("pb.formula.studio", "apply_starter", [cid, key || "vn_standard"]);
-            if (r.ok) { this.notif.add(`Added ${r.rule_count} components`, { type: "success" }); await this.load(cid); }
-            else if (r.error === "not_empty") { this.notif.add("This configuration already has components.", { type: "warning" }); }
-            else { this.notif.add("Could not apply the starter.", { type: "danger" }); }
+            if (r.ok) { this.notif.add(_t("Added %(count)s components", { count: r.rule_count }), { type: "success" }); await this.load(cid); }
+            else if (r.error === "not_empty") { this.notif.add(_t("This configuration already has components."), { type: "warning" }); }
+            else { this.notif.add(_t("Could not apply the starter."), { type: "danger" }); }
         } finally { this.state.wizardBusy = false; }
     }
     async addComponentQuick() {
@@ -5579,7 +5580,7 @@ export class PbFormulaStudio extends Component {
             const cid = this.state.config.id;
             const r = await this.orm.call("pb.formula.studio", "add_component", [cid, {}]);
             if (r.ok) { await this.load(cid); this.state.selectedId = r.rule_id; }
-            else { this.notif.add("Could not add a component.", { type: "danger" }); }
+            else { this.notif.add(_t("Could not add a component."), { type: "danger" }); }
         } finally { this.state.wizardBusy = false; }
     }
     // ----- remove a whole configuration (picker trash + build-panel discard) -----
@@ -5592,11 +5593,11 @@ export class PbFormulaStudio extends Component {
         const blocked = cfg.can_delete === false;
         this.state.confirmDel = {
             id: cfg.id,
-            name: cfg.name || "this configuration",
+            name: cfg.name || _t("this configuration"),
             count: (cfg.rule_count != null ? cfg.rule_count : (cfg.count || 0)),
             state: cfg.state || "draft",
             mode: blocked ? "archive" : "delete",
-            blockedBy: blocked ? (cfg.delete_blocked_by || "existing payroll data") : "",
+            blockedBy: blocked ? (cfg.delete_blocked_by || _t("existing payroll data")) : "",
         };
     }
     askArchiveConfig(cfg, ev) {
@@ -5616,24 +5617,26 @@ export class PbFormulaStudio extends Component {
         try {
             r = await this.orm.call("pb.formula.studio", method, [d.id]);
         } catch (e) {
-            this.notif.add(`Could not ${archiving ? "archive" : "delete"} configuration`, { type: "danger" });
+            this.notif.add(archiving ? _t("Could not archive configuration") : _t("Could not delete configuration"), { type: "danger" });
             this.state.confirmDel = null;
             return;
         }
         if (!r || !r.ok) {
-            this.notif.add(r && r.msg ? r.msg : `Could not ${archiving ? "archive" : "delete"} configuration`,
+            this.notif.add(r && r.msg ? r.msg : (archiving ? _t("Could not archive configuration") : _t("Could not delete configuration")),
                            { type: "warning" });
             // The server may have found history the card didn't know about —
             // keep the dialog open, switched to the archive path.
             if (r && r.can_archive && !archiving) {
                 d.mode = "archive";
-                d.blockedBy = d.blockedBy || "existing payroll data";
+                d.blockedBy = d.blockedBy || _t("existing payroll data");
             } else {
                 this.state.confirmDel = null;
             }
             return;
         }
-        this.notif.add(`${archiving ? "Archived" : "Deleted"} “${d.name}”`, { type: "success" });
+        this.notif.add(archiving
+            ? _t("Archived “%(name)s”", { name: d.name })
+            : _t("Deleted “%(name)s”", { name: d.name }), { type: "success" });
         this.state.confirmDel = null;
         this.state.configPickerOpen = false;
         this.state.selectedId = null;
@@ -5663,7 +5666,7 @@ export class PbFormulaStudio extends Component {
         const comp = this.state.components.find(c => c.id === rid);
         if (!window.confirm(`Delete component “${comp ? comp.name : rid}”?`)) return;
         await this.orm.call("pb.formula.studio", "delete_component", [rid]);
-        this.notif.add("Component deleted", { type: "success" });
+        this.notif.add(_t("Component deleted"), { type: "success" });
         if (this.state.selectedId === rid) this.state.selectedId = null;
         await this.load(cid);
     }

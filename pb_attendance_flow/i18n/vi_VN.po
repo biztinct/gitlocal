@@ -1,0 +1,1366 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "%(label)s on %(date)s — %(detail)s"
+msgstr "%(label)s trên %(date)s — %(detail)s"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "%s imported, %s skipped."
+msgstr "%s đã được nhập, %s bị bỏ qua."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid ""
+"A %(state)s correction can no longer be edited (%(fields)s) — reset it to draft first."
+msgstr ""
+"Không thể chỉnh sửa phần chỉnh sửa %(state)s nữa (%(fields)s) — trước tiên hãy đặt lại"
+" thành bản nháp."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_pb_attendance_rule__grace_in_minutes
+msgid ""
+"A check-in later than the shift start by more than this many minutes counts as late."
+msgstr ""
+"Việc nhận phòng muộn hơn thời gian bắt đầu ca nhiều hơn số phút này sẽ được tính là "
+"muộn."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_pb_attendance_rule__grace_out_minutes
+msgid ""
+"A check-out earlier than the shift end by more than this many minutes counts as an "
+"early departure."
+msgstr ""
+"Việc trả phòng sớm hơn thời gian ca làm việc kết thúc nhiều hơn số phút này được coi "
+"là khởi hành sớm."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "A correction can be reset to draft only from Submitted or Refused."
+msgstr ""
+"Một bản chỉnh sửa chỉ có thể được đặt lại thành bản nháp từ Đã gửi hoặc Từ chối."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/hr_attendance.py:0
+msgid ""
+"A device/kiosk punch can only be removed through an approved attendance correction — "
+"it is never deleted directly (%s)."
+msgstr ""
+"Chỉ có thể xóa điểm bấm thiết bị/kiosk thông qua chỉnh sửa chấm công đã được phê duyệt"
+" — nó không bao giờ bị xóa trực tiếp (%s)."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "A new punch needs a check-in time."
+msgstr "Một cú đấm mới cần có thời gian kiểm tra."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_pb_attendance_rule__variance_minutes
+msgid ""
+"A punch within this many minutes of its scheduled shift start and end is CLEAN for the"
+" weekly Close — no review needed. Anything beyond it is flagged for a human."
+msgstr ""
+"Một cú đấm trong vòng nhiều phút kể từ khi bắt đầu và kết thúc ca theo lịch trình của "
+"nó là SẠCH cho phần Đóng hàng tuần - không cần xem xét. Bất cứ điều gì vượt quá nó đều"
+" được gắn cờ cho con người."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "A reason is required before submitting."
+msgstr "Cần phải có lý do trước khi gửi."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_needaction
+msgid "Action Needed"
+msgstr "Hành động Cần"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Action failed."
+msgstr "Thao tác không thành công."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Hoạt động Ngoại lệ Trang trí"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_state
+msgid "Activity State"
+msgstr "Hoạt động Trạng thái"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Hoạt động Loại Biểu tượng"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__correction_type__create
+msgid "Add a punch"
+msgstr "Thêm một cú đấm"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__correction_type__adjust
+msgid "Adjust a punch"
+msgstr "Điều chỉnh cú đấm"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "All clear"
+msgstr "Tất cả đều rõ ràng"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_pb_attendance_rule__open_checkout_hours
+msgid ""
+"An attendance still open (no check-out) this many hours after check-in is flagged as a"
+" missing check-out."
+msgstr ""
+"Việc chấm công vẫn mở (không trả phòng) nhiều giờ sau khi nhận phòng sẽ bị gắn cờ là "
+"thiếu lượt trả phòng."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__state__approved
+msgid "Applied"
+msgstr "Đã áp dụng"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__apply_error
+msgid "Apply Error"
+msgstr "Áp dụng lỗi"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__approval_widget_json
+msgid "Approval Trail"
+msgstr "Đường mòn phê duyệt"
+
+#. module: pb_attendance_flow
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_hr_attendance_correction_form
+msgid "Approve & Apply"
+msgstr "Phê duyệt & Áp dụng"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Approve & apply"
+msgstr "Phê duyệt và áp dụng"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_attachment_count
+msgid "Attachment Count"
+msgstr "Tệp đính kèm Số lượng"
+
+#. module: pb_attendance_flow
+#: model:ir.model,name:pb_attendance_flow.model_hr_attendance
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_attendance_flow
+#: model:ir.model,name:pb_attendance_flow.model_pb_attendance_import_wizard
+msgid "Attendance Bulk Import"
+msgstr "Nhập số lượng lớn chấm công"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+#: model:ir.actions.client,name:pb_attendance_flow.action_pb_attendance_flow
+#: model:pb.sidebar.item,name:pb_attendance_flow.item_attendance_control
+msgid "Attendance Control"
+msgstr "Kiểm soát chấm công"
+
+#. module: pb_attendance_flow
+#: model:ir.model,name:pb_attendance_flow.model_pb_attendance_flow
+msgid "Attendance Control Cockpit"
+msgstr "Buồng kiểm soát chấm công"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_cockpit.py:0
+msgid "Attendance Control is for internal users."
+msgstr "Kiểm soát chấm công dành cho người dùng nội bộ."
+
+#. module: pb_attendance_flow
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_hr_attendance_correction_form
+msgid "Attendance Correction"
+msgstr "Sửa điểm danh"
+
+#. module: pb_attendance_flow
+#: model:ir.model,name:pb_attendance_flow.model_hr_attendance_correction
+msgid "Attendance Correction Request"
+msgstr "Yêu cầu sửa điểm danh"
+
+#. module: pb_attendance_flow
+#: model:ir.actions.act_window,name:pb_attendance_flow.action_hr_attendance_correction
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_hr_attendance_correction_list
+msgid "Attendance Corrections"
+msgstr "Sửa điểm danh"
+
+#. module: pb_attendance_flow
+#: model:ir.model,name:pb_attendance_flow.model_pb_attendance_exception_engine
+msgid "Attendance Exception Engine (read-only feed)"
+msgstr "Công cụ ngoại lệ chấm công (nguồn cấp dữ liệu chỉ đọc)"
+
+#. module: pb_attendance_flow
+#: model:ir.model,name:pb_attendance_flow.model_pb_attendance_rule
+msgid "Attendance Grace / Late Policy"
+msgstr "Chính sách ân hạn tham dự / trễ"
+
+#. module: pb_attendance_flow
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_pb_attendance_rule_form
+msgid "Attendance Rule"
+msgstr "Quy tắc chấm công"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_rule.py:0
+#: model:ir.actions.act_window,name:pb_attendance_flow.action_pb_attendance_rule
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_pb_attendance_rule_list
+msgid "Attendance Rules"
+msgstr "Quy tắc tham dự"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Back to control"
+msgstr "Quay lại kiểm soát"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Back to mapping"
+msgstr "Quay lại bản đồ"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Bad check-out time"
+msgstr "Thời gian trả phòng không tốt"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Bad or missing check-in time"
+msgstr "Thời gian nhận phòng không đúng hoặc bị thiếu"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Bad or missing date"
+msgstr "Ngày xấu hoặc bị thiếu"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "CSV or XLSX · columns: Employee · Date · Check-in · Check-out"
+msgstr "CSV hoặc XLSX · cột: Nhân viên · Ngày · Nhận phòng · Trả phòng"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__can_approve
+msgid "Can Approve"
+msgstr "Có thể phê duyệt"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__can_refuse
+msgid "Can Refuse"
+msgstr "Có thể từ chối"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__can_submit
+msgid "Can Submit"
+msgstr "có thể gửi"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Check-in"
+msgstr "Nhận phòng"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Check-out"
+msgstr "Trả phòng"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_exception.py:0
+msgid "Checked in %(m)d min after the shift start."
+msgstr "Đã kiểm tra %(m)d phút sau khi bắt đầu ca."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Choose file"
+msgstr "Chọn tập tin"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "Choose the punch to %s before submitting."
+msgstr "Chọn cú đấm tới %s trước khi gửi."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__variance_hours_week
+msgid "Close Tolerance (h / week)"
+msgstr "Đóng dung sai (h / tuần)"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__variance_minutes
+msgid "Close Tolerance (min)"
+msgstr "Đóng dung sai (phút)"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__company_id
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance__pb_entry_source__correction
+msgid "Correction"
+msgstr "Sửa chữa"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Correction refused."
+msgstr "Việc sửa chữa bị từ chối."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Corrections"
+msgstr "Sửa chữa"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Couldn’t load Attendance Control"
+msgstr "Không thể tải Kiểm soát chấm công"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__create_uid
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_import_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__create_date
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_import_wizard__create_date
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__date
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Device punch — protected"
+msgstr "Cú đấm thiết bị - được bảo vệ"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance__display_name
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__display_name
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_shift_planning__display_name
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_exception_engine__display_name
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_flow__display_name
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_import_wizard__display_name
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Drop a punch file"
+msgstr "Thả một tập tin đấm"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Early departure"
+msgstr "Khởi hành sớm"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__grace_out_minutes
+msgid "Early-Leave Grace (min)"
+msgstr "Ân hạn nghỉ phép sớm (phút)"
+
+#. module: pb_attendance_flow
+#: model:ir.model.constraint,message:pb_attendance_flow.constraint_pb_attendance_rule_grace_out_bounds
+msgid "Early-leave grace must be between 0 and 120 minutes."
+msgstr "Thời gian ân hạn nghỉ phép sớm phải từ 0 đến 120 phút."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Employee (badge or name), Date, Check-in, and optionally Check-out."
+msgstr "Nhân viên (huy hiệu hoặc tên), Ngày, Nhận phòng và Trả phòng tùy chọn."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "Employee / Officer"
+msgstr "Nhân viên/Cán bộ"
+
+#. module: pb_attendance_flow
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_pb_attendance_rule_form
+msgid "Empty = global default for every company."
+msgstr "Trống = mặc định toàn cầu cho mọi công ty."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "Enter a check-in time before submitting."
+msgstr "Nhập thời gian nhận phòng trước khi gửi."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid ""
+"Enter the corrected check-in and/or check-out time before submitting an adjustment."
+msgstr "Nhập thời gian nhận phòng và/hoặc trả phòng đã sửa trước khi gửi điều chỉnh."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance__pb_entry_source
+msgid "Entry Source"
+msgstr "Nguồn đầu vào"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Exceeds the under-18 daily cap (%(cap).0f h)"
+msgstr "Vượt quá giới hạn hàng ngày dành cho trẻ dưới 18 tuổi (%(cap).0f h)"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Exceptions & corrections"
+msgstr "Ngoại lệ và sửa chữa"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Exceptions queue"
+msgstr "Hàng đợi ngoại lệ"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_import_wizard__import_file
+msgid "File"
+msgstr "Tệp"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "File correction"
+msgstr "Chỉnh sửa tập tin"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "File one from an exception on the left."
+msgstr "Gửi một tệp từ một ngoại lệ ở bên trái."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "Filed"
+msgstr "Đã nộp"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_import_wizard__filename
+msgid "Filename"
+msgstr "Tên tệp"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__pb_attendance_rule__count_late_as__deduct_flag
+msgid "Flag for deduction (future)"
+msgstr "Cờ để khấu trừ (tương lai)"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Partners)"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Phông chữ tuyệt vời biểu tượng e.g. fa-tasks"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__exception_kind
+msgid "From Exception"
+msgstr "Từ ngoại lệ"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_rule.py:0
+msgid "Global"
+msgstr "Toàn cầu"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__has_message
+msgid "Has Message"
+msgstr "Có Thông báo"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance__id
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__id
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_shift_planning__id
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_exception_engine__id
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_flow__id
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_import_wizard__id
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng để cho biết ngoại lệ hoạt động."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu đã chọn, mới thông báo yêu cầu của bạn chú ý."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__message_has_error
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu đã chọn, một số thông báo có giao lỗi."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance__pb_entry_source__import
+msgid "Import"
+msgstr "Nhập"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Import another"
+msgstr "Nhập cái khác"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Import attendance"
+msgstr "nhập khẩu tham dự"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Import punches"
+msgstr "Cú đấm nhập khẩu"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Importing attendance is restricted to attendance officers."
+msgstr "Nhập khẩu sự tham dự được giới hạn cho các nhân viên tham dự."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Incomplete row"
+msgstr "Hàng chưa hoàn chỉnh"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_is_follower
+msgid "Is Follower"
+msgstr "Là Follower"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__write_uid
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_import_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__write_date
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_import_wizard__write_date
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__count_late_as
+msgid "Late Counting"
+msgstr "Đếm muộn"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__grace_in_minutes
+msgid "Late Grace (min)"
+msgstr "Ân điển muộn (phút)"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Late arrival"
+msgstr "đến muộn"
+
+#. module: pb_attendance_flow
+#: model:ir.model.constraint,message:pb_attendance_flow.constraint_pb_attendance_rule_grace_in_bounds
+msgid "Late grace must be between 0 and 120 minutes."
+msgstr "Thời gian gia hạn muộn phải từ 0 đến 120 phút."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_pb_attendance_rule__company_id
+msgid ""
+"Leave empty for the global default applied to every company that has no rule of its "
+"own."
+msgstr "Để trống cho mặc định chung áp dụng cho mọi công ty không có quy tắc riêng."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_exception.py:0
+msgid "Left %(m)d min before the shift end."
+msgstr "Còn lại %(m)d phút trước khi kết thúc ca."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Loading Attendance Control…"
+msgstr "Đang tải Kiểm soát chấm công…"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__manager_id
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "Manager / Officer"
+msgstr "Quản lý / Cán bộ"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Map at least the Employee, Date and Check-In columns."
+msgstr "Ánh xạ ít nhất các cột Nhân viên, Ngày và Đăng ký."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_has_error
+msgid "Message Delivery error"
+msgstr "Thông báo Giao lỗi"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_ids
+msgid "Messages"
+msgstr "Thông báo"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Missing check-out"
+msgstr "Thiếu trả phòng"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Missing punch"
+msgstr "Cú đấm thiếu"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "My Hoạt động Hạn chót"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__new_check_in
+msgid "New Check-In"
+msgstr "Đăng ký mới"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__new_check_out
+msgid "New Check-Out"
+msgstr "Trả phòng mới"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Tiếp theo Hoạt động Calendar Sự kiện"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Tiếp theo Hoạt động Hạn chót"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tiếp theo Hoạt động Tóm tắt"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tiếp theo Hoạt động Loại"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "No attendance exceptions in this window. Nice."
+msgstr "Không có trường hợp ngoại lệ tham dự trong cửa sổ này. Đẹp."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "No corrections yet"
+msgstr "Chưa có chỉnh sửa nào"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_cockpit.py:0
+msgid "No employee is linked to your user."
+msgstr "Không có nhân viên nào được liên kết với người dùng của bạn."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_exception.py:0
+msgid "No punch against the published %s shift."
+msgstr "Không có cú đấm nào chống lại sự thay đổi %s được công bố."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "No punches this day"
+msgstr "Không có cú đấm vào ngày này"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số của Hành động"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số của lỗi"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số của thông báo yêu cầu hành động"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số của thông báo với giao lỗi"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "Only a submitted correction can be approved."
+msgstr "Chỉ có một sửa đổi được gửi có thể được phê duyệt."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Only the first %s rows were imported — split the file for the rest."
+msgstr "Chỉ các hàng %s đầu tiên được nhập - chia tệp cho phần còn lại."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "Only the requester or an attendance officer can reset this correction to draft."
+msgstr ""
+"Chỉ người yêu cầu hoặc nhân viên chấm công mới có thể đặt lại bản sửa lỗi này thành "
+"bản nháp."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_pb_attendance_rule__open_checkout_hours
+msgid "Open Check-out Threshold (h)"
+msgstr "Ngưỡng thanh toán mở (h)"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Open employee record"
+msgstr "Mở hồ sơ nhân viên"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Overlaps an existing punch"
+msgstr "Chồng chéo một cú đấm hiện có"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_pb_attendance_rule__count_late_as
+msgid ""
+"Phase G only REPORTS late/early. The deduction flag is reserved for future payroll "
+"wiring and is currently unused."
+msgstr ""
+"Giai đoạn G chỉ BÁO CÁO muộn/sớm. The deduction flag is reserved for future payroll "
+"wiring and is currently unused."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Proposed change"
+msgstr "Đề xuất thay đổi"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_exception.py:0
+msgid "Punch open %(h)d h with no check-out."
+msgstr "Bấm mở %(h)d h mà không cần kiểm tra."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__reason
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Reason for refusal (optional)"
+msgstr "Lý do từ chối (tùy chọn)"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__name
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_hr_attendance_correction_form
+msgid "Refuse"
+msgstr "Từ chối"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__state__refused
+msgid "Refused"
+msgstr "Đã từ chối"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Refused on apply:"
+msgstr "Từ chối nộp đơn:"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__correction_type__delete
+msgid "Remove a punch"
+msgstr "Loại bỏ một cú đấm"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__pb_attendance_rule__count_late_as__report_only
+msgid "Report only"
+msgstr "Chỉ báo cáo"
+
+#. module: pb_attendance_flow
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_hr_attendance_correction_form
+msgid "Reset to Draft"
+msgstr "Đặt lại để Nháp"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "Reset to draft"
+msgstr "Đặt lại về bản nháp"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__activity_user_id
+msgid "Responsible User"
+msgstr "Phụ trách Người dùng"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Retry"
+msgstr "Thử lại"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS Giao lỗi"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance__pb_entry_source
+msgid ""
+"Set when a record is created by the Weekly Entry grid; blank for device/kiosk/manual "
+"punches which the grid must never overwrite."
+msgstr ""
+"Đặt thời điểm một bản ghi được tạo bởi lưới Mục nhập hàng tuần; trống cho các cú đấm "
+"thiết bị/kiosk/thủ công mà lưới không bao giờ được ghi đè."
+
+#. module: pb_attendance_flow
+#: model:ir.model,name:pb_attendance_flow.model_hr_shift_planning
+msgid "Shift Planning"
+msgstr "Kế hoạch ca"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Show everyone"
+msgstr "Cho mọi người xem"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Skipped rows"
+msgstr "Hàng bị bỏ qua"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên trên hoạt động\n"
+"Quá hạn: Đến hạn ngày là đã đã vượt\n"
+"Hôm nay: Hoạt động ngày là hôm nay\n"
+"Planned: Tương lai hoạt động."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_hr_attendance_correction_form
+msgid "Submit"
+msgstr "Gửi"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+#: model:ir.model.fields.selection,name:pb_attendance_flow.selection__hr_attendance_correction__state__submitted
+msgid "Submitted"
+msgstr "Đã gửi"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__attendance_id
+msgid "Target Punch"
+msgstr "cú đấm mục tiêu"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "The check-out cannot be before the check-in."
+msgstr "Việc trả phòng không thể diễn ra trước khi nhận phòng."
+
+#. module: pb_attendance_flow
+#: model:ir.model.constraint,message:pb_attendance_flow.constraint_pb_attendance_rule_variance_minutes_bounds
+msgid "The close tolerance must be between 0 and 240 minutes."
+msgstr "Dung sai gần phải nằm trong khoảng từ 0 đến 240 phút."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "The day’s punches"
+msgstr "Những cú đấm trong ngày"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__attendance_id
+msgid "The existing punch to adjust or remove (required for those types)."
+msgstr "Cú đấm hiện có để điều chỉnh hoặc loại bỏ (bắt buộc đối với các loại đó)."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid ""
+"The file has more rows than the %s-row limit — only the first %s were read. Split the "
+"file to import the rest."
+msgstr ""
+"Tệp có nhiều hàng hơn giới hạn hàng %s — chỉ %s đầu tiên được đọc. Chia nhỏ tập tin để"
+" nhập phần còn lại."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "The file has no header row."
+msgstr "Tệp không có hàng tiêu đề."
+
+#. module: pb_attendance_flow
+#: model:ir.model.constraint,message:pb_attendance_flow.constraint_pb_attendance_rule_open_checkout_bounds
+msgid "The open-checkout threshold must be between 1 and 72 hours."
+msgstr "Ngưỡng thanh toán mở phải nằm trong khoảng từ 1 đến 72 giờ."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "The punch to adjust no longer exists."
+msgstr "Cú đấm để điều chỉnh không còn tồn tại."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "The target punch belongs to a different employee."
+msgstr "Cú đấm mục tiêu thuộc về một nhân viên khác."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "The target punch is not on the correction's day."
+msgstr "Cú đấm mục tiêu không nằm trong ngày điều chỉnh."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "The uploaded file could not be decoded."
+msgstr "Không thể giải mã được tệp đã tải lên."
+
+#. module: pb_attendance_flow
+#: model:ir.model.constraint,message:pb_attendance_flow.constraint_pb_attendance_rule_variance_week_bounds
+msgid "The weekly close tolerance must be between 0 and 40 hours."
+msgstr "Dung sai đóng hàng tuần phải nằm trong khoảng từ 0 đến 40 giờ."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_rule.py:0
+msgid ""
+"There is already an active attendance rule for this scope (%s). Deactivate it first."
+msgstr ""
+"Hiện đã có quy tắc chấm công hiện hoạt cho phạm vi này (%s). Vô hiệu hóa nó đầu tiên."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_cockpit.py:0
+msgid "This correction no longer exists."
+msgstr "Sự điều chỉnh này không còn tồn tại."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_cockpit.py:0
+msgid "This employee belongs to another company."
+msgstr "Nhân viên này thuộc về một công ty khác."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "This will remove the selected punch."
+msgstr "Thao tác này sẽ loại bỏ cú đấm đã chọn."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_pb_attendance_rule__variance_hours_week
+msgid ""
+"Total scheduled-vs-actual difference an employee may accumulate over a week and still "
+"be CLEAN, even when every individual day is within the per-punch tolerance."
+msgstr ""
+"Tổng chênh lệch theo lịch trình so với thực tế mà một nhân viên có thể tích lũy trong "
+"một tuần mà vẫn SẠCH, ngay cả khi mỗi ngày đều nằm trong dung sai cho mỗi lần làm "
+"việc."
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__correction_type
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_cockpit.py:0
+msgid "Unknown action."
+msgstr "Hành động không xác định."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Unknown employee"
+msgstr "nhân viên không xác định"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Validate"
+msgstr "Xác thực"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__website_message_ids
+msgid "Website Messages"
+msgstr "Trang web Thông báo"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,help:pb_attendance_flow.field_hr_attendance_correction__website_message_ids
+msgid "Website communication history"
+msgstr "Trang web giao tiếp history"
+
+#. module: pb_attendance_flow
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_pb_attendance_rule_form
+msgid "Weekly Close tolerance"
+msgstr "Dung sai đóng hàng tuần"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_attendance_flow.view_hr_attendance_correction_form
+msgid "Why is this correction needed?"
+msgstr "Tại sao sự điều chỉnh này là cần thiết?"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid ""
+"XLSX import needs the openpyxl library on the server — please upload a CSV instead."
+msgstr ""
+"Quá trình nhập XLSX cần có thư viện openpyxl trên máy chủ — thay vào đó, vui lòng tải "
+"lên tệp CSV."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "YYYY-MM-DD HH:MM:SS"
+msgstr "YYYY-MM-DD HH:MM:SS"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "You are not allowed to approve this correction."
+msgstr "Bạn không được phép phê duyệt sự điều chỉnh này."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_cockpit.py:0
+msgid "You can only view your own punches, or your reports' as their manager."
+msgstr ""
+"Bạn chỉ có thể xem các cú đấm của chính mình hoặc báo cáo của bạn với tư cách là người"
+" quản lý chúng."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "adjust"
+msgstr "điều chỉnh"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "flagged"
+msgstr "bị gắn cờ"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "imports this month"
+msgstr "nhập khẩu trong tháng này"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "late this week"
+msgstr "cuối tuần này"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "m"
+msgstr "tôi"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "more employees not shown"
+msgstr "nhiều nhân viên hơn không được hiển thị"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "only"
+msgstr "chỉ"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "open exceptions"
+msgstr "mở ngoại lệ"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "pending corrections"
+msgstr "đang chờ sửa chữa"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "punches imported"
+msgstr "cú đấm nhập khẩu"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction.py:0
+msgid "remove"
+msgstr "loại bỏ"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "rows"
+msgstr "hàng"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "rows."
+msgstr "hàng."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_exception.py:0
+msgid "scheduled"
+msgstr "theo lịch trình"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "skipped of"
+msgstr "bỏ qua"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "valid"
+msgstr "hợp lệ"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "— none —"
+msgstr "— không có —"

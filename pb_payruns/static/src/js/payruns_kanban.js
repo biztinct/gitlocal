@@ -6,6 +6,7 @@ import { onWillStart, onMounted, useState } from "@odoo/owl";
 import { kanbanView } from "@web/views/kanban/kanban_view";
 import { KanbanController } from "@web/views/kanban/kanban_controller";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { _t } from "@web/core/l10n/translation";
 
 function fmt(d) {
     const p = (n) => String(n).padStart(2, "0");
@@ -67,19 +68,19 @@ export class PbPayrunsKanbanController extends KanbanController {
     get pbStatusTabs() {
         const c = this.pbState.tabCounts || {};
         return [
-            { id: "all", label: "All" },
-            { id: "draft", label: "Draft", count: c.draft, tone: "slate" },
-            { id: "pending", label: "Pending approval", count: c.pending, tone: "amber" },
-            { id: "done", label: "Done", count: c.done, tone: "green" },
-            { id: "rejected", label: "Rejected", count: c.rejected, tone: "rose" },
+            { id: "all", label: _t("All") },
+            { id: "draft", label: _t("Draft"), count: c.draft, tone: "slate" },
+            { id: "pending", label: _t("Pending approval"), count: c.pending, tone: "amber" },
+            { id: "done", label: _t("Done"), count: c.done, tone: "green" },
+            { id: "rejected", label: _t("Rejected"), count: c.rejected, tone: "rose" },
         ];
     }
     get pbDateTabs() {
         return [
-            { id: "all_dates", label: "All periods" },
-            { id: "this_month", label: "This month" },
-            { id: "this_quarter", label: "This quarter" },
-            { id: "this_year", label: "This year" },
+            { id: "all_dates", label: _t("All periods") },
+            { id: "this_month", label: _t("This month") },
+            { id: "this_quarter", label: _t("This quarter") },
+            { id: "this_year", label: _t("This year") },
         ];
     }
 
@@ -119,7 +120,7 @@ export class PbPayrunsKanbanController extends KanbanController {
         const sm = this.env.searchModel;
         if (this._tabGroupId !== null) { sm.deactivateGroup(this._tabGroupId); this._tabGroupId = null; }
         const id = this.pbState.activeTab;
-        const pre = { description: "Status: " + (this.pbStatusTabs.find(t => t.id === id)?.label || id), domain: this._statusDomain(id) };
+        const pre = { description: _t("Status: %(status)s", { status: this.pbStatusTabs.find(t => t.id === id)?.label || id }), domain: this._statusDomain(id) };
         sm.createNewFilters([pre]);
         this._tabGroupId = pre.groupId;
     }
@@ -131,7 +132,7 @@ export class PbPayrunsKanbanController extends KanbanController {
         const dom = this._dateDomain(id);
         if (!dom.length) return;
         const label = id === "custom"
-            ? `Period ${this.pbState.customFrom || "…"} → ${this.pbState.customTo || "…"}`
+            ? _t("Period %(from)s → %(to)s", { from: this.pbState.customFrom || "…", to: this.pbState.customTo || "…" })
             : (this.pbDateTabs.find(t => t.id === id)?.label || id);
         const pre = { description: label, domain: dom };
         sm.createNewFilters([pre]);
@@ -156,7 +157,7 @@ export class PbPayrunsKanbanController extends KanbanController {
 
     // -------- division chips --------
     get pbDivisionTabs() {
-        return [{ key: "all", label: "All divisions" }, ...(this.pbState.divisions || [])];
+        return [{ key: "all", label: _t("All divisions") }, ...(this.pbState.divisions || [])];
     }
     _applyDivision() {
         const sm = this.env.searchModel;
@@ -164,7 +165,7 @@ export class PbPayrunsKanbanController extends KanbanController {
         const id = this.pbState.activeDivision;
         if (id === "all") return;
         const label = (this.pbState.divisions.find(d => d.key === id) || {}).label || id;
-        const pre = { description: "Division: " + label, domain: [["pb_division", "=", id]] };
+        const pre = { description: _t("Division: %(division)s", { division: label }), domain: [["pb_division", "=", id]] };
         sm.createNewFilters([pre]);
         this._divGroupId = pre.groupId;
     }

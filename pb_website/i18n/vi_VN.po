@@ -1,0 +1,813 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<b>Executive PDF reports</b>One prompt turns your data into a board-ready report, "
+"charts and all."
+msgstr ""
+"<b>EBáo cáo PDF điều hành</b>Một lời nhắc biến dữ liệu của bạn thành một báo cáo, biểu"
+" đồ và tất cả mọi thứ sẵn sàng trên bảng."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>ID</b> Indonesia"
+msgstr "<b>ID</b> Indonesia"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>IN</b> India"
+msgstr "<b>IN</b> Ấn Độ"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>KH</b> Cambodia"
+msgstr "<b>KH</b> Campuchia"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>MY</b> Malaysia"
+msgstr "<b>MY</b> Malaysia"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<b>Predictive forecasting</b>Project payroll cost and headcount, with anomaly "
+"detection that flags the unexpected."
+msgstr ""
+"<b>Dự báo dự đoán</b>Chi phí tiền lương và số lượng nhân viên dự án, với khả năng phát"
+" hiện bất thường để cảnh báo những điều không mong đợi."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>SG</b>"
+msgstr "<b>SG</b>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>SG</b> Singapore"
+msgstr "<b>SG</b> Singapore"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>TH</b> Thailand"
+msgstr "<b>TH</b> Thái Lan"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>VN</b> Vietnam"
+msgstr "<b>VN</b> Việt Nam"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<b>Voice-to-chart</b>Speak a question and watch the chart build itself — hands-free "
+"analytics."
+msgstr ""
+"<b>Voice-to-chart</b>Nói câu hỏi và xem biểu đồ tự xây dựng — phân tích rảnh tay."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<b>fx</b><span>= BASIC * 0.12 + ALLOWANCE</span>"
+msgstr "<b>fx</b><span>= CƠ BẢN * 0,12 + PHỤ KIỆN</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-app__dot\"/><span class=\"pbw-app__dot\"/><span class=\"pbw-app__dot\"/>\n"
+"                  <span class=\"pbw-app__title\">Pay Run · June 2026</span>\n"
+"                  <span class=\"pbw-badge pbw-badge--ok\">Ready to approve</span>"
+msgstr ""
+"<span class=\"pbw-app__dot\"/><span class=\"pbw-app__dot\"/><span class=\"pbw-app__dot\"/>\n"
+"                  Chạy <span class=\"pbw-app__title\">Pay · Tháng 6 năm 2026</span>\n"
+"                  <span class=\"pbw-badge pbw-badge--ok\">Sẵn sàng phê duyệt</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-av\">AS</span><span class=\"pbw-row__name\">Aisyah binti "
+"Rahman<small>Singapore · CPF</small></span><span class=\"pbw-row__amt pbw-"
+"money\">$5,420</span>"
+msgstr ""
+"<span class=\"pbw-av\">AS</span><span class=\"pbw-row__name\">Aisyah binti "
+"Rahman<small> Singapore · CPF</small></span><span class=\"pbw-row__amt pbw-"
+"money\">$5,420</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-av\">NT</span><span class=\"pbw-row__name\">Nguyễn "
+"Thanh<small>Vietnam · BHXH</small></span><span class=\"pbw-row__amt pbw-"
+"money\">$2,180</span>"
+msgstr ""
+"<span class=\"pbw-av\">NT</span><span class=\"pbw-row__name\">Nguyễn "
+"Thanh<small>Vietnam · BHXH</small></span><span class=\"pbw-row__amt pbw-"
+"money\">$2,180</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-av\">RK</span><span class=\"pbw-row__name\">Rahul Kapoor<small>India"
+" · PF + TDS</small></span><span class=\"pbw-row__amt pbw-money\">$3,640</span>"
+msgstr ""
+"<span class=\"pbw-av\">RK</span><span class=\"pbw-row__name\">Rahul Kapoor<small>Ấn Độ"
+" · PF + TDS</small></span><span class=\"pbw-row__amt pbw-money\">$3,640</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-brand__word\">Payobook</span>"
+msgstr "<span class=\"pbw-brand__word\">Payobook</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-chip\">CPF</span><span class=\"pbw-chip\">SDL</span><span class=\"pbw-chip\">FWL</span>\n"
+"                  <span class=\"pbw-chip\">Income Tax</span><span class=\"pbw-chip\">Transport &amp; housing allowances</span>"
+msgstr ""
+"<span class=\"pbw-chip\">CPF</span><span class=\"pbw-chip\">SDL</span><span class=\"pbw-chip\">FWL</span>\n"
+"                  <span class=\"pbw-chip\">Thuế thu nhập</span><span class=\"pbw-chip\">Giao thông &amp; phụ cấp nhà ở</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-eyebrow\" data-pb=\"reveal\">\n"
+"                <span class=\"pbw-eyebrow__dot\"/>\n"
+"                Multi-country payroll · now with PayAI\n"
+"              </span>"
+msgstr ""
+"<span class=\"pbw-eyebrow\" data-pb=\"reveal\">\n"
+"                <span class=\"pbw-eyebrow__dot\"/>\n"
+"                Bảng lương đa quốc gia · hiện có PayAI\n"
+"              </span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-gh\">A</span><span class=\"pbw-gh\">B</span><span class=\"pbw-gh\">C</span><span class=\"pbw-gh\">D</span>\n"
+"                  <span>Basic</span><span class=\"pbw-money\">3,000</span><span>HRA</span><span class=\"pbw-money\">1,200</span>\n"
+"                  <span>EPF</span><span class=\"pbw-money pbw-neg\">360</span><span>Tax</span><span class=\"pbw-money pbw-neg\">214</span>\n"
+"                  <span class=\"pbw-gsel\">Net</span><span class=\"pbw-money pbw-gsel\">3,626</span><span>YTD</span><span class=\"pbw-money\">41,8k</span>"
+msgstr ""
+"<span class=\"pbw-gh\">A</span><span class=\"pbw-gh\">B</span><span class=\"pbw-gh\">C</span><span class=\"pbw-gh\">D</span>\n"
+"                  <span>Basic</span><span class=\"pbw-money\">3,000</span><span>HRA</span><span class=\"pbw-money\">1,200</span>\n"
+"                  <span>EPF</span><span class=\"pbw-money pbw-neg\">360</span><span>Tax</span><span class=\"pbw-money pbw-neg\">214</span>\n"
+"                  <span class=\"pbw-gsel\">Net</span><span class=\"pbw-money pbw-gsel\">3,626</span><span>YTD</span><span class=\"pbw-money\">41,8k</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-kicker pbw-kicker--ai\">Meet PayAI</span>"
+msgstr "<span class=\"pbw-kicker pbw-kicker--ai\">Gặp PayAI</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-kicker pbw-kicker--ai\">Why Payobook</span>"
+msgstr "<span class=\"pbw-kicker pbw-kicker--ai\">Tại sao phải trả Payobook</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-kicker\">Analytics &amp; reporting</span>"
+msgstr "<span class=\"pbw-kicker\">Phân tích &amp; báo cáo</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-kicker\">Compliance, handled</span>"
+msgstr "<span class=\"pbw-kicker\">Tuân thủ, đã xử lý</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-kicker\">Power for the people who run payroll</span>"
+msgstr "<span class=\"pbw-kicker\">Sức mạnh dành cho người điều hành bảng lương</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-kicker\">The whole run, end to end</span>"
+msgstr "<span class=\"pbw-kicker\">Toàn bộ quá trình chạy, từ đầu đến cuối</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-kpi__k\">Gross</span><span class=\"pbw-kpi__v pbw-"
+"money\">$4.92M</span>"
+msgstr ""
+"<span class=\"pbw-kpi__k\">Gross</span><span class=\"pbw-kpi__v pbw-"
+"money\">$4,92M</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-kpi__k\">Headcount</span><span class=\"pbw-kpi__v\">1,284</span>"
+msgstr "<span class=\"pbw-kpi__k\">Số nhân viên</span><span class=\"pbw-kpi__v\">1,284</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-kpi__k\">Net pay</span><span class=\"pbw-kpi__v pbw-"
+"money\">$3.71M</span>"
+msgstr ""
+"<span class=\"pbw-kpi__k\"> Khoản thanh toán ròng</span><span class=\"pbw-kpi__v pbw-"
+"money\">$3,71M</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span class=\"pbw-rail__step is-done\">Compute</span>\n"
+"                    <span class=\"pbw-rail__step is-done\">Review</span>\n"
+"                    <span class=\"pbw-rail__step is-active\">Approve</span>\n"
+"                    <span class=\"pbw-rail__step\">Pay</span>"
+msgstr ""
+"<span class=\"pbw-rail__step is-done\">Tính toán</span>\n"
+"                    <span class=\"pbw-rail__step is-done\">Đánh giá</span>\n"
+"                    <span class=\"pbw-rail__step is-active\">Phê duyệt</span>\n"
+"                    <span class=\"pbw-rail__step\">Pay</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-stage__n\">01</span>"
+msgstr "<span class=\"pbw-stage__n\">01</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-stage__n\">02</span>"
+msgstr "<span class=\"pbw-stage__n\">02</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-stage__n\">03</span>"
+msgstr "<span class=\"pbw-stage__n\">03</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-stage__n\">04</span>"
+msgstr "<span class=\"pbw-stage__n\">04</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-stage__n\">05</span>"
+msgstr "<span class=\"pbw-stage__n\">05</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-stage__n\">06</span>"
+msgstr "<span class=\"pbw-stage__n\">06</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span class=\"pbw-stage__n\">07</span>"
+msgstr "<span class=\"pbw-stage__n\">07</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"1\">1</span>"
+msgstr "<span data-count=\"1\">1</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"10\" data-suffix=\"+\">0</span>"
+msgstr "<span data-count=\"10\" data-suffix=\"+\">0</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"100\" data-suffix=\"%\">0</span>"
+msgstr "<span data-count=\"100\" data-suffix=\"%\">0</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"38\">0</span><span data-suffix=\"%\">%</span>"
+msgstr "<span data-count=\"38\">0</span><span data-suffix=\"%\">%</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"5\" data-suffix=\"+\">0</span>"
+msgstr "<span data-count=\"5\" data-suffix=\"+\">0</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"5\" data-suffix=\"+\">5+</span>"
+msgstr "<span data-count=\"5\" data-suffix=\"+\">5+</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"8\">0</span>"
+msgstr "<span data-count=\"8\">0</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"8\">8</span>"
+msgstr "<span data-count=\"8\">8</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"9\">0</span>"
+msgstr "<span data-count=\"9\">0</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span data-count=\"9\">9</span>"
+msgstr "<span data-count=\"9\">9</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span/>Scroll"
+msgstr "<span/>Cuộn"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span>Ask PayAI… or hold to speak</span>\n"
+"                <span class=\"pbw-send\">→</span>"
+msgstr ""
+"<span>Ask PayAI… hoặc giữ để nói</span>\n"
+"                <span class=\"pbw-send\">→</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span>Headcount</span><b>1,284</b>"
+msgstr "<span>Số nhân viên</span><b>1,284</b>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span>Personnel cost</span><b class=\"pbw-money\">$4.92M</b>"
+msgstr "<span>Chi phí nhân sự</span><b class=\"pbw-money\">$4,92M</b>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span>Singapore</span><i>·</i><span>Malaysia</span><i>·</i><span>Indonesia</span><i>·</i><span>India</span><i>·</i><span>Vietnam</span><i>·</i><span>Thailand</span><i>·</i><span>Cambodia</span><i>·</i>\n"
+"              <span>Singapore</span><i>·</i><span>Malaysia</span><i>·</i><span>Indonesia</span><i>·</i><span>India</span><i>·</i><span>Vietnam</span><i>·</i><span>Thailand</span><i>·</i><span>Cambodia</span><i>·</i>"
+msgstr ""
+"<span>Singapore</span><i>·</i><span>Malaysia</span><i>·</i><span>Indonesia</span><i>·</i><span>Ấn Độ</span><i>·</i><span>Việt Nam</span><i>·</i><span>Thái Lan</span><i>·</i><span>Campuchia</span><i>·</i>\n"
+"              <span>Singapore</span><i>·</i><span>Malaysia</span><i>·</i><span>Indonesia</span><i>·</i><span>Ấn Độ</span><i>·</i><span>Việt Nam</span><i>·</i><span>Thái Lan</span><i>·</i><span>Campuchia</span><i>·</i>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "<span>Variance vs budget</span><b class=\"pbw-pos\">+2.1%</b>"
+msgstr "<span>Phương sai so với ngân sách</span><b class=\"pbw-pos\">+2,1%</b>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span>Zoho People</span><span>SAP "
+"SuccessFactors</span><span>Workday</span><span>Oracle HCM</span><span>Excel · "
+"CSV</span>"
+msgstr ""
+"<span>Zoho People</span><span>SAP Yếu tố thành "
+"công</span><span>Workday</span><span>oracle HCM</span><span>Excel · CSV</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"<span>© Payobook. All rights reserved.</span>\n"
+"            <span>Built for payroll teams across Asia-Pacific.</span>"
+msgstr ""
+"<span> © Payobook. Mọi quyền được bảo lưu.</span>\n"
+"            <span>Built for payroll teams across Asia-Pacific.</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"A conversational copilot wired straight to your data. Type or speak a question — get "
+"charts, forecasts and answers in seconds."
+msgstr ""
+"Một phi công phụ đàm thoại sẽ kết nối thẳng với dữ liệu của bạn. Nhập hoặc nói câu hỏi"
+" - nhận biểu đồ, dự báo và câu trả lời trong vài giây."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"A familiar grid with column letters, a formula bar with autocomplete, real-time "
+"validation and circular-reference detection. Drag a column — every reference updates "
+"itself."
+msgstr ""
+"Một lưới quen thuộc với các chữ cái cột, một thanh công thức có tính năng tự động hoàn"
+" thành, xác thực theo thời gian thực và phát hiện tham chiếu vòng tròn. Kéo một cột - "
+"mọi tham chiếu đều tự cập nhật."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"A guided run: select period → compute → review → approve. Pipeline Kanban with live "
+"KPIs."
+msgstr ""
+"Chạy theo hướng dẫn: chọn giai đoạn → tính toán → xem xét → phê duyệt. Quy trình "
+"Kanban với KPI trực tiếp."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "A pay-statement hero — earnings, deductions, net — exportable and crystal clear."
+msgstr ""
+"Người hùng trong bảng kê lương — thu nhập, khấu trừ, ròng — có thể xuất khẩu và rõ "
+"ràng."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "An Excel-grade formula engine."
+msgstr "Một công cụ công thức cấp Excel."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Ask your payroll anything."
+msgstr "Hãy hỏi bảng lương của bạn bất cứ điều gì."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Bespoke cockpits"
+msgstr "Buồng lái riêng biệt"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Book a demo"
+msgstr "Đặt bản demo"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Bring import, people, pay runs, approvals, statutory and PayAI together — for every "
+"country you operate in."
+msgstr ""
+"Kết hợp hoạt động nhập khẩu, con người, tính lương, phê duyệt, luật định và PayAI — "
+"cho mọi quốc gia mà bạn hoạt động."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Build components and rules visually. Country tax logic and slabs wired in."
+msgstr ""
+"Xây dựng các thành phần và quy tắc một cách trực quan. Logic thuế quốc gia và các bảng"
+" được nối dây."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Cambodia"
+msgstr "Campuchia"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Chart types"
+msgstr "Các loại biểu đồ"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Contact"
+msgstr "Liên hệ"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Countries"
+msgstr "Quốc gia"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Countries, one platform"
+msgstr "Các quốc gia, một nền tảng"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Drag-and-drop column reordering"
+msgstr "Sắp xếp lại cột kéo và thả"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Effortless payroll solutions for Asia-Pacific. Multi-country, compliant, and "
+"beautifully unified."
+msgstr ""
+"Giải pháp trả lương dễ dàng cho Châu Á-Thái Bình Dương. Đa quốc gia, tuân thủ và thống"
+" nhất tốt đẹp."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Effortless payroll solutions."
+msgstr "Giải pháp tính lương dễ dàng."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Excel-like grid · columns A–Z, AA, AB…"
+msgstr "Lưới dạng Excel · cột A–Z, AA, AB…"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"From import to payslip,<br/><span class=\"pbw-muted\">beautifully orchestrated.</span>"
+msgstr ""
+"Từ nhập đến phiếu lương,<br/><span class=\"pbw-muted\">được dàn dựng đẹp mắt.</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Get started"
+msgstr "Bắt đầu"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "HR integrations"
+msgstr "Tích hợp nhân sự"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "HR systems to import from"
+msgstr "Hệ thống nhân sự để nhập từ"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Here's Q2 net pay by country — Singapore leads at 38%. Total is up 3.1% on Q1, driven "
+"by new hires in India."
+msgstr ""
+"Đây là mức lương ròng quý 2 theo quốc gia - Singapore dẫn đầu với 38%. Total is up "
+"3.1% on Q1, driven by new hires in India."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Import"
+msgstr "Nhập"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Indonesia · India"
+msgstr "Indonesia · Ấn Độ"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Less time per pay run"
+msgstr "Ít thời gian hơn cho mỗi kỳ lương"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Live validation &amp; error highlighting"
+msgstr "Đánh dấu lỗi xác thực trực tiếp &amp;"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Local statutory rules, tax tables and government reports are built in — pick a country"
+" and Payobook computes the right contributions, every run."
+msgstr ""
+"Các quy tắc pháp lý địa phương, bảng thuế và báo cáo của chính phủ được xây dựng sẵn —"
+" chọn một quốc gia và Payobook tính toán các khoản đóng góp phù hợp cho mỗi lần chạy."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Numbers that tell the story."
+msgstr "Những con số kể câu chuyện."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"One platform. Eight countries.<br/><span class=\"pbw-muted\">Zero compliance "
+"headaches.</span>"
+msgstr ""
+"Một nền tảng. Tám quốc gia.<br/><span class=\"pbw-muted\">Không đau đầu về tuân "
+"thủ.</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "One run. Every country. Fully compliant."
+msgstr "Một lần chạy. Mọi quốc gia. Hoàn toàn tuân thủ."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Pay Runs"
+msgstr "kỳ lương"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "PayAI"
+msgstr "PayAI"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "PayAI: net pay is up 3.1% vs May"
+msgstr "PayAI: lương thực nhận tăng 3,1% so với tháng 5"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Payobook"
+msgstr "Payobook"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Payobook home"
+msgstr "Trang chủ Payobook"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Payobook runs fully-compliant payroll across <strong>eight countries</strong> —\n"
+"                import, people, pay runs, approvals and statutory filing in one beautifully\n"
+"                unified suite. Ask <strong>PayAI</strong> anything and get charts, forecasts and\n"
+"                answers in seconds."
+msgstr ""
+"Payobook thực hiện bảng lương tuân thủ đầy đủ trên khắp các quốc gia <strong>eight</strong> —\n"
+"                nhập khẩu, con người, thanh toán, phê duyệt và nộp hồ sơ theo luật định một cách đẹp đẽ\n"
+"                bộ thống nhất. Hỏi <strong>PayAI</strong> bất cứ điều gì và nhận biểu đồ, dự báo và\n"
+"                câu trả lời trong vài giây."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Payobook — Effortless Payroll Solutions"
+msgstr "Payobook — Giải pháp tính lương dễ dàng"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Payroll for all of Asia.\n"
+"                <span class=\"pbw-grad\">Now with an AI copilot.</span>"
+msgstr ""
+"Bảng lương cho toàn bộ Châu Á.\n"
+"                <span class=\"pbw-grad\">Bây giờ có phi công phụ AI.</span>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Payroll teams across Asia-Pacific run on Payobook"
+msgstr "Các nhóm tính lương trên khắp Châu Á - Thái Bình Dương chạy trên Payobook"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "People &amp; Contracts"
+msgstr "Hợp đồng con người &amp;"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Personnel cost by department, role and cost centre. Cross-country comparison, "
+"statutory tracking, budget variance and annual overviews — ten-plus chart types, "
+"exportable to PDF and Excel."
+msgstr ""
+"Chi phí nhân sự theo bộ phận, vai trò và trung tâm chi phí. So sánh giữa các quốc gia,"
+" theo dõi theo luật định, chênh lệch ngân sách và tổng quan hàng năm - hơn 10 loại "
+"biểu đồ, có thể xuất sang PDF và Excel."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Primary"
+msgstr "Chủ đạo"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Pull from Zoho, SAP, Workday, Oracle HCM or Excel. Map → validate → commit, with "
+"multi-sheet detection."
+msgstr ""
+"Lấy từ Zoho, SAP, Workday, Oracle HCM hoặc Excel. Bản đồ → xác thực → cam kết, với "
+"tính năng phát hiện nhiều trang."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Rates, ceilings and tax slabs in one cockpit — plus government XLS reports "
+"(BHXH/BHYT/BHTN)."
+msgstr ""
+"Tỷ giá, trần và bảng thuế trong một buồng lái — cộng với các báo cáo XLS của chính phủ"
+" (BHXH/BHYT/BHTN)."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Resident &amp; non-resident tax, multi-tier CPF, and statutory levies — computed "
+"automatically each pay run."
+msgstr ""
+"Thuế không cư trú &amp; của người không cư trú, CPF nhiều tầng và các khoản thuế theo "
+"luật định - được tính toán tự động mỗi kỳ lương."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Roster, onboarding and contract wizards. Headcount and payroll-readiness at a glance."
+msgstr ""
+"Danh sách, giới thiệu và hợp đồng. Tổng quan về số lượng nhân viên và mức lương sẵn "
+"sàng."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Salary Structures"
+msgstr "Cấu trúc lương"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Scroll to follow the run →"
+msgstr "Cuộn để theo dõi đường chạy →"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Seamless multi-sheet Excel import"
+msgstr "Nhập Excel nhiều trang liền mạch"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "See it in action"
+msgstr "Xem nó hoạt động"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Seven bespoke cockpits, one flow. Each surface is a hand-built single-page experience "
+"— no clunky forms, just clarity."
+msgstr ""
+"Bảy buồng lái được thiết kế riêng, một dòng chảy. Mỗi bề mặt là một trải nghiệm trên "
+"một trang được xây dựng thủ công — không có hình thức rườm rà, chỉ có sự rõ ràng."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Sign in"
+msgstr "Đăng nhập"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Singapore · Malaysia"
+msgstr "Singapore · Malaysia"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Split-view payslip review and a one-click approval queue. Sign off with confidence."
+msgstr ""
+"Split-view payslip review and a one-click approval queue. Đăng xuất với sự tự tin."
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Statutory"
+msgstr "Biên chế"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Statutory coverage"
+msgstr "Bảo hiểm theo luật định"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid ""
+"Statutory funds automated<small>CPF · EPF · SOCSO · EIS · BPJS · PF · SSF · NSSF · "
+"BHXH</small>"
+msgstr ""
+"Quỹ pháp định tự động<small>CPF · EPF · SOCSO · EIS · BPJS · PF · SSF · NSSF · "
+"Bệnh</small>"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Statutory regimes automated"
+msgstr "Chế độ theo luật định được tự động hóa"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Unified suite"
+msgstr "Bộ hợp nhất"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Vietnam · Thailand"
+msgstr "Việt Nam · Thái Lan"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "What did we spend on payroll across Q2, by country?"
+msgstr "Chúng ta đã chi bao nhiêu cho bảng lương trong quý 2, theo quốc gia?"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Why Payobook"
+msgstr "Tại sao Payobook"
+
+#. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "payobook.com"
+msgstr "payobook.com"

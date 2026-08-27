@@ -1,0 +1,815 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "<b>Note:</b>"
+msgstr "<b>Lưu ý:</b>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "<span class=\"pbme-diff-arrow\">→</span>"
+msgstr "<span class=\"pbme-diff-arrow\">→</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "<span class=\"pbme-muted\">no change</span>"
+msgstr "<span class=\"pbme-muted\">không thay đổi</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_payslips
+msgid "<span class=\"pbme-pay-net-l\">Net pay</span>"
+msgstr "<span class=\"pbme-pay-net-l\">Tiền lương ròng</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.ess_stepper
+msgid "<span class=\"pbme-step-dot\"/><span class=\"pbme-step-lab\">Refused</span>"
+msgstr "<span class=\"pbme-step-dot\"/><span class=\"pbme-step-lab\">Từ chối</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "<span>Address</span>"
+msgstr "<span>AĐịa chỉ</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "<span>Emergency Contact</span>"
+msgstr "<span>ELiên hệ khẩn cấp</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "<span>Emergency Phone</span>"
+msgstr "<span>EĐiện thoại khẩn cấp</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "<span>Note to HR (optional)</span>"
+msgstr "<span>Lưu ý tới HR (tùy chọn)</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "<span>Private Email</span>"
+msgstr "<span>Email riêng</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "<span>Private Phone</span>"
+msgstr "<span>Điện thoại riêng</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "<span>Work Email</span>"
+msgstr "<span>Email công việc</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "<span>Work Phone</span>"
+msgstr "<span>Điện thoại cơ quan</span>"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "A decided profile change request is immutable."
+msgstr "Yêu cầu thay đổi hồ sơ đã được quyết định là không thể thay đổi."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "A profile change request always targets your own employee record."
+msgstr "Yêu cầu thay đổi hồ sơ luôn nhắm tới hồ sơ nhân viên của chính bạn."
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_needaction
+msgid "Action Needed"
+msgstr "Hành động Cần"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__x_address
+msgid "Address"
+msgstr "Địa chỉ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_payslip_page
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "Applied"
+msgstr "Đã áp dụng"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__approval_widget_json
+msgid "Approval Widget Json"
+msgstr "Tiện ích phê duyệt Json"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_form
+msgid "Approve & Apply"
+msgstr "Phê duyệt & Áp dụng"
+
+#. module: pb_me_portal
+#: model:ir.model.fields.selection,name:pb_me_portal.selection__pb_profile_change_request__state__approved
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_attachment_count
+msgid "Attachment Count"
+msgstr "Tệp đính kèm Số lượng"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_search
+msgid "Awaiting HR"
+msgstr "Đang chờ nhân sự"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_payslip_page
+msgid "Back to payslips"
+msgstr "Quay lại phiếu lương"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_error
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Back to profile"
+msgstr "Quay lại hồ sơ"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__can_hr_approve
+msgid "Can Hr Approve"
+msgstr "Nhân sự có thể phê duyệt"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__can_refuse
+msgid "Can Refuse"
+msgstr "Có thể từ chối"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__can_submit
+msgid "Can Submit"
+msgstr "có thể gửi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Category"
+msgstr "Danh mục"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_payslip_page
+msgid "Component"
+msgstr "Thành phần"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Current"
+msgstr "Hiện tại"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__cur_address
+msgid "Current Address"
+msgstr "Địa chỉ hiện tại"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__cur_emergency_contact
+msgid "Current Emergency Contact"
+msgstr "Liên hệ khẩn cấp hiện tại"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__cur_emergency_phone
+msgid "Current Emergency Phone"
+msgstr "Điện thoại khẩn cấp hiện tại"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__cur_private_email
+msgid "Current Private Email"
+msgstr "Email riêng hiện tại"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__cur_phone
+msgid "Current Private Phone"
+msgstr "Điện thoại riêng hiện tại"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_search
+msgid "Decided"
+msgstr "quyết định"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_employee_document__display_name
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_employee_document_category__display_name
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/controllers/portal.py:0
+msgid "Document"
+msgstr "Tài liệu"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "Documents"
+msgstr "Tài liệu"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_payslip_page
+msgid "Download PDF"
+msgstr "Tải xuống bản PDF"
+
+#. module: pb_me_portal
+#: model:ir.model.fields.selection,name:pb_me_portal.selection__pb_profile_change_request__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "Edit any field below and submit for HR review. Blank fields are left unchanged."
+msgstr ""
+"Chỉnh sửa bất kỳ trường nào bên dưới và gửi để nhân sự xem xét. Các trường trống được "
+"giữ nguyên không thay đổi."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__x_emergency_contact
+msgid "Emergency Contact"
+msgstr "Liên hệ khẩn cấp"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__x_emergency_phone
+msgid "Emergency Phone"
+msgstr "SĐT khẩn cấp"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__employee_id
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_search
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_me_portal
+#: model:ir.model,name:pb_me_portal.model_pb_employee_document
+msgid "Employee Document"
+msgstr "Tài liệu nhân viên"
+
+#. module: pb_me_portal
+#: model:ir.model,name:pb_me_portal.model_pb_employee_document_category
+msgid "Employee Document Category"
+msgstr "Danh mục tài liệu nhân viên"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_employee_document_category__ess_uploadable
+msgid "Employee Self-Upload"
+msgstr "Nhân viên tự tải lên"
+
+#. module: pb_me_portal
+#: model_terms:ir.actions.act_window,help:pb_me_portal.action_profile_change_requests
+msgid "Employee-filed profile changes land here for HR review."
+msgstr "Hồ sơ nhân viên nộp thay đổi đất ở đây để nhân sự xem xét."
+
+#. module: pb_me_portal
+#: model:ir.model.fields,help:pb_me_portal.field_pb_employee_document_category__ess_uploadable
+msgid ""
+"Employees may upload documents in this category from the /my portal. HR-only "
+"categories leave this off."
+msgstr ""
+"Nhân viên có thể tải lên các tài liệu thuộc danh mục này từ cổng /my. Các danh mục chỉ"
+" dành cho nhân sự bỏ qua điều này."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_payslips
+msgid "Every pay period, with a themed PDF to download."
+msgstr "Mỗi kỳ thanh toán đều có bản PDF theo chủ đề để tải xuống."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Expiry date (if any)"
+msgstr "Ngày hết hạn (nếu có)"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Field"
+msgstr "Trường"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "File (PDF, JPG, PNG)"
+msgstr "Tệp (PDF, JPG, PNG)"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_list
+msgid "Filed"
+msgstr "Đã nộp"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Partners)"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+#: model:ir.model.fields.selection,name:pb_me_portal.selection__pb_profile_change_request__state__hr_review
+msgid "HR Review"
+msgstr "Nhân sự xét duyệt"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__has_message
+msgid "Has Message"
+msgstr "Có Thông báo"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_hr_payslip__id
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_employee_document__id
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_employee_document_category__id
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,help:pb_me_portal.field_pb_profile_change_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu đã chọn, mới thông báo yêu cầu của bạn chú ý."
+
+#. module: pb_me_portal
+#: model:ir.model.fields,help:pb_me_portal.field_pb_profile_change_request__message_has_error
+#: model:ir.model.fields,help:pb_me_portal.field_pb_profile_change_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu đã chọn, một số thông báo có giao lỗi."
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_is_follower
+msgid "Is Follower"
+msgstr "Là Follower"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_has_error
+msgid "Message Delivery error"
+msgstr "Thông báo Giao lỗi"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_ids
+msgid "Messages"
+msgstr "Thông báo"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_menu_ess
+msgid "My Documents"
+msgstr "Tài liệu của tôi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "My Payobook"
+msgstr "Sổ Payobook của tôi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_menu_ess
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "My Profile"
+msgstr "Thông tin của tôi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "My requests"
+msgstr "Đơn của tôi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_payslip_page
+msgid "Net pay"
+msgstr "Lương thực nhận"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "No change requests yet."
+msgstr "Chưa có yêu cầu thay đổi nào."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "No employee is linked to your user — a profile change request needs one."
+msgstr ""
+"Không có nhân viên nào được liên kết với người dùng của bạn - yêu cầu thay đổi hồ sơ "
+"cần có một nhân viên."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_payslips
+msgid "No payslips yet"
+msgstr "Chưa có phiếu lương"
+
+#. module: pb_me_portal
+#: model_terms:ir.actions.act_window,help:pb_me_portal.action_profile_change_requests
+msgid "No profile change requests"
+msgstr "Không có yêu cầu thay đổi hồ sơ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_taxsheet
+msgid "No tax data yet"
+msgstr "Chưa có dữ liệu thuế"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid ""
+"None of the proposed values differ from your current profile — nothing to submit."
+msgstr ""
+"Không có giá trị được đề xuất nào khác với hồ sơ hiện tại của bạn — không có giá trị "
+"nào để gửi."
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__note
+msgid "Note to HR"
+msgstr "Lưu ý cho nhân sự"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số của Hành động"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số của lỗi"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,help:pb_me_portal.field_pb_profile_change_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số của thông báo yêu cầu hành động"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,help:pb_me_portal.field_pb_profile_change_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số của thông báo với giao lỗi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_payslips
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_me_portal
+#: model:ir.model,name:pb_me_portal.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Phiếu lương"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_payslip_page
+msgid "Payslip"
+msgstr "Phiếu lương"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_payslips
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_taxsheet
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "Preview &amp; submit"
+msgstr "Xem trước gửi &amp;"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__x_private_email
+msgid "Private Email"
+msgstr "Email cá nhân"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__x_phone
+msgid "Private Phone"
+msgstr "Điện thoại cá nhân"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "Profile"
+msgstr "Hồ sơ"
+
+#. module: pb_me_portal
+#: model:ir.model,name:pb_me_portal.model_pb_profile_change_request
+msgid "Profile Change Request"
+msgstr "Yêu cầu thay đổi hồ sơ"
+
+#. module: pb_me_portal
+#: model:ir.actions.act_window,name:pb_me_portal.action_profile_change_requests
+msgid "Profile Change Requests"
+msgstr "Yêu cầu thay đổi hồ sơ"
+
+#. module: pb_me_portal
+#: model:ir.ui.menu,name:pb_me_portal.menu_profile_change_requests
+msgid "Profile Changes"
+msgstr "Thay đổi hồ sơ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Profile change"
+msgstr "Thay đổi hồ sơ"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "Profile updated from this request."
+msgstr "Hồ sơ được cập nhật từ yêu cầu này."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Proposed"
+msgstr "Đề xuất"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Proposed changes"
+msgstr "Những thay đổi được đề xuất"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_form
+msgid "Proposed changes (current → proposed)"
+msgstr "Những thay đổi được đề xuất (hiện tại → được đề xuất)"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__name
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_form
+msgid "Refuse"
+msgstr "Từ chối"
+
+#. module: pb_me_portal
+#: model:ir.model.fields.selection,name:pb_me_portal.selection__pb_profile_change_request__state__refused
+msgid "Refused"
+msgstr "Đã từ chối"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_form
+msgid "Request"
+msgstr "Yêu cầu"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "Request a change"
+msgstr "Yêu cầu thay đổi"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS Giao lỗi"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__state
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.view_profile_change_request_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+msgid "Submit for approval"
+msgstr "Gửi để phê duyệt"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "System"
+msgstr "Hệ thống"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_menu_ess
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_taxsheet
+msgid "Tax Sheet"
+msgstr "Bảng thuế"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid ""
+"The current-value snapshot of a profile change request is system-computed and cannot "
+"be edited: %s."
+msgstr ""
+"Ảnh chụp nhanh giá trị hiện tại của yêu cầu thay đổi hồ sơ được hệ thống tính toán và "
+"không thể chỉnh sửa: %s."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "This request is under review — it can no longer be edited."
+msgstr "Yêu cầu này đang được xem xét — không thể chỉnh sửa được nữa."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Upload"
+msgstr "Tải lên"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Upload a document"
+msgstr "Tải lên một tài liệu"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Upload your certificates and IDs. HR verifies each one."
+msgstr "Tải lên chứng chỉ và ID của bạn. HR xác minh từng cái một."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "Verified"
+msgstr "Đã xác minh"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_payslips
+msgid "View"
+msgstr "Chế độ xem"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "View your details and request a change"
+msgstr "Xem thông tin chi tiết của bạn và yêu cầu thay đổi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_error
+msgid "We couldn't process that"
+msgstr "Chúng tôi không thể xử lý thông tin đó"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,field_description:pb_me_portal.field_pb_profile_change_request__website_message_ids
+msgid "Website Messages"
+msgstr "Trang web Thông báo"
+
+#. module: pb_me_portal
+#: model:ir.model.fields,help:pb_me_portal.field_pb_profile_change_request__website_message_ids
+msgid "Website communication history"
+msgstr "Trang web giao tiếp history"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "Welcome"
+msgstr "Chào mừng"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_taxsheet
+msgid "YTD"
+msgstr "YTD"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+msgid "You"
+msgstr "Bạn"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/employee_document_ext.py:0
+msgid "You can only self-upload documents in a category HR has marked self-uploadable."
+msgstr ""
+"Bạn chỉ có thể tự tải lên các tài liệu trong danh mục mà HR đã đánh dấu là có thể tự "
+"tải lên."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "You haven't uploaded any documents yet."
+msgstr "Bạn chưa tải lên bất kỳ tài liệu nào."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_taxsheet
+msgid "Your PIT summary appears once you have finalized payslips."
+msgstr "Bản tóm tắt PIT của bạn xuất hiện sau khi bạn đã hoàn tất các phiếu lương."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "Your PIT summary per period"
+msgstr "Tóm tắt thuế TNCN của bạn mỗi kỳ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "Your certificates, IDs and permits"
+msgstr "Chứng chỉ, ID và giấy phép của bạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+msgid "Your details on file. Bank changes go through a separate secure flow."
+msgstr ""
+"Thông tin chi tiết của bạn trong hồ sơ. Các thay đổi của ngân hàng đi qua một luồng an"
+" toàn riêng biệt."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_payslips
+msgid "Your payslips will appear here once payroll is run."
+msgstr "Phiếu lương của bạn sẽ xuất hiện ở đây sau khi bảng lương được chạy."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "Your payslips, profile and documents — all in one place."
+msgstr "Phiếu lương, hồ sơ và tài liệu của bạn — tất cả ở cùng một nơi."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_taxsheet
+msgid "Your personal income tax summary, period by period."
+msgstr "Tóm tắt thuế thu nhập cá nhân của bạn, theo từng thời kỳ."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "e.g. Degree certificate"
+msgstr "ví dụ: Chứng chỉ bằng cấp"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
+msgid "expires"
+msgstr "hết hạn"

@@ -1,0 +1,350 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Active configs"
+msgstr "Cấu hình hoạt động"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "All departments · monthly"
+msgstr "Tất cả các phòng ban · hàng tháng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Analytics"
+msgstr "Phân tích"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Avg salary"
+msgstr "Mức lương trung bình"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Company overview"
+msgstr "Tổng quan về công ty"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Configs"
+msgstr "Cấu hình"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Contributions"
+msgstr "Đóng góp"
+
+#. module: pb_dashboard
+#: model:ir.actions.client,name:pb_dashboard.action_pb_dashboard
+msgid "Dashboard"
+msgstr "Bảng điều khiển"
+
+#. module: pb_dashboard
+#: model:ir.model.fields,field_description:pb_dashboard.field_pb_dashboard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Each step opens the screen it talks about. Come back here any time."
+msgstr "Mỗi bước sẽ mở ra màn hình mà nó nói đến. Hãy quay lại đây bất cứ lúc nào."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Excel-driven configs"
+msgstr "Cấu hình dựa trên Excel"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Formula engine"
+msgstr "Động cơ công thức"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Get your first payroll out"
+msgstr "Nhận bảng lương đầu tiên của bạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Headcount"
+msgstr "Số lượng nhân sự"
+
+#. module: pb_dashboard
+#: model:ir.model.fields,field_description:pb_dashboard.field_pb_dashboard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Latest pay run"
+msgstr "Lần trả lương mới nhất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Loading dashboard…"
+msgstr "Đang tải trang tổng quan…"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Monthly payroll"
+msgstr "Bảng lương hàng tháng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "No payroll data yet — let's get you set up"
+msgstr "Chưa có dữ liệu bảng lương - hãy giúp bạn thiết lập"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open analytics →"
+msgstr "Phân tích mở →"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open formula engine →"
+msgstr "Mở công cụ công thức →"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open pay runs →"
+msgstr "Các kỳ lương mở →"
+
+#. module: pb_dashboard
+#: model:ir.model,name:pb_dashboard.model_pb_dashboard
+msgid "Payobook Dashboard data provider"
+msgstr "Nhà cung cấp dữ liệu Bảng điều khiển Payobook"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Payroll"
+msgstr "Tiền lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Pending approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Rules"
+msgstr "Quy tắc"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Run Payroll"
+msgstr "Chạy bảng lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Tests"
+msgstr "Kiểm thử"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "active"
+msgstr "hoạt động"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "approvals"
+msgstr "phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "awaiting approval"
+msgstr "đang chờ duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "awaiting sign-off"
+msgstr "đang chờ đăng xuất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "configs"
+msgstr "cấu hình"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "done"
+msgstr "xong"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "headcount"
+msgstr "số lượng nhân viên"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "payslips done ·"
+msgstr "phiếu lương đã xong ·"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "pending"
+msgstr "đang chờ xử lý"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "personnel cost"
+msgstr "chi phí nhân sự"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:52
+msgid "Meet Payobook"
+msgstr "Gặp gỡ Payobook"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:53
+msgid "A 2-minute tour. I drive, you watch."
+msgstr "Một chuyến tham quan 2 phút. Tôi lái xe, bạn xem."
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:54
+msgid "Watch the tour"
+msgstr "Xem chuyến tham quan"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:58
+msgid "Pick up where you left off"
+msgstr "Tiếp tục nơi bạn đã dừng lại"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:63
+msgid "Add your first employee"
+msgstr "Thêm nhân viên đầu tiên của bạn"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:64
+msgid "A name, a contract, a salary. That is all it takes."
+msgstr "Một cái tên, một hợp đồng, một mức lương. Đó là tất cả những gì cần thiết."
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:65
+msgid "Add employee"
+msgstr "Thêm nhân viên"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:70
+msgid "Bring in your payroll Excel"
+msgstr "Mang theo bảng lương Excel của bạn"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:71
+msgid "Already have a sheet? Bring everyone in at once."
+msgstr "Bạn đã có tờ giấy chưa? Đưa mọi người vào cùng một lúc."
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:72
+msgid "Import data"
+msgstr "Nhập dữ liệu"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:77
+msgid "Run a practice payroll"
+msgstr "kỳ lương thực hành"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:78
+msgid "On a made-up company. Nothing here is real."
+msgstr "Trên một công ty trang điểm. Không có gì ở đây là có thật."
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:79
+msgid "Try it"
+msgstr "Hãy thử nó"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:85
+msgid "Run your first real payroll"
+msgstr "kỳ lương thực tế đầu tiên của bạn"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:86
+msgid "Your own data, with the guide beside you. You press every button."
+msgstr "Dữ liệu của riêng bạn, với hướng dẫn bên cạnh bạn. Bạn nhấn từng nút."
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:87
+msgid "Start"
+msgstr "Bắt đầu"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:162
+msgid "Good morning"
+msgstr "Chào buổi sáng"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:163
+msgid "Good afternoon"
+msgstr "Chào buổi chiều"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:164
+msgid "Good evening"
+msgstr "Chào buổi tối"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:229
+msgid "That screen is not installed on this database."
+msgstr "Màn hình đó chưa được cài đặt trên cơ sở dữ liệu này."
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:262
+msgid "Home"
+msgstr "Trang chủ"
+
+#: pb_dashboard/static/src/js/pb_dashboard.js:292
+msgid "The guided tour is not installed on this database."
+msgstr "Chuyến tham quan có hướng dẫn chưa được cài đặt trên cơ sở dữ liệu này."

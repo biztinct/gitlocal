@@ -1,0 +1,3538 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.report,print_report_name:pb_hr_payroll_vietnam.action_report_payslip_vietnam
+msgid "('Payslip - %s' % (object.employee_id.name))"
+msgstr "('Phiếu lương - %s' % (object.employee_id.name))"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "- Số người phụ thuộc"
+msgstr "- Số người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "1. BHXH-BHYT-BHTN tháng"
+msgstr "1. BHXH-BHYT-BHTN tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "1. Lương theo ngày công"
+msgstr "1. Lương theo ngày công"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "2. Các khoản thu nhập khác"
+msgstr "2. Các khoản thu nhập khác"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "2. Phí công đoàn"
+msgstr "2. Phí công đoàn"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "3. Điện thoại vượt mức tháng"
+msgstr "3. Điện thoại vượt mức tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "4. Thu phí KBT"
+msgstr "4. Thu phí KBT"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "5. Cấn trừ mua xe ô tô"
+msgstr "5. Cấn trừ mua xe ô tô"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "6. Phụng điều (0 tin buôn)"
+msgstr "6. Phụng điều (0 tin buôn)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "7. Thuế TNCN trong tháng"
+msgstr "7. Thuế TNCN trong tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "<i class=\"fa fa-arrow-right\"/> Configure Salary"
+msgstr "<i class=\"fa fa-arrow-right\"/> Định cấu hình mức lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<i class=\"fa fa-bar-chart\" title=\"Bar Chart\"/> Employer vs Employee Split"
+msgstr ""
+"<i class=\"fa fa-bar-chart\" title=\"Bar Chart\"/> Phân chia nhà tuyển dụng và nhân "
+"viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid ""
+"<i class=\"fa fa-briefcase\" title=\"UI\" style=\"color: #ec4899;\"/> Unemployment "
+"Insurance (BHTN)"
+msgstr ""
+"<i class=\"fa fa-briefcase\" title=\"UI\" style=\"color: #ec4899;\"/> Bảo hiểm Thất "
+"nghiệp (BHTN)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<i class=\"fa fa-briefcase\" title=\"Unemployment Insurance\"/> BHTN"
+msgstr "<i class=\"fa fa-briefcase\" title=\"Bảo hiểm thất nghiệp\"/> BHTN"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<i class=\"fa fa-calculator\" title=\"Total\" style=\"color: #10b981;\"/> TOTAL"
+msgstr "TỔNG <i class=\"fa fa-calculator\" title=\"Total\" style=\"color: #10b981;\"/>"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<i class=\"fa fa-calculator\" title=\"Total\"/> Total Insurance"
+msgstr "<i class=\"fa fa-calculator\" title=\"Total\"/> Bảo hiểm tổng thể"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid ""
+"<i class=\"fa fa-exclamation-triangle\" title=\"OA\" style=\"color: #ef4444;\"/> Occ. "
+"Accident/Disease (TNLĐ-BNN)"
+msgstr ""
+"<i class=\"fa fa-exclamation-triangle\" title=\"OA\" style=\"color: #ef4444;\"/> Occ. "
+"Accident/Disease (TNLĐ-BNN)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid ""
+"<i class=\"fa fa-hospital-o\" title=\"SI\" style=\"color: #3b82f6;\"/> Social "
+"Insurance (BHXH)"
+msgstr ""
+"<i class=\"fa fa-hospital-o\" title=\"SI\" style=\"color: #3b82f6;\"/> Bảo hiểm xã hội"
+" (BHXH)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<i class=\"fa fa-hospital-o\" title=\"Social Insurance\"/> BHXH"
+msgstr "<i class=\"fa fa-hospital-o\" title=\"Social Insurance\"/> Bệnh"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<i class=\"fa fa-pie-chart\" title=\"Pie Chart\"/> Insurance Distribution"
+msgstr "Phân phối bảo hiểm <i class=\"fa fa-pie-chart\" title=\"Pie Chart\"/>"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid ""
+"<i class=\"fa fa-plus-square\" title=\"HI\" style=\"color: #f59e0b;\"/> Health "
+"Insurance (BHYT)"
+msgstr ""
+"Bảo hiểm y tế <i class=\"fa fa-plus-square\" title=\"HI\" style=\"color: #f59e0b;\"/> "
+"(BHYT)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<i class=\"fa fa-plus-square\" title=\"Health Insurance\"/> BHYT"
+msgstr "<i class=\"fa fa-plus-square\" title=\"Health Insurance\"/> hưởng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid ""
+"<i class=\"fa fa-shield\" title=\"Insurance\" style=\"margin-right: 10px;\"/>\n"
+"                                Insurance Contribution Analysis"
+msgstr ""
+"<i class=\"fa fa-shield\" title=\"Insurance\" style=\"margin-right: 10px;\"/>\n"
+"                                Phân tích đóng góp bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<i class=\"fa fa-table\" title=\"Table\"/> Insurance Contribution Breakdown"
+msgstr "Phân tích đóng góp bảo hiểm <i class=\"fa fa-table\" title=\"Table\"/>"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<span id=\"hi-enrolled-count\">0</span>"
+msgstr "<span id=\"hi-enrolled-count\">0</span>"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<span id=\"si-enrolled-count\">0</span>"
+msgstr "<span id=\"si-enrolled-count\">0</span>"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "<span id=\"ui-enrolled-count\">0</span>"
+msgstr "<span id=\"ui-enrolled-count\">0</span>"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+msgid "<strong>Dependent Tax Allowance:</strong>"
+msgstr "<strong>Trợ cấp thuế phụ thuộc:</strong>"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+msgid "<strong>Eligible Dependents:</strong>"
+msgstr "<strong>ENgười phụ thuộc đủ điều kiện:</strong>"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__zoho_access_token
+msgid "Access Token"
+msgstr "Truy cập Token"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_accident_insurance_employer
+msgid "Accident Insurance - Employer (VND)"
+msgstr "Bảo hiểm tai nạn - Người sử dụng lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__active
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__active
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_search
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_vietnam.action_vietnam_employee_dependent
+msgid "Add dependents via the Employee form to track tax deduction eligibility."
+msgstr ""
+"Thêm người phụ thuộc thông qua biểu mẫu Nhân viên để theo dõi khả năng đủ điều kiện "
+"khấu trừ thuế."
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Additional analytics features will appear here when configured"
+msgstr "Các tính năng phân tích bổ sung sẽ xuất hiện ở đây khi được định cấu hình"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__adjustment_date
+msgid "Adjustment Date"
+msgstr "Ngày điều chỉnh"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Adjustment Details"
+msgstr "Chi tiết điều chỉnh"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__adjustment_type
+msgid "Adjustment Type"
+msgstr "Loại điều chỉnh"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Advanced Analytics"
+msgstr "Nâng cao Phân tích"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__insurance_type__all
+msgid "All Insurance Types"
+msgstr "Tất cả các loại bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_allowances
+msgid "Allowances (VND)"
+msgstr "Phụ cấp (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Amounts"
+msgstr "Số tiền"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__line_ids
+msgid "Analysis Lines"
+msgstr "Dòng phân tích"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Analytics Info"
+msgstr "Thông tin phân tích"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_annual_leave_days
+msgid "Annual Leave Days"
+msgstr "Ngày nghỉ phép hàng năm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_tax_report_wizard__report_type__annual
+msgid "Annual Tax Report"
+msgstr "Báo cáo thuế hàng năm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_insurance_policy_id
+msgid "Applicable insurance policy for this employee"
+msgstr "Chính sách bảo hiểm áp dụng cho nhân viên này"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_table_id
+msgid "Applicable tax table for this employee"
+msgstr "Bảng thuế áp dụng cho nhân viên này"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Application"
+msgstr "ứng dụng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Applied"
+msgstr "Đã áp dụng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__applied_payslip_id
+msgid "Applied in Payslip"
+msgstr "Áp dụng trong Phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__state__applied
+msgid "Applied to Payroll"
+msgstr "Áp dụng vào Bảng lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Apply to Payroll"
+msgstr "Áp dụng vào bảng lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Approval Dashboard"
+msgstr "Bảng phê duyệt"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_search
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "BHXH630"
+msgstr "BHXH 630"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "BHXHDSTK01-DV_595"
+msgstr "BHXHDSTK01-DV_595"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__bidv
+msgid "BIDV"
+msgstr "BIDV"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Backdated"
+msgstr "Lỗi thời"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__adjustment_type__backdated
+msgid "Backdated Collections (Đóng bổ sung)"
+msgstr "Backdated Collections (Đóng bổ sung)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "BangKeHS D01-TS"
+msgstr "BangKeHS D01-TS"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_bank_account_name
+msgid "Bank Account Holder Name"
+msgstr "Tên chủ tài khoản ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_bank_account_number
+msgid "Bank Account Number"
+msgstr "Số tài khoản ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_bank_branch
+msgid "Bank Branch"
+msgstr "Chi nhánh ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Bank Export"
+msgstr "Xuất ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__bank_format
+msgid "Bank Format"
+msgstr "Định dạng ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_bank_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_bank_name
+msgid "Bank Name"
+msgstr "Ngân hàng Tên"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_bank_export_wizard.py:0
+msgid "Bank transfer file has been exported successfully"
+msgstr "Tệp chuyển khoản ngân hàng đã được xuất thành công"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__include_basic_income_tax
+msgid "Basic Income Tax"
+msgstr "Thuế thu nhập cơ bản"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_basic_salary
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_basic_salary
+msgid "Basic Salary (VND)"
+msgstr "Lương cơ bản (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_policy__si_applicable_salary_type__basic_allowances
+msgid "Basic Salary + Allowances (VN Law)"
+msgstr "Lương cơ bản + Phụ cấp (Luật VN)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_policy__si_applicable_salary_type__basic
+msgid "Basic Salary Only"
+msgstr "Chỉ Lương Cơ Bản"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_contract_vietnam.py:0
+msgid "Basic salary (%.0f VND) is below minimum wage (%.0f VND) for %s"
+msgstr "Lương cơ bản (%.0f VNĐ) thấp hơn mức lương tối thiểu (%.0f VNĐ) đối với %s"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_payslip_batch_kanban
+msgid "Batch Payslips"
+msgstr "Phiếu lương hàng loạt"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_bonus
+msgid "Bonus/13th Month (VND)"
+msgstr "Thưởng/Tháng 13 (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Breakdown"
+msgstr "Sự cố"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "Báo giảm lao động - Employee termination report"
+msgstr "Báo giảm lao động - Employee termination report"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "Báo tăng lao động - New employee registration report"
+msgstr "Báo tăng lao động - New employee registration report"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Bồi dưỡng PHSK"
+msgstr "Bồi dưỡng PHSK"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:0
+msgid ""
+"Cannot print payslips with different structures together. Please select payslips with "
+"the same structure."
+msgstr ""
+"Không thể in các phiếu lương có cấu trúc khác nhau cùng nhau. Vui lòng chọn các phiếu "
+"lương có cùng cấu trúc."
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__relationship__child
+msgid "Child (Con)"
+msgstr "Con (Con)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_si_enrollment_status__not_enrolled
+msgid "Chưa đăng ký"
+msgstr "Chưa đăng ký"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_citizen_id
+msgid "Citizen ID Number"
+msgstr "Số CMND"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__identification_number
+msgid "Citizen ID or Birth Certificate number"
+msgstr "Số CMND hoặc giấy khai sinh"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__college
+msgid "College"
+msgstr "đại học"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Coming Soon"
+msgstr "Sắp tới"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__company_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__company_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__company_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__company_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_search
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Company Logo"
+msgstr "Logo Công ty"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Compare payroll data across periods and analyze trends"
+msgstr "So sánh dữ liệu bảng lương giữa các thời kỳ và phân tích xu hướng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Comprehensive HR analytics with charts and insights"
+msgstr "Phân tích nhân sự toàn diện với biểu đồ và thông tin chi tiết"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Comprehensive payroll analytics with trend analysis and reporting"
+msgstr "Phân tích bảng lương toàn diện với phân tích và báo cáo xu hướng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_personal_tax_rate
+msgid "Computed effective personal tax rate"
+msgstr "Thuế suất cá nhân hiệu quả được tính toán"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Configure formula-based salary calculations with Excel-like rules"
+msgstr ""
+"Định cấu hình tính toán lương dựa trên công thức với các quy tắc giống như Excel"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Configure payroll calculations using Excel-like formulas and salary rules"
+msgstr ""
+"Định cấu hình tính toán bảng lương bằng các công thức và quy tắc lương giống như Excel"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__state__confirmed
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:0
+msgid "Connection Test"
+msgstr "Kiểm tra kết nối"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:0
+msgid "Connection failed: %s"
+msgstr "Kết nối không thành công: %s"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_contracts_kanban
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_insurance_analytics
+msgid "Contribution Analysis"
+msgstr "Phân tích đóng góp"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Contribution Rates"
+msgstr "Tỷ lệ đóng góp"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Contribution Summary"
+msgstr "Tóm tắt đóng góp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__new_contribution
+msgid "Correct Contribution"
+msgstr "Đóng góp đúng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__new_contribution
+msgid "Corrected contribution amount"
+msgstr "Số tiền đóng góp đã sửa chữa"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:0
+msgid ""
+"Could not generate PDF for any payslips. Please check that the payslip template is correctly configured.\n"
+"\n"
+"Affected employees: %s"
+msgstr ""
+"Không thể tạo PDF cho bất kỳ phiếu lương nào. Vui lòng kiểm tra xem mẫu phiếu lương đã được cấu hình đúng chưa.\n"
+"\n"
+"Nhân viên bị ảnh hưởng: %s"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_pb_govt_report_selector__country
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__country_code
+msgid "Country Code"
+msgstr "Quốc gia Mã"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Create Default 2024 Slabs"
+msgstr "Tạo tấm 2024 mặc định"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__import_mode__create_new
+msgid "Create New Employees Only"
+msgstr "Chỉ tạo nhân viên mới"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__import_mode__create_and_update
+msgid "Create New and Update Existing"
+msgstr "Tạo mới và cập nhật hiện có"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_vietnam.action_vietnam_insurance_adjustment
+msgid "Create an Insurance Adjustment"
+msgstr "Tạo một Điều chỉnh Bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_vietnam.action_vietnam_insurance_policy
+msgid "Create your first Insurance Policy"
+msgstr "Tạo Chính sách bảo hiểm đầu tiên của bạn"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_vietnam.action_vietnam_tax_table
+msgid "Create your first Tax Table"
+msgstr "Tạo Bảng thuế đầu tiên của bạn"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_tax_table.py:0
+msgid "Created %d default tax slabs for Vietnam 2024."
+msgstr "Đã tạo bảng thuế mặc định %d cho Việt Nam năm 2024."
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_pb_govt_report_selector__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_pb_govt_report_selector__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__company_currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_gross_salary_current_month
+msgid "Current Month Gross Salary"
+msgstr "Tổng lương tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_net_salary_current_month
+msgid "Current Month Net Salary"
+msgstr "Lương ròng tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_payslips_current_month
+msgid "Current Month Payslips"
+msgstr "Phiếu lương tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_social_insurance_current_month
+msgid "Current Month Social Insurance"
+msgstr "Bảo hiểm xã hội tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_tax_current_month
+msgid "Current Month Tax"
+msgstr "Thuế tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_search
+msgid "Current Year"
+msgstr "Năm nay"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__is_currently_eligible
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_search
+msgid "Currently Eligible"
+msgstr "Hiện đủ điều kiện"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "Danh sách tham gia - Social insurance participant list"
+msgstr "Danh sách tham gia - Social insurance participant list"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__display_name
+msgid "Dashboard Name"
+msgstr "Bảng điều khiển Tên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__date_from
+msgid "Date From"
+msgstr "Ngày Từ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__date_to
+msgid "Date To"
+msgstr "Ngày Để"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__date_of_birth
+msgid "Date of Birth"
+msgstr "Ngày sinh"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__registration_date
+msgid "Date registered with tax authority"
+msgstr "Ngày đăng ký với cơ quan thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_effective_date
+msgid "Date when HI enrollment starts"
+msgstr "Ngày bắt đầu tuyển sinh HI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_si_effective_date
+msgid "Date when SI enrollment starts"
+msgstr "Ngày bắt đầu đăng ký SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_effective_date
+msgid "Date when UI enrollment starts"
+msgstr "Ngày bắt đầu đăng ký UI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_effective_date
+msgid "Date when current tax regime applies"
+msgstr "Ngày áp dụng chế độ thuế hiện hành"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Deductions & Exemptions"
+msgstr "Các khoản khấu trừ & miễn trừ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__default_vietnam_region
+msgid "Default Vietnam Region"
+msgstr "Khu vực Việt Nam mặc định"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__include_defense_fund
+msgid "Defense Fund Contribution"
+msgstr "Đóng góp quỹ quốc phòng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_vietnam.action_vietnam_tax_table
+msgid "Define progressive income tax slabs and deductions for Vietnam payroll."
+msgstr ""
+"Xác định bảng thuế thu nhập lũy tiến và các khoản khấu trừ cho bảng lương của Việt "
+"Nam."
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_vietnam.action_vietnam_insurance_policy
+msgid "Define statutory insurance rates (BHXH, BHYT, BHTN) for Vietnam payroll."
+msgstr ""
+"Xác định mức đóng bảo hiểm theo luật định (BHXH, Medicare, BHTN) cho bảng lương Việt "
+"Nam."
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_contract_type__definite
+msgid "Definite Term Contract"
+msgstr "Hợp đồng xác định thời hạn"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Demo Employee Data"
+msgstr "Dữ liệu nhân viên demo"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__department_ids
+msgid "Departments"
+msgstr "Phòng cấm"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_form
+msgid "Dependent"
+msgstr "Người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__dependent_deduction
+msgid "Dependent Deduction (VND/person/month)"
+msgstr "Giảm trừ người phụ thuộc (đồng/người/tháng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_form
+msgid "Dependent Information"
+msgstr "Thông tin phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__name
+msgid "Dependent Name"
+msgstr "Tên phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_dependent_tax_allowance
+msgid "Dependent Tax Allowance"
+msgstr "Trợ cấp thuế cho người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__tax_registration_number
+msgid "Dependent's personal tax code if available"
+msgstr "Mã số thuế cá nhân của người phụ thuộc nếu có"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_dependent_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_tree
+msgid "Dependents"
+msgstr "Người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+msgid "Dependents (Người phụ thuộc)"
+msgstr "Dependents (Người phụ thuộc)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__difference
+msgid "Difference"
+msgstr "Chênh lệch"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Disabled"
+msgstr "Vô hiệu hoá"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config_analytics__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_payroll_dashboard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_pb_govt_report_selector__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_district
+msgid "District"
+msgstr "Quận/Huyện"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_marital_status__divorced
+msgid "Divorced"
+msgstr "Ly hôn"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__state__draft
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__name
+msgid "E.g., 'BHXH Vietnam 2024'"
+msgstr "Ví dụ: 'BHXH Việt Nam 2024'"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_table__name
+msgid "E.g., 'Vietnam Income Tax 2024'"
+msgstr "Ví dụ: 'Thuế thu nhập Việt Nam 2024'"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "ER: 1% | EE: 1%"
+msgstr "ER: 1% | EE: 1%"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "ER: 17.5% | EE: 8%"
+msgstr "ER: 17,5% | EE: 8%"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "ER: 3% | EE: 1.5%"
+msgstr "ER: 3% | EE: 1,5%"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_education_level
+msgid "Education Level"
+msgstr "Trình độ học vấn"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__effective_from
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__effective_date
+msgid "Effective From"
+msgstr "Có hiệu lực từ"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_employee_dependent.py:0
+msgid "Effective From must be before Effective To."
+msgstr "Từ có hiệu lực phải ở trước Có hiệu lực đến."
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__effective_to
+msgid "Effective To"
+msgstr "Hiệu quả để"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__end_date
+msgid "Effective Until"
+msgstr "Có hiệu lực cho đến khi"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_insurance_policy.py:0
+msgid "Effective date must be before end date."
+msgstr "Ngày có hiệu lực phải trước ngày kết thúc."
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_form
+msgid "Eligibility"
+msgstr "Đủ điều kiện"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_search
+msgid "Eligible"
+msgstr "Đủ điều kiện"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__status__eligible
+msgid "Eligible (Đủ điều kiện)"
+msgstr "Eligible (Đủ điều kiện)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_eligible_dependent_count
+msgid "Eligible Dependents"
+msgstr "Người phụ thuộc đủ điều kiện"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_emergency_contact_name
+msgid "Emergency Contact Name"
+msgstr "Tên liên hệ khẩn cấp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_emergency_contact_phone
+msgid "Emergency Contact Phone"
+msgstr "Điện thoại liên lạc khẩn cấp"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_vietnam/static/src/js/vietnam_insurance_analytics.js:0
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_employee
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__employee_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__employee_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__employee_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_tree
+msgid "Employee %"
+msgstr "Tỷ lệ nhân viên %"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employee (1%)"
+msgstr "Nhân viên (1%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employee (1.5%)"
+msgstr "Nhân viên (1,5%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employee (8%)"
+msgstr "Nhân viên (8%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__employee_amount
+msgid "Employee Adjustment"
+msgstr "Điều chỉnh nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Employee Amount"
+msgstr "Số lượng nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_contract
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employee Contributions"
+msgstr "Đóng góp của nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Employee Data"
+msgstr "Dữ liệu nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_employee_dependent
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_employee_dependents
+msgid "Employee Dependents"
+msgstr "Người phụ thuộc của nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employee Details"
+msgstr "Chi tiết nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_employee_insurance_cost
+msgid "Employee Insurance Cost"
+msgstr "Chi phí bảo hiểm nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Employee Rate"
+msgstr "Tỷ lệ nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__hi_employee_rate
+msgid "Employee contribution rate for Health Insurance (1.5% standard)"
+msgstr "Tỷ lệ đóng bảo hiểm y tế của nhân viên (1,5% standard)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_employee_rate
+msgid "Employee contribution rate for Social Insurance (8% standard)"
+msgstr "Tỷ lệ người lao động đóng Bảo hiểm xã hội (8% standard)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__ui_employee_rate
+msgid "Employee contribution rate for Unemployment Insurance (1% standard)"
+msgstr "Tỷ lệ đóng bảo hiểm thất nghiệp của người lao động (1% standard)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__employee_amount
+msgid "Employee portion of adjustment"
+msgstr "Phần điều chỉnh của nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_employees_kanban
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__employee_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__employee_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__employee_count
+msgid "Employees Analyzed"
+msgstr "Nhân viên được phân tích"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__employees_created
+msgid "Employees Created"
+msgstr "Nhân viên được tạo"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Employees Enrolled in HI"
+msgstr "Nhân viên đăng ký vào HI"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Employees Enrolled in SI"
+msgstr "Nhân viên đã đăng ký SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Employees Enrolled in UI"
+msgstr "Nhân viên đã đăng ký UI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__employees_updated
+msgid "Employees Updated"
+msgstr "Nhân viên được cập nhật"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_vietnam/static/src/js/vietnam_insurance_analytics.js:0
+msgid "Employer"
+msgstr "Doanh nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_tree
+msgid "Employer %"
+msgstr "Tỷ lệ người sử dụng lao động %"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employer (0.5%)"
+msgstr "Người sử dụng lao động (0,5%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employer (1%)"
+msgstr "Người sử dụng lao động (1%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employer (17.5%)"
+msgstr "Người sử dụng lao động (17,5%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Employer (3%)"
+msgstr "Người sử dụng lao động (3%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Employer + Employee"
+msgstr "Chủ lao động + Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__employer_amount
+msgid "Employer Adjustment"
+msgstr "Điều chỉnh nhà tuyển dụng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Employer Amount"
+msgstr "Số tiền của nhà tuyển dụng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_employer_insurance_cost
+msgid "Employer Insurance Cost"
+msgstr "Chi phí bảo hiểm của người sử dụng lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Employer Rate"
+msgstr "Tỷ lệ nhà tuyển dụng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Employer Rates"
+msgstr "Tỷ lệ nhà tuyển dụng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__hi_employer_rate
+msgid "Employer contribution rate for Health Insurance (3% standard)"
+msgstr "Tỷ lệ đóng góp của người sử dụng lao động cho Bảo hiểm y tế (3% stiêu chuẩn)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_employer_rate
+msgid "Employer contribution rate for Social Insurance (17.5% standard)"
+msgstr "Tỷ lệ người sử dụng lao động đóng Bảo hiểm xã hội (17,5% stiêu chuẩn)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__ui_employer_rate
+msgid "Employer contribution rate for Unemployment Insurance (1% standard)"
+msgstr "Tỷ lệ đóng của người sử dụng lao động cho Bảo hiểm Thất nghiệp (1% standard)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__employer_amount
+msgid "Employer portion of adjustment"
+msgstr "Phần điều chỉnh của người sử dụng lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__oa_employer_rate
+msgid "Employer rate for occupational accident insurance"
+msgstr "Tỷ lệ người sử dụng lao động đóng bảo hiểm tai nạn lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__od_employer_rate
+msgid "Employer rate for occupational disease insurance"
+msgstr "Tỷ lệ người sử dụng lao động đóng bảo hiểm bệnh nghề nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__oa_waiver_enabled
+msgid "Enable occupational accident waiver based on SLIP 08"
+msgstr "Cho phép miễn trừ tai nạn lao động dựa trên SLIP 08"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__effective_to
+msgid "End date of eligibility (leave empty for ongoing)"
+msgstr "Ngày kết thúc đủ điều kiện (để trống để tiếp tục)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__period_to
+msgid "End of backdated period"
+msgstr "Kết thúc thời kỳ lạc hậu"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Enrollment Summary"
+msgstr "Tóm tắt tuyển sinh"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__errors_count
+msgid "Errors"
+msgstr "Lỗi"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr "Cấu hình công thức Excel"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_insurance_analytics.py:0
+msgid "Excel export will be implemented in a future update."
+msgstr "Xuất Excel sẽ được triển khai trong bản cập nhật trong tương lai."
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_exempt_oa_od
+msgid "Exempt from OA/OD"
+msgstr "Miễn OA/OD"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_exempt_oa_od
+msgid "Exempt from Occupational Accident/Disease calculation"
+msgstr "Miễn trừ tính toán Tai nạn/Bệnh lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Exemptions"
+msgstr "Miễn trừ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_residency_status__expatriate
+msgid "Expatriate Resident (Người nước ngoài)"
+msgstr "Expatriate Resident (Người nước ngoài)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Export Bank File"
+msgstr "Xuất tập tin ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_bank_export_wizard.py:0
+msgid "Export Completed"
+msgstr "Đã xuất xong"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Export Excel"
+msgstr "Xuất Excel"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Export payroll data to bank format for automated salary disbursement"
+msgstr "Xuất dữ liệu bảng lương sang định dạng ngân hàng để giải ngân lương tự động"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__file_name
+msgid "File Name"
+msgstr "Tệp Tên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__department_ids
+msgid "Filter by departments (leave empty for all)"
+msgstr "Lọc theo phòng ban (để trống cho tất cả)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__employee_ids
+msgid "Filter by specific employees (leave empty for all)"
+msgstr "Lọc theo nhân viên cụ thể (để trống cho tất cả)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__insurance_policy_id
+msgid "Filter by specific insurance policy"
+msgstr "Lọc theo chính sách bảo hiểm cụ thể"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__fixed_amount
+msgid "Fixed Amount (VND)"
+msgstr "Số tiền cố định (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_slab__fixed_amount
+msgid "Fixed tax amount for income up to previous bracket"
+msgstr "Số tiền thuế cố định đối với thu nhập tính đến khung trước đó"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_foreign_insurance_exempt
+msgid "Foreign Employee Exempt"
+msgstr "Miễn trừ nhân viên nước ngoài"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Foreign Employee Waivers"
+msgstr "Miễn trừ nhân viên nước ngoài"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_foreign_insurance_exempt
+msgid "Foreign employee exempt from certain insurance types"
+msgstr "Nhân viên nước ngoài được miễn một số loại bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__waive_hi_foreign
+msgid "Foreign employees exempt from Health Insurance"
+msgstr "Người lao động nước ngoài được miễn bảo hiểm y tế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__waive_ui_foreign
+msgid "Foreign employees exempt from Unemployment Insurance"
+msgstr "Người lao động nước ngoài được miễn bảo hiểm thất nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__formula_description
+msgid "Formula"
+msgstr "Công thức"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Formula Configuration"
+msgstr "Cấu hình công thức"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__date_from
+msgid "From Date"
+msgstr "Từ ngày"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Generate 25 Vietnamese employees with realistic demo data for testing purposes"
+msgstr "Tạo ra 25 nhân viên Việt Nam với dữ liệu demo thực tế cho mục đích thử nghiệm"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Generate Demo Data"
+msgstr "Tạo dữ liệu demo"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Generate Report"
+msgstr "Tạo Báo cáo"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Generate official government reports and declarations"
+msgstr "Tạo các báo cáo và tuyên bố chính thức của chính phủ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__generic
+msgid "Generic CSV"
+msgstr "CSV chung"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "GiamLaoDong"
+msgstr "GiamLaoDong"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_pb_govt_report_selector
+msgid "Government Report Selector"
+msgstr "Bộ chọn Báo cáo Chính phủ"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Government Reports"
+msgstr "Báo cáo chính phủ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_graduation_year
+msgid "Graduation Year"
+msgstr "Năm tốt nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__grand_total
+msgid "Grand Total"
+msgstr "Grand Tổng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_gross_salary
+msgid "Gross Salary (VND)"
+msgstr "Tổng lương (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_work_region__hcmc
+msgid "HCMC / Hanoi"
+msgstr "TP.HCM / Hà Nội"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__hi_employee
+msgid "HI (Employee)"
+msgstr "HI (Nhân viên)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__hi_employer
+msgid "HI (Employer)"
+msgstr "HI (Nhà tuyển dụng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "HI EE"
+msgstr "Chào EE"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "HI ER"
+msgstr "xin chào er"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_effective_date
+msgid "HI Effective Date"
+msgstr "HI Ngày có hiệu lực"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__hi_employee_rate
+msgid "HI Employee Rate (%)"
+msgstr "Tỷ lệ nhân viên HI (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_hi_employee
+msgid "HI Employee Total"
+msgstr "HI Tổng số nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__hi_employer_rate
+msgid "HI Employer Rate (%)"
+msgstr "HI Tỷ lệ nhà tuyển dụng (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_hi_employer
+msgid "HI Employer Total"
+msgstr "HI Nhà tuyển dụng Tổng cộng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_enrolled
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__hi_enrolled_count
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "HI Enrolled"
+msgstr "HI đã đăng ký"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_number
+msgid "HI Number"
+msgstr "Số HI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_salary_base
+msgid "HI Salary Base"
+msgstr "Cơ Sở Lương HI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__hi_max_salary_ceiling
+msgid "HI Salary Ceiling"
+msgstr "Trần lương HI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__hi_enrolled
+msgid "HI ✓"
+msgstr "CHÀO ✓"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__insurance_type__hi
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Health Insurance (BHYT)"
+msgstr "Bảo hiểm Y tế (BHYT)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_health_insurance_employee
+msgid "Health Insurance - Employee (VND)"
+msgstr "Bảo hiểm Y tế - Người lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_health_insurance_employer
+msgid "Health Insurance - Employer (VND)"
+msgstr "Bảo hiểm Y tế - Người sử dụng lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_number
+msgid "Health Insurance Number (Số thẻ BHYT)"
+msgstr "Health Insurance Number (Số thẻ BHYT)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__high_school
+msgid "High School"
+msgstr "Trường trung học"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_house_allowance
+msgid "House Allowance (VND)"
+msgstr "Trợ cấp nhà ở (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "Hồ sơ D01-TS - D01-TS document records"
+msgstr "Hồ sơ D01-TS - D01-TS document records"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Hỗ trợ nhà ở"
+msgstr "Hỗ trợ nhà ở"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "I. LƯƠNG &amp; PHỤ CẤP"
+msgstr "I. LƯƠNG &amp; PHỤ CẤP"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config_analytics__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_payroll_dashboard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_pb_govt_report_selector__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__identification_number
+msgid "ID/Birth Certificate Number"
+msgstr "Số CMND/Giấy khai sinh"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "II. TỔNG THU NHẬP TRONG THÁNG"
+msgstr "II. TỔNG THU NHẬP TRONG THÁNG"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "III. CÁC KHOẢN TRỪ"
+msgstr "III. CÁC KHOẢN TRỪ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_bank_details
+msgid "Import Bank Details"
+msgstr "Chi tiết ngân hàng nhập khẩu"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_contracts
+msgid "Import Contract Information"
+msgstr "Thông tin hợp đồng nhập khẩu"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_mode
+msgid "Import Mode"
+msgstr "Nhập Chế độ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_summary
+msgid "Import Summary"
+msgstr "Nhập Tóm tắt"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_tax_info
+msgid "Import Tax Information"
+msgstr "Thông tin thuế nhập khẩu"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:0
+msgid "Import Vietnam Employee Data"
+msgstr "Nhập dữ liệu nhân viên Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Import and synchronize employee information from Zoho People system"
+msgstr "Nhập và đồng bộ hóa thông tin nhân viên từ hệ thống Zoho People"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:0
+msgid "Import failed: %s"
+msgstr "Nhập thất bại: %s"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__hi_include_in_employee_cost
+msgid "Include HI in Employee Cost"
+msgstr "Đưa HI vào chi phí nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__include_inactive
+msgid "Include Inactive Employees"
+msgstr "Bao gồm Inactive Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_include_in_employee_cost
+msgid "Include SI in Employee Cost"
+msgstr "Bao gồm SI trong chi phí nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__ui_include_in_employee_cost
+msgid "Include UI in Employee Cost"
+msgstr "Bao gồm giao diện người dùng trong chi phí nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_table__include_defense_fund
+msgid "Include mandatory defense fund contribution"
+msgstr "Bao gồm đóng góp quỹ quốc phòng bắt buộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__income_from
+msgid "Income From (VND)"
+msgstr "Thu nhập từ (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_tax_table.py:0
+msgid "Income From must be less than Income To."
+msgstr "Thu nhập Từ phải nhỏ hơn Thu nhập Đến."
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__income_to
+msgid "Income To (VND)"
+msgstr "Thu nhập (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_contract_type__indefinite
+msgid "Indefinite Term Contract"
+msgstr "Hợp đồng không xác định thời hạn"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__status__ineligible
+msgid "Ineligible (Không đủ điều kiện)"
+msgstr "Ineligible (Không đủ điều kiện)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_insurance_config
+msgid "Insurance"
+msgstr "Bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+msgid "Insurance (BH)"
+msgstr "Bảo hiểm (BH)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Insurance Adjustment"
+msgstr "Điều chỉnh bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_insurance_adjustment
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_insurance_adjustments
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_tree
+msgid "Insurance Adjustments"
+msgstr "Điều chỉnh bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Insurance Analysis"
+msgstr "Phân tích bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_insurance_analytics.py:0
+msgid "Insurance Analysis - %s"
+msgstr "Phân tích bảo hiểm - %s"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_insurance_analytics_line
+msgid "Insurance Analytics Line"
+msgstr "Đường dây phân tích bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_insurance_analytics.py:0
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_insurance_analytics
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Insurance Contribution Analysis"
+msgstr "Phân tích đóng góp bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__insurance_exemption
+msgid "Insurance Contributions Tax Exempt"
+msgstr "Miễn thuế đóng góp bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config_analytics__insurance_data_json
+msgid "Insurance Data JSON"
+msgstr "Dữ liệu bảo hiểm JSON"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_insurance_policy
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_insurance_policies
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_tree
+msgid "Insurance Policies"
+msgstr "Chính sách bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_insurance_policy_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config__vn_insurance_policy_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__insurance_policy_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Insurance Policy"
+msgstr "Chính sách bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__insurance_type
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Insurance Type"
+msgstr "Loại bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_formula_config_analytics__insurance_data_json
+msgid "JSON data for Vietnam insurance contribution charts"
+msgstr "Dữ liệu JSON cho biểu đồ đóng góp bảo hiểm Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_pb_govt_report_selector__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_pb_govt_report_selector__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__reason__late_enrollment
+msgid "Late Enrollment"
+msgstr "Ghi danh muộn"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__adjustment_type__late_enrollment
+msgid "Late Enrollment (Đăng ký muộn)"
+msgstr "Late Enrollment (Đăng ký muộn)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__end_date
+msgid "Leave empty for ongoing policy"
+msgstr "Để trống cho chính sách đang diễn ra"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_formula_config__vn_insurance_policy_id
+msgid "Link to Vietnam insurance policy for this salary configuration"
+msgstr "Link chính sách bảo hiểm Việt Nam cho cấu hình lương này"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_formula_config__vn_tax_table_id
+msgid "Link to Vietnam tax table for this salary configuration"
+msgstr "Link bảng thuế Việt Nam cấu hình mức lương này"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương cơ bản"
+msgstr "Lương cơ bản"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương làm việc ngày Bảy được nghỉ"
+msgstr "Lương làm việc ngày Bảy được nghỉ"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương nghỉ Lễ Tết"
+msgstr "Lương nghỉ Lễ Tết"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương nghỉ bất khả kháng"
+msgstr "Lương nghỉ bất khả kháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương nghỉ phép năm"
+msgstr "Lương nghỉ phép năm"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương ngày Tạm ngừng việc"
+msgstr "Lương ngày Tạm ngừng việc"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương ngày nghỉ chế độ"
+msgstr "Lương ngày nghỉ chế độ"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương ngày thường"
+msgstr "Lương ngày thường"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương quyết toán phép năm NV nghỉ việc"
+msgstr "Lương quyết toán phép năm NV nghỉ việc"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương tăng ca lễ"
+msgstr "Lương tăng ca lễ"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương tăng ca ngày nghỉ"
+msgstr "Lương tăng ca ngày nghỉ"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Lương tăng ca ngày thường"
+msgstr "Lương tăng ca ngày thường"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__mb_bank
+msgid "MB Bank"
+msgstr "Ngân hàng MB"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_major
+msgid "Major/Specialization"
+msgstr "Major/Specialization"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Manage employee contracts and salary structures"
+msgstr "Quản lý hợp đồng nhân viên và cơ cấu tiền lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Manage payroll operations for Vietnam region"
+msgstr "Quản lý hoạt động tính lương cho khu vực Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Manage payslip batches and bulk payroll processing"
+msgstr "Quản lý lô phiếu lương và xử lý bảng lương số lượng lớn"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_marital_status
+msgid "Marital Status"
+msgstr "Tình trạng hôn nhân"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_marital_status__married
+msgid "Married"
+msgstr "Đã kết hôn"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_maternity_leave_days
+msgid "Maternity Leave Days"
+msgstr "Ngày nghỉ thai sản"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__oa_waiver_max_months
+msgid "Max OA Waiver Months"
+msgstr "Số tháng miễn trừ OA tối đa"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__oa_waiver_max_months
+msgid "Maximum months for OA waiver"
+msgstr "Số tháng tối đa được miễn trừ viêm khớp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__hi_max_salary_ceiling
+msgid "Maximum salary base for HI calculation (VND)"
+msgstr "Căn cứ mức lương tối đa để tính HI (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_max_salary_ceiling
+msgid "Maximum salary base for SI calculation (VND)"
+msgstr "Căn cứ mức lương tối đa để tính SI (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__ui_max_salary_ceiling
+msgid "Maximum salary base for UI calculation (VND)"
+msgstr "Căn cứ mức lương tối đa để tính BHTN (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_meal_allowance
+msgid "Meal Allowance (VND)"
+msgstr "Phụ cấp bữa ăn (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_contract__vietnam_region
+msgid "Minimum wage region for Vietnam payroll"
+msgstr "Vùng lương tối thiểu trong bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_region
+msgid "Minimum wage region in Vietnam"
+msgstr "Vùng lương tối thiểu ở Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_si_enrollment_status__exempt
+msgid "Miễn đóng"
+msgstr "Miễn đóng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_monthly_tax_allowance
+msgid "Monthly Tax Allowance"
+msgstr "Trợ cấp thuế hàng tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__tax_allowance
+msgid "Monthly Tax Allowance (VND)"
+msgstr "Trợ cấp thuế hàng tháng (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_tax_report_wizard__report_type__monthly
+msgid "Monthly Tax Report"
+msgstr "Báo cáo thuế hàng tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__tax_allowance
+msgid "Monthly deduction amount (4,400,000 VND standard)"
+msgstr "Số tiền khấu trừ hàng tháng (tiêu chuẩn 4.400.000 VNĐ)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_table__dependent_deduction
+msgid "Monthly deduction per dependent (4,400,000 VND standard)"
+msgstr "Mức khấu trừ hàng tháng cho mỗi người phụ thuộc (tiêu chuẩn 4.400.000 VNĐ)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_employee_insurance_cost
+msgid "Monthly employee insurance contribution"
+msgstr "Đóng góp bảo hiểm nhân viên hàng tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_employer_insurance_cost
+msgid "Monthly employer insurance contribution"
+msgstr "Đóng góp bảo hiểm hàng tháng của người sử dụng lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_table__personal_deduction
+msgid "Monthly personal deduction (11,000,000 VND standard)"
+msgstr "Khấu trừ cá nhân hàng tháng (tiêu chuẩn 11.000.000 VNĐ)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_payroll_dashboard
+msgid "Multi-Country Payroll Dashboard"
+msgstr "Bảng điều khiển bảng lương đa quốc gia"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_insurance_adjustment.py:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_tax_regime__new
+msgid "New Regime (Chế độ mới)"
+msgstr "New Regime (Chế độ mới)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Ngạch lương"
+msgstr "Ngạch lương"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:0
+msgid "No confirmed payslips found to print."
+msgstr "Không tìm thấy phiếu lương nào được xác nhận để in."
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_vietnam.action_vietnam_employee_dependent
+msgid "No dependents found"
+msgstr "Không tìm thấy người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_vietnam/static/src/js/vietnam_insurance_analytics.js:0
+msgid "No insurance data available. Ensure employees have insurance policies assigned."
+msgstr ""
+"Không có dữ liệu bảo hiểm có sẵn. Đảm bảo nhân viên có chính sách bảo hiểm được chỉ "
+"định."
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_residency_status__non_resident
+msgid "Non-Resident (Không cư trú)"
+msgstr "Non-Resident (Không cư trú)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__notes
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__notes
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__notes
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__notes
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_dependents_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_dependents
+msgid "Number of Dependents"
+msgstr "Số người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__slab_count
+msgid "Number of Slabs"
+msgstr "Số lượng tấm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_eligible_dependent_count
+msgid "Number of currently eligible dependents"
+msgstr "Số người phụ thuộc hiện đủ điều kiện"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__oa_waiver_enabled
+msgid "OA Waiver Based on SLIP 08"
+msgstr "Miễn trừ OA dựa trên SLIP 08"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__oa_od
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "OA/OD"
+msgstr "OA/OD"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "OA/OD (TNLĐ-BNN)"
+msgstr "OA/OD (TNLĐ-BNN)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_oa_od
+msgid "OA/OD Total"
+msgstr "Tổng OA/OD"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Occupational (TNLĐ-BNN)"
+msgstr "Occupational (TNLĐ-BNN)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__oa_employer_rate
+msgid "Occupational Accident Rate (%)"
+msgstr "Tỷ lệ tai nạn lao động (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__od_employer_rate
+msgid "Occupational Disease Rate (%)"
+msgstr "Tỷ lệ bệnh nghề nghiệp (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_tax_regime__old
+msgid "Old Regime (Chế độ cũ)"
+msgstr "Old Regime (Chế độ cũ)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Open Dashboard"
+msgstr "Mở trang tổng quan"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Open Formula Config"
+msgstr "Mở cấu hình công thức"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_dashboard_window
+msgid "Open Vietnam Payroll Dashboard"
+msgstr "Mở Bảng lương Bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__old_contribution
+msgid "Original contribution amount"
+msgstr "Số tiền đóng góp ban đầu"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__reason__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__relationship__other
+msgid "Other (Khác)"
+msgstr "Other (Khác)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_other_allowances
+msgid "Other Allowances (VND)"
+msgstr "Các khoản phụ cấp khác (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_work_region__other
+msgid "Other Regions"
+msgstr "Các khu vực khác"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Other Waivers"
+msgstr "Miễn trừ khác"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_overtime_amount
+msgid "Overtime Amount (VND)"
+msgstr "Số tiền làm thêm giờ (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "PC Chức danh"
+msgstr "PC Chức danh"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "PC Kiêm nhiệm"
+msgstr "PC Kiêm nhiệm"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "PC Thâm niên"
+msgstr "PC Thâm niên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__relationship__parent
+msgid "Parent (Bố/Mẹ)"
+msgstr "Parent (Bố/Mẹ)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_enrolled
+msgid "Participates in Health Insurance"
+msgstr "Tham gia Bảo hiểm Y tế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_si_enrolled
+msgid "Participates in Social Insurance"
+msgstr "Tham gia Bảo hiểm xã hội"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_enrolled
+msgid "Participates in Unemployment Insurance"
+msgstr "Tham gia bảo hiểm thất nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_passport_number
+msgid "Passport Number"
+msgstr "Số hộ chiếu"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Payroll Comparisons"
+msgstr "So sánh tiền lương"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/payroll_dashboard_vietnam.py:0
+msgid ""
+"Payroll import batches are unavailable. Install pb_hr_payroll_formula to use this "
+"feature."
+msgstr ""
+"Các lô nhập bảng lương không có sẵn. Cài đặt pb_hr_payroll_formula để sử dụng tính "
+"năng này."
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Payslip Batch"
+msgstr "Phiếu lương Đợt"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Phiếu lương Đợt"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__payslip_ids
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_search
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__status__pending
+msgid "Pending Verification (Chờ xác minh)"
+msgstr "Pending Verification (Chờ xác minh)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__period_from
+msgid "Period From"
+msgstr "Khoảng thời gian từ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__period_to
+msgid "Period To"
+msgstr "Khoảng thời gian đến"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_permanent_address
+msgid "Permanent Address in Vietnam"
+msgstr "Địa chỉ thường trú tại Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_work_permit_type__permanent_resident
+msgid "Permanent Resident Card"
+msgstr "Thẻ thường trú"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__personal_deduction
+msgid "Personal Deduction (VND/month)"
+msgstr "Khấu trừ cá nhân (đồng/tháng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Personal Deductions"
+msgstr "Khấu trừ cá nhân"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_personal_income_tax
+msgid "Personal Income Tax (VND)"
+msgstr "Thuế thu nhập cá nhân (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_tax_code
+msgid "Personal Income Tax code"
+msgstr "Mã số thuế thu nhập cá nhân"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_personal_tax_rate
+msgid "Personal Tax Rate (%)"
+msgstr "Thuế suất cá nhân (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_phone_allowance
+msgid "Phone Allowance (VND)"
+msgstr "Phụ cấp điện thoại (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__code
+msgid "Policy Code"
+msgstr "Mã chính sách"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__name
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Policy Name"
+msgstr "Tên chính sách"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__postgraduate
+msgid "Postgraduate"
+msgstr "Sau đại học"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_previous_company
+msgid "Previous Company"
+msgstr "Công ty trước đó"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__old_contribution
+msgid "Previous Contribution"
+msgstr "Đóng góp trước đó"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_previous_position
+msgid "Previous Position"
+msgstr "Vị trí trước đó"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__primary
+msgid "Primary School"
+msgstr "Trường tiểu học"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Print PDF"
+msgstr "In PDF"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_hr_payslip_form_vietnam
+msgid "Print Payslip"
+msgstr "In phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_contract_type__probation
+msgid "Probation Contract"
+msgstr "Hợp đồng thử việc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_province
+msgid "Province/City"
+msgstr "Tỉnh/Thành phố"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_tax_report_wizard__report_type__quarterly
+msgid "Quarterly Tax Report"
+msgstr "Báo cáo thuế hàng quý"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__reason__rate_change
+msgid "Rate Change"
+msgstr "Thay đổi tỷ giá"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__adjustment_type__correction
+msgid "Rate Correction (Điều chỉnh mức đóng)"
+msgstr "Rate Correction (Điều chỉnh mức đóng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__reason
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_vietnam.action_vietnam_insurance_adjustment
+msgid ""
+"Record backdated corrections, refunds, or additional collections for insurance "
+"contributions."
+msgstr ""
+"Ghi lại các chỉnh sửa lỗi thời, hoàn lại tiền hoặc thu bổ sung cho các khoản đóng góp "
+"bảo hiểm."
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__name
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__adjustment_type__refund
+msgid "Refund (Hoàn trả)"
+msgstr "Refund (Hoàn trả)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Refunds"
+msgstr "Đơn hoàn tiền"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_region__region1
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_payslip__vietnam_region__region1
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__default_vietnam_region__region1
+msgid "Region I (Hanoi, Ho Chi Minh City)"
+msgstr "Khu vực I (Hà Nội, TP.HCM)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__region1_employees
+msgid "Region I Employees"
+msgstr "Nhân viên khu vực I"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_region__region2
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_payslip__vietnam_region__region2
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__default_vietnam_region__region2
+msgid "Region II (Can Tho, Da Nang, Hai Phong)"
+msgstr "Vùng II (Cần Thơ, Đà Nẵng, Hải Phòng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__region2_employees
+msgid "Region II Employees"
+msgstr "Nhân viên khu vực II"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_region__region3
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_payslip__vietnam_region__region3
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__default_vietnam_region__region3
+msgid "Region III (Bien Hoa, Vung Tau, Nha Trang)"
+msgstr "Vùng III (Biên Hòa, Vũng Tàu, Nha Trang)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__region3_employees
+msgid "Region III Employees"
+msgstr "Nhân viên khu vực III"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_region__region4
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_payslip__vietnam_region__region4
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__default_vietnam_region__region4
+msgid "Region IV (Other provinces)"
+msgstr "Vùng IV (Các tỉnh khác)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__region4_employees
+msgid "Region IV Employees"
+msgstr "Nhân viên khu vực IV"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__registration_date
+msgid "Registration Date"
+msgstr "Ngày đăng ký"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_emergency_contact_relationship
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__relationship
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_search
+msgid "Relationship"
+msgstr "Mối quan hệ"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Report Filters"
+msgstr "Bộ lọc báo cáo"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_tax_report_wizard.py:0
+msgid "Report Generated"
+msgstr "Báo cáo đã tạo"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__name
+msgid "Report Name"
+msgstr "Tên báo cáo"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__report_type
+msgid "Report Type"
+msgstr "Báo cáo Loại"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_form
+msgid "Reset to Draft"
+msgstr "Đặt lại để Nháp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_residency_status
+msgid "Residency Status"
+msgstr "Tình trạng cư trú"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_residency_status__resident
+msgid "Resident (Cư trú)"
+msgstr "Resident (Cư trú)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__reason__retroactive
+msgid "Retroactive Adjustment"
+msgstr "Điều chỉnh hồi tố"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Review and approve payroll with detailed analytics"
+msgstr "Xem xét và phê duyệt bảng lương với các phân tích chi tiết"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__si_employee
+msgid "SI (Employee)"
+msgstr "SI (Nhân viên)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__si_employer
+msgid "SI (Employer)"
+msgstr "SI (Nhà tuyển dụng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_applicable_salary_type
+msgid "SI Applicable Salary"
+msgstr "Mức lương áp dụng SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "SI EE"
+msgstr "SI EE"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "SI ER"
+msgstr "SI ER"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_effective_date
+msgid "SI Effective Date"
+msgstr "Ngày hiệu lực SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_employee_rate
+msgid "SI Employee Rate (%)"
+msgstr "Tỷ lệ nhân viên SI (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_si_employee
+msgid "SI Employee Total"
+msgstr "Tổng số nhân viên SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_employer_rate
+msgid "SI Employer Rate (%)"
+msgstr "SI Tỷ lệ sử dụng lao động (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_si_employer
+msgid "SI Employer Total"
+msgstr "SI Nhà tuyển dụng Tổng cộng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_enrolled
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__si_enrolled_count
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "SI Enrolled"
+msgstr "SI đã đăng ký"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_enrollment_status
+msgid "SI Enrollment Status"
+msgstr "Tình trạng đăng ký SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_number
+msgid "SI Number"
+msgstr "Số SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_si_salary_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__si_salary_base
+msgid "SI Salary Base"
+msgstr "Cơ sở lương SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__si_max_salary_ceiling
+msgid "SI Salary Ceiling"
+msgstr "Trần lương SI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__si_enrolled
+msgid "SI ✓"
+msgstr "SI ✓"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_table__insurance_exemption
+msgid "SI/HI/UI contributions are exempt from taxable income"
+msgstr "Các khoản đóng góp SI/HI/UI được miễn thuế thu nhập"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Salary Base"
+msgstr "Cơ sở lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__reason__salary_correction
+msgid "Salary Base Correction"
+msgstr "Điều chỉnh cơ sở lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Salary Configuration"
+msgstr "Cấu hình lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_formula_config_analytics
+msgid "Salary Structure Analytics Dashboard"
+msgstr "Cấu trúc lương Phân tích Bảng điều khiển"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_hi_salary_base
+msgid "Salary base for HI contribution calculation"
+msgstr "Căn cứ tính lương đóng bảo hiểm xã hội"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_si_salary_base
+msgid "Salary base for SI contribution calculation"
+msgstr "Căn cứ tiền lương để tính đóng bảo hiểm xã hội"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_salary_base
+msgid "Salary base for UI contribution calculation"
+msgstr "Căn cứ tiền lương để tính đóng BHTN"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_contract_type__seasonal
+msgid "Seasonal Contract"
+msgstr "Hợp đồng theo mùa"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__secondary
+msgid "Secondary School"
+msgstr "Trường THCS"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "Select Government Report"
+msgstr "Chọn Báo cáo Chính phủ"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "Select Report"
+msgstr "Chọn báo cáo"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "Select a report type to generate official government declarations"
+msgstr "Chọn loại báo cáo để tạo các tờ khai chính thức của chính phủ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__relationship__sibling
+msgid "Sibling (Anh/Chị/Em)"
+msgstr "Sibling (Anh/Chị/Em)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_sick_leave_days
+msgid "Sick Leave Days"
+msgstr "Ngày nghỉ ốm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_marital_status__single
+msgid "Single"
+msgstr "Chưa kết hôn"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__insurance_type__si
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Social Insurance (BHXH)"
+msgstr "Bảo hiểm xã hội (BHXH)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid ""
+"Social Insurance (BHXH) • Health Insurance (BHYT) • Unemployment Insurance (BHTN)"
+msgstr "Bảo hiểm xã hội (BHXH) • Bảo hiểm y tế (BHYT) • Bảo hiểm thất nghiệp (BHTN)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_social_insurance_employee
+msgid "Social Insurance - Employee (VND)"
+msgstr "Bảo hiểm xã hội - Người lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_social_insurance_employer
+msgid "Social Insurance - Employer (VND)"
+msgstr "Bảo hiểm xã hội - Người sử dụng lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_social_insurance_number
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_social_insurance_number
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_social_insurance_number
+msgid "Social Insurance Number"
+msgstr "Số bảo hiểm xã hội"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_si_number
+msgid "Social Insurance Number (Số sổ BHXH)"
+msgstr "Social Insurance Number (Số sổ BHXH)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_dependent__relationship__spouse
+msgid "Spouse (Vợ/Chồng)"
+msgstr "Spouse (Vợ/Chồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_spouse_name
+msgid "Spouse Name"
+msgstr "Tên vợ/chồng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_spouse_tax_code
+msgid "Spouse Tax Code"
+msgstr "Mã số thuế vợ/chồng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__effective_from
+msgid "Start date of tax deduction eligibility"
+msgstr "Ngày bắt đầu đủ điều kiện khấu trừ thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__period_from
+msgid "Start of backdated period"
+msgstr "Bắt đầu thời kỳ lạc hậu"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__status
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_adjustment__state
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:0
+msgid "Successfully connected to Zoho API"
+msgstr "Đã kết nối thành công với API Zoho"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__reason__system_error
+msgid "System Error Correction"
+msgstr "Sửa lỗi hệ thống"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "THÔNG TIN LƯƠNG THÁNG"
+msgstr "THÔNG TIN LƯƠNG THÁNG"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "TangLaoDong"
+msgstr "TangLaoDong"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_tax_config
+msgid "Tax"
+msgstr "Thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+msgid "Tax & Dependents"
+msgstr "Thuế & Người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_employee_dependent_form
+msgid "Tax Allowance"
+msgstr "Phụ cấp thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Tax Components"
+msgstr "Thành phần thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+msgid "Tax Configuration"
+msgstr "Cấu hình thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__tax_rate
+msgid "Tax Rate (%)"
+msgstr "Thuế suất (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_regime
+msgid "Tax Regime"
+msgstr "Chế độ thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_effective_date
+msgid "Tax Regime Effective Date"
+msgstr "Chế độ thuế Ngày có hiệu lực"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_dependent__tax_registration_number
+msgid "Tax Registration Number"
+msgstr "Mã số thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__slab_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_slab_tree
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Tax Slabs"
+msgstr "Tấm thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_tax_table_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config__vn_tax_table_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_slab__table_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Tax Table"
+msgstr "Bảng thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__name
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "Tax Table Name"
+msgstr "Tên bảng thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_tax_table
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_tax_tables
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_tree
+msgid "Tax Tables"
+msgstr "Bảng thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_table__tax_year
+msgid "Tax Year"
+msgstr "Năm tính thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_slab__tax_rate
+msgid "Tax percentage for this bracket"
+msgstr "Phần trăm thuế cho khung này"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_slab__income_to
+msgid "Taxable income bracket end (0 or empty = unlimited)"
+msgstr "Cuối khung thu nhập chịu thuế (0 hoặc trống = không giới hạn)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_tax_slab__income_from
+msgid "Taxable income bracket start"
+msgstr "Bắt đầu khung thu nhập chịu thuế"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__techcombank
+msgid "Techcombank"
+msgstr "Techcombank"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_temporary_address
+msgid "Temporary Address"
+msgstr "Địa chỉ tạm thời"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_work_permit_type__temp_resident
+msgid "Temporary Resident Card"
+msgstr "Thẻ tạm trú"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "This will replace existing slabs. Continue?"
+msgstr "Điều này sẽ thay thế các tấm hiện có. Tiếp tục?"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Thưởng hiệu quả công việc"
+msgstr "Thưởng hiệu quả công việc"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Thực nhận kỳ 1"
+msgstr "Thực nhận kỳ 1"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Thực nhận kỳ 2"
+msgstr "Thực nhận kỳ 2"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Tiền cơm tháng"
+msgstr "Tiền cơm tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__date_to
+msgid "To Date"
+msgstr "Đến ngày"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_formula_config_analytics_insurance_tab
+msgid "Total"
+msgstr "Tổng cộng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Total Base"
+msgstr "Tổng cơ sở"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Total EE"
+msgstr "Tổng EE"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Total ER"
+msgstr "Tổng số ER"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__total_employee
+msgid "Total Employee"
+msgstr "Tổng số Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_employee_contribution
+msgid "Total Employee Contribution"
+msgstr "Tổng đóng góp của nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__total_employee_rate
+msgid "Total Employee Rate (%)"
+msgstr "Tổng tỷ lệ nhân viên (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_employees
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "Total Employees"
+msgstr "Tổng Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__total_employer
+msgid "Total Employer"
+msgstr "Tổng số nhà tuyển dụng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_employer_contribution
+msgid "Total Employer Contribution"
+msgstr "Tổng đóng góp của người sử dụng lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__total_employer_rate
+msgid "Total Employer Rate (%)"
+msgstr "Tổng tỷ lệ sử dụng lao động (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_total_insurance_contribution
+msgid "Total Insurance Contribution"
+msgstr "Tổng đóng góp bảo hiểm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_total_salary
+msgid "Total Salary (VND)"
+msgstr "Tổng lương (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_total_insurance_contribution
+msgid "Total monthly insurance contribution"
+msgstr "Tổng số tiền đóng bảo hiểm hàng tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_monthly_tax_allowance
+msgid "Total monthly tax allowance (personal + dependents)"
+msgstr "Tổng trợ cấp thuế hàng tháng (cá nhân + người phụ thuộc)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_dependent_tax_allowance
+msgid "Total monthly tax allowance from dependents"
+msgstr "Tổng trợ cấp thuế hàng tháng từ người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_transport_allowance
+msgid "Transport Allowance (VND)"
+msgstr "Phụ cấp đi lại (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Truy lãnh (+)/ Truy thu lương (-)"
+msgstr "Truy lãnh (+)/ Truy thu lương (-)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_adjustment_search
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Tạm ứng Thưởng HQCV tháng"
+msgstr "Tạm ứng Thưởng HQCV tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "Tỷ lệ % HQCV tháng"
+msgstr "Tỷ lệ % HQCV tháng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__ui_employee
+msgid "UI (Employee)"
+msgstr "Giao diện người dùng (Nhân viên)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__ui_employer
+msgid "UI (Employer)"
+msgstr "Giao diện người dùng (Nhà tuyển dụng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "UI EE"
+msgstr "giao diện người dùng EE"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "UI ER"
+msgstr "Giao diện người dùng ER"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_effective_date
+msgid "UI Effective Date"
+msgstr "Ngày hiệu lực UI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__ui_employee_rate
+msgid "UI Employee Rate (%)"
+msgstr "Tỷ lệ nhân viên UI (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_ui_employee
+msgid "UI Employee Total"
+msgstr "Tổng số nhân viên UI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__ui_employer_rate
+msgid "UI Employer Rate (%)"
+msgstr "Tỷ lệ nhà tuyển dụng UI (%)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__total_ui_employer
+msgid "UI Employer Total"
+msgstr "Tổng số nhà tuyển dụng UI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_enrolled
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics__ui_enrolled_count
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+msgid "UI Enrolled"
+msgstr "Đã đăng ký giao diện người dùng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_number
+msgid "UI Number"
+msgstr "Số giao diện người dùng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_salary_base
+msgid "UI Salary Base"
+msgstr "Cơ Sở Lương UI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__ui_max_salary_ceiling
+msgid "UI Salary Ceiling"
+msgstr "Mức lương trần UI"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__ui_enrolled
+msgid "UI ✓"
+msgstr "Giao diện người dùng ✓"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_insurance_adjustment__insurance_type__ui
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.vietnam_insurance_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Unemployment Insurance (BHTN)"
+msgstr "Bảo hiểm Thất nghiệp (BHTN)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_unemployment_insurance_employee
+msgid "Unemployment Insurance - Employee (VND)"
+msgstr "Bảo hiểm thất nghiệp - Người lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_unemployment_insurance_employer
+msgid "Unemployment Insurance - Employer (VND)"
+msgstr "Bảo hiểm thất nghiệp - Người sử dụng lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_employee__vn_ui_number
+msgid "Unemployment Insurance Number"
+msgstr "Số Bảo hiểm Thất nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__code
+msgid "Unique reference code"
+msgstr "Mã tham chiếu duy nhất"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__university
+msgid "University"
+msgstr "Đại học"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_university_name
+msgid "University/School Name"
+msgstr "Tên trường đại học/trường học"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__import_mode__update_existing
+msgid "Update Existing Employees Only"
+msgstr "Chỉ cập nhật nhân viên hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config__vn_copy_insurance_from_company
+msgid "Use Company Insurance Policy"
+msgstr "Sử dụng Chính sách Bảo hiểm của Công ty"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_formula_config__vn_copy_tax_from_company
+msgid "Use Company Tax Table"
+msgstr "Sử dụng Bảng Thuế Công ty"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_formula_config__vn_copy_insurance_from_company
+msgid ""
+"Use the company's default insurance policy instead of defining one for this config"
+msgstr ""
+"Sử dụng chính sách bảo hiểm mặc định của công ty thay vì xác định chính sách cho cấu "
+"hình này"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_formula_config__vn_copy_tax_from_company
+msgid "Use the company's default tax table instead of defining one for this config"
+msgstr ""
+"Sử dụng bảng thuế mặc định của công ty thay vì xác định bảng thuế cho cấu hình này"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.report_payslip_vietnam
+msgid "V. TỔNG THỰC NHẬN TRONG THÁNG"
+msgstr "V. TỔNG THỰC NHẬN TRONG THÁNG"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__vietcombank
+msgid "Vietcombank"
+msgstr "vietcombank"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_bank_account
+msgid "Vietnam Bank Account"
+msgstr "Tài khoản ngân hàng Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_bank_export_wizard
+msgid "Vietnam Bank Transfer Export"
+msgstr "Xuất khẩu chuyển khoản ngân hàng Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_contract_type
+msgid "Vietnam Contract Type"
+msgstr "Loại hợp đồng ở Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+msgid "Vietnam Current Month Payslips"
+msgstr "Việt Nam Phiếu lương tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_dashboard
+msgid "Vietnam Dashboard"
+msgstr "Bảng điều khiển Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_employee_dependent
+msgid "Vietnam Employee Dependent"
+msgstr "Người lao động phụ thuộc ở Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_employee_id
+msgid "Vietnam Employee ID"
+msgstr "ID nhân viên Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_employee_import_wizard
+msgid "Vietnam Employee Import from Zoho"
+msgstr "Nhập khẩu nhân viên Việt Nam từ Zoho"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+msgid "Vietnam Employees"
+msgstr "Vietnam Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_insurance_adjustment
+msgid "Vietnam Insurance Adjustment"
+msgstr "Điều chỉnh bảo hiểm Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_insurance_analytics
+msgid "Vietnam Insurance Contribution Analysis"
+msgstr "Phân tích Đóng góp Bảo hiểm Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_insurance_policy
+msgid "Vietnam Insurance Policy"
+msgstr "Chính sách bảo hiểm Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.report,name:pb_hr_payroll_vietnam.action_report_payslip_vietnam
+msgid "Vietnam PaySlip"
+msgstr "Phiếu lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_payroll_dashboard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Vietnam Payroll Dashboard"
+msgstr "Vietnam Bảng lương Bảng điều khiển"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_payroll_dashboard_vietnam
+msgid "Vietnam Payroll Dashboard Professional"
+msgstr "Bảng lương Việt Nam chuyên nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Vietnam Payroll Management"
+msgstr "Quản lý tiền lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:0
+msgid "Vietnam Payroll Spreadsheet"
+msgstr "Bảng tính lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:res.groups,name:pb_hr_payroll_vietnam.group_vietnam_payroll_user
+msgid "Vietnam Payroll User"
+msgstr "Vietnam Bảng lương Người dùng"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_region
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_region
+msgid "Vietnam Region"
+msgstr "Khu vực Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_payroll_config_root
+msgid "Vietnam Settings"
+msgstr "Cài đặt Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_social_insurance
+msgid "Vietnam Social Insurance"
+msgstr "Bảo hiểm xã hội Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+msgid "Vietnam Social Insurance Report"
+msgstr "Báo cáo Bảo hiểm xã hội Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_tax_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_tax_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_tax_code
+msgid "Vietnam Tax Code"
+msgstr "Vietnam Thuế Mã"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_employee_vietnam.py:0
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+msgid "Vietnam Tax Report"
+msgstr "Báo cáo thuế Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_tax_report_wizard
+msgid "Vietnam Tax Report Generator"
+msgstr "Trình tạo báo cáo thuế Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_tax_slab
+msgid "Vietnam Tax Slab"
+msgstr "Tấm thuế Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_tax_table
+msgid "Vietnam Tax Table"
+msgstr "Bảng thuế Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_tax_report_wizard.py:0
+msgid "Vietnam tax report has been generated successfully"
+msgstr "Báo cáo thuế Việt Nam đã được tạo thành công"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_work_permit_type__citizen
+msgid "Vietnamese Citizen"
+msgstr "công dân việt nam"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View Analytics"
+msgstr "Xem phân tích"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "View Comparisons"
+msgstr "Xem so sánh"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View Contracts"
+msgstr "Xem hợp đồng"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View Employees"
+msgstr "Xem nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.server,name:pb_hr_payroll_vietnam.action_vietnam_view_payslip_batches_clean
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View Payslip Batches"
+msgstr "Xem các đợt phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View Reports"
+msgstr "Xem báo cáo"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View and manage employee records in kanban view"
+msgstr "Xem và quản lý hồ sơ nhân viên ở chế độ xem Kanban"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__vocational
+msgid "Vocational Training"
+msgstr "Đào tạo nghề"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__waive_hi_foreign
+msgid "Waive HI (SDLDD) for Foreign Employees"
+msgstr "Miễn HI (SDLDD) cho nhân viên nước ngoài"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__waive_ui_no_fund_areas
+msgid "Waive UI for Areas Without Fund"
+msgstr "Miễn UI cho các khu vực không có quỹ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__waive_ui_foreign
+msgid "Waive UI for Foreign Employees"
+msgstr "Miễn UI cho nhân viên nước ngoài"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_vietnam_insurance_policy__waive_ui_no_fund_areas
+msgid "Waive for areas without Unemployment Insurance Fund"
+msgstr "Miễn trừ đối với khu vực không có Quỹ bảo hiểm thất nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "Waivers & Exemptions"
+msgstr "Miễn trừ & Miễn trừ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_ward
+msgid "Ward/Commune"
+msgstr "Ward/Commune"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_marital_status__widowed
+msgid "Widowed"
+msgstr "góa bụa"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_insurance_analytics_line__wizard_id
+msgid "Wizard"
+msgstr "Thuật sĩ"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_work_permit_type
+msgid "Work Authorization"
+msgstr "Ủy quyền làm việc"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_employee_form_vietnam_insurance
+msgid "Work Info"
+msgstr "Thông tin công việc"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_work_permit_expiry
+msgid "Work Permit Expiry Date"
+msgstr "Ngày hết hạn giấy phép lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_work_permit_type__work_permit
+msgid "Work Permit Holder"
+msgstr "Người có giấy phép lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_work_permit_number
+msgid "Work Permit Number"
+msgstr "Số giấy phép lao động"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vn_work_region
+msgid "Work Region"
+msgstr "Khu vực làm việc"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_employee_vietnam.py:0
+msgid "Work permit expiry date is required for work permit holders"
+msgstr ""
+"Ngày hết hạn của giấy phép lao động là bắt buộc đối với người có giấy phép lao động"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_employee_vietnam.py:0
+msgid "Work permit has expired. Please renew before processing payroll."
+msgstr "Giấy phép lao động đã hết hạn. Vui lòng gia hạn trước khi xử lý bảng lương."
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_search
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_years_of_experience
+msgid "Years of Experience"
+msgstr "Số năm kinh nghiệm"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__zoho_api_url
+msgid "Zoho API URL"
+msgstr "URL API Zoho"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_insurance_policy_form
+msgid "e.g. BHXH Vietnam 2024"
+msgstr "ví dụ: Bệnh viện Việt Nam 2024"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_vietnam_tax_table_form
+msgid "e.g. Vietnam Income Tax 2024"
+msgstr "ví dụ: Thuế thu nhập Việt Nam 2024"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+msgid "employee_id"
+msgstr "nhân_id"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+msgid "id"
+msgstr "mã số"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vn_si_enrollment_status__enrolled
+msgid "Đã đăng ký"
+msgstr "Đã đăng ký"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "Ốm đau/Thai sản - Sickness and maternity benefits report"
+msgstr "Ốm đau/Thai sản - Sickness and maternity benefits report"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_pb_govt_report_selector_form
+msgid "📊 Government Reports"
+msgstr "📊 Báo cáo Chính phủ"

@@ -3,12 +3,13 @@
 import { Component } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
+import { _t } from "@web/core/l10n/translation";
 
 const PIPE = [
-    { key: "draft", label: "Draft" },
-    { key: "level1", label: "HR" },
-    { key: "level2", label: "GM" },
-    { key: "done", label: "Done" },
+    { key: "draft", label: _t("Draft") },
+    { key: "level1", label: _t("HR") },
+    { key: "level2", label: _t("GM") },
+    { key: "done", label: _t("Done") },
 ];
 const IDX = { draft: 0, verify: 0, level1: 1, level2: 2, done: 3 };
 

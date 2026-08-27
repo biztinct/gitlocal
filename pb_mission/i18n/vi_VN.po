@@ -1,0 +1,856 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "%(n)s approved, then stopped: %(why)s"
+msgstr "%(n)s được phê duyệt, sau đó dừng: %(why)s"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "%s clean overtime requests approved"
+msgstr "Yêu cầu làm thêm giờ sạch sẽ của %s đã được phê duyệt"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "%s days locked"
+msgstr "%s ngày bị khóa"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "%s days reopened"
+msgstr "%s ngày mở cửa trở lại"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "%s flagged remain"
+msgstr "%s vẫn được gắn cờ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "%s flags reviewed"
+msgstr "Đã xem xét cờ %s"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "%sd"
+msgstr "%sd"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+".\n"
+"            This records that you looked at it and accepted it — the flag stops\n"
+"            blocking the close but the row stays on the board."
+msgstr ""
+".\n"
+"            Điều này ghi lại rằng bạn đã xem nó và chấp nhận nó - cờ dừng lại\n"
+"            chặn đóng nhưng hàng vẫn ở trên bảng."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "1 clean overtime approved"
+msgstr "Đã phê duyệt 1 giờ làm thêm sạch sẽ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "1 day locked"
+msgstr "bị khóa 1 ngày"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "1 day reopened"
+msgstr "1 ngày mở cửa trở lại"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "1 flag reviewed"
+msgstr "1 lá cờ được xem xét"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "1 flagged remains"
+msgstr "1 phần còn lại được gắn cờ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "All clear"
+msgstr "Tất cả đều rõ ràng"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Apply time off on behalf"
+msgstr "Thay mặt xin nghỉ phép"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Approvals arrive here when someone reports to you."
+msgstr "Phê duyệt đến đây khi ai đó báo cáo cho bạn."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Approvals waiting for you"
+msgstr "Phê duyệt đang chờ bạn"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Approve all"
+msgstr "Phê duyệt tất cả"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Approve as-is"
+msgstr "Phê duyệt nguyên trạng"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Approving…"
+msgstr "Đang phê duyệt…"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "Auto-approved · within %s-min tolerance"
+msgstr "Được phê duyệt tự động · trong phạm vi dung sai %s-min"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Bonus hours"
+msgstr "Giờ thưởng"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Bonus hours review"
+msgstr "Đánh giá giờ thưởng"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Clear or review every flag first."
+msgstr "Xóa hoặc xem lại mọi lá cờ trước."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_mission.xml:0
+msgid "Clear person"
+msgstr "Bỏ chọn nhân viên"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "Close week %s"
+msgstr "Đóng tuần %s"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Collapse"
+msgstr "Thu gọn"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Collapse the approvals dock"
+msgstr "Thu gọn thanh phê duyệt"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Copy week forward"
+msgstr "Sao chép tuần tới"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Could not load that person."
+msgstr "Không thể tải người đó."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Days locked"
+msgstr "Số ngày bị khóa"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Dismiss"
+msgstr "Bỏ qua"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Est. gross"
+msgstr "Ước tính. thô thiển"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+"Every scheduled day is inside tolerance and every request\n"
+"                    is decided. Lock it and hand it to payroll."
+msgstr ""
+"Mỗi ngày đã lên lịch đều nằm trong khả năng chịu đựng và mọi yêu cầu\n"
+"                    được quyết định. Khóa nó lại và giao cho người trả lương."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Expand the approvals dock"
+msgstr "Mở rộng dock phê duyệt"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "File a correction"
+msgstr "Gửi bản sửa lỗi"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Fix"
+msgstr "Điều chỉnh"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Flagged for review"
+msgstr "Được gắn cờ để xem xét"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+"Flags on your OWN attendance are refused — that is signing off on\n"
+"            your own payslip inputs — and any that are skipped will be listed\n"
+"            afterwards."
+msgstr ""
+"Cờ về sự tham dự RIÊNG của bạn bị từ chối - nghĩa là đăng xuất\n"
+"            đầu vào phiếu lương của riêng bạn - và bất kỳ thông tin nào bị bỏ qua sẽ được liệt kê\n"
+"            sau đó."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+"Handed to payroll. Punches, corrections and overtime for\n"
+"                      these days are read-only."
+msgstr ""
+"Giao cho bảng lương. Cú đấm, sửa chữa và làm thêm giờ cho\n"
+"                      những ngày này là chỉ đọc."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Import punches"
+msgstr "Cú đấm nhập khẩu"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Loading the week…"
+msgstr "Đang tải tuần…"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Lock the week"
+msgstr "Khóa tuần"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Lock week & send to payroll"
+msgstr "Khóa tuần và gửi vào bảng lương"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Locking a week is an attendance or payroll manager's decision."
+msgstr "Khóa một tuần là quyết định của người quản lý chấm công hoặc tính lương."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Missing punches"
+msgstr "Thiếu cú đấm"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "My team"
+msgstr "Đội của tôi"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Needs you"
+msgstr "cần bạn"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "New shift"
+msgstr "Ca mới"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Next page"
+msgstr "Trang tiếp"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "No reports"
+msgstr "Không có báo cáo"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Not allowed"
+msgstr "Không được phép"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Not applied"
+msgstr "Không áp dụng"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Note (optional) — it is kept with the review"
+msgstr "Lưu ý (tùy chọn) - nó được lưu giữ cùng với phần đánh giá"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Note (optional) — the same note is kept with every one of them"
+msgstr "Ghi chú (tùy chọn) - cùng một ghi chú được lưu giữ với mỗi người trong số họ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Nothing is waiting on you right now."
+msgstr "Không có gì đang chờ đợi bạn ngay bây giờ."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Nothing left to review"
+msgstr "Không còn gì để xem xét"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Only the first"
+msgstr "Chỉ có người đầu tiên"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Open"
+msgstr "Mở"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Open full queue"
+msgstr "Mở hàng đợi đầy đủ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Open person"
+msgstr "Người mở"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Open the driver map"
+msgstr "Mở bản đồ lái xe"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Organisation"
+msgstr "Tổ chức"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Partly done"
+msgstr "Đã xong một phần"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Payroll handoff"
+msgstr "Chuyển giao tiền lương"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Person · day"
+msgstr "Người · ngày"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Previous page"
+msgstr "Trang trước"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Reason (optional) — this request type does not store it"
+msgstr "Lý do (tùy chọn) - loại yêu cầu này không lưu trữ nó"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Refuse"
+msgstr "Từ chối"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Refused"
+msgstr "Đã từ chối"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Refused by a server guard · %s"
+msgstr "Bị người bảo vệ máy chủ từ chối · %s"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Regular hours"
+msgstr "Giờ thông thường"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Reopen"
+msgstr "Mở lại"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+"Reopening a closed day is recorded against it — this reason is the\n"
+"            only account anyone reviewing this payroll will have of why the week\n"
+"            was taken back."
+msgstr ""
+"Việc mở lại một ngày đã đóng cửa sẽ được ghi lại - lý do này là\n"
+"            chỉ có tài khoản mà bất kỳ ai xem xét bảng lương này mới có lý do tại sao trong tuần\n"
+"            đã được lấy lại."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Reopen…"
+msgstr "Mở lại…"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Review all"
+msgstr "Xem lại tất cả"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Reviewed"
+msgstr "Đã rà soát"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "Reviewed · %s"
+msgstr "Đã đánh giá · %s"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Schedule"
+msgstr "Lịch trình"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Scheduled vs actual"
+msgstr "Theo lịch trình so với thực tế"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_mission.xml:0
+msgid "Search people, lenses and actions"
+msgstr "Tìm kiếm người, ống kính và hành động"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_mission.xml:0
+msgid "Search people, lenses, actions…"
+msgstr "Tìm kiếm người, ống kính, hành động…"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Set labour budget"
+msgstr "Đặt ngân sách lao động"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Show only the flags somebody has already waived"
+msgstr "Chỉ hiển thị những lá cờ mà ai đó đã từ bỏ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Show only the flags still blocking the close"
+msgstr "Chỉ hiển thị các cờ vẫn chặn đóng"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "Show the whole organisation"
+msgstr "Hiển thị toàn bộ tổ chức"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "Showing %(from)s–%(to)s of %(total)s"
+msgstr "Đang hiển thị %(from)s–%(to)s của %(total)s"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Something went wrong."
+msgstr "Đã xảy ra lỗi."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "That employee is not available in this company."
+msgstr "Nhân viên đó không có mặt ở công ty này."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "The Close board could not be loaded."
+msgstr "Không thể tải bảng Đóng."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "The queue could not load. It will retry in a minute."
+msgstr "Hàng đợi không thể tải. Nó sẽ thử lại sau một phút."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "The request could not be processed."
+msgstr "Yêu cầu không thể được xử lý."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "This records that you looked at"
+msgstr "Bản ghi này bạn đã xem"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "This week is clean."
+msgstr "Tuần này sạch sẽ."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Time"
+msgstr "Giờ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Time Off"
+msgstr "Nghỉ Phép"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Time off"
+msgstr "Nghỉ phép"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+#: code:addons/pb_mission/static/src/js/pb_mission.js:0
+msgid "Trips"
+msgstr "Chuyến đi"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "Week closed and handed to payroll"
+msgstr "Tuần kết thúc và bàn giao cho bảng lương"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Week locked"
+msgstr "Tuần bị khóa"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Why flagged"
+msgstr "Tại sao bị gắn cờ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Why is this being reopened? (required)"
+msgstr "Tại sao điều này được mở lại? (bắt buộc)"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "Why is this refused? (required)"
+msgstr "Tại sao điều này bị từ chối? (bắt buộc)"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_mission.xml:0
+#: model:ir.actions.client,name:pb_mission.action_pb_workforce
+#: model:pb.sidebar.item,name:pb_mission.item_workforce
+msgid "Workforce"
+msgstr "Lực lượng lao động"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_mission.xml:0
+msgid "Workforce lenses"
+msgstr "Ống kính lực lượng lao động"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "clean"
+msgstr "sạch sẽ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid ""
+"clean overtime —\n"
+"              hours match the grid, under every ceiling, on an open day."
+msgstr ""
+"làm thêm giờ sạch sẽ -\n"
+"              giờ khớp với lưới, dưới mọi trần nhà, vào một ngày mở cửa."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+"could not be\n"
+"                  reviewed by you:"
+msgstr ""
+"không thể được\n"
+"                  được bạn xem xét:"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "flag"
+msgstr "cờ"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "flags reviewed."
+msgstr "cờ được xem xét"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "more"
+msgstr "thêm"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "on this board."
+msgstr "trên bảng này."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+"on this department and week, and accepted them. They stop blocking\n"
+"            the close; the rows stay on the board with your note."
+msgstr ""
+"về bộ phận này và tuần, và chấp nhận chúng. Họ ngừng chặn\n"
+"            sự đóng cửa; các hàng ở trên bảng với ghi chú của bạn."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "open"
+msgstr "mở"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "reviewed"
+msgstr "đã xem xét"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+"rows of\n"
+"                      this selection are reachable — narrow the department or\n"
+"                      the search."
+msgstr ""
+"hàng của\n"
+"                      lựa chọn này có thể truy cập được - thu hẹp bộ phận hoặc\n"
+"                      việc tìm kiếm."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "s"
+msgstr "s"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_close_lens.js:0
+msgid "the whole week"
+msgstr "cả tuần"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/js/pb_dock.js:0
+msgid "today"
+msgstr "hôm nay"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid ""
+"worked without a resolvable\n"
+"              contract rate and are not in that estimate."
+msgstr ""
+"làm việc mà không thể giải quyết được\n"
+"              giá hợp đồng và không nằm trong ước tính đó."
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
+msgid "Δ"
+msgstr "Δ"

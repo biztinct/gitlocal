@@ -2,21 +2,22 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted", none: "muted" };
 const STATUS_CHIPS = [
-    { id: "all", label: "All" },
-    { id: "running", label: "Running" },
-    { id: "expiring", label: "Expiring soon" },
-    { id: "new", label: "New this month" },
-    { id: "none", label: "No contract" },
+    { id: "all", label: _t("All") },
+    { id: "running", label: _t("Running") },
+    { id: "expiring", label: _t("Expiring soon") },
+    { id: "new", label: _t("New this month") },
+    { id: "none", label: _t("No contract") },
 ];
 const DATE_CHIPS = [
-    { id: "all", label: "All time" },
-    { id: "month", label: "Joined this month" },
-    { id: "year", label: "Joined this year" },
-    { id: "custom", label: "Custom" },
+    { id: "all", label: _t("All time") },
+    { id: "month", label: _t("Joined this month") },
+    { id: "year", label: _t("Joined this year") },
+    { id: "custom", label: _t("Custom") },
 ];
 
 export class PbPeople extends Component {
@@ -147,7 +148,7 @@ export class PbPeople extends Component {
         if (!deptId || !this.state.selected.length) return;
         const res = await this.orm.call("pb.people", "bulk_apply", [this.state.selected, "set_department", deptId]);
         if (res.error) { this.notif.add(res.error, { type: "danger" }); return; }
-        this.notif.add(`${res.count} employees moved.`, { type: "success" });
+            this.notif.add(_t("%(count)s employees moved.", { count: res.count }), { type: "success" });
         this.state.selected = []; this.state.bulkDept = ""; await this.load();
     }
     bulkExport() {

@@ -1,0 +1,402 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "All departments"
+msgstr "Tất cả phòng ban"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "All divisions"
+msgstr "Tất cả các bộ phận"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Approved hours"
+msgstr "Số giờ đã duyệt"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Attendance exceptions"
+msgstr "Bất thường chấm công"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid ""
+"Attendance, overtime, leave and cost per head — on real payroll\n"
+"              and attendance data, filterable, and every figure opens the people behind it."
+msgstr ""
+"Chấm công, làm thêm giờ, nghỉ phép và chi phí đầu người - trên bảng lương thực tế\n"
+"              và dữ liệu điểm danh, có thể lọc và mọi con số đều mở ra những người đứng đằng sau nó."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Away today"
+msgstr "Hôm nay đi vắng"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Board built in"
+msgstr "Bảng mạch được xây dựng trong"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Bonus hours"
+msgstr "Giờ thưởng"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Clear filters"
+msgstr "Bỏ bộ lọc"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Cost per head"
+msgstr "Chi phí mỗi đầu"
+
+#. module: pb_workforce_insights
+#: model:ir.model.fields,field_description:pb_workforce_insights.field_pb_workforce_insights__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Employees paid"
+msgstr "Nhân viên được trả lương"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Exceptions"
+msgstr "Ngoại lệ"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Headcount paid"
+msgstr "Số lượng nhân viên được trả"
+
+#. module: pb_workforce_insights
+#: model:ir.model.fields,field_description:pb_workforce_insights.field_pb_workforce_insights__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Joiners"
+msgstr "Thợ mộc"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Leavers"
+msgstr "Người rời đi"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "M"
+msgstr "M"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Movement compares"
+msgstr "So sánh chuyển động"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Near the overtime ceiling"
+msgstr "Gần mức trần làm thêm giờ"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "No leave taken in this window."
+msgstr "Không nghỉ phép trong cửa sổ này."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "No payroll cost in this window."
+msgstr "Không có chi phí tiền lương trong cửa sổ này."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Overtime is not installed on this database."
+msgstr "Làm thêm giờ không được cài đặt trên cơ sở dữ liệu này."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Overtime load"
+msgstr "Tải ngoài giờ"
+
+#. module: pb_workforce_insights
+#: model:ir.model,name:pb_workforce_insights.model_pb_workforce_insights
+msgid "Payobook Workforce Insights — read-only cockpit facade"
+msgstr "Payobook Workforce Insights — giao diện buồng lái chỉ đọc"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Reading the workforce…"
+msgstr "Đọc lực lượng lao động…"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "Something went wrong."
+msgstr "Đã xảy ra lỗi."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
+msgid "The Analytics Explorer is not available."
+msgstr "Analytics Explorer không có sẵn."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "The attendance workflow is not installed on this database."
+msgstr "Quy trình chấm công chưa được cài đặt trên cơ sở dữ liệu này."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Time Off is not installed on this database."
+msgstr "Thời gian nghỉ chưa được cài đặt trên cơ sở dữ liệu này."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Time off"
+msgstr "Nghỉ phép"
+
+#. module: pb_workforce_insights
+#. odoo-python
+#: code:addons/pb_workforce_insights/models/pb_workforce_insights.py:0
+msgid "Unassigned"
+msgstr "Chưa phân bổ"
+
+#. module: pb_workforce_insights
+#. odoo-python
+#: code:addons/pb_workforce_insights/models/pb_workforce_insights.py:0
+msgid "Unspecified"
+msgstr "Không xác định"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "Workforce"
+msgstr "Lực lượng lao động"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+#: model:ir.actions.client,name:pb_workforce_insights.action_pb_workforce_insights
+msgid "Workforce Insights"
+msgstr "Thông tin chi tiết về lực lượng lao động"
+
+#. module: pb_workforce_insights
+#. odoo-python
+#: code:addons/pb_workforce_insights/models/pb_workforce_insights.py:0
+msgid "Workforce Insights is restricted to payroll analytics managers."
+msgstr ""
+"Thông tin chi tiết về lực lượng lao động được giới hạn ở những người quản lý phân tích"
+" tiền lương."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "approved"
+msgstr "đã duyệt"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "avg of the ceiling, across"
+msgstr "trung bình của trần nhà, ngang"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "awaiting approval"
+msgstr "đang chờ duyệt"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "away today"
+msgstr "hôm nay đi xa"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "by department · click to open in the Explorer"
+msgstr "theo bộ phận · bấm để mở trong Explorer"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "cost per head"
+msgstr "chi phí mỗi đầu"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "d"
+msgstr "d"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "days taken"
+msgstr "ngày thực hiện"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "employee(s) at 90% of the"
+msgstr "(các) nhân viên tại 90% of"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "employees paid"
+msgstr "nhân viên được trả lương"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "in the last weeks"
+msgstr "trong những tuần qua"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid ""
+"is still in progress — pay runs\n"
+"            for the rest of the month have not happened yet, so everyone not\n"
+"            yet paid counts as a leaver. Switch to a finished month before\n"
+"            reading these two figures."
+msgstr ""
+"vẫn đang được tiến hành - các kỳ lương\n"
+"            trong thời gian còn lại của tháng vẫn chưa xảy ra nên mọi người chưa\n"
+"            chưa được trả tiền được tính là người rời bỏ. Chuyển sang một tháng đã hoàn thành trước đó\n"
+"            đọc hai hình này."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "joined"
+msgstr "đã tham gia"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "left"
+msgstr "trái"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "month by month"
+msgstr "từng tháng"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "monthly ceiling"
+msgstr "trần hàng tháng"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "more departments not shown"
+msgstr "nhiều phòng ban hơn không được hiển thị"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid ""
+"ms ·\n"
+"          cost figures read from the derived payroll fact tables, so they match\n"
+"          the Analytics Explorer exactly."
+msgstr ""
+"cô ·\n"
+"          số liệu chi phí được đọc từ bảng thực tế tiền lương dẫn xuất, để chúng khớp với nhau\n"
+"          Analytics Explorer chính xác."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "not yet paid this month"
+msgstr "tháng này vẫn chưa thanh toán"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid ""
+"on a payroll basis — who was\n"
+"            actually paid, not who has a contract end date."
+msgstr ""
+"trên cơ sở tiền lương - ai là người\n"
+"            thực tế đã thanh toán chứ không phải ai có ngày kết thúc hợp đồng."
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "people doing OT"
+msgstr "mọi người làm OT"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "since"
+msgstr "kể từ khi"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "with"
+msgstr "với"
+
+#. module: pb_workforce_insights
+#. odoo-javascript
+#: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
+msgid "· sampled"
+msgstr "· lấy mẫu"

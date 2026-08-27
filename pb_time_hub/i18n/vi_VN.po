@@ -1,0 +1,187 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_time_hub
+#. odoo-python
+#: code:addons/pb_time_hub/models/time_hub.py:0
+msgid "%s entries need review"
+msgstr "Các mục %s cần được xem xét"
+
+#. module: pb_time_hub
+#. odoo-python
+#: code:addons/pb_time_hub/models/time_hub.py:0
+msgid "1 entry needs review"
+msgstr "1 mục cần xem xét"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+msgid "Adjust the department, the week or the search above."
+msgstr "Điều chỉnh bộ phận, tuần hoặc tìm kiếm ở trên."
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/timeline_lens.js:0
+msgid "Business trip"
+msgstr "Chuyến công tác"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Correction filed from the person drawer for %(date)s."
+msgstr "Bản chỉnh sửa được gửi từ ngăn kéo cá nhân cho %(date)s."
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Could not file a correction."
+msgstr "Không thể gửi bản sửa lỗi."
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Could not load that person."
+msgstr "Không thể tải người đó."
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/timeline_lens.js:0
+msgid "Could not load the timeline."
+msgstr "Không thể tải dòng thời gian."
+
+#. module: pb_time_hub
+#: model:ir.model.fields,field_description:pb_time_hub.field_pb_time_hub__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Exceptions"
+msgstr "Ngoại lệ"
+
+#. module: pb_time_hub
+#: model:ir.model.fields,field_description:pb_time_hub.field_pb_time_hub__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Import"
+msgstr "Nhập"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+msgid "Loading the week…"
+msgstr "Đang tải tuần…"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+msgid "No one to show"
+msgstr "Không có ai để hiển thị"
+
+#. module: pb_time_hub
+#. odoo-python
+#: code:addons/pb_time_hub/models/time_hub.py:0
+msgid "Nothing needs review this week."
+msgstr "Không có gì cần xem xét trong tuần này."
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+msgid "OT"
+msgstr "Tăng ca"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+msgid "Reg"
+msgstr "Đăng ký"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+msgid "Regular"
+msgstr "Thường kỳ"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/timeline_lens.js:0
+msgid "Showing the first %s employees — narrow by department or search to see the rest."
+msgstr ""
+"Hiển thị nhân viên %s đầu tiên - thu hẹp theo bộ phận hoặc tìm kiếm để xem phần còn "
+"lại."
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "That employee is not available in this company."
+msgstr "Nhân viên đó không có mặt ở công ty này."
+
+#. module: pb_time_hub
+#. odoo-python
+#: code:addons/pb_time_hub/models/time_hub.py:0
+msgid "The Time hub is restricted to attendance officers."
+msgstr "Trung tâm Thời gian được giới hạn cho các nhân viên tham dự."
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+#: model:ir.actions.client,name:pb_time_hub.action_pb_time_hub
+#: model:pb.sidebar.item,name:pb_time_hub.item_wf_time
+msgid "Time"
+msgstr "Giờ"
+
+#. module: pb_time_hub
+#: model:ir.model,name:pb_time_hub.model_pb_time_hub
+msgid "Time Hub Cockpit"
+msgstr "Buồng lái Time Hub"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Timeline"
+msgstr "Dòng thời gian"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/xml/time_hub.xml:0
+msgid "Total"
+msgstr "Tổng cộng"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Week Grid"
+msgstr "Lưới tuần"
+
+#: pb_time_hub/static/src/js/timeline_lens.js:106
+msgid "now"
+msgstr "bây giờ"

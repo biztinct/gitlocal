@@ -1,0 +1,328 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Activate (set running) on create"
+msgstr "Kích hoạt (thiết lập đang chạy) khi tạo"
+
+#. module: pb_people_advanced
+#: model:ir.actions.client,name:pb_people_advanced.action_pb_onboard_wizard
+msgid "Add Employee"
+msgstr "Thêm nhân viên"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Add employee"
+msgstr "Thêm nhân viên"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_people_advanced
+#: model:ir.actions.client,name:pb_people_advanced.action_pb_contract_wizard
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Contract created"
+msgstr "Đã tạo hợp đồng"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Create a first contract now"
+msgstr "Tạo hợp đồng đầu tiên ngay bây giờ"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Create contract"
+msgstr "Tạo hợp đồng"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Create employee"
+msgstr "Tạo nhân viên"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Department & role"
+msgstr "Bộ phận & vai trò"
+
+#. module: pb_people_advanced
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_contract_wizard__display_name
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_onboard_wizard__display_name
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_refs__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Employee added"
+msgstr "Đã thêm nhân viên"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "End"
+msgstr "Kết thúc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "End (optional)"
+msgstr "Kết thúc (tùy chọn)"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Full name *"
+msgstr "Tên đầy đủ *"
+
+#. module: pb_people_advanced
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_contract_wizard__id
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_onboard_wizard__id
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_refs__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Identity"
+msgstr "Định danh"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Job title (free text)"
+msgstr "Chức danh (văn bản miễn phí)"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Location"
+msgstr "Vị trí"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Monthly wage ("
+msgstr "Tiền lương hàng tháng ("
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Next"
+msgstr "Kế tiếp"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Open contract"
+msgstr "Hợp đồng mở"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Open employee"
+msgstr "Nhân viên mở"
+
+#. module: pb_people_advanced
+#: model:ir.model,name:pb_people_advanced.model_pb_people_refs
+msgid "Payobook People wizard reference data"
+msgstr "Dữ liệu tham khảo của Payobook People Wizard"
+
+#. module: pb_people_advanced
+#: model:ir.model,name:pb_people_advanced.model_pb_people_contract_wizard
+msgid "Payobook guided contract creation"
+msgstr "Hướng dẫn tạo hợp đồng Payobook"
+
+#. module: pb_people_advanced
+#: model:ir.model,name:pb_people_advanced.model_pb_people_onboard_wizard
+msgid "Payobook guided employee onboarding"
+msgstr "Payobook hướng dẫn nhân viên làm quen"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Payobook · People"
+msgstr "Payobook · Mọi người"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Period & schedule"
+msgstr "Thời gian & lịch trình"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid ""
+"Renewing — start date should be after the previous contract ends to avoid an overlap."
+msgstr ""
+"Gia hạn - ngày bắt đầu phải sau khi hợp đồng trước đó kết thúc để tránh trùng lặp."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Salary structure"
+msgstr "Cơ cấu tiền lương"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Salary structure *"
+msgstr "Cơ cấu lương *"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Start"
+msgstr "Bắt đầu"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Start *"
+msgstr "Bắt đầu *"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid ""
+"Statutory details (bank, tax, insurance) can be completed later on the employee’s "
+"Advanced form."
+msgstr ""
+"Các chi tiết theo luật định (ngân hàng, thuế, bảo hiểm) có thể được điền sau trên biểu"
+" mẫu Nâng cao của nhân viên."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Structure & wage"
+msgstr "Cơ cấu & tiền lương"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Structure type"
+msgstr "Kiểu kết cấu"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Work email"
+msgstr "Email công việc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Work phone"
+msgstr "Điện thoại cơ quan"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Working schedule"
+msgstr "lịch làm việc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "· first contract created"
+msgstr "· Hợp đồng đầu tiên được tạo"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "— Optional —"
+msgstr "— Tùy chọn —"
+
+#: pb_people_advanced/static/src/js/contract_wizard.js:55
+msgid "Failed."
+msgstr "Không thành công."
+
+#: pb_people_advanced/static/src/js/onboard_wizard.js:9
+msgid "Person"
+msgstr "người"
+
+#: pb_people_advanced/static/src/js/onboard_wizard.js:9
+msgid "Role"
+msgstr "Vai trò"
+
+#: pb_people_advanced/static/src/js/onboard_wizard.js:56
+msgid "Employee created; contract: %(error)s"
+msgstr "Nhân viên được tạo ra; hợp đồng: %(error)s"

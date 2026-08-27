@@ -4,6 +4,7 @@ import { Component, useState, useRef, onMounted, onWillUnmount, onPatched } from
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
+import { _t } from "@web/core/l10n/translation";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
 
 /**
@@ -187,7 +188,7 @@ export class AiDashboard extends Component {
                 kwargs: {},
             });
             this.state.widgets = this.state.widgets.filter(w => w.id !== widgetId);
-            this.notification.add("Widget removed", { type: "info" });
+        this.notification.add(_t("Widget removed"), { type: "info" });
         } catch (error) {
             console.error("Remove widget error:", error);
         }
@@ -220,14 +221,14 @@ export class AiDashboard extends Component {
             });
             this.state.widgets = result.widgets || [];
             this.state.copilotText = "";
-            this.notification.add("Dashboard updated!", { type: "success" });
+            this.notification.add(_t("Dashboard updated!"), { type: "success" });
 
             // Flag for re-init after OWL re-renders
             this._destroyGrid();
             this._gridNeedsInit = true;
         } catch (error) {
             console.error("Copilot error:", error);
-            this.notification.add("Failed to generate. Check AI configuration.", { type: "danger" });
+            this.notification.add(_t("Failed to generate. Check AI configuration."), { type: "danger" });
         }
         this.state.isCopilotLoading = false;
     }
@@ -240,7 +241,7 @@ export class AiDashboard extends Component {
         this._destroyGrid();
         await this._loadDashboard();
         this._gridNeedsInit = true;
-        this.notification.add("Dashboard refreshed", { type: "info" });
+        this.notification.add(_t("Dashboard refreshed"), { type: "info" });
     }
 }
 

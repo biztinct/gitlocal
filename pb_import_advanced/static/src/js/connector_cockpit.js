@@ -148,10 +148,10 @@ export class ConnectorCockpit extends Component {
             if (res && typeof res === "object") {
                 this.state.detail = res;
                 if (res.error) this.notif.add(res.error, { type: "warning" });
-                else this.notif.add("Done.", { type: "success" });
+                else this.notif.add(_t("Done."), { type: "success" });
             }
         } catch (e) {
-            this.notif.add((e && e.message && e.message.toString()) || "Action failed.", { type: "danger" });
+            this.notif.add((e && e.message && e.message.toString()) || _t("Action failed."), { type: "danger" });
         } finally {
             this.state.busy = false;
         }

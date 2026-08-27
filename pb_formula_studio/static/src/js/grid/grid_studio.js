@@ -432,7 +432,7 @@ export class GridStudio extends Component {
     extraValue(ex, col) { return this.props.formatValueFor ? this.props.formatValueFor(col, ex.values) : "—"; }
     onUnpinExtra(sid) { if (this.props.onUnpinSample) this.props.onUnpinSample(sid); }
 
-    typeLabel(c) { return { input: "Input", formula: "Formula", constant: "Constant" }[c.type] || c.type; }
+    typeLabel(c) { return { input: _t("Input"), formula: _t("Formula"), constant: _t("Constant") }[c.type] || c.type; }
     formulaText(c) {
         if (c.type === "formula") return c.excel_formula || "—";
         if (c.type === "constant") return String(c.constant_value ?? "");
@@ -480,10 +480,10 @@ export class GridStudio extends Component {
         return cycles.find(cy => (cy.cols || []).includes(col)) || null;
     }
     statusOf(comp) {
-        if (!comp.is_valid) return { state: "error", message: comp.validation_message || "This formula has an error." };
+        if (!comp.is_valid) return { state: "error", message: comp.validation_message || _t("This formula has an error.") };
         const cyc = this._cycleForCol(comp.col);
         if (cyc) return { state: "error", message: cyc.human_explanation };
-        return { state: "ok", message: "Valid" };
+        return { state: "ok", message: _t("Valid") };
     }
     formulaTitle(c) {
         const st = this.statusOf(c);
@@ -1128,7 +1128,7 @@ export class GridStudio extends Component {
         return Math.abs(d) < 0.5 ? null : d;
     }
     scenarioStatus(s) {
-        return s.valid === false ? { state: "error", message: s.message || "Invalid formula" } : { state: "ok", message: "Valid" };
+        return s.valid === false ? { state: "error", message: s.message || _t("Invalid formula") } : { state: "ok", message: _t("Valid") };
     }
 
     // ---- post-render: seed the overlay input once, keep focus in view ----

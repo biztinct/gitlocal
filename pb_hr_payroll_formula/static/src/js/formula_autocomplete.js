@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import { Component, useState } from "@odoo/owl";
+import { _t } from "@web/core/l10n/translation";
 
 /**
  * FormulaAutocomplete - Autocomplete dropdown for formula input
@@ -66,12 +67,12 @@ export class FormulaAutocomplete extends Component {
 
     getCategoryLabel(category) {
         const labels = {
-            "Math": "Mathematical Functions",
-            "Logical": "Logical Functions",
-            "Text": "Text Functions",
-            "Lookup": "Lookup & Reference",
-            "Statistical": "Statistical Functions",
-            "Date": "Date & Time Functions",
+            [_t("Math")]: _t("Mathematical Functions"),
+            [_t("Logical")]: _t("Logical Functions"),
+            [_t("Text")]: _t("Text Functions"),
+            [_t("Lookup")]: _t("Lookup & Reference"),
+            [_t("Statistical")]: _t("Statistical Functions"),
+            [_t("Date")]: _t("Date & Time Functions"),
         };
         return labels[category] || category;
     }
@@ -80,7 +81,7 @@ export class FormulaAutocomplete extends Component {
         const groups = {};
 
         for (const item of this.props.items) {
-            const category = item.category || (item.type === "column" ? "Columns" : "Other");
+            const category = item.category || (item.type === "column" ? _t("Columns") : _t("Other"));
 
             if (!groups[category]) {
                 groups[category] = [];
@@ -107,25 +108,25 @@ export class FunctionHelp extends Component {
 
         const examples = {
             "SUM": [
-                { formula: "=SUM(A1, B1, C1)", result: "Sum of values" },
-                { formula: "=SUM(A1:A10)", result: "Sum of range" },
+                { formula: "=SUM(A1, B1, C1)", result: _t("Sum of values") },
+                { formula: "=SUM(A1:A10)", result: _t("Sum of range") },
             ],
             "IF": [
-                { formula: "=IF(A1>100, \"High\", \"Low\")", result: "Conditional text" },
-                { formula: "=IF(B1=0, 0, A1/B1)", result: "Avoid division by zero" },
+                { formula: "=IF(A1>100, \"High\", \"Low\")", result: _t("Conditional text") },
+                { formula: "=IF(B1=0, 0, A1/B1)", result: _t("Avoid division by zero") },
             ],
             "ROUND": [
                 { formula: "=ROUND(3.14159, 2)", result: "3.14" },
-                { formula: "=ROUND(A1, 0)", result: "Round to integer" },
+                { formula: "=ROUND(A1, 0)", result: _t("Round to integer") },
             ],
             "AVERAGE": [
-                { formula: "=AVERAGE(A1, B1, C1)", result: "Average of values" },
+                { formula: "=AVERAGE(A1, B1, C1)", result: _t("Average of values") },
             ],
             "VLOOKUP": [
-                { formula: "=VLOOKUP(A1, B1:C10, 2, FALSE)", result: "Exact match lookup" },
+                { formula: "=VLOOKUP(A1, B1:C10, 2, FALSE)", result: _t("Exact match lookup") },
             ],
             "IFERROR": [
-                { formula: "=IFERROR(A1/B1, 0)", result: "0 if error" },
+                { formula: "=IFERROR(A1/B1, 0)", result: _t("0 if error") },
             ],
         };
 
@@ -135,12 +136,12 @@ export class FunctionHelp extends Component {
     getCategoryBadgeClass() {
         const category = this.props.func?.category;
         const classes = {
-            "Math": "badge-math",
-            "Logical": "badge-logical",
-            "Text": "badge-text",
-            "Lookup": "badge-lookup",
-            "Statistical": "badge-statistical",
-            "Date": "badge-date",
+            [_t("Math")]: "badge-math",
+            [_t("Logical")]: "badge-logical",
+            [_t("Text")]: "badge-text",
+            [_t("Lookup")]: "badge-lookup",
+            [_t("Statistical")]: "badge-statistical",
+            [_t("Date")]: "badge-date",
         };
         return classes[category] || "badge-default";
     }

@@ -1,0 +1,1943 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "%(staged)s staged · %(synced)s pulled · %(mapped)s mapped"
+msgstr "%(staged)s được dàn dựng · %(synced)s đã kéo · %(mapped)s được ánh xạ"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "%s executable feeds need a path."
+msgstr "Nguồn cấp dữ liệu thực thi %s cần có đường dẫn."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "%s expected fields"
+msgstr "Các trường dự kiến ​​%s"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "%s missing feeds added. Existing configuration was kept."
+msgstr "Đã thêm nguồn cấp dữ liệu bị thiếu %s. Cấu hình hiện tại được giữ nguyên."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "%s must be a complete HTTP(S) URL."
+msgstr "%s phải là URL HTTP(S) hoàn chỉnh."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "%s must not contain credentials."
+msgstr "%s không được chứa thông tin xác thực."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "%s older rows are not tied to an exact feed"
+msgstr "Các hàng cũ hơn %s không được liên kết với nguồn cấp dữ liệu chính xác"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "A feed path cannot start with //."
+msgstr "Đường dẫn nguồn cấp dữ liệu không thể bắt đầu bằng //."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "A period cannot end before it starts."
+msgstr "Một khoảng thời gian không thể kết thúc trước khi nó bắt đầu."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid ""
+"A vendor feed code is stable and cannot be renamed. Change its display name instead."
+msgstr ""
+"A vendor feed code is stable and cannot be renamed. Thay vào đó hãy thay đổi tên hiển "
+"thị của nó."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "ABM"
+msgstr "ABM"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "API URL"
+msgstr "API URL"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "API base URL"
+msgstr "URL cơ sở API"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "API endpoint"
+msgstr "điểm cuối API"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "API version label"
+msgstr "Nhãn phiên bản API"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Add Client ID & secret"
+msgstr "Thêm ID khách hàng và bí mật"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Add a path to preview the URL"
+msgstr "Thêm đường dẫn để xem trước URL"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Add missing local templates and data-store evidence; this does not scan the vendor API"
+msgstr ""
+"Thêm các mẫu cục bộ còn thiếu và bằng chứng lưu trữ dữ liệu; cái này không quét API "
+"của nhà cung cấp"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Add or select a feed to configure it."
+msgstr "Thêm hoặc chọn một nguồn cấp dữ liệu để định cấu hình nó."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Add the Client ID and Client Secret Zoho gave you; saved values are never shown again."
+msgstr ""
+"Thêm ID khách hàng và Bí mật khách hàng Zoho đã cung cấp cho bạn; các giá trị đã lưu "
+"sẽ không bao giờ được hiển thị lại."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"After Zoho creates the client, save its Client ID and Client Secret in Payobook. The "
+"redirect URI must match character-for-character."
+msgstr ""
+"Sau khi Zoho tạo ứng dụng khách, hãy lưu ID ứng dụng khách và Bí mật ứng dụng khách "
+"trong Payobook. URI chuyển hướng phải khớp từng ký tự."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "All relative feed paths inherit this URL"
+msgstr "Tất cả đường dẫn nguồn cấp dữ liệu tương đối đều kế thừa URL này"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Allow pop-ups to connect Zoho."
+msgstr "Cho phép cửa sổ bật lên kết nối Zoho."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Analyze"
+msgstr "Phân tích"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Attendance by employee/date"
+msgstr "Sự tham dự của nhân viên/ngày"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Attendance summary"
+msgstr "Tóm tắt điểm danh"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Attendance, overtime, leave and timesheets are pulled for this window"
+msgstr "Chấm công, làm thêm giờ, nghỉ phép và bảng chấm công được kéo cho cửa sổ này"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Authorization URL"
+msgstr "URL xác thực"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Authorization contract"
+msgstr "Hợp đồng ủy quyền"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Authorized redirect URI"
+msgstr "URI chuyển hướng được ủy quyền"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Back to connector"
+msgstr "Quay lại trình kết nối"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Benefits"
+msgstr "Phúc lợi"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Blank means unchanged. Values are never shown again once saved."
+msgstr ""
+"Trống có nghĩa là không thay đổi. Các giá trị không bao giờ được hiển thị lại sau khi "
+"được lưu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Blank provider URLs continue to use the connector’s proven defaults. The resolved "
+"callback is ready to copy into Zoho."
+msgstr ""
+"URL nhà cung cấp trống tiếp tục sử dụng các giá trị mặc định đã được chứng minh của "
+"trình kết nối. Cuộc gọi lại đã được giải quyết đã sẵn sàng để sao chép vào Zoho."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Catalogue only"
+msgstr "Chỉ danh mục"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Catalogue only is visible and mappable, but cannot run."
+msgstr "Danh mục chỉ hiển thị và có thể ánh xạ nhưng không thể chạy."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Catalogue-only feeds never pretend to sync"
+msgstr "Nguồn cấp dữ liệu chỉ dành cho danh mục không bao giờ giả vờ đồng bộ hóa"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Changing the base URL updates only relative feeds. Any feed with a complete URL is "
+"left untouched."
+msgstr ""
+"Việc thay đổi URL cơ sở chỉ cập nhật các nguồn cấp dữ liệu tương đối. Bất kỳ nguồn cấp"
+" dữ liệu nào có URL hoàn chỉnh đều không bị ảnh hưởng."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Checking the installed vendor catalogue…"
+msgstr "Đang kiểm tra danh mục nhà cung cấp đã cài đặt…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Clear this value on save"
+msgstr "Xóa giá trị này khi lưu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Click to choose a file"
+msgstr "Bấm để chọn một tập tin"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Click to choose a workbook"
+msgstr "Bấm để chọn sổ làm việc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Client name"
+msgstr "Tên khách hàng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Client type"
+msgstr "Loại khách hàng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Configuration was not saved."
+msgstr "Cấu hình chưa được lưu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Configure"
+msgstr "Cấu hình"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Configure connection"
+msgstr "Định cấu hình kết nối"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid ""
+"Confirm to pull this data into the staging store. You can then run a payroll import "
+"from it."
+msgstr ""
+"Xác nhận để kéo dữ liệu này vào cửa hàng thử nghiệm. Sau đó, bạn có thể chạy nhập bảng"
+" lương từ nó."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Connection"
+msgstr "Kết nối"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Connection & Feed Studio"
+msgstr "Studio kết nối & nguồn cấp dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Connection and feeds saved."
+msgstr "Đã lưu kết nối và nguồn cấp dữ liệu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Connection foundation"
+msgstr "Nền tảng kết nối"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Connection tested"
+msgstr "Đã kiểm tra kết nối"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+#: model:ir.actions.client,name:pb_import_advanced.action_pb_import_connector_cockpit
+msgid "Connector"
+msgstr "Trình kết nối"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Connector-defined operation"
+msgstr "Hoạt động do trình kết nối xác định"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Continue in advanced view"
+msgstr "Tiếp tục ở chế độ xem nâng cao"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Copied."
+msgstr "Đã sao chép."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Copy"
+msgstr "Sao chép"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Copy homepage URL"
+msgstr "Sao chép URL trang chủ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Copy redirect URI"
+msgstr "Sao chép URI chuyển hướng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Copy resolved URL"
+msgstr "Sao chép URL đã giải quyết"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Copy-ready"
+msgstr "Sẵn sàng sao chép"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Create a Server-based Application"
+msgstr "Tạo một ứng dụng dựa trên máy chủ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Create contracts"
+msgstr "Tạo hợp đồng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Create input columns"
+msgstr "Tạo cột đầu vào"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Created"
+msgstr "Đã tạo"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Credentials"
+msgstr "Thông tin xác thực"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Credentials saved."
+msgstr "Đã lưu thông tin xác thực."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Custom / other"
+msgstr "Tùy chỉnh / khác"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Data pulled"
+msgstr "Dữ liệu được kéo"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Data to pull"
+msgstr "Dữ liệu để kéo"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Dependants"
+msgstr "Người phụ thuộc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Detect feeds only adds missing definitions and never overwrites this feed."
+msgstr ""
+"Phát hiện nguồn cấp dữ liệu chỉ bổ sung các định nghĩa còn thiếu và không bao giờ ghi "
+"đè nguồn cấp dữ liệu này."
+
+#. module: pb_import_advanced
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_connector_cockpit__display_name
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_employee_wizard__display_name
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_formula_wizard__display_name
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_multisheet_wizard__display_name
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_sync_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Display name"
+msgstr "Tên hiển thị"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Download template"
+msgstr "Tải xuống mẫu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Effective callback URI"
+msgstr "URI gọi lại hiệu quả"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Employee file (.xlsx / .csv / .json)"
+msgstr "File nhân viên (.xlsx/.csv/.json)"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Employee master"
+msgstr "Bậc thầy nhân viên"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Employee master data"
+msgstr "Dữ liệu chính của nhân viên"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Employees found"
+msgstr "Nhân viên được tìm thấy"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Employees imported"
+msgstr "Nhân viên nhập khẩu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Example: https://people.zoho.com/people/api"
+msgstr "Ví dụ: https://people.zoho.com/people/api"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Execution"
+msgstr "Thi hành"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Existing"
+msgstr "hiện có"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Expected sync cadence"
+msgstr "Nhịp độ đồng bộ hóa dự kiến"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Failed"
+msgstr "Thất bại"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Feed URL"
+msgstr "URL nguồn cấp dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Feed catalogue"
+msgstr "Danh mục nguồn cấp dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Feed catalogue is already complete. Nothing was overwritten."
+msgstr "Danh mục nguồn cấp dữ liệu đã hoàn tất. Không có gì bị ghi đè."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Feed code “%s” is already used on this connector."
+msgstr "Mã nguồn cấp dữ liệu “%s” đã được sử dụng trên trình kết nối này."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Feed codes use 2–64 lowercase letters, numbers, hyphens or underscores."
+msgstr ""
+"Mã nguồn cấp dữ liệu sử dụng 2–64 chữ cái viết thường, số, dấu gạch ngang hoặc dấu "
+"gạch dưới."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Feed definition"
+msgstr "Định nghĩa nguồn cấp dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Feed synced."
+msgstr "Nguồn cấp dữ liệu đã được đồng bộ hóa."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Feeds"
+msgstr "Nguồn cấp dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Fetch fields"
+msgstr "Tìm nạp các trường"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Fetching…"
+msgstr "Đang tìm nạp…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Field list updated."
+msgstr "Danh sách trường được cập nhật."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Field mappings"
+msgstr "Ánh xạ trường"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "File ("
+msgstr "Tập tin ("
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Find missing feeds"
+msgstr "Tìm nguồn cấp dữ liệu bị thiếu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Fixed by the selected execution handler."
+msgstr "Đã sửa lỗi bằng trình xử lý thực thi đã chọn."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Guided pull…"
+msgstr "Kéo có hướng dẫn…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "HTTP method"
+msgstr "Phương thức HTTP"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Holds %s"
+msgstr "Giữ %s"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Holds %s — not the selected period"
+msgstr "Giữ %s — không phải khoảng thời gian đã chọn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Homepage URL"
+msgstr "URL trang chủ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Human-readable guidance shown to operators; runtime parameters follow the selected "
+"execution handler."
+msgstr ""
+"Hướng dẫn mà con người có thể đọc được được hiển thị cho người vận hành; các tham số "
+"thời gian chạy tuân theo trình xử lý thực thi đã chọn."
+
+#. module: pb_import_advanced
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_connector_cockpit__id
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_employee_wizard__id
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_formula_wizard__id
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_multisheet_wizard__id
+#: model:ir.model.fields,field_description:pb_import_advanced.field_pb_import_sync_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_import_advanced
+#: model:ir.actions.client,name:pb_import_advanced.action_pb_employee_wizard
+msgid "Import Employees"
+msgstr "Nhập Nhân viên"
+
+#. module: pb_import_advanced
+#: model:ir.actions.client,name:pb_import_advanced.action_pb_formula_wizard
+msgid "Import Formula Configuration"
+msgstr "Nhập Cấu hình công thức"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Import employees"
+msgstr "nhân viên nhập khẩu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Import formula configuration"
+msgstr "Nhập cấu hình công thức"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Import from"
+msgstr "Nhập từ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Import rules"
+msgstr "Quy tắc nhập khẩu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Installed from the vendor catalogue; your edits are never overwritten automatically."
+msgstr ""
+"Được cài đặt từ danh mục của nhà cung cấp; các chỉnh sửa của bạn không bao giờ được "
+"ghi đè tự động."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Integrations"
+msgstr "Tích hợp"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Keep existing rules in the config"
+msgstr "Giữ các quy tắc hiện có trong cấu hình"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Last pull"
+msgstr "Lần kéo cuối cùng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Last sync"
+msgstr "Đồng bộ hóa lần cuối"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Leave / time-off"
+msgstr "Nghỉ phép/nghỉ phép"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Leave blank to use the Payobook callback below."
+msgstr "Để trống để sử dụng lệnh gọi lại Payobook bên dưới."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Leave records"
+msgstr "Để lại hồ sơ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Load pay data…"
+msgstr "Tải dữ liệu thanh toán…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Load preview"
+msgstr "Tải bản xem trước"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Load this period's pay data through this connection — upload or pull, review the "
+"matches, then commit."
+msgstr ""
+"Tải dữ liệu thanh toán của kỳ này thông qua kết nối này — tải lên hoặc kéo, xem lại "
+"các kết quả phù hợp, sau đó cam kết."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Loading connector…"
+msgstr "Đang tải trình kết nối…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Main"
+msgstr "Chính"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Make every OAuth address explicit"
+msgstr "Làm cho mọi địa chỉ OAuth rõ ràng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Map fields"
+msgstr "Các trường bản đồ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Max records (optional)"
+msgstr "Bản ghi tối đa (tùy chọn)"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "More actions"
+msgstr "Thêm hành động"
+
+#. module: pb_import_advanced
+#: model:ir.actions.client,name:pb_import_advanced.action_pb_multisheet_wizard
+msgid "Multi-sheet Excel Import"
+msgstr "Nhập Excel nhiều trang"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Multi-sheet Excel import"
+msgstr "Nhập Excel nhiều trang"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Never synced"
+msgstr "Chưa bao giờ được đồng bộ hóa"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "New feed"
+msgstr "Nguồn cấp dữ liệu mới"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Next month"
+msgstr "Tháng sau"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid ""
+"Next, the detailed view lets you pick the primary key that joins the sheets, choose "
+"columns, set the append order and map any missing fields."
+msgstr ""
+"Tiếp theo, chế độ xem chi tiết cho phép bạn chọn khóa chính nối các trang tính, chọn "
+"cột, đặt thứ tự nối thêm và ánh xạ mọi trường bị thiếu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "No feed on this connector has ever pulled data."
+msgstr "Không có nguồn cấp dữ liệu nào trên trình kết nối này từng lấy dữ liệu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "No feeds catalogued yet."
+msgstr "Chưa có nguồn cấp dữ liệu nào được liệt kê."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"No feeds catalogued yet. “Find missing feeds” checks the installed\n"
+"            vendor catalogue and records already in the data store; it does not\n"
+"            scan the vendor API."
+msgstr ""
+"Chưa có nguồn cấp dữ liệu nào được liệt kê. “Tìm nguồn cấp dữ liệu bị thiếu” kiểm tra các nguồn cấp dữ liệu đã cài đặt\n"
+"            danh mục nhà cung cấp và hồ sơ đã có trong kho dữ liệu; nó không\n"
+"            quét API của nhà cung cấp."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "No field list was returned."
+msgstr "Không có danh sách trường nào được trả lại."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "No field mappings yet. Use “Fetch fields” to discover them."
+msgstr "Chưa có bản đồ trường nào. Sử dụng “Trường tìm nạp” để khám phá chúng."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "No rules found."
+msgstr "Không tìm thấy quy tắc nào."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "No transformation rules."
+msgstr "Không có quy tắc chuyển đổi."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "OAuth"
+msgstr "OAuth"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "OAuth scopes"
+msgstr "phạm vi OAuth"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "OAuth settings could not be saved."
+msgstr "Không thể lưu cài đặt OAuth."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Off"
+msgstr "Tắt"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "One trusted root for every feed"
+msgstr "Một nguồn gốc đáng tin cậy cho mọi nguồn cấp dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Only a system administrator may change a connector's credentials."
+msgstr ""
+"Chỉ quản trị viên hệ thống mới có thể thay đổi thông tin xác thực của trình kết nối."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Open Mapping"
+msgstr "Mở bản đồ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Open all"
+msgstr "Mở tất cả"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Open configuration"
+msgstr "Mở cấu hình"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Open native record"
+msgstr "Mở bản ghi gốc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Options"
+msgstr "Tùy chọn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Overtime requests"
+msgstr "Yêu cầu làm thêm giờ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Parameter contract"
+msgstr "Hợp đồng tham số"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Payobook"
+msgstr "Payobook"
+
+#. module: pb_import_advanced
+#: model:ir.model,name:pb_import_advanced.model_pb_import_connector_cockpit
+msgid "Payobook connector cockpit"
+msgstr "Buồng kết nối Payobook"
+
+#. module: pb_import_advanced
+#: model:ir.model,name:pb_import_advanced.model_pb_import_sync_wizard
+msgid "Payobook guided connector sync"
+msgstr "Đồng bộ hóa trình kết nối có hướng dẫn của Payobook"
+
+#. module: pb_import_advanced
+#: model:ir.model,name:pb_import_advanced.model_pb_import_employee_wizard
+msgid "Payobook guided employee import"
+msgstr "Payobook hướng dẫn nhập nhân viên"
+
+#. module: pb_import_advanced
+#: model:ir.model,name:pb_import_advanced.model_pb_import_formula_wizard
+msgid "Payobook guided formula-config import"
+msgstr "Nhập cấu hình công thức theo hướng dẫn của Payobook"
+
+#. module: pb_import_advanced
+#: model:ir.model,name:pb_import_advanced.model_pb_import_multisheet_wizard
+msgid "Payobook guided multi-sheet import (shell)"
+msgstr "Nhập nhiều trang theo hướng dẫn của Payobook (shell)"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Payobook · Import"
+msgstr "Payobook · Nhập khẩu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Payobook · Sync"
+msgstr "Payobook · Đồng bộ hóa"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Payroll structure"
+msgstr "Cơ cấu tiền lương"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Period & options"
+msgstr "Thời gian & tùy chọn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Period from"
+msgstr "Khoảng thời gian từ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Period to"
+msgstr "Khoảng thời gian đến"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Preserve categories"
+msgstr "Bảo tồn danh mục"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Preview"
+msgstr "Xem trước"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Previous month"
+msgstr "Tháng trước"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Produces"
+msgstr "sản xuất"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Pull data"
+msgstr "Kéo dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Pull data from connector"
+msgstr "Kéo dữ liệu từ trình kết nối"
+
+#. module: pb_import_advanced
+#: model:ir.actions.client,name:pb_import_advanced.action_pb_sync_wizard
+msgid "Pull from Connector"
+msgstr "Kéo từ đầu nối"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Pull one year at a time or less."
+msgstr "Kéo một năm một lần hoặc ít hơn."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Ready to import. New employees"
+msgstr "Sẵn sàng để nhập khẩu. Nhân viên mới"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Redirect URI"
+msgstr "URI chuyển hướng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Redirect URI override"
+msgstr "Ghi đè URI chuyển hướng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Reference only; the resolved feed URLs are the execution truth."
+msgstr "Chỉ tham khảo; các URL nguồn cấp dữ liệu được giải quyết là sự thật thực thi."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Relative feed paths are resolved against this base URL. Absolute feed URLs remain "
+"independent."
+msgstr ""
+"Đường dẫn nguồn cấp dữ liệu tương đối được giải quyết dựa trên URL cơ sở này. URL "
+"nguồn cấp dữ liệu tuyệt đối vẫn độc lập."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Relative path or complete URL"
+msgstr "Đường dẫn tương đối hoặc URL đầy đủ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Restore vendor template"
+msgstr "Khôi phục mẫu nhà cung cấp"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Rules & options"
+msgstr "Quy tắc & tùy chọn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Rules are taken from the selected"
+msgstr "Các quy tắc được lấy từ lựa chọn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Rules imported"
+msgstr "Đã nhập quy tắc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Run transformation rules"
+msgstr "Chạy quy tắc chuyển đổi"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Safe inheritance"
+msgstr "Kế thừa an toàn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Salary / compensation"
+msgstr "Lương/thù lao"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Save & connect Zoho"
+msgstr "Lưu và kết nối Zoho"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Save configuration"
+msgstr "Lưu cấu hình"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Save credentials"
+msgstr "Lưu thông tin xác thực"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Saving…"
+msgstr "Đang lưu…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Search salary rules…"
+msgstr "Tìm kiếm quy định về lương…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Secrets remain write-only"
+msgstr "Bí mật vẫn chỉ được ghi"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Seeded templates and your additions"
+msgstr "Các mẫu được gieo hạt và các phần bổ sung của bạn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Server-based Applications"
+msgstr "Ứng dụng dựa trên máy chủ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Set main"
+msgstr "Đặt chính"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Stable code"
+msgstr "Mã ổn định"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Staged records"
+msgstr "Hồ sơ dàn dựng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Sync"
+msgstr "Đồng bộ"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Sync interval must be a whole number."
+msgstr "Khoảng thời gian đồng bộ hóa phải là số nguyên."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Sync interval must be between 0 and 525600 minutes."
+msgstr "Khoảng thời gian đồng bộ hóa phải nằm trong khoảng từ 0 đến 525600 phút."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Synced %sd ago"
+msgstr "Đã đồng bộ hóa %sd trước đây"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Synced %sh ago"
+msgstr "Đã đồng bộ hóa %sh trước đây"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Synced <1h ago"
+msgstr "Đã đồng bộ hóa <1 giờ trước"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Syncing…"
+msgstr "Đang đồng bộ hóa…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "System administrator required"
+msgstr "Cần có quản trị viên hệ thống"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "Target & source"
+msgstr "Mục tiêu & nguồn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Target & workbook"
+msgstr "Mục tiêu & sổ làm việc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Target configuration"
+msgstr "Cấu hình mục tiêu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Target rule"
+msgstr "Quy tắc mục tiêu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Tax"
+msgstr "Thuế"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Template safety"
+msgstr "An toàn mẫu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Template was not restored."
+msgstr "Mẫu chưa được khôi phục."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Test connection"
+msgstr "Kiểm tra kết nối"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "That could not be opened."
+msgstr "Cái đó không thể mở được."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "That feed could not be synced."
+msgstr "Không thể đồng bộ hóa nguồn cấp dữ liệu đó."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "That feed does not belong to this connector."
+msgstr "Nguồn cấp dữ liệu đó không thuộc về trình kết nối này."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "That feed has an unsupported configuration value."
+msgstr "Nguồn cấp dữ liệu đó có giá trị cấu hình không được hỗ trợ."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "That field list could not be fetched."
+msgstr "Không thể tìm nạp danh sách trường đó."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "That period is not a pair of dates."
+msgstr "Khoảng thời gian đó không phải là một cặp ngày tháng."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "The connection was tested at this time. A test moves no data."
+msgstr ""
+"Kết nối đã được kiểm tra tại thời điểm này. Một bài kiểm tra không di chuyển dữ liệu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "The feed ran, but its records could not be staged."
+msgstr "Nguồn cấp dữ liệu đã chạy nhưng không thể sắp xếp các bản ghi của nó."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "The feed synced with some staging errors. Review the feed card."
+msgstr ""
+"Nguồn cấp dữ liệu được đồng bộ hóa với một số lỗi dàn dựng. Xem lại thẻ nguồn cấp dữ "
+"liệu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "The installed feed catalogue could not be checked."
+msgstr "Không thể kiểm tra danh mục nguồn cấp dữ liệu đã cài đặt."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"The window this feed's rows are about — a different fact from when it was last "
+"fetched."
+msgstr ""
+"Cửa sổ chứa các hàng của nguồn cấp dữ liệu này — một thực tế khác với thời điểm nó "
+"được tìm nạp lần cuối."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"These records predate exact feed tracking and remain available in the connector data "
+"store."
+msgstr ""
+"Những bản ghi này có trước tính năng theo dõi nguồn cấp dữ liệu chính xác và vẫn có "
+"sẵn trong kho dữ liệu trình kết nối."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Those could not be saved."
+msgstr "Những điều đó không thể cứu được."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Timesheets"
+msgstr "Bảng chấm công"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "To"
+msgstr "Để"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Token URL"
+msgstr "Token URL"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "Total records"
+msgstr "Tổng số hồ sơ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Transform"
+msgstr "chuyển đổi"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Transformations"
+msgstr "chuyển đổi"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Update existing employees"
+msgstr "Cập nhật nhân viên hiện có"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Updated"
+msgstr "Đã cập nhật"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Upgrade this database before changing feed definitions."
+msgstr "Nâng cấp cơ sở dữ liệu này trước khi thay đổi định nghĩa nguồn cấp dữ liệu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Used for overdue status, not scheduling. 0 means manual only."
+msgstr "Dùng cho trạng thái quá hạn, không lập lịch. 0 means manual only."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid ""
+"Uses a one-time, 10-minute state check. Tokens remain server-side and are never "
+"returned to this screen."
+msgstr ""
+"Sử dụng kiểm tra trạng thái một lần, 10 phút. Mã thông báo vẫn ở phía máy chủ và không"
+" bao giờ được trả lại màn hình này."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Validation errors"
+msgstr "Lỗi xác thực"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Vendor default shown. Saving makes it explicit for this connector."
+msgstr ""
+"Mặc định của nhà cung cấp được hiển thị. Việc lưu làm cho nó rõ ràng đối với trình kết"
+" nối này."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Vendor identity; use the display name for local wording."
+msgstr "Danh tính nhà cung cấp; sử dụng tên hiển thị cho từ ngữ địa phương."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Vendor template restored."
+msgstr "Mẫu nhà cung cấp được khôi phục."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "View data"
+msgstr "Xem dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "View data store"
+msgstr "Xem kho dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "View employees"
+msgstr "Xem nhân viên"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid ""
+"We’ll analyze the tabs, then let you choose sheets and columns. The advanced ordering "
+"& mapping steps open in the detailed view."
+msgstr ""
+"Chúng tôi sẽ phân tích các tab, sau đó cho phép bạn chọn trang tính và cột. Các bước "
+"sắp xếp và ánh xạ nâng cao sẽ mở ra ở chế độ xem chi tiết."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid ""
+"We’ll load a preview first so you can review matches and validation before anything is"
+" created."
+msgstr ""
+"Trước tiên, chúng tôi sẽ tải bản xem trước để bạn có thể xem lại kết quả trùng khớp và"
+" xác thực trước khi tạo bất kỳ nội dung nào."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Workbook (.xlsx with multiple tabs)"
+msgstr "Sổ làm việc (.xlsx có nhiều tab)"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "Worksheets — pick the main sheet and which to include"
+msgstr "Bảng tính - chọn bảng chính và bảng cần đưa vào"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "You cannot configure this connector."
+msgstr "Bạn không thể định cấu hình trình kết nối này."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Zoho API Console"
+msgstr "Bảng điều khiển API Zoho"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Zoho API key"
+msgstr "Khóa API Zoho"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Zoho authorization did not complete."
+msgstr "Ủy quyền Zoho chưa hoàn tất."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Zoho is connected."
+msgstr "Zoho đã được kết nối."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "Zoho organization ID"
+msgstr "ID tổ chức Zoho"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "and their contracts"
+msgstr "và hợp đồng của họ"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "checks"
+msgstr "séc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "cols · header row"
+msgstr "cols · hàng tiêu đề"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "contracts"
+msgstr "hợp đồng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "created ·"
+msgstr "đã tạo ·"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "https://accounts.zoho.com/oauth/v2/auth"
+msgstr "https://accounts.zoho.com/oauth/v2/auth"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "https://accounts.zoho.com/oauth/v2/token"
+msgstr "https://accounts.zoho.com/oauth/v2/token"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "https://people.zoho.com/people/api"
+msgstr "https://people.zoho.com/people/api"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "https://…"
+msgstr "https://…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "minutes"
+msgstr "phút"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "now has"
+msgstr "bây giờ có"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "oauth_redirect_uri"
+msgstr "oauth_redirect_uri"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "oauth_token_url"
+msgstr "oauth_token_url"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+msgid "records staged from the connector."
+msgstr "các bản ghi được sắp xếp từ trình kết nối."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "required"
+msgstr "bắt buộc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/multisheet_wizard.xml:0
+msgid "rows ·"
+msgstr "hàng ·"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "rules"
+msgstr "quy tắc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "rules will be imported from this structure."
+msgstr "các quy tắc sẽ được nhập từ cấu trúc này."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "runnable"
+msgstr "có thể chạy được"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "selected"
+msgstr "đã chọn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "unchanged"
+msgstr "không thay đổi"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "updated ·"
+msgstr "đã cập nhật ·"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "will be created; existing ones"
+msgstr "sẽ được tạo ra; những cái hiện có"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "· configure once, understand every URL before it runs"
+msgstr "· cấu hình một lần, hiểu mọi URL trước khi chạy"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+msgid "— Optional —"
+msgstr "— Tùy chọn —"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/formula_wizard.xml:0
+msgid "— Select —"
+msgstr "— Chọn —"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid ""
+"“Produces” cannot change after this feed has stored data. Create a new feed instead so"
+" existing provenance remains true."
+msgstr ""
+"“Sản phẩm” không thể thay đổi sau khi nguồn cấp dữ liệu này đã lưu trữ dữ liệu. Thay "
+"vào đó, hãy tạo một nguồn cấp dữ liệu mới để nguồn gốc hiện tại vẫn đúng."
+
+#: pb_import_advanced/static/src/js/connector_cockpit.js:151
+msgid "Done."
+msgstr "Xong."
+
+#: pb_import_advanced/static/src/js/connector_cockpit.js:154
+msgid "Action failed."
+msgstr "Thao tác không thành công."
+
+#: pb_import_advanced/static/src/js/employee_wizard.js:70
+msgid "Step failed."
+msgstr "Bước không thành công."
+
+#: pb_import_advanced/static/src/js/formula_wizard.js:86
+msgid "Import failed."
+msgstr "Nhập không thành công."
+
+#: pb_import_advanced/static/src/js/multisheet_wizard.js:9
+msgid "Upload"
+msgstr "Tải lên"
+
+#: pb_import_advanced/static/src/js/multisheet_wizard.js:9
+msgid "Sheets"
+msgstr "Trang tính"

@@ -3,6 +3,7 @@
 import { Component, useState, onWillStart, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 
 const IC = {
     upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
@@ -17,9 +18,9 @@ const IC = {
     plus: '<path d="M12 5v14M5 12h14"/>',
     search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
 };
-const STEPS = ["Source & file", "Review & match", "Validate", "Commit"];
+const STEPS = [_t("Source & file"), _t("Review & match"), _t("Validate"), _t("Commit")];
 const LINE_CLS = { matched: "ok", validated: "ok", processed: "ok", new: "new", unmatched: "warn", error: "err", draft: "muted" };
-const LINE_LABEL = { matched: "Matched", validated: "Validated", processed: "Processed", unmatched: "Unmatched", error: "Error", draft: "Pending" };
+const LINE_LABEL = { matched: _t("Matched"), validated: _t("Validated"), processed: _t("Processed"), unmatched: _t("Unmatched"), error: _t("Error"), draft: _t("Pending") };
 
 export class ImportWizard extends Component {
     static template = "pb_import_wizard.ImportWizard";
@@ -145,7 +146,7 @@ export class ImportWizard extends Component {
             if (res && res.error) this.notif.add(res.error, { type: "warning" });
             if (nextStep) this.state.step = nextStep;
         } catch (e) {
-            this.notif.add((e && e.message && e.message.toString()) || "Step failed.", { type: "danger" });
+            this.notif.add((e && e.message && e.message.toString()) || _t("Step failed."), { type: "danger" });
         } finally {
             this.state.loading = false;
         }

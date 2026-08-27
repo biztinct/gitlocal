@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.structures.wizard";
@@ -29,7 +30,7 @@ export class StructureWizard extends Component {
             const res = await this.orm.call(MODEL, "create_structure", [this.state.form]);
             if (res.error) { this.notif.add(res.error, { type: "danger" }); return; }
             this.state.result = res;
-        } catch (e) { this.notif.add("Failed.", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Failed."), { type: "danger" }); }
         finally { this.state.loading = false; }
     }
     openStructure() {
@@ -71,7 +72,7 @@ export class StructureRuleWizard extends Component {
             const res = await this.orm.call(MODEL, "add_rule", [{ ...this.state.form, structure_id: this.sid }]);
             if (res.error) { this.notif.add(res.error, { type: "danger" }); return; }
             this.state.result = res;
-        } catch (e) { this.notif.add("Failed.", { type: "danger" }); }
+        } catch (e) { this.notif.add(_t("Failed."), { type: "danger" }); }
         finally { this.state.loading = false; }
     }
     backToStructure() {

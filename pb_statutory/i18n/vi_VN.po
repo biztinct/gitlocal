@@ -1,0 +1,588 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "% · ER"
+msgstr "% · ER"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "/month)"
+msgstr "/tháng)"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Active insurance rates"
+msgstr "Tỷ lệ bảo hiểm tích cực"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Active only"
+msgstr "Chỉ hoạt động"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "Adjustments"
+msgstr "Điều chỉnh"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Advanced form"
+msgstr "Biểu mẫu nâng cao"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Brackets"
+msgstr "Dấu ngoặc đơn"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Ceiling"
+msgstr "Trần nhà"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Code *"
+msgstr "Mã *"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Contribution analysis"
+msgstr "Phân tích đóng góp"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Contribution rates, ceilings, tax brackets and actuals."
+msgstr "Tỷ lệ đóng góp, mức trần, khung thuế và số liệu thực tế."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Contributions"
+msgstr "Đóng góp"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "Could not load this row's detail."
+msgstr "Không thể tải chi tiết của hàng này."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "Could not load this table."
+msgstr "Không thể tải bảng này."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Create policy"
+msgstr "Tạo chính sách"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Create tax table"
+msgstr "Tạo bảng thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Creating…"
+msgstr "Đang tạo…"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Cumulative fixed"
+msgstr "Tích lũy cố định"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Data"
+msgstr "Dữ liệu"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Deductions ("
+msgstr "Các khoản khấu trừ ("
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Dependents"
+msgstr "Người phụ thuộc"
+
+#. module: pb_statutory
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory__display_name
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "EE"
+msgstr "EE"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Effective date"
+msgstr "Ngày có hiệu lực"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Employee leg"
+msgstr "Chân nhân viên"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Employee total"
+msgstr "Tổng số nhân viên"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Employer"
+msgstr "Doanh nghiệp"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Employer leg"
+msgstr "Chân chủ"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Employer total"
+msgstr "Tổng số nhà tuyển dụng"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Generate default progressive brackets"
+msgstr "Tạo dấu ngoặc lũy tiến mặc định"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Health Insurance (BHYT)"
+msgstr "Bảo hiểm Y tế (BHYT)"
+
+#. module: pb_statutory
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory__id
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Identity"
+msgstr "Định danh"
+
+#. module: pb_statutory
+#: model:ir.actions.client,name:pb_statutory.action_pb_policy_detail
+msgid "Insurance Policy"
+msgstr "Chính sách bảo hiểm"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Insurance policies"
+msgstr "Hợp đồng bảo hiểm"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Insurance policy"
+msgstr "Chính sách bảo hiểm"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Loading policy…"
+msgstr "Đang tải chính sách…"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Loading statutory…"
+msgstr "Đang tải theo luật định…"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Loading tax table…"
+msgstr "Đang tải bảng thuế..."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Monthly ceiling"
+msgstr "Trần hàng tháng"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Name *"
+msgstr "Tên *"
+
+#. module: pb_statutory
+#: model:ir.actions.client,name:pb_statutory.action_pb_policy_wizard
+msgid "New Insurance Policy"
+msgstr "Chính sách bảo hiểm mới"
+
+#. module: pb_statutory
+#: model:ir.actions.client,name:pb_statutory.action_pb_tax_wizard
+msgid "New Tax Table"
+msgstr "Bảng thuế mới"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "New insurance policy"
+msgstr "Hợp đồng bảo hiểm mới"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "New tax table"
+msgstr "Bảng thuế mới"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "No active insurance policy."
+msgstr "Không có chính sách bảo hiểm đang hoạt động."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "No active tax table."
+msgstr "Không có bảng thuế hoạt động."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "No insurance policies."
+msgstr "Không có chính sách bảo hiểm."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "No tax tables."
+msgstr "Không có bảng thuế."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Open policy"
+msgstr "Chính sách mở"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Open tax table"
+msgstr "Mở bảng thuế"
+
+#. module: pb_statutory
+#: model:ir.model,name:pb_statutory.model_pb_statutory
+msgid "Payobook Statutory cockpit data"
+msgstr "Dữ liệu buồng lái theo luật định của Payobook"
+
+#. module: pb_statutory
+#: model:ir.model,name:pb_statutory.model_pb_statutory_wizard
+msgid "Payobook statutory config wizards"
+msgstr "Trình hướng dẫn cấu hình theo luật định của Payobook"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Payobook · Statutory"
+msgstr "Payobook · Theo luật định"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Per dependent"
+msgstr "Mỗi người phụ thuộc"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Personal"
+msgstr "Cá nhân"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Personal relief"
+msgstr "Cứu trợ cá nhân"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Policies"
+msgstr "Chính sách"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Policy created"
+msgstr "Đã tạo chính sách"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Progressive brackets"
+msgstr "Dấu ngoặc lũy tiến"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Rate"
+msgstr "Hệ số"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Rates (employee / employer %)"
+msgstr "Tỷ lệ (nhân viên / chủ lao động%)"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid ""
+"Rates default to Vietnam 2024. Fine-tune ceilings and waivers later on the Advanced "
+"form."
+msgstr ""
+"Giá mặc định là Việt Nam 2024. Tinh chỉnh mức trần và miễn trừ sau trên biểu mẫu Nâng "
+"cao."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Scheme"
+msgstr "sơ đồ"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Scheme rates & ceilings"
+msgstr "Tỷ lệ và trần chương trình"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "Showing %(shown)s of %(total)s"
+msgstr "Đang hiển thị %(shown)s của %(total)s"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid ""
+"Showing %(shown)s of %(total)s · the newest %(loaded)s are loaded, so narrow the "
+"search to reach the rest."
+msgstr ""
+"Hiển thị %(shown)s của %(total)s · %(loaded)s mới nhất đã được tải, vì vậy hãy thu hẹp"
+" tìm kiếm để tiếp cận phần còn lại."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Social Insurance (BHXH)"
+msgstr "Bảo hiểm xã hội (BHXH)"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+#: model:ir.actions.client,name:pb_statutory.action_pb_statutory
+msgid "Statutory"
+msgstr "Biên chế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Statutory · Insurance & Tax"
+msgstr "Theo luật định · Bảo hiểm & Thuế"
+
+#. module: pb_statutory
+#: model:ir.actions.client,name:pb_statutory.action_pb_tax_detail
+msgid "Tax Table"
+msgstr "Bảng thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Tax brackets"
+msgstr "khung thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Tax table"
+msgstr "Bảng thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Tax table created"
+msgstr "Đã tạo bảng thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Tax tables"
+msgstr "Bảng thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Tax year"
+msgstr "Năm tính thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Tax year *"
+msgstr "Năm tính thuế *"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "This table could not be loaded."
+msgstr "Không thể tải bảng này."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "To"
+msgstr "Để"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Total"
+msgstr "Tổng cộng"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "Unemployment (BHTN)"
+msgstr "Thất nghiệp (BHTN)"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
+msgid "Waivers:"
+msgstr "Miễn trừ:"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "brackets"
+msgstr "dấu ngoặc đơn"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
+msgid "brackets generated"
+msgstr "dấu ngoặc được tạo"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "· effective"
+msgstr "· hiệu quả"
+
+#: pb_statutory/static/src/js/statutory.js:193
+msgid "Showing %(shown)s of %(total)s · the newest %(loaded)s are"
+msgstr "Hiển thị %(shown)s của %(total)s · %(loaded)s mới nhất là"
+
+#: pb_statutory/static/src/js/statutory_wizards.js:41
+msgid "Failed."
+msgstr "Không thành công."

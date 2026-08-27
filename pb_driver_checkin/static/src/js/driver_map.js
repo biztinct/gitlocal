@@ -2,6 +2,7 @@
 import { Component, useState, useRef, onWillStart, onMounted, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { GeoMap } from "@biz_geo_tracking/js/geo_map";
 
 const POLL_MS = 5000;
@@ -188,11 +189,11 @@ export class DriverMap extends Component {
         try {
             await this.orm.call("pb.driver.map", "toggle_demo", [next]);
             this.state.demoActive = next;
-            this.notif.add(next ? "Demo mode ON — simulated routes running." : "Demo mode OFF.",
+            this.notif.add(next ? _t("Demo mode ON — simulated routes running.") : _t("Demo mode OFF."),
                 { type: next ? "success" : "info" });
             await this.refresh();
         } catch (e) {
-            this.notif.add(e.message || "Demo toggle failed.", { type: "danger" });
+            this.notif.add(e.message || _t("Demo toggle failed."), { type: "danger" });
         }
     }
 }

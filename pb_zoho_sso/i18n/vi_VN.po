@@ -1,0 +1,507 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "1000.XXXXXXXX"
+msgstr "1000.XXXXXXXX"
+
+#. module: pb_zoho_sso
+#. odoo-python
+#: code:addons/pb_zoho_sso/models/zoho_sso.py:0
+msgid "A linked Zoho identity must have a Payobook user."
+msgstr "Danh tính Zoho được liên kết phải có người dùng Payobook."
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,help:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_default_target
+msgid ""
+"A logical destination such as home or action-1156. Raw external URLs are never "
+"accepted."
+msgstr ""
+"Một đích đến hợp lý như nhà hoặc hành động-1156. URL bên ngoài thô không bao giờ được "
+"chấp nhận."
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "Account linking"
+msgstr "Liên kết tài khoản"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.actions.act_window,help:pb_zoho_sso.action_pb_zoho_sso_identity
+msgid ""
+"After Zoho verifies a user, approve the identity by selecting an active Payobook user "
+"and setting its status to Linked."
+msgstr ""
+"Sau khi Zoho xác minh người dùng, hãy phê duyệt danh tính bằng cách chọn người dùng "
+"Payobook đang hoạt động và đặt trạng thái của người đó thành Đã liên kết."
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "Allow users to sign in through Zoho People"
+msgstr "Cho phép người dùng đăng nhập thông qua Zoho People"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_allowed_domains
+msgid "Allowed email domains"
+msgstr "Tên miền email được phép"
+
+#. module: pb_zoho_sso
+#: model:ir.model.constraint,message:pb_zoho_sso.constraint_pb_zoho_sso_transaction_unique_state_hash
+msgid "An SSO transaction with this state already exists."
+msgstr "Giao dịch SSO có trạng thái này đã tồn tại."
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_audit__event__pending
+msgid "Approval required"
+msgstr "Cần có sự phê duyệt"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__res_config_settings__pb_zoho_sso_accounts_url__https://accounts_zoho_com_au
+msgid "Australia (.com.au)"
+msgstr "Úc (.com.au)"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_callback_url
+msgid "Authorized redirect URI"
+msgstr "URI chuyển hướng được ủy quyền"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_auto_link_email
+msgid "Automatically link existing users"
+msgstr "Tự động liên kết người dùng hiện tại"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_identity__state__pending
+msgid "Awaiting approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_identity__state__blocked
+msgid "Blocked"
+msgstr "Đã bị chặn"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__browser_nonce_hash
+msgid "Browser Nonce Hash"
+msgstr "Trình duyệt Nonce Hash"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__res_config_settings__pb_zoho_sso_accounts_url__https://accounts_zoho_ca
+msgid "Canada (.ca)"
+msgstr "Canada (.ca)"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__res_config_settings__pb_zoho_sso_accounts_url__https://accounts_zoho_com_cn
+msgid "China (.com.cn)"
+msgstr "Trung Quốc (.com.cn)"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_client_id
+msgid "Client ID"
+msgstr "ID ứng dụng"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_client_secret
+msgid "Client Secret"
+msgstr "Bí mật ứng dụng"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__code_verifier
+msgid "Code Verifier"
+msgstr "Trình xác minh mã"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,help:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_allowed_domains
+msgid ""
+"Comma-separated company domains, for example example.com,example.com.au. Leave empty "
+"to require every identity to be approved manually."
+msgstr ""
+"Các miền công ty được phân tách bằng dấu phẩy, ví dụ example.com,example.com.au. Để "
+"trống để yêu cầu mọi danh tính phải được phê duyệt thủ công."
+
+#. module: pb_zoho_sso
+#: model:ir.model,name:pb_zoho_sso.model_res_config_settings
+msgid "Config Settings"
+msgstr "Cấu hình thiết lập"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_transaction__status__consumed
+msgid "Consumed"
+msgstr "tiêu thụ"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid ""
+"Copy this URL into the Zoho People button. The destination is resolved inside "
+"Payobook, never from an external URL."
+msgstr ""
+"Sao chép URL này vào nút Zoho People. Đích được giải quyết bên trong Payobook, không "
+"bao giờ từ URL bên ngoài."
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__create_uid
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__create_uid
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__create_date
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__create_date
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__credential_hash
+msgid "Credential Hash"
+msgstr "Băm thông tin xác thực"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_default_target
+msgid "Default Payobook destination"
+msgstr "Điểm đến Payobook mặc định"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_audit__event__denied
+msgid "Denied"
+msgstr "Bị từ chối"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__detail
+msgid "Detail"
+msgstr "Chi tiết"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__display_name
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__display_name
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__display_name
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_users__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__email
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__email
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_enabled
+msgid "Enable Zoho single sign-on"
+msgstr "Bật đăng nhập một lần Zoho"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__res_config_settings__pb_zoho_sso_accounts_url__https://accounts_zoho_eu
+msgid "Europe (.eu)"
+msgstr "Châu Âu (.eu)"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__event
+msgid "Event"
+msgstr "Sự kiện"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__expires_at
+msgid "Expires At"
+msgstr "Expires Tại"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_audit__event__failed
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_transaction__status__failed
+msgid "Failed"
+msgstr "Thất bại"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.sso_error_page
+msgid "Go to Payobook sign in"
+msgstr "Vào Payobook đăng nhập"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__id
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__id
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__id
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__id
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_users__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__identity_id
+msgid "Identity"
+msgstr "Định danh"
+
+#. module: pb_zoho_sso
+#: model:ir.ui.menu,name:pb_zoho_sso.menu_pb_zoho_sso_identities
+msgid "Identity approvals"
+msgstr "Phê duyệt danh tính"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__res_config_settings__pb_zoho_sso_accounts_url__https://accounts_zoho_in
+msgid "India (.in)"
+msgstr "Ấn Độ (.in)"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__res_config_settings__pb_zoho_sso_accounts_url__https://accounts_zoho_jp
+msgid "Japan (.jp)"
+msgstr "Nhật Bản (.jp)"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__last_login_at
+msgid "Last Login At"
+msgstr "Đăng nhập lần cuối vào lúc"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__last_seen_at
+msgid "Last Seen At"
+msgstr "Nhìn thấy lần cuối vào lúc"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__write_uid
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__write_uid
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__write_date
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__write_date
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,help:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_auto_link_email
+msgid ""
+"Link a Zoho identity to one active Payobook user whose login or email matches exactly."
+" This is only used for an allowed email domain."
+msgstr ""
+"Liên kết danh tính Zoho với một người dùng Payobook đang hoạt động có thông tin đăng "
+"nhập hoặc email khớp chính xác. Điều này chỉ được sử dụng cho một tên miền email được "
+"phép."
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_identity__state__linked
+msgid "Linked"
+msgstr "Đã liên kết"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "Manual approval is always available under Settings → Zoho SSO."
+msgstr "Phê duyệt thủ công luôn có sẵn trong Cài đặt → Zoho SSO."
+
+#. module: pb_zoho_sso
+#: model_terms:ir.actions.act_window,help:pb_zoho_sso.action_pb_zoho_sso_identity
+msgid "No Zoho identities have attempted to sign in yet."
+msgstr "Chưa có danh tính Zoho nào cố gắng đăng nhập."
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_scope
+msgid "OAuth scope"
+msgstr "phạm vi OAuth"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.sso_error_page
+msgid "Payobook"
+msgstr "Payobook"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__user_id
+msgid "Payobook user"
+msgstr "Người dùng Payobook"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_transaction__status__pending
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_transaction__status__processing
+msgid "Processing"
+msgstr "Đang xử lý"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid ""
+"Register this exact redirect URI on a Server-based Application. Do not add wildcards."
+msgstr ""
+"Đăng ký URI chuyển hướng chính xác này trên Ứng dụng dựa trên Máy chủ. Không thêm ký "
+"tự đại diện."
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__remote_ip
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__remote_ip
+msgid "Remote Ip"
+msgstr "IP từ xa"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__res_config_settings__pb_zoho_sso_accounts_url__https://accounts_zoho_sa
+msgid "Saudi Arabia (.sa)"
+msgstr "Ả Rập Saudi (.sa)"
+
+#. module: pb_zoho_sso
+#: model:ir.model,name:pb_zoho_sso.model_pb_zoho_sso_transaction
+msgid "Short-lived Zoho SSO transaction"
+msgstr "Giao dịch Zoho SSO trong thời gian ngắn"
+
+#. module: pb_zoho_sso
+#: model:ir.ui.menu,name:pb_zoho_sso.menu_pb_zoho_sso_audit
+msgid "Sign-in audit"
+msgstr "Kiểm tra đăng nhập"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_audit__event__started
+msgid "Started"
+msgstr "Đã bắt đầu"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__state_hash
+msgid "State Hash"
+msgstr "Băm trạng thái"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__status
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_audit__event__success
+msgid "Successful login"
+msgstr "Đăng nhập thành công"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__target_path
+msgid "Target Path"
+msgstr "Đường dẫn đích"
+
+#. module: pb_zoho_sso
+#: model:ir.model.constraint,message:pb_zoho_sso.constraint_pb_zoho_sso_identity_unique_payobook_user
+msgid "This Payobook user is already linked to a Zoho identity."
+msgstr "Người dùng Payobook này đã được liên kết với danh tính Zoho."
+
+#. module: pb_zoho_sso
+#: model:ir.model.constraint,message:pb_zoho_sso.constraint_pb_zoho_sso_identity_unique_zoho_identity
+msgid "This Zoho identity is already registered."
+msgstr "Danh tính Zoho này đã được đăng ký."
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__res_config_settings__pb_zoho_sso_accounts_url__https://accounts_zoho_com
+msgid "United States / Global (.com)"
+msgstr "Hoa Kỳ / Toàn cầu (.com)"
+
+#. module: pb_zoho_sso
+#: model:ir.model,name:pb_zoho_sso.model_res_users
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__user_id
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_transaction__user_id
+msgid "User"
+msgstr "Người dùng"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_audit__user_agent
+msgid "User Agent"
+msgstr "Tác nhân người dùng"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid ""
+"Uses Zoho Authorization Code flow with PKCE and maps the verified Zoho identity to an "
+"existing Payobook user."
+msgstr ""
+"Sử dụng luồng Mã ủy quyền Zoho với PKCE và ánh xạ danh tính Zoho đã được xác minh tới "
+"người dùng Payobook hiện có."
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields.selection,name:pb_zoho_sso.selection__pb_zoho_sso_transaction__status__verified
+msgid "Verified"
+msgstr "Đã xác minh"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "Zoho API Console"
+msgstr "Bảng điều khiển API Zoho"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "Zoho OAuth client"
+msgstr "Ứng dụng khách Zoho OAuth"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "Zoho People button"
+msgstr "Nút Zoho People"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_button_url
+msgid "Zoho People button URL"
+msgstr "URL nút Zoho People"
+
+#. module: pb_zoho_sso
+#: model:ir.actions.act_window,name:pb_zoho_sso.action_pb_zoho_sso_identity
+#: model:ir.ui.menu,name:pb_zoho_sso.menu_pb_zoho_sso_root
+msgid "Zoho SSO"
+msgstr "Zoho SSO"
+
+#. module: pb_zoho_sso
+#: model:ir.actions.act_window,name:pb_zoho_sso.action_pb_zoho_sso_audit
+msgid "Zoho SSO audit"
+msgstr "Kiểm tra Zoho SSO"
+
+#. module: pb_zoho_sso
+#: model:ir.model,name:pb_zoho_sso.model_pb_zoho_sso_audit
+msgid "Zoho SSO audit event"
+msgstr "Sự kiện kiểm tra Zoho SSO"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_users__zoho_sso_identity_ids
+msgid "Zoho SSO identities"
+msgstr "Danh tính Zoho SSO"
+
+#. module: pb_zoho_sso
+#: model:ir.model,name:pb_zoho_sso.model_pb_zoho_sso_identity
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.view_pb_zoho_sso_identity_form
+msgid "Zoho SSO identity"
+msgstr "Nhận dạng Zoho SSO"
+
+#. module: pb_zoho_sso
+#: model:ir.actions.server,name:pb_zoho_sso.ir_cron_gc_zoho_sso_transactions_ir_actions_server
+msgid "Zoho SSO: remove expired transactions"
+msgstr "Zoho SSO: xóa giao dịch đã hết hạn"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__accounts_url
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_res_config_settings__pb_zoho_sso_accounts_url
+msgid "Zoho data centre"
+msgstr "Trung tâm dữ liệu Zoho"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "Zoho single sign-on"
+msgstr "Đăng nhập một lần Zoho"
+
+#. module: pb_zoho_sso
+#: model:ir.model.fields,field_description:pb_zoho_sso.field_pb_zoho_sso_identity__zoho_user_id
+msgid "Zoho user ID"
+msgstr "ID người dùng Zoho"
+
+#. module: pb_zoho_sso
+#: model_terms:ir.ui.view,arch_db:pb_zoho_sso.res_config_settings_view_form_pb_zoho_sso
+msgid "yourcompany.com,yourcompany.com.au"
+msgstr "yourcompany.com,yourcompany.com.au"

@@ -1,0 +1,426 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "% · EE"
+msgstr "% · EE"
+
+#. module: pb_structures
+#: model:ir.actions.client,name:pb_structures.action_pb_structure_rule_wizard
+msgid "Add Rule"
+msgstr "Thêm quy tắc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Add rule"
+msgstr "Thêm quy tắc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Add salary rule"
+msgstr "Thêm quy định về lương"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Adding…"
+msgstr "Đang thêm…"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "Advanced form"
+msgstr "Biểu mẫu nâng cao"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "Back to Structures"
+msgstr "Quay lại Cấu trúc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Back to structure"
+msgstr "Quay lại cấu trúc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Categories"
+msgstr "Phân loại"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Category *"
+msgstr "Danh mục *"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Code *"
+msgstr "Mã *"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Countries"
+msgstr "Quốc gia"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Create structure"
+msgstr "Tạo cấu trúc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Creating…"
+msgstr "Đang tạo…"
+
+#. module: pb_structures
+#: model:ir.model.fields,field_description:pb_structures.field_pb_structures__display_name
+#: model:ir.model.fields,field_description:pb_structures.field_pb_structures_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "ER"
+msgstr "ER"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Employees covered"
+msgstr "Nhân viên được bảo hiểm"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "For Python-computed rules, use the structure’s Advanced form."
+msgstr ""
+"Đối với các quy tắc do Python tính toán, hãy sử dụng biểu mẫu Nâng cao của cấu trúc."
+
+#. module: pb_structures
+#: model:ir.model.fields,field_description:pb_structures.field_pb_structures__id
+#: model:ir.model.fields,field_description:pb_structures.field_pb_structures_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Identity"
+msgstr "Định danh"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Loading structures…"
+msgstr "Đang tải cấu trúc…"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "Loading structure…"
+msgstr "Đang tải cấu trúc…"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Mark as a base structure"
+msgstr "Đánh dấu là cấu trúc cơ sở"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Name *"
+msgstr "Tên *"
+
+#. module: pb_structures
+#: model:ir.actions.client,name:pb_structures.action_pb_structure_wizard
+msgid "New Structure"
+msgstr "Cấu trúc mới"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "New salary structure"
+msgstr "Cơ cấu lương mới"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "New structure"
+msgstr "Cấu trúc mới"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "No rules yet. Use “Add rule” to build this structure."
+msgstr "Chưa có quy tắc nào. Sử dụng “Thêm quy tắc” để xây dựng cấu trúc này."
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "No structures match these filters."
+msgstr "Không có cấu trúc nào phù hợp với các bộ lọc này."
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "On payslip"
+msgstr "Trên phiếu lương"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Open full structures list →"
+msgstr "Mở danh sách cấu trúc đầy đủ →"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Open structure"
+msgstr "Cấu trúc mở"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Pay schedule"
+msgstr "Lịch thanh toán"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Pay structures, their rules and category make-up across countries."
+msgstr "Cấu trúc thanh toán, quy tắc và danh mục của họ ở khắp các quốc gia."
+
+#. module: pb_structures
+#: model:ir.model,name:pb_structures.model_pb_structures
+msgid "Payobook salary structures cockpit"
+msgstr "Buồng lái cấu trúc lương Payobook"
+
+#. module: pb_structures
+#: model:ir.model,name:pb_structures.model_pb_structures_wizard
+msgid "Payobook structure/rule wizards"
+msgstr "Trình hướng dẫn quy tắc/cấu trúc Payobook"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Payobook · Structures"
+msgstr "Payobook · Cấu trúc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Reference code *"
+msgstr "Mã tham chiếu *"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Rule"
+msgstr "Quy định"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Rule added"
+msgstr "Đã thêm quy tắc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+#: model:ir.actions.client,name:pb_structures.action_pb_structures
+msgid "Salary Structures"
+msgstr "Cấu trúc lương"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Salary rules"
+msgstr "quy định về lương"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Search name or code…"
+msgstr "Tìm kiếm tên hoặc mã…"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Set active on create"
+msgstr "Đặt hoạt động khi tạo"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Show on payslip"
+msgstr "Hiển thị trên phiếu lương"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_structures
+#: model:ir.actions.client,name:pb_structures.action_pb_structure_detail
+msgid "Structure"
+msgstr "Cấu trúc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Structure created"
+msgstr "Cấu trúc được tạo"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Structures"
+msgstr "Cấu trúc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+msgid "Value"
+msgstr "Giá trị"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "base"
+msgstr "căn cứ"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "employees"
+msgstr "nhân viên"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "rules ·"
+msgstr "quy tắc ·"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "updated"
+msgstr "đã cập nhật"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+msgid "— Optional —"
+msgstr "— Tùy chọn —"
+
+#: pb_structures/static/src/js/structure_wizards.js:33
+msgid "Failed."
+msgstr "Không thành công."
+
+#: pb_structures/static/src/js/structures.js:11
+msgid "All"
+msgstr "Tất cả"
+
+#: pb_structures/static/src/js/structures.js:11
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#: pb_structures/static/src/js/structures.js:12
+msgid "Draft"
+msgstr "Nháp"
+
+#: pb_structures/static/src/js/structures.js:12
+msgid "Deprecated"
+msgstr "Ngừng sử dụng"
+
+#: pb_structures/static/src/js/structures.js:15
+msgid "All time"
+msgstr "Mọi lúc"
+
+#: pb_structures/static/src/js/structures.js:15
+msgid "Updated this month"
+msgstr "Đã cập nhật trong tháng này"
+
+#: pb_structures/static/src/js/structures.js:16
+msgid "Updated this year"
+msgstr "Cập nhật năm nay"
+
+#: pb_structures/static/src/js/structures.js:16
+msgid "Custom"
+msgstr "Tùy chỉnh"

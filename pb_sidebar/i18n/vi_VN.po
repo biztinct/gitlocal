@@ -1,0 +1,552 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_sidebar
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_item_form
+msgid ""
+"A locked item shows a padlock + upsell dialog <b>only for users who lack its Allowed Groups</b>\n"
+"                            (admins and users with access still open it normally). Set Allowed Groups <b>and</b> tick Restricted to lock it."
+msgstr ""
+"Một mặt hàng bị khóa hiển thị hộp thoại ổ khóa + bán thêm <b>chỉ dành cho người dùng thiếu Nhóm được phép</b>\n"
+"                            (quản trị viên và người dùng có quyền truy cập vẫn mở bình thường). Đặt nhóm được phép <b>and</b> đánh dấu Bị hạn chế để khóa nó."
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__action_xmlid
+msgid "Action XML ID"
+msgstr "ID XML hành động"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__active
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_sidebar
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_item_form
+msgid "Active-item matching (highlight rules)"
+msgstr "So khớp mục đang hoạt động (đánh dấu quy tắc)"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__groups_id
+msgid "Allowed Groups"
+msgstr "Được phép Nhóm"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_approvals
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__badge
+msgid "Badge"
+msgstr "Huy hiệu"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__action_tag
+msgid "Client Action Tag"
+msgstr "Thẻ hành động của khách hàng"
+
+#. module: pb_sidebar
+#. odoo-javascript
+#: code:addons/pb_sidebar/static/src/xml/pb_sidebar.xml:0
+msgid "Collapse / expand sidebar"
+msgstr "Thu gọn/mở rộng thanh bên"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_companies
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wfp_cycles
+msgid "Compensation Cycles"
+msgstr "Chu kỳ bồi thường"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_compliance
+msgid "Compliance"
+msgstr "Tuân thủ"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_contracts
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__create_uid
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__create_date
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_dashboard
+msgid "Dashboard"
+msgstr "Bảng điều khiển"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__display_name
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wfp_forecasts
+msgid "Employee Forecasts"
+msgstr "Dự báo nhân viên"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_emp_mapping
+msgid "Employee/Contract Mapping"
+msgstr "Ánh xạ Nhân viên/Hợp đồng"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_employees
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_explorer
+msgid "Explorer"
+msgstr "Nhà thám hiểm"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_formula
+msgid "Formula Engine"
+msgstr "Bộ máy công thức"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_full_final
+msgid "Full & Final"
+msgstr "Quyết toán thôi việc"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_govt_reports
+msgid "Government Reports"
+msgstr "Báo cáo chính phủ"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__id
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_section__restricted
+msgid ""
+"If set, non-admin users see this section LOCKED — its items stay collapsed and it "
+"cannot be expanded (shown with an upsell dialog). Admins are unaffected and can still "
+"expand it."
+msgstr ""
+"Nếu được đặt, người dùng không phải quản trị viên sẽ thấy phần này ĐÃ KHÓA — các mục "
+"của nó vẫn bị thu gọn và không thể mở rộng (hiển thị bằng hộp thoại bán thêm). Quản "
+"trị viên không bị ảnh hưởng và vẫn có thể mở rộng nó."
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_item__groups_id
+msgid "If set, only users in these groups see this item."
+msgstr "Nếu được đặt, chỉ người dùng trong các nhóm này mới nhìn thấy mục này."
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_item__restricted
+msgid ""
+"If set, users who lack this item's groups still SEE it — shown locked with an upsell "
+"dialog instead of being hidden."
+msgstr ""
+"Nếu được đặt, người dùng thiếu nhóm của mặt hàng này vẫn XEM nó - được hiển thị bị "
+"khóa bằng hộp thoại bán thêm thay vì bị ẩn."
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_import
+msgid "Import Data"
+msgstr "Nhập Dữ liệu"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_analytics
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_insurance
+msgid "Insurance Policies"
+msgstr "Chính sách bảo hiểm"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_integrations
+msgid "Integrations"
+msgstr "Tích hợp"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__write_uid
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__write_date
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_sidebar
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_item_form
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_section_form
+msgid "Lock (upsell)"
+msgstr "Khóa (bán thêm)"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__icon
+msgid "Lucide Icon"
+msgstr "Biểu tượng Lucide"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_item__icon
+msgid "Lucide icon name, e.g. home, calendar, receipt"
+msgstr "Tên biểu tượng Lucide, ví dụ: nhà, lịch, biên nhận"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__match_action_tags
+msgid "Match Action Tags"
+msgstr "Thẻ hành động phù hợp"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__match_action_xmlids
+msgid "Match Action XML IDs"
+msgstr "So khớp ID XML hành động"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__match_models
+msgid "Match Models"
+msgstr "Mô hình phù hợp"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_menu_cfg
+msgid "Menu & Sidebar"
+msgstr "Menu & Thanh bên"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__item_ids
+msgid "Menu Items"
+msgstr "Mục thực đơn"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wfp_merit
+msgid "Merit Matrix"
+msgstr "Ma trận công đức"
+
+#. module: pb_sidebar
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_item_form
+msgid ""
+"Message shown when a locked item is clicked (defaults to the standard upsell text)."
+msgstr ""
+"Thông báo hiển thị khi nhấp vào một mục bị khóa (mặc định là văn bản bán thêm tiêu "
+"chuẩn)."
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_item__restriction_reason
+msgid "Message shown when a locked item is clicked."
+msgstr "Thông báo hiển thị khi nhấp vào một mục bị khóa."
+
+#. module: pb_sidebar
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_section_form
+msgid ""
+"Message shown when a locked section is clicked (defaults to the standard upsell text)."
+msgstr ""
+"Thông báo hiển thị khi nhấp vào phần bị khóa (mặc định là văn bản bán thêm tiêu "
+"chuẩn)."
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_section__restriction_reason
+msgid "Message shown when a locked section is clicked."
+msgstr "Thông báo hiển thị khi nhấp vào phần bị khóa."
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__name
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_payrun
+msgid "Operate"
+msgstr "vận hành"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_item__badge
+msgid "Optional small badge text, e.g. a count"
+msgstr "Văn bản huy hiệu nhỏ tùy chọn, ví dụ: một số đếm"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_overview
+msgid "Overview"
+msgstr "Tổng quan"
+
+#. module: pb_sidebar
+#. odoo-javascript
+#: code:addons/pb_sidebar/static/src/xml/pb_sidebar.xml:0
+msgid "P"
+msgstr "P"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__parent_id
+msgid "Parent Item"
+msgstr "Mục gốc"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wfp_grades
+msgid "Pay Grades"
+msgstr "Trả điểm"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_pay_runs
+msgid "Pay Runs"
+msgstr "kỳ lương"
+
+#. module: pb_sidebar
+#. odoo-javascript
+#: code:addons/pb_sidebar/static/src/xml/pb_sidebar.xml:0
+msgid "Payobook"
+msgstr "Payobook"
+
+#. module: pb_sidebar
+#: model:ir.model,name:pb_sidebar.model_pb_sidebar_item
+msgid "Payobook Sidebar Item"
+msgstr "Mục thanh bên Payobook"
+
+#. module: pb_sidebar
+#: model:ir.model,name:pb_sidebar.model_pb_sidebar_section
+msgid "Payobook Sidebar Section"
+msgstr "Phần thanh bên Payobook"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wf_payroll_report
+msgid "Payroll Report"
+msgstr "Báo cáo lương"
+
+#. module: pb_sidebar
+#. odoo-javascript
+#: code:addons/pb_sidebar/static/src/xml/pb_sidebar.xml:0
+msgid "Payroll Suite"
+msgstr "Bộ bảng lương"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_payslips
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_people
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_planning
+msgid "Planning"
+msgstr "Kế hoạch"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wfp_dashboard
+msgid "Planning Dashboard"
+msgstr "Trang tổng quan lập kế hoạch"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wfp_scenarios
+msgid "Planning Scenarios"
+msgstr "Kịch bản quy hoạch"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_proration
+msgid "Proration Audit"
+msgstr "Kiểm tra phân bổ"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_section__show_label
+msgid "Render the section header label."
+msgstr "Hiển thị nhãn tiêu đề phần."
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_reports
+msgid "Reports"
+msgstr "Báo cáo"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__restricted
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__restricted
+msgid "Restricted (upsell)"
+msgstr "Bị hạn chế (bán thêm)"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__restriction_reason
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__restriction_reason
+msgid "Restriction Message"
+msgstr "Thông báo hạn chế"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_retro
+msgid "Retro Adjustments"
+msgstr "Điều chỉnh hồi tố"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_roles
+msgid "Roles & Access"
+msgstr "Vai trò & Quyền truy cập"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_run_payroll
+msgid "Run Payroll"
+msgstr "Chạy bảng lương"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_structures
+msgid "Salary Structures"
+msgstr "Cấu trúc lương"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wf_roster
+msgid "Schedule"
+msgstr "Lịch trình"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__section_id
+msgid "Section"
+msgstr "Phần"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_item__sequence
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_setup
+msgid "Setup"
+msgstr "Thiết lập"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wf_templates
+msgid "Shift Templates"
+msgstr "Mẫu ca"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__show_label
+msgid "Show Label"
+msgstr "Hiển thị nhãn"
+
+#. module: pb_sidebar
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_item_form
+msgid "Sidebar Item"
+msgstr "Mục thanh bên"
+
+#. module: pb_sidebar
+#: model:ir.actions.act_window,name:pb_sidebar.action_pb_sidebar_item
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_item_list
+msgid "Sidebar Items"
+msgstr "Mục thanh bên"
+
+#. module: pb_sidebar
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_section_form
+msgid "Sidebar Section"
+msgstr "Phần thanh bên"
+
+#. module: pb_sidebar
+#: model:ir.actions.act_window,name:pb_sidebar.action_pb_sidebar_section
+#: model:pb.sidebar.item,name:pb_sidebar.item_section_cfg
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_section_list
+msgid "Sidebar Sections"
+msgstr "Phần thanh bên"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_statutory
+msgid "Statutory (Insurance & Tax)"
+msgstr "Theo luật định (Bảo hiểm & Thuế)"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_admin
+msgid "System"
+msgstr "Hệ thống"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_wfp_tags
+msgid "Tag Components"
+msgstr "Thành phần thẻ"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_tax
+msgid "Tax Tables"
+msgstr "Bảng thuế"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,field_description:pb_sidebar.field_pb_sidebar_section__technical_key
+msgid "Technical Key"
+msgstr "Khóa kỹ thuật"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_insights
+msgid "Understand"
+msgstr "Hiểu"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_item__parent_id
+msgid "When set, this item is a sub-menu shown under its parent."
+msgstr "Khi được đặt, mục này là menu phụ được hiển thị bên dưới mục gốc của nó."
+
+#. module: pb_sidebar
+#: model_terms:ir.ui.view,arch_db:pb_sidebar.view_pb_sidebar_section_form
+msgid ""
+"When ticked, non-admin users see this section <b>locked</b> — its items stay collapsed\n"
+"                                and it can't be expanded (upsell dialog). Admins are unaffected and can still expand it."
+msgstr ""
+"Khi được đánh dấu, người dùng không phải quản trị viên sẽ thấy phần này <b>locked</b> — các mục của nó vẫn bị thu gọn\n"
+"                                và không thể mở rộng nó (hộp thoại bán thêm). Quản trị viên không bị ảnh hưởng và vẫn có thể mở rộng nó."
+
+#. module: pb_sidebar
+#: model:pb.sidebar.section,name:pb_sidebar.sec_workforce
+msgid "Workforce"
+msgstr "Lực lượng lao động"
+
+#. module: pb_sidebar
+#: model:pb.sidebar.item,name:pb_sidebar.item_workforce_insights
+msgid "Workforce Analytics"
+msgstr "Phân tích lực lượng lao động"
+
+#. module: pb_sidebar
+#: model:ir.model.fields,help:pb_sidebar.field_pb_sidebar_item__action_xmlid
+msgid ""
+"XML ID of the action to open on click, e.g. "
+"pb_hr_payroll_base.action_hr_payslip_payroll"
+msgstr ""
+"ID XML của hành động sẽ mở khi nhấp chuột, ví dụ: "
+"pb_hr_payroll_base.action_hr_payslip_payroll"
+
+#: pb_sidebar/static/src/js/pb_sidebar.js:232
+msgid "Available in the full platform"
+msgstr "Có sẵn trong nền tảng đầy đủ"
+
+#: pb_sidebar/static/src/js/pb_sidebar.js:234
+msgid ""
+"This functionality is available in the full Payobook platform. Please contact Payobook"
+" to arrange a personalised demonstration."
+msgstr ""
+"Chức năng này có sẵn trong nền tảng Payobook đầy đủ. Vui lòng liên hệ với Payobook để "
+"sắp xếp một buổi trình diễn được cá nhân hóa."
+
+#: pb_sidebar/static/src/js/pb_sidebar.js:235
+msgid "Got it"
+msgstr "Hiểu rồi"

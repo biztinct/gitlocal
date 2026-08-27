@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 
 export class PbPayrunResults extends Component {
     static template = "pb_payrun_results.PbPayrunResults";
@@ -42,7 +43,7 @@ export class PbPayrunResults extends Component {
             this.state.picker.multiCompany = !!(r && r.multi_company);
         } catch (e) {
             this.state.picker.all = [];
-            this.notif.add("Could not load pay runs", { type: "danger" });
+            this.notif.add(_t("Could not load pay runs"), { type: "danger" });
         } finally {
             this.state.picker.loading = false;
         }
@@ -106,9 +107,9 @@ export class PbPayrunResults extends Component {
     get yearFacets() { return this._facet("year", "year").sort((a, b) => String(b.v).localeCompare(String(a.v))); }
     get quickRanges() {
         return [
-            { key: "tm", label: "This month" }, { key: "lm", label: "Last month" },
-            { key: "tq", label: "This quarter" }, { key: "ty", label: "This year" },
-            { key: "ly", label: "Last year" },
+            { key: "tm", label: _t("This month") }, { key: "lm", label: _t("Last month") },
+            { key: "tq", label: _t("This quarter") }, { key: "ty", label: _t("This year") },
+            { key: "ly", label: _t("Last year") },
         ];
     }
 
@@ -176,15 +177,16 @@ export class PbPayrunResults extends Component {
         return "";
     }
     pRunMoneyLabel(card) {
-        if (Number(card.net) > 0) return "Net pay";
-        if (Number(card.gross) > 0) return "Gross";
+        if (Number(card.net) > 0) return _t("Net pay");
+        if (Number(card.gross) > 0) return _t("Gross");
         return "";
     }
     pDate(iso) {
         if (!iso) return "";
         const p = iso.split("-");
         if (p.length !== 3) return iso;
-        const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const M = [_t("Jan"), _t("Feb"), _t("Mar"), _t("Apr"), _t("May"), _t("Jun"),
+            _t("Jul"), _t("Aug"), _t("Sep"), _t("Oct"), _t("Nov"), _t("Dec")];
         return `${parseInt(p[2], 10)} ${M[parseInt(p[1], 10) - 1]} ${p[0]}`;
     }
     pPeriod(card) {
@@ -277,7 +279,7 @@ export class PbPayrunResults extends Component {
         try {
             const r = await this.orm.call("pb.payrun.results", "export_grid",
                 [this.state.runId, this.state.filters]);
-            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Export failed", { type: "warning" }); return; }
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Export failed"), { type: "warning" }); return; }
             const bin = atob(r.file_b64);
             const bytes = new Uint8Array(bin.length);
             for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -285,9 +287,9 @@ export class PbPayrunResults extends Component {
             const a = document.createElement("a");
             a.href = url; a.download = r.filename; a.click();
             URL.revokeObjectURL(url);
-            this.notif.add("Results exported to Excel", { type: "success" });
+            this.notif.add(_t("Results exported to Excel"), { type: "success" });
         } catch (e) {
-            this.notif.add("Export failed", { type: "danger" });
+            this.notif.add(_t("Export failed"), { type: "danger" });
         } finally {
             this.state.exporting = false;
         }
