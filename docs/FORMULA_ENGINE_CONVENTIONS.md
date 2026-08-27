@@ -1345,3 +1345,28 @@ number from the handovers — keep the numbering stable.
      in depth against a migration or raw SQL, not the enforcement point — assert the refusal where
      it lives, and don't write a test that manufactures the impossible state (it fails with a
      ValidationError, which is the model being right).
+111. **Never name a test fixture attribute `run`** (NETROLE P4). `TransactionCase.run` IS unittest's
+     entry point: `cls.run = env['hr.payslip.run'].create(...)` makes the suite die with
+     `TypeError: 'hr.payslip.run' object is not callable` at `test(result)` — *before* any test
+     method executes, so the log reads `0 failed, 0 error(s) of 0 tests` and looks like a
+     test-tags typo rather than a shadowed method. Same trap for `id`, `shortDescription`,
+     `subTest`, `addCleanup`. Use `payrun`, `slip`, etc.
+112. **`payobook_template` has NO active member of `base.group_system`** (both `admin` and
+     `__system__` are archived), so **any** `res.users.create` in a test on that database raises
+     Odoo's own `ValidationError: You must have at least an administrator user.` from
+     `_check_at_least_one_administrator` — nothing to do with the module under test. An
+     access-refusal test must BORROW an existing user that holds none of the gate groups
+     (fall back to `base.public_user`) rather than create one. This is a property of the template
+     database; the other three carry live admins.
+113. **`-i <module>` on an already-installed module runs ZERO tests.** A first test run that fails
+     during the post-install suite still leaves the module `installed`, so the obvious retry with
+     `-i` silently selects nothing and reports `0 failed, 0 error(s) of 0 tests`. Retry with
+     `-u <module>`. Also: with `--logfile=<path>` the shell's `echo EXIT=$? >> <path>` can be lost
+     — capture the exit code to its OWN file if you need it as evidence.
+114. **The provenance blob covers INPUTS only** (NETROLE P4). `formula_input_sources` has one entry
+     per `column_type='input'` rule; a `formula` component (NETPAY included) and, on the batch-free
+     path, a `constant` one have no entry at all. A surface that reads only the blob therefore has
+     no NETPAY cell to click. The fix is a **declared** lane derived from the rule's own
+     `column_type` (`formula → calculated`, `constant → constant`) kept explicitly distinct from a
+     **recorded** one, never a guess written into the blob — and a `calculated` lane must never be
+     summed into a money total, because it is made of the other lanes' numbers.
