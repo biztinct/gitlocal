@@ -3420,8 +3420,21 @@ class HrPayrollImportBatch(models.Model):
         line_vals_list = []
         sequence = 1
 
+        skipped_non_numeric = []
         for rule in rules:
             if not rule.appears_on_payslip:
+                continue
+
+            # VALUEKIND P2 — a payslip line carries a Float `total`, so only a
+            # NUMBER can be one. This is the SECOND line creator (the other is
+            # `hr_payslip_formula._create_payslip_lines_from_formulas`), and it
+            # is the one the import and Recompute paths actually run — guarding
+            # only the other one left ABM's EMPBANKACCOA on the payslip after a
+            # full recompute. Line creation lives in two places for the same
+            # reason coercion did (C18.117/122); both need the rail.
+            if not value_kind_classifier.wants_number(
+                    getattr(rule, 'value_kind', None)):
+                skipped_non_numeric.append(rule.code)
                 continue
 
             amount = normalize_payslip_amount(rule, computed_values.get(rule.code, 0))
@@ -3467,6 +3480,13 @@ class HrPayrollImportBatch(models.Model):
 
             line_vals_list.append(line_vals)
             sequence += 1
+
+        if skipped_non_numeric:
+            _logger.info(
+                "VALUEKIND: payslip %s — %s component(s) marked 'appears on "
+                "payslip' hold a non-numeric value and cannot be a payslip "
+                "line: %s", payslip.id, len(skipped_non_numeric),
+                ', '.join(sorted(set(skipped_non_numeric))))
 
         # Bulk create payslip lines
         if line_vals_list:
@@ -3776,9 +3796,17 @@ class HrPayrollImportBatch(models.Model):
             if value is None:
                 return rule.default_value if numeric else ''
             if isinstance(value, bool):
-                return float(value) if numeric else value
+                # A bool on a NON-boolean text field is Odoo's "nothing" (an
+                # unset Char reads as False), not the word "false" — rendering
+                # it as one is how `LASTWORKIDAY` showed up as `false` in the
+                # Atlas grid.
+                if numeric:
+                    return float(value)
+                if kind == value_kind_classifier.KIND_BOOLEAN:
+                    return value
+                return '' if value is False else str(value)
             if isinstance(value, (int, float)):
-                return float(value)
+                return value_kind_classifier.apply_kind(kind, float(value))
             if isinstance(value, str):
                 stripped = value.strip()
                 if stripped == '':
@@ -3789,7 +3817,7 @@ class HrPayrollImportBatch(models.Model):
                     return stripped
                 numeric_value = coerce_numeric_string(stripped)
                 if numeric_value is not None:
-                    return numeric_value
+                    return value_kind_classifier.apply_kind(kind, numeric_value)
                 return stripped
             return value
 

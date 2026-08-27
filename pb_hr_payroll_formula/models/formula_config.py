@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from . import formula_operand_context
 from . import value_kind_classifier
 from odoo.tools.sql import table_exists
@@ -1999,3 +1999,149 @@ class HrFormulaConfig(models.Model):
             })
         out.sort(key=lambda r: -r['slips_numeric'])
         return out
+
+    # ==================================================================
+    # VALUEKIND P2 — the board a person decides types on
+    # ==================================================================
+    _VALUE_KIND_GATE = (
+        'pb_hr_payroll_base.group_payroll_base_officer',
+        'pb_hr_payroll_base.group_payroll_base_manager',
+        'pb_hr_payroll_base.group_payroll_super_admin',
+        'om_hr_payroll.group_hr_payroll_manager',
+    )
+
+    def _value_kind_gate(self):
+        """Same ladder the pay run itself requires. Read AND write."""
+        if self.env.su or self.env.user._is_admin():
+            return
+        if any(self.env.user.has_group(g) for g in self._VALUE_KIND_GATE):
+            return
+        raise AccessError(_(
+            "You need payroll officer access to change how a pay component's "
+            "value is read."))
+
+    def _value_kind_lane(self, rule, wire):
+        """Where this component's value comes from, in the Atlas's own words.
+
+        One vocabulary for both boards. The point of this whole feature is that
+        a type is a property of the COMPONENT, not of the wire that happens to
+        feed it — so the lane is information, never the thing being edited.
+        """
+        if rule.column_type == 'formula':
+            return 'calculated'
+        if rule.column_type == 'constant':
+            return 'constant'
+        if wire:
+            return 'feed'
+        if getattr(rule, 'is_contract_component', False):
+            return 'contract_component'
+        return 'excel'
+
+    @api.model
+    def _value_kind_options(self):
+        """The selection, as the client needs it — value, label, and whether
+        choosing it means the value gets converted to a number."""
+        field = self.env['hr.formula.rule']._fields['value_kind']
+        return [{'value': key,
+                 'label': label,
+                 'numeric': value_kind_classifier.wants_number(key)}
+                for key, label in field.selection]
+
+    def value_kind_board(self, run_id=None):
+        """Everything the Field types board shows, in one call.
+
+        Read-only. Nothing here changes a value or recomputes a payslip —
+        a person presses Save, and then presses Recompute, and both say so.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        samples = self._value_kind_samples()
+        scheme = self._scheme_operand_contexts()
+        drift = {d['code']: d
+                 for d in self._audit_stored_drift(run_id=run_id, samples=samples)}
+
+        wires = {}
+        if 'hr.integration.field.mapping' in self.env:
+            for wire in self.env['hr.integration.field.mapping'].sudo().search(
+                    [('target_rule_id', 'in', self.rule_ids.ids)]):
+                if wire.target_rule_id:
+                    wires[wire.target_rule_id.id] = wire
+
+        rows = []
+        for rule in self.rule_ids.sorted(key=lambda r: (r.sequence, r.id)):
+            wire = wires.get(rule.id)
+            values = samples.get(rule.code) or []
+            row_drift = drift.get(rule.code)
+            rows.append({
+                'id': rule.id,
+                'code': rule.code or '',
+                'name': rule.name or rule.code or '',
+                'band': (rule.component_type or '')
+                        or (rule.category_id.name or '') or _('Ungrouped'),
+                'lane': self._value_kind_lane(rule, wire),
+                'source_key': (wire.source_field if wire
+                               else (rule.data_source_field or rule.column_letter or '')),
+                'kind': rule.value_kind,
+                'kind_source': rule.value_kind_source,
+                'kind_reason': rule.value_kind_reason or '',
+                'appears_on_payslip': bool(rule.appears_on_payslip),
+                'numeric': value_kind_classifier.wants_number(rule.value_kind),
+                'delivered': [str(v)[:48] for v in values[:3]],
+                'seen': len(values),
+                'drift': bool(row_drift),
+                'drift_stored': (row_drift or {}).get('stored_examples') or [],
+                'contexts': sorted(self._rule_operand_contexts(rule, scheme)),
+            })
+        return {
+            'config_id': self.id,
+            'name': self.name or '',
+            'options': self._value_kind_options(),
+            'rows': rows,
+            'drift_count': len(drift),
+        }
+
+    def set_value_kinds(self, updates):
+        """``{code: kind}`` -> the rows changed. A person's decision.
+
+        Writes `value_kind_source='user'`, which every automatic writer —
+        the classifier and the upgrade migration alike — is required to respect
+        for good. `reset_value_kind` is the only way back.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        valid = {k for k, _label in
+                 self.env['hr.formula.rule']._fields['value_kind'].selection}
+        by_code = {(r.code or '').upper(): r for r in self.rule_ids}
+        changed = []
+        for code, kind in (updates or {}).items():
+            rule = by_code.get(str(code).upper())
+            if not rule:
+                raise UserError(_("No component named '%s' on this scheme.", code))
+            if kind not in valid:
+                raise UserError(_("'%(kind)s' is not a value kind.", kind=kind))
+            if rule.value_kind == kind and rule.value_kind_source == 'user':
+                continue
+            rule.write({
+                'value_kind': kind,
+                'value_kind_source': 'user',
+                'value_kind_reason': _("%s chose this.", self.env.user.name),
+            })
+            changed.append(rule.code)
+        if changed:
+            _logger.info("VALUEKIND: %s set %s on scheme %s: %s",
+                         self.env.user.login, len(changed), self.id,
+                         ', '.join(changed))
+        return {'changed': changed,
+                'note': _("Saved. Existing payslips keep the values they were "
+                          "computed with until the run is recomputed.")}
+
+    def reset_value_kind(self, codes):
+        """Hand chosen components back to the classifier."""
+        self.ensure_one()
+        self._value_kind_gate()
+        wanted = {str(c).upper() for c in (codes or [])}
+        rules = self.rule_ids.filtered(lambda r: (r.code or '').upper() in wanted)
+        if rules:
+            rules.write({'value_kind_source': 'auto'})
+            self.classify_value_kinds()
+        return {'reset': rules.mapped('code')}

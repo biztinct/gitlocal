@@ -53,6 +53,8 @@ from .formula_operand_context import (
 # Kinds
 # --------------------------------------------------------------------------
 KIND_MONEY = 'money'
+KIND_DECIMAL = 'decimal'
+KIND_INTEGER = 'integer'
 KIND_QUANTITY = 'quantity'
 KIND_RATE = 'rate'
 KIND_IDENTIFIER = 'identifier'
@@ -60,12 +62,20 @@ KIND_TEXT = 'text'
 KIND_DATE = 'date'
 KIND_BOOLEAN = 'boolean'
 
-KINDS = (KIND_MONEY, KIND_QUANTITY, KIND_RATE, KIND_IDENTIFIER,
-         KIND_TEXT, KIND_DATE, KIND_BOOLEAN)
+KINDS = (KIND_MONEY, KIND_DECIMAL, KIND_INTEGER, KIND_QUANTITY, KIND_RATE,
+         KIND_IDENTIFIER, KIND_TEXT, KIND_DATE, KIND_BOOLEAN)
 
-#: Kinds the engine may do arithmetic on. Everything else passes through the
-#: wire and the resolver untouched.
-NUMERIC_KINDS = frozenset((KIND_MONEY, KIND_QUANTITY, KIND_RATE))
+#: Kinds the engine may do arithmetic on. THIS SET IS THE ONE DEFINITION of
+#: "may meet float()" — the wire, the resolver, the payslip-line rail and the
+#: migration's direction rule all key off it. Adding `text`, `identifier`,
+#: `date` or `boolean` here restores the exact defect this module exists to
+#: remove (C18.116/117).
+NUMERIC_KINDS = frozenset((KIND_MONEY, KIND_DECIMAL, KIND_INTEGER,
+                           KIND_QUANTITY, KIND_RATE))
+
+#: Kinds that round to a whole number after coercion, so a field a person
+#: declared to be a count never renders as `2.0000001`.
+WHOLE_KINDS = frozenset((KIND_INTEGER,))
 
 #: What net pay does with a component, when it does anything at all.
 _PAY_ROLES = frozenset(('earning', 'deduction', 'net', 'employer_cost', 'mixed'))
@@ -298,3 +308,29 @@ def contradictions(kind, values):
             if not _is_yes_no(value):
                 bad.append(value)
     return bad
+
+
+# --------------------------------------------------------------------------
+# Coercion
+# --------------------------------------------------------------------------
+def wants_number(kind):
+    """Whether a value of this kind may be put through ``float()``.
+
+    One function, so the wire, the resolver, the payslip-line rail and the
+    migration cannot drift into four opinions about the same question.
+    """
+    return (kind or KIND_MONEY) in NUMERIC_KINDS
+
+
+def apply_kind(kind, number):
+    """Final shaping of an already-coerced number for its kind.
+
+    Only `integer` does anything today: a field a person declared to be a whole
+    number must not come back as `2.0000001` because a transform divided it.
+    """
+    if kind in WHOLE_KINDS:
+        try:
+            return float(round(float(number)))
+        except (TypeError, ValueError):
+            return number
+    return number

@@ -29,6 +29,10 @@
                   t-on-click="showGrid">
             <t t-out="ic('table', 15)"/> Grid
           </button>
+          <button t-attf-class="psa-seg-b {{ state.view === 'types' ? 'on' : '' }}"
+                  t-on-click="showTypes">
+            <t t-out="ic('settings', 15)"/> Field types
+          </button>
         </div>
         <button class="psa-btn primary" t-on-click="() => this.download('matrix')"
                 t-att-disabled="state.downloading ? 1 : 0">
@@ -239,6 +243,92 @@
                   </td>
                   <td t-else="" class="psa-cell empty">·</td>
                 </t>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- =================================================== FIELD TYPES -->
+      <div t-if="state.view === 'types'" class="psa-card psa-types">
+        <div class="psa-types-head">
+          <div>
+            <h2>How each value is read</h2>
+            <p class="psa-sub">A value is read as a number or kept exactly as it
+              arrived. This is set once per pay component, so it holds however the
+              value reaches you — a spreadsheet column, a connected system, a
+              contract, or the scheme's own formulas.</p>
+          </div>
+          <div class="psa-types-act">
+            <label class="psa-check" t-if="state.types">
+              <input type="checkbox" t-att-checked="state.typesOnlyDrift"
+                     t-on-change="toggleOnlyDrift"/>
+              <span>Only the <b t-esc="state.types.drift_count"/> that disagree</span>
+            </label>
+            <button class="psa-btn primary" t-on-click="saveTypes"
+                    t-att-disabled="(dirtyCount and !state.typesSaving) ? 0 : 1">
+              <span t-if="state.typesSaving">Saving…</span>
+              <span t-elif="dirtyCount">Save <t t-esc="dirtyCount"/> change(s)</span>
+              <span t-else="">Save types</span>
+            </button>
+          </div>
+        </div>
+
+        <div t-if="state.typesLoading" class="psa-empty"><p>Reading the scheme…</p></div>
+
+        <div t-elif="state.types" class="psa-types-body">
+          <p t-if="state.types.drift_count" class="psa-warn">
+            <t t-out="ic('alert', 15)"/>
+            <span><b t-esc="state.types.drift_count"/> component(s) were delivered as
+              text but stored as a number on this run's payslips. Set the right type
+              here, then recompute the run to rewrite the stored values — saving alone
+              never changes a payslip.</span>
+          </p>
+
+          <table class="psa-types-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Comes from</th>
+                <th>What arrived</th>
+                <th>Read it as</th>
+                <th/>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="typeRows" t-as="row" t-key="row.code"
+                  t-attf-class="{{ row.drift ? 'drift' : '' }} {{ state.typesDirty[row.code] ? 'dirty' : '' }}">
+                <td class="psa-t-name">
+                  <b t-esc="row.name"/>
+                  <span class="psa-t-code" t-esc="row.code"/>
+                </td>
+                <td>
+                  <span t-attf-class="psa-lane-chip l-{{ row.lane }}"
+                        t-esc="laneMeta(row.lane).label"/>
+                  <span class="psa-t-key" t-if="row.source_key" t-esc="row.source_key"/>
+                </td>
+                <td class="psa-t-eg">
+                  <span t-if="!row.delivered.length" class="muted">no sample</span>
+                  <span t-foreach="row.delivered" t-as="eg" t-key="eg_index"
+                        class="psa-t-chip" t-esc="eg"/>
+                  <span t-if="row.drift" class="psa-t-stored">
+                    stored as <b t-esc="row.drift_stored[0]"/>
+                  </span>
+                </td>
+                <td>
+                  <select class="psa-select" t-on-change="(ev) => this.onKindChange(row, ev)">
+                    <option t-foreach="state.types.options" t-as="opt" t-key="opt.value"
+                            t-att-value="opt.value"
+                            t-att-selected="kindOf(row) === opt.value ? 'selected' : false"
+                            t-esc="opt.label"/>
+                  </select>
+                  <span class="psa-t-why" t-att-title="row.kind_reason"
+                        t-esc="row.kind_source === 'user' ? 'you set this' : row.kind_reason"/>
+                </td>
+                <td>
+                  <button class="psa-linkb" t-if="row.kind_source === 'user'"
+                          t-on-click="() => this.resetType(row)">Reset</button>
+                </td>
               </tr>
             </tbody>
           </table>
