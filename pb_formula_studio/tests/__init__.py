@@ -34,3 +34,8 @@ from . import test_journey_j9_display
 # JOURNEY J10 — EMPLOYEE / CONTRACT RECORD and BANK ACCOUNT on the card,
 # beside whatever else it declares, at rank 4.
 from . import test_journey_j10_record_source
+
+# NETROLE P2 — the import ends with a category conversation: the chain, the
+# payload, the default tick, and the promise that a person's own column band is
+# never silently overruled.
+from . import test_category_review

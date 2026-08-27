@@ -1198,6 +1198,7 @@ export class PbFormulaStudio extends Component {
                 T("branches", "Branches", "Fork this config, trial a change, merge back", "branches", "blue", () => this.openBranches(), cfg.branch_count || null),
                 T("variants", "Variants", "One master scheme, many synced variants", "variants", "teal", () => this.openVariants(), cfg.variant_count || null),
                 T("reclassify", "Review classification", "Re-check what each column is for, and accept only the changes you agree with", "reclassify", "teal", () => this.openReclassify()),
+                T("categories", "Review categories", "Read the net-pay formula and file every component as an earning, a deduction, an employer cost or information", "categories", "green", () => this.openCategoryReview()),
                 T("legislation", "Legislation", "Roll a statutory change across every configuration", "legislation", "amber", () => this.openLegislation()),
                 T("releases", "Releases", "Review and sign off formula changes", "releases", "green", () => this.openReleases()),
             ] },
@@ -4397,6 +4398,36 @@ export class PbFormulaStudio extends Component {
         } finally {
             this.state.reclassBusy = false;
         }
+    }
+
+    /**
+     * NETROLE P2 — "Review categories", the same door the import ends at.
+     *
+     * The review is a client action rather than a scrim over the studio,
+     * because an import has no studio to sit over: it finishes in a
+     * notification whose `next` has to be a real action. One surface, two
+     * hosts. `next_action` brings you back to this scheme when you leave it,
+     * so the door returns you where you came from (J1's rule).
+     */
+    openCategoryReview() {
+        const cfg = this.state.config && this.state.config.id;
+        if (!cfg) return;
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "pb_category_review",
+            name: _t("Review component categories"),
+            target: "current",
+            params: {
+                config_id: cfg,
+                next_action: {
+                    type: "ir.actions.client",
+                    tag: "pb_formula_studio",
+                    params: { config_id: cfg },
+                    context: { config_id: cfg },
+                },
+            },
+            context: { config_id: cfg },
+        });
     }
 
     /**

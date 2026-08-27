@@ -1692,6 +1692,224 @@ class PbFormulaStudio(models.AbstractModel):
             'applied': applied,
         }
 
+    # ==================================================================
+    # NETROLE P2 — the category review
+    #
+    # The engine reads a scheme's formulas and knows what net pay does with
+    # every component (`suggest_categories`). It writes nothing. This is the
+    # conversation that turns that reading into a decision: a grouped list of
+    # what WOULD move, the sentence that explains each one, and a checkbox.
+    #
+    # Two opinions are held at once. Ours comes from the arithmetic; theirs
+    # comes from the coloured band they typed above the column in their own
+    # spreadsheet. Where those disagree the row arrives UNTICKED with the
+    # disagreement spelled out — the math is allowed to win, but only by their
+    # click.
+    # ==================================================================
+
+    #: Group order in the dialog. `review` leads because it is the only group
+    #: that cannot be answered by pressing Apply.
+    _CATEGORY_REVIEW_GROUPS = ('review', 'earning', 'deduction', 'employer_cost',
+                               'net', 'info')
+
+    @api.model
+    def _category_review_group_meta(self):
+        return {
+            'review': (_("Needs a decision"),
+                       _("The formulas do not settle these, or your own "
+                         "column band says something different.")),
+            'earning': (_("Added to pay"),
+                        _("Net pay adds these up.")),
+            'deduction': (_("Taken off pay"),
+                          _("Net pay subtracts these.")),
+            'employer_cost': (_("Employer cost"),
+                              _("Never reaches the employee — the company "
+                                "carries it on top of pay.")),
+            'net': (_("Net pay"), _("The figure everything else adds up to.")),
+            'info': (_("Information"),
+                     _("Counts, references and working figures — not money "
+                       "paid or taken.")),
+        }
+
+    @api.model
+    def _category_review_group(self, row):
+        if row.get('confidence') == 'review' or row.get('band_conflict'):
+            return 'review'
+        if row.get('quantity'):
+            return 'info'
+        role = row.get('role') or 'info'
+        return role if role in self._CATEGORY_REVIEW_GROUPS else 'info'
+
+    @api.model
+    def _category_review_checked(self, row):
+        """The default-tick policy, in one place and in reading order.
+
+        Rule 2 is the promise the whole dialog rests on: a category somebody's
+        own spreadsheet band already claimed is never silently overruled.
+        Rule 7 is its mirror — a component nobody has ever filed cannot be
+        "overridden", and leaving a fresh import entirely unticked would make
+        the reading useless on the very screen it was built for.
+
+        Rule 4 sits above the confidence tests on purpose. "This column counts
+        hours" is read off the label and the arithmetic, not off the path to net
+        pay, so a `likely` path does not weaken it — and the move it proposes is
+        from pay to information, which no total anywhere depends on.
+        """
+        if not row.get('changes'):
+            return False                      # 1. nothing to write
+        if row.get('band_conflict'):
+            return False                      # 2. their band disagrees
+        if row.get('confidence') == 'review':
+            return False                      # 3. only a person can settle it
+        if row.get('quantity'):
+            return True                       # 4. it counts hours, not money
+        if row.get('confidence') == 'certain':
+            return True                       # 5. the formulas are unambiguous
+        if row.get('band_kind'):
+            return True                       # 6. their band agrees with us
+        current = row.get('current_category') or ''
+        if not current or current == 'OTH':
+            return True                       # 7. nothing was ever decided
+        return False                          # 8. likely, over a real choice
+
+    @api.model
+    def category_review_data(self, config_id):
+        """Everything the review dialog draws — and no category moved.
+
+        Opening the review re-reads the scheme and stores that reading
+        (`net_role*` on each rule). What it never touches is a CATEGORY: those
+        move only through `category_review_apply`, and only for ticked rows.
+        """
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            raise UserError(_("That salary structure no longer exists."))
+        payload = {
+            'ok': True,
+            'config_id': config.id,
+            'config_name': config.name or '',
+            'can_edit': self._can_edit(),
+            'error': '',
+            'net_code': '',
+            'net_name': '',
+            'net_candidates': [],
+            'groups': [],
+            'agree_count': 0,
+            'row_count': 0,
+            'checked_count': 0,
+        }
+        # Opening the review re-reads the scheme and STORES what it read — but
+        # only for somebody who could act on it. A read-only Formula User gets
+        # the same payload computed write-free, because a screen that raises an
+        # AccessError on open is not a read-only screen (C16's rail: detection
+        # paths must not write).
+        if payload['can_edit']:
+            summary = (config.classify_net_roles() or {}).get(config.id) or {}
+        else:
+            summary = config._build_net_role_classification()
+            summary.pop('_classification', None)
+        if summary.get('error'):
+            # No net-pay component. The dialog says so in one sentence and
+            # offers the one fix there is — naming it.
+            payload['error'] = summary['error']
+            payload['net_candidates'] = [
+                {'id': rule.id, 'col': rule.column_letter or '',
+                 'code': rule.code or '', 'name': rule.name or rule.code or ''}
+                for rule in config.rule_ids.sorted(key=lambda r: (r.sequence, r.id))
+                if rule.column_type == 'formula'
+            ]
+            return payload
+        payload['net_code'] = summary.get('net_code') or ''
+        buckets = {key: [] for key in self._CATEGORY_REVIEW_GROUPS}
+        rules_by_id = {rule.id: rule for rule in config.rule_ids}
+        for row in config.suggest_categories():
+            actionable = (row['changes'] or row['band_conflict']
+                          or row['confidence'] == 'review')
+            if not actionable:
+                payload['agree_count'] += 1
+                continue
+            rule = rules_by_id.get(row['rule_id'])
+            checked = self._category_review_checked(row)
+            buckets[self._category_review_group(row)].append({
+                'id': row['rule_id'],
+                'col': (rule.column_letter or '') if rule else '',
+                'code': row['code'],
+                'name': row['name'] or row['code'],
+                'role': row['role'],
+                'role_label': row['role_label'],
+                # The chip is tinted by what the component is being filed AS, so
+                # an hours count never wears the green of pay.
+                'tint': 'info' if row['quantity'] else row['role'],
+                'detail': row['detail'],
+                'reason': row['reason'],
+                'confidence': row['confidence'],
+                'current': row['current_category'],
+                'current_label': row['current_category_name'] or row['current_category'],
+                'suggested': row['suggested_category_code'],
+                'suggested_label': row['suggested_category_name'],
+                'changes': row['changes'],
+                'quantity': row['quantity'],
+                'band': row['band'],
+                'band_conflict': row['band_conflict'],
+                'band_conflict_text': row['band_conflict_text'],
+                'accept': checked,
+            })
+            payload['row_count'] += 1
+            payload['checked_count'] += 1 if checked else 0
+        meta = self._category_review_group_meta()
+        for key in self._CATEGORY_REVIEW_GROUPS:
+            if not buckets[key]:
+                continue
+            label, hint = meta[key]
+            payload['groups'].append({
+                'key': key, 'label': label, 'hint': hint,
+                'rows': buckets[key],
+            })
+        if payload['net_code']:
+            net = config.rule_ids.filtered(lambda r: r.code == payload['net_code'])
+            payload['net_name'] = (net[:1].name or '') if net else ''
+        return payload
+
+    @api.model
+    def category_review_apply(self, config_id, rule_ids=None):
+        """Write the accepted rows — the ONLY writer in this feature."""
+        if not self._can_edit():
+            raise AccessError(_("You do not have permission to change how "
+                                "components are filed."))
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            raise UserError(_("That salary structure no longer exists."))
+        ids = [int(i) for i in (rule_ids or [])]
+        if not ids:
+            return {'ok': True, 'applied': 0}
+        # C4 — one logical operation, one reason, one version row per rule.
+        applied = config.with_context(
+            formula_version_reason='bulk').apply_suggested_categories(ids)
+        return {'ok': True, 'applied': applied, 'requested': len(ids)}
+
+    @api.model
+    def category_review_set_net(self, config_id, rule_id):
+        """Name the net-pay component, then read the scheme again.
+
+        The classifier refuses to guess which component is net pay (C7), so a
+        scheme it cannot read is not a dead end — it is one question.
+        """
+        if not self._can_edit():
+            raise AccessError(_("You do not have permission to change this "
+                                "salary structure."))
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not config.exists() or not rule.exists() or rule.config_id != config:
+            raise UserError(_("That component is not part of this salary "
+                              "structure."))
+        Category = self.env['hr.salary.rule.category']
+        net = Category.search([('code', '=', 'NET')], limit=1)
+        if not net:
+            net = Category.create({'name': _("Net"), 'code': 'NET'})
+        rule.with_context(formula_version_reason='edit').category_id = net.id
+        if rule.salary_rule_id:
+            rule.salary_rule_id.category_id = net.id
+        return self.category_review_data(config.id)
+
     @api.model
     def _field_meta(self):
         """Option lists for the inline component editor (loaded once)."""
