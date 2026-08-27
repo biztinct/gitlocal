@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"PO-Revision-Date: 2026-08-27 20:46+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -1447,58 +1447,72 @@ msgstr "👉 Ghim vào Bảng điều khiển"
 msgid "🔌 Test Connection"
 msgstr "🔌 Kiểm tra kết nối"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js:191
 msgid "Widget removed"
 msgstr "Đã xóa tiện ích"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js:224
 msgid "Dashboard updated!"
 msgstr "Bảng điều khiển được cập nhật!"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js:231
 msgid "Failed to generate. Check AI configuration."
 msgstr "Không tạo được. Kiểm tra cấu hình AI."
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js:244
 msgid "Dashboard refreshed"
 msgstr "Đã làm mới trang tổng quan"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:248
 msgid "Chat history cleared"
 msgstr "Đã xóa lịch sử trò chuyện"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:265
 msgid "Chart pinned to dashboard!"
 msgstr "Biểu đồ được ghim vào bảng điều khiển!"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:268
 msgid "Failed to pin chart"
 msgstr "Không thể ghim biểu đồ"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:143
 msgid "Chart pinned to dashboard! 📌"
 msgstr "Biểu đồ được ghim vào bảng điều khiển! 🎯"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:37
 msgid "Bar"
 msgstr "Cột"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:38
 msgid "Line"
 msgstr "Dòng"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:39
 msgid "Pie"
 msgstr "Tròn"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:40
 msgid "Doughnut"
 msgstr "Bánh vòng"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:41
 msgid "Radar"
 msgstr "ra đa"
 
+#. module: pb_payroll_ai_insights
 #: pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js:42
 msgid "Polar"
 msgstr "Cực"

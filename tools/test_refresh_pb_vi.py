@@ -14,6 +14,7 @@ from refresh_pb_vi import (
     extract_javascript_terms,
     extract_python_terms,
     extract_xml_terms,
+    make_catalog,
     protect,
     restore,
     same_structure,
@@ -40,6 +41,12 @@ class TranslationSafetyTests(unittest.TestCase):
     def test_javascript_regex_skips_dynamic_templates_in_extractor(self) -> None:
         matches = list(JS_T_RE.finditer('_t("Hello"); _t(`Hi ${name}`);'))
         self.assertEqual([match.group("value") for match in matches], ["Hello", "Hi ${name}"])
+
+    def test_generated_entries_have_odoo_module_marker(self) -> None:
+        template = polib.POFile()
+        template.append(polib.POEntry(msgid="Hello"))
+        catalog = make_catalog(template, {"Hello": "Xin chào"}, "pb_example")
+        self.assertIn("module: pb_example", catalog[0].comment)
 
 
 class SourceFallbackTests(unittest.TestCase):

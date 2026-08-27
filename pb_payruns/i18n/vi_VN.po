@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"PO-Revision-Date: 2026-08-27 20:46+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -592,62 +592,77 @@ msgstr "”? Mọi phiếu lương trong đợt này đều bị hủy."
 msgid "✕ Rejected"
 msgstr "✕ Bị từ chối"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:71
 msgid "All"
 msgstr "Tất cả"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:72
 msgid "Draft"
 msgstr "Nháp"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:73
 msgid "Pending approval"
 msgstr "Đang chờ phê duyệt"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:74
 msgid "Done"
 msgstr "Hoàn tất"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:75
 msgid "Rejected"
 msgstr "Đã từ chối"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:80
 msgid "All periods"
 msgstr "Tất cả các kỳ"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:81
 msgid "This month"
 msgstr "Tháng này"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:82
 msgid "This quarter"
 msgstr "Quý này"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:83
 msgid "This year"
 msgstr "Năm nay"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:123
 msgid "Status: %(status)s"
 msgstr "Trạng thái: %(status)s"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:135
 msgid "Period %(from)s → %(to)s"
 msgstr "Chu kỳ %(from)s → %(to)s"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/payruns_kanban.js:168
 msgid "Division: %(division)s"
 msgstr "Phân khu: %(division)s"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/pipeline_field.js:10
 msgid "Officer review"
 msgstr "Chuyên viên duyệt"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/pipeline_field.js:11
 msgid "HR review"
 msgstr "Nhân sự duyệt"
 
+#. module: pb_payruns
 #: pb_payruns/static/src/js/pipeline_field.js:12
 msgid "Finance approval"
 msgstr "Tài chính phê duyệt"

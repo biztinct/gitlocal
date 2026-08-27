@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-05 00:00+0000\n"
-"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"PO-Revision-Date: 2026-08-27 20:46+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -18,106 +18,132 @@ msgstr ""
 msgid "Indonesia Payroll Dashboard"
 msgstr "Indonesia Bảng lương Bảng điều khiển"
 
+#. module: pb_hr_payroll_indonesia
 #: model:ir.ui.menu,name:pb_hr_payroll_indonesia.menu_indonesia_dashboard
 msgid "Indonesia Dashboard"
 msgstr "Trang tổng quan Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: model:ir.ui.menu,name:pb_hr_payroll_indonesia.menu_indonesia_thr
 msgid "Indonesia THR Payments"
 msgstr "Thanh toán THR của Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: field:hr.payslip,indonesia_bpjs_kes_emp:0
 msgid "BPJS Kesehatan - Employee"
 msgstr "BPJS Kesehatan - Nhân viên"
 
+#. module: pb_hr_payroll_indonesia
 #: field:hr.payslip,indonesia_bpjs_kes_comp:0
 msgid "BPJS Kesehatan - Company"
 msgstr "BPJS Kesehatan - Công ty"
 
+#. module: pb_hr_payroll_indonesia
 #: field:hr.payslip,indonesia_bpjs_jht_emp:0
 msgid "BPJS Ketenagakerjaan JHT - Employee"
 msgstr "BPJS Ketenagakerjaan JHT - Nhân viên"
 
+#. module: pb_hr_payroll_indonesia
 #: field:hr.payslip,indonesia_bpjs_jht_comp:0
 msgid "BPJS Ketenagakerjaan JHT - Company"
 msgstr "BPJS Ketenagakerjaan JHT - Công ty"
 
+#. module: pb_hr_payroll_indonesia
 #: field:hr.payslip,indonesia_pph21:0
 msgid "PPh 21 Income Tax"
 msgstr "PPh 21 Thuế thu nhập"
 
+#. module: pb_hr_payroll_indonesia
 #: field:hr.payslip,indonesia_thr:0
 msgid "THR (Religious Allowance)"
 msgstr "THR (Trợ cấp tôn giáo)"
 
+#. module: pb_hr_payroll_indonesia
 #: button:hr.payslip,action_compute_indonesia_tax:0
 msgid "Compute Indonesia Tax"
 msgstr "Tính thuế Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: view:hr.payslip:0
 msgid "Indonesia Payslip"
 msgstr "Phiếu lương Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: view:hr.payslip:0
 msgid "Indonesia Salary Rules"
 msgstr "Quy tắc lương của Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: view:hr.payslip:0
 msgid "Indonesia BPJS Components"
 msgstr "Các thành phần BPJS của Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: code:addons/pb_hr_payroll_indonesia/models/hr_payslip_indonesia.py:50
 msgid "Indonesia tax computed successfully"
 msgstr "Thuế Indonesia được tính thành công"
 
+#. module: pb_hr_payroll_indonesia
 #: code:addons/pb_hr_payroll_indonesia/models/hr_payslip_indonesia.py:60
 msgid "Error computing Indonesia tax: %s"
 msgstr "Lỗi tính thuế Indonesia: %s"
 
+#. module: pb_hr_payroll_indonesia
 #: help:hr.payslip,indonesia_bpjs_kes_emp:0
 msgid "Employee contribution to BPJS Kesehatan (Health Insurance)"
 msgstr "Đóng góp của nhân viên cho BPJS Kesehatan (Bảo hiểm y tế)"
 
+#. module: pb_hr_payroll_indonesia
 #: help:hr.payslip,indonesia_bpjs_kes_comp:0
 msgid "Company contribution to BPJS Kesehatan (Health Insurance)"
 msgstr "Đóng góp của công ty cho BPJS Kesehatan (Bảo hiểm y tế)"
 
+#. module: pb_hr_payroll_indonesia
 #: help:hr.payslip,indonesia_bpjs_jht_emp:0
 msgid "Employee contribution to BPJS JHT (Retirement Fund)"
 msgstr "Đóng góp của nhân viên cho BPJS JHT (Quỹ hưu trí)"
 
+#. module: pb_hr_payroll_indonesia
 #: res.groups,name:pb_hr_payroll_indonesia.group_indonesia_payroll_officer
 msgid "Indonesia Payroll Officer"
 msgstr "Cán bộ tiền lương Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: button:payroll.dashboard,action_process_indonesia_payroll:0
 msgid "Process Indonesia Payroll"
 msgstr "Quy trình tính lương của Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: button:payroll.dashboard,action_process_thr:0
 msgid "Process THR Payments"
 msgstr "Xử lý thanh toán THR"
 
+#. module: pb_hr_payroll_indonesia
 #: button:payroll.dashboard,action_export_indonesia_data:0
 msgid "Export Indonesia Data"
 msgstr "Xuất dữ liệu Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: dashboard.payroll:0
 msgid "Indonesia Payroll Management System"
 msgstr "Hệ thống quản lý tiền lương của Indonesia"
 
+#. module: pb_hr_payroll_indonesia
 #: dashboard.payroll:0
 msgid "BPJS Kesehatan Management"
 msgstr "Quản lý BPJS Kesehatan"
 
+#. module: pb_hr_payroll_indonesia
 #: dashboard.payroll:0
 msgid "BPJS Ketenagakerjaan Management"
 msgstr "Quản lý BPJS Ketenagakerjaan"
 
+#. module: pb_hr_payroll_indonesia
 #: dashboard.payroll:0
 msgid "PPh 21 Tax Processing"
 msgstr "Xử lý thuế PPh 21"
 
+#. module: pb_hr_payroll_indonesia
 #: dashboard.payroll:0
 msgid "THR Calculation and Payment"
 msgstr "Tính toán và thanh toán THR"
