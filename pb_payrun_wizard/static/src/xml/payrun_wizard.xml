@@ -51,7 +51,7 @@
                 </t>
 
                 <!-- Step 1 -->
-                <t t-elif="state.step === 1">
+                <t t-elif="stepKey === 'period'">
                     <div class="pw-grid2" data-coach="pw-scope">
                         <div class="pw-sec">
                             <h4>Period</h4>
@@ -81,8 +81,80 @@
                     </div>
                 </t>
 
+                <!-- Pay data (NETROLE P3) — present only when a scheme binds
+                     components to spreadsheet columns. -->
+                <t t-elif="stepKey === 'data'">
+                    <div class="pw-grid2 pw-datagrid" data-coach="pw-paydata">
+                        <div class="pw-sec">
+                            <h4>This month's pay data</h4>
+                            <p class="pw-muted mb">
+                                <b t-esc="state.sheet.gate.config_name"/> reads
+                                <b><t t-esc="sheetComponents.length"/></b> pay component<t t-if="sheetComponents.length !== 1">s</t>
+                                from a spreadsheet. Load the file for this period.
+                            </p>
+                            <label t-attf-class="pw-drop {{ state.sheet.dragging ? 'over' : '' }}"
+                                   t-on-dragover="onDragOver" t-on-dragleave="onDragLeave" t-on-drop="onDrop">
+                                <t t-out="ic('upload',24)"/>
+                                <span t-if="!state.sheet.file_name">Drop the file here, or click to choose — .xlsx, .xls or .csv</span>
+                                <span t-else="" class="fn"><t t-out="ic('file',15)"/> <t t-esc="state.sheet.file_name"/></span>
+                                <input type="file" accept=".xlsx,.xls,.csv" t-on-change="onSheetFile" style="display:none"/>
+                            </label>
+                            <div class="pw-hint" t-if="!state.sheet.file_name and state.sheet.gate.filename_hint">
+                                Last time this scheme read <b t-esc="state.sheet.gate.filename_hint"/>.
+                            </div>
+                            <div class="pw-err" t-if="state.sheet.error">
+                                <t t-out="ic('alert',14)"/> <span t-esc="state.sheet.error"/>
+                            </div>
+                            <button class="pw-btn ghost pw-btn--sm" t-if="state.sheet.file_name" t-on-click="clearSheetFile">Choose a different file</button>
+                        </div>
+
+                        <div class="pw-sec" data-coach="pw-coverage">
+                            <h4>Coverage</h4>
+                            <t t-if="state.sheet.checking">
+                                <div class="pw-busy pw-busy--inline"><div class="pw-spin"></div><div>Reading the column headings…</div></div>
+                            </t>
+                            <t t-elif="sheetReady">
+                                <t t-set="pf" t-value="state.sheet.preflight"/>
+                                <div class="pw-cov">
+                                    <b><t t-esc="pf.fed.length"/> of <t t-esc="pf.total"/></b>
+                                    spreadsheet component<t t-if="pf.total !== 1">s</t> are fed by this file
+                                    (<t t-esc="pf.columns"/> column<t t-if="pf.columns !== 1">s</t> read).
+                                </div>
+                                <div class="pw-cov pw-cov--warn" t-if="!pf.employees_col">
+                                    <t t-out="ic('alert',13)"/> No employee code, name or email column was recognised — rows may match nobody.
+                                </div>
+                                <div class="pw-covlist">
+                                    <div class="pw-covrow ok" t-foreach="pf.fed_rows" t-as="f" t-key="f.code">
+                                        <span class="ico"><t t-out="ic('check',13)"/></span>
+                                        <span class="nm" t-esc="f.name"/>
+                                        <span class="col" t-esc="f.column"/>
+                                    </div>
+                                    <div class="pw-covrow miss" t-foreach="pf.missing" t-as="m" t-key="m.code">
+                                        <span class="ico"><t t-out="ic('alert',13)"/></span>
+                                        <span class="nm" t-esc="m.name"/>
+                                        <span class="col" t-esc="m.key"/>
+                                    </div>
+                                </div>
+                                <div class="pw-note" t-if="pf.missing.length">
+                                    The missing components will use their fallback values for this run.
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <p class="pw-muted">Choose a file and its columns will be checked against the components below before anything is computed.</p>
+                                <div class="pw-covlist">
+                                    <div class="pw-covrow" t-foreach="sheetComponents" t-as="c" t-key="c.code">
+                                        <span class="ico"><t t-out="ic('table',13)"/></span>
+                                        <span class="nm" t-esc="c.name"/>
+                                        <span class="col" t-esc="c.key"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
                 <!-- Step 2 (after compute) -->
-                <t t-elif="state.step === 2 and state.summary">
+                <t t-elif="stepKey === 'compute' and state.summary">
                     <div class="pw-result" data-coach="pw-result">
                         <div class="pw-result-ic"><t t-out="ic('zap',30)"/></div>
                         <h3>Computed <t t-esc="state.summary.computed"/> of <t t-esc="state.summary.count"/> payslips</h3>
@@ -91,6 +163,21 @@
                             <t t-esc="state.summary.adopted"/> payslip(s) for this period already existed and were
                             added to this run as they are, rather than computed again.
                         </p>
+                        <!-- NETROLE P3: what the file did, and what running without one cost. -->
+                        <p class="pw-muted" t-if="state.summary.sheet">
+                            <t t-esc="state.summary.sheet.filename"/> fed
+                            <b><t t-esc="state.summary.sheet.fed_components.length"/></b> component(s)
+                            across <t t-esc="state.summary.sheet.rows"/> row(s) and produced
+                            <b><t t-esc="state.summary.sheet.created"/></b> payslip(s) in this run.
+                        </p>
+                        <div class="pw-fallback" t-if="(state.summary.skipped_components || []).length">
+                            <t t-out="ic('alert',14)"/>
+                            <span>
+                                <b><t t-esc="state.summary.skipped_components.length"/></b>
+                                component(s) used fallback values — no spreadsheet was loaded:
+                                <t t-esc="state.summary.skipped_components.join(', ')"/>
+                            </span>
+                        </div>
                         <div class="pw-statpills" data-coach="pw-pills">
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.count"/><div class="l">Payslips</div></div>
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.computed"/><div class="l">Computed</div></div>
@@ -100,7 +187,7 @@
                 </t>
 
                 <!-- Step 3 -->
-                <t t-elif="state.step === 3 and state.summary">
+                <t t-elif="stepKey === 'review' and state.summary">
                     <t t-set="exc" t-value="state.summary.exceptions || []"/>
                     <t t-if="exc.length or state.summary.flagged">
                         <p class="pw-muted mb">These items need a look before approval:</p>
@@ -121,12 +208,18 @@
 
             <!-- Footer -->
             <div class="pw-foot" t-if="!state.loading">
-                <button class="pw-btn ghost" t-if="state.step > 1" t-on-click="() => this.goto(state.step-1)">← Back</button>
-                <button class="pw-btn ghost" t-if="state.step === 1 and !props.embedded" t-on-click="cancel">Cancel</button>
+                <button class="pw-btn ghost" t-if="state.step > 1" t-on-click="back">← Back</button>
+                <button class="pw-btn ghost" t-if="stepKey === 'period' and !props.embedded" t-on-click="cancel">Cancel</button>
                 <div class="pw-spacer"></div>
-                <button class="pw-btn primary" data-coach="pw-compute" t-if="state.step === 1" t-on-click="toCompute">Compute payslips <t t-out="ic('arrow',14)"/></button>
-                <button class="pw-btn primary" t-if="state.step === 2" t-on-click="() => this.goto(3)">Review exceptions <t t-out="ic('arrow',14)"/></button>
-                <button class="pw-btn primary" t-if="state.step === 3" t-on-click="openRun">Open Payroll <t t-out="ic('arrow',14)"/></button>
+                <button class="pw-btn primary" data-coach="pw-compute" t-if="stepKey === 'period'" t-on-click="advanceFromPeriod">
+                    <t t-if="wantsSheet">Add pay data</t><t t-else="">Compute payslips</t>
+                    <t t-out="ic('arrow',14)"/>
+                </button>
+                <!-- Skipping is a CHOICE made in front of the list, never a default. -->
+                <button class="pw-btn ghost" data-coach="pw-skipsheet" t-if="stepKey === 'data'" t-on-click="runWithoutSheet">Run without a spreadsheet</button>
+                <button class="pw-btn primary" t-if="stepKey === 'data'" t-att-disabled="!sheetReady" t-on-click="continueWithSheet">Continue with this file <t t-out="ic('arrow',14)"/></button>
+                <button class="pw-btn primary" t-if="stepKey === 'compute'" t-on-click="() => this.gotoKey('review')">Review exceptions <t t-out="ic('arrow',14)"/></button>
+                <button class="pw-btn primary" t-if="stepKey === 'review'" t-on-click="openRun">Open Payroll <t t-out="ic('arrow',14)"/></button>
             </div>
         </div>
     </div>
