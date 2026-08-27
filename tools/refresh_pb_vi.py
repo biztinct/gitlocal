@@ -676,7 +676,11 @@ def write_cache(path: Path, cache: dict[str, str]) -> None:
     )
 
 
-def make_catalog(template: polib.POFile, translations: dict[str, str]) -> polib.POFile:
+def make_catalog(
+    template: polib.POFile,
+    translations: dict[str, str],
+    module: str,
+) -> polib.POFile:
     catalog = polib.POFile(wrapwidth=88)
     catalog.metadata = {
         "Project-Id-Version": "Odoo Server 19.0",
@@ -701,6 +705,8 @@ def make_catalog(template: polib.POFile, translations: dict[str, str]) -> polib.
             tcomment=source_entry.tcomment,
             flags=list(source_entry.flags),
         )
+        if not re.search(r"(?:^|\n)module:\s*", entry.comment or ""):
+            entry.comment = "\n".join(filter(None, [f"module: {module}", entry.comment]))
         entry.flags = [flag for flag in entry.flags if flag != "fuzzy"]
         entry.msgstr = translations.get(entry.msgid, "")
         if entry.msgid_plural:
@@ -840,7 +846,7 @@ def main() -> int:
                 unresolved.append((module, source))
                 totals["unresolved"] += 1
 
-        catalog = make_catalog(template, translations)
+        catalog = make_catalog(template, translations, module)
         if not args.dry_run:
             destination = repo / module / "i18n" / "vi_VN.po"
             destination.parent.mkdir(parents=True, exist_ok=True)

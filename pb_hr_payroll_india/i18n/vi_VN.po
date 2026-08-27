@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-05 00:00+0000\n"
-"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"PO-Revision-Date: 2026-08-27 20:46+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -18,114 +18,142 @@ msgstr ""
 msgid "India Payroll Dashboard"
 msgstr "India Bảng lương Bảng điều khiển"
 
+#. module: pb_hr_payroll_india
 #: model:ir.ui.menu,name:pb_hr_payroll_india.menu_india_dashboard
 msgid "India Dashboard"
 msgstr "Trang tổng quan Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: model:ir.ui.menu,name:pb_hr_payroll_india.menu_india_gratuity
 msgid "India Gratuity Payments"
 msgstr "Thanh toán tiền thưởng ở Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: field:hr.payslip,india_pf_employee:0
 msgid "Provident Fund - Employee"
 msgstr "Quỹ tiết kiệm - Nhân viên"
 
+#. module: pb_hr_payroll_india
 #: field:hr.payslip,india_pf_company:0
 msgid "Provident Fund - Company"
 msgstr "Quỹ dự phòng - Công ty"
 
+#. module: pb_hr_payroll_india
 #: field:hr.payslip,india_esi_employee:0
 msgid "Employee State Insurance - Employee"
 msgstr "Bảo hiểm nhà nước cho nhân viên - Nhân viên"
 
+#. module: pb_hr_payroll_india
 #: field:hr.payslip,india_esi_company:0
 msgid "Employee State Insurance - Company"
 msgstr "Bảo hiểm Nhà nước cho Người lao động - Công ty"
 
+#. module: pb_hr_payroll_india
 #: field:hr.payslip,india_pt:0
 msgid "Professional Tax"
 msgstr "Chuyên nghiệp Thuế"
 
+#. module: pb_hr_payroll_india
 #: field:hr.payslip,india_tds:0
 msgid "Tax Deducted at Source"
 msgstr "Thuế được khấu trừ tại nguồn"
 
+#. module: pb_hr_payroll_india
 #: field:hr.payslip,india_gratuity:0
 msgid "Gratuity"
 msgstr "Phụ cấp thôi việc"
 
+#. module: pb_hr_payroll_india
 #: button:hr.payslip,action_compute_india_tax:0
 msgid "Compute India Tax"
 msgstr "Tính thuế Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: view:hr.payslip:0
 msgid "India Payslip"
 msgstr "Phiếu lương Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: view:hr.payslip:0
 msgid "India Salary Rules"
 msgstr "Quy tắc lương của Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: view:hr.payslip:0
 msgid "India Insurance Components"
 msgstr "Thành phần bảo hiểm Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: code:addons/pb_hr_payroll_india/models/hr_payslip_india.py:50
 msgid "India tax computed successfully"
 msgstr "Thuế Ấn Độ đã được tính thành công"
 
+#. module: pb_hr_payroll_india
 #: code:addons/pb_hr_payroll_india/models/hr_payslip_india.py:60
 msgid "Error computing India tax: %s"
 msgstr "Lỗi tính thuế Ấn Độ: %s"
 
+#. module: pb_hr_payroll_india
 #: help:hr.payslip,india_pf_employee:0
 msgid "12% deducted from employee salary for provident fund"
 msgstr "12% dTrừ lương nhân viên vào quỹ dự phòng"
 
+#. module: pb_hr_payroll_india
 #: help:hr.payslip,india_pf_company:0
 msgid "12% paid by company for provident fund"
 msgstr "12% pZđược công ty hỗ trợ cho quỹ dự phòng"
 
+#. module: pb_hr_payroll_india
 #: help:hr.payslip,india_esi_employee:0
 msgid "0.75% deducted from employee salary for ESI"
 msgstr "0,75% dTrừ từ lương nhân viên cho ESI"
 
+#. module: pb_hr_payroll_india
 #: help:hr.payslip,india_esi_company:0
 msgid "3.25% paid by company for ESI"
 msgstr "Công ty đóng 3,25% cho ESI"
 
+#. module: pb_hr_payroll_india
 #: res.groups,name:pb_hr_payroll_india.group_india_payroll_officer
 msgid "India Payroll Officer"
 msgstr "Cán bộ nhân sự Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: button:payroll.dashboard,action_process_india_payroll:0
 msgid "Process India Payroll"
 msgstr "Quy trình bảng lương Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: button:payroll.dashboard,action_process_gratuity:0
 msgid "Process Gratuity Payments"
 msgstr "Quy trình thanh toán tiền thưởng"
 
+#. module: pb_hr_payroll_india
 #: button:payroll.dashboard,action_export_india_data:0
 msgid "Export India Data"
 msgstr "Xuất dữ liệu Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: dashboard.payroll:0
 msgid "India Payroll Management System"
 msgstr "Hệ thống quản lý tiền lương của Ấn Độ"
 
+#. module: pb_hr_payroll_india
 #: dashboard.payroll:0
 msgid "Provident Fund Management"
 msgstr "Quản lý quỹ dự phòng"
 
+#. module: pb_hr_payroll_india
 #: dashboard.payroll:0
 msgid "Employee State Insurance Management"
 msgstr "Quản lý bảo hiểm nhà nước cho nhân viên"
 
+#. module: pb_hr_payroll_india
 #: dashboard.payroll:0
 msgid "Professional Tax Processing"
 msgstr "Xử lý thuế chuyên nghiệp"
 
+#. module: pb_hr_payroll_india
 #: dashboard.payroll:0
 msgid "Gratuity Calculation and Payment"
 msgstr "Tính toán và thanh toán tiền thưởng"

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"PO-Revision-Date: 2026-08-27 20:46+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -311,18 +311,22 @@ msgstr "· Hợp đồng đầu tiên được tạo"
 msgid "— Optional —"
 msgstr "— Tùy chọn —"
 
+#. module: pb_people_advanced
 #: pb_people_advanced/static/src/js/contract_wizard.js:55
 msgid "Failed."
 msgstr "Không thành công."
 
+#. module: pb_people_advanced
 #: pb_people_advanced/static/src/js/onboard_wizard.js:9
 msgid "Person"
 msgstr "người"
 
+#. module: pb_people_advanced
 #: pb_people_advanced/static/src/js/onboard_wizard.js:9
 msgid "Role"
 msgstr "Vai trò"
 
+#. module: pb_people_advanced
 #: pb_people_advanced/static/src/js/onboard_wizard.js:56
 msgid "Employee created; contract: %(error)s"
 msgstr "Nhân viên được tạo ra; hợp đồng: %(error)s"

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-05 00:00+0000\n"
-"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"PO-Revision-Date: 2026-08-27 20:46+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -18,102 +18,127 @@ msgstr ""
 msgid "Thailand Payroll Dashboard"
 msgstr "Trang tổng quan bảng lương Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: model:ir.ui.menu,name:pb_hr_payroll_thailand.menu_thailand_dashboard
 msgid "Thailand Dashboard"
 msgstr "Trang tổng quan Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: model:ir.ui.menu,name:pb_hr_payroll_thailand.menu_thailand_ssf
 msgid "Thailand SSF Reporting"
 msgstr "Báo cáo SSF Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: field:hr.payslip,thailand_ssf_employee:0
 msgid "SSF - Employee"
 msgstr "SSF - Nhân Viên"
 
+#. module: pb_hr_payroll_thailand
 #: field:hr.payslip,thailand_ssf_company:0
 msgid "SSF - Company"
 msgstr "SSF - Công ty"
 
+#. module: pb_hr_payroll_thailand
 #: field:hr.payslip,thailand_pf_employee:0
 msgid "Provident Fund - Employee"
 msgstr "Quỹ tiết kiệm - Nhân viên"
 
+#. module: pb_hr_payroll_thailand
 #: field:hr.payslip,thailand_pf_company:0
 msgid "Provident Fund - Company"
 msgstr "Quỹ dự phòng - Công ty"
 
+#. module: pb_hr_payroll_thailand
 #: field:hr.payslip,thailand_wcf:0 dashboard.payroll:0
 msgid "Workmen's Compensation Fund"
 msgstr "Workmen's Compensation Quỹ"
 
+#. module: pb_hr_payroll_thailand
 #: button:hr.payslip,action_compute_thailand_tax:0
 msgid "Compute Thailand Tax"
 msgstr "Tính thuế Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: view:hr.payslip:0
 msgid "Thailand Payslip"
 msgstr "Phiếu lương Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: view:hr.payslip:0
 msgid "Thailand Salary Rules"
 msgstr "Quy tắc lương của Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: view:hr.payslip:0
 msgid "Thailand Insurance Components"
 msgstr "Linh kiện bảo hiểm Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: code:addons/pb_hr_payroll_thailand/models/hr_payslip_thailand.py:50
 msgid "Thailand tax computed successfully"
 msgstr "Thuế Thái Lan được tính thành công"
 
+#. module: pb_hr_payroll_thailand
 #: code:addons/pb_hr_payroll_thailand/models/hr_payslip_thailand.py:60
 msgid "Error computing Thailand tax: %s"
 msgstr "Lỗi tính thuế Thái Lan: %s"
 
+#. module: pb_hr_payroll_thailand
 #: help:hr.payslip,thailand_ssf_employee:0
 msgid "Social Security Fund contribution deducted from employee"
 msgstr "Khoản đóng góp Quỹ An sinh xã hội được khấu trừ từ người lao động"
 
+#. module: pb_hr_payroll_thailand
 #: help:hr.payslip,thailand_ssf_company:0
 msgid "Social Security Fund contribution paid by company"
 msgstr "Công ty đóng góp Quỹ An Sinh Xã Hội"
 
+#. module: pb_hr_payroll_thailand
 #: help:hr.payslip,thailand_pf_employee:0
 msgid "Employee provident fund contribution"
 msgstr "Đóng góp vào quỹ tiết kiệm của nhân viên"
 
+#. module: pb_hr_payroll_thailand
 #: help:hr.payslip,thailand_pf_company:0
 msgid "Company provident fund contribution"
 msgstr "Đóng góp vào quỹ dự phòng của công ty"
 
+#. module: pb_hr_payroll_thailand
 #: res.groups,name:pb_hr_payroll_thailand.group_thailand_payroll_officer
 msgid "Thailand Payroll Officer"
 msgstr "Cán bộ tiền lương Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: button:payroll.dashboard,action_process_thailand_payroll:0
 msgid "Process Thailand Payroll"
 msgstr "Quy trình tính lương Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: button:payroll.dashboard,action_submit_ssf:0
 msgid "Submit SSF Report"
 msgstr "Gửi báo cáo SSF"
 
+#. module: pb_hr_payroll_thailand
 #: button:payroll.dashboard,action_export_thailand_data:0
 msgid "Export Thailand Data"
 msgstr "Xuất dữ liệu Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: dashboard.payroll:0
 msgid "Thailand Payroll Management System"
 msgstr "Hệ thống quản lý tiền lương của Thái Lan"
 
+#. module: pb_hr_payroll_thailand
 #: dashboard.payroll:0
 msgid "SSF Management and Reporting"
 msgstr "Quản lý và báo cáo SSF"
 
+#. module: pb_hr_payroll_thailand
 #: dashboard.payroll:0
 msgid "Provident Fund Management"
 msgstr "Quản lý quỹ dự phòng"
 
+#. module: pb_hr_payroll_thailand
 #: dashboard.payroll:0
 msgid "Monthly Payroll Processing"
 msgstr "Xử lý bảng lương hàng tháng"

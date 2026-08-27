@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"PO-Revision-Date: 2026-08-27 20:46+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -14043,250 +14043,312 @@ msgstr "✓ Thử nghiệm trực tiếp"
 msgid "⟳ Recompute All"
 msgstr "⟳ Tính lại tất cả"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:70
 msgid "Math"
 msgstr "Toán học"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:70
 msgid "Mathematical Functions"
 msgstr "Hàm toán học"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:71
 msgid "Logical"
 msgstr "Hợp lý"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:71
 msgid "Logical Functions"
 msgstr "Hàm logic"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:72
 msgid "Text Functions"
 msgstr "Chức năng văn bản"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:73
 msgid "Lookup"
 msgstr "tra cứu"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:73
 msgid "Lookup & Reference"
 msgstr "Tra cứu & Tham khảo"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:74
 msgid "Statistical"
 msgstr "Thống kê"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:74
 msgid "Statistical Functions"
 msgstr "Hàm thống kê"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:75
 msgid "Date & Time Functions"
 msgstr "Chức năng ngày và giờ"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:111
 msgid "Sum of values"
 msgstr "Tổng các giá trị"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:112
 msgid "Sum of range"
 msgstr "Tổng phạm vi"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:115
 msgid "Conditional text"
 msgstr "Văn bản có điều kiện"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:116
 msgid "Avoid division by zero"
 msgstr "Tránh chia cho số 0"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:120
 msgid "Round to integer"
 msgstr "Làm tròn thành số nguyên"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:123
 msgid "Average of values"
 msgstr "Giá trị trung bình"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:126
 msgid "Exact match lookup"
 msgstr "Tra cứu kết quả khớp chính xác"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_autocomplete.js:129
 msgid "0 if error"
 msgstr "0 nếu có lỗi"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:47
 msgid "Adds all numbers in a range"
 msgstr "Cộng tất cả các số trong một phạm vi"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:48
 msgid "Returns the average of arguments"
 msgstr "Trả về giá trị trung bình của các đối số"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:49
 msgid "Returns the minimum value"
 msgstr "Trả về giá trị tối thiểu"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:50
 msgid "Returns the maximum value"
 msgstr "Trả về giá trị tối đa"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:51
 msgid "Returns absolute value"
 msgstr "Trả về giá trị tuyệt đối"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:52
 msgid "Rounds to specified digits"
 msgstr "Làm tròn đến các chữ số được chỉ định"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:53
 msgid "Rounds up to specified digits"
 msgstr "Làm tròn đến các chữ số được chỉ định"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:54
 msgid "Rounds down to specified digits"
 msgstr "Làm tròn xuống các chữ số được chỉ định"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:55
 msgid "Rounds up to nearest multiple"
 msgstr "Làm tròn lên bội số gần nhất"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:56
 msgid "Rounds down to nearest multiple"
 msgstr "Làm tròn xuống bội số gần nhất"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:57
 msgid "Returns number raised to power"
 msgstr "Trả về số được nâng lên lũy thừa"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:58
 msgid "Returns square root"
 msgstr "Trả về căn bậc hai"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:59
 msgid "Returns remainder after division"
 msgstr "Trả về số dư sau khi chia"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:60
 msgid "Rounds down to nearest integer"
 msgstr "Làm tròn xuống số nguyên gần nhất"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:63
 msgid "Conditional evaluation"
 msgstr "Đánh giá có điều kiện"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:64
 msgid "Returns TRUE if all conditions are true"
 msgstr "Trả về TRUE nếu tất cả điều kiện đều đúng"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:65
 msgid "Returns TRUE if any condition is true"
 msgstr "Trả về TRUE nếu bất kỳ điều kiện nào là đúng"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:66
 msgid "Reverses the logic"
 msgstr "Đảo ngược logic"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:67
 msgid "Returns value if no error"
 msgstr "Trả về giá trị nếu không có lỗi"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:68
 msgid "Multiple conditions"
 msgstr "Nhiều điều kiện"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:71
 msgid "Joins text strings"
 msgstr "Nối chuỗi văn bản"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:72
 msgid "Returns leftmost characters"
 msgstr "Trả về các ký tự ngoài cùng bên trái"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:73
 msgid "Returns rightmost characters"
 msgstr "Trả về các ký tự ngoài cùng bên phải"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:74
 msgid "Returns characters from middle"
 msgstr "Trả về các ký tự từ giữa"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:75
 msgid "Returns length of text"
 msgstr "Trả về độ dài của văn bản"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:76
 msgid "Converts to uppercase"
 msgstr "Chuyển đổi sang chữ hoa"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:77
 msgid "Converts to lowercase"
 msgstr "Chuyển đổi sang chữ thường"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:78
 msgid "Removes extra spaces"
 msgstr "Loại bỏ các khoảng trống thừa"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:81
 msgid "Vertical lookup"
 msgstr "Tra cứu dọc"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:82
 msgid "Horizontal lookup"
 msgstr "Tìm kiếm ngang"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:83
 msgid "Returns value at position"
 msgstr "Trả về giá trị tại vị trí"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:84
 msgid "Returns position of value"
 msgstr "Trả về vị trí của giá trị"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:87
 msgid "Counts numbers"
 msgstr "Đếm số"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:88
 msgid "Counts non-empty cells"
 msgstr "Đếm các ô không trống"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:89
 msgid "Counts cells matching criteria"
 msgstr "Đếm các ô phù hợp với tiêu chí"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:90
 msgid "Sums cells matching criteria"
 msgstr "Tính tổng các ô phù hợp với tiêu chí"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:91
 msgid "Averages cells matching criteria"
 msgstr "Tính trung bình các ô phù hợp với tiêu chí"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:94
 msgid "Returns current date"
 msgstr "Trả về ngày hiện tại"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:95
 msgid "Returns current date and time"
 msgstr "Trả về ngày và giờ hiện tại"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:96
 msgid "Returns year from date"
 msgstr "Trả về năm kể từ ngày"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:97
 msgid "Returns month from date"
 msgstr "Trả về tháng kể từ ngày"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/static/src/js/formula_bar.js:98
 msgid "Returns day from date"
 msgstr "Trả về ngày kể từ ngày"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_config.py:774
 msgid "%s batch(es) skipped without payslips."
 msgstr "(Các) lô %s bị bỏ qua mà không có phiếu lương."
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_config.py:1572
 msgid ""
 "The category review needs the Formula Studio, which is not installed on this database."
@@ -14294,15 +14356,18 @@ msgstr ""
 "Việc đánh giá danh mục cần có Formula Studio, ứng dụng này chưa được cài đặt trên cơ "
 "sở dữ liệu này."
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_config.py:1719
 msgid "... and %d more. Check the list for all errors."
 msgstr "... và %d hơn thế nữa. Kiểm tra danh sách cho tất cả các lỗi."
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1277
 msgid "Your sheet files this under \"%(band)s\" — the formula makes it %(role)s."
 msgstr ""
 "Trang tính của bạn lưu thông tin này vào \"%(band)s\" — công thức tạo thành %(role)s."
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1275
 msgid ""
 "Your sheet files this under \"%(band)s\" — but it is a count of hours or days, not "
@@ -14311,6 +14376,7 @@ msgstr ""
 "Trang tính của bạn ghi thông tin này trong \"%(band)s\" - nhưng đó là số giờ hoặc ngày"
 " chứ không phải tiền."
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:658
 msgid ""
 "Counted in hours or days, not money — so it belongs with the information on a payslip "
@@ -14319,38 +14385,47 @@ msgstr ""
 "Được tính theo giờ hoặc ngày, không phải tiền - vì vậy nó thuộc về thông tin trên "
 "phiếu lương chứ không phải tiền lương. %(reason)s"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1249
 msgid "Earning"
 msgstr "Thu nhập"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1250
 msgid "Deduction"
 msgstr "Giảm trừ"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1251
 msgid "Net pay"
 msgstr "Lương thực nhận"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1254
 msgid "Both at once"
 msgstr "Cả hai cùng một lúc"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1290
 msgid "Net"
 msgstr "Thực lãnh"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1291
 msgid "Basic"
 msgstr "Cơ sở"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1291
 msgid "Gross"
 msgstr "Tổng thu nhập"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/models/formula_net_role.py:1292
 msgid "Allowance"
 msgstr "Phụ cấp"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:1010
 msgid ""
 "Cannot proceed. The following columns are required by main sheet formulas but are not "
@@ -14359,10 +14434,12 @@ msgstr ""
 "Không thể tiếp tục. Các cột sau đây được yêu cầu bởi các công thức của trang tính "
 "chính nhưng không được chọn:"
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:1013
 msgid "Please select these columns to continue."
 msgstr "Vui lòng chọn các cột này để tiếp tục."
 
+#. module: pb_hr_payroll_formula
 #: pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:3087
 msgid ""
 "⚠ %d constant(s) had non-numeric values and were imported as 0 — set them manually: %s"

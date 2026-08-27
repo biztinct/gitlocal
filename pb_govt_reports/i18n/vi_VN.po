@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:20+1000\n"
+"PO-Revision-Date: 2026-08-27 20:46+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -311,14 +311,17 @@ msgstr ""
 msgid "parameters"
 msgstr "thông số"
 
+#. module: pb_govt_reports
 #: pb_govt_reports/static/src/js/filing_flow.js:203
 msgid "%s further parameters belong to the other filings of this"
 msgstr "Các tham số khác của %s thuộc về các hồ sơ khác của điều này"
 
+#. module: pb_govt_reports
 #: pb_govt_reports/static/src/js/filing_flow.js:211
 msgid "Leave empty to cover everyone in range, narrowed by the"
 msgstr "Để trống để bao quát mọi người trong phạm vi, bị thu hẹp bởi"
 
+#. module: pb_govt_reports
 #: pb_govt_reports/static/src/js/filing_flow.js:219
 msgid "Generated %s file(s). Nothing has been sent anywhere —"
 msgstr "Đã tạo (các) tệp %s. Không có gì được gửi đi bất cứ đâu -"
