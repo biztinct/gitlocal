@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:46+1000\n"
+"PO-Revision-Date: 2026-08-27 20:49+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -1306,102 +1306,102 @@ msgid "users"
 msgstr "người dùng"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:13
+#: code:addons/pb_tenants/static/src/js/tenants.js:13
 msgid "— pick later —"
 msgstr "— chọn sau —"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:13
+#: code:addons/pb_tenants/static/src/js/tenants.js:13
 msgid "Vietnam"
 msgstr "Việt Nam"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:13
+#: code:addons/pb_tenants/static/src/js/tenants.js:13
 msgid "Indonesia"
 msgstr "Indonesia"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:13
+#: code:addons/pb_tenants/static/src/js/tenants.js:13
 msgid "India"
 msgstr "Ấn Độ"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:14
+#: code:addons/pb_tenants/static/src/js/tenants.js:14
 msgid "Singapore"
 msgstr "Singapore"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:14
+#: code:addons/pb_tenants/static/src/js/tenants.js:14
 msgid "Thailand"
 msgstr "Thái Lan"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:14
+#: code:addons/pb_tenants/static/src/js/tenants.js:14
 msgid "Cambodia"
 msgstr "Campuchia"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:14
+#: code:addons/pb_tenants/static/src/js/tenants.js:14
 msgid "Malaysia"
 msgstr "Malaysia"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:73
+#: code:addons/pb_tenants/static/src/js/tenants.js:73
 msgid "Platform status refreshed."
 msgstr "Đã làm mới trạng thái nền tảng."
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:86
+#: code:addons/pb_tenants/static/src/js/tenants.js:86
 msgid "Copied"
 msgstr "Đã sao chép"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:91
+#: code:addons/pb_tenants/static/src/js/tenants.js:91
 msgid "Copy failed — select and copy manually."
 msgstr "Sao chép không thành công — chọn và sao chép thủ công."
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:130
+#: code:addons/pb_tenants/static/src/js/tenants.js:130
 msgid "Checking availability…"
 msgstr "Đang kiểm tra tính khả dụng…"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:137
+#: code:addons/pb_tenants/static/src/js/tenants.js:137
 msgid "Available"
 msgstr "Khả dụng"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:138
+#: code:addons/pb_tenants/static/src/js/tenants.js:138
 msgid "Not available"
 msgstr "Không sẵn sàng"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:141
+#: code:addons/pb_tenants/static/src/js/tenants.js:141
 msgid "Could not check — retry."
 msgstr "Không thể kiểm tra - thử lại."
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:158
+#: code:addons/pb_tenants/static/src/js/tenants.js:158
 msgid "Lost connection to the server — check your network and retry."
 msgstr "Mất kết nối với máy chủ — hãy kiểm tra mạng của bạn và thử lại."
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:187
+#: code:addons/pb_tenants/static/src/js/tenants.js:187
 msgid "Provisioning %(host)s …"
 msgstr "Đang cung cấp %(host)s …"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:197
+#: code:addons/pb_tenants/static/src/js/tenants.js:197
 msgid "Step failed."
 msgstr "Bước không thành công."
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:243
+#: code:addons/pb_tenants/static/src/js/tenants.js:243
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:261
+#: code:addons/pb_tenants/static/src/js/tenants.js:261
 msgid ""
 "This restores a copy of the backup into '%(database)s'. The live tenant is untouched. "
 "Any existing staging copy is replaced. Continue?"
@@ -1411,53 +1411,53 @@ msgstr ""
 "tục?"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:262
+#: code:addons/pb_tenants/static/src/js/tenants.js:262
 msgid "Restore copy"
 msgstr "Khôi phục bản sao"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:278
+#: code:addons/pb_tenants/static/src/js/tenants.js:278
 msgid "Remove staging copy"
 msgstr "Xóa bản sao dàn dựng"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:279
+#: code:addons/pb_tenants/static/src/js/tenants.js:279
 msgid "Drop the staging database '%(database)s'? The live tenant is untouched."
 msgstr ""
 "Bỏ cơ sở dữ liệu dàn dựng '%(database)s'? Người thuê nhà trực tiếp không bị ảnh hưởng."
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:280
+#: code:addons/pb_tenants/static/src/js/tenants.js:280
 msgid "Drop staging"
 msgstr "Bỏ dàn dựng"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:299
+#: code:addons/pb_tenants/static/src/js/tenants.js:299
 msgid "Remove domain"
 msgstr "Xóa miền"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:300
+#: code:addons/pb_tenants/static/src/js/tenants.js:300
 msgid "Detach %(hostname)s from this tenant? Its certificate and routing are removed."
 msgstr ""
 "Tách %(hostname)s khỏi đối tượng thuê này? Chứng chỉ và định tuyến của nó bị xóa."
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:301
+#: code:addons/pb_tenants/static/src/js/tenants.js:301
 msgid "Remove"
 msgstr "Xóa"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:313
+#: code:addons/pb_tenants/static/src/js/tenants.js:313
 msgid "Tenant decommissioned. Final backup: %(backup)s"
 msgstr "Người thuê đã ngừng hoạt động. Bản sao lưu cuối cùng: %(backup)s"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:313
+#: code:addons/pb_tenants/static/src/js/tenants.js:313
 msgid "n/a"
 msgstr "n/a"
 
 #. module: pb_tenants
-#: pb_tenants/static/src/js/tenants.js:316
+#: code:addons/pb_tenants/static/src/js/tenants.js:316
 msgid "Offboarding failed."
 msgstr "Tắt máy không thành công."

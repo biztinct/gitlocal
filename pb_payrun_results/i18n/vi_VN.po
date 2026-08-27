@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:46+1000\n"
+"PO-Revision-Date: 2026-08-27 20:49+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -375,106 +375,106 @@ msgid "‹ Prev"
 msgstr "‹ Trước đó"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:46
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:46
 msgid "Could not load pay runs"
 msgstr "Không thể tải các kỳ lương"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:110
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:110
 msgid "This month"
 msgstr "Tháng này"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:110
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:110
 msgid "Last month"
 msgstr "Tháng trước"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:111
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:111
 msgid "This quarter"
 msgstr "Quý này"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:111
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:111
 msgid "This year"
 msgstr "Năm nay"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:112
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:112
 msgid "Last year"
 msgstr "Năm ngoái"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:181
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:181
 msgid "Gross"
 msgstr "Tổng thu nhập"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:188
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
 msgid "Jan"
 msgstr "tháng một"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:188
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
 msgid "Feb"
 msgstr "tháng hai"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:188
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
 msgid "Mar"
 msgstr "tháng 3"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:188
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
 msgid "Apr"
 msgstr "tháng tư"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:188
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
 msgid "May"
 msgstr "Th5"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:188
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:188
 msgid "Jun"
 msgstr "tháng sáu"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:189
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
 msgid "Jul"
 msgstr "tháng 7"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:189
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
 msgid "Aug"
 msgstr "tháng 8"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:189
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
 msgid "Sep"
 msgstr "tháng 9"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:189
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
 msgid "Oct"
 msgstr "Tháng 10"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:189
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
 msgid "Nov"
 msgstr "tháng 11"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:189
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:189
 msgid "Dec"
 msgstr "Tháng mười hai"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:282
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:282
 msgid "Export failed"
 msgstr "Xuất Thất bại"
 
 #. module: pb_payrun_results
-#: pb_payrun_results/static/src/js/payrun_results.js:290
+#: code:addons/pb_payrun_results/static/src/js/payrun_results.js:290
 msgid "Results exported to Excel"
 msgstr "Kết quả được xuất sang Excel"

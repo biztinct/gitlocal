@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:46+1000\n"
+"PO-Revision-Date: 2026-08-27 20:49+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -11812,252 +11812,252 @@ msgid "＋ Row ↓"
 msgstr "＋ Hàng ↓"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:69
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:69
 msgid "Grid navigation"
 msgstr "Điều hướng lưới"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:70
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:70
 msgid "Move between cells"
 msgstr "Di chuyển giữa các ô"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:71
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:71
 msgid "Next column · Shift+Tab for previous"
 msgstr "Cột tiếp theo · Shift+Tab cho cột trước"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:72
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:72
 msgid "Extend the column selection"
 msgstr "Mở rộng lựa chọn cột"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:73
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:73
 msgid "Edit the focused formula cell"
 msgstr "Chỉnh sửa ô công thức tập trung"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:76
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:76
 msgid "Grid editing"
 msgstr "Chỉnh sửa lưới"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:77
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:77
 msgid "Start typing to edit a formula cell"
 msgstr "Bắt đầu nhập để chỉnh sửa ô công thức"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:78
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:78
 msgid "Save the edit"
 msgstr "Lưu chỉnh sửa"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:79
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:79
 msgid "Cancel the edit · clear selection"
 msgstr "Hủy chỉnh sửa · xóa lựa chọn"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:80
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:80
 msgid "Undo the last saved formula"
 msgstr "Hoàn tác công thức đã lưu cuối cùng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:82
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:82
 msgid "Drag-fill"
 msgstr "Kéo điền"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:83
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:83
 msgid "Confirm the proposed fill"
 msgstr "Xác nhận điền được đề xuất"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:84
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:84
 msgid "Cancel the fill"
 msgstr "Hủy điền"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:763
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:763
 msgid "— %(sample)s: %(code)s"
 msgstr "— %(sample)s: %(code)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:765
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:765
 msgid "%(count)s sample tests failing%(detail)s"
 msgstr "Các thử nghiệm mẫu %(count)s không thành công%(detail)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:766
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:766
 msgid "Tests failing"
 msgstr "Kiểm tra thất bại"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:798
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:798
 msgid "Could not save formula"
 msgstr "Không thể lưu công thức"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:817
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:817
 msgid "Bulk update failed"
 msgstr "Cập nhật hàng loạt không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:818
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:818
 msgid "Updated %(count)s components"
 msgstr "Các thành phần %(count)s được cập nhật"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:838
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:838
 msgid "Reorder failed"
 msgstr "Sắp xếp lại không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:847
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:847
 msgid "Grouping failed"
 msgstr "Nhóm không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:848
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:848
 msgid "Columns grouped by category"
 msgstr "Các cột được nhóm theo danh mục"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:858
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:858
 msgid "Fill failed"
 msgstr "Điền không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:859
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:859
 msgid "Filled %(count)s columns"
 msgstr "Đã điền các cột %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:888
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:888
 msgid "Paste failed"
 msgstr "Dán không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:890
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:890
 msgid "Pasted %(count)s formulas"
 msgstr "Đã dán công thức %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:933
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:933
 msgid "You can pin up to 2 extra sample rows"
 msgstr "Bạn có thể ghim tối đa 2 hàng mẫu bổ sung"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:936
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:936
 msgid "Add more sample data to pin another row"
 msgstr "Thêm nhiều dữ liệu mẫu hơn để ghim một hàng khác"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1002
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1002
 msgid "A snippet needs a name and a body"
 msgstr "Đoạn mã cần có tên và nội dung"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1010
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1010
 msgid "Could not save snippet"
 msgstr "Không thể lưu đoạn trích"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1013
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1013
 msgid "Snippet saved"
 msgstr "Đã lưu đoạn mã"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1025
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1025
 msgid "Could not delete snippet"
 msgstr "Không thể xóa đoạn trích"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1073
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1073
 msgid "Replace failed"
 msgstr "Thay thế không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1102
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1102
 msgid "Views"
 msgstr "Lượt xem"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1104
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1104
 msgid "Tests view"
 msgstr "Chế độ xem thử nghiệm"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1105
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1105
 msgid "Compare periods"
 msgstr "So sánh thời gian"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1106
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1106
 msgid "Compare vs budget"
 msgstr "So sánh với ngân sách"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1107
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1107
 msgid "Actions"
 msgstr "Hành động"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1116
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1116
 msgid "New component"
 msgstr "Thành phần mới"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1117
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1117
 msgid "Import from Excel…"
 msgstr "Nhập từ Excel…"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1118
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1118
 msgid "Find & replace"
 msgstr "Tìm và thay thế"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1119
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1119
 msgid "Release preview"
 msgstr "Xem trước bản phát hành"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1184
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1184
 msgid "Analyze"
 msgstr "Phân tích"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1185
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1185
 msgid "Watch a payslip compute step by step"
 msgstr "Xem cách tính phiếu lương theo từng bước"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1186
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1186
 msgid "Slide a rate and project the payroll cost"
 msgstr "Trượt tỷ lệ và dự kiến chi phí tiền lương"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1187
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1187
 msgid "The whole configuration as a graph"
 msgstr "Toàn bộ cấu hình dưới dạng biểu đồ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1188
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1188
 msgid "Type hypothetical inputs, see the full breakdown"
 msgstr "Nhập thông tin đầu vào giả định, xem thông tin chi tiết đầy đủ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1190
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1190
 msgid "Design"
 msgstr "Thiết kế"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1191
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1191
 msgid "Design the payslip layout"
 msgstr "Thiết kế bố cục phiếu lương"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1192
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1192
 msgid ""
 "Open the mapping board on this scheme — spreadsheet columns, system fields, employee "
 "and contract records"
@@ -12066,58 +12066,58 @@ msgstr ""
 " hợp đồng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1193
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1193
 msgid "PIT brackets and other rate tables"
 msgstr "Dấu ngoặc thuế TNCN và các bảng thuế suất khác"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1194
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1194
 msgid "Export workbook"
 msgstr "Xuất sổ làm việc"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1194
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1194
 msgid "Download the config as a living Excel file with real formulas"
 msgstr "Tải config dưới dạng file Excel sống với công thức thực"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1196
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1196
 msgid "Govern"
 msgstr "quản lý"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1197
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1197
 msgid "Lint checks and rename-refactor"
 msgstr "Kiểm tra Lint và đổi tên-tái cấu trúc"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1198
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1198
 msgid "Fork this config, trial a change, merge back"
 msgstr "Phân nhánh cấu hình này, thử thay đổi, hợp nhất lại"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1199
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1199
 msgid "One master scheme, many synced variants"
 msgstr "Một sơ đồ tổng thể, nhiều biến thể được đồng bộ hóa"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1200
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1200
 msgid "Review classification"
 msgstr "Đánh giá phân loại"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1200
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1200
 msgid "Re-check what each column is for, and accept only the changes you agree with"
 msgstr ""
 "Kiểm tra lại mục đích của từng cột và chỉ chấp nhận những thay đổi mà bạn đồng ý"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1201
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1201
 msgid "Review categories"
 msgstr "Đánh giá danh mục"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1201
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1201
 msgid ""
 "Read the net-pay formula and file every component as an earning, a deduction, an "
 "employer cost or information"
@@ -12126,619 +12126,619 @@ msgstr ""
 " chi phí hoặc thông tin của người sử dụng lao động"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1202
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1202
 msgid "Roll a statutory change across every configuration"
 msgstr "Thực hiện thay đổi theo luật định trên mọi cấu hình"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1203
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1203
 msgid "Review and sign off formula changes"
 msgstr "Xem xét và ký tắt các thay đổi trong công thức"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1205
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1205
 msgid "Collaborate"
 msgstr "Cộng tác"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1206
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1206
 msgid "Share for review"
 msgstr "Chia sẻ để xem xét"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1206
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1206
 msgid "A read-only link for your client"
 msgstr "Một liên kết chỉ đọc cho khách hàng của bạn"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1207
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1207
 msgid "Describe a rule in plain English and let AI draft it"
 msgstr "Mô tả một quy tắc bằng tiếng Anh đơn giản và để AI soạn thảo nó"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1322
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1322
 msgid "Command palette"
 msgstr "Bảng lệnh"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1324
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1324
 msgid "Keyboard shortcuts (this panel)"
 msgstr "Phím tắt (bảng này)"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1325
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1325
 msgid "Close palette · find · drawers"
 msgstr "Đóng bảng màu · tìm · ngăn kéo"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1327
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1327
 msgid "Command layer"
 msgstr "Lớp lệnh"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1338
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1338
 msgid "Could not create scenario"
 msgstr "Không thể tạo kịch bản"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1357
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1357
 msgid "Promote failed"
 msgstr "Quảng cáo không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1358
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1358
 msgid "Promoted into %(code)s"
 msgstr "Được thăng cấp thành %(code)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
 msgid "Testing"
 msgstr "Kiểm thử"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
 msgid "Validated"
 msgstr "Đã xác thực"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
 msgid "Active"
 msgstr "Đang hoạt động"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1514
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1514
 msgid "Archived"
 msgstr "Đã lưu trữ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1515
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1515
 msgid "Start testing"
 msgstr "Bắt đầu thử nghiệm"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1515
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1515
 msgid "Advance"
 msgstr "Nâng cao"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1853
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1853
 msgid "Could not sign off the release"
 msgstr "Không thể đăng xuất bản phát hành"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1854
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1854
 msgid "Release sealed · %(count)s components"
 msgstr "Phát hành kín · Linh kiện %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1859
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1859
 msgid "Sign-off failed"
 msgstr "Đăng xuất không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1916
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1916
 msgid "No historical payslips to simulate against"
 msgstr "Không có phiếu lương lịch sử nào để mô phỏng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1931
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1931
 msgid "Simulation failed"
 msgstr "Mô phỏng không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1941
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1941
 msgid "Rollback failed"
 msgstr "Khôi phục không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1942
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1942
 msgid "Rolled back · %(count)s components restored"
 msgstr "Đã khôi phục · Đã khôi phục các thành phần %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1967
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1967
 msgid "Clone failed"
 msgstr "Sao chép không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:1968
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1968
 msgid "Cloned as “%(name)s”"
 msgstr "Được nhân bản thành “%(name)s”"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2032
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2032
 msgid "Published"
 msgstr "Đã đăng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2032
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2032
 msgid "Superseded"
 msgstr "Đã thay thế"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2055
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2055
 msgid "Apply failed"
 msgstr "Áp dụng không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2056
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2056
 msgid "Applied · %(count)s values updated"
 msgstr "Đã áp dụng · Đã cập nhật giá trị %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2071
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2071
 msgid "Roll-out failed"
 msgstr "Ra mắt không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2072
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2072
 msgid "Rolled out to %(configs)s configurations · %(values)s values updated"
 msgstr "Đã triển khai cho cấu hình %(configs)s · Đã cập nhật giá trị %(values)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2117
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2117
 msgid "Could not create branch"
 msgstr "Không thể tạo chi nhánh"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2118
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2118
 msgid "Branch “%(name)s” created"
 msgstr "Đã tạo nhánh “%(name)s”"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2121
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2121
 msgid "Branch creation failed"
 msgstr "Tạo chi nhánh không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2153
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2153
 msgid "Merge failed"
 msgstr "Hợp nhất không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2165
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2165
 msgid "Discard failed"
 msgstr "Hủy không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2166
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2166
 msgid "Branch “%(name)s” discarded"
 msgstr "Nhánh “%(name)s” bị loại bỏ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2199
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2199
 msgid "Could not create variant"
 msgstr "Không thể tạo biến thể"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2200
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2200
 msgid "Variant “%(name)s” created"
 msgstr "Đã tạo biến thể “%(name)s”"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2203
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2203
 msgid "Variant creation failed"
 msgstr "Tạo biến thể không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2238
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2238
 msgid "Sync failed"
 msgstr "Đồng bộ hóa không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2239
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2239
 msgid "Synced %(components)s components · %(overrides)s overrides kept"
 msgstr ""
 "Các thành phần %(components)s được đồng bộ hóa · Các phần ghi đè %(overrides)s được "
 "giữ nguyên"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2251
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2251
 msgid "Push failed"
 msgstr "Đẩy không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2252
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2252
 msgid "Pushed to %(variants)s variants · %(updates)s updates"
 msgstr "Đã đẩy lên các biến thể %(variants)s · Cập nhật %(updates)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2262
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2262
 msgid "Could not change override"
 msgstr "Không thể thay đổi ghi đè"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2264
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2264
 msgid "“%(name)s” protected from sync"
 msgstr "“%(name)s” được bảo vệ khỏi đồng bộ hóa"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2265
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2265
 msgid "“%(name)s” now inherits from master"
 msgstr "“%(name)s” hiện được kế thừa từ chủ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2272
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2272
 msgid "Detach failed"
 msgstr "Tách không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2273
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2273
 msgid "“%(name)s” detached — now a standalone configuration"
 msgstr "“%(name)s” đã được tách ra - hiện là cấu hình độc lập"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2303
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2303
 msgid "Could not create link"
 msgstr "Không thể tạo liên kết"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2304
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2304
 msgid "Review link created"
 msgstr "Liên kết đánh giá đã được tạo"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2308
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2308
 msgid "Failed to create link"
 msgstr "Không tạo được liên kết"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2315
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2315
 msgid "Link copied to clipboard"
 msgstr "Đã sao chép liên kết vào bảng nhớ tạm"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2322
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2322
 msgid "Revoke failed"
 msgstr "Thu hồi không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2323
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2323
 msgid "Link revoked"
 msgstr "Đã thu hồi liên kết"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2327
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
 msgid "Viewed"
 msgstr "Đã xem"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2327
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
 msgid "Signed off"
 msgstr "Đã đăng xuất"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2327
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
 msgid "Revoked"
 msgstr "Đã thu hồi"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2327
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2327
 msgid "Expired"
 msgstr "Đã hết hạn"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2553
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2553
 msgid "Could not open the component."
 msgstr "Không thể mở thành phần."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2650
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2650
 msgid "Could not save component"
 msgstr "Không thể lưu thành phần"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2656
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2656
 msgid "Component saved"
 msgstr "Đã lưu thành phần"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:2825
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:2825
 msgid "if"
 msgstr "nếu"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3070
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3070
 msgid "Action blocked"
 msgstr "Hành động bị chặn"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3071
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3071
 msgid "Now %(state)s"
 msgstr "Bây giờ %(state)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3076
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3076
 msgid "Validation complete"
 msgstr "Xác thực hoàn tất"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3076
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3076
 msgid "Validation failed"
 msgstr "Xác thực Thất bại"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3081
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3081
 msgid "%(passed)s/%(total)s tests passed"
 msgstr "Đã vượt qua các bài kiểm tra %(passed)s/%(total)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3082
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3082
 msgid "Test run failed"
 msgstr "Chạy thử không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3097
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3097
 msgid "Could not load settings."
 msgstr "Không thể tải cài đặt."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3105
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3105
 msgid "Could not generate sample"
 msgstr "Không thể tạo mẫu"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3106
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3106
 msgid "Sample data generated"
 msgstr "Dữ liệu mẫu được tạo"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3142
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3142
 msgid "Pick two periods to compare"
 msgstr "Chọn hai thời kỳ để so sánh"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3143
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3143
 msgid "Pick two different periods"
 msgstr "Chọn hai thời kỳ khác nhau"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3154
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3154
 msgid "Comparison failed"
 msgstr "So sánh không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3212
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3212
 msgid "Could not narrate this comparison"
 msgstr "Không thể thuật lại sự so sánh này"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3214
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3214
 msgid "Narration failed"
 msgstr "Tường thuật không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3225
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3225
 msgid "Narrative copied"
 msgstr "Tường thuật được sao chép"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3251
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3251
 msgid "Pick or create a budget first"
 msgstr "Chọn hoặc tạo ngân sách trước"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3252
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3252
 msgid "Pick a payrun to measure against"
 msgstr "Chọn một kỳ lương để đo lường"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3262
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3262
 msgid "Budget comparison failed"
 msgstr "So sánh ngân sách không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3287
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3287
 msgid "Could not open the budget editor"
 msgstr "Không thể mở trình chỉnh sửa ngân sách"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3318
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3318
 msgid "Pick a payrun to seed from"
 msgstr "Chọn một kỳ lương để bắt đầu từ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3325
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3325
 msgid "Amounts seeded from the payrun"
 msgstr "Số tiền được chọn từ kỳ lương"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3327
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3327
 msgid "Could not seed from that payrun"
 msgstr "Không thể bắt đầu từ kỳ lương đó"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3341
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3341
 msgid "Amounts seeded from the on-screen comparison"
 msgstr "Số tiền được chọn từ so sánh trên màn hình"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3346
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3346
 msgid "A budget needs a name"
 msgstr "Ngân sách cần có tên"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3362
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3362
 msgid "Could not save budget"
 msgstr "Không thể tiết kiệm ngân sách"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3367
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3367
 msgid "Budget saved"
 msgstr "Đã lưu ngân sách"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3377
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3377
 msgid "Could not delete budget"
 msgstr "Không thể xóa ngân sách"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3381
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3381
 msgid "Budget deleted"
 msgstr "Đã xóa ngân sách"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3457
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3457
 msgid "Could not load that sample"
 msgstr "Không thể tải mẫu đó"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3490
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3490
 msgid "Offer summary copied"
 msgstr "Đã sao chép tóm tắt ưu đãi"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3557
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3557
 msgid "Select at least one reachable edge."
 msgstr "Chọn ít nhất một cạnh có thể tiếp cận."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3562
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3562
 msgid "Could not generate"
 msgstr "Không thể tạo"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3565
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3565
 msgid "Boundary samples: %(summary)s"
 msgstr "Mẫu ranh giới: %(summary)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3577
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3577
 msgid "Could not confirm"
 msgstr "Không thể xác nhận"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3579
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3579
 msgid "Baseline confirmed"
 msgstr "Đường cơ sở đã được xác nhận"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3586
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3586
 msgid "%(count)s baselines confirmed"
 msgstr "Đã xác nhận đường cơ sở %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3595
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3595
 msgid "AI is unavailable."
 msgstr "AI không có sẵn."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3606
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3606
 msgid "Select at least one profile."
 msgstr "Chọn ít nhất một hồ sơ."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3610
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3610
 msgid "Could not add samples"
 msgstr "Không thể thêm mẫu"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3611
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3611
 msgid "%(count)s AI profiles added"
 msgstr "Đã thêm hồ sơ AI %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3635
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3635
 msgid "Could not add sample"
 msgstr "Không thể thêm mẫu"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3645
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3645
 msgid "%(count)s random samples added"
 msgstr "Đã thêm mẫu ngẫu nhiên %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3659
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3659
 msgid "Baseline saved"
 msgstr "Đã lưu đường cơ sở"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3685
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3685
 msgid "Tests run"
 msgstr "Chạy thử nghiệm"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3701
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3701
 msgid "Could not export template"
 msgstr "Không thể xuất mẫu"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3709
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3709
 msgid "Template downloaded"
 msgstr "Đã tải mẫu xuống"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3717
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3717
 msgid "Could not export workbook"
 msgstr "Không thể xuất sổ làm việc"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3725
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3725
 msgid "Workbook downloaded"
 msgstr "Đã tải sổ làm việc xuống"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3737
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3737
 msgid "Could not import"
 msgstr "Không thể nhập"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3738
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3738
 msgid "%(count)s samples imported"
 msgstr "Mẫu %(count)s được nhập khẩu"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3775
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3775
 msgid "Could not save settings"
 msgstr "Không thể lưu cài đặt"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3780
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3780
 msgid "Settings saved"
 msgstr "Đã lưu cài đặt"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3843
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3843
 msgid "Philippines"
 msgstr "Philippines"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3846
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3846
 msgid "Mid-cycle"
 msgstr "Giữa chu kỳ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3846
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3846
 msgid "End-cycle"
 msgstr "Cuối chu kỳ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3906
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3906
 msgid "Available in the full platform"
 msgstr "Có sẵn trong nền tảng đầy đủ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3907
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3907
 msgid ""
 "This functionality is available in the full Payobook platform. Please contact Payobook"
 " to arrange a personalised demonstration."
@@ -12747,188 +12747,188 @@ msgstr ""
 "sắp xếp một buổi trình diễn được cá nhân hóa."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3908
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3908
 msgid "Got it"
 msgstr "Hiểu rồi"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3996
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3996
 msgid "Restore failed"
 msgstr "Khôi phục không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:3999
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3999
 msgid "Restored v%(version)s"
 msgstr "Đã khôi phục v%(version)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:4143
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4143
 msgid "Could not apply the rewrite"
 msgstr "Không thể áp dụng tính năng viết lại"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:4211
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4211
 msgid "Rename failed"
 msgstr "Đổi tên không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:4293
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4293
 msgid "Save failed"
 msgstr "Lưu không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:4294
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4294
 msgid "Rate table saved"
 msgstr "Đã lưu bảng giá"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:4308
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4308
 msgid "Delete failed"
 msgstr "Xóa không thành công"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:4309
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4309
 msgid "Rate table deleted"
 msgstr "Bảng giá đã bị xóa"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:4419
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:4419
 msgid "Review component categories"
 msgstr "Xem lại danh mục thành phần"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5489
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5489
 msgid "Formula applied to %(target)s"
 msgstr "Công thức áp dụng cho %(target)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5490
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5490
 msgid "Could not apply"
 msgstr "Không thể áp dụng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5492
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5492
 msgid "That would create a new component — open the editor to confirm name & code."
 msgstr ""
 "Điều đó sẽ tạo ra một thành phần mới — hãy mở trình chỉnh sửa để xác nhận tên và mã."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5527
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5527
 msgid "Give the configuration a name first."
 msgstr "Đặt tên cho cấu hình trước tiên."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5536
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5536
 msgid "Created “%(name)s” with %(count)s components"
 msgstr "Đã tạo “%(name)s” với các thành phần %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5538
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5538
 msgid "Could not create configuration"
 msgstr "Không thể tạo cấu hình"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5571
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5571
 msgid "Added %(count)s components"
 msgstr "Đã thêm các thành phần %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5572
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5572
 msgid "This configuration already has components."
 msgstr "Cấu hình này đã có thành phần."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5573
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5573
 msgid "Could not apply the starter."
 msgstr "Không thể áp dụng bộ khởi động."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5583
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5583
 msgid "Could not add a component."
 msgstr "Không thể thêm thành phần."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5596
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5596
 msgid "this configuration"
 msgstr "cấu hình này"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5620
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5620
 msgid "Could not archive configuration"
 msgstr "Không thể lưu trữ cấu hình"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5620
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5620
 msgid "Could not delete configuration"
 msgstr "Không thể xóa cấu hình"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5638
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5638
 msgid "Archived “%(name)s”"
 msgstr "Đã lưu trữ “%(name)s”"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5639
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5639
 msgid "Deleted “%(name)s”"
 msgstr "Đã xóa “%(name)s”"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/formula_studio.js:5669
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:5669
 msgid "Component deleted"
 msgstr "Đã xóa thành phần"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/grid/formula_bar.js:34
+#: code:addons/pb_formula_studio/static/src/js/grid/formula_bar.js:34
 msgid "Select a component"
 msgstr "Chọn một thành phần"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/grid/formula_bar.js:35
+#: code:addons/pb_formula_studio/static/src/js/grid/formula_bar.js:35
 msgid "Input — value comes from the data source"
 msgstr "Đầu vào - giá trị đến từ nguồn dữ liệu"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/grid/formula_bar.js:37
+#: code:addons/pb_formula_studio/static/src/js/grid/formula_bar.js:37
 msgid "= formula"
 msgstr "= công thức"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/grid/grid_studio.js:483
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:483
 msgid "This formula has an error."
 msgstr "Công thức này có lỗi."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/grid/grid_studio.js:1131
+#: code:addons/pb_formula_studio/static/src/js/grid/grid_studio.js:1131
 msgid "Invalid formula"
 msgstr "Công thức không hợp lệ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/journey_board.js:313
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:313
 msgid "1 component can be read back off an employee or contract record"
 msgstr "1 thành phần có thể được đọc lại từ hồ sơ nhân viên hoặc hợp đồng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/journey_board.js:315
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:315
 msgid "%s components can be read back off employee or contract records"
 msgstr "Các thành phần %s có thể được đọc lại từ hồ sơ nhân viên hoặc hợp đồng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/journey_board.js:465
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:465
 msgid "1 mapped field. It writes the record on import and is read"
 msgstr "1 trường được ánh xạ. Nó ghi bản ghi khi nhập và được đọc"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/journey_board.js:467
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:467
 msgid "%s mapped fields. They write the records on import and are"
 msgstr "Các trường được ánh xạ %s. Họ viết hồ sơ nhập khẩu và"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1063
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1063
 msgid "not sent"
 msgstr "không được gửi"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1064
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1064
 msgid ""
 "This feed has synced and did not carry this field. It may have been renamed or "
 "switched off at the source."
@@ -12937,37 +12937,37 @@ msgstr ""
 "đổi tên hoặc tắt tại nguồn."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1068
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1068
 msgid "computed"
 msgstr "tính toán"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1069
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1069
 msgid "Payobook computes this from the records this feed returns."
 msgstr "Payobook tính toán điều này từ các bản ghi mà nguồn cấp dữ liệu này trả về."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1070
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1070
 msgid "expected"
 msgstr "dự kiến"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1072
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1072
 msgid "Expected from the vendor's catalogue. %(note)s"
 msgstr "Dự kiến từ danh mục của nhà cung cấp. %(note)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1073
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1073
 msgid "Expected from the vendor's catalogue. The first sync will confirm it."
 msgstr "Dự kiến từ danh mục của nhà cung cấp. Đồng bộ hóa đầu tiên sẽ xác nhận nó."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1076
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1076
 msgid "Payobook field"
 msgstr "Trường Payobook"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1077
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1077
 msgid ""
 "This is one of Payobook's own employee fields, not a field this source has told us "
 "about."
@@ -12976,12 +12976,12 @@ msgstr ""
 "nguồn này đã cho chúng tôi biết."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1080
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1080
 msgid "mapped elsewhere"
 msgstr "được ánh xạ ở nơi khác"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1081
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1081
 msgid ""
 "Shown because a mapping names it. It arrives on another feed, or on none this board "
 "knows about."
@@ -12990,227 +12990,227 @@ msgstr ""
 "hoặc không có nguồn nào mà diễn đàn này biết đến."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1086
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1086
 msgid "All"
 msgstr "Tất cả"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1086
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1086
 msgid "Mapped"
 msgstr "Đã ánh xạ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1087
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1087
 msgid "Unmapped"
 msgstr "Chưa ánh xạ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1088
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1088
 msgid "Suggested"
 msgstr "Được đề xuất"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1241
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1241
 msgid "Both ends of this wire are hidden by the column filters."
 msgstr "Cả hai đầu của dây này đều bị các bộ lọc cột che khuất."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1763
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1763
 msgid "Direct copy"
 msgstr "Sao chép trực tiếp"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1764
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1764
 msgid "Multiply by"
 msgstr "Nhân với"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1765
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1765
 msgid "Divide by"
 msgstr "Chia cho"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1766
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1766
 msgid "Add"
 msgstr "Thêm"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1767
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1767
 msgid "Subtract"
 msgstr "Trừ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1768
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1768
 msgid "Round to decimals"
 msgstr "Làm tròn đến số thập phân"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1769
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1769
 msgid "Absolute value"
 msgstr "Giá trị tuyệt đối"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1770
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_canvas.js:1770
 msgid "Default if empty"
 msgstr "Mặc định nếu trống"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:109
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:109
 msgid "The whole picture: which systems, feeds and files reach this"
 msgstr "Toàn cảnh: hệ thống, nguồn cấp dữ liệu và tệp nào đạt được điều này"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:122
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:122
 msgid "See what each transformation rule reads, what it computes,"
 msgstr "Xem mỗi quy tắc chuyển đổi đọc gì, nó tính toán những gì,"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:130
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:130
 msgid "Copy what a scheme computes onto employee and contract records —"
 msgstr "Sao chép những gì chương trình tính toán vào hồ sơ nhân viên và hợp đồng —"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:296
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:296
 msgid "The scheme this link named is not available to you —"
 msgstr "Chương trình có tên liên kết này không có sẵn cho bạn —"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:300
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:300
 msgid "The connector this link named is not available to you —"
 msgstr "Trình kết nối có tên liên kết này không có sẵn cho bạn -"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:303
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:303
 msgid "The feed this link named is no longer on this connector —"
 msgstr "Nguồn cấp dữ liệu có tên liên kết này không còn trên trình kết nối này nữa —"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:1624
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1624
 msgid "That workbook is very wide — only the first"
 msgstr "Sổ làm việc đó rất rộng - chỉ là cuốn đầu tiên"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:1689
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1689
 msgid "Template downloaded — one column per input component,"
 msgstr "Đã tải xuống mẫu - một cột cho mỗi thành phần đầu vào,"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:1956
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:1956
 msgid "This system has no transformation rules yet. A rule turns"
 msgstr "Hệ thống này chưa có quy tắc chuyển đổi. Một quy tắc biến"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/transform_flow_board.js:250
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:250
 msgid "A wire from this rule points at a component that is no longer there."
 msgstr "Một dây theo quy tắc này trỏ đến một thành phần không còn ở đó nữa."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/transform_flow_board.js:255
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:255
 msgid "This rule computes “%s” and no pay component takes it."
 msgstr "Quy tắc này tính toán “%s” và không có thành phần trả tiền nào lấy nó."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/transform_flow_board.js:261
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:261
 msgid "This rule reads a field this system is not known to deliver."
 msgstr "Quy tắc này đọc một trường mà hệ thống này không biết sẽ phân phối."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/transform_flow_board.js:274
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:274
 msgid "Which fields a rule reads is part of the rule itself —"
 msgstr "Những trường mà quy tắc đọc là một phần của chính quy tắc đó -"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/transform_flow_board.js:280
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:280
 msgid "Double-click to bring both ends of this line into view."
 msgstr "Bấm đúp để hiển thị cả hai đầu của dòng này."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/mapping/transform_flow_board.js:812
+#: code:addons/pb_formula_studio/static/src/js/mapping/transform_flow_board.js:812
 msgid "This component is set to read this rule's output."
 msgstr "Thành phần này được thiết lập để đọc đầu ra của quy tắc này."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/review/category_review.js:94
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:94
 msgid "Here is what each component does to net pay."
 msgstr "Đây là những gì mỗi thành phần làm để trả lương ròng."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/review/category_review.js:96
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:96
 msgid "We read %(net)s. Here is what each component does to net pay."
 msgstr "Chúng tôi đọc %(net)s. Đây là những gì mỗi thành phần làm để trả lương ròng."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/review/category_review.js:112
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:112
 msgid "Certain"
 msgstr "Chắc chắn"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/review/category_review.js:113
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:113
 msgid "Likely"
 msgstr "Có khả năng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/review/category_review.js:145
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:145
 msgid "%s component(s) refiled"
 msgstr "Đã tinh chỉnh (các) thành phần %s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/review/category_review.js:146
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:146
 msgid "Everything was already filed that way."
 msgstr "Mọi thứ đã được nộp theo cách đó."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/review/category_review.js:150
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:150
 msgid "Those categories could not be saved."
 msgstr "Không thể lưu những danh mục đó."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/review/category_review.js:166
+#: code:addons/pb_formula_studio/static/src/js/review/category_review.js:166
 msgid "That component could not be set as net pay."
 msgstr "Không thể đặt thành phần đó làm lương ròng."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/shadow/shadow_run.js:53
+#: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:53
 msgid "Pick a configuration first"
 msgstr "Chọn cấu hình trước"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/shadow/shadow_run.js:59
+#: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:59
 msgid "Nothing to shadow"
 msgstr "Không có gì để che giấu"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/shadow/shadow_run.js:64
+#: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:64
 msgid "Shadow run failed to start"
 msgstr "Chạy bóng không khởi động được"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/shadow/shadow_run.js:124
+#: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:124
 msgid "PayAI named %(count)s clusters"
 msgstr "PayAI đặt tên là cụm %(count)s"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/shadow/shadow_run.js:125
+#: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:125
 msgid "No AI naming available"
 msgstr "Không có khả năng đặt tên AI"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/shadow/shadow_run.js:133
+#: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:133
 msgid "Tolerance must be valid JSON"
 msgstr "Dung sai phải là JSON hợp lệ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/js/shadow/shadow_run.js:139
+#: code:addons/pb_formula_studio/static/src/js/shadow/shadow_run.js:139
 msgid "Re-compared with new tolerance"
 msgstr "So sánh lại với dung sai mới"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1718
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1718
 msgid "Needs a decision"
 msgstr "Cần một quyết định"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1719
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1719
 msgid ""
 "The formulas do not settle these, or your own column band says something different."
 msgstr ""
@@ -13218,148 +13218,148 @@ msgstr ""
 "điều gì đó khác."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1721
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1721
 msgid "Added to pay"
 msgstr "Đã thêm để thanh toán"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1722
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1722
 msgid "Net pay adds these up."
 msgstr "Lương ròng cộng thêm những thứ này."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1723
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1723
 msgid "Taken off pay"
 msgstr "Bị trừ lương"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1724
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1724
 msgid "Net pay subtracts these."
 msgstr "Lương ròng trừ đi những khoản này."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1725
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1725
 msgid "Employer cost"
 msgstr "Chi phí của người sử dụng lao động"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1726
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1726
 msgid "Never reaches the employee — the company carries it on top of pay."
 msgstr "Không bao giờ đến tay nhân viên - công ty trả lương cao hơn."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1728
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1728
 msgid "The figure everything else adds up to."
 msgstr "Con số mọi thứ khác cộng lại."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1729
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1729
 msgid "Information"
 msgstr "Thông tin"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1730
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1730
 msgid "Counts, references and working figures — not money paid or taken."
 msgstr ""
 "Số lượng, tài liệu tham khảo và số liệu làm việc - không phải tiền được trả hoặc nhận."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1876
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1876
 msgid "You do not have permission to change how components are filed."
 msgstr "Bạn không có quyền thay đổi cách sắp xếp các thành phần."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1897
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1897
 msgid "You do not have permission to change this salary structure."
 msgstr "Bạn không được phép thay đổi cơ cấu lương này."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1902
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1902
 msgid "That component is not part of this salary structure."
 msgstr "Thành phần đó không phải là một phần của cơ cấu tiền lương này."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/models/pb_formula_studio.py:1907
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:1907
 msgid "Net"
 msgstr "Thực lãnh"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Reading the scheme's formulas…"
 msgstr "Đang đọc công thức của cấu hình…"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "This scheme could not be read."
 msgstr "Không thể đọc cấu hình này."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Nothing was changed. Try again from the salary structure."
 msgstr "Không có gì được thay đổi. Hãy thử lại từ cơ cấu tiền lương."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Component categories"
 msgstr "Danh mục thành phần"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Nothing here says which component is net pay."
 msgstr "Không có gì ở đây cho biết thành phần nào là lương ròng."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Net pay is"
 msgstr "Lương ròng là"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Read the scheme again"
 msgstr "Đọc lại cấu hình"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Ask a payroll manager to name the net-pay component."
 msgstr "Yêu cầu người quản lý tiền lương đặt tên cho thành phần lương ròng."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Everything already matches the formula."
 msgstr "Mọi thành phần đã khớp với công thức."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "are filed the way this scheme's own arithmetic reads them."
 msgstr "đã được phân loại theo phép tính của chính cấu hình này."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "to settle"
 msgstr "cần xử lý"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "already match"
 msgstr "đã khớp rồi"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Tick all"
 msgstr "Chọn tất cả"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Tick"
 msgstr "Chọn"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "counted inside a total"
 msgstr "được tính trong một thành phần tổng"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid ""
 "You can read this, but changing how components are filed needs a payroll manager."
 msgstr ""
@@ -13367,7 +13367,7 @@ msgstr ""
 "quản lý bảng lương."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid ""
 "Name the net-pay component and this scheme can be read; skip and nothing changes."
 msgstr ""
@@ -13375,39 +13375,39 @@ msgstr ""
 "thay đổi."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Only ticked rows are written. Everything else keeps the category it has now."
 msgstr ""
 "Chỉ các dòng được chọn mới được cập nhật. Các dòng còn lại giữ nguyên danh mục hiện "
 "tại."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Nothing here needs changing."
 msgstr "Không có gì ở đây cần thay đổi."
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Skip for now"
 msgstr "Bỏ qua bây giờ"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "selected"
 msgstr "đã chọn"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/studio.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "'Company'"
 msgstr "'Công ty'"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/studio.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "'— none —'"
 msgstr "'— không có —'"
 
 #. module: pb_formula_studio
-#: pb_formula_studio/static/src/xml/studio.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid ""
 "would be refiled. Untick anything you disagree with — only ticked rows are written, "
 "and the rest keep the role they have now."

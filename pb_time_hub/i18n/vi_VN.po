@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:46+1000\n"
+"PO-Revision-Date: 2026-08-27 20:49+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -183,6 +183,6 @@ msgid "Week Grid"
 msgstr "Lưới tuần"
 
 #. module: pb_time_hub
-#: pb_time_hub/static/src/js/timeline_lens.js:106
+#: code:addons/pb_time_hub/static/src/js/timeline_lens.js:106
 msgid "now"
 msgstr "bây giờ"
