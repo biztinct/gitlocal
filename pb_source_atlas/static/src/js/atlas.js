@@ -107,6 +107,41 @@ export class PbSourceAtlas extends Component {
         }
     }
 
+    /**
+     * Back to the pay run this Atlas is about.
+     *
+     * The cockpit is a client action opened from the run's form, and in
+     * full-screen mode Odoo's own breadcrumb is hidden — so the only way back
+     * was the browser button, which is not an affordance anyone should have to
+     * find. This is the same move the "Batch Payslips" breadcrumb makes on the
+     * form itself.
+     */
+    async backToRun() {
+        // POP the breadcrumb rather than push a new one: `doAction` would put
+        // the run form ON TOP of the cockpit and leave a trail reading
+        // `Batch Payslips > Payroll June 2026 > Where the numbers come from >
+        // Payroll June 2026`.
+        //
+        // `env.config.breadcrumbs` INCLUDES the current controller as its last
+        // entry, so "more than one" is what says there is somewhere to go back
+        // to; `historyBack` is the web client's own back and pops exactly one.
+        const crumbs = this.env.config?.breadcrumbs || [];
+        if (crumbs.length > 1 && this.env.config?.historyBack) {
+            return this.env.config.historyBack();
+        }
+        if (crumbs.length > 1) {
+            return this.action.restore(crumbs[crumbs.length - 2].jsId);
+        }
+        // Opened straight from a URL, so there is nothing to pop back to.
+        await this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.payslip.run",
+            res_id: this.runId,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
+
     // ---------------------------------------------------------------- views
     async showLanes() {
         this.state.view = "lanes";
