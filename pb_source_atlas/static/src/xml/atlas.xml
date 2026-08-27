@@ -9,6 +9,10 @@
       <div class="psa-hero-l">
         <span class="psa-hero-ic"><t t-out="ic('compass', 22)"/></span>
         <div class="psa-hero-tx">
+          <button class="psa-back" t-if="runId" t-on-click="backToRun">
+            <t t-out="ic('back', 14)"/>
+            <span t-esc="run.name or 'Back to the pay run'"/>
+          </button>
           <h1>Where the numbers come from</h1>
           <p t-if="run.name">
             <span class="psa-run" t-esc="run.name"/>
