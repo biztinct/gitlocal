@@ -124,8 +124,16 @@ class HrPayslipRun(models.Model):
             run.pb_division = div
             run.pb_division_label = div.replace('_', ' ').title() if div else ''
 
+    # `category_id` belongs here: the sums below are grouped BY category, so a
+    # line moving from "Other" to "Deduction" changes every figure in the band
+    # while the amounts stay untouched. Without it, re-categorising a scheme
+    # left the stored KPIs reporting the old grouping until something else
+    # happened to touch a total. `component_detail` lives in the formula engine,
+    # which this module does not depend on, so it cannot be named here — it is
+    # written at the same moment as the category on both paths that set it, and
+    # this trigger covers that write.
     @api.depends('slip_ids', 'slip_ids.line_ids', 'slip_ids.line_ids.total',
-                 'slip_ids.state')
+                 'slip_ids.line_ids.category_id', 'slip_ids.state')
     def _compute_pb_totals(self):
         # Aggregate in SQL — iterating slip_ids.line_ids through the ORM reads
         # hundreds of thousands of records at scale and hangs the kanban.
@@ -145,7 +153,15 @@ class HrPayslipRun(models.Model):
         # same transaction (the Run Payroll wizard does exactly that) returned
         # zeros for that reason alone.
         self.env['hr.payslip'].flush_model(['payslip_run_id', 'state'])
-        self.env['hr.payslip.line'].flush_model(['slip_id', 'category_id', 'total'])
+        line_fields = ['slip_id', 'category_id', 'total']
+        # NETROLE — the flag lives in `pb_hr_payroll_formula` (the payslip-line
+        # extension that already carries report_visible/component_type). This
+        # cockpit does not depend on the formula engine, so the column may
+        # genuinely be absent; when it is, the sums are exactly what they were.
+        detail_aware = 'component_detail' in self.env['hr.payslip.line']._fields
+        if detail_aware:
+            line_fields.append('component_detail')
+        self.env['hr.payslip.line'].flush_model(line_fields)
         cr = self.env.cr
         cr.execute("""
             SELECT p.payslip_run_id, count(*)
@@ -154,6 +170,16 @@ class HrPayslipRun(models.Model):
             GROUP BY p.payslip_run_id
         """, (tuple(run_ids),))
         counts = dict(cr.fetchall())
+        # NETROLE — a component that is folded into a roll-up is counted through
+        # the roll-up, never twice. `SI-HI-IU Total 10.5%`, `Monthly PIT` and
+        # `Total Deduction` are all subtracted from net pay, but the third one
+        # IS the first two plus one more; summing all three is how ABM's June
+        # run reported ₫5,058,029,390 of deductions against ₫1.9bn of gross.
+        # Net is exempt: net pay is one component, never a roll-up of others.
+        # A line created before any classification has the flag NULL, so every
+        # existing tenant's figures are bit-for-bit what they were.
+        detail_clause = ("AND (c.code = 'NET' OR pl.component_detail IS NOT TRUE)"
+                         if detail_aware else "")
         cr.execute("""
             SELECT p.payslip_run_id, c.code, COALESCE(SUM(pl.total), 0)
             FROM hr_payslip_line pl
@@ -162,6 +188,7 @@ class HrPayslipRun(models.Model):
             WHERE p.payslip_run_id IN %s
               AND c.code IN ('NET', 'GROSS', 'DED', 'DEDUCTION', 'COMP',
                              'BASIC', 'ALW')
+              """ + detail_clause + """
             GROUP BY p.payslip_run_id, c.code
         """, (tuple(run_ids),))
         agg = {}
@@ -177,6 +204,12 @@ class HrPayslipRun(models.Model):
             # ₫0 next to ₫1.9bn of basic pay on ABM's June run.
             run.pb_total_gross = d.get('GROSS') or (
                 d.get('BASIC', 0.0) + d.get('ALW', 0.0))
+            # COMP stays in this sum. An employer contribution is arguably not a
+            # deduction from pay at all — but on the reference tenant EVERY dong
+            # of the deductions KPI is a COMP line (DED and DEDUCTION are zero
+            # there), so dropping the bucket would replace a wrong number with a
+            # blank one. The detail filter above is what removes the
+            # double-counted employer roll-ups instead.
             run.pb_total_deductions = abs(d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
                                           + d.get('COMP', 0.0))
 
