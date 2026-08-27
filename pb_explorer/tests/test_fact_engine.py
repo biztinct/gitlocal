@@ -447,6 +447,40 @@ class TestFactEngine(common.TransactionCase):
             self.assertTrue(self.env.ref(rep['xmlid'], raise_if_not_found=False),
                             "an unresolvable classic report was offered")
 
+    # -------------------------------------- optional-column probes (C18)
+    def test_14_optional_dimension_columns_exist(self):
+        """Every optional column the aggregate names must exist in THIS DB.
+
+        pb_division lives on hr.formula.config only when pb_demo is installed;
+        on a customer DB it does not, and the un-probed `fc.pb_division` made
+        the whole Explorer answer with `column fc.pb_division does not exist`.
+        Executing the aggregate is the honest check — Postgres resolves every
+        column name whether or not any row matches.
+        """
+        builder = self.env['pb.fact.builder']
+        for grain in ('line', 'emp'):
+            self.env.cr.execute(builder._aggregate_sql(grain), ((0,),))
+            self.assertEqual(self.env.cr.fetchall(), [])
+        # ...and the coverage query, which shares the same two expressions.
+        self.assertEqual(builder._coverage((0,)), {})
+
+    def test_14b_missing_config_column_falls_back_to_the_run(self):
+        """With the config column absent, division must come from the run —
+        never silently vanish, and never emit an unjoinable `fc.` reference."""
+        builder = self.env['pb.fact.builder']
+        real = type(builder)._has_config_field
+
+        def _no_division(self, fname):
+            return False if fname == 'pb_division' else real(self, fname)
+
+        type(builder)._has_config_field = _no_division
+        try:
+            self.assertIn('r.pb_division', builder._division_sql())
+            self.env.cr.execute(builder._aggregate_sql('line'), ((0,),))
+            self.assertEqual(self.env.cr.fetchall(), [])
+        finally:
+            type(builder)._has_config_field = real
+
     # ----------------------------------------------- §6.12 self-contained
     def test_12_no_external_assets(self):
         module = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
