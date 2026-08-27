@@ -18,6 +18,7 @@ from .bank_account_util import (
     sanitize_bank_text,
 )
 from . import input_provenance
+from . import value_kind_classifier
 from .column_role_classifier import (
     EMPLOYEE_CODE_MARKERS,
     EMPLOYEE_CODE_HEADER_CANDIDATES,
@@ -3759,16 +3760,31 @@ class HrPayrollImportBatch(models.Model):
                 return None
 
         def normalize_input_value(rule, value):
+            # VALUEKIND — the second of the two coercion sites (C18.117). This
+            # one floats any string that merely LOOKS numeric, which is why
+            # `EMPBANKACCOA` lost its leading zeros even though its connector
+            # mapping was correctly typed `string`. A component whose value is
+            # not a number is now kept exactly as it arrived.
+            #
+            # `is_employee_code_rule` stays as a belt-and-braces fallback for a
+            # scheme whose components have never been classified (every
+            # `value_kind` still at its `money` default) — it is the behaviour
+            # that shipped, and removing it would regress those schemes.
+            kind = getattr(rule, 'value_kind', None) or 'money'
+            numeric = kind in value_kind_classifier.NUMERIC_KINDS
+
             if value is None:
-                return rule.default_value
+                return rule.default_value if numeric else ''
             if isinstance(value, bool):
-                return float(value)
+                return float(value) if numeric else value
             if isinstance(value, (int, float)):
                 return float(value)
             if isinstance(value, str):
                 stripped = value.strip()
                 if stripped == '':
-                    return rule.default_value
+                    return rule.default_value if numeric else ''
+                if not numeric:
+                    return stripped
                 if is_employee_code_rule(rule):
                     return stripped
                 numeric_value = coerce_numeric_string(stripped)

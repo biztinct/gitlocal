@@ -288,8 +288,63 @@ export class PbSourceAtlas extends Component {
         return String(value);
     }
 
-    short(value, length = 14) {
-        const text = this.num(value);
+    /**
+     * Format a value by what it IS, not by what JavaScript thinks its type is.
+     *
+     * `num()` groups every JS number, which is right for an amount and wrong for
+     * an employee code — 11450 is a name, and "11,450" is a name nobody has. The
+     * kind comes from the component's `value_kind` (server-side ladder), so this
+     * is a rendering of a decision, never a second guess at it.
+     */
+    kindly(value, kind) {
+        if (value === null || value === undefined || value === "") {
+            return "—";
+        }
+        switch (kind) {
+            case "identifier":
+                // Verbatim. Leading zeros, if they survived, are the point.
+                return String(value);
+            case "text":
+            case "boolean":
+                return String(value);
+            case "date":
+                return this.dateText(value);
+            case "money":
+                return typeof value === "number" ? this.money(value) : String(value);
+            case "quantity":
+            case "rate":
+                return this.num(value);
+            default:
+                return this.num(value);
+        }
+    }
+
+    /** A date in the reader's own format (vi-VN → 04-04-2022), or as it arrived. */
+    dateText(value) {
+        const text = String(value).trim();
+        const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (!iso) {
+            return text;
+        }
+        const parsed = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+        if (Number.isNaN(parsed.getTime())) {
+            return text;
+        }
+        return new Intl.DateTimeFormat(this.localeName, {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        }).format(parsed);
+    }
+
+    get localeName() {
+        // The user's language, so a Vietnamese reader gets dd-mm-yyyy without
+        // this component owning a date-format table of its own.
+        return (this.env.services.user?.lang || navigator.language || "en-US").replace("_", "-");
+    }
+
+    short(value, length = 14, kind = null) {
+        const text = kind ? this.kindly(value, kind) : this.num(value);
         return text.length > length ? `${text.slice(0, length - 1)}…` : text;
     }
 

@@ -235,7 +235,7 @@
                       t-attf-class="psa-cell l-{{ cell.l }} {{ state.journeyKey === row.slip_id + ':' + comp.code ? 'on' : '' }}"
                       t-on-click="() => this.openJourney(row.slip_id, comp.code)"
                       t-att-title="cell.k">
-                    <span class="v" t-esc="short(cell.v)"/>
+                    <span class="v" t-esc="short(cell.v, 14, cell.t)"/>
                   </td>
                   <td t-else="" class="psa-cell empty">·</td>
                 </t>
@@ -267,7 +267,7 @@
           <div class="psa-j-value">
             <span class="l">Value on this payslip</span>
             <span class="v" t-if="state.journey.money" t-esc="money(state.journey.number)"/>
-            <span class="v" t-else="" t-esc="num(state.journey.value)"/>
+            <span class="v" t-else="" t-esc="kindly(state.journey.value, state.journey.kind)"/>
             <span t-if="state.journey.net_role"
                   t-attf-class="psa-role r-{{ roleTone(state.journey.net_role) }}"
                   t-esc="roleLabel(state.journey.net_role)"/>
@@ -290,7 +290,7 @@
                 </div>
                 <div class="psa-kv" t-if="state.journey.source.raw_value !== undefined and state.journey.source.raw_value !== null">
                   <span class="k">raw value</span>
-                  <b t-esc="num(state.journey.source.raw_value)"/>
+                  <b t-esc="kindly(state.journey.source.raw_value, state.journey.kind)"/>
                 </div>
                 <div class="psa-kv" t-if="state.journey.source.via_label">
                   <span class="k">why this one</span>
@@ -313,7 +313,7 @@
                   <span class="psa-dot">·</span>
                   <span>pulled <t t-esc="state.journey.source.feed.pulled"/></span>
                   <span class="psa-dot">·</span>
-                  <span>as delivered: <b t-esc="num(state.journey.source.feed.value)"/></span>
+                  <span>as delivered: <b t-esc="kindly(state.journey.source.feed.value, state.journey.kind)"/></span>
                 </div>
                 <div class="psa-sub" t-if="state.journey.source.record">
                   <t t-out="ic('user', 13)"/>
@@ -324,7 +324,7 @@
                 <div class="psa-sub warn" t-if="state.journey.source.ignored">
                   <t t-out="ic('eyeOff', 13)"/>
                   <span>the other source also sent</span>
-                  <b t-esc="num(state.journey.source.ignored.value)"/>
+                  <b t-esc="kindly(state.journey.source.ignored.value, state.journey.kind)"/>
                   <span t-if="state.journey.source.ignored.key">on <code t-esc="state.journey.source.ignored.key"/></span>
                   <span>— not used</span>
                 </div>
@@ -355,7 +355,7 @@
                 <div class="psa-kv">
                   <span class="k">value</span>
                   <b t-if="state.journey.money" t-esc="money(state.journey.number)"/>
-                  <b t-else="" t-esc="num(state.journey.value)"/>
+                  <b t-else="" t-esc="kindly(state.journey.value, state.journey.kind)"/>
                 </div>
                 <code class="psa-formula" t-if="state.journey.formula" t-esc="state.journey.formula"/>
               </div>
@@ -376,7 +376,7 @@
                   <div class="psa-kv">
                     <span class="k">value</span>
                     <b t-if="hop.money" t-esc="money(hop.number)"/>
-                    <b t-else="" t-esc="num(hop.value)"/>
+                    <b t-else="" t-esc="kindly(hop.value, hop.kind)"/>
                     <span t-if="hop.confidence === 'review'" class="psa-flag">needs review</span>
                     <span t-if="hop.net_role_detail" class="psa-flag">folded into a total</span>
                   </div>

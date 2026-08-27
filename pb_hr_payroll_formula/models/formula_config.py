@@ -2,6 +2,8 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from . import formula_operand_context
+from . import value_kind_classifier
 from odoo.tools.sql import table_exists
 from markupsafe import Markup, escape
 import json
@@ -1739,3 +1741,261 @@ class HrFormulaConfig(models.Model):
                     'sticky': False,
                 }
             }
+
+    # ==================================================================
+    # VALUEKIND — what each component's value IS
+    # ==================================================================
+    def _value_kind_samples(self, limit=200):
+        """``{CODE: [raw values]}`` from the newest finished import batch.
+
+        Read from ``hr_payroll_import_line.raw_data_json`` — the material as it
+        ARRIVED. Never from ``hr_payslip.formula_input_values``: that blob is
+        downstream of the two coercion sites this whole feature exists to fix,
+        so evidence drawn from it would only confirm its own damage (C18.118).
+
+        A component is looked up by its connector mapping's ``source_field``
+        first, then by its own spellings (code, name, column letter), because a
+        component fed through the header ladder has no mapping row at all.
+        """
+        self.ensure_one()
+        Line = self.env['hr.payroll.import.line'].sudo()
+        Batch = self.env['hr.payroll.import.batch'].sudo()
+        batch = Batch.search([('formula_config_id', '=', self.id),
+                              ('state', '=', 'done')], order='id desc', limit=1)
+        if not batch:
+            batch = Batch.search([('formula_config_id', '=', self.id)],
+                                 order='id desc', limit=1)
+        if not batch:
+            return {}
+        lines = Line.search([('batch_id', '=', batch.id)], limit=limit)
+        rows = []
+        for line in lines:
+            try:
+                data = json.loads(line.raw_data_json or '{}')
+            except (TypeError, ValueError):
+                continue
+            if isinstance(data, dict):
+                rows.append(data)
+        if not rows:
+            return {}
+
+        # One normalised index per row, so a header spelling that differs only in
+        # case, spacing or punctuation still finds its column.
+        Batchm = self.env['hr.payroll.import.batch']
+        indexed = []
+        for row in rows:
+            indexed.append({Batchm._normalize_header_key(k): v
+                            for k, v in row.items() if isinstance(k, str)})
+
+        mapping_by_rule = {}
+        if 'hr.integration.field.mapping' in self.env:
+            wires = self.env['hr.integration.field.mapping'].sudo().search(
+                [('target_rule_id', 'in', self.rule_ids.ids)])
+            mapping_by_rule = {w.target_rule_id.id: w for w in wires
+                               if w.target_rule_id}
+
+        out = {}
+        for rule in self.rule_ids:
+            keys = []
+            wire = mapping_by_rule.get(rule.id)
+            if wire and wire.source_field:
+                keys.append(wire.source_field)
+            keys += [rule.code, rule.name, rule.data_source_field]
+            values = []
+            for key in keys:
+                if not key:
+                    continue
+                norm = Batchm._normalize_header_key(key)
+                if not norm:
+                    continue
+                found = [row.get(norm) for row in indexed if norm in row]
+                if found:
+                    values = found
+                    break
+            if values:
+                out[rule.code] = values
+        return out
+
+    def _scheme_operand_contexts(self):
+        """``{REF: set(contexts)}`` over EVERY formula in this scheme.
+
+        A component's kind is decided by how the WHOLE scheme uses it, not by
+        its own formula — an input column has no formula of its own at all.
+        """
+        self.ensure_one()
+        merged = {}
+        for rule in self.rule_ids:
+            formula_operand_context.merge_contexts(
+                merged,
+                formula_operand_context.deserialize(rule.formula_operand_roles))
+        return merged
+
+    def _rule_operand_contexts(self, rule, scheme_contexts):
+        """The contexts applied to ONE rule, under any spelling it answers to.
+
+        `formula_dependencies` and the operand scan both record COLUMN LETTERS
+        as often as codes, so all three spellings are asked (C18.115).
+        """
+        contexts = set()
+        for spelling in (rule.code, rule.column_letter, rule.original_column_letter):
+            key = formula_operand_context.normalize_ref(spelling)
+            if key:
+                contexts |= set(scheme_contexts.get(key, ()))
+        return contexts
+
+    def classify_value_kinds(self, force=False):
+        """(Re)classify every component's `value_kind`. Returns rows changed.
+
+        `value_kind_source='user'` is never touched unless `force`, which the UI
+        does not offer — a person's answer outranks the ladder, permanently.
+        """
+        self.ensure_one()
+        # Imported here, not at module top: `formula_net_role` declares
+        # `_inherit` on both hr.formula.rule and hr.formula.config, and
+        # `models/__init__.py` loads it deliberately LAST (line 78). A top-level
+        # import would pull those inherits in before `formula_rule` itself.
+        from .formula_net_role import looks_like_a_quantity
+
+        scheme = self._scheme_operand_contexts()
+        samples = self._value_kind_samples()
+        vendor = {}
+        if 'hr.integration.field.mapping' in self.env:
+            for wire in self.env['hr.integration.field.mapping'].sudo().search(
+                    [('target_rule_id', 'in', self.rule_ids.ids)]):
+                if wire.target_rule_id:
+                    vendor[wire.target_rule_id.id] = wire.source_data_type or ''
+
+        changed = 0
+        for rule in self.rule_ids:
+            if rule.value_kind_source == 'user' and not force:
+                continue
+            kind, reason = value_kind_classifier.classify_value_kind(
+                code=rule.code or '',
+                name=rule.name or '',
+                column_role=rule.column_role or 'payroll',
+                net_role=rule.net_role or '',
+                column_type=rule.column_type or 'input',
+                contexts=self._rule_operand_contexts(rule, scheme),
+                quantity=bool(looks_like_a_quantity(rule.name or '', rule.code or '')),
+                vendor_type=vendor.get(rule.id, ''),
+                sample_values=samples.get(rule.code) or [],
+                appears_on_payslip=bool(rule.appears_on_payslip),
+            )
+            if rule.value_kind != kind or rule.value_kind_reason != reason:
+                rule.with_context(skip_formula_version=True).write({
+                    'value_kind': kind,
+                    'value_kind_source': 'auto',
+                    'value_kind_reason': reason,
+                })
+                changed += 1
+        _logger.info("VALUEKIND: classified %s component(s) on scheme %s (%s)",
+                     changed, self.id, self.name)
+        return changed
+
+    def audit_value_kinds(self, run_id=None):
+        """Read-only. Two different disagreements, deliberately kept apart.
+
+        ``rows``  — the component's DECLARED kind versus the values the source
+                    actually delivers. Self-healing: re-classifying makes these
+                    agree, so an empty list here means the declarations are
+                    consistent, not that payroll is correct.
+
+        ``drift`` — what the source delivered versus WHAT THE PAYSLIP STORED.
+                    This is the one that matters, and the one that would have
+                    caught ABM's LOCATION in March instead of leaving it to a
+                    screenshot: the feed sent "Ho Chi Minh Branch", the payslip
+                    holds 0.0, and every `IF(F5="La Nga", …)` in the scheme has
+                    been false ever since. No declaration is wrong; the VALUE
+                    was destroyed on the way in.
+
+        Reads and reports. Never writes, never recomputes a payslip — repairing
+        a historic run is a separate, explicitly-approved exercise.
+        """
+        self.ensure_one()
+        samples = self._value_kind_samples()
+        scheme = self._scheme_operand_contexts()
+        rows = []
+        for rule in self.rule_ids:
+            values = samples.get(rule.code) or []
+            if not values:
+                continue
+            bad = value_kind_classifier.contradictions(rule.value_kind, values)
+            if not bad:
+                continue
+            rows.append({
+                'code': rule.code,
+                'name': rule.name or rule.code,
+                'declared': rule.value_kind,
+                'source': rule.value_kind_source,
+                'reason': rule.value_kind_reason or '',
+                'contexts': sorted(self._rule_operand_contexts(rule, scheme)),
+                'seen': len(values),
+                'contradicted': len(bad),
+                'examples': [str(v)[:60] for v in bad[:3]],
+            })
+        rows.sort(key=lambda r: -r['contradicted'])
+        return {
+            'config_id': self.id,
+            'name': self.name or '',
+            'rows': rows,
+            'drift': self._audit_stored_drift(run_id=run_id, samples=samples),
+        }
+
+    def _audit_stored_drift(self, run_id=None, samples=None, limit=200):
+        """Components whose payslips hold a number where the source sent text.
+
+        The comparison is per COMPONENT, not per employee: a component is
+        reported when the source delivered a non-blank, non-numeric value for a
+        row and the payslip for that same period stored the component's numeric
+        fallback. That pairing is what "the value was destroyed on the way in"
+        looks like from the outside.
+        """
+        self.ensure_one()
+        samples = samples if samples is not None else self._value_kind_samples()
+        if not samples:
+            return []
+        Slip = self.env['hr.payslip'].sudo()
+        domain = [('formula_config_id', '=', self.id)]
+        if run_id:
+            domain.append(('payslip_run_id', '=', int(run_id)))
+        slips = Slip.search(domain, order='id desc', limit=limit)
+        if not slips:
+            return []
+
+        stored = {}        # code -> list of stored values
+        for slip in slips:
+            try:
+                blob = json.loads(slip.formula_input_values or '{}')
+            except (TypeError, ValueError):
+                continue
+            if not isinstance(blob, dict):
+                continue
+            for code, value in blob.items():
+                stored.setdefault(code, []).append(value)
+
+        out = []
+        for rule in self.rule_ids:
+            delivered = samples.get(rule.code) or []
+            held = stored.get(rule.code) or []
+            if not delivered or not held:
+                continue
+            texty = [v for v in delivered
+                     if value_kind_classifier.is_texty_sample(v)]
+            if not texty:
+                continue
+            numeric_held = [v for v in held
+                            if isinstance(v, (int, float))
+                            and not isinstance(v, bool)]
+            if not numeric_held:
+                continue
+            out.append({
+                'code': rule.code,
+                'name': rule.name or rule.code,
+                'declared': rule.value_kind,
+                'delivered_examples': [str(v)[:60] for v in texty[:3]],
+                'stored_examples': numeric_held[:3],
+                'slips_seen': len(held),
+                'slips_numeric': len(numeric_held),
+            })
+        out.sort(key=lambda r: -r['slips_numeric'])
+        return out

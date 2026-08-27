@@ -1370,3 +1370,56 @@ number from the handovers — keep the numbering stable.
      `column_type` (`formula → calculated`, `constant → constant`) kept explicitly distinct from a
      **recorded** one, never a guess written into the blob — and a `calculated` lane must never be
      summed into a money total, because it is made of the other lanes' numbers.
+115. **`formula_dependencies` holds COLUMN LETTERS and throws the operator away**
+     (VALUEKIND P1). `_compute_dependencies` (`formula_rule.py:1417`) regex-scrapes
+     `excel_formula` into a flat comma list of refs — `NETPAY → "BP,BP5,CC,CC5,CD,CD5"` —
+     and it feeds the engine's topological order, so its output must not change. It also
+     cannot answer "is this a number", because `IF(F5="La Nga",…)` and `X5/AB5` both
+     produce a bare ref. Operator context is a SEPARATE stored field
+     (`formula_operand_roles`, from `formula_operand_context.py`) with its own
+     `@api.depends`; never widen the dependency compute to carry it.
+116. **A type default whose failure mode is DESTRUCTION is the wrong default**
+     (VALUEKIND P1). `hr.integration.field.mapping.source_data_type` defaulted to
+     `'number'`, and `transform_value` returned `default_value` (a Float, 0.0) when the
+     `float()` failed. Four wires on ABM created without an explicit type silently turned
+     `"Ho Chi Minh Branch"`, `"2025-06-02"` and `"Resigned"` into `0.0` on every run —
+     and `LOCATION` is read by the scheme's own `IF(F5="La Nga",…)`, so that comparison
+     was false for all 152 employees, in silence, for the life of the connector. When a
+     guess can destroy data, default to the option that PRESERVES it and flag the
+     disagreement instead. The default is now `'string'`, and the target component's
+     `value_kind` is what actually decides coercion.
+117. **Coercion happens in TWO places, not one** (VALUEKIND P1). Re-typing the wire is
+     not enough: `normalize_input_value` (`payroll_import_batch.py:3761`) independently
+     floats any numeric-looking string, which is why `EMPBANKACCOA` lost its leading
+     zeros despite a correctly-typed `string` mapping. Any "this value has the wrong
+     type" report must check both sites before concluding anything.
+118. **Never classify a column from `formula_input_values`.** That blob is downstream of
+     both coercion sites, so evidence drawn from it confirms its own damage. The intact
+     source material is `hr_payroll_import_line.raw_data_json`, which survives on every
+     done batch — which is also why a historic run can be repaired without re-syncing the
+     vendor. The exception is an AUDIT that deliberately compares the two: "the feed sent
+     `Ho Chi Minh Branch`, the payslip stored `0.0`" is the finding.
+119. **"Used in a formula" is NOT evidence of a number** (VALUEKIND P1). `F5="La Nga"`
+     and `X5/AB5*AD5` are both usage; only the OPERATOR tells them apart. ABM's
+     `SHUIPARTICIP` is a genuine text input to the pay calculation (`AS5="YES"`), and it
+     carries `net_role='earning'`. So a DERIVED signal (`net_role`, itself read off the
+     formula graph) must never outrank DIRECT evidence — 152 stored values reading
+     "YES". Only `CTX_ARITH` and a `formula`/`constant` column type are strong enough to
+     outrank the values themselves.
+120. **An automated re-type may only ever move TOWARD preserving the value**
+     (VALUEKIND P1). The first draft of `19.0.1.91.0` widened three correctly-typed
+     `string` wires on the demo database — `date_of_birth` among them — because the
+     classifier had returned `money` with the stated reason *"no signal — money by
+     policy"*. Acting on a DEFAULT as though it were a finding is how an automated repair
+     becomes an automated regression. Two rails now: never non-numeric → numeric
+     automatically (log it as a suggestion for a person), and never act when the
+     classifier's reason begins "no signal".
+121. **`rsync -a` preserves 0600 and the `odoo` user then cannot read the module**
+     (VALUEKIND P1). A file written locally with mode 0600 arrives on the server as 0600;
+     the service runs as `odoo`, so `__manifest__.py` became unreadable and the log said
+     only `module …: manifest not found` / `not installable, skipped`, while
+     `ir_module_module.state` sat at `to upgrade` and the test run reported
+     `0 failed, 0 error(s) of 0 tests`. Nothing anywhere says "permissions". Deploy with
+     `rsync -az --perms --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r` (the `D…,F…` short form is
+     rejected by rsync 3.x as an invalid argument), and check
+     `find <addons>/<module> ! -perm -o+r | wc -l` is 0 after every deploy.

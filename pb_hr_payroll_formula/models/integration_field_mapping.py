@@ -7,6 +7,7 @@ import json
 import logging
 
 from . import component_code
+from . import value_kind_classifier
 from .integration_endpoint import SOURCE_DATA_TYPES
 
 _logger = logging.getLogger(__name__)
@@ -70,8 +71,13 @@ class HrIntegrationFieldMapping(models.Model):
     # -character what was written here before, so nothing in the database moves;
     # what changes is that a catalogue row and the mapping that consumes it can
     # no longer be given two different type vocabularies.
+    # VALUEKIND / C18.116 — the default was 'number', and `transform_value`'s
+    # failure mode for a number was `return self.default_value` (0.0). A guess
+    # that can DESTROY the value is the wrong default: 'string' round-trips
+    # anything, and the target component's `value_kind` is what actually decides
+    # coercion now, so this only governs a wire whose target is unclassified.
     source_data_type = fields.Selection(
-        SOURCE_DATA_TYPES, string='Source Data Type', default='number')
+        SOURCE_DATA_TYPES, string='Source Data Type', default='string')
 
     source_sample_value = fields.Char(
         string='Sample Value',
@@ -386,16 +392,60 @@ Example: value * 1.1 if value > 1000 else value
                 ) % self.source_field)
             return self.default_value
 
-        # Convert to float if needed
+        # ==============================================================
+        # VALUEKIND — the FIRST of the two coercion sites (C18.116/117).
+        #
+        # WHAT THIS DID: `if source_data_type in (number, float, integer,
+        # currency): value = float(value)`, and on failure `return
+        # self.default_value` — a Float defaulting to 0.0. `source_data_type`
+        # defaulted to 'number', so a wire created without an explicit type WAS
+        # a number wire. On ABM four such wires turned "Ho Chi Minh Branch",
+        # "2025-06-02" and "Resigned" into 0.0 on every run, and one of them is
+        # read by the scheme's own `IF(F5="La Nga", …)`, which was therefore
+        # false for every employee, in silence.
+        #
+        # WHAT IT DOES NOW: the TARGET COMPONENT's `value_kind` decides. A
+        # component that is not a number is not floated at all. A component that
+        # IS a number and cannot be parsed no longer silently becomes 0.0 — the
+        # raw value is passed through and the wire is FLAGGED, so the
+        # disagreement is visible on the mapping board instead of invisible in a
+        # payslip. `is_required` still raises, exactly as before.
+        #
+        # `source_data_type` is kept as the fallback for a wire whose target has
+        # never been classified, so a scheme that has not run the classifier
+        # behaves byte-identically.
+        # ==============================================================
+        target_kind = self.target_rule_id.value_kind if self.target_rule_id else None
+        if target_kind:
+            wants_number = target_kind in value_kind_classifier.NUMERIC_KINDS
+        else:
+            wants_number = self.source_data_type in (
+                'number', 'float', 'integer', 'currency')
         try:
-            if self.source_data_type in ('number', 'float', 'integer', 'currency'):
+            if wants_number:
                 value = float(value)
         except (ValueError, TypeError):
             if self.is_required:
                 raise ValidationError(_(
                     "Cannot convert value '%s' to number for field '%s'"
                 ) % (value, self.source_field))
-            return self.default_value
+            self._flag_transform_error(True, _(
+                "Delivered '%(value)s', which is not a number, but %(field)s is "
+                "set up to deliver one.",
+                value=str(value)[:60], field=self.source_field or ''))
+            return value
+
+        # A text value must not enter the arithmetic ladder. `multiply` on a
+        # string is not a TypeError in Python — `"YES" * 3` is `"YESYESYES"` —
+        # so this guard is the difference between a flagged misconfiguration and
+        # a silently mangled value. `direct` and `default_if_empty` are the only
+        # ops that mean anything for a non-numeric component.
+        if not wants_number and self.transformation_type not in (
+                'direct', 'default_if_empty', False, None, ''):
+            self._flag_transform_error(True, _(
+                "'%(op)s' only works on numbers, and %(field)s delivers text.",
+                op=self.transformation_type, field=self.source_field or ''))
+            return value
 
         vals = {f: self[f] for f in self._T_FIELDS}
         if self.transformation_type == 'python':
