@@ -71,3 +71,8 @@ from . import payroll_cycle_component_mapping
 from . import payroll_cycle_mapping_suggestion
 from . import payroll_proration_line
 from . import payroll_retro_adjustment
+
+# NETROLE — the net-pay role classifier. Imported LAST because it extends both
+# `hr.formula.rule` and `hr.formula.config` without declaring either (Odoo 19
+# adds model classes in import order, W84's family).
+from . import formula_net_role
