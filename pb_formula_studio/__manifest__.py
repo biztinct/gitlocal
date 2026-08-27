@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.160.0',
+    'version': '19.0.1.161.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -27,6 +27,7 @@
         'views/pb_formula_studio_action.xml',
         'views/pb_mapping_studio_action.xml',
         'views/pb_shadow_run_action.xml',
+        'views/pb_category_review_action.xml',
         'views/formula_config_view_inherit.xml',
         'views/multisheet_wizard_view_inherit.xml',
         'views/sample_wizard_view_inherit.xml',
@@ -62,6 +63,8 @@
             'pb_formula_studio/static/src/scss/shortcuts.scss',
             'pb_formula_studio/static/src/scss/snippet.scss',
             'pb_formula_studio/static/src/scss/reclass.scss',
+            # NETROLE P2 — the category review takeover.
+            'pb_formula_studio/static/src/scss/category_review.scss',
             # SOURCING S4 — the shared source vocabulary. Listed before its
             # consumers (the studio, the grid) so the bundle order matches the
             # dependency order.
@@ -87,6 +90,9 @@
             'pb_formula_studio/static/src/js/formula_studio.js',
             'pb_formula_studio/static/src/js/formula_config_views.js',
             'pb_formula_studio/static/src/js/shadow/shadow_run.js',
+            # NETROLE P2 — a client action of its own: the import chains it, and
+            # the studio opens it as a door (same shape as the shadow cockpit).
+            'pb_formula_studio/static/src/js/review/category_review.js',
             'pb_formula_studio/static/src/xml/grid_studio.xml',
             'pb_formula_studio/static/src/xml/command_layer.xml',
             'pb_formula_studio/static/src/xml/mapping_canvas.xml',
@@ -95,6 +101,7 @@
             'pb_formula_studio/static/src/xml/mapping_studio.xml',
             'pb_formula_studio/static/src/xml/studio.xml',
             'pb_formula_studio/static/src/xml/shadow_run.xml',
+            'pb_formula_studio/static/src/xml/category_review.xml',
         ],
         # Loaded only by /web/tests — never part of the backend bundle.
         'web.assets_unit_tests': [

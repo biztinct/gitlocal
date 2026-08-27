@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- NETROLE P2 — the category review.
+       Rendered inside `.pbfs` so it inherits the studio's tokens, buttons and
+       16px icon sizing; everything of its own is namespaced `.pbcr-*`. -->
+  <t t-name="pb_formula_studio.PbCategoryReview">
+    <div class="pbfs pbcr">
+
+      <t t-if="state.loading">
+        <div class="pbcr-center">
+          <div class="pbfs-spinner"/>
+          <p>Reading the scheme's formulas…</p>
+        </div>
+      </t>
+
+      <t t-elif="state.failed">
+        <div class="pbcr-center">
+          <svg class="pbcr-big warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <h2>This scheme could not be read.</h2>
+          <p>Nothing was changed. Try again from the salary structure.</p>
+          <button class="pbfs-btn primary" t-on-click="skip">Continue</button>
+        </div>
+      </t>
+
+      <t t-else="">
+        <div class="pbcr-scroll">
+          <div class="pbcr-card">
+
+            <!-- ============ header ============ -->
+            <header class="pbcr-head">
+              <div class="pbcr-eyebrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h10M3 12h7M3 18h4"/><path d="M17 4v11"/><polyline points="13.5 11.5 17 15 20.5 11.5"/><circle cx="17" cy="19.4" r="1.2"/></svg>
+                <span>Component categories</span>
+              </div>
+              <h1 t-esc="data.config_name"/>
+              <p class="pbcr-lede" t-esc="anchorSentence"/>
+
+              <div class="pbcr-legend">
+                <span class="lg earning"><i/>Added to pay</span>
+                <span class="lg deduction"><i/>Taken off pay</span>
+                <span class="lg employer_cost"><i/>Employer cost</span>
+                <span class="lg info"><i/>Information</span>
+              </div>
+            </header>
+
+            <!-- ============ no net-pay component ============ -->
+            <t t-if="netless">
+              <div class="pbcr-netless">
+                <svg class="pbcr-big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12.5"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <h2>Nothing here says which component is net pay.</h2>
+                <p t-esc="data.error"/>
+                <t t-if="canEdit and netCandidates.length">
+                  <div class="pbcr-netpick">
+                    <label for="pbcr_net">Net pay is</label>
+                    <select id="pbcr_net" t-on-change="onNetPick">
+                      <option t-foreach="netCandidates" t-as="c" t-key="c.id" t-att-value="c.id"
+                              t-att-selected="c.id === state.netPick">
+                        <t t-esc="c.name"/> (<t t-esc="c.code"/>)
+                      </option>
+                    </select>
+                    <button class="pbfs-btn primary" t-att-disabled="state.busy" t-on-click="confirmNet">
+                      Read the scheme again
+                    </button>
+                  </div>
+                </t>
+                <t t-elif="!canEdit">
+                  <p class="pbcr-fine">Ask a payroll manager to name the net-pay component.</p>
+                </t>
+              </div>
+            </t>
+
+            <!-- ============ everything already matches ============ -->
+            <t t-elif="!hasRows">
+              <div class="pbcr-done">
+                <svg class="pbcr-big ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.4 2.7 2.7L16 9.8"/></svg>
+                <h2>Everything already matches the formula.</h2>
+                <p>
+                  All <t t-esc="data.agree_count"/> component<t t-if="data.agree_count !== 1">s</t>
+                  are filed the way this scheme's own arithmetic reads them.
+                </p>
+              </div>
+            </t>
+
+            <!-- ============ the review ============ -->
+            <t t-else="">
+              <div class="pbcr-bulk">
+                <div class="pbcr-bulk-txt">
+                  <b><t t-esc="data.row_count"/> component<t t-if="data.row_count !== 1">s</t> to settle</b>
+                  <span t-if="data.agree_count"><t t-esc="data.agree_count"/> already match</span>
+                </div>
+                <button class="pbfs-btn ghost sm" t-on-click="acceptAll">Tick all</button>
+                <button class="pbfs-btn ghost sm" t-on-click="clearAll">Clear</button>
+              </div>
+
+              <div t-foreach="groups" t-as="group" t-key="group.key" t-attf-class="pbcr-group {{ group.key }}">
+                <div class="pbcr-ghead">
+                  <div>
+                    <b t-esc="group.label"/>
+                    <span t-esc="group.hint"/>
+                  </div>
+                  <div class="pbcr-gcount">
+                    <t t-esc="groupAcceptedCount(group)"/> / <t t-esc="group.rows.length"/>
+                    <button class="pbfs-btn ghost sm" t-on-click="() => this.acceptGroup(group)">Tick</button>
+                    <button class="pbfs-btn ghost sm" t-on-click="() => this.clearGroup(group)">Clear</button>
+                  </div>
+                </div>
+
+                <label t-foreach="group.rows" t-as="row" t-key="row.id"
+                       t-attf-class="pbcr-row {{ row.accept ? '' : 'skipped' }} {{ row.band_conflict ? 'flag' : '' }}">
+                  <input type="checkbox" t-att-checked="row.accept" t-att-disabled="!canEdit"
+                         t-on-change="() => this.toggleRow(row)"/>
+
+                  <div class="pbcr-who">
+                    <b t-esc="row.name"/>
+                    <span class="pbcr-code mono" t-esc="row.code"/>
+                    <span t-if="row.detail" class="pbcr-tag">counted inside a total</span>
+                  </div>
+
+                  <div class="pbcr-move">
+                    <span class="pbcr-chip from" t-esc="row.current_label || '—'"/>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    <span t-attf-class="pbcr-chip to {{ row.tint }}" t-esc="row.suggested_label"/>
+                  </div>
+
+                  <div class="pbcr-why">
+                    <span t-attf-class="pbcr-conf {{ row.confidence }}" t-esc="confidenceLabel(row)"/>
+                    <span t-esc="row.reason"/>
+                    <span t-if="row.band_conflict" class="pbcr-band">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                      <t t-esc="row.band_conflict_text"/>
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </t>
+          </div>
+        </div>
+
+        <!-- ============ footer ============ -->
+        <footer class="pbcr-foot">
+          <div class="pbcr-foot-inner">
+            <p class="pbcr-fine">
+              <t t-if="!canEdit">You can read this, but changing how components are filed needs a payroll manager.</t>
+              <t t-elif="netless">Name the net-pay component and this scheme can be read; skip and nothing changes.</t>
+              <t t-elif="hasRows">Only ticked rows are written. Everything else keeps the category it has now.</t>
+              <t t-else="">Nothing here needs changing.</t>
+            </p>
+            <div class="pbcr-btns">
+              <button class="pbfs-btn ghost" t-att-disabled="state.busy" t-on-click="skip">
+                <t t-if="hasRows">Skip for now</t>
+                <t t-else="">Close</t>
+              </button>
+              <button t-if="hasRows and canEdit" class="pbfs-btn primary"
+                      t-att-disabled="state.busy" t-on-click="apply">
+                Apply <t t-esc="acceptedCount"/> selected
+              </button>
+            </div>
+          </div>
+        </footer>
+      </t>
+    </div>
+  </t>
+
+</templates>
