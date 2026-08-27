@@ -86,8 +86,23 @@ class PbFactBuilder(models.AbstractModel):
         """The cycle/division dimensions come from the formula engine, which is
         NOT a hard dependency of this module (a structure-based payroll has no
         hr.formula.config at all). Probed, so the aggregate degrades to empty
-        strings instead of blowing up on a missing table."""
-        return 'hr.formula.config' in self.env
+        strings instead of blowing up on a missing table. The join key is
+        probed too: without ``hr_payslip.formula_config_id`` there is nothing
+        to join ON."""
+        return ('hr.formula.config' in self.env
+                and 'formula_config_id' in self.env['hr.payslip']._fields)
+
+    @api.model
+    def _has_config_field(self, fname):
+        """Model presence is NOT column presence. ``pb_division`` is added to
+        hr.formula.config by pb_demo, which is absent from a real customer DB
+        (ABM), so probing only ``hr.formula.config in env`` yielded
+        ``column fc.pb_division does not exist``. Probe the FIELD, and only
+        count stored ones — a non-stored/related field has no column either."""
+        if not self._has_formula():
+            return False          # no `fc` alias in the FROM clause at all
+        f = self.env['hr.formula.config']._fields.get(fname)
+        return bool(f is not None and f.store and f.column_type)
 
     @api.model
     def _from_sql(self):
@@ -103,11 +118,19 @@ class PbFactBuilder(models.AbstractModel):
 
     @api.model
     def _cycle_sql(self):
-        return "COALESCE(fc.cycle_type, '')" if self._has_formula() else "''"
+        return ("COALESCE(fc.cycle_type, '')"
+                if self._has_config_field('cycle_type') else "''")
 
     @api.model
     def _division_sql(self):
-        return "COALESCE(fc.pb_division, '')" if self._has_formula() else "''"
+        """Division, in order of truth. The config-level key is the finer grain
+        (a run *could* mix divisions); where it does not exist, hr_payslip_run
+        carries the same key stored+indexed (pb_payruns is a hard dependency of
+        this module, so ``r.pb_division`` is always there) — which is exactly
+        what the header build already reads through the ORM."""
+        if self._has_config_field('pb_division'):
+            return "COALESCE(fc.pb_division, '')"
+        return "COALESCE(r.pb_division, '')"
 
     @api.model
     def _aggregate_sql(self, grain):
