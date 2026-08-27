@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:46+1000\n"
+"PO-Revision-Date: 2026-08-27 20:49+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -277,46 +277,46 @@ msgid "→ indefinite"
 msgstr "→ không xác định"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:10
+#: code:addons/pb_people/static/src/js/people.js:10
 msgid "All"
 msgstr "Tất cả"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:11
+#: code:addons/pb_people/static/src/js/people.js:11
 msgid "Running"
 msgstr "Đang chạy"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:12
+#: code:addons/pb_people/static/src/js/people.js:12
 msgid "Expiring soon"
 msgstr "Sắp hết hạn"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:14
+#: code:addons/pb_people/static/src/js/people.js:14
 msgid "No contract"
 msgstr "Không có hợp đồng"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:17
+#: code:addons/pb_people/static/src/js/people.js:17
 msgid "All time"
 msgstr "Mọi lúc"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:18
+#: code:addons/pb_people/static/src/js/people.js:18
 msgid "Joined this month"
 msgstr "Đã tham gia tháng này"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:19
+#: code:addons/pb_people/static/src/js/people.js:19
 msgid "Joined this year"
 msgstr "Đã tham gia năm nay"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:20
+#: code:addons/pb_people/static/src/js/people.js:20
 msgid "Custom"
 msgstr "Tùy chỉnh"
 
 #. module: pb_people
-#: pb_people/static/src/js/people.js:151
+#: code:addons/pb_people/static/src/js/people.js:151
 msgid "%(count)s employees moved."
 msgstr "Nhân viên %(count)s đã di chuyển."

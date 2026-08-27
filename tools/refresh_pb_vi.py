@@ -404,7 +404,10 @@ def _add_source_entry(
         return
     seen.add(source)
     catalog.append(
-        polib.POEntry(msgid=source, occurrences=[(relative_path, str(line))])
+        polib.POEntry(
+            msgid=source,
+            occurrences=[(f"code:addons/{relative_path}", str(line))],
+        )
     )
 
 

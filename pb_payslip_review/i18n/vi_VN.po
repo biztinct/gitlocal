@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:46+1000\n"
+"PO-Revision-Date: 2026-08-27 20:49+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -144,41 +144,41 @@ msgid "✓ Fully approved"
 msgstr "✓ Đã được phê duyệt đầy đủ"
 
 #. module: pb_payslip_review
-#: pb_payslip_review/static/src/js/payslip_review.js:8
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:8
 msgid "Draft"
 msgstr "Nháp"
 
 #. module: pb_payslip_review
-#: pb_payslip_review/static/src/js/payslip_review.js:8
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:8
 msgid "Waiting"
 msgstr "Đang chờ"
 
 #. module: pb_payslip_review
-#: pb_payslip_review/static/src/js/payslip_review.js:8
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:8
 msgid "HR Manager pending"
 msgstr "Giám đốc nhân sự đang chờ xử lý"
 
 #. module: pb_payslip_review
-#: pb_payslip_review/static/src/js/payslip_review.js:9
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:9
 msgid "Rejected"
 msgstr "Đã từ chối"
 
 #. module: pb_payslip_review
-#: pb_payslip_review/static/src/js/payslip_review.js:12
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:12
 msgid "Submit for HR review"
 msgstr "Gửi để xem xét nhân sự"
 
 #. module: pb_payslip_review
-#: pb_payslip_review/static/src/js/payslip_review.js:12
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:12
 msgid "HR approve → GM"
 msgstr "Nhân sự phê duyệt → GM"
 
 #. module: pb_payslip_review
-#: pb_payslip_review/static/src/js/payslip_review.js:12
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:12
 msgid "GM approve → Done"
 msgstr "GM phê duyệt → Xong"
 
 #. module: pb_payslip_review
-#: pb_payslip_review/static/src/js/payslip_review.js:66
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:66
 msgid "Action blocked"
 msgstr "Hành động bị chặn"

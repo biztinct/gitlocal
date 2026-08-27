@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:46+1000\n"
+"PO-Revision-Date: 2026-08-27 20:49+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -175,6 +175,6 @@ msgid "Workforce Planning is not open to you."
 msgstr "Lập kế hoạch lực lượng lao động không dành cho bạn."
 
 #. module: pb_people_hub
-#: pb_people_hub/static/src/js/plan_launcher.js:241
+#: code:addons/pb_people_hub/static/src/js/plan_launcher.js:241
 msgid "Planning scenarios, forecasts, pay grades and merit"
 msgstr "Lập kế hoạch kịch bản, dự báo, trả điểm và bằng khen"

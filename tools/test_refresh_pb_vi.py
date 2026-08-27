@@ -80,6 +80,13 @@ class SourceFallbackTests(unittest.TestCase):
             self.assertIn("Visible attribute", terms)
             self.assertIn("Visible text", terms)
             self.assertNotIn("technical.model", terms)
+            self.assertTrue(
+                all(
+                    occurrence[0].startswith("code:addons/pb_example/")
+                    for entry in catalog
+                    for occurrence in entry.occurrences
+                )
+            )
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 20:46+1000\n"
+"PO-Revision-Date: 2026-08-27 20:48+1000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -262,111 +262,111 @@ msgid "personnel cost"
 msgstr "chi phí nhân sự"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:52
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:52
 msgid "Meet Payobook"
 msgstr "Gặp gỡ Payobook"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:53
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:53
 msgid "A 2-minute tour. I drive, you watch."
 msgstr "Một chuyến tham quan 2 phút. Tôi lái xe, bạn xem."
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:54
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:54
 msgid "Watch the tour"
 msgstr "Xem chuyến tham quan"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:58
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:58
 msgid "Pick up where you left off"
 msgstr "Tiếp tục nơi bạn đã dừng lại"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:63
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:63
 msgid "Add your first employee"
 msgstr "Thêm nhân viên đầu tiên của bạn"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:64
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:64
 msgid "A name, a contract, a salary. That is all it takes."
 msgstr "Một cái tên, một hợp đồng, một mức lương. Đó là tất cả những gì cần thiết."
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:65
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:65
 msgid "Add employee"
 msgstr "Thêm nhân viên"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:70
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:70
 msgid "Bring in your payroll Excel"
 msgstr "Mang theo bảng lương Excel của bạn"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:71
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:71
 msgid "Already have a sheet? Bring everyone in at once."
 msgstr "Bạn đã có tờ giấy chưa? Đưa mọi người vào cùng một lúc."
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:72
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:72
 msgid "Import data"
 msgstr "Nhập dữ liệu"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:77
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:77
 msgid "Run a practice payroll"
 msgstr "kỳ lương thực hành"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:78
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:78
 msgid "On a made-up company. Nothing here is real."
 msgstr "Trên một công ty trang điểm. Không có gì ở đây là có thật."
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:79
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:79
 msgid "Try it"
 msgstr "Hãy thử nó"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:85
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:85
 msgid "Run your first real payroll"
 msgstr "kỳ lương thực tế đầu tiên của bạn"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:86
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:86
 msgid "Your own data, with the guide beside you. You press every button."
 msgstr "Dữ liệu của riêng bạn, với hướng dẫn bên cạnh bạn. Bạn nhấn từng nút."
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:87
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:87
 msgid "Start"
 msgstr "Bắt đầu"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:162
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:162
 msgid "Good morning"
 msgstr "Chào buổi sáng"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:163
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:163
 msgid "Good afternoon"
 msgstr "Chào buổi chiều"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:164
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:164
 msgid "Good evening"
 msgstr "Chào buổi tối"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:229
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:229
 msgid "That screen is not installed on this database."
 msgstr "Màn hình đó chưa được cài đặt trên cơ sở dữ liệu này."
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:262
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:262
 msgid "Home"
 msgstr "Trang chủ"
 
 #. module: pb_dashboard
-#: pb_dashboard/static/src/js/pb_dashboard.js:292
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:292
 msgid "The guided tour is not installed on this database."
 msgstr "Chuyến tham quan có hướng dẫn chưa được cài đặt trên cơ sở dữ liệu này."
