@@ -1,0 +1,636 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2026-08-27 19:46+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: pb_source_atlas/static/src/js/atlas.js:23
+msgid "Adds to net pay"
+msgstr "Cộng vào lương thực nhận"
+
+#: pb_source_atlas/static/src/js/atlas.js:24
+msgid "Taken off net pay"
+msgstr "Khấu trừ khỏi lương thực nhận"
+
+#: pb_source_atlas/static/src/js/atlas.js:25
+msgid "Net pay"
+msgstr "Lương thực nhận"
+
+#: pb_source_atlas/static/src/js/atlas.js:26
+msgid "Employer cost"
+msgstr "Chi phí của người sử dụng lao động"
+
+#: pb_source_atlas/static/src/js/atlas.js:27
+msgid "Information only"
+msgstr "Chỉ thông tin"
+
+#: pb_source_atlas/static/src/js/atlas.js:28
+msgid "Both added and taken off"
+msgstr "Vừa cộng vừa khấu trừ"
+
+#: pb_source_atlas/static/src/js/atlas.js:76
+msgid "Could not read this pay run."
+msgstr "Không thể đọc kỳ lương này."
+
+#: pb_source_atlas/static/src/js/atlas.js:97
+msgid "Could not read the grid."
+msgstr "Không thể đọc lưới."
+
+#: pb_source_atlas/static/src/js/atlas.js:158
+msgid "Could not trace that value."
+msgstr "Không thể theo dõi giá trị đó."
+
+#: pb_source_atlas/static/src/js/atlas.js:182
+msgid "Nothing to export."
+msgstr "Không có dữ liệu để xuất."
+
+#: pb_source_atlas/static/src/js/atlas.js:241
+msgid "no employees"
+msgstr "không có nhân viên"
+
+#: pb_source_atlas/static/src/js/atlas.js:245
+msgid "%(from)s–%(to)s of %(total)s employees"
+msgstr "Nhân viên %(from)s–%(to)s trên tổng số %(total)s"
+
+#: pb_source_atlas/static/src/js/atlas.js:251
+msgid "no components match"
+msgstr "không có thành phần nào phù hợp"
+
+#: pb_source_atlas/static/src/js/atlas.js:255
+msgid "%(from)s–%(to)s of %(total)s components"
+msgstr "Thành phần %(from)s–%(to)s trên tổng số %(total)s"
+
+#: pb_source_atlas/static/src/js/atlas.js:301
+msgid "Not classified"
+msgstr "Không được phân loại"
+
+#: pb_source_atlas/models/atlas_download.py:140
+msgid "All sources"
+msgstr "Tất cả các nguồn"
+
+#: pb_source_atlas/models/atlas_download.py:142
+msgid "Everything"
+msgstr "Tất cả"
+
+#: pb_source_atlas/models/atlas_download.py:345
+msgid "Source Atlas export"
+msgstr "Bản xuất Nguồn dữ liệu"
+
+#: pb_source_atlas/models/atlas_download.py:53
+msgid "There is no '%s' source lane to download."
+msgstr "Không có luồng nguồn '%s' để tải xuống."
+
+#: pb_source_atlas/models/atlas_download.py:63
+msgid "This pay run has no payslips yet, so there is nothing to export."
+msgstr "Kỳ lương này chưa có phiếu lương nên không có dữ liệu để xuất."
+
+#: pb_source_atlas/models/atlas_download.py:75
+msgid "Only the first %(cap)s of %(total)s employees are included."
+msgstr "Chỉ bao gồm %(cap)s nhân viên đầu tiên trong tổng số %(total)s."
+
+#: pb_source_atlas/models/atlas_download.py:82
+msgid "Nothing in this pay run came from %(lane)s, so there is nothing to export."
+msgstr ""
+"Không có dữ liệu nào trong kỳ lương này đến từ %(lane)s nên không có dữ liệu để xuất."
+
+#: pb_source_atlas/models/atlas_download.py:86
+msgid "Only the first %(cap)s of %(total)s components are included."
+msgstr "Chỉ bao gồm %(cap)s thành phần đầu tiên trong tổng số %(total)s."
+
+#: pb_source_atlas/models/atlas_download.py:191
+msgid "Values"
+msgstr "Giá trị"
+
+#: pb_source_atlas/models/atlas_download.py:196
+msgid "Employee code"
+msgstr "Mã nhân viên"
+
+#: pb_source_atlas/models/atlas_download.py:196
+msgid "Employee"
+msgstr "Nhân viên"
+
+#: pb_source_atlas/models/atlas_download.py:196
+msgid "Department"
+msgstr "Phòng ban"
+
+#: pb_source_atlas/models/atlas_download.py:219
+msgid "Sources"
+msgstr "Nguồn"
+
+#: pb_source_atlas/models/atlas_download.py:253
+msgid "No %(lane)s rows are attached to this pay run, so the raw sheet is not included."
+msgstr ""
+"Không có hàng %(lane)s nào được đính kèm vào kỳ lương này, do đó, bảng tính thô không "
+"được bao gồm."
+
+#: pb_source_atlas/models/atlas_download.py:288
+msgid ""
+"The connected system's own rows are no longer on file for this run, so only the "
+"imported values are exported."
+msgstr ""
+"Các hàng riêng của hệ thống được kết nối không còn có trong tệp cho lần chạy này nữa "
+"nên chỉ các giá trị đã nhập mới được xuất."
+
+#: pb_source_atlas/models/atlas_download.py:327
+msgid "How to read this"
+msgstr "Hướng dẫn đọc"
+
+#: pb_source_atlas/models/atlas_download.py:331
+msgid "Pay run"
+msgstr "Kỳ lương"
+
+#: pb_source_atlas/models/atlas_download.py:332
+msgid "Period"
+msgstr "Giai đoạn"
+
+#: pb_source_atlas/models/atlas_download.py:333
+msgid "Source lane"
+msgstr "Luồng nguồn"
+
+#: pb_source_atlas/models/atlas_download.py:334
+msgid "Employees"
+msgstr "Nhân viên"
+
+#: pb_source_atlas/models/atlas_download.py:335
+msgid "Components"
+msgstr "Thành phần"
+
+#: pb_source_atlas/models/atlas_download.py:336
+msgid "Prepared"
+msgstr "Ngày tạo"
+
+#: pb_source_atlas/models/atlas_download.py:338
+msgid "What each employee's component was worth in this run."
+msgstr "Giá trị từng thành phần lương của mỗi nhân viên trong kỳ lương này."
+
+#: pb_source_atlas/models/atlas_download.py:339
+msgid ""
+"The same grid, but each cell says where the value came from: the lane, the key it "
+"arrived on, and why that source won."
+msgstr ""
+"Cùng một bảng dữ liệu, nhưng mỗi ô cho biết giá trị đến từ luồng nào, qua khóa nào và "
+"vì sao nguồn đó được ưu tiên."
+
+#: pb_source_atlas/models/atlas_download.py:57
+msgid ""
+"Spreadsheet export needs the 'xlsxwriter' library, which is not available on this "
+"server."
+msgstr ""
+"Xuất bảng tính cần thư viện 'xlsxwriter', thư viện này không có sẵn trên máy chủ này."
+
+#: pb_source_atlas/models/atlas_download.py:305
+msgid "The %(type)s feed carries %(n)s keys; the first %(cap)s are exported."
+msgstr "Nguồn cấp %(type)s có %(n)s khóa; %(cap)s khóa đầu tiên được xuất."
+
+#: pb_source_atlas/models/atlas_download.py:313
+msgid "External id"
+msgstr "ID bên ngoài"
+
+#: pb_source_atlas/models/atlas_download.py:313
+msgid "Pulled"
+msgstr "Thời điểm lấy"
+
+#: pb_source_atlas/models/atlas_download.py:313
+msgid "State"
+msgstr "Trạng thái"
+
+#: pb_source_atlas/models/atlas_download.py:344
+msgid "Note"
+msgstr "Ghi chú"
+
+#: pb_source_atlas/models/atlas_download.py:269
+msgid "Workbook"
+msgstr "Sổ tính"
+
+#: pb_source_atlas/models/atlas_download.py:272
+msgid "Row"
+msgstr "Hàng"
+
+#: pb_source_atlas/models/atlas_download.py:310
+msgid "Feed · %s"
+msgstr "Nguồn cấp · %s"
+
+#: pb_source_atlas/models/hr_payslip_run.py:23
+msgid "Where the numbers come from"
+msgstr "Những con số đến từ đâu"
+
+#: pb_source_atlas/models/pb_source_atlas.py:833
+msgid "Read off %(model)s · %(field)s for this employee."
+msgstr "Đọc từ %(model)s · %(field)s của nhân viên này."
+
+#: pb_source_atlas/models/pb_source_atlas.py:865
+msgid ""
+"This is a contract component, and this contract carries no amount for it — so it came "
+"through as zero."
+msgstr ""
+"Đây là một thành phần hợp đồng và hợp đồng này không có giá trị gì cho nó - vì vậy nó "
+"được coi là bằng không."
+
+#: pb_source_atlas/models/pb_source_atlas.py:158
+msgid ""
+"The Source Atlas shows every employee's pay data for a whole run. It is open to "
+"payroll officers and above."
+msgstr ""
+"Nguồn dữ liệu hiển thị dữ liệu lương của mọi nhân viên trong toàn bộ kỳ lương. Chỉ "
+"chuyên viên tiền lương và cấp cao hơn được truy cập."
+
+#: pb_source_atlas/models/pb_source_atlas.py:620
+msgid "Not tracked"
+msgstr "Chưa theo dõi"
+
+#: pb_source_atlas/models/pb_source_atlas.py:718
+msgid ""
+"The value was recorded as coming from %(src)s on key '%(key)s', but the imported row "
+"behind it is no longer on file."
+msgstr ""
+"Giá trị được ghi lại là đến từ %(src)s trên khóa '%(key)s', nhưng hàng đã nhập phía "
+"sau nó không còn có trong tệp."
+
+#: pb_source_atlas/models/pb_source_atlas.py:744
+msgid "Read from column '%(key)s' of the uploaded workbook, row %(row)s."
+msgstr "Đọc từ cột '%(key)s' của sổ làm việc đã tải lên, hàng %(row)s."
+
+#: pb_source_atlas/models/pb_source_atlas.py:748
+msgid "Delivered by %(conn)s on key '%(key)s' for this period."
+msgstr "Được phân phối bởi %(conn)s trên khóa '%(key)s' trong giai đoạn này."
+
+#: pb_source_atlas/models/pb_source_atlas.py:810
+msgid ""
+"Read off this employee's own record. The exact field is no longer mapped, so it cannot"
+" be named here."
+msgstr ""
+"Đọc hồ sơ riêng của nhân viên này. Trường chính xác không còn được ánh xạ nữa nên "
+"không thể đặt tên ở đây."
+
+#: pb_source_atlas/models/pb_source_atlas.py:843
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#: pb_source_atlas/models/pb_source_atlas.py:847
+msgid "Recorded as a contract component, but this payslip has no contract attached."
+msgstr ""
+"Được ghi nhận là một thành phần của hợp đồng nhưng phiếu lương này không có hợp đồng "
+"kèm theo."
+
+#: pb_source_atlas/models/pb_source_atlas.py:861
+msgid "The amount agreed on this contract for %(name)s."
+msgstr "Số tiền đã thỏa thuận trong hợp đồng này là %(name)s."
+
+#: pb_source_atlas/models/pb_source_atlas.py:167
+msgid "That pay run no longer exists."
+msgstr "Kỳ lương đó không còn tồn tại."
+
+#: pb_source_atlas/models/pb_source_atlas.py:293
+msgid ""
+"This pay run has no payslips yet, so there is nothing to trace. Run payroll for the "
+"period and the Atlas fills in."
+msgstr ""
+"Kỳ lương này chưa có phiếu lương nên chưa có dữ liệu để truy vết. Hãy tính lương cho "
+"kỳ này để Nguồn dữ liệu được cập nhật."
+
+#: pb_source_atlas/models/pb_source_atlas.py:425
+msgid ""
+"%(n)s of these payslips were computed before source tracking existed, so their values "
+"carry no origin."
+msgstr ""
+"%(n)s của các phiếu lương này đã được tính toán trước khi tồn tại việc theo dõi nguồn,"
+" do đó giá trị của chúng không có nguồn gốc."
+
+#: pb_source_atlas/models/pb_source_atlas.py:430
+msgid ""
+"%(n)s codes carry a source but no longer match a component on this scheme — they are "
+"listed so nothing is hidden."
+msgstr ""
+"Mã %(n)s mang nguồn nhưng không còn khớp với thành phần trong sơ đồ này nữa — chúng "
+"được liệt kê nên không có gì bị ẩn."
+
+#: pb_source_atlas/models/pb_source_atlas.py:435
+msgid ""
+"Some components have no pay role yet, so they are left out of the money totals. "
+"Classify the scheme to include them."
+msgstr ""
+"Một số thành phần chưa được phân loại vai trò lương nên chưa được tính vào tổng tiền. "
+"Hãy phân loại cấu hình để đưa chúng vào."
+
+#: pb_source_atlas/models/pb_source_atlas.py:572
+msgid "That payslip is not part of this pay run."
+msgstr "Phiếu lương đó không phải là một phần của kỳ lương này."
+
+#: pb_source_atlas/models/pb_source_atlas.py:576
+msgid "Pick a component to trace."
+msgstr "Chọn một thành phần để theo dõi."
+
+#: pb_source_atlas/models/pb_source_atlas.py:614
+msgid ""
+"This code carries a source but no longer matches a component on the scheme, so its "
+"journey stops here."
+msgstr ""
+"Mã này mang một nguồn nhưng không còn khớp với một thành phần trên lược đồ, vì vậy "
+"hành trình của nó dừng ở đây."
+
+#: pb_source_atlas/models/pb_source_atlas.py:623
+msgid "Computed before source tracking existed"
+msgstr "Được tính trước khi có tính năng theo dõi nguồn"
+
+#: pb_source_atlas/models/pb_source_atlas.py:624
+msgid ""
+"This payslip was computed before the system recorded where each value came from. "
+"Recomputing the run captures it."
+msgstr ""
+"Phiếu lương này được tính trước khi hệ thống ghi nhận nguồn của từng giá trị. Hãy tính"
+" lại kỳ lương để ghi nhận nguồn."
+
+#: pb_source_atlas/models/pb_source_atlas.py:668
+msgid "Nothing fed this"
+msgstr "Không có nguồn dữ liệu"
+
+#: pb_source_atlas/models/pb_source_atlas.py:669
+msgid "No source carried a value, so the component's own default was used."
+msgstr ""
+"Không có nguồn nào mang giá trị nên giá trị mặc định của chính thành phần đó đã được "
+"sử dụng."
+
+#: pb_source_atlas/models/pb_source_atlas.py:888
+msgid ""
+"This scheme has no net pay component, so the chain cannot be followed to the end."
+msgstr ""
+"Cấu hình này chưa có thành phần lương thực nhận nên không thể truy theo chuỗi đến "
+"cuối."
+
+#: pb_source_atlas/models/pb_source_atlas.py:930
+msgid ""
+"This component does not reach net pay through any formula on this scheme — it is "
+"carried for information."
+msgstr ""
+"Thành phần này không đi vào lương thực nhận qua bất kỳ công thức nào trong cấu hình; "
+"nó chỉ dùng để tham khảo."
+
+#: pb_source_atlas/models/pb_source_atlas.py:960
+msgid "The chain is longer than %(n)s hops and has been cut short here."
+msgstr "Chuỗi có hơn %(n)s bước nên được rút gọn tại đây."
+
+#: pb_source_atlas/models/pb_source_atlas.py:652
+msgid "Worked out here"
+msgstr "Được tính tại đây"
+
+#: pb_source_atlas/models/pb_source_atlas.py:653
+msgid "This component has no source of its own — this scheme's formula produces it."
+msgstr ""
+"Thành phần này không có nguồn riêng; công thức trong cấu hình tạo ra giá trị này."
+
+#: pb_source_atlas/models/pb_source_atlas.py:661
+msgid "A fixed value on the scheme"
+msgstr "Giá trị cố định trong cấu hình"
+
+#: pb_source_atlas/models/pb_source_atlas.py:662
+msgid "The same number for every employee."
+msgstr "Số lượng như nhau cho mọi nhân viên."
+
+#: pb_source_atlas/models/pb_source_atlas.py:234
+msgid "Ungrouped"
+msgstr "Chưa phân nhóm"
+
+#: pb_source_atlas/models/pb_source_atlas.py:385
+msgid "Made of the other lanes' numbers — not summed here."
+msgstr "Được tạo từ số liệu của các luồng khác; không cộng lại tại đây."
+
+#: pb_source_atlas/models/pb_source_atlas.py:696
+msgid "The same number for every employee on this scheme."
+msgstr "Con số giống nhau cho mọi nhân viên trong chương trình này."
+
+#: pb_source_atlas/models/pb_source_atlas.py:699
+msgid "No source carried a value for %s."
+msgstr "Không có nguồn nào mang giá trị cho %s."
+
+#: pb_source_atlas/models/pb_source_atlas.py:750
+msgid "a connected system"
+msgstr "một hệ thống được kết nối"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "·"
+msgstr "·"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "–"
+msgstr "–"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "payslips"
+msgstr "phiếu lương"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Lanes"
+msgstr "Luồng nguồn"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Grid"
+msgstr "Lưới"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Preparing…"
+msgstr "Đang chuẩn bị…"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Download everything"
+msgstr "Tải xuống mọi thứ"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "This run could not be read"
+msgstr "Không thể đọc kỳ lương này"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Nothing has been calculated yet"
+msgstr "Chưa có gì được tính toán"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid ""
+"This pay run has no payslips, so there are no numbers to trace. Run payroll for the "
+"period and every value's source appears here."
+msgstr ""
+"Kỳ lương này chưa có phiếu lương nên chưa có số liệu để truy vết. Hãy tính lương cho "
+"kỳ này để xem nguồn của từng giá trị."
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Run payroll"
+msgstr "Tính lương"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "from the component's own type"
+msgstr "từ loại riêng của thành phần"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Nothing in this run came this way."
+msgstr "Không có dữ liệu nào trong kỳ lương đi qua luồng này."
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "components"
+msgstr "thành phần"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "employees"
+msgstr "nhân viên"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "values"
+msgstr "giá trị"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "% of employees"
+msgstr "% nhân viên"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Carried into this run"
+msgstr "Được đưa vào kỳ lương này"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "See the cells"
+msgstr "Xem các ô dữ liệu"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Spreadsheet"
+msgstr "Bảng tính"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Codes with a source but no component"
+msgstr "Mã có nguồn nhưng không còn thành phần tương ứng"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid ""
+"These carry provenance from an earlier version of the scheme. They are listed rather "
+"than dropped, so nothing is hidden."
+msgstr ""
+"Chúng mang nguồn gốc từ phiên bản trước của chương trình. Chúng được liệt kê chứ không"
+" bị loại bỏ, vì vậy không có gì bị ẩn."
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Find an employee…"
+msgstr "Tìm nhân viên…"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Filter components…"
+msgstr "Lọc thành phần…"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "All groups"
+msgstr "Tất cả các nhóm"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Reading the run…"
+msgstr "Đang đọc kỳ lương…"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "No employee matches that search"
+msgstr "Không có nhân viên nào phù hợp với tìm kiếm đó"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "no source recorded"
+msgstr "chưa ghi nhận nguồn"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "The journey of one number"
+msgstr "Hành trình của một con số"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Following the chain…"
+msgstr "Đang truy theo chuỗi…"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Value on this payslip"
+msgstr "Giá trị trên phiếu lương này"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "arrived on"
+msgstr "đã đến"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "raw value"
+msgstr "giá trị thô"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "why this one"
+msgstr "lý do chọn nguồn này"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "row"
+msgstr "hàng"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "pulled"
+msgstr "được lấy lúc"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "as delivered:"
+msgstr "như đã giao:"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "the other source also sent"
+msgstr "nguồn khác cũng cung cấp"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "on"
+msgstr "trên"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "— not used"
+msgstr "- không được sử dụng"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "Shaped by a transformation rule"
+msgstr "Được xử lý theo quy tắc chuyển đổi"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "The component"
+msgstr "thành phần"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "—"
+msgstr "—"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "value"
+msgstr "giá trị"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "feeds into"
+msgstr "được đưa vào"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "needs review"
+msgstr "cần xem xét"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "folded into a total"
+msgstr "được cộng vào tổng"
+
+#: pb_source_atlas/static/src/xml/atlas.xml:1
+msgid "This is net pay itself — everything above adds up to it."
+msgstr "Bản thân đây là khoản lương ròng - mọi thứ ở trên đều cộng lại."
+
+#: pb_source_atlas/views/pb_source_atlas_views.xml:1
+msgid "pb_source_atlas_cockpit"
+msgstr "pb_source_atlas_cockpit"
+
+#: pb_source_atlas/views/pb_source_atlas_views.xml:1
+msgid "hr.payslip.run.form.source-atlas"
+msgstr "hr.payslip.run.form.source-atlas"
+
+#: pb_source_atlas/views/pb_source_atlas_views.xml:1
+msgid "hr.payslip.run"
+msgstr "hr.payslip.run"
+
+#: pb_source_atlas/views/pb_source_atlas_views.xml:1
+msgid "40"
+msgstr "40"
+
+#: pb_source_atlas/views/pb_source_atlas_views.xml:1
+msgid "hr.payslip.run.kanban.source-atlas"
+msgstr "hr.payslip.run.kanban.source-atlas"
