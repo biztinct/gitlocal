@@ -4,15 +4,32 @@ import { Component, useState, onWillStart, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { IC as KIT_IC } from "@pb_import_kit/js/import_icons";
 
+// The shared Lucide registry first, this wizard's own five last, so every glyph
+// the standalone screen already rendered is byte-identical and the pay-data step
+// gets `upload`/`file`/`checkCircle` without a second icon file (C11: Lucide, never emoji).
 const IC = {
+    ...KIT_IC,
     check:'<path d="M20 6 9 17l-5-5"/>',
     calendar:'<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
     zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
     alert:'<path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
     arrow:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
 };
-const STEPS = ["Select period", "Compute", "Review exceptions"];
+
+// NETROLE P3: the rail is now built from KEYS, not from a fixed array of three
+// labels. "Pay data" appears only when a scheme actually binds components to
+// spreadsheet columns, and on every database where none does, `stepKeys` is the
+// original three and every step number means exactly what it always meant.
+const STEP_LABELS = {
+    period: "Select period",
+    data: "Pay data",
+    compute: "Compute",
+    review: "Review exceptions",
+};
+const STEPS_PLAIN = ["period", "compute", "review"];
+const STEPS_SHEET = ["period", "data", "compute", "review"];
 
 export class PayrunWizard extends Component {
     static template = "pb_payrun_wizard.PayrunWizard";
@@ -28,10 +45,28 @@ export class PayrunWizard extends Component {
             defaults: null, form: { name: "", date_start: "", date_end: "", struct_id: null, division: null },
             summary: null,
             progress: null,   // { done, total } during chunked compute → determinate bar
+            // NETROLE P3 — the month's spreadsheet.
+            sheet: {
+                gate: null,        // spreadsheet_gate(): null / {wanted:false} / {wanted:true, …}
+                file_b64: "", file_name: "",
+                preflight: null,   // coverage of the chosen file
+                checking: false,   // reading headings
+                dragging: false,
+                error: "",         // the server's own refusal, shown on the step
+                skipped: false,    // the user looked at the list and went on without a file
+            },
         });
         onWillStart(async () => {
-            const d = await this.orm.call("pb.payrun.wizard", "get_defaults", []);
+            // The gate is a read of the schemes, not of the period, so it rides
+            // alongside the defaults rather than costing the user a round trip.
+            const [d, gate] = await Promise.all([
+                this.orm.call("pb.payrun.wizard", "get_defaults", []),
+                this.orm.silent
+                    .call("pb.payrun.wizard", "spreadsheet_gate", [{}])
+                    .catch(() => ({ wanted: false })),
+            ]);
             this.state.defaults = d;
+            this.state.sheet.gate = gate || { wanted: false };
             this.state.form.name = d.name;
             this.state.form.date_start = d.date_start;
             this.state.form.date_end = d.date_end;
@@ -44,7 +79,12 @@ export class PayrunWizard extends Component {
 
     ic(n, s = 16) { return markup(`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n] || IC.check}</svg>`); }
     vnd(n) { n = n || 0; if (n >= 1e9) return "₫" + (n / 1e9).toFixed(1) + "B"; if (n >= 1e6) return "₫" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "₫" + (n / 1e3).toFixed(0) + "K"; return "₫" + Math.round(n); }
-    get steps() { return STEPS; }
+    get wantsSheet() { const g = this.state.sheet.gate; return !!(g && g.wanted); }
+    get stepKeys() { return this.wantsSheet ? STEPS_SHEET : STEPS_PLAIN; }
+    get steps() { return this.stepKeys.map((k) => STEP_LABELS[k]); }
+    get stepKey() { return this.stepKeys[this.state.step - 1] || "period"; }
+    gotoKey(k) { const i = this.stepKeys.indexOf(k); if (i >= 0) { this.state.step = i + 1; } }
+    back() { if (this.state.step > 1) { this.state.step -= 1; } }
 
     onField(f, ev) { this.state.form[f] = ev.target.value; }
     onDivision(ev) {
@@ -79,16 +119,99 @@ export class PayrunWizard extends Component {
         return this.divInfo ? this.divInfo.eligible : (this.state.defaults ? this.state.defaults.eligible : 0);
     }
 
+    // ---------------- NETROLE P3: the month's spreadsheet ----------------
+    get sheetComponents() {
+        const g = this.state.sheet.gate;
+        return (g && g.components) || [];
+    }
+    get sheetReady() {
+        const p = this.state.sheet.preflight;
+        return !!(p && p.ok);
+    }
+
+    onDragOver(ev) { ev.preventDefault(); this.state.sheet.dragging = true; }
+    onDragLeave(ev) { ev.preventDefault(); this.state.sheet.dragging = false; }
+    onDrop(ev) {
+        ev.preventDefault();
+        this.state.sheet.dragging = false;
+        const f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+        this._takeFile(f);
+    }
+    onSheetFile(ev) {
+        const f = ev.target.files && ev.target.files[0];
+        this._takeFile(f);
+    }
+    clearSheetFile() {
+        Object.assign(this.state.sheet, {
+            file_b64: "", file_name: "", preflight: null, error: "",
+        });
+    }
+
+    _takeFile(f) {
+        if (!f) { return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.state.sheet.file_b64 = String(reader.result).split(",")[1] || "";
+            this.state.sheet.file_name = f.name;
+            this.state.sheet.preflight = null;
+            this.state.sheet.error = "";
+            this._preflight();
+        };
+        reader.readAsDataURL(f);
+    }
+
+    async _preflight() {
+        const s = this.state.sheet;
+        const configId = (s.gate && s.gate.config_id) || null;
+        if (!configId || !s.file_b64) { return; }
+        s.checking = true;
+        try {
+            const res = await this.orm.silent.call(
+                "pb.payrun.wizard", "preflight_spreadsheet",
+                [configId, s.file_b64, s.file_name]);
+            s.preflight = res;
+            // A file that cannot be read is refused HERE, with the reason, and
+            // is never carried into a run (C7 — no silent fallback).
+            s.error = res && res.ok ? "" : ((res && res.msg) || "This file could not be read.");
+        } catch (e) {
+            s.preflight = null;
+            s.error = "This file could not be read.";
+        } finally {
+            s.checking = false;
+        }
+    }
+
+    // "Run without a spreadsheet" — a choice made while looking at the list of
+    // components that will fall back, never a silent default.
+    runWithoutSheet() {
+        Object.assign(this.state.sheet, {
+            skipped: true, file_b64: "", file_name: "", preflight: null, error: "",
+        });
+        return this.toCompute();
+    }
+
+    continueWithSheet() {
+        this.state.sheet.skipped = false;
+        return this.toCompute();
+    }
+
+    // Step 1's primary action: the pay-data step when a scheme wants a file,
+    // the compute it always was when none does.
+    async advanceFromPeriod() {
+        if (this.wantsSheet) { return this.gotoKey("data"); }
+        return this.toCompute();
+    }
+
     async toCompute() {
-        // Step 1 -> 2: create + compute a (draft) run, guarding existing payroll.
-        this.state.step = 2;
+        // Create + compute a (draft) run, guarding existing payroll.
+        this.gotoKey("compute");
         this.state.loading = true;
         this.state.busyMsg = "Creating run and computing payslips…";
         try {
             await this._compute(false);
         } catch (e) {
             this.notif.add("Could not compute the run. See server logs.", { type: "danger" });
-            this.state.step = 1;
+            this.gotoKey("period");
         } finally {
             this.state.loading = false;
             this.state.progress = null;
@@ -100,14 +223,42 @@ export class PayrunWizard extends Component {
     // global loading overlay stays hidden — the modal shows its own progress
     // (no more "two spinners"). Each batch commits independently on the server.
     async _compute(force) {
+        const sheet = this.state.sheet;
         const payload = { ...this.state.form, force_clean: force };
+        if (sheet.skipped) { payload.spreadsheet_skipped = true; }
         const prep = await this.orm.silent.call("pb.payrun.wizard", "prepare_run", [payload]);
         if (prep && prep.needs_confirmation) {
-            this.state.step = 1;          // sit behind the dialog on step 1
+            this.gotoKey("period");       // sit behind the dialog on step 1
             this._confirmOverwrite(prep);
             return;
         }
         const { run_id, name, date_start, date_end, division } = prep;
+
+        // The file goes in FIRST, into the run that now exists. Its payslips are
+        // then the ones the chunked compute below skips (compute_batch's
+        // `already` guard), so nobody is paid twice for one month.
+        let batch = null;
+        if (sheet.file_b64 && this.wantsSheet) {
+            this.state.progress = null;
+            this.state.busyMsg = "Loading " + (sheet.file_name || "the pay data file") + "…";
+            batch = await this.orm.silent.call(
+                "pb.payrun.wizard", "attach_spreadsheet",
+                [run_id, (sheet.preflight && sheet.preflight.config_id) || sheet.gate.config_id,
+                 sheet.file_b64, sheet.file_name, date_start, date_end]);
+            if (!batch || !batch.ok) {
+                sheet.error = (batch && batch.msg) || "The pay data file could not be loaded.";
+                // Nothing was computed, so the empty run it would have gone into
+                // is litter, not history.
+                await this.orm.silent
+                    .call("pb.payrun.wizard", "discard_empty_run", [run_id])
+                    .catch(() => null);
+                this.state.progress = null;
+                this.gotoKey("data");
+                this.notif.add(sheet.error, { type: "danger" });
+                return;
+            }
+        }
+
         const empIds = prep.emp_ids || [];
         const total = empIds.length;
         const CHUNK = 40;
@@ -126,11 +277,16 @@ export class PayrunWizard extends Component {
             this.state.progress = { done, total };
         }
         const summary = await this.orm.silent.call("pb.payrun.wizard", "get_summary", [run_id]);
-        summary.exceptions = exceptions;
+        // A row the file could not process is an exception in exactly the sense
+        // this wizard already means it: something a person has to look at.
+        summary.exceptions = exceptions.concat((batch && batch.errors) || []);
         // Payslips prepare_run claimed from the period were never computed here,
         // so they must be counted as done or the result reads "computed 0 of 152".
-        summary.computed = computed + (prep.adopted || 0);
+        // Payslips the pay data file created are done for the same reason.
+        summary.computed = computed + (prep.adopted || 0) + ((batch && batch.created) || 0);
         summary.adopted = prep.adopted || 0;
+        summary.sheet = batch || null;
+        summary.skipped_components = prep.skipped_components || [];
         this.state.progress = null;
         this.state.summary = summary;
     }
@@ -148,7 +304,7 @@ export class PayrunWizard extends Component {
                     this.state.form.date_start = res.july.date_start;
                     this.state.form.date_end = res.july.date_end;
                 }
-                this.state.step = 2;
+                this.gotoKey("compute");
                 this.state.loading = true;
                 this.state.busyMsg = "Cleaning previous data and re-running payroll…";
                 // Fire-and-forget (NOT awaited): returning synchronously lets the
@@ -158,17 +314,12 @@ export class PayrunWizard extends Component {
                 // re-run on its own.
                 (async () => {
                     try { await this._compute(true); }
-                    catch (e) { this.notif.add("Re-run failed. See server logs.", { type: "danger" }); this.state.step = 1; }
+                    catch (e) { this.notif.add("Re-run failed. See server logs.", { type: "danger" }); this.gotoKey("period"); }
                     finally { this.state.loading = false; this.state.progress = null; }
                 })();
             },
-            cancel: () => { this.state.step = 1; },
+            cancel: () => { this.gotoKey("period"); },
         });
-    }
-
-    goto(n) {
-        if (n === 2 && !this.state.summary) { return this.toCompute(); }
-        if (n >= 1 && n <= 3) this.state.step = n;
     }
 
     // "Open Payroll" — leaves the run in DRAFT and opens it so the user can

@@ -1331,3 +1331,17 @@ number from the handovers — keep the numbering stable.
      truncated=False while rows were dropped. Thread the collector's own `capped` boolean through
      (and the import wizard's row cap was off by one AND silent — surface `truncated` + the cap in
      every parse/validate/commit payload).
+109. **`peek_source_columns` returns every SPELLING of a column, not one row per column** (NETROLE
+     P3). `_raw_data_from_row` stores the heading AND the bare column letter, and a multisheet
+     scheme adds the `SHEET|heading` twin — so a 25-column file yields ~50-75 entries and
+     `len(cols)` shown to a user as "N columns read" is two to three times the truth. The list is
+     right (the resolver really does see all of them, and `_lookup_in_blob` must be offered all of
+     them), so keep the full set in the blob and count `preferred` for the human number. Matching a
+     binding key against a file MUST go through `hr.payroll.import.batch._lookup_in_blob` — exact,
+     then normalised, then the ≥6-char substring stage — never a string compare in the caller, or
+     the screen's idea of "fed" and the run's differ.
+110. **`hr.formula.rule.source._check_key` refuses a blank key at write time**, so "a binding that
+     names no column" is unreachable through the ORM. A gate that drops blank-key rows is defence
+     in depth against a migration or raw SQL, not the enforcement point — assert the refusal where
+     it lives, and don't write a test that manufactures the impossible state (it fails with a
+     ValidationError, which is the model being right).

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import logging
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -279,13 +280,22 @@ class PbPayrunWizard(models.AbstractModel):
         adopted = self._adopt_loose_slips(run, ds, de)
         emp_ids = [e for e in self._eligible_employees()
                    if e not in set(adopted.mapped('employee_id').ids)]
-        return {
+        payload = {
             'run_id': run.id, 'name': name,
             'date_start': ds, 'date_end': de,
             'division': vals.get('division'),   # passed back to compute_batch
             'emp_ids': emp_ids, 'total': len(emp_ids),
             'adopted': len(adopted),
         }
+        # NETROLE P3 — the scheme wanted this month's spreadsheet and the user,
+        # looking at the list of components that would run without it, chose to
+        # go on anyway. WHICH components those are does not belong in a log:
+        # the summary has to be able to name them, so they ride back here.
+        # Additive key; every existing caller (pb_demo's override included) is
+        # unaffected by its presence or absence.
+        if vals.get('spreadsheet_skipped'):
+            payload['skipped_components'] = self._skipped_component_codes(vals)
+        return payload
 
     @api.model
     def compute_batch(self, payload):
@@ -367,6 +377,341 @@ class PbPayrunWizard(models.AbstractModel):
             computed += 1
 
         return {'computed': computed, 'exceptions': exceptions}
+
+    # ==================================================================
+    # NETROLE Phase 3 — the month's spreadsheet
+    #
+    # A scheme can say, component by component, "this one reads a spreadsheet
+    # column" (`hr.formula.rule.source` rows with `kind='excel'`). The Run
+    # Payroll wizard never asked for a file, and the batchless compute path has
+    # no spreadsheet branch — so every one of those components quietly fell back
+    # to the contract or to a default, and no screen said a file had been
+    # expected. On ABM that is 26 components of a 2026 payroll.
+    #
+    # THE BATCH IS THE SPREADSHEET PATH, AND THERE IS ONLY ONE OF IT. Nothing
+    # here re-implements reading a pay file: `attach_spreadsheet` builds the
+    # very `hr.payroll.import.batch` the Import cockpit builds, points it at the
+    # run that already exists, and drives load → match → validate → process.
+    # `_get_formula_input_values` is deliberately untouched.
+    # ==================================================================
+    def _spreadsheet_configs(self):
+        """Every scheme in view whose components declare a spreadsheet column.
+
+        Returns `[{'config': record, 'components': [{code, name, key}]}]`,
+        schemes that are live first and then the one waiting on the most
+        columns. A source row with a blank key names nothing and is not a
+        reason to ask anybody for a file, so it is dropped here rather than
+        surfacing as a component that can never be fed.
+
+        Read-only, and `sudo` on purpose: this decides whether a STEP appears.
+        A payroll officer who has no read access to the scheme's source rows
+        must still be asked for the file their scheme is waiting on, and the
+        alternative — an officer silently getting the old, file-less behaviour
+        — is the exact defect this phase exists to close.
+        """
+        # No formula engine on this database means no scheme can bind a
+        # component to a column, so there is nothing to ask anybody for.
+        if 'hr.formula.rule.source' not in self.env:
+            return []
+        Config = self.env['hr.formula.config'].sudo()
+        domain = [('state', '!=', 'archived')]
+        if 'company_id' in Config._fields and self.env.companies:
+            domain += ['|', ('company_id', '=', False),
+                       ('company_id', 'in', self.env.companies.ids)]
+        configs = Config.search(domain)
+        if not configs:
+            return []
+        sources = self.env['hr.formula.rule.source'].sudo().search([
+            ('kind', '=', 'excel'), ('rule_id.config_id', 'in', configs.ids)])
+        by_config = {}
+        for src in sources:
+            key = (src.key or '').strip()
+            if not key:
+                continue
+            rule = src.rule_id
+            by_config.setdefault(rule.config_id.id, []).append({
+                'code': rule.code or '',
+                'name': rule.name or rule.code or '',
+                'key': key,
+            })
+        entries = []
+        for cfg in configs:
+            components = by_config.get(cfg.id)
+            if not components:
+                continue
+            components.sort(key=lambda c: (c['name'] or '').lower())
+            entries.append({'config': cfg, 'components': components})
+        entries.sort(key=lambda e: (e['config'].state != 'active',
+                                    -len(e['components']), e['config'].id))
+        return entries
+
+    def _last_spreadsheet_name(self, config):
+        """What the last file loaded for this scheme was called, or ''.
+
+        Purely so the step can say "last time this was `ABM June.xlsx`" — a
+        hint, never a filter on what may be uploaded.
+        """
+        try:
+            batch = self.env['hr.payroll.import.batch'].sudo().search([
+                ('formula_config_id', '=', config.id),
+                ('source_type', '=', 'excel'),
+                ('import_filename', '!=', False),
+            ], order='id desc', limit=1)
+            return batch.import_filename or ''
+        except Exception:       # noqa: BLE001 — a hint must never break a step
+            return ''
+
+    @api.model
+    def spreadsheet_gate(self, vals=None):
+        """Does this payroll want a spreadsheet before it is computed?
+
+        `{'wanted': False}` means the wizard runs exactly as it did before —
+        which is every database where no scheme binds a component to a column,
+        the demo world included. Never raises: a gate that blew up would take
+        the whole Run Payroll screen with it, so any doubt at all is answered
+        with "no file wanted" and a loud log line (C7 — the failure is visible
+        to whoever reads the log, and the run still happens).
+        """
+        try:
+            entries = self._spreadsheet_configs()
+        except Exception:       # noqa: BLE001
+            _logger.exception(
+                "Payrun wizard: could not read the schemes' spreadsheet "
+                "columns; the pay-data step is hidden for this run.")
+            return {'wanted': False}
+        if not entries:
+            return {'wanted': False}
+        chosen = entries[0]
+        cfg = chosen['config']
+        return {
+            'wanted': True,
+            'config_id': cfg.id,
+            'config_name': cfg.display_name or cfg.name or '',
+            'components': chosen['components'],
+            'filename_hint': self._last_spreadsheet_name(cfg),
+            # More than one scheme can be waiting on a file. Naming them lets
+            # the step ask which one rather than picking silently.
+            'choices': [{'id': e['config'].id,
+                         'name': e['config'].display_name or e['config'].name or '',
+                         'count': len(e['components'])} for e in entries],
+        }
+
+    def _skipped_component_codes(self, vals=None):
+        """The components that will run on fallback values because no file came."""
+        gate = self.spreadsheet_gate(vals or {})
+        if not gate.get('wanted'):
+            return []
+        wanted_id = (vals or {}).get('spreadsheet_config_id') or gate.get('config_id')
+        for entry in self._spreadsheet_configs():
+            if entry['config'].id == wanted_id:
+                return [c['code'] for c in entry['components']]
+        return [c['code'] for c in gate.get('components') or []]
+
+    def _coverage(self, batch, components, keys):
+        """Which of `components` a payload carrying `keys` actually feeds.
+
+        `hr.payroll.import.batch._lookup_in_blob` is the header-matching ladder
+        the RUN will use — exact key, normalised key, then the ≥6-character
+        substring stage. Asking it, rather than comparing strings here, is what
+        makes "this file feeds 24 of 26" a statement about the payroll and not
+        about this screen's own idea of a match.
+        """
+        blob = {k: 1 for k in keys if k}   # presence only: this is a header check
+        fed, fed_rows, missing = [], [], []
+        for comp in components:
+            _value, matched = batch._lookup_in_blob(blob, [comp['key']])
+            if matched:
+                fed.append(comp['code'])
+                fed_rows.append(dict(comp, column=matched))
+            else:
+                missing.append(dict(comp))
+        return fed, fed_rows, missing
+
+    @api.model
+    def preflight_spreadsheet(self, config_id, file_b64, filename):
+        """Read a file's headings and say what it feeds. Creates nothing.
+
+        `peek_source_columns` parses through an in-memory `new()` record: no
+        batch row, no import line, no employee touched, no pay value written.
+        A file that cannot be read is refused HERE, with the parser's own
+        words, rather than half-loading a run.
+        """
+        if 'hr.payroll.import.batch' not in self.env:
+            return {'ok': False, 'msg': _(
+                "This database cannot read pay data files.")}
+        config = self.env['hr.formula.config'].sudo() \
+            .browse(int(config_id or 0)).exists()
+        if not config:
+            return {'ok': False,
+                    'msg': _("That payroll scheme no longer exists.")}
+        components = next((e['components'] for e in self._spreadsheet_configs()
+                           if e['config'].id == config.id), [])
+        try:
+            content = base64.b64decode(file_b64 or '')
+        except Exception:       # noqa: BLE001
+            content = b''
+        if not content:
+            return {'ok': False,
+                    'msg': _("This file arrived empty — nothing was read.")}
+        Batch = self.env['hr.payroll.import.batch'].sudo()
+        try:
+            cols = Batch.peek_source_columns(config, content, filename or '')
+        except Exception as e:  # noqa: BLE001
+            _logger.warning("Payrun wizard: could not read %s: %s", filename, e)
+            return {'ok': False, 'msg': _(
+                "This file could not be read as a spreadsheet: %s") % e}
+        if not cols:
+            return {'ok': False, 'msg': _(
+                "No column headings were found in this file. Check that the "
+                "headings are on the first row.")}
+
+        samples = {c['key']: (c.get('sample') or '') for c in cols if c.get('key')}
+        # The peek deliberately returns every SPELLING of a column (the heading,
+        # its bare letter, the sheet-qualified twin). All of them stay in the
+        # blob because the resolver really does see them, but "N columns read"
+        # must count real columns or the number is three times the truth.
+        real = len([c for c in cols if c.get('preferred')]) \
+            or len([c for c in cols if c.get('header')])
+        fed, fed_rows, missing = self._coverage(Batch, components, samples.keys())
+        for row in fed_rows:
+            row['sample'] = samples.get(row['column'], '')
+
+        # Who each row is about, read the way the loader itself reads it —
+        # a file whose people cannot be identified matches nobody, and saying
+        # so now is cheaper than a run of unmatched rows.
+        employees_col = False
+        try:
+            probe = Batch.new({'formula_config_id': config.id})
+            code, name, email = probe._identity_from_file_row(dict(samples))
+            employees_col = bool(code or name or email)
+        except Exception:       # noqa: BLE001
+            employees_col = False
+
+        return {
+            'ok': True,
+            'config_id': config.id,
+            'config_name': config.display_name or config.name or '',
+            'filename': filename or '',
+            'columns': real,
+            'total': len(components),
+            'fed': fed,
+            'fed_rows': fed_rows,
+            'missing': missing,
+            'employees_col': employees_col,
+        }
+
+    @api.model
+    def attach_spreadsheet(self, run_id, config_id, file_b64, filename,
+                           date_start, date_end):
+        """Load this month's pay file INTO the run that already exists.
+
+        `payslip_run_id` is set on the batch BEFORE processing, which is what
+        makes the created payslips land in this run instead of a second one
+        being built beside it (`payroll_import_batch.py:1487-1498`).
+
+        The whole load runs inside a savepoint. A file that fails halfway
+        leaves nothing behind — no batch, no lines, no payslips — and the
+        caller gets the server's own refusal rather than "Compute error"
+        (the June lesson: a refusal that states its reason is the difference
+        between a fixable run and a mystery).
+        """
+        if 'hr.payroll.import.batch' not in self.env:
+            return {'ok': False, 'msg': _(
+                "This database cannot read pay data files.")}
+        run = self.env['hr.payslip.run'].sudo().browse(int(run_id or 0)).exists()
+        if not run:
+            return {'ok': False, 'msg': _("This pay run no longer exists.")}
+        config = self.env['hr.formula.config'].sudo() \
+            .browse(int(config_id or 0)).exists()
+        if not config:
+            return {'ok': False,
+                    'msg': _("That payroll scheme no longer exists.")}
+        if not file_b64:
+            return {'ok': False, 'msg': _("No file was received.")}
+
+        Batch = self.env['hr.payroll.import.batch'].sudo()
+        try:
+            with self.env.cr.savepoint():
+                batch = Batch.create({
+                    'name': _("%s — pay data") % (run.name or _('Payroll run')),
+                    'source_type': 'excel',
+                    'formula_config_id': config.id,
+                    'payslip_run_id': run.id,
+                    'payroll_period': 'custom',
+                    'date_from': date_start or run.date_start,
+                    'date_to': date_end or run.date_end,
+                    'import_file': file_b64,
+                    'import_filename': filename or 'pay-data.xlsx',
+                })
+                batch.action_load_file()
+                batch.action_match_employees()
+                batch.action_validate()
+                batch.action_process()
+        except (AccessError, UserError) as e:
+            # A refusal states its own reason; passing it on unchanged is the
+            # whole point. invalidate: the rollback undid writes the ORM cache
+            # may still be holding.
+            self.env.invalidate_all()
+            return {'ok': False, 'msg': str(e)}
+        except Exception:       # noqa: BLE001
+            _logger.exception(
+                "Payrun wizard: pay data file failed on run %s", run.id)
+            self.env.invalidate_all()
+            # arbitrary exception internals never reach the client (L-5)
+            return {'ok': False, 'msg': _(
+                "The pay data file could not be loaded — the run was left "
+                "unchanged. Ask an administrator to check the log.")}
+
+        lines = batch.import_line_ids
+        errors = [{
+            'emp': (line.employee_name or line.employee_code
+                    or _("Row %s") % (line.sequence or '?')),
+            'why': line.error_message or _("This row could not be processed."),
+        } for line in lines.filtered(lambda l: l.state == 'error')][:100]
+
+        fed = []
+        first = lines[:1]
+        if first:
+            try:
+                raw = first.get_raw_data() or {}
+                components = next(
+                    (e['components'] for e in self._spreadsheet_configs()
+                     if e['config'].id == config.id), [])
+                fed = self._coverage(Batch, components, raw.keys())[0]
+            except Exception:   # noqa: BLE001
+                fed = []
+
+        return {
+            'ok': True,
+            'batch_id': batch.id,
+            'run_id': run.id,
+            'rows': len(lines),
+            'created': len(batch.created_payslip_ids),
+            'matched': len(lines.filtered(lambda l: l.employee_id)),
+            'created_employees': len(batch.created_employee_ids),
+            'filename': batch.import_filename or '',
+            'errors': errors,
+            'fed_components': fed,
+        }
+
+    @api.model
+    def discard_empty_run(self, run_id):
+        """Drop a draft run that was created for a file that never loaded.
+
+        Deliberately narrow: draft, and not one payslip in it. A run that
+        adopted this period's existing payslips has work in it and is never
+        touched here — the failed upload can be retried against it.
+        """
+        run = self.env['hr.payslip.run'].sudo().browse(int(run_id or 0)).exists()
+        if not run or run.state != 'draft' or run.slip_ids:
+            return {'ok': False}
+        try:
+            run.unlink()
+        except Exception:       # noqa: BLE001
+            _logger.info("Payrun wizard: empty run %s could not be discarded.",
+                         run_id)
+            return {'ok': False}
+        return {'ok': True}
 
     # ---------------- Step 3/4: summary + approve ----------------
     @api.model
