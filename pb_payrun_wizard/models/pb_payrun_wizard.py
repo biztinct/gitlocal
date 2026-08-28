@@ -546,19 +546,20 @@ class PbPayrunWizard(models.AbstractModel):
         return _("No contract running between %(a)s and %(b)s.", a=ds, b=de)
 
     def _payrun_sync_plan(self, vals=None):
-        """One step per (connected system, kind of data) this scheme reads.
+        """One step per FEED this scheme reads — not per kind of data.
 
-        Derived from the wires, not guessed. `action_pull_data`'s own default is
-        `['employee', 'salary']`, and on the reference tenant that was both too
-        much and too little: NOTHING reads `salary` there (0 wires), while
-        `attendance` and `custom` — 9 wires, including the worked hours every
-        deduction is a percentage of — were not pulled at all. So the run
-        syncing "successfully" still had no hours.
+        Per-kind was wrong twice over. `action_pull_data` handles only
+        employee / salary / dependent / attendance / leave, so a scheme reading
+        a `custom` feed (ABM's Overtime requests — six components) asked for a
+        pull that had no branch and silently fetched nothing. And a connector
+        can have SEVERAL feeds of one kind — Zoho has two attendance feeds and
+        two custom ones — so even where a branch exists, the kind does not say
+        which feed the person mapped.
 
-        `salary` is also the expensive one: `fetch_payroll_data` loops per
-        employee making three API calls each, which for 152 people is ~456
-        sequential requests. Pulling only what something actually reads is why
-        this is both correct and fast.
+        `action_pull_endpoint` is already endpoint-scoped and says so in its own
+        docstring. Building the plan from the endpoints the wires point at is
+        what makes the promise true: everything you map is what gets synced,
+        and nothing else is.
         """
         vals = vals or {}
         Config = self.env.get('hr.formula.config')
@@ -574,52 +575,36 @@ class PbPayrunWizard(models.AbstractModel):
             return []
         wires = Mapping.sudo().search([('target_rule_id', 'in', rules.ids)])
 
-        plan, seen, unroutable = [], set(), set()
+        plan, seen = [], set()
         for wire in wires:
             connector = wire.connector_id
-            if not connector or not connector.active:
-                continue
             endpoint = wire.endpoint_id if 'endpoint_id' in wire._fields else None
-            # A wire with no endpoint names no data type. It is not a reason to
-            # pull everything — the other wires on the same connector say what
-            # this scheme reads, and if none of them do the fallback below asks
-            # the connector for its own default.
-            data_type = (endpoint.data_type if endpoint else '') or ''
-            if not data_type:
-                # A wire with no endpoint names no feed, so nothing can pull it
-                # and the component silently falls to its default. Collected,
-                # never skipped in silence: on the reference tenant BASESALARY
-                # was wired this way, so base pay resolved to 0 and every
-                # deduction — being a percentage of it — resolved to 0 with it.
-                unroutable.add((wire.target_rule_id.code or '',
-                                wire.source_field or ''))
+            if not connector or not connector.active or not endpoint:
+                continue                     # `_unroutable_wires` reports these
+            if endpoint.id in seen:
                 continue
-            key = (connector.id, data_type)
-            if key in seen:
-                continue
-            seen.add(key)
+            seen.add(endpoint.id)
+            # A feed that cannot run is not a step. It is reported instead, so
+            # nobody waits on a spinner for a fetch that was never possible.
+            blocked = ''
+            if not endpoint.active:
+                blocked = _("this feed is switched off")
+            elif (endpoint.operation or 'catalog_only') == 'catalog_only':
+                blocked = _("this feed is catalogued for reference only and has "
+                            "no handler that can fetch it")
+            elif connector.connector_type == 'zoho' and not endpoint.path:
+                blocked = _("this feed has no path set")
             plan.append({
                 'connector_id': connector.id,
                 'connector': connector.display_name or '',
-                'data_type': data_type,
-                'label': _("%(sys)s — %(kind)s",
+                'endpoint_id': endpoint.id,
+                'data_type': endpoint.data_type or '',
+                'blocked': blocked,
+                'label': _("%(sys)s — %(feed)s",
                            sys=connector.display_name or '',
-                           kind=self._sync_kind_label(data_type)),
+                           feed=endpoint.name or self._sync_kind_label(
+                               endpoint.data_type)),
             })
-        if unroutable:
-            _logger.warning(
-                "Payrun wizard: %s wire(s) name no feed and cannot be pulled — "
-                "their components will fall to defaults: %s",
-                len(unroutable),
-                ', '.join(sorted('%s <- %s' % (c, f) for c, f in unroutable)))
-        if not plan:
-            for connector in wires.mapped('connector_id').filtered('active'):
-                plan.append({
-                    'connector_id': connector.id,
-                    'connector': connector.display_name or '',
-                    'data_type': '',        # let the connector choose
-                    'label': _("%(sys)s", sys=connector.display_name or ''),
-                })
         return plan
 
     @api.model
@@ -690,7 +675,7 @@ class PbPayrunWizard(models.AbstractModel):
 
     @api.model
     def sync_step(self, step, vals=None):
-        """Pull ONE kind of data from ONE connected system, for the period.
+        """Pull ONE feed from ONE connected system, for the period.
 
         Never raises. A feed that cannot be reached is a thing the person
         running payroll needs to SEE and then decide about — a connector that
@@ -700,26 +685,28 @@ class PbPayrunWizard(models.AbstractModel):
         vals = vals or {}
         step = step or {}
         out = {'label': step.get('label') or '', 'pulled': 0, 'error': ''}
+        if step.get('blocked'):
+            out['error'] = _("%(label)s was not synced — %(why)s.",
+                             label=out['label'], why=step['blocked'])
+            return out
         connector = self.env['hr.integration.connector'].sudo().browse(
             int(step.get('connector_id') or 0)).exists()
-        if not connector:
+        endpoint_id = int(step.get('endpoint_id') or 0)
+        if not connector or not endpoint_id:
             return out
-        data_type = step.get('data_type') or ''
         try:
-            connector.action_pull_data(
-                data_types=[data_type] if data_type else None,
+            connector.action_pull_endpoint(
+                endpoint_id,
                 period_from=vals.get('date_start'),
                 period_to=vals.get('date_end'),
                 triggered_by='manual')
             connector.invalidate_recordset()
             out['pulled'] = connector.total_synced_records or 0
         except Exception as exc:        # noqa: BLE001 — see docstring
-            _logger.exception(
-                "Payrun wizard: could not pull %s (%s) before computing payroll",
-                connector.display_name, data_type or 'default')
-            out['error'] = _("%(name)s (%(kind)s) could not be reached: %(why)s",
-                             name=connector.display_name,
-                             kind=self._sync_kind_label(data_type), why=exc)
+            _logger.exception("Payrun wizard: could not pull %s before payroll",
+                              out['label'])
+            out['error'] = _("%(label)s could not be reached: %(why)s",
+                             label=out['label'], why=exc)
         return out
 
     def _spreadsheet_configs(self):
