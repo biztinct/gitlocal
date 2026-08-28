@@ -5640,6 +5640,39 @@ class PbFormulaStudio(models.AbstractModel):
     _SRC_TYPE = {'string': 'string', 'integer': 'integer', 'float': 'float',
                  'boolean': 'boolean', 'date': 'date', 'datetime': 'datetime'}
 
+    def _endpoint_for_field(self, conn, path):
+        """The feed on `conn` whose catalogue carries `path`, when only one does.
+
+        A wire has to name its feed or nothing can fetch it: the pay run's sync
+        plan is derived from `endpoint_id`, so a wire without one is pulled by
+        nothing and its component falls to a default on every run — silently,
+        because the run still reports success. On the reference tenant that is
+        exactly what happened to BASESALARY, and every deduction (a percentage
+        of base pay) came out ₫0 with it.
+
+        The board only sends an endpoint when the reader has picked one feed;
+        in the "All feeds" view it sends none, and the wire was created blank
+        even though the catalogue knows the answer. So look it up.
+
+        Silent when AMBIGUOUS on purpose. Two feeds carrying a field of the same
+        name is a real shape (Zoho's Employees and Salary form both expose an
+        id), and guessing between them would wire payroll to the wrong feed —
+        worse than leaving it for a person, which the run now reports.
+        """
+        Endpoint = self.env.get('hr.integration.endpoint')
+        if Endpoint is None or not path:
+            return None
+        Field = self.env.get('hr.integration.endpoint.field')
+        if Field is None:
+            return None
+        try:
+            hits = Field.sudo().search([('path', '=', path),
+                                        ('endpoint_id.connector_id', '=', conn.id)])
+        except Exception:       # noqa: BLE001 — a lookup must not block a draw
+            return None
+        endpoints = hits.mapped('endpoint_id')
+        return endpoints[:1] if len(endpoints) == 1 else None
+
     def _discovered_sample(self, conn, path, endpoint=None):
         """What the board is already showing for `path`, as writable vals.
 
@@ -5717,6 +5750,12 @@ class PbFormulaStudio(models.AbstractModel):
             eps = self._api_endpoints(conn)
             ep = (eps.filtered(lambda e: e.id == ep_wanted)[:1]
                   if eps is not None else None)
+            if ep:
+                vals['endpoint_id'] = ep.id
+        if not vals.get('endpoint_id'):
+            # The reader was looking at "All feeds", so the board named no
+            # endpoint — but the catalogue knows which one carries this field.
+            ep = self._endpoint_for_field(conn, src)
             if ep:
                 vals['endpoint_id'] = ep.id
         # The board ALREADY knows what this field looks like — every left card
