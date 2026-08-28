@@ -8,6 +8,13 @@
           <h2>How each component is treated</h2>
         </div>
         <div class="pct-act">
+          <button t-if="!props.readonly" class="pct-btn" t-on-click="reclassify"
+                  t-att-disabled="state.reclassifying ? 1 : 0"
+                  title="Work out every pay role and subtotal again from this scheme's own formulas. Rows you set yourself are left alone.">
+            <t t-out="ic('refresh', 15)"/>
+            <span t-if="state.reclassifying">Re-classifying…</span>
+            <span t-else="">Re-classify from the formulas</span>
+          </button>
           <button t-if="!props.readonly" class="pct-btn primary" t-on-click="save"
                   t-att-disabled="(dirtyCount and !state.saving) ? 0 : 1">
             <span t-if="state.saving">Saving…</span>
@@ -138,7 +145,7 @@
                 </select>
                 <span t-else="" t-esc="roleLabel(row)"/>
                 <span class="pct-why" t-att-title="row.pay_role_reason"
-                      t-esc="row.needs_review ? 'needs your answer' : row.pay_role_reason"/>
+                      t-esc="row.pay_role_source === 'user' ? 'you set this' : (row.needs_review ? 'needs your answer' : row.pay_role_reason)"/>
               </td>
               <td class="c">
                 <input type="checkbox" t-att-checked="valueOf(row, 'rollup')"
