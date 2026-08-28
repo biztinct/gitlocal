@@ -430,3 +430,35 @@ class TestNetRoleClassifier(TransactionCase):
         res = self.config.reclassify_from_formulas()
         self.assertEqual(res['kept'], 1)
         self.assertIn('changed', res)
+
+    # ------------------------------------------------------------------ 24
+    def test_24_a_draft_scheme_is_reported_as_draft_not_as_missing(self):
+        """The difference between "there is no scheme" and "the scheme is in
+        Draft" is an afternoon of assignment work versus one button.
+
+        Every rung of `_find_formula_config` filters on `state = 'active'`, so
+        a Draft scheme is invisible to all of them — and the message reported
+        it ABSENT. On the reference tenant that produced a run of 36 payslips
+        with no lines under a KPI band of zeros, over a scheme one lifecycle
+        step from working.
+        """
+        from odoo.exceptions import UserError
+        self.config.state = 'draft'
+        employee = self.env['hr.employee'].create({'name': 'Stranded Person'})
+        contract = self.env['hr.contract'].create({
+            'name': 'Stranded contract', 'employee_id': employee.id,
+            'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01'})
+        slip = self.env['hr.payslip'].create({
+            'employee_id': employee.id, 'name': 'Stranded slip',
+            'contract_id': contract.id, 'date_from': '2026-06-01',
+            'date_to': '2026-06-30'})
+        slip.struct_id = False
+        self.assertIn(self.config, slip._inactive_formula_configs())
+        with self.assertRaises(UserError) as caught:
+            slip.compute_sheet()
+        message = str(caught.exception)
+        self.assertIn('Draft', message,
+                      "the message must name the state that is blocking it")
+        self.assertIn(self.config.name, message,
+                      "…and the scheme, so there is nothing left to hunt for")
+        self.assertNotIn('neither a salary structure', message)

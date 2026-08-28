@@ -2162,6 +2162,11 @@ class HrFormulaConfig(models.Model):
             'role_conflict_count': sum(1 for r in rows if r['role_conflict']),
         }
 
+    def _pb_state_label(self):
+        """The status word a person reads, for use inside a sentence."""
+        self.ensure_one()
+        return dict(self._fields['state'].selection).get(self.state, self.state)
+
     def reclassify_from_formulas(self):
         """Re-derive every pay role and Subtotal flag from the scheme's formulas.
 

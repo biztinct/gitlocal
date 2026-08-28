@@ -268,6 +268,22 @@ class HrPayslipFormula(models.Model):
             })
         return payload
 
+    def _inactive_formula_configs(self):
+        """Schemes this company HAS, but which are not Active.
+
+        The difference between "there is no scheme" and "the scheme is in
+        Draft" is the difference between an afternoon of assignment work and
+        one button. Every rung of `_find_formula_config` filters on
+        `state = 'active'`, so it cannot tell them apart — this can.
+        """
+        self.ensure_one()
+        Config = self.env['hr.formula.config']
+        domain = [('state', 'not in', ('active', 'archived'))]
+        if self.company_id:
+            domain += ['|', ('company_id', '=', False),
+                       ('company_id', '=', self.company_id.id)]
+        return Config.search(domain, order='id')
+
     def _find_formula_config(self):
         """Find the formula configuration for a payslip that has none set.
 
@@ -651,6 +667,23 @@ class HrPayslipFormula(models.Model):
         # all. Saying so is the point: it used to return True and write nothing.
         stranded = standard_payslips.filtered(lambda p: not p.struct_id)
         if stranded:
+            # Say WHICH of the two things is missing. Every rung of
+            # `_find_formula_config` filters on `state = 'active'`, so a scheme
+            # sitting in Draft is invisible to all of them — and the message
+            # then reported it as ABSENT. On the reference tenant that produced
+            # a run of 36 payslips with no lines and a KPI band of zeros, over
+            # a scheme that was one lifecycle step from working, and sent two
+            # people looking for an assignment that was never the problem.
+            blocked = stranded[0]._inactive_formula_configs()
+            if blocked:
+                raise UserError(_(
+                    "Payroll scheme '%(scheme)s' is %(state)s, so payroll "
+                    "cannot run on it — a scheme has to be Active before a pay "
+                    "run can use it. Open it in the Formula Studio, take it "
+                    "through to Active, then run payroll again.",
+                    scheme=blocked[0].display_name,
+                    state=blocked[0]._pb_state_label(),
+                ))
             raise UserError(_(
                 "%(count)s payslip(s) cannot be computed: %(who)s has neither a "
                 "salary structure on the contract nor a payroll scheme for this "

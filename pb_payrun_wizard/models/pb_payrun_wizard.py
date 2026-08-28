@@ -348,6 +348,15 @@ class PbPayrunWizard(models.AbstractModel):
     # let the OWL wizard drive the work in chunks, showing a determinate progress
     # bar and keeping each RPC bounded (and each batch commits on its own).
     @api.model
+    # NOTE: there is deliberately NO scheme pre-flight here. `prepare_run`
+    # cannot know whether a run will strand: an employee whose contract carries
+    # a salary structure computes through the structure engine and needs no
+    # scheme at all, and the eligible set is computed by the CLIENT in chunks
+    # after this returns. A guard here refused runs that would have worked.
+    # The diagnosis belongs where the failure actually happens —
+    # `hr.payslip.compute_sheet` names the scheme and the state that blocks it,
+    # and every refusal lands in this wizard's own exceptions list.
+
     def prepare_run(self, vals):
         """Guard existing payroll, (optionally) clean it, create the draft run and
         return the list of eligible employees for the client to compute in chunks."""
