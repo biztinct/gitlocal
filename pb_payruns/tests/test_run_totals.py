@@ -55,7 +55,7 @@ class TestRunTotals(TransactionCase):
             self._line(slip, code, code, amount, detail=code in details)
         return slip
 
-    def _line(self, slip, code, category_code, amount, detail=False):
+    def _line(self, slip, code, category_code, amount, detail=False, role=None):
         category = self._cat(category_code)
         if not category:
             self.skipTest("no '%s' salary-rule category in this database"
@@ -70,6 +70,10 @@ class TestRunTotals(TransactionCase):
             if 'component_detail' not in self.env['hr.payslip.line']._fields:
                 self.skipTest("the formula engine is not installed here")
             vals['component_detail'] = True
+        if role:
+            if 'pay_role' not in self.env['hr.payslip.line']._fields:
+                self.skipTest("the formula engine is not installed here")
+            vals['pay_role'] = role
         return self.env['hr.payslip.line'].create(vals)
 
     # ---------------------------------------------- what the SQL can see
@@ -146,3 +150,46 @@ class TestRunTotals(TransactionCase):
         self.assertEqual(self.run.pb_total_deductions, 0.0)
         line.category_id = self._cat('DED').id
         self.assertEqual(self.run.pb_total_deductions, 1000.0)
+
+    # ------------------------------------- VALUEKIND P5: the pay role decides
+    def test_a_stamped_employer_cost_leaves_the_deductions_figure(self):
+        """`COMP` is one category holding two different things.
+
+        ABM files every employer contribution under it AND every employee
+        deduction, so `Total Cost to Employer` was reported as money taken off
+        somebody's pay. A line that carries `pay_role` says which it is, and
+        the two figures separate.
+        """
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'DEDAGG', 'COMP', 1000.0, role='deduction')
+        self._line(slip, 'ERSI', 'COMP', 1575.0, role='employer_cost')
+        self.assertEqual(self.run.pb_total_deductions, 1000.0)
+        self.assertEqual(self.run.pb_total_employer_cost, 1575.0)
+
+    def test_an_unstamped_comp_line_reads_exactly_as_before(self):
+        """The promise that nothing moves until a run is recomputed."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'ERSI', 'COMP', 1575.0)
+        self.assertEqual(self.run.pb_total_deductions, 1575.0)
+        self.assertEqual(self.run.pb_total_employer_cost, 0.0)
+
+    def test_a_quantity_line_is_in_no_money_figure_at_all(self):
+        """Hours carry `info`, and `info` is not an amount. Before P5 they
+        carried `earning` and were kept out of gross by the Subtotal flag
+        alone — untick it and hours were added to pay."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'GROSSAGG', 'GROSS', 9500.0, role='earning')
+        self._line(slip, 'WORKHOURS', 'ALW', 176.0, role='info')
+        self.assertEqual(self.run.pb_total_gross, 9500.0)
+        self.assertEqual(self.run.pb_total_deductions, 0.0)
+
+    def test_the_pay_role_beats_the_category_it_was_filed_under(self):
+        """A workbook-built scheme files a deduction under `ALW` as often as
+        not; the scheme's own net-pay formula is the authority."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'GROSSAGG', 'ALW', 9500.0, role='earning')
+        self._line(slip, 'DEDAGG', 'ALW', 1000.0, role='deduction')
+        self.assertEqual(self.run.pb_total_gross, 9500.0)
+        self.assertEqual(self.run.pb_total_deductions, 1000.0)
+        self.assertEqual(self.run.pb_total_gross - self.run.pb_total_deductions,
+                         self.run.pb_total_net)

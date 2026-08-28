@@ -99,6 +99,12 @@ class HrPayslipRun(models.Model):
     pb_total_deductions = fields.Monetary(
         string='Total Deductions', compute='_compute_pb_totals',
         currency_field='pb_currency_id', store=True)
+    # VALUEKIND P5 — what the employer pays ON TOP of gross, which used to be
+    # summed into Deductions because it shares the `COMP` category with them.
+    # It is not taken off anybody's pay and it never belonged there.
+    pb_total_employer_cost = fields.Monetary(
+        string='Employer Cost', compute='_compute_pb_totals',
+        currency_field='pb_currency_id', store=True)
     pb_currency_id = fields.Many2one(
         'res.currency', compute='_compute_pb_totals', store=True)
     # Division key (from the run's payslips' formula config) — powers the board
@@ -132,6 +138,54 @@ class HrPayslipRun(models.Model):
     # which this module does not depend on, so it cannot be named here — it is
     # written at the same moment as the category on both paths that set it, and
     # this trigger covers that write.
+    #: Category codes that still mean something when a line carries no pay role.
+    _PB_CATEGORY_BUCKETS = ('NET', 'GROSS', 'DED', 'DEDUCTION', 'COMP',
+                            'BASIC', 'ALW')
+
+    @api.model
+    def _pb_bucket_sql(self, role_aware):
+        """Which KPI band a payslip line belongs in, as a SQL expression.
+
+        VALUEKIND P5 — the bands used to come from
+        `hr_salary_rule_category.code` alone, and on a scheme built by importing
+        a workbook that code is whatever the workbook's own headings implied.
+        On ABM every employer contribution shares the `COMP` category with the
+        employee's deductions, so `Total Cost to Employer` and `SI-HI-UI Total
+        21.5%` were counted as money taken off somebody's pay. They are not:
+        they are what the company pays ON TOP of gross.
+
+        The scheme already knows the difference — it derives it from its own
+        net-pay formula and stamps it on the line at creation
+        (`hr.payslip.line.pay_role`). Read that first, and fall back to the
+        category only for lines written before the stamp existed, so an existing
+        tenant's figures never move under it without a recompute.
+
+        `info` and `mixed` deliberately return NULL: a component counted in
+        hours is not an amount, and a component that is both added and taken off
+        has no single band. Both are dropped from every money figure here.
+
+        Note `employer_cost` gets a bucket of its OWN (`ERCOST`) rather than
+        reusing `COMP`. A line written before the stamp existed still lands in
+        `COMP` through the fallback, and `COMP` still means exactly what it
+        meant then — part of the deductions figure. That is the whole of the
+        promise that an existing tenant's numbers do not move until the run is
+        recomputed: the separation only happens for lines that actually say
+        which side they are on.
+        """
+        if not role_aware:
+            return ("CASE WHEN c.code IN %s THEN c.code END"
+                    % (str(self._PB_CATEGORY_BUCKETS),))
+        return ("""
+            CASE pl.pay_role
+                WHEN 'earning'       THEN 'GROSS'
+                WHEN 'deduction'     THEN 'DED'
+                WHEN 'net'           THEN 'NET'
+                WHEN 'employer_cost' THEN 'ERCOST'
+                WHEN 'info'          THEN NULL
+                WHEN 'mixed'         THEN NULL
+                ELSE (CASE WHEN c.code IN %s THEN c.code END)
+            END""" % (str(self._PB_CATEGORY_BUCKETS),))
+
     @api.depends('slip_ids', 'slip_ids.line_ids', 'slip_ids.line_ids.total',
                  'slip_ids.line_ids.category_id', 'slip_ids.state')
     def _compute_pb_totals(self):
@@ -141,6 +195,7 @@ class HrPayslipRun(models.Model):
         for run in self:
             run.pb_employee_count = 0
             run.pb_total_net = run.pb_total_gross = run.pb_total_deductions = 0.0
+            run.pb_total_employer_cost = 0.0
             company = getattr(run, 'company_id', False) or self.env.company
             run.pb_currency_id = company.currency_id or default_cur
         run_ids = [r.id for r in self if r.id]
@@ -161,6 +216,11 @@ class HrPayslipRun(models.Model):
         detail_aware = 'component_detail' in self.env['hr.payslip.line']._fields
         if detail_aware:
             line_fields.append('component_detail')
+        # VALUEKIND P5 — the same column the Analytics Explorer switched to, for
+        # the same reason. See `_pb_bucket_sql`.
+        role_aware = 'pay_role' in self.env['hr.payslip.line']._fields
+        if role_aware:
+            line_fields.append('pay_role')
         self.env['hr.payslip.line'].flush_model(line_fields)
         cr = self.env.cr
         cr.execute("""
@@ -178,18 +238,22 @@ class HrPayslipRun(models.Model):
         # Net is exempt: net pay is one component, never a roll-up of others.
         # A line created before any classification has the flag NULL, so every
         # existing tenant's figures are bit-for-bit what they were.
-        detail_clause = ("AND (c.code = 'NET' OR pl.component_detail IS NOT TRUE)"
+        net_clause = ("pl.pay_role = 'net' OR c.code = 'NET'"
+                      if role_aware else "c.code = 'NET'")
+        detail_clause = ("AND ((" + net_clause + ") "
+                         "OR pl.component_detail IS NOT TRUE)"
                          if detail_aware else "")
+        bucket = self._pb_bucket_sql(role_aware)
         cr.execute("""
-            SELECT p.payslip_run_id, c.code, COALESCE(SUM(pl.total), 0)
+            SELECT p.payslip_run_id, """ + bucket + """ AS bucket,
+                   COALESCE(SUM(pl.total), 0)
             FROM hr_payslip_line pl
             JOIN hr_payslip p ON p.id = pl.slip_id AND p.state != 'cancel'
             JOIN hr_salary_rule_category c ON c.id = pl.category_id
             WHERE p.payslip_run_id IN %s
-              AND c.code IN ('NET', 'GROSS', 'DED', 'DEDUCTION', 'COMP',
-                             'BASIC', 'ALW')
+              AND """ + bucket + """ IS NOT NULL
               """ + detail_clause + """
-            GROUP BY p.payslip_run_id, c.code
+            GROUP BY p.payslip_run_id, 2
         """, (tuple(run_ids),))
         agg = {}
         for rid, code, total in cr.fetchall():
@@ -204,14 +268,15 @@ class HrPayslipRun(models.Model):
             # ₫0 next to ₫1.9bn of basic pay on ABM's June run.
             run.pb_total_gross = d.get('GROSS') or (
                 d.get('BASIC', 0.0) + d.get('ALW', 0.0))
-            # COMP stays in this sum. An employer contribution is arguably not a
-            # deduction from pay at all — but on the reference tenant EVERY dong
-            # of the deductions KPI is a COMP line (DED and DEDUCTION are zero
-            # there), so dropping the bucket would replace a wrong number with a
-            # blank one. The detail filter above is what removes the
-            # double-counted employer roll-ups instead.
+            # COMP stays in this sum, unchanged. A line in that bucket is one
+            # nothing has classified — on such a run, the reference tenant's
+            # whole deductions KPI is COMP lines, and dropping the bucket would
+            # replace a wrong number with a blank one. VALUEKIND P5 does not
+            # move that money; it gives a line that DOES know it is employer
+            # cost somewhere else to go.
             run.pb_total_deductions = abs(d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
                                           + d.get('COMP', 0.0))
+            run.pb_total_employer_cost = abs(d.get('ERCOST', 0.0))
 
     # ---- context-aware permission flags for kanban card buttons ----
     # NOTE: these are COSMETIC. Enforcement lives in _pb_require_tier below;
