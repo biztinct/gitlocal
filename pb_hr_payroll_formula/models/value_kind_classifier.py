@@ -80,6 +80,66 @@ WHOLE_KINDS = frozenset((KIND_INTEGER,))
 #: What net pay does with a component, when it does anything at all.
 _PAY_ROLES = frozenset(('earning', 'deduction', 'net', 'employer_cost', 'mixed'))
 
+#: The one role that measures nothing, and so may sit on any kind of value.
+ROLE_INFO = 'info'
+
+#: Kinds a MONEY role may be attached to.
+#:
+#: A component counted in hours, days or percent cannot be added to net pay or
+#: taken off it. ABM proved the point: nine `quantity` components (Standard
+#: Working Hour, Actual Working Hours, OT 1.5/2/3 Hours, Night shift hour…) and
+#: one `text` component carried `net_role='earning'`, because the net-role
+#: classifier walks the scheme's formula graph and found a path from each of
+#: them to net pay. The path is real. The ARITHMETIC is not — hours reach net
+#: pay as a multiplier and a divisor,
+#:
+#:     ACTUBASISALA = ROUND(BASESALARY / STANWORKHOUR * ACTUWORKHOUR, 0)
+#:
+#: not as an addend. They SCALE the money; they are not a share of it. Only the
+#: Subtotal flag kept them out of the money measures, so those figures were
+#: right by accident: untick one component and hours start being added to gross
+#: pay. `pb_source_atlas._MONEY_ROLES` had already written this down for its own
+#: totals; nothing else in the engine knew it.
+#:
+#: `decimal` and `integer` stay in deliberately. An unlabelled number carries no
+#: claim about what it counts, and refusing it a money role would demote real
+#: allowances that nobody has typed yet. The gate exists to stop what is KNOWN
+#: not to be money, not to demand proof that something is.
+#:
+#: Same determinant as everything else in this module: what a value IS governs
+#: what may be done with it (C18.129).
+MONEY_ROLE_KINDS = frozenset((KIND_MONEY, KIND_DECIMAL, KIND_INTEGER))
+
+
+def role_is_allowed(kind, role):
+    """May a component of this value kind carry this pay role?
+
+    Permissive at both ends on purpose. `info` and "no role decided yet" are
+    always allowed, and a component with no declared kind is never pre-judged —
+    a gate that fires on absence of evidence would fire on every fresh scheme.
+    """
+    if not role or role == ROLE_INFO or role not in _PAY_ROLES:
+        return True
+    if not kind:
+        return True
+    return kind in MONEY_ROLE_KINDS
+
+
+def allowed_roles(kind, roles):
+    """The subset of `roles` this value kind may carry, order preserved."""
+    return [r for r in roles if role_is_allowed(kind, r)]
+
+
+def gate_role(kind, role):
+    """The role a component may actually carry, given its value kind.
+
+    Returns `(role, demoted)`. `demoted` is True when a money role was asked
+    for and refused, so the caller can say WHY rather than silently substitute.
+    """
+    if role_is_allowed(kind, role):
+        return role, False
+    return ROLE_INFO, True
+
 #: Roles whose values name something rather than measure it.
 _NAMING_ROLES = frozenset(('identity', 'bank'))
 

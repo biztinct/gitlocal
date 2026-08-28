@@ -2060,8 +2060,18 @@ class HrFormulaConfig(models.Model):
         field = self.env['hr.formula.rule']._fields['value_kind']
         return [{'value': key,
                  'label': label,
-                 'numeric': value_kind_classifier.wants_number(key)}
+                 'numeric': value_kind_classifier.wants_number(key),
+                 # VALUEKIND P5 — picking a kind changes which pay roles the
+                 # row may hold, and the board has to grey them out in the same
+                 # keystroke rather than after a failed save.
+                 'money': key in value_kind_classifier.MONEY_ROLE_KINDS}
                 for key, label in field.selection]
+
+    @api.model
+    def _value_kind_label(self, kind):
+        """The words a person reads for a value kind, for use in a sentence."""
+        field = self.env['hr.formula.rule']._fields['value_kind']
+        return dict(field.selection).get(kind or '', _("untyped"))
 
     def value_kind_board(self, run_id=None):
         """Everything the Field types board shows, in one call.
@@ -2114,6 +2124,16 @@ class HrFormulaConfig(models.Model):
                 'signal': rule.payroll_signal or '',
                 'needs_review': not rule.net_role
                                 or rule.net_role_confidence == 'review',
+                # VALUEKIND P5 — a row that already holds a money role its own
+                # value type forbids. Shown, never silently rewritten: these
+                # were derived before the gate existed, the figures they feed
+                # are correct today (every one is flagged Subtotal), and a
+                # classification a person has been living with is theirs to
+                # confirm. `Fix these` on the board does it in one press.
+                'role_conflict': not value_kind_classifier.role_is_allowed(
+                    rule.value_kind, rule.net_role),
+                'role_blocked': not value_kind_classifier.role_is_allowed(
+                    rule.value_kind, 'earning'),
                 'appears_on_payslip': bool(rule.appears_on_payslip),
                 'numeric': value_kind_classifier.wants_number(rule.value_kind),
                 'delivered': [str(v)[:48] for v in values[:3]],
@@ -2129,7 +2149,8 @@ class HrFormulaConfig(models.Model):
             'config_id': self.id,
             'name': self.name or '',
             'options': self._value_kind_options(),
-            'pay_roles': [{'value': k, 'label': label}
+            'pay_roles': [{'value': k, 'label': label,
+                           'money': k in value_kind_classifier._PAY_ROLES}
                           for k, label in role_field.selection],
             'signals': [{'value': k, 'label': label}
                         for k, label in signal_field.selection],
@@ -2137,7 +2158,37 @@ class HrFormulaConfig(models.Model):
             'rows': rows,
             'drift_count': len(drift),
             'review_count': sum(1 for r in rows if r['needs_review']),
+            'role_conflict_count': sum(1 for r in rows if r['role_conflict']),
         }
+
+    def fix_role_conflicts(self, codes=None):
+        """Set every gated component to 'Information only'. Returns the codes.
+
+        The one action behind the board's conflict banner. It writes the same
+        role and reason the classifier would now derive, and marks it `certain`
+        — a person pressed this; it is not a guess to be re-opened next time
+        the scheme is classified.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        wanted = {str(c).upper() for c in (codes or [])}
+        fixed = []
+        for rule in self.rule_ids:
+            if wanted and (rule.code or '').upper() not in wanted:
+                continue
+            if value_kind_classifier.role_is_allowed(rule.value_kind, rule.net_role):
+                continue
+            rule.write({
+                'net_role': value_kind_classifier.ROLE_INFO,
+                'net_role_confidence': 'certain',
+                'net_role_reason': self._role_gate_reason(rule),
+            })
+            fixed.append(rule.code)
+        if fixed:
+            _logger.info("VALUEKIND P5: %s set %s component(s) to information "
+                         "only on scheme %s: %s", self.env.user.login,
+                         len(fixed), self.id, ', '.join(sorted(fixed)))
+        return fixed
 
     def set_value_kinds(self, updates):
         """``{code: kind}`` -> the rows changed. A person's decision.
@@ -2214,11 +2265,39 @@ class HrFormulaConfig(models.Model):
                 role = patch['pay_role'] or False
                 if role and role not in valid_roles:
                     raise UserError(_("'%(r)s' is not a pay role.", r=role))
+                # VALUEKIND P5 — the value type gates the role, and it gates it
+                # against the kind being saved in THIS call, not the one on the
+                # record: changing "Money" to "Quantity (hours, days)" and
+                # leaving the role at "Adds to net pay" is one edit of one row,
+                # and it must not be possible to leave the row self-contradictory.
+                kind = vals.get('value_kind', rule.value_kind)
+                if not value_kind_classifier.role_is_allowed(kind, role):
+                    raise UserError(_(
+                        "'%(name)s' is %(kind)s, so it cannot be '%(role)s'. "
+                        "Only a component that holds an amount can be added to "
+                        "or taken off net pay — set it to 'Information only', "
+                        "or change its value type first.",
+                        name=rule.name or rule.code,
+                        kind=self._value_kind_label(kind),
+                        role=dict(Rule._fields['net_role'].selection).get(role, role)))
                 if role != (rule.net_role or False):
                     vals.update(net_role=role,
                                 net_role_confidence='certain' if role else False,
                                 net_role_reason=_("%s chose this.",
                                                   self.env.user.name) if role else False)
+
+            # The kind may have changed on its own, with no `pay_role` key at
+            # all. The stored role has to follow it down rather than survive as
+            # a contradiction nobody asked about — this IS the person's edit of
+            # this row, so demoting here is their action, not a silent rewrite.
+            if 'value_kind' in vals and 'pay_role' not in patch:
+                kept, demoted = value_kind_classifier.gate_role(
+                    vals['value_kind'], rule.net_role or False)
+                if demoted:
+                    vals.update(net_role=kept,
+                                net_role_confidence='certain',
+                                net_role_reason=self._role_gate_reason_for(
+                                    rule, vals['value_kind']))
 
             if 'rollup' in patch and bool(patch['rollup']) != bool(rule.net_role_detail):
                 vals['net_role_detail'] = bool(patch['rollup'])
