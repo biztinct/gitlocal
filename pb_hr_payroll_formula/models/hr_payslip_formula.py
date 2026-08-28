@@ -410,20 +410,38 @@ class HrPayslipFormula(models.Model):
             mappings = connector._sync_mapping_ids()
             if not mappings:
                 return {}
+            # EVERY kind of feed the wires point at, not just employee and
+            # salary. Hours live on the attendance feed and overtime on a
+            # `custom` one, so a resolver reading two data types could not see
+            # them: on the reference tenant `STANWORKHOUR` (expected working
+            # hours) resolved to its default even with 168 June attendance rows
+            # sitting against the right people, and `ACTUBASISALA` —
+            # ROUND(BASESALARY / STANWORKHOUR * ACTUWORKHOUR, 0) — divided by
+            # that zero and produced no basic pay, so every deduction taken as
+            # a percentage of it came out ₫0 too.
+            kinds = [k for k in mappings.mapped('endpoint_id.data_type') if k]
+            kinds = list(dict.fromkeys(kinds)) or ['employee', 'salary']
             base = [('connector_id', '=', connector.id),
                     ('employee_id', '=', self.employee_id.id),
-                    ('data_type', 'in', ['employee', 'salary'])]
+                    ('data_type', 'in', kinds)]
             rows = Store.sudo().search(
-                base + [('state', '=', 'extracted')],
-                order='data_type asc, version asc, id asc')
+                base + [('state', '=', 'extracted')], order='version asc, id asc')
             if not rows:
                 rows = Store.sudo().search(
                     base + [('state', 'not in', ('archived', 'error'))],
-                    order='data_type asc, version asc, id asc')
+                    order='version asc, id asc')
             if not rows:
                 return {}
+            # Merged in an EXPLICIT precedence, not alphabetically. The old
+            # `data_type asc` happened to order employee before salary, which
+            # is the rule the docstring states — but it is a coincidence of
+            # spelling, and adding `attendance` and `custom` to the same sort
+            # would have silently put them first and let master data overwrite
+            # this period's hours.
+            order = {'employee': 0, 'salary': 1, 'leave': 2,
+                     'attendance': 3, 'custom': 4}
             blob = {}
-            for row in rows:
+            for row in rows.sorted(key=lambda r: order.get(r.data_type, 9)):
                 data = row.get_mappable_data()
                 if isinstance(data, dict):
                     blob.update(data)

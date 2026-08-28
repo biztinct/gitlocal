@@ -386,9 +386,19 @@ class HrApiDataStore(models.Model):
         if employee:
             return employee
 
-        # Try by work email
+        # Try by work email. Compared with case and underscores removed,
+        # because one vendor spells it differently on every feed: Zoho sends
+        # `EmailID` on the employee form and `emailId` / `mailId` on the
+        # attendance report. The exact-match list held neither, so attendance
+        # matched nobody at all.
         extracted = self.extracted_data or {}
-        email = extracted.get('Email') or extracted.get('email') or extracted.get('work_email')
+        normalised = {}
+        for key, val in (extracted or {}).items():
+            if isinstance(key, str):
+                normalised.setdefault(key.replace('_', '').lower(), val)
+        email = next((normalised.get(k) for k in
+                      ('email', 'emailid', 'mailid', 'workemail', 'officialemail')
+                      if normalised.get(k)), None)
         if email:
             employee = Employee.search([
                 '|',
@@ -397,6 +407,27 @@ class HrApiDataStore(models.Model):
             ], limit=1)
             if employee:
                 return employee
+
+        # Last: use the EMPLOYEE feed as the roster.
+        #
+        # A salary or attendance record carries whatever id its own form uses,
+        # and on this reference tenant none of them is stored on the employee
+        # record — the employee code (`11708`) lives nowhere in `hr.employee`.
+        # But the employee feed carries the same id AND resolves (by email), so
+        # a record that cannot match a person directly can still find the peer
+        # that already did. Without this, 3,064 attendance rows and 1,365 of
+        # 1,368 salary rows attached to nobody: the data arrived, no payslip
+        # could see it, and every component reading it fell back to a default
+        # while the pay run reported success.
+        if self.connector_id:
+            peer = self.sudo().search([
+                ('connector_id', '=', self.connector_id.id),
+                ('data_type', '=', 'employee'),
+                ('employee_external_id', '=', ext_id),
+                ('employee_id', '!=', False),
+            ], limit=1)
+            if peer:
+                return peer.employee_id
 
         return False
 

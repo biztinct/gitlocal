@@ -1590,11 +1590,26 @@ class HrIntegrationConnector(models.Model):
         endpoint_id = endpoint_id or self.env.context.get(
             'pb_source_endpoint_id') or False
 
-        # Try to extract employee external ID from the data if not provided
+        # Try to extract employee external ID from the data if not provided.
+        #
+        # Compared with case and underscores removed, because one vendor spells
+        # the SAME field three ways across its own feeds: Zoho sends
+        # `EmployeeID` on the employee form, `Employee_ID` on the salary form
+        # and `employeeId` on the attendance report. The old exact-match list
+        # held only the first, so salary linked 3 records of 1,368 and
+        # attendance linked 0 of 3,064 — the data arrived, attached to nobody,
+        # and every component reading it fell back to a default while the pay
+        # run reported success.
         if not employee_external_id and isinstance(raw_data, dict):
-            for key in ('EmployeeID', 'employee_id', 'emp_id', 'empId',
-                        'RecordId', 'record_id', 'ID', 'id'):
-                val = raw_data.get(key)
+            normalised = {}
+            for key, val in raw_data.items():
+                if not isinstance(key, str):
+                    continue
+                normalised.setdefault(key.replace('_', '').lower(), val)
+            # Order is priority: an employee-specific key beats a bare `id`,
+            # which on a form record is the record's own id, not a person's.
+            for key in ('employeeid', 'empid', 'recordid', 'id'):
+                val = normalised.get(key)
                 if val:
                     employee_external_id = str(val)
                     break
