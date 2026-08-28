@@ -2118,6 +2118,7 @@ class HrFormulaConfig(models.Model):
                          or (rule.category_id.name or '') or '',
                 'group_set': bool(rule.component_type),
                 'pay_role': rule.net_role or '',
+                'pay_role_source': rule.net_role_source or '',
                 'pay_role_confidence': rule.net_role_confidence or '',
                 'pay_role_reason': rule.net_role_reason or '',
                 'rollup': bool(rule.net_role_detail),
@@ -2161,6 +2162,38 @@ class HrFormulaConfig(models.Model):
             'role_conflict_count': sum(1 for r in rows if r['role_conflict']),
         }
 
+    def reclassify_from_formulas(self):
+        """Re-derive every pay role and Subtotal flag from the scheme's formulas.
+
+        The board's own door to `classify_net_roles`. It had one — the Category
+        review, reached from a server action bound to `hr.formula.config` — but
+        that menu is not reachable in the current navigation (`menu-451` falls
+        through to Discuss), so in practice the only way to re-derive a scheme
+        was to run an import. This is the action the two banners on this board
+        actually need: the value-type gate and the roll-up chain are both
+        decided here, and neither moves until something re-classifies.
+
+        Rows a person has set are left alone — see `net_role_source`.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        before = {r.id: (r.net_role, r.net_role_detail) for r in self.rule_ids}
+        summary = (self.classify_net_roles() or {}).get(self.id) or {}
+        if summary.get('error'):
+            raise UserError(_(
+                "This scheme could not be re-classified: %(why)s",
+                why=summary['error']))
+        changed = [r.code for r in self.rule_ids
+                   if before.get(r.id) != (r.net_role, r.net_role_detail)]
+        _logger.info("VALUEKIND P5: %s re-classified scheme %s — %s change(s): %s",
+                     self.env.user.login, self.id, len(changed),
+                     ', '.join(sorted(changed)) or 'none')
+        return {
+            'changed': len(changed),
+            'kept': len(summary.get('kept') or []),
+            'gated': len(summary.get('gated') or []),
+        }
+
     def fix_role_conflicts(self, codes=None):
         """Set every gated component to 'Information only'. Returns the codes.
 
@@ -2180,6 +2213,8 @@ class HrFormulaConfig(models.Model):
                 continue
             rule.write({
                 'net_role': value_kind_classifier.ROLE_INFO,
+                # A person pressed this, so a later re-classify leaves it be.
+                'net_role_source': 'user',
                 'net_role_confidence': 'certain',
                 'net_role_reason': self._role_gate_reason(rule),
             })
@@ -2282,6 +2317,9 @@ class HrFormulaConfig(models.Model):
                         role=dict(Rule._fields['net_role'].selection).get(role, role)))
                 if role != (rule.net_role or False):
                     vals.update(net_role=role,
+                                # Blank hands the row BACK to the classifier;
+                                # anything else is a decision it must respect.
+                                net_role_source='user' if role else False,
                                 net_role_confidence='certain' if role else False,
                                 net_role_reason=_("%s chose this.",
                                                   self.env.user.name) if role else False)
@@ -2299,8 +2337,11 @@ class HrFormulaConfig(models.Model):
                                 net_role_reason=self._role_gate_reason_for(
                                     rule, vals['value_kind']))
 
+            # The Subtotal flag rides the same marker: it and the pay role are
+            # one decision about how a component is treated, edited on one row.
             if 'rollup' in patch and bool(patch['rollup']) != bool(rule.net_role_detail):
                 vals['net_role_detail'] = bool(patch['rollup'])
+                vals.setdefault('net_role_source', 'user')
 
             if 'signal' in patch:
                 signal = patch['signal'] or False

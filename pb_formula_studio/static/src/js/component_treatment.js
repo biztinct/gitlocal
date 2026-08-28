@@ -64,6 +64,7 @@ export class ComponentTreatmentBoard extends Component {
             loading: false,
             saving: false,
             fixing: false,
+            reclassifying: false,
             dirty: {},
             filter: "",
             error: "",
@@ -238,6 +239,37 @@ export class ComponentTreatmentBoard extends Component {
             );
         }
         this.state.saving = false;
+    }
+
+    /**
+     * Re-derive every role and Subtotal flag from the scheme's own formulas.
+     *
+     * The two banners on this board both describe things only a re-classify
+     * can move, and until now the only door to one was running an import.
+     */
+    async reclassify() {
+        if (this.state.reclassifying) {
+            return;
+        }
+        this.state.reclassifying = true;
+        try {
+            const res = await this.orm.call(
+                "hr.formula.config", "reclassify_from_formulas",
+                [[this.state.board.config_id]]
+            );
+            const bits = [_t("%s component(s) changed.", res.changed)];
+            if (res.kept) {
+                bits.push(_t("%s left as you set them.", res.kept));
+            }
+            this.notif.add(bits.join(" "), { type: "success" });
+            await this.load();
+        } catch (error) {
+            this.notif.add(
+                error?.data?.message || error?.message || _t("Could not re-classify."),
+                { type: "danger" }
+            );
+        }
+        this.state.reclassifying = false;
     }
 
     /** The one action behind the conflict banner. */

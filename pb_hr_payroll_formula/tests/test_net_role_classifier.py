@@ -375,3 +375,58 @@ class TestNetRoleClassifier(TransactionCase):
         self.assertEqual(self.config.fix_role_conflicts(), ['SWINGSRC'])
         self.assertEqual(hours.net_role, 'info')
         self.assertEqual(self.config.value_kind_board()['role_conflict_count'], 0)
+
+    # ------------------------------------------------------------------ 20
+    def test_20_a_role_a_person_set_survives_a_reclassify(self):
+        """`set_component_setup`'s docstring promised this and it was not true.
+
+        `classify_net_roles` rewrote every role and every Subtotal flag on the
+        scheme, so one press of Re-classify silently discarded every decision
+        a person had made. Confidence cannot carry the distinction — the
+        classifier marks its own confident answers `certain` too.
+        """
+        self._classify()
+        refund = self.rules['REFUND']
+        self.assertEqual(refund.net_role, 'earning')
+        self.config.set_component_setup({'REFUND': {'pay_role': 'info'}})
+        self.assertEqual(refund.net_role_source, 'user')
+        self.config.reclassify_from_formulas()
+        self.assertEqual(refund.net_role, 'info',
+                         "a decision a person made is not a guess to re-derive")
+        # …and everything else is still derived as before.
+        self.assertEqual(self._role('BASE'), 'earning')
+        self.assertEqual(self._role('PITAMT'), 'deduction')
+
+    # ------------------------------------------------------------------ 21
+    def test_21_the_subtotal_flag_rides_the_same_marker(self):
+        self._classify()
+        base = self.rules['BASE']
+        self.assertTrue(base.net_role_detail)
+        self.config.set_component_setup({'BASE': {'rollup': False}})
+        self.assertEqual(base.net_role_source, 'user')
+        self.config.reclassify_from_formulas()
+        self.assertFalse(base.net_role_detail,
+                         "the Subtotal flag is half of one decision, not a "
+                         "separate one the classifier may overwrite")
+
+    # ------------------------------------------------------------------ 22
+    def test_22_clearing_the_role_hands_the_row_back(self):
+        self._classify()
+        refund = self.rules['REFUND']
+        self.config.set_component_setup({'REFUND': {'pay_role': 'info'}})
+        self.assertEqual(refund.net_role_source, 'user')
+        self.config.set_component_setup({'REFUND': {'pay_role': ''}})
+        self.assertFalse(refund.net_role_source)
+        self.config.reclassify_from_formulas()
+        self.assertEqual(refund.net_role, 'earning',
+                         "'not set' means the classifier owns it again")
+
+    # ------------------------------------------------------------------ 23
+    def test_23_reclassify_reports_what_moved(self):
+        """The board's button reports; a silent re-derive of 99 rows is not a
+        thing anybody should press twice wondering if it worked."""
+        self._classify()
+        self.config.set_component_setup({'REFUND': {'pay_role': 'info'}})
+        res = self.config.reclassify_from_formulas()
+        self.assertEqual(res['kept'], 1)
+        self.assertIn('changed', res)

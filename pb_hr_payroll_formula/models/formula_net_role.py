@@ -600,6 +600,26 @@ class HrFormulaRuleNetRole(models.Model):
         help="How firmly the formulas decide this role. 'Needs review' means a "
              "person has to choose.",
     )
+    # VALUEKIND P5 — the marker `value_kind_source` has always had, and that
+    # `set_component_setup`'s own docstring already promised for roles: "an
+    # answer somebody gave is never re-derived". It was not true.
+    # `classify_net_roles` rewrote every role and every Subtotal flag on the
+    # scheme, so one press of Re-classify silently discarded every decision a
+    # person had made on the board. Confidence could not carry this — the
+    # classifier marks its OWN confident answers `certain` too.
+    #
+    # It covers the pay role AND the Subtotal flag, because they are one
+    # decision about how a component is treated and a person edits them on one
+    # row. Choosing "— not set —" hands the row back to the classifier.
+    net_role_source = fields.Selection(
+        [
+            ('auto', 'Worked out from the formulas'),
+            ('user', 'Set by a person'),
+        ],
+        string='Role Decided By',
+        help="'Set by a person' means re-classifying the scheme leaves this "
+             "component's pay role and subtotal flag alone.",
+    )
 
 
 class HrFormulaConfigNetRole(models.Model):
@@ -624,7 +644,12 @@ class HrFormulaConfigNetRole(models.Model):
                 continue
             classification = result.pop('_classification')
             gated = []
+            kept = []
             for rule in config.rule_ids:
+                # A decision a person made is not a guess to be re-derived.
+                if rule.net_role_source == 'user':
+                    kept.append(rule.code)
+                    continue
                 role = classification.roles.get(rule.id) or False
                 reason = classification.reasons.get(rule.id) or False
                 confidence = classification.confidences.get(rule.id) or False
@@ -644,6 +669,12 @@ class HrFormulaConfigNetRole(models.Model):
                     'net_role_reason': reason,
                     'net_role_confidence': confidence,
                 })
+            if kept:
+                result['kept'] = kept
+                _logger.info(
+                    "VALUEKIND P5: scheme %s — left %s component(s) alone "
+                    "because a person set them: %s",
+                    config.id, len(kept), ', '.join(sorted(kept)))
             if gated:
                 result['gated'] = gated
                 _logger.info(

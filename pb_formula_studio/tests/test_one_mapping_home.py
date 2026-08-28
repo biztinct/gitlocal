@@ -159,9 +159,12 @@ class TestOneMappingHome(TransactionCase):
         # before is still here, still spelled the same, still in the same
         # relative order, which is what keeps every deep link landing where it
         # always did.
+        # VALUEKIND P5 appends `treatment` — the same addition-only rule: it
+        # goes LAST because it is where the sentence ends, and every id before
+        # it keeps its spelling and its position.
         self.assertEqual(re.findall(r'\{ id: "(\w+)"', modes),
                          ['journey', 'api', 'transform', 'import', 'employee',
-                          'scheme', 'cycle'])
+                          'scheme', 'cycle', 'treatment'])
         # …and nothing a user reads on this surface says "Studio"
         for label in re.findall(r'label: _t\("([^"]+)"\)', modes):
             self.assertNotIn('Studio', label)

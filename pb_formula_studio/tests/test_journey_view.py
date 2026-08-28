@@ -496,8 +496,10 @@ class TestJourneyView(TransactionCase):
         ids = re.findall(r'\{\s*id:\s*"([a-z]+)"\s*,\s*icon:', stripped)
         self.assertEqual(
             ids, ['journey', 'api', 'transform', 'import', 'employee',
-                  'scheme', 'cycle'],
-            "the MODES order IS the story; Journey is first of seven")
+                  'scheme', 'cycle', 'treatment'],
+            "the MODES order IS the story; Journey is first of eight, and "
+            "VALUEKIND P5's `treatment` is last because every tab before it "
+            "says where a value comes FROM and it says what is done with it")
         self.assertIn('mode: askedMode || "journey"', stripped,
                       "a cold start must land on the Journey, and an explicit "
                       "pb_mode must still win")
