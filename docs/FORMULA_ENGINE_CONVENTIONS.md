@@ -1451,3 +1451,41 @@ number from the handovers — keep the numbering stable.
      that had already shipped. When a fix appears not to have taken, check
      `hr_payslip.create_date` against the deploy time before looking anywhere
      else — only a recompute rewrites `formula_input_values`.
+125. **A module's derived data is that module's OWN migration to rebuild**
+     (VALUEKIND P4). The first attempt flagged `pb.fact.run` dirty from
+     pb_hr_payroll_formula's migration, guarded by `'pb.fact.builder' in env`.
+     That guard is False: module load order runs the migration before
+     pb_explorer's models reach the registry. Nothing was flagged, nothing was
+     logged, and the Explorer went on answering with the old classification from
+     a fact table that looked perfectly fresh — `_token()` fingerprints the
+     PAYSLIPS, and no payslip had changed. A cross-module `in env` guard in a
+     migration is a silent no-op waiting to happen.
+126. **A blanket `except` around a cross-model call turns a typo into a feature
+     that quietly does nothing** (VALUEKIND P4). `employee_signal_map` called
+     `self._normalize_header_key(...)` on `hr.formula.config`; the method lives
+     on `hr.payroll.import.batch`. The caller's `except Exception: continue`
+     swallowed the AttributeError into "this scheme has no employment signals" —
+     which is indistinguishable from a scheme that genuinely has none, so the pay
+     run wizard showed no status filter and every run silently covered everybody.
+     Catch to protect a board from ONE bad row; log loudly enough that the
+     difference between "nothing to report" and "this is broken" is visible.
+127. **New columns on a shared positional statement go on the END.**
+     `pb_fact_builder._aggregate_sql` is read positionally by two consumers (the
+     builder's `_insert` and `test_01_aggregate_parity`). Inserting `is_rollup`
+     after `category_type` shifted every index after it, and the parity test
+     failed with `could not convert string to float: 'XBAS'` — the amount column
+     was now the component name. Append, never insert. And when asserting the
+     column count, capture `cr.description` IMMEDIATELY after the execute: it
+     describes the LAST query the cursor ran, and an ORM search two lines later
+     replaces it.
+128. **`net_role_detail` is shared between the run header and the reports, so
+     "fix" it for one and you move the other** (VALUEKIND P4). ABM's
+     `TOTACOSTTOER` (total employer cost) is flagged as a subtotal, which makes
+     the Explorer's Employer cost measure read 0. Unticking it does fix the
+     Explorer — and it also adds ₫1,170,285,630 to the pay run header's
+     DEDUCTIONS, because `pb_payruns` excludes detail lines
+     (`hr_payslip_run.py:181`) and its deduction bucket would otherwise swallow
+     the Company Contribution category. The flag is load-bearing in two places
+     for two different reasons. The real fix is for the header to classify by
+     `pay_role` as the Explorer now does; until then, do not untick a subtotal on
+     an employer-cost component and expect only the report to move.

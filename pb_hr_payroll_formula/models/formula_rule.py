@@ -665,6 +665,26 @@ class HrFormulaRule(models.Model):
              "payslip line, and how it is displayed. The first five are "
              "numbers; the last four are not and are never converted.")
 
+    # VALUEKIND P4 — components that say something ABOUT THE PERSON rather than
+    # about their pay, and that the run therefore has to act on.
+    #
+    # A pay run has to answer "does this person belong in this run at all?", and
+    # on a scheme-driven tenant the only truthful answer lives in the feed. On
+    # ABM every one of the 152 employees is `active` on `hr.employee` with a
+    # running contract, while the feed says 85 Resigned and 25 Terminated — the
+    # records are stale and the component is not. So the component has to be
+    # nameable, exactly as the net-pay component is.
+    #
+    # Deliberately NOT inferred from the code: `EMPSTATUS` is one tenant's
+    # spelling. It is auto-suggested and a person confirms it.
+    payroll_signal = fields.Selection([
+        ('employment_status', 'Whether the person is still employed'),
+        ('worked_hours', 'Hours actually worked'),
+    ], string='Tells the run', index=True,
+        help="Some components say something about the PERSON rather than about "
+             "their pay, and the run has to act on them — whether to produce a "
+             "payslip at all, for instance.")
+
     value_kind_source = fields.Selection([
         ('auto', 'Auto-classified'),
         ('user', 'Set by a person'),

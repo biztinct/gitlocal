@@ -334,3 +334,73 @@ def apply_kind(kind, number):
         except (TypeError, ValueError):
             return number
     return number
+
+
+# --------------------------------------------------------------------------
+# Payroll signals — components the RUN has to act on
+# --------------------------------------------------------------------------
+#: Values that mean "this person has left". Accent-folded and upper-cased before
+#: matching, so "Nghỉ việc" and "NGHI VIEC" are one entry.
+LEFT_STATUS_WORDS = frozenset((
+    'RESIGNED', 'TERMINATED', 'INACTIVE', 'LEFT', 'EXITED', 'SEPARATED',
+    'RETIRED', 'DISMISSED', 'ENDED', 'CLOSED',
+    'NGHI VIEC', 'DA NGHI', 'THOI VIEC',
+))
+
+#: Values that mean "still employed".
+ACTIVE_STATUS_WORDS = frozenset((
+    'ACTIVE', 'EMPLOYED', 'WORKING', 'CURRENT', 'PROBATION', 'ONBOARD',
+    'DANG LAM VIEC', 'CHINH THUC', 'THU VIEC',
+))
+
+_STATUS_LABEL_RE = re.compile(r'\bSTATUS\b|\bSTATE\b')
+#: A label alone is far too weak — "Residency Status", "Approval Status" and
+#: "Marital Status" all match it, and picking one of those as the component that
+#: decides who gets paid would be a serious wrong answer. Either the label says
+#: EMPLOYMENT, or the values themselves are in the employment vocabulary.
+_EMPLOYMENT_LABEL_RE = re.compile(r'\bEMPLOY\w*\b|\bEMP\b|\bSTAFF\b|\bWORKER\b')
+_HOURS_LABEL_RE = re.compile(
+    r'\b(?:ACTUAL|WORKED|ACTU)\w*\b[A-Z ]*\bHOUR')
+
+
+def is_left_status(value):
+    """True when this employment-status value means the person has left.
+
+    Unknown wording is NOT "left". A person wrongly kept in a run is a payslip
+    somebody deletes; a person wrongly dropped is somebody who does not get
+    paid, and only one of those is recoverable.
+    """
+    if value is None or value is False:
+        return False
+    folded = normalize_header(str(value)).upper().strip()
+    if not folded:
+        return False
+    if folded in ACTIVE_STATUS_WORDS:
+        return False
+    return folded in LEFT_STATUS_WORDS
+
+
+def suggest_payroll_signal(code='', name='', sample_values=None, quantity=False):
+    """``'employment_status'``, ``'worked_hours'`` or ``None`` — a SUGGESTION.
+
+    Nothing acts on this without a person confirming it, because acting on it
+    decides whether somebody is paid.
+    """
+    label = normalize_header('%s %s' % (name or '', code or '')).upper()
+    values = [v for v in (sample_values or []) if not is_blank_sample(v)]
+
+    if _STATUS_LABEL_RE.search(label):
+        known = [v for v in values
+                 if normalize_header(str(v)).upper().strip()
+                 in (LEFT_STATUS_WORDS | ACTIVE_STATUS_WORDS)]
+        # Values in the employment vocabulary settle it. Failing that, the label
+        # has to say EMPLOYMENT — "Residency Status" and "Approval Status" say
+        # nothing about whether somebody still works here.
+        if known or (not values and _EMPLOYMENT_LABEL_RE.search(label)):
+            return 'employment_status'
+
+    if _HOURS_LABEL_RE.search(label) and (quantity or not values
+                                          or all(_coerce_number(str(v)) is not None
+                                                 for v in values)):
+        return 'worked_hours'
+    return None

@@ -3476,6 +3476,8 @@ class HrPayrollImportBatch(models.Model):
                 # NETROLE — a component folded into a roll-up is carried on the
                 # line so the run's totals can skip it without losing the line.
                 'component_detail': bool(rule.net_role_detail),
+                # VALUEKIND P4 — and its pay role, on BOTH creators (C18.122).
+                'pay_role': rule.net_role or False,
             }
 
             line_vals_list.append(line_vals)

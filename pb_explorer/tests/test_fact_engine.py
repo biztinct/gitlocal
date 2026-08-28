@@ -133,9 +133,18 @@ class TestFactEngine(common.TransactionCase):
         # The honest path: run the SHARED statement directly.
         self.env.cr.execute(self.builder._aggregate_sql('line'),
                             ((self.april.id,),))
+        # Captured HERE: `cr.description` describes the LAST query the cursor
+        # ran, and the ORM searches below replace it.
+        columns = len(self.env.cr.description)
         live = {}
         for row in self.env.cr.fetchall():
-            # (run, cycle, division, dept, cat, ctype, code, rule, name, amt, ...)
+            # (run, company, cycle, division, dept, cat, ctype, code, rule,
+            #  name, amt, heads, lines, is_rollup)
+            #
+            # Read POSITIONALLY, which is the whole point of this test: a new
+            # column inserted rather than appended shifts every index after it
+            # and both consumers of the shared statement start reading the
+            # wrong thing (C18.127). New columns go on the END.
             live[(row[4], row[6], row[7])] = round(float(row[10] or 0.0), 2)
 
         stored = {}
@@ -144,6 +153,9 @@ class TestFactEngine(common.TransactionCase):
                 round(f.amount, 2)
 
         self.assertTrue(live, "the aggregate returned nothing — fixture is broken")
+        self.assertEqual(columns, 14,
+                         "the shared aggregate's column list changed shape; "
+                         "both consumers read it positionally")
         self.assertEqual(stored, live,
                          "stored facts diverge from the live aggregate")
 

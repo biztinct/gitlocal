@@ -37,18 +37,126 @@ class PbPayrunWizard(models.AbstractModel):
             'currency': self.env.company.currency_id.name or 'VND',
             'structures': [{'id': s.id, 'name': s.name} for s in structs],
             'eligible': len(emp_ids),
+            # VALUEKIND P4 — who to include, decided per run by a person rather
+            # than by a rule baked into the generator. Empty when the scheme has
+            # no component marked as carrying employment status, in which case
+            # the wizard shows no filter and behaves exactly as it always has.
+            'statuses': self.employment_status_options(),
         }
 
-    def _eligible_employees(self):
-        """Employees with a running contract (best-effort)."""
+    def _eligible_employees(self, statuses=None, employee_ids=None):
+        """Who this run should produce a payslip for.
+
+        `statuses` — employment statuses to include, as the SOURCE spells them
+        ("Active", "Resigned", …). None means "no opinion", which is the
+        behaviour that shipped: everyone with a running contract.
+
+        `employee_ids` — an explicit shortlist, for the "just these few people"
+        case. It is intersected with the status choice rather than overriding
+        it, so a shortlist can never quietly re-admit somebody the status
+        filter excluded.
+
+        The status is read from the FEED, never from `hr.employee.active` or the
+        contract state: on ABM all 152 employees are active with a running
+        contract while the source reports 85 Resigned and 25 Terminated. Filtering
+        on the record would be a filter that does nothing.
+        """
         try:
             contracts = self.env['hr.contract'].search([('state', '=', 'open')])
             emps = contracts.mapped('employee_id')
-            if emps:
-                return emps.ids
-        except Exception:
-            pass
-        return self.env['hr.employee'].search([]).ids
+            base = emps.ids if emps else self.env['hr.employee'].search([]).ids
+        except Exception:       # noqa: BLE001 — never let this break the wizard
+            base = self.env['hr.employee'].search([]).ids
+
+        if statuses is not None:
+            wanted = {str(s or '').strip() for s in statuses}
+            signals = self._employee_signals()
+            if signals:
+                # An employee the source said nothing about keeps the benefit of
+                # the doubt only when "not stated" was ticked; otherwise a person
+                # missing from the feed would silently drop off the payroll.
+                base = [e for e in base
+                        if (signals.get(e, {}).get('status') or '') in wanted]
+
+        if employee_ids:
+            shortlist = {int(e) for e in employee_ids}
+            base = [e for e in base if e in shortlist]
+        return base
+
+    def _employee_signals(self):
+        """``{employee_id: {status, hours}}`` across every scheme, merged."""
+        Config = self.env.get('hr.formula.config')
+        if Config is None or 'employee_signal_map' not in dir(Config):
+            return {}
+        out = {}
+        for config in Config.sudo().search([]):
+            try:
+                out.update(config.employee_signal_map())
+            except Exception:       # noqa: BLE001
+                # LOUD. A swallowed AttributeError here presents as "this scheme
+                # has no employment signals", which looks exactly like a scheme
+                # that genuinely has none — so the wizard silently offers no
+                # status filter and every run covers everybody (C18.126).
+                _logger.exception(
+                    "Could not read employment signals from scheme %s (%s) — the "
+                    "pay run wizard will offer no employment-status filter",
+                    config.id, config.name)
+        return out
+
+    def employment_status_options(self):
+        """The tick boxes the wizard offers, merged across schemes."""
+        Config = self.env.get('hr.formula.config')
+        if Config is None or 'employment_status_options' not in dir(Config):
+            return []
+        merged = {}
+        for config in Config.sudo().search([]):
+            try:
+                rows = config.employment_status_options()
+            except Exception:       # noqa: BLE001
+                _logger.exception(
+                    "Could not read employment statuses from scheme %s (%s)",
+                    config.id, config.name)
+                continue
+            for row in rows:
+                key = row['value']
+                if key in merged:
+                    merged[key]['count'] += row['count']
+                    merged[key]['worked'] += row['worked']
+                else:
+                    merged[key] = dict(row)
+        return sorted(merged.values(), key=lambda r: -r['count'])
+
+    @api.model
+    def eligible_preview(self, vals=None):
+        """How many people this run would cover, and who — before it is created.
+
+        The wizard shows this live as the tick boxes change, so nobody presses
+        Run Payroll and then discovers it covered 42 people instead of 152.
+        Read-only; creates nothing.
+        """
+        vals = vals or {}
+        statuses = vals.get('statuses')
+        search = (vals.get('search') or '').strip()
+        emp_ids = self._eligible_employees(
+            statuses=statuses, employee_ids=vals.get('employee_ids'))
+        signals = self._employee_signals()
+
+        domain = [('id', 'in', emp_ids)]
+        if search:
+            domain = ['&', ('id', 'in', emp_ids),
+                      '|', ('name', 'ilike', search), ('barcode', 'ilike', search)]
+        Employee = self.env['hr.employee'].sudo()
+        total = Employee.search_count(domain)
+        rows = [{
+            'id': e.id,
+            'name': e.display_name or '',
+            'code': e.barcode or '',
+            'department': e.department_id.display_name or '',
+            'status': (signals.get(e.id) or {}).get('status') or '',
+            'hours': (signals.get(e.id) or {}).get('hours') or 0.0,
+        } for e in Employee.search(domain, order='name', limit=40)]
+        return {'total': total, 'shown': len(rows), 'employees': rows,
+                'statuses': self.employment_status_options()}
 
     # ---------------- Existing-payroll detection + cleanup ----------------
     def _period_runs(self, ds, de):
@@ -278,7 +386,9 @@ class PbPayrunWizard(models.AbstractModel):
         # payslips on one person for one month, which is the pay-run shape of the
         # duplicate this system already refuses everywhere else.
         adopted = self._adopt_loose_slips(run, ds, de)
-        emp_ids = [e for e in self._eligible_employees()
+        emp_ids = [e for e in self._eligible_employees(
+                       statuses=vals.get('statuses'),
+                       employee_ids=vals.get('employee_ids'))
                    if e not in set(adopted.mapped('employee_id').ids)]
         payload = {
             'run_id': run.id, 'name': name,

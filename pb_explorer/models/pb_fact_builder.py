@@ -132,6 +132,68 @@ class PbFactBuilder(models.AbstractModel):
             return "COALESCE(fc.pb_division, '')"
         return "COALESCE(r.pb_division, '')"
 
+    # ---------------------------------------------------------- classification
+    # VALUEKIND P4 — WHAT a line is, decided by the scheme rather than by a
+    # field nobody maintains.
+    #
+    # Reports classified every line through `hr_salary_rule_category.
+    # category_type`. Nobody maintains it because nobody SEES it: the Atlas
+    # chips, the payslip and the category picker all show the category's NAME.
+    # On ABM the category named "Net" carries the type "allowance", and so do
+    # "Gross", "Deduction" and "Company Contribution" — so this module added
+    # every subtotal on top of the components it was a subtotal OF and reported
+    # ~14bn against a true gross of 927,155,630.
+    #
+    # `hr_payslip_line.pay_role` is the scheme's own answer, derived from its
+    # net-pay formula and stamped on the line when the payslip was computed. It
+    # is preferred where present; `category_type` remains the answer for
+    # structure-based payroll, which has no scheme and for which it is correct.
+    #
+    # The vocabularies differ on purpose and are translated, never merged:
+    # `net_role` says what net pay DOES with a component, `category_type` says
+    # which shelf it sits on. `basic`, `tax` and `social_security` have no
+    # net_role equivalent, so a scheme never produces them and those measures
+    # keep working through the fallback.
+    _PAY_ROLE_TO_TYPE = """
+        CASE pl.pay_role
+            WHEN 'earning'       THEN 'allowance'
+            WHEN 'deduction'     THEN 'deduction'
+            WHEN 'net'           THEN 'net'
+            WHEN 'employer_cost' THEN 'employer_cost'
+            WHEN 'info'          THEN 'info'
+            ELSE COALESCE(c.category_type, 'allowance')
+        END"""
+
+    @api.model
+    def _has_pay_role(self):
+        """`pay_role` ships with pb_hr_payroll_formula, which is not a hard
+        dependency of this module. Probed, like every other optional column
+        here (C18.116) — model presence is not column presence."""
+        Line = self.env.get('hr.payslip.line')
+        if Line is None:
+            return False
+        field = Line._fields.get('pay_role')
+        return bool(field is not None and field.store and field.column_type)
+
+    @api.model
+    def _category_type_sql(self):
+        return self._PAY_ROLE_TO_TYPE if self._has_pay_role() \
+            else "COALESCE(c.category_type, 'allowance')"
+
+    @api.model
+    def _rollup_sql(self):
+        """Is this line already counted inside another line's total?
+
+        A money measure must count each dong once. `SI-HI-IU Total 10.5%` is
+        subtracted from net pay and so is `Total Deduction` — but only because
+        the second CONTAINS the first. The flag is `component_detail`, copied
+        onto the line by the same pass that copies the pay role.
+        """
+        Line = self.env.get('hr.payslip.line')
+        if Line is not None and 'component_detail' in Line._fields:
+            return "COALESCE(pl.component_detail, FALSE)"
+        return "FALSE"
+
     @api.model
     def _aggregate_sql(self, grain):
         """The ONE aggregate. ``grain`` is 'line' (T1) or 'emp' (T2).
@@ -140,6 +202,7 @@ class PbFactBuilder(models.AbstractModel):
         Shared verbatim by the builder and the live fallback (contract 1).
         """
         cyc, div, frm = self._cycle_sql(), self._division_sql(), self._from_sql()
+        ctype, roll = self._category_type_sql(), self._rollup_sql()
         if grain == 'line':
             return """
                 SELECT r.id                                   AS run_id,
@@ -148,20 +211,29 @@ class PbFactBuilder(models.AbstractModel):
                        {div}                                  AS division,
                        v.department_id                        AS department_id,
                        pl.category_id                         AS category_id,
-                       COALESCE(c.category_type, 'allowance') AS category_type,
+                       {ctype}                                AS category_type,
                        pl.code                                AS code,
                        pl.salary_rule_id                      AS rule_id,
                        {label}                                AS component_name,
                        SUM(pl.total)                          AS amount,
                        COUNT(DISTINCT p.employee_id)          AS headcount,
-                       COUNT(*)                               AS line_count
+                       COUNT(*)                               AS line_count,
+                       -- APPENDED, never inserted: both consumers of this
+                       -- statement read the row POSITIONALLY, so a new column
+                       -- in the middle silently shifts every index after it.
+                       -- `test_01_aggregate_parity` caught exactly that
+                       -- (C18.127).
+                       {roll}                                 AS is_rollup
                 {frm}
                  WHERE r.id IN %s
                  GROUP BY r.id, {cyc}, {div}, v.department_id, pl.category_id,
-                          COALESCE(c.category_type, 'allowance'), pl.code,
-                          pl.salary_rule_id
-            """.format(cyc=cyc, div=div, label=_COMPONENT_LABEL, frm=frm)
+                          {ctype}, pl.code, pl.salary_rule_id, {roll}
+            """.format(cyc=cyc, div=div, ctype=ctype, roll=roll,
+                       label=_COMPONENT_LABEL, frm=frm)
         if grain == 'emp':
+            # The employee grain is what money measures read, so a roll-up must
+            # not reach it at all — there is no per-component row here to skip
+            # it later.
             return """
                 SELECT r.id                                   AS run_id,
                        MAX(p.company_id)                      AS company_id,
@@ -170,13 +242,13 @@ class PbFactBuilder(models.AbstractModel):
                        p.employee_id                          AS employee_id,
                        v.department_id                        AS department_id,
                        v.job_id                               AS job_id,
-                       COALESCE(c.category_type, 'allowance') AS category_type,
-                       SUM(pl.total)                          AS amount
+                       {ctype}                                AS category_type,
+                       SUM(pl.total) FILTER (WHERE NOT {roll}) AS amount
                 {frm}
                  WHERE r.id IN %s
                  GROUP BY r.id, {cyc}, {div}, p.employee_id, v.department_id,
-                          v.job_id, COALESCE(c.category_type, 'allowance')
-            """.format(cyc=cyc, div=div, frm=frm)
+                          v.job_id, {ctype}
+            """.format(cyc=cyc, div=div, ctype=ctype, roll=roll, frm=frm)
         raise ValueError('unknown grain %r' % (grain,))
 
     # -------------------------------------------------------------- freshness
@@ -343,20 +415,22 @@ class PbFactBuilder(models.AbstractModel):
             table = 'pb_fact_line'
             cols = ('fact_run_id', 'run_id', 'company_id', 'month', 'year',
                     'quarter', 'cycle', 'division', 'basis', 'department_id',
-                    'category_id', 'category_type', 'code', 'rule_id',
-                    'component_name', 'amount', 'headcount', 'line_count',
+                    'category_id', 'category_type', 'is_rollup', 'code',
+                    'rule_id', 'component_name', 'amount', 'headcount',
+                    'line_count',
                     'create_uid', 'create_date', 'write_uid', 'write_date')
             vals = []
             for (run_id, company_id, cycle, division, dept_id, cat_id,
-                 cat_type, code, rule_id, comp_name, amount, heads, nlines) in rows:
+                 cat_type, code, rule_id, comp_name, amount, heads, nlines,
+                 is_rollup) in rows:
                 h = headers.get(run_id)
                 if not h:
                     continue
                 counts[run_id] = counts.get(run_id, 0) + 1
                 vals.append((h.id, run_id, company_id or h.company_id.id, h.month,
                              h.year, h.quarter, cycle, division, h.basis, dept_id,
-                             cat_id, cat_type, code, rule_id, comp_name,
-                             amount or 0.0, heads or 0, nlines or 0,
+                             cat_id, cat_type, bool(is_rollup), code, rule_id,
+                             comp_name, amount or 0.0, heads or 0, nlines or 0,
                              uid, now, uid, now))
         else:
             table = 'pb_fact_emp'
