@@ -35,7 +35,7 @@
           </button>
           <button t-attf-class="psa-seg-b {{ state.view === 'types' ? 'on' : '' }}"
                   t-on-click="showTypes">
-            <t t-out="ic('settings', 15)"/> Setup
+            <t t-out="ic('settings', 15)"/> Treatment
           </button>
         </div>
         <button class="psa-btn primary" t-on-click="() => this.download('matrix')"
@@ -254,136 +254,13 @@
       </div>
 
       <!-- ================================================ COMPONENT SETUP -->
-      <div t-if="state.view === 'types'" class="psa-card psa-types">
-        <div class="psa-types-head">
-          <div>
-            <h2>How each component is treated</h2>
-            <p class="psa-sub">Set once per pay component and it holds however the
-              value reaches you — a spreadsheet column, a connected system, a
-              contract, or the scheme's own formulas. <b>Group</b> is what you see
-              on the grid. <b>Pay role</b> is what every report counts it as.
-              <b>Subtotal</b> means the amount is already inside another line, so
-              totals count that one instead of this. <b>Value type</b> decides
-              whether it is read as a number or kept exactly as it arrived.</p>
-          </div>
-          <div class="psa-types-act">
-            <button class="psa-btn primary" t-on-click="saveTypes"
-                    t-att-disabled="(dirtyCount and !state.typesSaving) ? 0 : 1">
-              <span t-if="state.typesSaving">Saving…</span>
-              <span t-elif="dirtyCount">Save <t t-esc="dirtyCount"/> change(s)</span>
-              <span t-else="">Save</span>
-            </button>
-          </div>
-        </div>
-
-        <div t-if="state.typesLoading" class="psa-empty"><p>Reading the scheme…</p></div>
-
-        <div t-elif="state.types" class="psa-types-body">
-          <div class="psa-types-filters">
-            <button t-attf-class="psa-fchip {{ !state.typesFilter ? 'on' : '' }}"
-                    t-on-click="() => this.setTypesFilter('')">
-              All <t t-esc="state.types.rows.length"/>
-            </button>
-            <button t-if="state.types.review_count"
-                    t-attf-class="psa-fchip warn {{ state.typesFilter === 'review' ? 'on' : '' }}"
-                    t-on-click="() => this.setTypesFilter('review')">
-              Needs your answer <t t-esc="state.types.review_count"/>
-            </button>
-            <button t-if="state.types.drift_count"
-                    t-attf-class="psa-fchip warn {{ state.typesFilter === 'drift' ? 'on' : '' }}"
-                    t-on-click="() => this.setTypesFilter('drift')">
-              Stored differently <t t-esc="state.types.drift_count"/>
-            </button>
-          </div>
-
-          <p t-if="state.types.drift_count" class="psa-warn">
-            <t t-out="ic('alert', 15)"/>
-            <span><b t-esc="state.types.drift_count"/> component(s) were delivered as
-              text but stored as a number on this run's payslips. Set the right value
-              type, then recompute the run to rewrite the stored values — saving alone
-              never changes a payslip.</span>
-          </p>
-
-          <table class="psa-types-table">
-            <thead>
-              <tr>
-                <th>Component</th>
-                <th>Comes from</th>
-                <th>Group</th>
-                <th>Pay role</th>
-                <th class="c">Subtotal</th>
-                <th>Tells the run</th>
-                <th>Value type</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr t-foreach="typeRows" t-as="row" t-key="row.code"
-                  t-attf-class="{{ row.drift ? 'drift' : '' }} {{ state.typesDirty[row.code] ? 'dirty' : '' }}">
-                <td class="psa-t-name">
-                  <b t-esc="row.name"/>
-                  <span class="psa-t-code" t-esc="row.code"/>
-                </td>
-                <td>
-                  <span t-attf-class="psa-lane-chip l-{{ row.lane }}"
-                        t-esc="laneMeta(row.lane).label"/>
-                  <span class="psa-t-eg">
-                    <span t-foreach="row.delivered" t-as="eg" t-key="eg_index"
-                          class="psa-t-chip" t-esc="eg"/>
-                  </span>
-                  <span t-if="row.drift" class="psa-t-stored">
-                    stored as <b t-esc="row.drift_stored[0]"/>
-                  </span>
-                </td>
-                <td>
-                  <input class="psa-input" list="psa-groups"
-                         t-att-value="valueOf(row, 'group')"
-                         t-on-change="(ev) => this.onSetupChange(row, 'group', ev)"/>
-                </td>
-                <td>
-                  <select class="psa-select"
-                          t-on-change="(ev) => this.onSetupChange(row, 'pay_role', ev)">
-                    <option value="">— not set —</option>
-                    <option t-foreach="state.types.pay_roles" t-as="pr" t-key="pr.value"
-                            t-att-value="pr.value"
-                            t-att-selected="valueOf(row, 'pay_role') === pr.value ? 'selected' : false"
-                            t-esc="pr.label"/>
-                  </select>
-                  <span class="psa-t-why"
-                        t-att-title="row.pay_role_reason"
-                        t-esc="row.needs_review ? 'needs your answer' : row.pay_role_reason"/>
-                </td>
-                <td class="c">
-                  <input type="checkbox" t-att-checked="valueOf(row, 'rollup')"
-                         t-on-change="(ev) => this.onSetupChange(row, 'rollup', ev)"/>
-                </td>
-                <td>
-                  <select class="psa-select"
-                          t-on-change="(ev) => this.onSetupChange(row, 'signal', ev)">
-                    <option value="">—</option>
-                    <option t-foreach="state.types.signals" t-as="sg" t-key="sg.value"
-                            t-att-value="sg.value"
-                            t-att-selected="valueOf(row, 'signal') === sg.value ? 'selected' : false"
-                            t-esc="sg.label"/>
-                  </select>
-                </td>
-                <td>
-                  <select class="psa-select"
-                          t-on-change="(ev) => this.onSetupChange(row, 'kind', ev)">
-                    <option t-foreach="state.types.options" t-as="opt" t-key="opt.value"
-                            t-att-value="opt.value"
-                            t-att-selected="valueOf(row, 'kind') === opt.value ? 'selected' : false"
-                            t-esc="opt.label"/>
-                  </select>
-                  <span class="psa-t-why" t-att-title="row.kind_reason"
-                        t-esc="row.kind_source === 'user' ? 'you set this' : row.kind_reason"/>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <datalist id="psa-groups">
-            <option t-foreach="state.types.groups" t-as="g" t-key="g" t-att-value="g"/>
-          </datalist>
-        </div>
+      <!-- VALUEKIND P5 — read-only here, editable under Mappings. One
+           component, two hosts: the run is where you notice, Mappings is
+           where you change it. -->
+      <div t-if="state.view === 'types'" class="psa-card">
+        <ComponentTreatmentBoard configId="treatmentConfigId" runId="runId"
+                                 readonly="true"
+                                 onEdit="() => this.openTreatment()"/>
       </div>
 
       <!-- ====================================================== JOURNEY -->

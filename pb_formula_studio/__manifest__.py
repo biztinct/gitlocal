@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.161.0',
+    'version': '19.0.1.164.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -65,6 +65,9 @@
             'pb_formula_studio/static/src/scss/reclass.scss',
             # NETROLE P2 — the category review takeover.
             'pb_formula_studio/static/src/scss/category_review.scss',
+            # VALUEKIND P5 — the component-treatment board, rendered here and
+            # (read-only) inside pb_source_atlas.
+            'pb_formula_studio/static/src/scss/component_treatment.scss',
             # SOURCING S4 — the shared source vocabulary. Listed before its
             # consumers (the studio, the grid) so the bundle order matches the
             # dependency order.
@@ -84,6 +87,7 @@
             # kernel it reads: the bundle order matches the import order.
             'pb_formula_studio/static/src/js/mapping/transform_flow_board.js',
             'pb_formula_studio/static/src/js/mapping/journey_board.js',
+            'pb_formula_studio/static/src/js/component_treatment.js',
             'pb_formula_studio/static/src/js/mapping/mapping_studio.js',
             'pb_formula_studio/static/src/js/payslip_table_tools.js',
             'pb_formula_studio/static/src/js/payslip_image_tools.js',
@@ -98,6 +102,7 @@
             'pb_formula_studio/static/src/xml/mapping_canvas.xml',
             'pb_formula_studio/static/src/xml/transform_flow_board.xml',
             'pb_formula_studio/static/src/xml/journey_board.xml',
+            'pb_formula_studio/static/src/xml/component_treatment.xml',
             'pb_formula_studio/static/src/xml/mapping_studio.xml',
             'pb_formula_studio/static/src/xml/studio.xml',
             'pb_formula_studio/static/src/xml/shadow_run.xml',

@@ -64,6 +64,7 @@ import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { MappingCanvas } from "./mapping_canvas";
 import { TransformFlowBoard } from "./transform_flow_board";
 import { JourneyBoard } from "./journey_board";
+import { ComponentTreatmentBoard } from "@pb_formula_studio/js/component_treatment";
 import { placeInLane } from "./mapping_geometry";
 import { ROLE_LANE_ORDER, roleIcon, roleLabel } from "./mapping_roles";
 // JOURNEY J4 — the Rule Composer is IMPORTED, never re-implemented. J4's brief
@@ -133,6 +134,16 @@ export const MODES = [
       hint: _t("Say which payroll scheme pays each part of the workforce.") },
     { id: "cycle", icon: "refresh", label: _t("Mid ↔ End cycle"),
       hint: _t("Carry a mid-cycle advance's components into the end-cycle run.") },
+    // VALUEKIND P5 — LAST, because it is where the sentence ends: every tab
+    // above says where a value comes from, and this one says what the scheme
+    // then does with it. It arrived here from inside the Source Atlas, which is
+    // reached from a pay run — the wrong home for a setting that changes every
+    // run, past and future. The Atlas now shows the same board read-only and
+    // links here.
+    { id: "treatment", icon: "settings", label: _t("Component treatment"),
+      hint: _t("What the scheme does with each component: which group it shows "
+               + "in, what net pay does with it, whether it is already inside "
+               + "another total, and whether its value is money, hours or text.") },
 ];
 
 /** Which adapters take a transform on the wire, and which take templates. */
@@ -141,6 +152,7 @@ const TEMPLATABLE = ["api", "cycle"];
 export class MappingStudio extends Component {
     static template = "pb_formula_studio.MappingStudio";
     static components = { MappingCanvas, TransformFlowBoard, JourneyBoard,
+                          ComponentTreatmentBoard,
                           RuleComposer, HubBackChip };
     static props = ["*"];
 
@@ -183,6 +195,8 @@ export class MappingStudio extends Component {
             // on an empty Transformations board over a database with eight
             // rules in it and concludes the feature is broken.
             connectorPicked: linkedConnector,
+            // VALUEKIND P5 — reported by the treatment board once it has read.
+            treatmentCount: 0,
             data: null,
             dismissed: [],
             // SOURCING S6 — columns named by hand on the spreadsheet board
@@ -460,6 +474,10 @@ export class MappingStudio extends Component {
             case "scheme":
                 return { kind: "static", title: _t("Employee segments"),
                          sub: _t("Departments with employees"), icon: "users" };
+            case "treatment":
+                return { kind: "static", title: _t("Every component"),
+                         sub: _t("However its value reaches the scheme"),
+                         icon: "layers" };
             default:      // cycle
                 return { kind: "static",
                          title: (d.mid && d.mid.name) || _t("Mid-cycle scheme"),
@@ -478,6 +496,7 @@ export class MappingStudio extends Component {
             case "api":
             case "transform":
             case "import":
+            case "treatment":
                 return { kind: "config", title: this.configName,
                          sub: this.toSub, icon: "calculator" };
             case "employee":
@@ -540,6 +559,11 @@ export class MappingStudio extends Component {
     get isTransform() { return this.state.mode === "transform"; }
 
     get isJourney() { return this.state.mode === "journey"; }
+
+    get isTreatment() { return this.state.mode === "treatment"; }
+
+    /** How many components the treatment board is showing. */
+    get treatmentCount() { return this.state.treatmentCount || 0; }
 
     /** "42 wired" — the Journey's own middle-of-the-sentence count. */
     get journeyWired() {
@@ -721,6 +745,15 @@ export class MappingStudio extends Component {
                     break;
                 case "scheme":
                     r = await this.orm.call(MODEL, "scheme_mapping_data", [cfg, false]);
+                    break;
+                case "treatment":
+                    // The board owns its own read (`value_kind_board`), because
+                    // it is the same component the Source Atlas renders and it
+                    // cannot depend on this shell's payload to exist. Nothing
+                    // here to fetch — but the shell still needs an `ok` payload
+                    // or it renders its "could not load" state over a board that
+                    // loaded perfectly well.
+                    r = { ok: true };
                     break;
                 default:
                     r = await this.orm.call(MODEL, "mapping_canvas_data", [cfg]);
@@ -1931,7 +1964,10 @@ export class MappingStudio extends Component {
         // a wire, and the Journey is the tab you are on precisely because you do
         // not yet know which source. Its ghosts carry the invitation instead,
         // one per lane, each pointing at the tab that can actually do it.
-        if (this.isTransform || this.isJourney) { return false; }
+        // VALUEKIND P5 — never on Component treatment, for the plainest
+        // reason of the three: that board has no wires at all, so "draw a wire"
+        // is an instruction for a different screen.
+        if (this.isTransform || this.isJourney || this.isTreatment) { return false; }
         return !!(this.state.data && this.state.data.ok && !this.mappedCount);
     }
 

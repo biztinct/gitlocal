@@ -87,6 +87,9 @@
                    exist on a board with five lanes and no suggestions, and a
                    disabled control teaches the reader to stop trying (W64). -->
               <span t-elif="isJourney" class="pbms-count is-static"><b t-esc="journeyWired"/> wired</span>
+              <!-- VALUEKIND P5 — a board with no wires has nothing to count
+                   and nothing to flash. It names what it holds instead. -->
+              <span t-elif="isTreatment" class="pbms-count is-static"><b t-esc="treatmentCount"/> components</span>
               <button t-else="" class="pbms-count" t-att-disabled="mappedCount ? false : 'disabled'"
                       title="Flash every mapped wire on the board"
                       t-on-click="flashWires"><b t-esc="mappedCount"/> mapped</button>
@@ -452,6 +455,14 @@
             <div t-if="isJourney" class="pbms-canvas">
               <JourneyBoard data="state.data" busy="state.busy"
                             onOpenDoor="(door) => this.openDoor(door)"/>
+            </div>
+
+            <!-- VALUEKIND P5 — the same component the Source Atlas renders
+                 read-only. Editable here, because what it changes belongs to
+                 the scheme rather than to any one pay run. -->
+            <div t-elif="isTreatment" class="pbms-canvas">
+              <ComponentTreatmentBoard configId="state.configId"
+                                       onLoaded="(n) => this.state.treatmentCount = n"/>
             </div>
 
             <div t-elif="isTransform" class="pbms-canvas">
