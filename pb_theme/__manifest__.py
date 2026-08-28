@@ -20,7 +20,7 @@
         Palette: Indigo #5A4BB0 primary · Cyan #0891B2 accent · Emerald money.
         SOLID colours only (no gradients). Inter typography. Lucide iconography.
     ''',
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.1.0',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -46,7 +46,13 @@
         ],
         'web.assets_backend': [
             'pb_theme/static/src/scss/pb_overrides.scss',
+            'pb_theme/static/src/scss/language_switcher.scss',
             'pb_theme/static/src/js/vi_translation_terms.js',
+            'pb_theme/static/src/js/language_switcher.js',
+            'pb_theme/static/src/xml/language_switcher.xml',
+        ],
+        'web.assets_unit_tests': [
+            'pb_theme/static/tests/**/*',
         ],
     },
     'installable': True,
