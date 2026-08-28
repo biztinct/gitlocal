@@ -244,10 +244,14 @@ class TestNetRoleClassifier(TransactionCase):
                     'INFOFIELD': 0.0}
         slip._create_payslip_lines_from_formulas(self.config.rule_ids, computed)
         by_code = {line.code: line for line in slip.line_ids}
-        for code in ('SIAMT', 'PITAMT', 'SIBASE', 'BASE', 'ERSI', 'ERCOST'):
+        for code in ('SIAMT', 'PITAMT', 'SIBASE', 'BASE', 'ERCOST'):
             self.assertTrue(by_code[code].component_detail,
                             "%s: the producer must copy the flag" % code)
-        for code in ('DEDAGG', 'GROSSAGG', 'REFUND'):
+        # VALUEKIND P5 — ERSI moved to the other list. Its only roll-up is
+        # ERCOST, which is excluded outright for containing net pay, so ERSI is
+        # what a run counts as employer cost; calling it a detail of an
+        # excluded total is what made the figure read zero. See test 15.
+        for code in ('DEDAGG', 'GROSSAGG', 'REFUND', 'ERSI'):
             self.assertFalse(by_code[code].component_detail, code)
         self.assertEqual(by_code['DEDAGG'].category_id.code, 'DED')
         self.assertEqual(by_code['GROSSAGG'].category_id.code, 'GROSS')
@@ -289,3 +293,85 @@ class TestNetRoleClassifier(TransactionCase):
                              "%s: nothing classified this scheme" % line.code)
         for rule in self.config.rule_ids:
             self.assertFalse(rule.net_role)
+
+    # ------------------------------------------------------------------ 15
+    def test_15_a_detail_of_an_excluded_total_is_counted_itself(self):
+        """VALUEKIND P5 — ABM's Employer cost read ZERO for this reason.
+
+        `ERCOST` is a grand total that contains net pay, so it is excluded
+        outright. Marking `ERSI` a detail of it meant every level deferred to
+        the level above and the top level was excluded, so nothing anywhere was
+        counted. A detail is only a detail of a roll-up that is itself counted.
+        """
+        self._classify()
+        self.assertTrue(self.rules['ERCOST'].net_role_detail,
+                        "the grand total still contains money counted elsewhere")
+        self.assertFalse(
+            self.rules['ERSI'].net_role_detail,
+            "ERSI's only roll-up is excluded, so ERSI is what a run counts")
+
+    # ------------------------------------------------------------------ 16
+    def test_16_a_detail_two_levels_down_is_still_a_detail(self):
+        """The counted ancestor may be two hops up, and usually is.
+
+        `SIBASE` is inside `SIAMT`, which is inside `DEDAGG`, which is counted.
+        A rule that only looked one level up would call SIBASE countable
+        because its immediate parent is not, and report the insurance twice.
+        """
+        self._classify()
+        self.assertFalse(self.rules['DEDAGG'].net_role_detail)
+        self.assertTrue(self.rules['SIAMT'].net_role_detail)
+        self.assertTrue(self.rules['SIBASE'].net_role_detail,
+                        "SIBASE's money is inside SIAMT, which is inside DEDAGG")
+
+    # ------------------------------------------------------------------ 17
+    def test_17_a_quantity_is_never_added_to_net_pay(self):
+        """VALUEKIND P5 — the value type gates the pay role.
+
+        The graph walk says WHETHER a component reaches net pay; it cannot say
+        HOW. Hours reach it as a multiplier, and a multiplier is not a share of
+        the money. On ABM nine `quantity` components carried 'earning' and were
+        kept out of the money measures by the Subtotal flag alone.
+        """
+        hours = self.rules['SWINGSRC']
+        hours.write({'value_kind': 'quantity', 'value_kind_source': 'user'})
+        self._classify()
+        self.assertEqual(hours.net_role, 'info',
+                         "a value counted in hours cannot be added to net pay")
+        self.assertIn('hours', hours.net_role_reason)
+        # …and the money components around it are untouched.
+        self.assertEqual(self._role('BASE'), 'earning')
+        self.assertEqual(self._role('PITAMT'), 'deduction')
+
+    # ------------------------------------------------------------------ 18
+    def test_18_the_board_refuses_a_money_role_on_a_non_money_type(self):
+        self._classify()
+        hours = self.rules['SWINGSRC']
+        hours.write({'value_kind': 'quantity', 'value_kind_source': 'user'})
+        from odoo.exceptions import UserError
+        with self.assertRaises(UserError):
+            self.config.set_component_setup({'SWINGSRC': {'pay_role': 'earning'}})
+        # Changing the TYPE alone retires the role rather than leaving the row
+        # saying two things that cannot both be true.
+        money = self.rules['REFUND']
+        self.config.set_component_setup({'REFUND': {'pay_role': 'earning'}})
+        self.config.set_component_setup({'REFUND': {'kind': 'quantity'}})
+        self.assertEqual(money.net_role, 'info')
+
+    # ------------------------------------------------------------------ 19
+    def test_19_fix_role_conflicts_clears_what_was_stored_before_the_gate(self):
+        """Existing rows are flagged, not silently rewritten — this is the
+        one action behind the banner that clears them."""
+        self._classify()
+        hours = self.rules['SWINGSRC']
+        # Exactly the state ABM was found in: a money role already stored, and
+        # a value type that forbids it.
+        hours.write({'value_kind': 'quantity', 'value_kind_source': 'user',
+                     'net_role': 'earning'})
+        board = self.config.value_kind_board()
+        self.assertEqual(board['role_conflict_count'], 1)
+        row = next(r for r in board['rows'] if r['code'] == 'SWINGSRC')
+        self.assertTrue(row['role_conflict'])
+        self.assertEqual(self.config.fix_role_conflicts(), ['SWINGSRC'])
+        self.assertEqual(hours.net_role, 'info')
+        self.assertEqual(self.config.value_kind_board()['role_conflict_count'], 0)

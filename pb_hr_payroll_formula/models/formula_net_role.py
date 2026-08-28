@@ -43,6 +43,7 @@ import unicodedata
 from odoo import _, api, fields, models
 
 from ..formula_engine.column_manager import ColumnManager
+from . import value_kind_classifier
 
 _logger = logging.getLogger(__name__)
 
@@ -622,15 +623,54 @@ class HrFormulaConfigNetRole(models.Model):
                 summary[config.id] = result
                 continue
             classification = result.pop('_classification')
+            gated = []
             for rule in config.rule_ids:
+                role = classification.roles.get(rule.id) or False
+                reason = classification.reasons.get(rule.id) or False
+                confidence = classification.confidences.get(rule.id) or False
+                # VALUEKIND P5 — the graph walk says WHETHER a component
+                # reaches net pay. It cannot say HOW, and for a quantity the
+                # answer is "as a multiplier", which is not a share of the
+                # money. Refuse the money role here rather than in the reports,
+                # so there is one answer and every reader of `net_role` gets it.
+                role, demoted = value_kind_classifier.gate_role(rule.value_kind, role)
+                if demoted:
+                    gated.append(rule.code)
+                    reason = config._role_gate_reason(rule)
+                    confidence = 'certain'
                 rule.write({
-                    'net_role': classification.roles.get(rule.id) or False,
+                    'net_role': role,
                     'net_role_detail': classification.details.get(rule.id, False),
-                    'net_role_reason': classification.reasons.get(rule.id) or False,
-                    'net_role_confidence': classification.confidences.get(rule.id) or False,
+                    'net_role_reason': reason,
+                    'net_role_confidence': confidence,
                 })
+            if gated:
+                result['gated'] = gated
+                _logger.info(
+                    "VALUEKIND P5: scheme %s — %s component(s) kept off the "
+                    "money roles by their value type: %s",
+                    config.id, len(gated), ', '.join(sorted(gated)))
             summary[config.id] = result
         return summary
+
+    @api.model
+    def _role_gate_reason(self, rule):
+        """Why this component cannot be added to net pay, in the owner's words."""
+        return self._role_gate_reason_for(rule, rule.value_kind)
+
+    @api.model
+    def _role_gate_reason_for(self, rule, kind):
+        word = {
+            'quantity': _("counted in hours or days"),
+            'rate': _("a percentage"),
+            'text': _("text"),
+            'date': _("a date"),
+            'boolean': _("a yes/no answer"),
+            'identifier': _("a reference, not an amount"),
+        }.get(kind or '', _("not an amount"))
+        return _("Information only: this value is %(word)s, so it cannot be "
+                 "added to or taken off net pay. It may still be used inside "
+                 "other components' formulas.", word=word)
 
     def suggest_categories(self):
         """Return the categories the formulas imply — and write NOTHING.
@@ -1086,12 +1126,33 @@ class HrFormulaConfigNetRole(models.Model):
         `SIHIIUTOT105` is subtracted from net pay and so is `TOTALDEDUCTI`,
         because the second one is the first one plus two more. A run that sums
         both reports the same money twice.
+
+        VALUEKIND P5 — but a detail is only a detail if the roll-up that
+        contains it is ITSELF counted. ABM's employer cost read ₫0 for exactly
+        this reason: `Total Cost to Employer` is a grand total that also
+        contains net pay, so it is excluded by the pass above; `SI-HI-UI Total
+        21.5%` and `Trade Union ER 2%` were then marked details of it, and the
+        three parts behind the 21.5% were marked details of that. Every level
+        deferred to the level above and the top level was excluded, so nothing
+        anywhere was counted.
+
+        So the test is not "is it inside a roll-up" but "is it inside a roll-up
+        that is itself counted" — and that is a one-line change, because a
+        roll-up which is merely a detail of something else still carries its
+        children's money up to whatever DOES get counted. Only a roll-up
+        excluded outright breaks the chain, and when every roll-up above a
+        component is excluded, that component has to be counted itself.
         """
+        # A grand total excluded upstream is not a detail OF anything: it is
+        # money already counted elsewhere, and nothing reaches a total through
+        # it. Everything else passes its children's money on.
+        excluded = {rid for rid, flag in classification.details.items() if flag}
+
         for rule_id, role in classification.roles.items():
-            if role in ('net',) or classification.details.get(rule_id):
+            if role == 'net' or rule_id in excluded:
                 continue
             for target, sign, _derived, _conf in outgoing.get(rule_id, []):
-                if target == net_rule.id or sign != 1:
+                if target == net_rule.id or sign != 1 or target in excluded:
                     continue
                 if classification.roles.get(target) == role:
                     classification.details[rule_id] = True
