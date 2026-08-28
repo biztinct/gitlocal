@@ -14,6 +14,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { ComponentTreatmentBoard } from "@pb_formula_studio/js/component_treatment";
 
 const MODEL = "pb.source.atlas";
 const COL_PAGE = 18; // components rendered at once — the DOM stays small (C8)
@@ -31,6 +32,7 @@ const ROLE_META = {
 export class PbSourceAtlas extends Component {
     static template = "pb_source_atlas.Atlas";
     static props = { action: { type: Object, optional: true }, "*": true };
+    static components = { ComponentTreatmentBoard };
 
     setup() {
         this.orm = useService("orm");
@@ -60,12 +62,6 @@ export class PbSourceAtlas extends Component {
             journeyLoading: false,
             journeyKey: "",
             downloading: "",
-            // VALUEKIND P2 — the Field types board.
-            types: null,
-            typesLoading: false,
-            typesDirty: {},
-            typesSaving: false,
-            typesFilter: "",
         });
 
         this._searchToken = 0;
@@ -152,128 +148,33 @@ export class PbSourceAtlas extends Component {
         this.state.grid || (await this.loadGrid());
     }
 
-    async showTypes() {
+    showTypes() {
         this.state.view = "types";
-        if (!this.state.types) {
-            await this.loadTypes();
-        }
     }
 
-    // ------------------------------------------------- VALUEKIND: field types
+    // ------------------------------------------- VALUEKIND: component setup
     /**
-     * The board reads through the Atlas but WRITES through hr.formula.config.
+     * The board itself moved to Settings -> Integrations -> Mappings (P5).
      *
-     * `pb.source.atlas` is a strictly read-only facade and stays one — its
-     * `test_07` counts rows around every endpoint. The type of a value is a
-     * property of the pay COMPONENT, so the model that owns the component owns
-     * the write. That is also why one board covers a spreadsheet column and an
-     * API wire alike: neither of them holds the type.
+     * What it edits belongs to the SCHEME: change a pay role while standing in
+     * June's pay run and you have changed July, August and every run already
+     * computed. The Atlas is where you NOTICE that something is wrong — the
+     * amber "stored differently" banner is genuinely about THIS run — so it
+     * still shows the board, read-only, and sends you to the one place that
+     * can change it. `ComponentTreatmentBoard` is one implementation rendered
+     * in two hosts, so the two can never disagree.
      */
-    async loadTypes() {
-        this.state.typesLoading = true;
-        try {
-            const configId = this.state.atlas?.config_ids?.[0];
-            if (!configId) {
-                this.state.error = _t("This pay run has no scheme to read types from.");
-            } else {
-                this.state.types = await this.orm.call(
-                    "hr.formula.config", "value_kind_board", [[configId], this.runId]
-                );
-                this.state.typesDirty = {};
-            }
-        } catch (error) {
-            this.state.error = error?.data?.message || error?.message || _t("Could not read the field types.");
-        }
-        this.state.typesLoading = false;
+    get treatmentConfigId() {
+        return this.state.atlas?.config_ids?.[0] || false;
     }
 
-    get typeRows() {
-        const rows = this.state.types?.rows || [];
-        if (this.state.typesFilter === "drift") {
-            return rows.filter((r) => r.drift);
-        }
-        if (this.state.typesFilter === "review") {
-            return rows.filter((r) => r.needs_review);
-        }
-        return rows;
-    }
-
-    setTypesFilter(which) {
-        this.state.typesFilter = this.state.typesFilter === which ? "" : which;
-    }
-
-    get dirtyCount() {
-        return Object.keys(this.state.typesDirty).length;
-    }
-
-    /**
-     * The four axes are edited together, so the pending change is a PATCH per
-     * component rather than a single value: a person who moves a component to
-     * a new group and then corrects its pay role has made one change to one
-     * row, and one Save should carry both.
-     */
-    patchOf(row) {
-        return this.state.typesDirty[row.code] || {};
-    }
-
-    valueOf(row, field) {
-        const patch = this.patchOf(row);
-        return field in patch ? patch[field] : row[field];
-    }
-
-    onSetupChange(row, field, ev) {
-        const target = ev.target;
-        const chosen = target.type === "checkbox" ? target.checked : target.value;
-        const patch = { ...this.patchOf(row) };
-        if (chosen === row[field]) {
-            delete patch[field];
-        } else {
-            patch[field] = chosen;
-        }
-        if (Object.keys(patch).length) {
-            this.state.typesDirty[row.code] = patch;
-        } else {
-            delete this.state.typesDirty[row.code];
-        }
-    }
-
-    async saveTypes() {
-        if (!this.dirtyCount || this.state.typesSaving) {
-            return;
-        }
-        this.state.typesSaving = true;
-        try {
-            const configId = this.state.types.config_id;
-            const res = await this.orm.call(
-                "hr.formula.config", "set_component_setup",
-                [[configId], { ...this.state.typesDirty }]
-            );
-            this.notif.add(res.note, { type: "success" });
-            await this.loadTypes();
-            // The grid renders BY kind, so it is now stale.
-            this.state.grid = null;
-        } catch (error) {
-            this.notif.add(
-                error?.data?.message || error?.message || _t("Could not save."),
-                { type: "danger" }
-            );
-        }
-        this.state.typesSaving = false;
-    }
-
-    async resetType(row) {
-        try {
-            const configId = this.state.types.config_id;
-            await this.orm.call("hr.formula.config", "reset_value_kind",
-                                [[configId], [row.code]]);
-            delete this.state.typesDirty[row.code];
-            await this.loadTypes();
-        } catch (error) {
-            this.notif.add(
-                error?.data?.message || error?.message || _t("Could not reset."),
-                { type: "danger" }
-            );
-        }
+    openTreatment() {
+        this.action.doAction("pb_formula_studio.action_pb_mapping_studio", {
+            // `pb_config`, not `pb_config_id` — the Studio's arrival keys are
+            // pb_mode / pb_connector / pb_endpoint / pb_config.
+            additionalContext: { pb_mode: "treatment",
+                                 pb_config: this.treatmentConfigId },
+        });
     }
 
     async focusLane(laneKey) {

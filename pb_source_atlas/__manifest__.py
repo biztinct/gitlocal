@@ -23,15 +23,19 @@ programme (``hr.payslip.formula_input_sources``); this module only reads it,
 joins it back to the raw material, and draws it. Per-lane spreadsheet downloads
 re-materialise exactly what the screen shows.
 """,
-    'version': '19.0.1.7.0',
+    'version': '19.0.1.8.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     # pb_import_kit supplies the shared --pbim-* tokens and the ONE Lucide icon
     # registry (a per-module icon map is how a design system stops being one).
+    # VALUEKIND P5 — `pb_formula_studio` owns the component-treatment board now
+    # that it is edited under Mappings; the Atlas renders the same component
+    # read-only. The dependency points this way on purpose: a viewer may depend
+    # on the editor, never the other way round.
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_formula', 'pb_payruns',
-                'pb_import_kit'],
+                'pb_import_kit', 'pb_formula_studio'],
     'data': [
         'views/pb_source_atlas_views.xml',
     ],
