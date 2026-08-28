@@ -223,6 +223,20 @@
                             last computed, not from now. Press <b>Recompute Formulas</b> on the pay run if you
                             want them worked out again, or delete the drafts first and generate a fresh set.
                         </p>
+                        <!-- The connected systems were refreshed first, and what
+                             that produced. A run on stale data is one of the two
+                             ways a pay run silently reports last month's pay. -->
+                        <p class="pw-muted" t-if="state.summary.sync and state.summary.sync.ran">
+                            Synced <t t-esc="state.summary.sync.connectors.length"/>
+                            connected system(s) for this period before computing.
+                        </p>
+                        <p class="pw-warn" t-if="state.summary.sync and state.summary.sync.errors.length">
+                            <b>Could not refresh <t t-esc="state.summary.sync.errors.length"/>
+                            connected system(s)</b> — these figures may be from the last
+                            successful sync rather than from now.
+                            <span t-foreach="state.summary.sync.errors" t-as="e" t-key="e_index"
+                                  class="pw-warn-line" t-esc="e"/>
+                        </p>
                         <!-- NETROLE P3: what the file did, and what running without one cost. -->
                         <p class="pw-muted" t-if="state.summary.sheet">
                             <t t-esc="state.summary.sheet.filename"/> fed

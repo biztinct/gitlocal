@@ -109,6 +109,16 @@ class HrPayslipRun(models.Model):
     pb_total_employer_cost = fields.Monetary(
         string='Employer Cost', compute='_compute_pb_totals',
         currency_field='pb_currency_id', store=True)
+    # VALUEKIND P5 — how many payslips here were computed on nothing but scheme
+    # defaults. On the reference tenant a run of 36 reported a gross of
+    # ₫243,000,000 and a KPI band that looked perfectly healthy; every one of
+    # the 54 inputs had resolved to `src: none`, and the ₫243m was one
+    # component's default value repeated 36 times. Payroll that ran on no data
+    # must not be able to look like payroll that ran.
+    pb_unsourced_count = fields.Integer(
+        string='Payslips With No Source Data', compute='_compute_pb_totals',
+        store=True)
+
     pb_currency_id = fields.Many2one(
         'res.currency', compute='_compute_pb_totals', store=True)
     # Division key (from the run's payslips' formula config) — powers the board
@@ -200,6 +210,7 @@ class HrPayslipRun(models.Model):
             run.pb_employee_count = 0
             run.pb_total_net = run.pb_total_gross = run.pb_total_deductions = 0.0
             run.pb_total_employer_cost = 0.0
+            run.pb_unsourced_count = 0
             company = getattr(run, 'company_id', False) or self.env.company
             run.pb_currency_id = company.currency_id or default_cur
         run_ids = [r.id for r in self if r.id]
@@ -234,6 +245,28 @@ class HrPayslipRun(models.Model):
             GROUP BY p.payslip_run_id
         """, (tuple(run_ids),))
         counts = dict(cr.fetchall())
+        # Payslips computed entirely on defaults. The column lives in the
+        # formula engine, which this cockpit does not depend on, so it may
+        # genuinely be absent — when it is, the banner simply never shows.
+        unsourced = {}
+        if 'pb_sourced_inputs' in self.env['hr.payslip']._fields:
+            self.env['hr.payslip'].flush_model(['pb_sourced_inputs'])
+            cr.execute("""
+                SELECT p.payslip_run_id, count(*)
+                FROM hr_payslip p
+                WHERE p.payslip_run_id IN %s AND p.state != 'cancel'
+                  AND COALESCE(p.pb_sourced_inputs, 0) = 0
+                  AND p.calculation_method = 'formula'
+                  -- A payslip with no provenance blob PREDATES the recording of
+                  -- it, which is a different statement from "this payslip
+                  -- sourced nothing" and no reader may collapse the two. The
+                  -- 19.0.1.97.0 migration counts every blob that does exist, so
+                  -- what is left here is genuinely unmeasurable, not zero.
+                  AND p.formula_input_sources IS NOT NULL
+                  AND p.formula_input_sources <> ''
+                GROUP BY p.payslip_run_id
+            """, (tuple(run_ids),))
+            unsourced = dict(cr.fetchall())
         # NETROLE — a component that is folded into a roll-up is counted through
         # the roll-up, never twice. `SI-HI-IU Total 10.5%`, `Monthly PIT` and
         # `Total Deduction` are all subtracted from net pay, but the third one
@@ -265,6 +298,7 @@ class HrPayslipRun(models.Model):
         for run in self:
             d = agg.get(run.id, {})
             run.pb_employee_count = counts.get(run.id, 0)
+            run.pb_unsourced_count = unsourced.get(run.id, 0)
             run.pb_total_net = d.get('NET', 0.0)
             # A scheme built by importing a payroll workbook rarely has a
             # component filed under "Gross" — it has a basic and a list of

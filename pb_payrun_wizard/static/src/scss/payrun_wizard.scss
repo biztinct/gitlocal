@@ -92,6 +92,14 @@
     .pw-result-ic.ok { background: #E7F6EF; color: #059669; }
     .pw-result h3 { font-size: 19px; font-weight: 800; }
     .pw-muted { color: var(--pw-muted); font-size: 13px; } .pw-muted.mb { margin-bottom: 12px; }
+    // A feed that could not be refreshed is not a footnote: the figures on the
+    // screen behind it may be last month's.
+    .pw-warn {
+        margin: 12px auto 0; max-width: 44ch; text-align: left;
+        background: #FEF3C7; color: #92400E;
+        border-radius: 10px; padding: 10px 13px; font-size: 12.5px; line-height: 1.5;
+    }
+    .pw-warn-line { display: block; margin-top: 4px; font-size: 11.5px; opacity: .9; }
     .pw-statpills { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
     .pw-statpill { background: #F4F7FC; border: 1px solid var(--pw-border); border-radius: 12px; padding: 10px 16px; min-width: 80px; }
     .pw-statpill .n { font-size: 20px; font-weight: 800; } .pw-statpill .l { font-size: 10.5px; color: var(--pw-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }

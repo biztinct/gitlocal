@@ -63,7 +63,20 @@
                         state_field="state"/>
             </xpath>
 
+            <!-- VALUEKIND P5 — payroll that ran on no data must not be able to
+                 look like payroll that ran. Above the KPI band, because the
+                 band is exactly what it is warning you not to believe. -->
             <xpath expr="//sheet/group" position="after">
+                <div class="alert alert-warning pb-payrun-nodata" role="alert"
+                     invisible="not pb_unsourced_count">
+                    <b><field name="pb_unsourced_count" nolabel="1" readonly="1"
+                              class="pb-nodata-n"/> payslip(s) were computed with no
+                        source data.</b>
+                    Every value came from a scheme default — no file, no connected
+                    system, no contract, no employee record — so the figures below
+                    are not this period's pay. Run payroll again with this period's
+                    pay data, or sync the connected system first.
+                </div>
                 <div class="pb-payrun-kpis">
                     <div class="pb-pk">
                         <span class="pb-pk-l">Total gross</span>
