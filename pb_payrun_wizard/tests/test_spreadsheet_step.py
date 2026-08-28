@@ -259,3 +259,72 @@ class TestSpreadsheetStep(TransactionCase):
     def test_a_run_that_was_never_asked_for_a_file_says_nothing_about_one(self):
         prep = self.Wizard.prepare_run(dict(self.vals))
         self.assertNotIn('skipped_components', prep)
+
+
+@tagged('post_install', '-at_install')
+class TestSyncPlan(TransactionCase):
+    """The pull is scoped to what the scheme actually reads.
+
+    `action_pull_data`'s own default is `['employee', 'salary']`, and on the
+    reference tenant that was both too much and too little: NOTHING read
+    `salary` there, while `attendance` and `custom` — 9 wires including the
+    worked hours every deduction is a percentage of — were not pulled at all.
+    So a run that synced "successfully" still had no hours. `salary` is also
+    the expensive one: it loops per employee making three API calls each.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.Wizard = self.env['pb.payrun.wizard']
+        if 'hr.integration.field.mapping' not in self.env:
+            self.skipTest("the integration layer is not installed here")
+        self.config = self.env['hr.formula.config'].create({
+            'name': 'Sync plan scheme', 'code': 'PWSYNC', 'country_code': 'VN'})
+        self.rule = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'code': 'WORKEDHRS',
+            'name': 'Worked hours', 'column_type': 'input'})
+        self.connector = self.env['hr.integration.connector'].create({
+            'name': 'Sync plan system', 'connector_type': 'demo'})
+
+    def _endpoint(self, data_type, name):
+        return self.env['hr.integration.endpoint'].create({
+            'connector_id': self.connector.id,
+            'name': name, 'data_type': data_type})
+
+    def _wire(self, endpoint, source_field):
+        return self.env['hr.integration.field.mapping'].create({
+            'connector_id': self.connector.id,
+            'endpoint_id': endpoint.id,
+            'source_field': source_field,
+            'target_rule_id': self.rule.id})
+
+    def test_the_plan_covers_the_kinds_the_scheme_reads(self):
+        self._wire(self._endpoint('attendance', 'Attendance summary'), 'WORKEDHRS')
+        kinds = {s['data_type'] for s in self.Wizard._payrun_sync_plan({})}
+        self.assertIn('attendance', kinds,
+                      "the hours every deduction is a percentage of")
+
+    def test_a_kind_nothing_reads_is_not_pulled(self):
+        self._wire(self._endpoint('attendance', 'Attendance summary'), 'WORKEDHRS')
+        self._endpoint('salary', 'Salary form')      # exists, but nothing wires it
+        kinds = {s['data_type'] for s in self.Wizard._payrun_sync_plan({})}
+        self.assertNotIn('salary', kinds,
+                         "an unread feed is cost with no benefit — and this is "
+                         "the per-employee one")
+
+    def test_one_step_per_system_and_kind(self):
+        att = self._endpoint('attendance', 'Attendance summary')
+        self._wire(att, 'WORKEDHRS')
+        self._wire(att, 'OTHERKEY')                  # second wire, same endpoint
+        plan = self.Wizard._payrun_sync_plan({})
+        self.assertEqual(len(plan), 1, "two wires on one feed is one pull")
+        self.assertIn('Attendance', plan[0]['label']
+                      if 'Attendance' in plan[0]['label'] else 'attendance',
+                      plan[0]['label'])
+
+    def test_a_step_names_itself_for_the_progress_bar(self):
+        self._wire(self._endpoint('custom', 'Overtime requests'), 'WORKEDHRS')
+        plan = self.Wizard._payrun_sync_plan({})
+        self.assertTrue(plan[0]['label'],
+                        "the wizard shows this while it waits")
+        self.assertIn('Sync plan system', plan[0]['label'])
