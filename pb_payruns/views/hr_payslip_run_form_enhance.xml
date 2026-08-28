@@ -60,6 +60,13 @@
                         <span class="pb-pk-l">Deductions</span>
                         <field name="pb_total_deductions" nolabel="1" class="pb-pk-v amber"/>
                     </div>
+                    <!-- What the company pays on top of gross. Shown only when
+                         the scheme actually has employer contributions, so a
+                         run that has none keeps the tighter four-tile band. -->
+                    <div class="pb-pk" invisible="not pb_total_employer_cost">
+                        <span class="pb-pk-l">Employer cost</span>
+                        <field name="pb_total_employer_cost" nolabel="1" class="pb-pk-v"/>
+                    </div>
                     <div class="pb-pk hero">
                         <span class="pb-pk-l">Total net</span>
                         <field name="pb_total_net" nolabel="1" class="pb-pk-v"/>
