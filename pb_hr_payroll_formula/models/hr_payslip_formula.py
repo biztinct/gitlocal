@@ -61,6 +61,20 @@ class HrPayslipFormula(models.Model):
         readonly=True,
         help="Where each input value came from on the run that produced this payslip."
     )
+    # How many of those inputs actually CAME from somewhere. A payslip where
+    # this is 0 was computed entirely on scheme defaults — no file, no feed, no
+    # contract, no employee record — and on the reference tenant that produced
+    # 36 payslips, a gross of ₫243,000,000 (one component's default value,
+    # repeated) and a KPI band that looked perfectly healthy. The provenance to
+    # detect it was already being written; nothing was counting it.
+    #
+    # Stored as an integer beside the blob rather than re-parsed on demand:
+    # the run's banner has to be cheap enough to compute over every payslip.
+    pb_sourced_inputs = fields.Integer(
+        string='Inputs With A Source', readonly=True, copy=False,
+        help="How many input values came from a file, a feed, a contract or a "
+             "record. Zero means the payslip was computed entirely on defaults."
+    )
 
     formula_computed_values = fields.Text(
         string='Computed Values (JSON)',
@@ -129,6 +143,7 @@ class HrPayslipFormula(models.Model):
             input_values = payslip._get_formula_input_values(config, provenance=input_sources)
             payslip.formula_input_values = json.dumps(input_values, indent=2)
             payslip.formula_input_sources = json.dumps(input_sources, indent=2)
+            payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
 
             # Get rules in order (display) but compute using dependency sorting
             rules = config.rule_ids.sorted(key=lambda r: r.sequence)
@@ -425,6 +440,17 @@ class HrPayslipFormula(models.Model):
                 "J3 S4: could not read connected-system data for payslip %s",
                 self.id, exc_info=True)
             return {}
+
+    @api.model
+    def pb_count_sourced(self, input_sources):
+        """How many provenance entries actually came from somewhere.
+
+        `src == 'none'` means the resolver found nothing and the component fell
+        to its default. Counting them is the difference between "payroll ran"
+        and "payroll ran on nothing".
+        """
+        return sum(1 for v in (input_sources or {}).values()
+                   if isinstance(v, dict) and (v.get('src') or 'none') != 'none')
 
     def _get_formula_input_values(self, config, provenance=None):
         """
@@ -734,6 +760,7 @@ class HrPayslipFormula(models.Model):
                 )
                 payslip.formula_input_values = json.dumps(input_values)
                 payslip.formula_input_sources = json.dumps(input_sources)
+                payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
                 payslip.line_ids.unlink()
                 batch._compute_and_create_payslip_lines(payslip, input_values)
             else:

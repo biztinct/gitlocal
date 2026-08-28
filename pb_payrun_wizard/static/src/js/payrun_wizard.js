@@ -48,6 +48,7 @@ export class PayrunWizard extends Component {
             // NETROLE P3 — the month's spreadsheet.
             // VALUEKIND P4 — who this run covers. `statuses` is null until the
             // defaults arrive, then it is the set of employment statuses ticked.
+            syncing: false,
             who: {
                 statuses: null,     // Set-like object {status: true}
                 search: "",
@@ -304,6 +305,22 @@ export class PayrunWizard extends Component {
                 payload.employee_ids = [...this.state.who.picked];
             }
         }
+        // Freshen the connected systems BEFORE anything is computed. A pay run
+        // that computes first and syncs never is a pay run on stale data, and
+        // the failure is silent because the numbers still look like numbers.
+        // It never blocks: a feed that is down is reported and the run goes on,
+        // because the file and the contract fallbacks may well be enough.
+        this.state.progress = null;
+        this.state.syncing = true;
+        let sync = null;
+        try {
+            sync = await this.orm.silent.call(
+                "pb.payrun.wizard", "sync_feeds", [payload]);
+        } catch (e) {
+            console.warn("pb_payrun_wizard: feed sync failed", e);
+        }
+        this.state.syncing = false;
+
         const prep = await this.orm.silent.call("pb.payrun.wizard", "prepare_run", [payload]);
         if (prep && prep.needs_confirmation) {
             this.gotoKey("period");       // sit behind the dialog on step 1
@@ -367,6 +384,7 @@ export class PayrunWizard extends Component {
         // were computed is the headline saying the opposite of what happened.
         // On the reference tenant that heading sat above payslips two days old.
         summary.fresh = computed + ((batch && batch.created) || 0);
+        summary.sync = sync;
         summary.sheet = batch || null;
         summary.skipped_components = prep.skipped_components || [];
         this.state.progress = null;

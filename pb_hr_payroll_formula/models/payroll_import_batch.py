@@ -3249,6 +3249,10 @@ class HrPayrollImportBatch(models.Model):
             # would leave a window where a payslip has values and no provenance,
             # which is the state S4 must be able to read as "predates the feature".
             'formula_input_sources': json.dumps(input_sources),
+            # Third writer of this blob — see C18.117/C18.122; a counter added
+            # to two of the three is a counter that reports zero on the path
+            # nobody tested.
+            'pb_sourced_inputs': self.env['hr.payslip'].pb_count_sourced(input_sources),
         }
         if 'journal_id' in self.env['hr.payslip']._fields:
             payslip_vals['journal_id'] = self._get_payroll_journal().id

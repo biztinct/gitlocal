@@ -264,3 +264,73 @@ class TestRunDeletion(TransactionCase):
     def test_deleting_an_empty_run_still_works(self):
         self.run.unlink()
         self.assertFalse(self.run.exists())
+
+
+@tagged('post_install', '-at_install')
+class TestUnsourcedRun(TransactionCase):
+    """Payroll that ran on no data must not look like payroll that ran.
+
+    The reference tenant produced 36 payslips, a gross of ₫243,000,000 and a
+    clean KPI band. Every one of the 54 inputs had resolved to `src: none`, and
+    the ₫243m was one component's DEFAULT value repeated 36 times. The
+    provenance to detect it was already being written; nothing counted it.
+    """
+
+    def setUp(self):
+        super().setUp()
+        if 'pb_sourced_inputs' not in self.env['hr.payslip']._fields:
+            self.skipTest("the formula engine is not installed here")
+        self.company = self.env.company
+        self.employee = self.env['hr.employee'].create({
+            'name': 'Unsourced Person', 'company_id': self.company.id})
+        self.contract = self.env['hr.contract'].create({
+            'name': 'Unsourced contract', 'employee_id': self.employee.id,
+            'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01',
+            'company_id': self.company.id})
+        self.run = self.env['hr.payslip.run'].create({
+            'name': 'Unsourced June', 'date_start': '2026-06-01',
+            'date_end': '2026-06-30'})
+
+    def _slip(self, sourced, method='formula'):
+        return self.env['hr.payslip'].create({
+            'employee_id': self.employee.id, 'name': 'Unsourced slip',
+            'contract_id': self.contract.id, 'date_from': '2026-06-01',
+            'date_to': '2026-06-30', 'company_id': self.company.id,
+            'payslip_run_id': self.run.id,
+            'calculation_method': method,
+            'pb_sourced_inputs': sourced})
+
+    def test_a_run_computed_on_defaults_is_counted(self):
+        self._slip(sourced=0)
+        self.assertEqual(self.run.pb_unsourced_count, 1)
+
+    def test_a_run_with_real_data_raises_no_flag(self):
+        self._slip(sourced=54)
+        self.assertEqual(self.run.pb_unsourced_count, 0)
+
+    def test_only_formula_payslips_are_judged_this_way(self):
+        """A structure-based payslip has no formula inputs to source, so a
+        count of zero says nothing about it.
+
+        Built standard from the start rather than flipped afterwards:
+        `calculation_method` is not in this compute's `@api.depends` and cannot
+        be — it lives in the formula engine, which this module does not depend
+        on (the same reason `component_detail` is not named there). In the real
+        flow that costs nothing, because `pb_sourced_inputs` is written in the
+        same breath as the payslip's LINES, and lines do trigger the compute.
+        """
+        self._slip(sourced=0, method='standard')
+        self.assertEqual(self.run.pb_unsourced_count, 0)
+
+    def test_the_counter_reads_the_provenance_blob(self):
+        Payslip = self.env['hr.payslip']
+        self.assertEqual(Payslip.pb_count_sourced({}), 0)
+        self.assertEqual(Payslip.pb_count_sourced({
+            'A': {'src': 'none', 'via': 'default'},
+            'B': {'src': 'none', 'via': 'default'},
+        }), 0, "a run where everything defaulted has sourced nothing")
+        self.assertEqual(Payslip.pb_count_sourced({
+            'A': {'src': 'feed', 'key': 'BASESALARY', 'via': 'connector_mapping'},
+            'B': {'src': 'none', 'via': 'default'},
+            'C': {'src': 'contract', 'via': 'contract_component'},
+        }), 2)

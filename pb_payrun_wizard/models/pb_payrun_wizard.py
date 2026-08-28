@@ -513,6 +513,74 @@ class PbPayrunWizard(models.AbstractModel):
     # run that already exists, and drives load → match → validate → process.
     # `_get_formula_input_values` is deliberately untouched.
     # ==================================================================
+    # ---------------- Freshening the feed before anything is computed --------
+    def _payrun_connectors(self):
+        """The connected systems whose fields feed a scheme in view.
+
+        Narrow on purpose: a connector is only pulled when at least one of its
+        field mappings actually targets a component of a scheme this company
+        would run payroll with. A connector nobody wired to a rule has nothing
+        to contribute to a pay run and must not be woken up by one.
+        """
+        Config = self.env.get('hr.formula.config')
+        Mapping = self.env.get('hr.integration.field.mapping')
+        if Config is None or Mapping is None:
+            return self.env['hr.integration.connector'].browse() \
+                if 'hr.integration.connector' in self.env else None
+        domain = [('state', '!=', 'archived')]
+        if 'company_id' in Config._fields and self.env.companies:
+            domain += ['|', ('company_id', '=', False),
+                       ('company_id', 'in', self.env.companies.ids)]
+        rules = Config.sudo().search(domain).mapped('rule_ids')
+        if not rules:
+            return self.env['hr.integration.connector'].browse()
+        wires = Mapping.sudo().search([('target_rule_id', 'in', rules.ids)])
+        connectors = wires.mapped('connector_id')
+        return connectors.filtered(lambda c: c.active) if connectors else connectors
+
+    @api.model
+    def sync_feeds(self, vals=None):
+        """Pull this period's data from every connected system, before computing.
+
+        A pay run that computes first and syncs never is a pay run on stale
+        data, and the failure is silent — the numbers look like numbers. On the
+        reference tenant the wizard ran with no pull at all and produced 36
+        payslips whose every input read `src: none`.
+
+        Never raises. A feed that cannot be reached is a thing the person
+        running payroll needs to SEE and then decide about — a connector that
+        is down must not make payroll impossible, because the file and the
+        contract fallbacks may well be enough. Each failure comes back named.
+        """
+        vals = vals or {}
+        out = {'ran': False, 'connectors': [], 'errors': []}
+        connectors = self._payrun_connectors()
+        if not connectors:
+            return out
+        ds, de = vals.get('date_start'), vals.get('date_end')
+        for connector in connectors:
+            row = {'id': connector.id, 'name': connector.display_name or '',
+                   'pulled': 0, 'error': ''}
+            try:
+                connector.sudo().action_pull_data(
+                    period_from=ds, period_to=de, triggered_by='manual')
+                connector.invalidate_recordset()
+                row['pulled'] = connector.sudo().total_synced_records or 0
+                row['status'] = connector.sudo().last_sync_status or ''
+                out['ran'] = True
+            except Exception as exc:        # noqa: BLE001 — see docstring
+                _logger.exception(
+                    "Payrun wizard: could not pull %s before computing payroll",
+                    connector.display_name)
+                row['error'] = str(exc)
+                out['errors'].append(
+                    _("%(name)s could not be reached: %(why)s",
+                      name=connector.display_name, why=exc))
+            out['connectors'].append(row)
+        _logger.info("Payrun wizard: pulled %s connector(s) for %s → %s; %s error(s)",
+                     len(out['connectors']), ds, de, len(out['errors']))
+        return out
+
     def _spreadsheet_configs(self):
         """Every scheme in view whose components declare a spreadsheet column.
 
