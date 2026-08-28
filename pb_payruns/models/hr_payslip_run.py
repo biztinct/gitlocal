@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
+
+_logger = logging.getLogger(__name__)
 
 # Salary-category code buckets (mirror pb_hr_workforce payroll_report).
 NET_CODES = ('NET',)
@@ -556,6 +560,79 @@ class HrPayslipRun(models.Model):
             standard._pb_chain_ctx().write({'state': 'level0'})
             return res
         return True
+
+    # ------------------------------------------------------------------
+    # Removing a run, and removing what it produced
+    # ------------------------------------------------------------------
+    #: The two states a payslip may be thrown away in. Anything else has been
+    #: approved by somebody and is a record of a decision, not a draft.
+    _PB_DISPOSABLE_SLIP_STATES = ('draft', 'cancel')
+
+    def _pb_disposable_slips(self):
+        """This run's payslips that may be deleted, and those that may not."""
+        slips = self.mapped('slip_ids')
+        disposable = slips.filtered(
+            lambda s: s.state in self._PB_DISPOSABLE_SLIP_STATES)
+        return disposable, slips - disposable
+
+    def unlink(self):
+        """Deleting a pay run takes its DRAFT payslips with it.
+
+        It did not, and that is a trap rather than a nicety. `payslip_run_id`
+        is a plain many2one, so deleting a batch left every payslip alive and
+        unattached — and the Run Payroll wizard then ADOPTS this period's
+        loose drafts on purpose (`_adopt_loose_slips`), to stop a second
+        payroll being computed on top of one that already exists. The two
+        behaviours are individually reasonable and together they mean: delete
+        a run, build a new one, and the old numbers walk back in without being
+        recomputed. Seen on the reference tenant on 2026-08-28 — a run created
+        at 03:39 adopted 152 payslips computed two days earlier, and the only
+        trace was one line in the server log.
+
+        A payslip past draft is a different thing: somebody approved it. Those
+        stop the deletion rather than being swept up in it.
+        """
+        disposable, protected = self._pb_disposable_slips()
+        if protected:
+            raise UserError(_(
+                "This pay run has %(n)s payslip(s) that have been approved, so "
+                "it cannot be deleted. Cancel or reject them first if you "
+                "really mean to remove this run.", n=len(protected)))
+        if disposable:
+            _logger.info("pb_payruns: deleting run(s) %s and their %s draft "
+                         "payslip(s)", self.ids, len(disposable))
+            disposable.unlink()
+        return super().unlink()
+
+    def action_pb_delete_draft_payslips(self):
+        """Throw away this run's draft payslips and keep the run itself.
+
+        The way to start a period again without deleting the run: clear what
+        was computed, then Generate Payslips. Doing it by deleting the run
+        instead is what leaves the drafts loose for the next run to adopt.
+        """
+        self.ensure_one()
+        disposable, protected = self._pb_disposable_slips()
+        if protected:
+            raise UserError(_(
+                "%(n)s payslip(s) on this pay run have been approved and were "
+                "not deleted. Cancel or reject them first.", n=len(protected)))
+        if not disposable:
+            return self._pb_toast(_("There are no draft payslips to delete."))
+        count = len(disposable)
+        disposable.unlink()
+        _logger.info("pb_payruns: %s deleted %s draft payslip(s) from run %s",
+                     self.env.user.login, count, self.id)
+        return {
+            'type': 'ir.actions.client', 'tag': 'display_notification',
+            'params': {
+                'title': _('Draft payslips deleted'),
+                'message': _("%(n)s payslip(s) removed. Press Generate "
+                             "Payslips to compute the period again.", n=count),
+                'type': 'success', 'sticky': False,
+                'next': {'type': 'ir.actions.act_window_close'},
+            },
+        }
 
     # ---- Pay Salary (post-approval disbursement) — surfaced on Done cards ----
     def _pb_toast(self, message):
