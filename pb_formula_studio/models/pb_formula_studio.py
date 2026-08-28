@@ -5640,6 +5640,101 @@ class PbFormulaStudio(models.AbstractModel):
     _SRC_TYPE = {'string': 'string', 'integer': 'integer', 'float': 'float',
                  'boolean': 'boolean', 'date': 'date', 'datetime': 'datetime'}
 
+    #: Field origins a mapping may point at. `live` is a value this connector
+    #: has actually received; `computed` is a key this platform itself adds
+    #: through a transformation rule, which exists whether or not a record has
+    #: been pulled yet. Everything else — `catalog` (a field the vendor's
+    #: documentation says exists) and `odoo` (our own schema) — is an
+    #: EXPECTATION, and mapping payroll to an expectation is how a component
+    #: silently falls back to its default on every run.
+    _MAPPABLE_PROVENANCE = ('live', 'computed')
+
+    def _field_provenance(self, conn, path):
+        """Where `path` comes from: 'live', 'computed', 'catalog', 'odoo' or ''."""
+        FM = self.env['hr.integration.field.mapping']
+        try:
+            fields_ = FM.get_available_source_fields(conn.id) or []
+        except Exception:       # noqa: BLE001 — a lookup must not block a draw
+            return ''
+        found = next((f for f in fields_ if f.get('path') == path), None)
+        if not found:
+            return ''
+        return found.get('provenance') or ''
+
+    def _connector_has_live_fields(self, conn):
+        """Has anything at all ever arrived from this connected system?"""
+        Store = self.env.get('hr.api.data.store')
+        if Store is None:
+            return True         # cannot tell — do not stand in the way
+        return bool(Store.sudo().search_count([('connector_id', '=', conn.id)]))
+
+    def _refuse_unarrived_field(self, conn, path):
+        """Refuse a mapping to a field this system has never sent, and say why.
+
+        Reported by the owner after three empty pay runs: Base Salary was
+        mapped to `Salary`, a field Zoho's catalogue advertises and has never
+        delivered. The board said so — an orange NOT SENT badge and an "e.g."
+        before the number — and it was still possible to wire payroll to it,
+        after which the component fell back to its default every run while the
+        run reported success.
+
+        A transformation rule's output is exempt: this platform computes it, so
+        it legitimately exists before any record is pulled.
+        """
+        prov = self._field_provenance(conn, path)
+        if prov in self._MAPPABLE_PROVENANCE:
+            return None
+        if not self._connector_has_live_fields(conn):
+            return {'ok': False, 'needs_fetch': True, 'connector_id': conn.id,
+                    'msg': _(
+                        "Nothing has been fetched from %(sys)s yet, so there is "
+                        "no way to tell which fields it really sends. Fetch its "
+                        "fields first, then map — otherwise a component can be "
+                        "wired to a field that never arrives.",
+                        sys=conn.display_name or '')}
+        return {'ok': False, 'msg': _(
+            "%(sys)s has never sent '%(field)s' — it is listed because the "
+            "vendor says it exists, and the sample beside it is an example, not "
+            "your data. Map to a field that has actually arrived, or fetch "
+            "again if you expect this one to be there.",
+            sys=conn.display_name or '', field=path)}
+
+    def fetch_live_fields(self, connector_id, period_from=None, period_to=None):
+        """Pull a little real data from every runnable feed, so mapping has facts.
+
+        The answer to "what do I map against before the first sync?". It pulls
+        each executable feed once; afterwards the board's FROM column shows what
+        the system actually sends, with real samples, instead of the vendor's
+        catalogue with invented ones.
+        """
+        conn = self.env['hr.integration.connector'].sudo().browse(
+            int(connector_id or 0)).exists()
+        if not conn:
+            return {'ok': False, 'msg': _("That connected system no longer exists.")}
+        done, failed = [], []
+        for ep in conn.endpoint_ids:
+            if not ep.active or (ep.operation or 'catalog_only') == 'catalog_only':
+                continue
+            if conn.connector_type == 'zoho' and not ep.path:
+                continue
+            try:
+                conn.action_pull_endpoint(ep.id, period_from=period_from,
+                                          period_to=period_to,
+                                          triggered_by='manual')
+                done.append(ep.name or '')
+            except Exception as exc:        # noqa: BLE001
+                _logger.warning("fetch_live_fields: %s failed: %s", ep.name, exc)
+                failed.append(ep.name or '')
+        return {
+            'ok': bool(done),
+            'fetched': done, 'failed': failed,
+            'msg': (_("Fetched %(n)s feed(s). The field list now shows what "
+                      "%(sys)s actually sends.", n=len(done),
+                      sys=conn.display_name or '') if done
+                    else _("Nothing could be fetched from %(sys)s.",
+                           sys=conn.display_name or '')),
+        }
+
     def _endpoint_for_field(self, conn, path):
         """The feed on `conn` whose catalogue carries `path`, when only one does.
 
@@ -5741,6 +5836,9 @@ class PbFormulaStudio(models.AbstractModel):
         sealed = self._mc_refuse_sealed(rule)
         if sealed:
             return sealed
+        refusal = self._refuse_unarrived_field(conn, src)
+        if refusal:
+            return refusal
         vals = {'connector_id': conn.id, 'source_field': src,
                 'target_rule_id': rule.id,
                 'source_field_label': (src or '').replace('_', ' ').title()}

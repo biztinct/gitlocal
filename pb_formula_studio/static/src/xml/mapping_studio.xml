@@ -618,6 +618,32 @@
              here comes from the server, beside the ladder it describes — a client
              that composed this text would be a second opinion about precedence.
              Cancel writes nothing because nothing has been sent yet. -->
+        <!-- Nothing has ever been fetched from this system, so its field list is
+             the vendor's documentation rather than your data. Refusing the wire
+             and stopping there would leave the reader stuck on a fresh setup;
+             this offers the way forward instead. -->
+        <t t-if="state.fetchOffer">
+          <div class="pbms-rcn-scrim" t-on-click="dismissFetchOffer"/>
+          <div class="pbms-cfl" role="dialog" aria-modal="true"
+               t-on-keydown="(ev) => ev.key === 'Escape' &amp;&amp; this.dismissFetchOffer()"
+               t-on-click="(ev) => ev.stopPropagation()">
+            <div class="pbms-cfl__h">
+              <span class="pbms-cfl__ic" t-out="ic('cloud', 20)"/>
+              <h3>Fetch this system's fields first</h3>
+            </div>
+            <p class="pbms-cfl__p" t-esc="state.fetchOffer.msg"/>
+            <div class="pbms-cfl__acts">
+              <button class="pbim-btn" t-on-click="dismissFetchOffer"
+                      t-att-disabled="state.fetchBusy ? 1 : 0">Not now</button>
+              <button class="pbim-btn primary" t-on-click="runFetchFields"
+                      t-att-disabled="state.fetchBusy ? 1 : 0">
+                <span t-if="state.fetchBusy">Fetching…</span>
+                <span t-else="">Fetch fields</span>
+              </button>
+            </div>
+          </div>
+        </t>
+
         <t t-if="state.conflict">
           <div class="pbms-rcn-scrim" t-on-click="cancelConflict"/>
           <div t-attf-class="pbms-cfl {{ state.conflict.order ? 'is-order' : '' }}"

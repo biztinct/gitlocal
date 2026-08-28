@@ -198,6 +198,7 @@ export class MappingStudio extends Component {
             // VALUEKIND P5 — reported by the treatment board once it has read.
             treatmentCount: 0,
             data: null,
+            fetchOffer: null, fetchBusy: false,
             dismissed: [],
             // SOURCING S6 — columns named by hand on the spreadsheet board
             extraCols: [],
@@ -1179,6 +1180,34 @@ export class MappingStudio extends Component {
         await this._commitDraw(leftId, rightId, null);
     }
 
+    /**
+     * Go and fetch real data, so the FROM column shows what the system
+     * actually sends instead of what its documentation claims.
+     */
+    async runFetchFields() {
+        const offer = this.state.fetchOffer;
+        if (!offer || this.state.fetchBusy) { return; }
+        this.state.fetchBusy = true;
+        try {
+            const r = await this.orm.call(MODEL, "fetch_live_fields",
+                                          [offer.connectorId]);
+            this.notif.add((r && r.msg) || _t("Fetched."),
+                           { type: r && r.ok ? "success" : "warning" });
+            this.state.fetchOffer = null;
+            await this.load();
+        } catch (e) {
+            console.warn("pb_formula_studio: fetch_live_fields failed", e);
+            this.notif.add(_t("Could not fetch from that system."),
+                           { type: "danger" });
+        } finally {
+            this.state.fetchBusy = false;
+        }
+    }
+
+    dismissFetchOffer() {
+        if (!this.state.fetchBusy) { this.state.fetchOffer = null; }
+    }
+
     /** Answer the dialog. `resolve` is "replace" | "keep"; cancel never gets here. */
     async resolveConflict(resolve) {
         const c = this.state.conflict;
@@ -1227,6 +1256,13 @@ export class MappingStudio extends Component {
         const r = p
             ? await this.orm.call(MODEL, `${p}_mapping_create`, args)
             : await this.orm.call(MODEL, "mapping_create", [this.state.configId, leftId, rightId]);
+        // Nothing has ever been fetched from this system, so there is no way
+        // to know which fields it really sends. Offer to go and find out
+        // rather than refusing and leaving the reader stuck.
+        if (r && r.ok === false && r.needs_fetch) {
+            this.state.fetchOffer = { connectorId: r.connector_id, msg: r.msg };
+            return;
+        }
         if (r && r.ok === false) {
             // the reveal was speculative; a refusal must not leave the board in
             // a state the user did not ask for
