@@ -123,7 +123,17 @@ class PbPayrunWizardClose(models.AbstractModel):
 
     # ------------------------------------------------------------ the append
     def _close_append_exceptions(self, exceptions, emp_ids, ds, de):
-        """Append one advisory row per UNCLOSED week. Mutates `exceptions`."""
+        """Append one advisory row per UNCLOSED week. Mutates `exceptions`.
+
+        The advisory is about the PERIOD, but `compute_batch` is called once
+        per chunk of employees — so a run of 36 people over two chunks listed
+        every week twice, and the summary line twice with it. What the reader
+        saw was five weeks reported ten times, which reads as ten problems.
+
+        Deduplicating on the sentence is the right key here: two rows saying
+        the same thing about the same week ARE the same advisory, however many
+        chunks produced them.
+        """
         if not ds or not de:
             return exceptions
         weeks = self._close_weeks_in(ds, de)
@@ -157,14 +167,16 @@ class PbPayrunWizardClose(models.AbstractModel):
 
         if not unclosed:
             return exceptions
-        exceptions.extend(rows)
-        exceptions.append({
+        rows.append({
             'emp': _("Workforce close"),
             'why': _(
                 "%(n)s week(s) in this period have not been closed and locked. "
                 "The run still computes — this is a note, not a block.",
                 n=unclosed),
         })
+        seen = {(r.get('emp'), r.get('why')) for r in exceptions}
+        exceptions.extend(r for r in rows
+                          if (r['emp'], r['why']) not in seen)
         return exceptions
 
     # ------------------------------------------------------------- the seams
