@@ -43,9 +43,17 @@ export class ComponentTreatmentBoard extends Component {
         // The Mapping shell's header counts what the board holds; only the
         // board knows, and only after it has read.
         onLoaded: { type: Function, optional: true },
+        // `true` when the HOST page scrolls and this board should simply flow
+        // to its full height (the Source Atlas). Left false, the board takes
+        // the height its frame gives it and scrolls its own rows (Mappings).
+        // Named for the layout rather than inferred from `readonly`, so a third
+        // host cannot inherit the wrong one by accident: an `overflow: auto`
+        // that never scrolls still becomes the sticky header's container, and
+        // the header then pins itself to a box that is off screen.
+        flow: { type: Boolean, optional: true },
         slots: { type: Object, optional: true },
     };
-    static defaultProps = { readonly: false };
+    static defaultProps = { readonly: false, flow: false };
 
     setup() {
         this.orm = useService("orm");

@@ -259,7 +259,7 @@
            where you change it. -->
       <div t-if="state.view === 'types'" class="psa-card">
         <ComponentTreatmentBoard configId="treatmentConfigId" runId="runId"
-                                 readonly="true"
+                                 readonly="true" flow="true"
                                  onEdit="() => this.openTreatment()"/>
       </div>
 

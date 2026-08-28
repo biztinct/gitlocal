@@ -2,18 +2,10 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_formula_studio.ComponentTreatmentBoard">
-    <div class="pct">
+    <div t-attf-class="pct {{ props.flow ? 'is-flow' : '' }}">
       <div class="pct-head">
         <div>
           <h2>How each component is treated</h2>
-          <p class="pct-sub">Set once per pay component and it holds however the
-            value reaches you — a spreadsheet column, a connected system, a
-            contract, or the scheme's own formulas. <b>Group</b> is what you see
-            on the grid. <b>Pay role</b> is what every report counts it as.
-            <b>Subtotal</b> means the amount is already inside another line, so
-            totals count that one instead of this. <b>Value type</b> decides
-            whether it is read as a number or kept exactly as it arrived — and a
-            value that is not an amount cannot be added to or taken off net pay.</p>
         </div>
         <div class="pct-act">
           <button t-if="!props.readonly" class="pct-btn primary" t-on-click="save"
@@ -88,6 +80,18 @@
             never changes a payslip.</span>
         </p>
 
+        <div class="pct-scroll">
+        <!-- Orientation text, read once. It sits INSIDE the scroller so it
+             scrolls away with the first row rather than holding 150px of a
+             911px window for the life of the session. -->
+        <p class="pct-sub">Set once per pay component and it holds however the
+          value reaches you — a spreadsheet column, a connected system, a
+          contract, or the scheme's own formulas. <b>Group</b> is what you see
+          on the grid. <b>Pay role</b> is what every report counts it as.
+          <b>Subtotal</b> means the amount is already inside another line, so
+          totals count that one instead of this. <b>Value type</b> decides
+          whether it is read as a number or kept exactly as it arrived — and a
+          value that is not an amount cannot be added to or taken off net pay.</p>
         <table class="pct-table">
           <thead>
             <tr>
@@ -170,6 +174,7 @@
         <datalist id="pct-groups">
           <option t-foreach="state.board.groups" t-as="g" t-key="g" t-att-value="g"/>
         </datalist>
+        </div>
       </div>
     </div>
   </t>
