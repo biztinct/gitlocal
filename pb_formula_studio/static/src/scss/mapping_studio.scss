@@ -743,6 +743,15 @@
     /* What it reads NOW, and what you are adding. Stated as two named things
        rather than as prose, because the sentence above already carries the
        prose and a reader deciding between three buttons needs the nouns. */
+    // The fetch-first dialog reuses the conflict dialog's frame; it needs only
+    // a paragraph and a row of buttons of its own.
+    .pbms-cfl__p {
+        margin: 0 0 18px; font-size: 13px; line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbms-cfl__acts {
+        display: flex; justify-content: flex-end; gap: 10px;
+    }
     .pbms-cfl__pair {
         display: flex; align-items: stretch; gap: 10px; padding: 10px 18px 14px;
     }
