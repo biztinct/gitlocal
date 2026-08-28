@@ -48,7 +48,6 @@ export class PayrunWizard extends Component {
             // NETROLE P3 — the month's spreadsheet.
             // VALUEKIND P4 — who this run covers. `statuses` is null until the
             // defaults arrive, then it is the set of employment statuses ticked.
-            syncing: false,
             who: {
                 statuses: null,     // Set-like object {status: true}
                 search: "",
@@ -310,16 +309,48 @@ export class PayrunWizard extends Component {
         // the failure is silent because the numbers still look like numbers.
         // It never blocks: a feed that is down is reported and the run goes on,
         // because the file and the contract fallbacks may well be enough.
+        //
+        // One step per (system, kind of data), so the screen can NAME what it
+        // is waiting on and count it. A single blocking call behind a spinner
+        // reading "Creating run and computing payslips…" was describing the
+        // wrong activity and gave no sense of how long it would take.
         this.state.progress = null;
-        this.state.syncing = true;
-        let sync = null;
+        const sync = { ran: false, connectors: [], errors: [] };
+        let plan = { steps: [] };
         try {
-            sync = await this.orm.silent.call(
-                "pb.payrun.wizard", "sync_feeds", [payload]);
+            plan = await this.orm.silent.call(
+                "pb.payrun.wizard", "sync_plan", [payload]);
         } catch (e) {
-            console.warn("pb_payrun_wizard: feed sync failed", e);
+            console.warn("pb_payrun_wizard: could not plan the feed sync", e);
         }
-        this.state.syncing = false;
+        const steps = (plan && plan.steps) || [];
+        // Components wired to a feed field that names no endpoint. Nothing can
+        // fetch them, so they fall to their default every run while the run
+        // reports success — the exact shape of the failure this whole step
+        // exists to make visible.
+        sync.unroutable = (plan && plan.unroutable) || [];
+        for (let i = 0; i < steps.length; i++) {
+            // Reuse the wizard's own progress bar rather than inventing a
+            // second kind of waiting. It already renders done/total and a
+            // percentage; all this needed was to be counted.
+            this.state.busyMsg = "Syncing " + steps[i].label + "…";
+            this.state.progress = { done: i, total: steps.length };
+            try {
+                const r = await this.orm.silent.call(
+                    "pb.payrun.wizard", "sync_step", [steps[i], payload]);
+                sync.ran = true;
+                sync.connectors.push(r);
+                if (r && r.error) { sync.errors.push(r.error); }
+            } catch (e) {
+                console.warn("pb_payrun_wizard: feed sync failed", e);
+                sync.errors.push(steps[i].label);
+            }
+        }
+        if (steps.length) {
+            this.state.progress = { done: steps.length, total: steps.length };
+        }
+        this.state.progress = null;
+        this.state.busyMsg = "Creating run and computing payslips…";
 
         const prep = await this.orm.silent.call("pb.payrun.wizard", "prepare_run", [payload]);
         if (prep && prep.needs_confirmation) {
@@ -374,7 +405,9 @@ export class PayrunWizard extends Component {
         const summary = await this.orm.silent.call("pb.payrun.wizard", "get_summary", [run_id]);
         // A row the file could not process is an exception in exactly the sense
         // this wizard already means it: something a person has to look at.
-        summary.exceptions = exceptions.concat((batch && batch.errors) || []);
+        summary.exceptions = exceptions
+            .concat((batch && batch.errors) || [])
+            .concat((sync && sync.unroutable) || []);
         // Payslips prepare_run claimed from the period were never computed here,
         // so they must be counted as done or the result reads "computed 0 of 152".
         // Payslips the pay data file created are done for the same reason.

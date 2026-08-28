@@ -545,71 +545,181 @@ class PbPayrunWizard(models.AbstractModel):
                      d=max(ended.mapped('date_end')))
         return _("No contract running between %(a)s and %(b)s.", a=ds, b=de)
 
-    def _payrun_connectors(self):
-        """The connected systems whose fields feed a scheme in view.
+    def _payrun_sync_plan(self, vals=None):
+        """One step per (connected system, kind of data) this scheme reads.
 
-        Narrow on purpose: a connector is only pulled when at least one of its
-        field mappings actually targets a component of a scheme this company
-        would run payroll with. A connector nobody wired to a rule has nothing
-        to contribute to a pay run and must not be woken up by one.
+        Derived from the wires, not guessed. `action_pull_data`'s own default is
+        `['employee', 'salary']`, and on the reference tenant that was both too
+        much and too little: NOTHING reads `salary` there (0 wires), while
+        `attendance` and `custom` — 9 wires, including the worked hours every
+        deduction is a percentage of — were not pulled at all. So the run
+        syncing "successfully" still had no hours.
+
+        `salary` is also the expensive one: `fetch_payroll_data` loops per
+        employee making three API calls each, which for 152 people is ~456
+        sequential requests. Pulling only what something actually reads is why
+        this is both correct and fast.
         """
+        vals = vals or {}
         Config = self.env.get('hr.formula.config')
         Mapping = self.env.get('hr.integration.field.mapping')
         if Config is None or Mapping is None:
-            return self.env['hr.integration.connector'].browse() \
-                if 'hr.integration.connector' in self.env else None
+            return []
         domain = [('state', '!=', 'archived')]
         if 'company_id' in Config._fields and self.env.companies:
             domain += ['|', ('company_id', '=', False),
                        ('company_id', 'in', self.env.companies.ids)]
         rules = Config.sudo().search(domain).mapped('rule_ids')
         if not rules:
-            return self.env['hr.integration.connector'].browse()
+            return []
         wires = Mapping.sudo().search([('target_rule_id', 'in', rules.ids)])
-        connectors = wires.mapped('connector_id')
-        return connectors.filtered(lambda c: c.active) if connectors else connectors
+
+        plan, seen, unroutable = [], set(), set()
+        for wire in wires:
+            connector = wire.connector_id
+            if not connector or not connector.active:
+                continue
+            endpoint = wire.endpoint_id if 'endpoint_id' in wire._fields else None
+            # A wire with no endpoint names no data type. It is not a reason to
+            # pull everything — the other wires on the same connector say what
+            # this scheme reads, and if none of them do the fallback below asks
+            # the connector for its own default.
+            data_type = (endpoint.data_type if endpoint else '') or ''
+            if not data_type:
+                # A wire with no endpoint names no feed, so nothing can pull it
+                # and the component silently falls to its default. Collected,
+                # never skipped in silence: on the reference tenant BASESALARY
+                # was wired this way, so base pay resolved to 0 and every
+                # deduction — being a percentage of it — resolved to 0 with it.
+                unroutable.add((wire.target_rule_id.code or '',
+                                wire.source_field or ''))
+                continue
+            key = (connector.id, data_type)
+            if key in seen:
+                continue
+            seen.add(key)
+            plan.append({
+                'connector_id': connector.id,
+                'connector': connector.display_name or '',
+                'data_type': data_type,
+                'label': _("%(sys)s — %(kind)s",
+                           sys=connector.display_name or '',
+                           kind=self._sync_kind_label(data_type)),
+            })
+        if unroutable:
+            _logger.warning(
+                "Payrun wizard: %s wire(s) name no feed and cannot be pulled — "
+                "their components will fall to defaults: %s",
+                len(unroutable),
+                ', '.join(sorted('%s <- %s' % (c, f) for c, f in unroutable)))
+        if not plan:
+            for connector in wires.mapped('connector_id').filtered('active'):
+                plan.append({
+                    'connector_id': connector.id,
+                    'connector': connector.display_name or '',
+                    'data_type': '',        # let the connector choose
+                    'label': _("%(sys)s", sys=connector.display_name or ''),
+                })
+        return plan
 
     @api.model
-    def sync_feeds(self, vals=None):
-        """Pull this period's data from every connected system, before computing.
+    def _sync_kind_label(self, data_type):
+        """The words a person reads for a kind of feed data."""
+        return {
+            'employee': _("employee records"),
+            'salary': _("salary data"),
+            'attendance': _("attendance"),
+            'leave': _("leave"),
+            'dependent': _("dependants"),
+            'custom': _("timesheets and overtime"),
+        }.get(data_type, data_type or _("data"))
 
-        A pay run that computes first and syncs never is a pay run on stale
-        data, and the failure is silent — the numbers look like numbers. On the
-        reference tenant the wizard ran with no pull at all and produced 36
-        payslips whose every input read `src: none`.
+    def _unroutable_wires(self, vals=None):
+        """Components wired to a feed field that names no endpoint.
+
+        Nothing can pull them, so they fall to their default every run — and
+        the run reports success. Surfaced as an exception rather than a log
+        line nobody reads.
+        """
+        Mapping = self.env.get('hr.integration.field.mapping')
+        Config = self.env.get('hr.formula.config')
+        if Mapping is None or Config is None or 'endpoint_id' not in Mapping._fields:
+            return []
+        domain = [('state', '!=', 'archived')]
+        if 'company_id' in Config._fields and self.env.companies:
+            domain += ['|', ('company_id', '=', False),
+                       ('company_id', 'in', self.env.companies.ids)]
+        rules = Config.sudo().search(domain).mapped('rule_ids')
+        if not rules:
+            return []
+        rows = []
+        for wire in Mapping.sudo().search([('target_rule_id', 'in', rules.ids),
+                                           ('endpoint_id', '=', False)]):
+            rule = wire.target_rule_id
+            # A component fed by ANOTHER, complete wire is fine — only the ones
+            # left with no route at all are worth a person's attention.
+            siblings = Mapping.sudo().search_count([
+                ('target_rule_id', '=', rule.id), ('endpoint_id', '!=', False)])
+            if siblings:
+                continue
+            rows.append({
+                'emp': rule.name or rule.code or '',
+                'why': _("Wired to '%(field)s' but no feed is named, so nothing "
+                         "can fetch it and it falls back to its default value "
+                         "every run. Set the feed on this mapping.",
+                         field=wire.source_field or ''),
+            })
+        return rows
+
+    @api.model
+    def sync_plan(self, vals=None):
+        """What the wizard is about to sync, so it can say so while it does.
+
+        The pull was one blocking call behind a spinner reading "Creating run
+        and computing payslips…", which is not what it was doing and gave no
+        sense of how long it would take. Split into steps, the wizard can name
+        each one and count them.
+        """
+        vals = vals or {}
+        # Returned here, and added to the run's exceptions ONCE by the client:
+        # `compute_batch` runs per chunk of employees, and a per-run advisory
+        # appended there is a per-run advisory reported N times (the workforce
+        # close notes did exactly that).
+        return {'steps': self._payrun_sync_plan(vals),
+                'unroutable': self._unroutable_wires(vals)}
+
+    @api.model
+    def sync_step(self, step, vals=None):
+        """Pull ONE kind of data from ONE connected system, for the period.
 
         Never raises. A feed that cannot be reached is a thing the person
         running payroll needs to SEE and then decide about — a connector that
         is down must not make payroll impossible, because the file and the
-        contract fallbacks may well be enough. Each failure comes back named.
+        contract fallbacks may well be enough.
         """
         vals = vals or {}
-        out = {'ran': False, 'connectors': [], 'errors': []}
-        connectors = self._payrun_connectors()
-        if not connectors:
+        step = step or {}
+        out = {'label': step.get('label') or '', 'pulled': 0, 'error': ''}
+        connector = self.env['hr.integration.connector'].sudo().browse(
+            int(step.get('connector_id') or 0)).exists()
+        if not connector:
             return out
-        ds, de = vals.get('date_start'), vals.get('date_end')
-        for connector in connectors:
-            row = {'id': connector.id, 'name': connector.display_name or '',
-                   'pulled': 0, 'error': ''}
-            try:
-                connector.sudo().action_pull_data(
-                    period_from=ds, period_to=de, triggered_by='manual')
-                connector.invalidate_recordset()
-                row['pulled'] = connector.sudo().total_synced_records or 0
-                row['status'] = connector.sudo().last_sync_status or ''
-                out['ran'] = True
-            except Exception as exc:        # noqa: BLE001 — see docstring
-                _logger.exception(
-                    "Payrun wizard: could not pull %s before computing payroll",
-                    connector.display_name)
-                row['error'] = str(exc)
-                out['errors'].append(
-                    _("%(name)s could not be reached: %(why)s",
-                      name=connector.display_name, why=exc))
-            out['connectors'].append(row)
-        _logger.info("Payrun wizard: pulled %s connector(s) for %s → %s; %s error(s)",
-                     len(out['connectors']), ds, de, len(out['errors']))
+        data_type = step.get('data_type') or ''
+        try:
+            connector.action_pull_data(
+                data_types=[data_type] if data_type else None,
+                period_from=vals.get('date_start'),
+                period_to=vals.get('date_end'),
+                triggered_by='manual')
+            connector.invalidate_recordset()
+            out['pulled'] = connector.total_synced_records or 0
+        except Exception as exc:        # noqa: BLE001 — see docstring
+            _logger.exception(
+                "Payrun wizard: could not pull %s (%s) before computing payroll",
+                connector.display_name, data_type or 'default')
+            out['error'] = _("%(name)s (%(kind)s) could not be reached: %(why)s",
+                             name=connector.display_name,
+                             kind=self._sync_kind_label(data_type), why=exc)
         return out
 
     def _spreadsheet_configs(self):
