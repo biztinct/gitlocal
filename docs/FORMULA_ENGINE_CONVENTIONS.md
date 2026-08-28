@@ -1489,3 +1489,37 @@ number from the handovers — keep the numbering stable.
      for two different reasons. The real fix is for the header to classify by
      `pay_role` as the Explorer now does; until then, do not untick a subtotal on
      an employer-cost component and expect only the report to move.
+129. **The formula graph says WHETHER a component reaches net pay; it cannot say
+     HOW** (VALUEKIND P5). NETROLE walks the scheme's own formulas and marks
+     anything with a path to net pay as an earning. On ABM that caught nine
+     `quantity` components and one `text` component, because hours reach net pay
+     through `ROUND(BASESALARY / STANWORKHOUR * ACTUWORKHOUR, 0)` — as a divisor
+     and a multiplier, not as an addend. They SCALE the money; they are not a
+     share of it. The figures were right only because all ten happened to be
+     flagged Subtotal, so untick one and hours join gross pay. `MONEY_ROLE_KINDS`
+     in `value_kind_classifier.py` is now the single test, applied at every
+     writer (`classify_net_roles`, `set_component_setup`) rather than left to the
+     reports to filter out. `decimal` and `integer` stay allowed: the gate stops
+     what is KNOWN not to be money, it does not demand proof that something is.
+130. **A component is a detail only of a roll-up that is ITSELF counted**
+     (VALUEKIND P5, and the close of C18.128). ABM's Employer cost read ₫0
+     because `TOTACOSTTOER` contains net pay and is excluded outright, `SI-HI-UI
+     Total 21.5%` and `Trade Union ER 2%` were marked details OF it, and the
+     three parts behind the 21.5% were details of that: every level deferred
+     upwards and the top level was excluded, so nothing anywhere was counted.
+     `_net_role_mark_details` now skips an excluded target when deciding. Note
+     the rule is transitive and one level is NOT enough — `SIBASE` is inside
+     `SIAMT` which is inside `DEDAGG`; a rule that only asked "is my parent
+     counted" would count SIBASE twice (test 16 pins this).
+131. **A setting whose effects outlive the screen you are on does not belong on
+     that screen** (VALUEKIND P5). The component-treatment board was reached from
+     a pay run, and it edits the SCHEME: a pay role changed while looking at June
+     changes July and every run already computed. It moved to Mappings and the
+     Atlas renders the SAME component with `readonly` plus a link. Two hosts, one
+     implementation — `pb_source_atlas` now depends on `pb_formula_studio`,
+     because a viewer may depend on the editor and never the reverse.
+132. **A read-only cell must not drop the value it is describing.** Filtering a
+     `<select>`'s options by what is now allowed made rows read "— not set —"
+     over components the database says are earnings: the screen denying the very
+     state the banner above it was asking about. Keep the stored value in its own
+     list, flag the row, and let the reader move off it.
