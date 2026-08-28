@@ -130,6 +130,15 @@ class PbFactLine(models.Model):
                               help='Live rule, for the translated display label')
     component_name = fields.Char(help='Label snapshot; fallback when rule_id is gone')
 
+    # VALUEKIND P4 — this component's amount is ALREADY INSIDE another
+    # component's total on the same payslip, so a money measure must count the
+    # total and not this row. Kept as a row rather than dropped, because the
+    # component-level view is where a person goes to see what a total is MADE
+    # of — it is the money measures that skip it, never the drill-down.
+    is_rollup = fields.Boolean(
+        index=True,
+        help='Already counted inside another component of the same kind.')
+
     amount = fields.Float(digits=(16, 2))
     headcount = fields.Integer(
         help='DISTINCT employees AT THIS GRAIN ONLY. Never SUM this across '

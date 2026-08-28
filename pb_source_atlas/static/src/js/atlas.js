@@ -65,7 +65,7 @@ export class PbSourceAtlas extends Component {
             typesLoading: false,
             typesDirty: {},
             typesSaving: false,
-            typesOnlyDrift: false,
+            typesFilter: "",
         });
 
         this._searchToken = 0;
@@ -187,29 +187,53 @@ export class PbSourceAtlas extends Component {
         this.state.typesLoading = false;
     }
 
-    toggleOnlyDrift() {
-        this.state.typesOnlyDrift = !this.state.typesOnlyDrift;
-    }
-
     get typeRows() {
         const rows = this.state.types?.rows || [];
-        return this.state.typesOnlyDrift ? rows.filter((r) => r.drift) : rows;
+        if (this.state.typesFilter === "drift") {
+            return rows.filter((r) => r.drift);
+        }
+        if (this.state.typesFilter === "review") {
+            return rows.filter((r) => r.needs_review);
+        }
+        return rows;
+    }
+
+    setTypesFilter(which) {
+        this.state.typesFilter = this.state.typesFilter === which ? "" : which;
     }
 
     get dirtyCount() {
         return Object.keys(this.state.typesDirty).length;
     }
 
-    kindOf(row) {
-        return this.state.typesDirty[row.code] ?? row.kind;
+    /**
+     * The four axes are edited together, so the pending change is a PATCH per
+     * component rather than a single value: a person who moves a component to
+     * a new group and then corrects its pay role has made one change to one
+     * row, and one Save should carry both.
+     */
+    patchOf(row) {
+        return this.state.typesDirty[row.code] || {};
     }
 
-    onKindChange(row, ev) {
-        const chosen = ev.target.value;
-        if (chosen === row.kind) {
-            delete this.state.typesDirty[row.code];
+    valueOf(row, field) {
+        const patch = this.patchOf(row);
+        return field in patch ? patch[field] : row[field];
+    }
+
+    onSetupChange(row, field, ev) {
+        const target = ev.target;
+        const chosen = target.type === "checkbox" ? target.checked : target.value;
+        const patch = { ...this.patchOf(row) };
+        if (chosen === row[field]) {
+            delete patch[field];
         } else {
-            this.state.typesDirty[row.code] = chosen;
+            patch[field] = chosen;
+        }
+        if (Object.keys(patch).length) {
+            this.state.typesDirty[row.code] = patch;
+        } else {
+            delete this.state.typesDirty[row.code];
         }
     }
 
@@ -221,7 +245,7 @@ export class PbSourceAtlas extends Component {
         try {
             const configId = this.state.types.config_id;
             const res = await this.orm.call(
-                "hr.formula.config", "set_value_kinds",
+                "hr.formula.config", "set_component_setup",
                 [[configId], { ...this.state.typesDirty }]
             );
             this.notif.add(res.note, { type: "success" });

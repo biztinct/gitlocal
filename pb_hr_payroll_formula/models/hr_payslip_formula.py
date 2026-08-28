@@ -584,6 +584,10 @@ class HrPayslipFormula(models.Model):
                 # NETROLE — same copy the batch producer makes, for the same
                 # reason: the run's totals must count each dong once.
                 'component_detail': bool(rule.net_role_detail),
+                # VALUEKIND P4 — and WHAT it is, so a report never has to read
+                # `hr_salary_rule_category.category_type`, which nobody
+                # maintains because nobody sees it.
+                'pay_role': rule.net_role or False,
             }
             lines_to_create.append(line_data)
 

@@ -384,3 +384,97 @@ class TestValueKinds(common.TransactionCase):
             src = inspect.getsource(getattr(klass, name))
             self.assertIn('wants_number', src,
                           "%s has no value-kind rail" % name)
+
+    # ------------------------------------------------------------------
+    # P4 — pay roles, and who a run covers
+    # ------------------------------------------------------------------
+    def test_26_both_line_creators_stamp_the_pay_role(self):
+        """A report must never have to join back to a live rule to know what a
+        line IS — the rule may since have been reclassified or deleted."""
+        import inspect
+        from odoo.addons.pb_hr_payroll_formula.models import (
+            hr_payslip_formula, payroll_import_batch,
+        )
+        for module, name in (
+            (hr_payslip_formula, '_create_payslip_lines_from_formulas'),
+            (payroll_import_batch, '_compute_and_create_payslip_lines'),
+        ):
+            klass = next(o for _n, o in inspect.getmembers(module, inspect.isclass)
+                         if hasattr(o, name))
+            src = inspect.getsource(getattr(klass, name))
+            self.assertIn("'pay_role'", src, "%s does not stamp pay_role" % name)
+
+    def test_27_pay_role_vocabulary_matches_net_role(self):
+        """Two selections, one vocabulary. A value that exists on the component
+        and not on the line would be silently dropped at line creation."""
+        line = set(dict(self.env['hr.payslip.line']._fields['pay_role'].selection))
+        rule = set(dict(self.env['hr.formula.rule']._fields['net_role'].selection))
+        self.assertEqual(line, rule)
+
+    def test_28_employment_status_is_never_guessed_from_the_label_alone(self):
+        """Picking the wrong component here decides who does not get paid.
+
+        "Residency Status", "Approval Status" and "Marital Status" all contain
+        the word — none of them says whether somebody still works here.
+        """
+        from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier as vkc
+        self.assertEqual(
+            vkc.suggest_payroll_signal('EMPSTATUS', 'Employee Status',
+                                       ['Active', 'Resigned']), 'employment_status')
+        for code, name, vals in (
+            ('RESIDENCSTAT', 'Residency Status', ['Resident', 'Non-resident']),
+            ('APPRSTATUS', 'Approval Status', ['Approval Not Enabled']),
+            ('MARITALSTAT', 'Marital Status', ['Married', 'Single']),
+        ):
+            self.assertIsNone(vkc.suggest_payroll_signal(code, name, vals),
+                              "%s must not be read as employment status" % name)
+
+    def test_29_unknown_status_wording_is_not_treated_as_left(self):
+        """A person wrongly kept in a run is a payslip somebody deletes; a
+        person wrongly dropped is somebody who does not get paid."""
+        from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier as vkc
+        self.assertTrue(vkc.is_left_status('Resigned'))
+        self.assertTrue(vkc.is_left_status('Terminated'))
+        self.assertFalse(vkc.is_left_status('Active'))
+        self.assertFalse(vkc.is_left_status('Probation'))
+        self.assertFalse(vkc.is_left_status('Sabbatical'),
+                         "unknown wording must never mean 'has left'")
+        self.assertFalse(vkc.is_left_status(''))
+        self.assertFalse(vkc.is_left_status(False))
+
+    def test_30_the_classifier_suggests_a_signal_but_never_overrules(self):
+        self.r_loc.write({'payroll_signal': 'employment_status'})
+        self.config.classify_value_kinds()
+        self.assertEqual(self.r_loc.payroll_signal, 'employment_status',
+                         "a person's choice of signal must survive")
+
+    def test_31_setup_board_writes_all_four_axes(self):
+        self.config.classify_value_kinds()
+        res = self.config.set_component_setup({
+            'VKLOCATION': {'group': 'Basic Information', 'pay_role': 'info',
+                           'rollup': True, 'kind': 'text',
+                           'signal': 'employment_status'},
+        })
+        self.assertEqual(res['changed'], ['VKLOCATION'])
+        self.assertEqual(self.r_loc.component_type, 'Basic Information')
+        self.assertEqual(self.r_loc.net_role, 'info')
+        self.assertEqual(self.r_loc.net_role_confidence, 'certain')
+        self.assertTrue(self.r_loc.net_role_detail)
+        self.assertEqual(self.r_loc.value_kind, 'text')
+        self.assertEqual(self.r_loc.payroll_signal, 'employment_status')
+
+    def test_32_setup_board_refuses_nonsense(self):
+        from odoo.exceptions import UserError
+        for patch in ({'pay_role': 'nope'}, {'signal': 'nope'}, {'kind': 'nope'}):
+            with self.assertRaises(UserError):
+                self.config.set_component_setup({'VKLOCATION': patch})
+
+    def test_33_review_gate_lists_only_the_genuinely_unsure(self):
+        self.r_loc.write({'net_role': False})
+        self.r_salary.write({'net_role': 'earning',
+                             'net_role_confidence': 'likely'})
+        rows = self.env['hr.formula.config'].unreviewed_components([self.config.id])
+        codes = set(rows[0]['codes']) if rows else set()
+        self.assertIn('VKLOCATION', codes, "no role at all must be asked about")
+        self.assertNotIn('VKSALARY', codes,
+                         "'likely' is a working answer — gating on it is noise")

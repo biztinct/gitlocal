@@ -413,6 +413,18 @@ class PbExplorer(models.AbstractModel):
         if types:
             clauses.append('category_type IN %s')
             params.append(tuple(types))
+        # VALUEKIND P4 — a money measure counts each dong once.
+        #
+        # A component whose amount is ALREADY INSIDE another component's total
+        # ("SI-HI-IU Total 10.5%" inside "Total Deduction") is kept as a fact
+        # row so the component view can show what a total is made of, and is
+        # skipped by every measure that sums money. Summing both reported ABM's
+        # gross as ~14bn against a true 927,155,630.
+        #
+        # `component`, which IS the per-component view, opts out by declaring no
+        # `types` — it is the one measure whose whole purpose is the detail.
+        if types and table == 'line':
+            clauses.append('COALESCE(is_rollup, FALSE) = FALSE')
         for key, vals in spec['filters'].items():
             col, _typ = _FILTERS[key]
             if key == 'run_id':          # already in the run scope

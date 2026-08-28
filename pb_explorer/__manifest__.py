@@ -29,7 +29,7 @@ Chart.js comes from Odoo's own lazy ``web.chartjs_lib`` bundle, never a CDN.
 """,
     # C2/C18.86: bump on EVERY asset change — the bundle URL hash is keyed on
     # module versions, so without this browsers keep serving the stale CSS/JS.
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

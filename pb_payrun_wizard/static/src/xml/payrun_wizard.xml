@@ -76,6 +76,62 @@
                             <div class="pw-kv"><span>Currency</span><b t-esc="state.defaults.currency"/></div>
                             <div class="pw-kv" t-if="divInfo"><span>Configuration</span><b t-esc="divInfo.config"/></div>
                             <div class="pw-kv"><span>Eligible employees</span><b t-esc="eligibleCount"/></div>
+
+                            <!-- VALUEKIND P4 — who this run covers. Shown only
+                                 when a scheme names a component carrying
+                                 employment status; otherwise the wizard looks
+                                 and behaves exactly as it always has. -->
+                            <t t-if="hasStatusFilter">
+                              <div class="pw-who">
+                                <label>Include</label>
+                                <div class="pw-chips">
+                                  <button t-foreach="statusOptions" t-as="opt" t-key="opt.value"
+                                          t-attf-class="pw-chip {{ state.who.statuses[opt.value] ? 'on' : '' }}"
+                                          t-on-click="() => this.toggleStatus(opt.value)">
+                                    <t t-esc="opt.label"/>
+                                    <span class="pw-chip-n" t-esc="opt.count"/>
+                                  </button>
+                                </div>
+                                <div class="pw-note" t-if="state.who.preview">
+                                  <t t-esc="state.who.preview.total"/> employee<t t-if="state.who.preview.total !== 1">s</t>
+                                  match. People who have left are unticked by default —
+                                  tick them if you still owe them a payslip.
+                                </div>
+
+                                <button class="pw-linkb" t-on-click="() => this.state.who.open = !state.who.open">
+                                  <t t-if="state.who.open">Hide the list</t>
+                                  <t t-else="">Run for just a few people…</t>
+                                </button>
+
+                                <div t-if="state.who.open" class="pw-picker">
+                                  <input class="pw-in" type="search" placeholder="Find an employee…"
+                                         t-att-value="state.who.search" t-on-input="onWhoSearch"/>
+                                  <div class="pw-picked" t-if="state.who.picked.length">
+                                    <b t-esc="state.who.picked.length"/> selected —
+                                    only these will be paid.
+                                    <button class="pw-linkb" t-on-click="clearPicked">Clear</button>
+                                  </div>
+                                  <div class="pw-plist">
+                                    <label t-foreach="state.who.preview ? state.who.preview.employees : []"
+                                           t-as="emp" t-key="emp.id" class="pw-prow">
+                                      <input type="checkbox"
+                                             t-att-checked="state.who.picked.includes(emp.id)"
+                                             t-on-change="() => this.togglePicked(emp.id)"/>
+                                      <span class="pw-pname" t-esc="emp.name"/>
+                                      <span class="pw-pmeta">
+                                        <t t-esc="emp.status"/>
+                                        <t t-if="emp.hours"> · <t t-esc="emp.hours"/> h</t>
+                                      </span>
+                                    </label>
+                                  </div>
+                                  <div class="pw-note" t-if="state.who.preview and state.who.preview.total > state.who.preview.shown">
+                                    Showing <t t-esc="state.who.preview.shown"/> of
+                                    <t t-esc="state.who.preview.total"/> — search to narrow.
+                                  </div>
+                                </div>
+                              </div>
+                            </t>
+
                             <div class="pw-note">A draft run will be created and computed — fully reversible. Only the selected division is affected.</div>
                         </div>
                     </div>

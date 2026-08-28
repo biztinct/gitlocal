@@ -1867,6 +1867,22 @@ class HrFormulaConfig(models.Model):
 
         changed = 0
         for rule in self.rule_ids:
+            # The payroll SIGNAL is suggested for every rule, including one
+            # whose value type a person has already chosen: they are separate
+            # questions, and skipping the whole row for the first would leave
+            # the second permanently unanswered — which is what made the pay
+            # run wizard show no employment-status filter at all.
+            if not rule.payroll_signal:
+                signal = value_kind_classifier.suggest_payroll_signal(
+                    code=rule.code or '', name=rule.name or '',
+                    sample_values=samples.get(rule.code) or [],
+                    quantity=bool(looks_like_a_quantity(rule.name or '',
+                                                        rule.code or '')))
+                if signal:
+                    rule.with_context(skip_formula_version=True).write(
+                        {'payroll_signal': signal})
+                    changed += 1
+
             if rule.value_kind_source == 'user' and not force:
                 continue
             kind, reason = value_kind_classifier.classify_value_kind(
@@ -1881,12 +1897,12 @@ class HrFormulaConfig(models.Model):
                 sample_values=samples.get(rule.code) or [],
                 appears_on_payslip=bool(rule.appears_on_payslip),
             )
+            vals = {}
             if rule.value_kind != kind or rule.value_kind_reason != reason:
-                rule.with_context(skip_formula_version=True).write({
-                    'value_kind': kind,
-                    'value_kind_source': 'auto',
-                    'value_kind_reason': reason,
-                })
+                vals.update(value_kind=kind, value_kind_source='auto',
+                            value_kind_reason=reason)
+            if vals:
+                rule.with_context(skip_formula_version=True).write(vals)
                 changed += 1
         _logger.info("VALUEKIND: classified %s component(s) on scheme %s (%s)",
                      changed, self.id, self.name)
@@ -2084,6 +2100,20 @@ class HrFormulaConfig(models.Model):
                 'kind': rule.value_kind,
                 'kind_source': rule.value_kind_source,
                 'kind_reason': rule.value_kind_reason or '',
+                # VALUEKIND P4 — the other two axes a person needs on the same
+                # row. `group` is what the Atlas chips show and what people call
+                # "the category"; `pay_role` is what every report counts it as;
+                # `rollup` is the double-count guard.
+                'group': (rule.component_type or '')
+                         or (rule.category_id.name or '') or '',
+                'group_set': bool(rule.component_type),
+                'pay_role': rule.net_role or '',
+                'pay_role_confidence': rule.net_role_confidence or '',
+                'pay_role_reason': rule.net_role_reason or '',
+                'rollup': bool(rule.net_role_detail),
+                'signal': rule.payroll_signal or '',
+                'needs_review': not rule.net_role
+                                or rule.net_role_confidence == 'review',
                 'appears_on_payslip': bool(rule.appears_on_payslip),
                 'numeric': value_kind_classifier.wants_number(rule.value_kind),
                 'delivered': [str(v)[:48] for v in values[:3]],
@@ -2092,12 +2122,21 @@ class HrFormulaConfig(models.Model):
                 'drift_stored': (row_drift or {}).get('stored_examples') or [],
                 'contexts': sorted(self._rule_operand_contexts(rule, scheme)),
             })
+        role_field = self.env['hr.formula.rule']._fields['net_role']
+        signal_field = self.env['hr.formula.rule']._fields['payroll_signal']
+        groups = sorted({r['group'] for r in rows if r['group']})
         return {
             'config_id': self.id,
             'name': self.name or '',
             'options': self._value_kind_options(),
+            'pay_roles': [{'value': k, 'label': label}
+                          for k, label in role_field.selection],
+            'signals': [{'value': k, 'label': label}
+                        for k, label in signal_field.selection],
+            'groups': groups,
             'rows': rows,
             'drift_count': len(drift),
+            'review_count': sum(1 for r in rows if r['needs_review']),
         }
 
     def set_value_kinds(self, updates):
@@ -2135,6 +2174,110 @@ class HrFormulaConfig(models.Model):
                 'note': _("Saved. Existing payslips keep the values they were "
                           "computed with until the run is recomputed.")}
 
+    def set_component_setup(self, updates):
+        """``{code: {group, pay_role, rollup, kind}}`` -> the rows changed.
+
+        One save for all four axes, because they are four columns of one row on
+        one screen and a person edits them together. Every key is optional; only
+        what is sent is written.
+
+        A pay role a PERSON chooses is marked `certain` and its reason names
+        them, so the net-role classifier — which derives roles from the scheme's
+        formulas — treats it exactly as `value_kind_source='user'` treats a
+        chosen value type: an answer somebody gave is never re-derived.
+        """
+        self.ensure_one()
+        self._value_kind_gate()
+        Rule = self.env['hr.formula.rule']
+        valid_kinds = {k for k, _l in Rule._fields['value_kind'].selection}
+        valid_roles = {k for k, _l in Rule._fields['net_role'].selection}
+        by_code = {(r.code or '').upper(): r for r in self.rule_ids}
+
+        changed = []
+        for code, patch in (updates or {}).items():
+            rule = by_code.get(str(code).upper())
+            if not rule:
+                raise UserError(_("No component named '%s' on this scheme.", code))
+            if not isinstance(patch, dict):
+                raise UserError(_("Malformed change for '%s'.", code))
+            vals = {}
+
+            if 'kind' in patch:
+                if patch['kind'] not in valid_kinds:
+                    raise UserError(_("'%(k)s' is not a value kind.", k=patch['kind']))
+                if patch['kind'] != rule.value_kind:
+                    vals.update(value_kind=patch['kind'], value_kind_source='user',
+                                value_kind_reason=_("%s chose this.",
+                                                    self.env.user.name))
+
+            if 'pay_role' in patch:
+                role = patch['pay_role'] or False
+                if role and role not in valid_roles:
+                    raise UserError(_("'%(r)s' is not a pay role.", r=role))
+                if role != (rule.net_role or False):
+                    vals.update(net_role=role,
+                                net_role_confidence='certain' if role else False,
+                                net_role_reason=_("%s chose this.",
+                                                  self.env.user.name) if role else False)
+
+            if 'rollup' in patch and bool(patch['rollup']) != bool(rule.net_role_detail):
+                vals['net_role_detail'] = bool(patch['rollup'])
+
+            if 'signal' in patch:
+                signal = patch['signal'] or False
+                valid_signals = {k for k, _l in
+                                 Rule._fields['payroll_signal'].selection}
+                if signal and signal not in valid_signals:
+                    raise UserError(_("'%(s)s' is not something a component can "
+                                      "tell the run.", s=signal))
+                if signal != (rule.payroll_signal or False):
+                    vals['payroll_signal'] = signal
+
+            if 'group' in patch:
+                group = (patch['group'] or '').strip()
+                if group != (rule.component_type or ''):
+                    vals['component_type'] = group or False
+
+            if vals:
+                rule.write(vals)
+                changed.append(rule.code)
+
+        if changed:
+            _logger.info("VALUEKIND P4: %s set up %s component(s) on scheme %s: %s",
+                         self.env.user.login, len(changed), self.id,
+                         ', '.join(changed))
+        return {
+            'changed': changed,
+            'note': _("Saved. Reports use this from now on; payslips already "
+                      "computed keep what they were computed with until the run "
+                      "is recomputed."),
+        }
+
+    @api.model
+    def unreviewed_components(self, config_ids=None):
+        """Components a person still has to rule on, per scheme.
+
+        Deliberately ONLY the genuinely unsure — no pay role at all, or the
+        classifier marked it `review`. A `likely` role is a working answer, and
+        a gate that stops on those becomes noise people learn to click through,
+        which is worse than no gate.
+        """
+        configs = self.browse(config_ids) if config_ids else self.search([])
+        out = []
+        for config in configs.exists():
+            rules = config.rule_ids.filtered(
+                lambda r: r.column_type != 'constant'
+                and (not r.net_role or r.net_role_confidence == 'review'))
+            if not rules:
+                continue
+            out.append({
+                'config_id': config.id,
+                'name': config.name or '',
+                'count': len(rules),
+                'codes': rules.mapped('code')[:20],
+            })
+        return out
+
     def reset_value_kind(self, codes):
         """Hand chosen components back to the classifier."""
         self.ensure_one()
@@ -2145,3 +2288,114 @@ class HrFormulaConfig(models.Model):
             rules.write({'value_kind_source': 'auto'})
             self.classify_value_kinds()
         return {'reset': rules.mapped('code')}
+
+    # ==================================================================
+    # VALUEKIND P4 — who belongs in a pay run
+    # ==================================================================
+    def _signal_component(self, signal):
+        """The component a person named as carrying this signal, or empty."""
+        self.ensure_one()
+        return self.rule_ids.filtered(
+            lambda r: r.payroll_signal == signal)[:1]
+
+    def employee_signal_map(self, limit=5000):
+        """``{employee_id: {'status': str, 'hours': float}}`` from the newest batch.
+
+        Read from `hr_payroll_import_line.raw_data_json` — what the source
+        actually delivered — because on a scheme-driven tenant the Payobook
+        records can be stale: ABM has all 152 employees `active` with a running
+        contract while the feed reports 85 Resigned and 25 Terminated. The
+        payroll run has to believe the feed, not the record it has not been
+        told to update.
+        """
+        self.ensure_one()
+        status_rule = self._signal_component('employment_status')
+        hours_rule = self._signal_component('worked_hours')
+        if not (status_rule or hours_rule):
+            return {}
+
+        Batch = self.env['hr.payroll.import.batch'].sudo()
+        batch = Batch.search([('formula_config_id', '=', self.id),
+                              ('state', '=', 'done')], order='id desc', limit=1) \
+            or Batch.search([('formula_config_id', '=', self.id)],
+                            order='id desc', limit=1)
+        if not batch:
+            return {}
+
+        wires = {}
+        if 'hr.integration.field.mapping' in self.env:
+            for wire in self.env['hr.integration.field.mapping'].sudo().search(
+                    [('target_rule_id', 'in', (status_rule | hours_rule).ids)]):
+                if wire.target_rule_id and wire.source_field:
+                    wires[wire.target_rule_id.id] = wire.source_field
+
+        # `_normalize_header_key` lives on the import batch, not here. Calling
+        # it on `self` raised AttributeError, which the caller's try/except
+        # swallowed into "this scheme has no signals" — so the wizard showed no
+        # status filter and every status returned all 152 employees.
+        Batchm = self.env['hr.payroll.import.batch']
+
+        def keys_for(rule):
+            out = []
+            if rule and wires.get(rule.id):
+                out.append(wires[rule.id])
+            if rule:
+                out += [rule.code, rule.name, rule.data_source_field]
+            return [Batchm._normalize_header_key(k) for k in out if k]
+
+        status_keys = keys_for(status_rule)
+        hours_keys = keys_for(hours_rule)
+
+        out = {}
+        for line in self.env['hr.payroll.import.line'].sudo().search(
+                [('batch_id', '=', batch.id)], limit=limit):
+            if not line.employee_id:
+                continue
+            try:
+                raw = json.loads(line.raw_data_json or '{}')
+            except (TypeError, ValueError):
+                continue
+            if not isinstance(raw, dict):
+                continue
+            indexed = {Batchm._normalize_header_key(k): v
+                       for k, v in raw.items() if isinstance(k, str)}
+            status = next((indexed[k] for k in status_keys if indexed.get(k)), '')
+            hours = next((indexed[k] for k in hours_keys if k in indexed), 0.0)
+            try:
+                hours = float(str(hours).replace(',', '') or 0.0)
+            except (TypeError, ValueError):
+                hours = 0.0
+            out[line.employee_id.id] = {'status': str(status or '').strip(),
+                                        'hours': hours}
+        return out
+
+    def employment_status_options(self):
+        """Every employment status the source actually delivers, with counts.
+
+        Data-driven on purpose: "Active / Resigned / Terminated" is ABM's
+        vocabulary, and the next tenant's will be different — and Vietnamese.
+        `left` marks the ones that read as "no longer employed", which is a
+        DEFAULT for the tick boxes, never a filter applied behind anyone's back.
+        """
+        self.ensure_one()
+        signals = self.employee_signal_map()
+        if not signals:
+            return []
+        counts, worked = {}, {}
+        for info in signals.values():
+            key = info['status'] or ''
+            counts[key] = counts.get(key, 0) + 1
+            if info['hours']:
+                worked[key] = worked.get(key, 0) + 1
+        out = []
+        for status, n in sorted(counts.items(), key=lambda kv: -kv[1]):
+            left = value_kind_classifier.is_left_status(status)
+            out.append({
+                'value': status,
+                'label': status or _('Not stated'),
+                'count': n,
+                'worked': worked.get(status, 0),
+                'left': left,
+                'default': not left,
+            })
+        return out

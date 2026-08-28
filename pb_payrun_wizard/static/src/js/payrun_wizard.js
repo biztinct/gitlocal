@@ -46,6 +46,16 @@ export class PayrunWizard extends Component {
             summary: null,
             progress: null,   // { done, total } during chunked compute → determinate bar
             // NETROLE P3 — the month's spreadsheet.
+            // VALUEKIND P4 — who this run covers. `statuses` is null until the
+            // defaults arrive, then it is the set of employment statuses ticked.
+            who: {
+                statuses: null,     // Set-like object {status: true}
+                search: "",
+                picked: [],         // explicit shortlist, empty = "everyone above"
+                preview: null,      // { total, employees, … }
+                loading: false,
+                open: false,        // the "just a few people" panel
+            },
             sheet: {
                 gate: null,        // spreadsheet_gate(): null / {wanted:false} / {wanted:true, …}
                 file_b64: "", file_name: "",
@@ -74,6 +84,17 @@ export class PayrunWizard extends Component {
             // Demo batch name carries the selected configuration so runs for
             // different divisions are distinguishable (e.g. "…June 2026 — Retail").
             if (d.is_demo) this.state.form.name = this._demoName();
+            // Tick the statuses the source says are still employed. A default,
+            // shown on screen and changeable — never a filter applied quietly.
+            const opts = d.statuses || [];
+            if (opts.length) {
+                const ticks = {};
+                for (const o of opts) {
+                    ticks[o.value] = !!o.default;
+                }
+                this.state.who.statuses = ticks;
+                this.refreshWho();
+            }
         });
     }
 
@@ -115,7 +136,55 @@ export class PayrunWizard extends Component {
         const ds = (this.state.defaults && this.state.defaults.divisions) || [];
         return ds.find(x => x.key === this.state.form.division) || null;
     }
+    // ------------------------------------------------- VALUEKIND P4: who
+    get statusOptions() { return this.state.defaults?.statuses || []; }
+    get hasStatusFilter() { return this.statusOptions.length > 0; }
+
+    get chosenStatuses() {
+        const t = this.state.who.statuses;
+        return t ? Object.keys(t).filter((k) => t[k]) : null;
+    }
+
+    toggleStatus(value) {
+        const t = this.state.who.statuses;
+        if (!t) { return; }
+        t[value] = !t[value];
+        this.refreshWho();
+    }
+
+    onWhoSearch(ev) {
+        this.state.who.search = ev.target.value;
+        clearTimeout(this._whoTimer);
+        this._whoTimer = setTimeout(() => this.refreshWho(), 260);
+    }
+
+    togglePicked(id) {
+        const picked = this.state.who.picked;
+        const at = picked.indexOf(id);
+        if (at >= 0) { picked.splice(at, 1); } else { picked.push(id); }
+    }
+
+    clearPicked() { this.state.who.picked = []; }
+
+    /** Live count, so nobody presses Run Payroll and then discovers the scope. */
+    async refreshWho() {
+        if (!this.hasStatusFilter) { return; }
+        this.state.who.loading = true;
+        try {
+            this.state.who.preview = await this.orm.call(
+                "pb.payrun.wizard", "eligible_preview",
+                [{ statuses: this.chosenStatuses, search: this.state.who.search }]
+            );
+        } catch (error) {
+            this.state.who.preview = null;
+        }
+        this.state.who.loading = false;
+    }
+
     get eligibleCount() {
+        if (this.hasStatusFilter && this.state.who.preview) {
+            return this.state.who.picked.length || this.state.who.preview.total;
+        }
         return this.divInfo ? this.divInfo.eligible : (this.state.defaults ? this.state.defaults.eligible : 0);
     }
 
@@ -226,6 +295,15 @@ export class PayrunWizard extends Component {
         const sheet = this.state.sheet;
         const payload = { ...this.state.form, force_clean: force };
         if (sheet.skipped) { payload.spreadsheet_skipped = true; }
+        // VALUEKIND P4 — who the person chose. Absent when the scheme names no
+        // employment-status component, in which case the server takes no view
+        // and the run covers exactly who it always did.
+        if (this.hasStatusFilter) {
+            payload.statuses = this.chosenStatuses;
+            if (this.state.who.picked.length) {
+                payload.employee_ids = [...this.state.who.picked];
+            }
+        }
         const prep = await this.orm.silent.call("pb.payrun.wizard", "prepare_run", [payload]);
         if (prep && prep.needs_confirmation) {
             this.gotoKey("period");       // sit behind the dialog on step 1
