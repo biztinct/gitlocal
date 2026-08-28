@@ -193,3 +193,74 @@ class TestRunTotals(TransactionCase):
         self.assertEqual(self.run.pb_total_deductions, 1000.0)
         self.assertEqual(self.run.pb_total_gross - self.run.pb_total_deductions,
                          self.run.pb_total_net)
+
+
+@tagged('post_install', '-at_install')
+class TestRunDeletion(TransactionCase):
+    """Deleting a pay run must take its drafts with it.
+
+    It did not, and the two reasonable behaviours either side of that gap
+    combined into a trap: `payslip_run_id` is a plain many2one so the payslips
+    survived, and the Run Payroll wizard adopts a period's loose drafts on
+    purpose so a second payroll is not computed on top of one that exists. On
+    the reference tenant a run created on 2026-08-28 at 03:39 adopted 152
+    payslips computed two days earlier, and said "Computed 152 of 152".
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.company = self.env.company
+        self.employee = self.env['hr.employee'].create({
+            'name': 'Deletion Person', 'company_id': self.company.id})
+        self.contract = self.env['hr.contract'].create({
+            'name': 'Deletion contract', 'employee_id': self.employee.id,
+            'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01',
+            'company_id': self.company.id})
+        self.run = self.env['hr.payslip.run'].create({
+            'name': 'Deletion June', 'date_start': '2026-06-01',
+            'date_end': '2026-06-30'})
+
+    def _slip(self, state='draft'):
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id, 'name': 'Deletion slip',
+            'contract_id': self.contract.id, 'date_from': '2026-06-01',
+            'date_to': '2026-06-30', 'company_id': self.company.id,
+            'payslip_run_id': self.run.id})
+        if state != 'draft':
+            slip.state = state
+        return slip
+
+    def test_deleting_a_run_deletes_its_draft_payslips(self):
+        slip = self._slip()
+        self.run.unlink()
+        self.assertFalse(slip.exists(),
+                         "a draft left behind is a draft the next run adopts")
+
+    def test_an_approved_payslip_stops_the_run_being_deleted(self):
+        from odoo.exceptions import UserError
+        slip = self._slip(state='done')
+        with self.assertRaises(UserError):
+            self.run.unlink()
+        self.assertTrue(slip.exists())
+        self.assertTrue(self.run.exists())
+
+    def test_the_button_clears_drafts_and_keeps_the_run(self):
+        slip = self._slip()
+        self.run.action_pb_delete_draft_payslips()
+        self.assertFalse(slip.exists())
+        self.assertTrue(self.run.exists(),
+                        "clearing a period must not require deleting the run")
+        self.assertEqual(self.run.pb_employee_count, 0)
+
+    def test_the_button_refuses_when_something_was_approved(self):
+        from odoo.exceptions import UserError
+        draft = self._slip()
+        done = self._slip(state='done')
+        with self.assertRaises(UserError):
+            self.run.action_pb_delete_draft_payslips()
+        self.assertTrue(draft.exists(), "nothing is deleted when the call fails")
+        self.assertTrue(done.exists())
+
+    def test_deleting_an_empty_run_still_works(self):
+        self.run.unlink()
+        self.assertFalse(self.run.exists())

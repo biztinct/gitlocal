@@ -43,6 +43,19 @@
             <xpath expr="//header/field[@name='state']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <!-- Starting the period again without deleting the run. Deleting
+                 the run is what used to leave 152 drafts loose for the next
+                 run to adopt, so the safe way needs to be the visible one.
+                 Hidden once the run is past draft: by then the payslips are
+                 somebody's decision, not a working copy. -->
+            <xpath expr="//form/header" position="inside">
+                <button name="action_pb_delete_draft_payslips"
+                        type="object"
+                        string="Delete Draft Payslips"
+                        invisible="state != 'draft' or not slip_ids"
+                        confirm="This deletes every DRAFT payslip on this pay run. The run itself, and any payslip already approved, are kept. Continue?"/>
+            </xpath>
+
             <xpath expr="//sheet/label[@for='name']" position="before">
                 <widget name="vu_progress_rail"
                         steps="draft,level0,level1,level2,done"

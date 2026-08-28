@@ -213,11 +213,15 @@
                 <t t-elif="stepKey === 'compute' and state.summary">
                     <div class="pw-result" data-coach="pw-result">
                         <div class="pw-result-ic"><t t-out="ic('zap',30)"/></div>
-                        <h3>Computed <t t-esc="state.summary.computed"/> of <t t-esc="state.summary.count"/> payslips</h3>
+                        <h3 t-if="state.summary.adopted and !state.summary.fresh">
+                          Reused <t t-esc="state.summary.adopted"/> existing payslips</h3>
+                        <h3 t-else="">Computed <t t-esc="state.summary.computed"/> of <t t-esc="state.summary.count"/> payslips</h3>
                         <p class="pw-muted"><t t-esc="state.summary.name"/> · net total <b t-esc="vnd(state.summary.total_net)"/></p>
                         <p class="pw-muted" t-if="state.summary.adopted">
                             <t t-esc="state.summary.adopted"/> payslip(s) for this period already existed and were
-                            added to this run as they are, rather than computed again.
+                            added to this run <b>exactly as they were</b> — their figures are from when they were
+                            last computed, not from now. Press <b>Recompute Formulas</b> on the pay run if you
+                            want them worked out again, or delete the drafts first and generate a fresh set.
                         </p>
                         <!-- NETROLE P3: what the file did, and what running without one cost. -->
                         <p class="pw-muted" t-if="state.summary.sheet">

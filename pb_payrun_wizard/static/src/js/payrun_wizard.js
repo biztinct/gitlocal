@@ -363,6 +363,10 @@ export class PayrunWizard extends Component {
         // Payslips the pay data file created are done for the same reason.
         summary.computed = computed + (prep.adopted || 0) + ((batch && batch.created) || 0);
         summary.adopted = prep.adopted || 0;
+        // …but "Computed 152 of 152" over a run where 152 were adopted and NONE
+        // were computed is the headline saying the opposite of what happened.
+        // On the reference tenant that heading sat above payslips two days old.
+        summary.fresh = computed + ((batch && batch.created) || 0);
         summary.sheet = batch || null;
         summary.skipped_components = prep.skipped_components || [];
         this.state.progress = null;
