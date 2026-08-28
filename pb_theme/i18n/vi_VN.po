@@ -54,3 +54,27 @@ msgstr "Phím tắt"
 #: code:addons/pb_theme/static/src/js/vi_translation_terms.js:13
 msgid "You will not receive any notifications"
 msgstr "Bạn sẽ không nhận được bất kỳ thông báo nào"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/language_switcher.js:53
+msgid "Change language. Current language: %s"
+msgstr "Đổi ngôn ngữ. Ngôn ngữ hiện tại: %s"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/language_switcher.js:66
+msgid "Could not change language. Please try again."
+msgstr "Không thể đổi ngôn ngữ. Vui lòng thử lại."
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/xml/language_switcher.xml:19
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/xml/language_switcher.xml:34
+msgid "Current language"
+msgstr "Ngôn ngữ hiện tại"
