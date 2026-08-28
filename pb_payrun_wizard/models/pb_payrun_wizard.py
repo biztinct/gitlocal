@@ -292,7 +292,9 @@ class PbPayrunWizard(models.AbstractModel):
                 oc = Slip.onchange_employee_id(ds, de, emp.id, contract_id=False)
                 v = oc.get('value', {})
                 if not v.get('contract_id'):
-                    exceptions.append({'emp': emp.name, 'why': 'No running contract'})
+                    exceptions.append({
+                        'emp': emp.name,
+                        'why': self._no_contract_reason(emp, ds, de)})
                     continue
                 slip = Slip.create({
                     'employee_id': emp.id,
@@ -444,7 +446,9 @@ class PbPayrunWizard(models.AbstractModel):
                 oc = Slip.onchange_employee_id(ds, de, emp.id, contract_id=False)
                 v = oc.get('value', {})
                 if not v.get('contract_id'):
-                    exceptions.append({'emp': emp.name, 'why': 'No running contract'})
+                    exceptions.append({
+                        'emp': emp.name,
+                        'why': self._no_contract_reason(emp, ds, de)})
                     continue
                 slip = Slip.create({
                     'employee_id': emp.id,
@@ -514,6 +518,33 @@ class PbPayrunWizard(models.AbstractModel):
     # `_get_formula_input_values` is deliberately untouched.
     # ==================================================================
     # ---------------- Freshening the feed before anything is computed --------
+    def _no_contract_reason(self, employee, ds, de):
+        """Why this person has no contract running in THIS period.
+
+        "No running contract" was true and unhelpful: on the reference tenant
+        every one of the six people it named had an open contract — starting in
+        July or August, over a June pay run. The reader cannot tell that from
+        the message and goes looking for missing contracts that are all there.
+        """
+        contracts = self.env['hr.contract'].sudo().search(
+            [('employee_id', '=', employee.id)], order='date_start desc')
+        if not contracts:
+            return _("No contract at all — this employee has never had one.")
+        running = contracts.filtered(lambda c: c.state == 'open')
+        if not running:
+            return _("No running contract — %(n)s contract(s) exist but none is "
+                     "in the Running state.", n=len(contracts))
+        later = running.filtered(lambda c: c.date_start and str(c.date_start) > str(de))
+        if later:
+            return _("Not employed yet in this period — contract starts "
+                     "%(d)s.", d=later[-1].date_start)
+        ended = running.filtered(
+            lambda c: c.date_end and str(c.date_end) < str(ds))
+        if ended:
+            return _("Contract ended %(d)s, before this period.",
+                     d=max(ended.mapped('date_end')))
+        return _("No contract running between %(a)s and %(b)s.", a=ds, b=de)
+
     def _payrun_connectors(self):
         """The connected systems whose fields feed a scheme in view.
 

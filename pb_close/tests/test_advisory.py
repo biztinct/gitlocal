@@ -11,7 +11,7 @@ same way.
 from datetime import timedelta
 from unittest.mock import patch
 
-from odoo.tests import tagged
+from odoo.tests import TransactionCase, tagged
 
 from .common import CloseCase
 
@@ -199,3 +199,28 @@ class TestCloseAdvisory(CloseCase):
                     if seam in vars(c)]
             self.assertTrue(any('pb_close' in s for s in srcs),
                             'pb_close must wrap %s' % seam)
+
+
+@tagged('post_install', '-at_install')
+class TestAdvisoryNotRepeated(TransactionCase):
+    """The advisory is about the PERIOD; `compute_batch` runs per CHUNK.
+
+    A run of 36 people over two chunks listed every unclosed week twice and
+    the summary line twice with it — five weeks reported as ten problems.
+    """
+
+    def test_appending_twice_adds_nothing_the_second_time(self):
+        wizard = self.env['pb.payrun.wizard']
+        exceptions = []
+        wizard._close_append_exceptions(exceptions, [], '2026-06-01', '2026-06-30')
+        first = len(exceptions)
+        wizard._close_append_exceptions(exceptions, [], '2026-06-01', '2026-06-30')
+        self.assertEqual(len(exceptions), first,
+                         "a second chunk must not re-report the same weeks")
+
+    def test_a_genuinely_different_row_still_lands(self):
+        wizard = self.env['pb.payrun.wizard']
+        exceptions = [{'emp': 'Someone', 'why': 'No contract at all.'}]
+        wizard._close_append_exceptions(exceptions, [], '2026-06-01', '2026-06-30')
+        self.assertIn({'emp': 'Someone', 'why': 'No contract at all.'}, exceptions,
+                      "deduplication must not eat rows from other producers")
