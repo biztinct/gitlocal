@@ -1536,3 +1536,92 @@ number from the handovers — keep the numbering stable.
      period without deleting the run, and the wizard says "Reused" rather than
      "Computed" when it adopted. When a fix looks like it did nothing, check
      `hr_payslip.create_date` against the deploy time before anything else.
+134. **A scheme in Draft is INVISIBLE to every config lookup, and the message
+     said "no scheme"** (VALUEKIND P5). Every rung of
+     `hr.payslip._find_formula_config` filters `state = 'active'`, so a Draft
+     scheme matched nothing and `compute_sheet` reported it ABSENT — sending two
+     people hunting for a missing assignment while the scheme sat one lifecycle
+     step from working. It had never surfaced because every payslip on that
+     tenant came from the IMPORT path, which sets `formula_config_id` explicitly
+     and never reads the state; the wizard was the first thing to look it up.
+     `_inactive_formula_configs()` tells the two apart. **When a lookup filters
+     on a state, the not-found message must say which of the two it is.**
+135. **A pay run that computed on nothing looked exactly like one that worked**
+     (VALUEKIND P5). 36 payslips, gross ₫243,000,000, a clean KPI band — and all
+     54 inputs on every payslip read `src: none, via: default`. The ₫243m was one
+     component's default (`PAIDLEAVUNUS`, 6,750,000) times 36, and deductions
+     were ₫0 because they are percentages of a base salary that defaulted to
+     zero. The provenance to detect this had been written since SOURCING S1;
+     nothing counted it. `hr.payslip.pb_sourced_inputs` +
+     `hr.payslip.run.pb_unsourced_count` + a banner ABOVE the KPI band, because
+     the band is what it is warning you not to believe.
+136. **A stored compute does not re-run when its code changes.** `pb_unsourced_count`
+     shipped without the "no provenance blob means PREDATES provenance, not
+     sourced nothing" guard, and its stored values flagged 42 correct runs on the
+     demo database. Adding the guard fixed nothing by itself — the wrong answers
+     sat there being wrong until a migration called `env.add_to_compute(...)`.
+     Ship a stored-field logic change WITH the migration that asks for it again.
+137. **Sync before you compute, or you compute on whatever the last import left.**
+     The Run Payroll wizard computed first and synced never. Freshening the feed
+     is now a step of the run (`sync_plan` / `sync_step`), and it never blocks: a
+     connector that is down is NAMED on the result screen and the run goes on,
+     because the file and contract fallbacks may well be enough.
+138. **Pull per FEED, never per kind of data** (the mistake, then the fix).
+     `action_pull_data` has branches for employee / salary / dependent /
+     attendance / leave and NONE for `custom` — so ABM's Overtime requests feed
+     (six components) asked for a pull that had no branch, fetched nothing, and
+     reported success. Kind is the wrong unit anyway: a Zoho connector has TWO
+     attendance feeds and two custom ones. `action_pull_endpoint` already says
+     this in its own docstring. Also: `salary` is the expensive one
+     (`fetch_payroll_data` loops per employee, three API calls each — ~456
+     requests for 152 people), so pulling only what is mapped is faster as well
+     as correct.
+139. **A wire with no `endpoint_id` is pulled by NOTHING.** The sync plan is
+     derived from the endpoint, so a wire that names only a source field falls
+     back to its default on every run while the run reports success. The board
+     only sends an endpoint when the reader has picked ONE feed — in "All feeds"
+     it sends none — and the catalogue knew the answer the whole time.
+     `_endpoint_for_field` looks it up on create; migration 19.0.1.169.0 did the
+     same for four already saved on abm, BASESALARY among them. Silent when
+     AMBIGUOUS on purpose: guessing between two feeds carrying the same field
+     name would wire payroll to the wrong one.
+140. **One vendor spells the same field three ways across its own feeds.** Zoho
+     sends `EmployeeID` on the employee form, `Employee_ID` on the salary form,
+     `employeeId` on the attendance report — and `EmailID` / `emailId` /
+     `mailId` for the address. Exact-match candidate lists caught the first of
+     each, so attendance linked 0 of 3,064 records and salary 3 of 1,368: the
+     data arrived, attached to nobody, and every component reading it defaulted.
+     **Compare identifier keys with case and underscores removed.**
+141. **The employee feed is the ROSTER other feeds join to.** ABM's employee code
+     (`11708`) is stored nowhere on `hr.employee` — matching only ever worked by
+     email, which salary records do not carry. A record that cannot find a person
+     directly now reuses the peer `data_type='employee'` row carrying the same
+     external id, which already resolved. 5,326 rows relinked.
+142. **The payslip resolver read TWO data types.** `_j3_feed_hits_by_rule`
+     searched `data_type in ('employee', 'salary')`, so hours (attendance) and
+     overtime (custom) were invisible however well they were linked:
+     `STANWORKHOUR` defaulted with 168 correct June rows sitting against the
+     right people, `ACTUBASISALA = ROUND(BASESALARY/STANWORKHOUR*ACTUWORKHOUR,0)`
+     divided by that zero, and no basic pay reached gross. Now every kind the
+     wires point at — **and the merge order is EXPLICIT**, because
+     `data_type asc` only happened to give employee-before-salary by spelling,
+     and adding `attendance`/`custom` to that sort would have let master data
+     overwrite the period's hours.
+143. **The FROM column mixes what ARRIVED with what the vendor CLAIMS.**
+     `get_available_source_fields` merges `live` (real payloads, real samples),
+     `catalog` (the vendor's field list, illustrative samples) and `odoo`. The
+     board labelled it honestly — NOT SENT badge, "e.g." before the number — and
+     still allowed payroll to be wired to a catalogue entry. Base Salary was
+     mapped to `Salary` (catalog, never delivered) while `Base_Salary` (live,
+     12,500,000) sat in the same list. Only `live` and `computed` are mappable
+     now; before a first sync the refusal becomes an offer to fetch.
+     **Corollary for whoever is debugging: read the payload, never the
+     catalogue.** Recommending `Salary` off the catalogue cost three empty runs.
+144. **Each fault hid the next.** Draft scheme → no lines at all. Fixed: no
+     source data. Fixed: wrong feeds pulled. Fixed: records attached to nobody.
+     Fixed: resolver could not see them. Fixed: gross ₫243m → ₫624,617,018, and
+     deductions still ₫0 because `SHUIPARTICIP` is sourced `excel` and the run
+     had no pay-data file. **On a "the number is wrong" report, walk the whole
+     chain before reporting a cause** — did it sync, did it link, did the
+     resolver read it, did the formula get a value, is the value used. Each
+     answer looks like the whole answer.
