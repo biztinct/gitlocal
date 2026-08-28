@@ -1523,3 +1523,16 @@ number from the handovers — keep the numbering stable.
      over components the database says are earnings: the screen denying the very
      state the banner above it was asking about. Keep the stored value in its own
      list, flag the row, and let the reader move off it.
+133. **Deleting a pay run did NOT delete its payslips, and the wizard adopts the
+     orphans** (VALUEKIND P5). `payslip_run_id` is a plain many2one, so a
+     deleted batch left every payslip alive and unattached; then
+     `pb.payrun.wizard._adopt_loose_slips` claims a period's loose drafts on
+     purpose, so that rebuilding a run does not compute a second payroll on top
+     of one that exists. Individually reasonable. Together: delete a run, build
+     a new one, and the OLD numbers walk back in unrecomputed. Caught live on
+     abm 2026-08-28 — run 15 created 03:39:32 holding 152 payslips created
+     2026-08-26, `write_date` = the moment of adoption. `hr.payslip.run.unlink`
+     now takes its drafts with it, `action_pb_delete_draft_payslips` clears a
+     period without deleting the run, and the wizard says "Reused" rather than
+     "Computed" when it adopted. When a fix looks like it did nothing, check
+     `hr_payslip.create_date` against the deploy time before anything else.
