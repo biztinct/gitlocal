@@ -499,6 +499,61 @@ class HrPayslipFormula(models.Model):
         # behaves exactly as it did before this phase.
         feed_hits = self._j3_feed_hits_by_rule(config)
 
+        # RECORDS RD45 — rank 4, which this path never had.
+        #
+        # `_declared_source_walk` (payroll_import_batch.py:2696) defines the
+        # order ONCE: feed > rule > excel > employee_field/contract_field >
+        # contract_component > tail. Every rung of it is reachable from the
+        # import batch; on THIS path — a run computed with no pay-data file —
+        # only the first two were, and the walk simply stopped there. So a
+        # component mapped to a field on the employee or the contract fell to
+        # its default however plainly the record answered, and the Source Atlas
+        # said so honestly: "Payobook records — nothing in this run came this
+        # way", on a tenant with 21 such mappings.
+        #
+        # On ABM that cost the whole deduction side. `SHUIPARTICIP` is mapped
+        # to `hr.contract.shuipart`, which reads YES on all 152 contracts, and
+        # every insurance line is `IF(SHUIPARTICIP="YES", …, 0)`. The component
+        # resolved to its default of 0, every gate took the zero leg, and a run
+        # of 36 payslips reported ₫0.00 of deductions.
+        #
+        # The rung is the SAME function the batch resolver's tail calls —
+        # `_mapped_record_value` — not a second reading of a record. Nothing
+        # here decides an ORDER; it fills in a rung the order already named.
+        #
+        # RANK 5 (the contract component) IS DELIBERATELY NOT ADDED. It is a
+        # rung of the same ladder, but on this path it does not add a source —
+        # it REPLACES a component's declared default with whatever the
+        # contract's advantage line says, including when that line says zero.
+        # Measured on the reference tenant: 612 of its 756 cells read zero,
+        # every one of them a placeholder, and the single component with a
+        # non-zero default (`PAIDLEAVUNUS`, ₫6,750,000) lost it — ₫243,000,000
+        # off the gross of a 36-payslip run, as a side effect of a fix about
+        # insurance. A rung that only ever subtracts is an owner's decision,
+        # not a bug fix's.
+        Batch = self.env['hr.payroll.import.batch']
+        mapping_by_rule = {}
+        try:
+            if config.rule_ids:
+                # `destination_type = 'field'` only, exactly as the batch
+                # resolver's `mapping_by_rule` (payroll_import_batch.py:3902):
+                # a bank destination is three columns assembling ONE account
+                # and is never a value a component reads.
+                mappings = self.env['hr.payslip.import.mapping'].sudo().search([
+                    ('salary_structure_id', '=', config.id),
+                    ('destination_type', '=', 'field'),
+                    ('component_id', 'in', config.rule_ids.ids),
+                ])
+                mapping_by_rule = {m.component_id.id: m
+                                   for m in mappings if m.component_id}
+        except Exception:       # noqa: BLE001
+            # Same rail as `_j3_feed_hits_by_rule`: a payslip must compute even
+            # when the mapping layer is misconfigured or mid-migration.
+            _logger.warning(
+                "RD45: could not read record sources for payslip %s",
+                self.id, exc_info=True)
+            mapping_by_rule = {}
+
         for rule in input_rules:
             value = rule.default_value
             src, key, via = 'none', None, 'default'
@@ -555,6 +610,28 @@ class HrPayslipFormula(models.Model):
                 value = hit['value']
                 src = 'rule' if hit['kind'] == 'rule' else 'feed'
                 key, via = hit['key'], 'connector_mapping'
+            else:
+                # RECORDS RD45 — rank 4. Reached ONLY when nothing above
+                # delivered, which is the walk's laziness contract: a component
+                # whose feed answered never touches the record at all.
+                #
+                # It outranks the contract-wage and worked-days branches
+                # above, which are this path's untouched tail — so a mapped
+                # field wins over them, and over the default, and over nothing
+                # else. `_blob_is_empty` is THE emptiness test (0 and False are
+                # values); the `False`-is-NULL guard is the batch resolver's,
+                # for the same reason it exists there.
+                mapping = mapping_by_rule.get(rule.id)
+                mapped = Batch._mapped_record_value(
+                    mapping, contract=self.contract_id,
+                    employee=self.employee_id) if mapping else None
+                if mapped is False and not Batch._record_dest_is_boolean(mapping):
+                    mapped = None
+                if not Batch._blob_is_empty(mapped):
+                    value = mapped
+                    src = 'employee_field'
+                    key = mapping.target_field_id.name or None
+                    via = 'employee_mapping'
 
             values[rule.code] = value
             if provenance is not None:
@@ -782,14 +859,54 @@ class HrPayslipFormula(models.Model):
                 payslip.line_ids.unlink()
                 batch._compute_and_create_payslip_lines(payslip, input_values)
             else:
-                if payslip.formula_input_values:
-                    try:
-                        input_values = json.loads(payslip.formula_input_values or '{}')
-                    except Exception:
-                        input_values = {}
-                else:
-                    input_values = payslip._get_formula_input_values(config)
-                    payslip.formula_input_values = json.dumps(input_values, indent=2)
+                # RECORDS RD45 — RE-READ THE SOURCES, don't just re-run the
+                # arithmetic over yesterday's inputs.
+                #
+                # This branch used to reuse `formula_input_values` verbatim
+                # whenever it held anything, and only resolve when it was empty.
+                # So the button labelled "recalculated with current settings"
+                # could not see a single CHANGED setting: the owner set SHUI
+                # participation on every ABM contract, pressed Recompute, and
+                # got the same ₫0.00 back, because the stale blob still said the
+                # component had no value. A button that cannot pick up a change
+                # is worse than no button — it answers "done" to work it did not
+                # do.
+                #
+                # WHAT THE REUSE WAS PROTECTING, and still does. The stored blob
+                # is the ONLY surviving copy of a spreadsheet's numbers once the
+                # import line is gone, and of the values `pb_demo` stages
+                # directly onto a payslip. Re-resolving unconditionally would
+                # erase both. So: a code that a LIVE source answers is refreshed
+                # from that source; a code the resolver cannot source keeps
+                # exactly what the payslip already held. Nothing is lost, and
+                # nothing is frozen.
+                stored, stored_sources = {}, {}
+                try:
+                    stored = json.loads(payslip.formula_input_values or '{}')
+                    stored_sources = json.loads(payslip.formula_input_sources or '{}')
+                except Exception:       # noqa: BLE001
+                    stored, stored_sources = {}, {}
+                if not isinstance(stored, dict):
+                    stored = {}
+                if not isinstance(stored_sources, dict):
+                    stored_sources = {}
+
+                fresh_sources = {}
+                fresh = payslip._get_formula_input_values(
+                    config, provenance=fresh_sources)
+                input_values = dict(stored)
+                input_sources = dict(stored_sources)
+                for code, value in fresh.items():
+                    entry = fresh_sources.get(code) or {}
+                    if (entry.get('src') or 'none') == 'none' and code in stored:
+                        # Nothing answers for this code today. Whatever the
+                        # payslip already carried is the better record of it.
+                        continue
+                    input_values[code] = value
+                    input_sources[code] = entry
+                payslip.formula_input_values = json.dumps(input_values, indent=2)
+                payslip.formula_input_sources = json.dumps(input_sources, indent=2)
+                payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
 
                 rules = config.rule_ids.sorted(key=lambda r: r.sequence)
                 computed_values, computation_log = payslip._evaluate_rules_with_dependencies(
