@@ -93,3 +93,8 @@ from . import test_net_role_quantity
 # neutrality rail (md5 + counter), the writeback that does not happen, and the
 # row for someone who is not in Payobook yet.
 from . import test_records_r1_one_time
+
+# RECORDS RD45 — ranks 4 and 5 on the file-less path: a component mapped to an
+# employee or contract field could not be read at all unless the run carried a
+# pay-data file, which is what made ABM's June deductions read ₫0.00.
+from . import test_records_r5_record_rung
