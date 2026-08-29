@@ -5,10 +5,10 @@ A pay run computed WITHOUT a pay-data file goes through
 `hr.payslip._get_formula_input_values`, and that function knew only two of the
 ladder's rungs: the connected system, then the tail (a contract-wage special
 case, worked-days lines, the component's default). Rank 4 — the mapped
-employee/contract field — and rank 5 below it were simply
-absent. Rank 5 is left out on purpose (`test_04c`); rank 4 is the defect: a
-component pointed at a record fell to its default however plainly the record
-answered. The Source Atlas reported it honestly and nobody could act
+employee/contract field — and rank 5 — the contract component — were simply
+absent, so a component pointed at a record fell to its default however plainly
+the record answered, and the SAME month produced a different gross depending
+only on whether a pay-data file had been uploaded. The Source Atlas reported it honestly and nobody could act
 on it: *"Payobook records — nothing in this run came this way"*, on a tenant
 with twenty-one such mappings.
 
@@ -24,7 +24,10 @@ What is asserted here, in order:
     the walk's laziness contract, asserted as "the read did not happen" rather
     than "the value differs" (J10's case 6);
   * `0` and `False` are values and a NULL column is not (MJ15);
-  * rank 5 (the contract component) stays OUT of this path — see `test_04c`;
+  * rank 5 (the contract component) joined it on the owner's ruling — a
+    contract line that says zero HAS answered, and a component the contract
+    does not mention at all falls to zero, exactly as a file-fed run resolves
+    it (`test_06*`);
   * a component with no mapping resolves exactly as it did before, which is the
     neutrality rail: nothing that works today may move.
 """
@@ -84,6 +87,17 @@ class TestRecordsRecordRung(TransactionCase):
             'destination_type': 'field',
             'target_model_id': self.env['ir.model']._get_id(model),
             'target_field_id': self.Fields._get(model, field).id,
+        })
+
+    def _advantage(self, contract, code, amount):
+        """A contract component line, the way a contract really carries one."""
+        Tmpl = self.env['hr.contract.advantage.template']
+        tmpl = Tmpl.search([('code', '=', code)], limit=1) or Tmpl.create({
+            'name': code.title(), 'code': code})
+        return self.env['hr.contract.advantage'].create({
+            'contract_id': contract.id,
+            'advantage_template_id': tmpl.id,
+            'amount': amount,
         })
 
     def _resolve(self, slip, cfg):
@@ -292,6 +306,61 @@ class TestRecordsRecordRung(TransactionCase):
         self.assertEqual(
             json.loads(slip.formula_input_sources)['FROMAFILE']['src'], 'excel')
 
+    # =====================================================================
+    # 6 — rank 5, the contract component (RD46, on the owner's ruling)
+    # =====================================================================
+    def test_06a_a_contract_line_that_says_zero_has_answered(self):
+        """The ₫243,000,000 case, as a rule rather than as an anecdote."""
+        cfg, rule, _e, contract, slip = self._fixture(code='PAIDLEAVE')
+        rule.default_value = 6750000.0
+        rule.is_contract_component = True
+        self._advantage(contract, 'PAIDLEAVE', 0.0)
+
+        values, prov = self._resolve(slip, cfg)
+
+        self.assertEqual(values['PAIDLEAVE'], 0.0,
+                         "a contract line saying zero is an answer (MJ15) and "
+                         "outranks the component's default")
+        self.assertEqual(prov['PAIDLEAVE']['src'], 'contract_component')
+        self.assertEqual(prov['PAIDLEAVE']['via'], 'contract')
+
+    def test_06b_a_real_contract_amount_reaches_the_payslip(self):
+        cfg, rule, _e, contract, slip = self._fixture(code='PAIDLEAVE')
+        rule.is_contract_component = True
+        self._advantage(contract, 'PAIDLEAVE', 4200.0)
+        values, prov = self._resolve(slip, cfg)
+        self.assertEqual(values['PAIDLEAVE'], 4200.0)
+        self.assertEqual(prov['PAIDLEAVE']['via'], 'contract')
+
+    def test_06c_a_contract_component_the_contract_never_mentions_is_zero(self):
+        """The batch resolver's `contract_component_default` branch, matched."""
+        cfg, rule, _e, _c, slip = self._fixture(code='PAIDLEAVE')
+        rule.default_value = 6750000.0
+        rule.is_contract_component = True
+        values, prov = self._resolve(slip, cfg)
+        self.assertEqual(values['PAIDLEAVE'], 0.0)
+        self.assertEqual(prov['PAIDLEAVE']['via'], 'contract_default')
+
+    def test_06d_an_ordinary_component_still_keeps_its_default(self):
+        """The rung is for contract components. Nothing else may lose a default."""
+        cfg, rule, _e, _c, slip = self._fixture(code='ALLOWANCE')
+        rule.default_value = 999.0
+        rule.is_contract_component = False
+        values, prov = self._resolve(slip, cfg)
+        self.assertEqual(values['ALLOWANCE'], 999.0)
+        self.assertEqual(prov['ALLOWANCE']['via'], 'default')
+
+    def test_06e_the_record_field_still_outranks_the_contract_component(self):
+        cfg, rule, _e, contract, slip = self._fixture()
+        rule.is_contract_component = True
+        contract.shuipart = 'YES'
+        self._map(cfg, rule, 'hr.contract', 'shuipart')
+        self._advantage(contract, 'SHUIPART', 0.0)
+        values, prov = self._resolve(slip, cfg)
+        self.assertEqual(values['SHUIPART'], 'YES',
+                         "J-D5: rank 4 is above rank 5 and stays there")
+        self.assertEqual(prov['SHUIPART']['src'], 'employee_field')
+
     def test_04c_the_record_is_read_through_the_batch_resolver_s_function(self):
         """One reading of a record, not two.
 
@@ -316,10 +385,10 @@ class TestRecordsRecordRung(TransactionCase):
         body = re.split(r'\n    def ', body, maxsplit=1)[0]
 
         self.assertIn('_mapped_record_value', body)
-        # Rank 5 is deliberately NOT here: on this path it replaces a
-        # component's declared default with a contract advantage line that
-        # usually says zero, which is an owner's decision and not this fix's.
-        self.assertNotIn('_contract_component_amounts', body)
+        # RD46 — rank 5 joined it once the owner ruled on it, and it must read
+        # the contract through the batch resolver's function for the same
+        # reason rank 4 does.
+        self.assertIn('_contract_component_amounts', body)
         self.assertNotIn('getattr(record,', body,
                          "a second implementation of 'read the record' is the "
                          "failure this rung exists inside of")

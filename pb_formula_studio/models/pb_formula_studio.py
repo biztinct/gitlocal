@@ -1976,6 +1976,174 @@ class PbFormulaStudio(models.AbstractModel):
         config = self.env['hr.formula.config'].browse(int(config_id))
         return self._compute(config, sample_id) if config.exists() else {'sample_id': sample_id, 'values': {}}
 
+    # ==================================================================
+    # RD46 — PREVIEW THE FORMULAS AGAINST A REAL PERSON.
+    #
+    # The Live Preview panel could only ever show a made-up sample, and on a
+    # scheme nobody had generated samples for it showed a column of ₫0. So the
+    # one question a person actually brings to this screen — "why did THIS
+    # employee get THAT number?" — had no answer here, and the numbers on the
+    # panel looked like the formulas were producing nothing.
+    #
+    # THE COPY RULE, and it is the whole safety story: these methods READ a
+    # payslip and never write one. The evaluation runs on an in-memory record
+    # (`.new()`, never saved) with `readonly=True`, which is the sample model's
+    # existing zero-write mode — it skips the dependency-metadata refresh that
+    # would otherwise stamp `write_date` on every component of a live scheme.
+    # Nothing here can change what anybody is paid, so editing a formula while
+    # a real person's numbers are on screen is safe by construction rather than
+    # by the caller remembering to be careful.
+    #
+    # ONE EVALUATOR. The numbers come out of the same
+    # `_evaluate_rules_with_dependencies` the samples, the test workbench and a
+    # real payslip all use. A second implementation would be a second answer to
+    # "what does this formula produce", which is the failure the whole sourcing
+    # programme exists to prevent.
+    # ==================================================================
+
+    @api.model
+    def preview_runs(self, config_id=None):
+        """Pay runs this scheme actually produced payslips for.
+
+        Scoped by `slip_ids.formula_config_id` rather than by date so the list
+        can never offer a run whose payslips this scheme did not compute —
+        picking one of those would preview a person against formulas that were
+        never applied to them, which is a worse answer than no answer.
+        """
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'runs': []}
+        Run = self.env['hr.payslip.run']
+        try:
+            runs = Run.search(
+                [('slip_ids.formula_config_id', '=', config.id)],
+                order='date_start desc, id desc', limit=24)
+        except Exception:       # noqa: BLE001 — a picker must not break the panel
+            _logger.warning("RD46: could not list pay runs", exc_info=True)
+            return {'ok': False, 'runs': []}
+        out = []
+        for run in runs:
+            out.append({
+                'id': run.id,
+                'name': run.name or _('Pay run'),
+                'date_from': fields.Date.to_string(run.date_start) if run.date_start else '',
+                'date_to': fields.Date.to_string(run.date_end) if run.date_end else '',
+                'count': len(run.slip_ids.filtered(
+                    lambda s: s.formula_config_id.id == config.id)),
+            })
+        return {'ok': True, 'runs': out}
+
+    @api.model
+    def preview_people(self, run_id, config_id=None):
+        """Who is in that run, and which payslip to preview for each.
+
+        Only the payslips THIS scheme computed, for the reason above.
+        """
+        config = self._pick_config(config_id)
+        if not (config and run_id):
+            return {'ok': False, 'people': []}
+        slips = self.env['hr.payslip'].search(
+            [('payslip_run_id', '=', int(run_id)),
+             ('formula_config_id', '=', config.id)],
+            order='employee_id, id')
+        people = []
+        for slip in slips:
+            people.append({
+                'payslip_id': slip.id,
+                'name': slip.employee_id.display_name or _('Employee'),
+                # `pb_sourced_inputs` is how many of this payslip's inputs came
+                # from somewhere real. Surfaced in the picker because a person
+                # whose payslip was computed entirely on defaults is exactly the
+                # one somebody is about to come asking about.
+                'sourced': slip.pb_sourced_inputs or 0,
+            })
+        return {'ok': True, 'people': people}
+
+    def _rd46_preview_label(self, slip, anonymize=False):
+        """What the panel calls this preview. Never a bare payslip number."""
+        who = _('Employee') if anonymize else (
+            slip.employee_id.display_name or _('Employee'))
+        if slip.date_from and slip.date_to:
+            from odoo.tools.misc import format_date
+            return '%s · %s' % (who, format_date(self.env, slip.date_from))
+        return who
+
+    @api.model
+    def preview_from_payslip(self, config_id, payslip_id, anonymize=False):
+        """This person's real inputs, run through the CURRENT formulas.
+
+        A COPY, always — see the block comment above. The inputs are the ones
+        the payslip recorded when it was computed; the formulas are whatever the
+        scheme says right now. That difference is the point: it is what lets a
+        person try a formula change against a real case and see the effect
+        before anything is applied to anyone.
+        """
+        empty = {'ok': False, 'sample_id': False, 'payslip_id': False,
+                 'label': '', 'values': {}}
+        config = self._pick_config(config_id)
+        if not config:
+            return empty
+        slip = self.env['hr.payslip'].browse(int(payslip_id))
+        if not slip.exists():
+            return dict(empty, reason='gone')
+        try:
+            inputs = json.loads(slip.formula_input_values or '{}')
+        except Exception:       # noqa: BLE001
+            inputs = {}
+        if not isinstance(inputs, dict):
+            inputs = {}
+        values = {}
+        try:
+            # `.new()` — an in-memory record that is never saved. It exists only
+            # to give the shared evaluator a `config_id` to read; no row is
+            # created, so previewing a hundred people leaves no trace.
+            probe = self.env['hr.formula.sample.data'].new({'config_id': config.id})
+            values = probe._evaluate_rules_with_dependencies(inputs, readonly=True)
+        except Exception as exc:        # noqa: BLE001
+            _logger.warning("RD46: preview failed for payslip %s: %s",
+                            slip.id, exc)
+            return dict(empty, reason='error')
+        by_code = {r.code: r.column_letter
+                   for r in config.rule_ids if r.code and r.column_letter}
+        out = {}
+        for code, value in (values or {}).items():
+            col = by_code.get(code)
+            if not col:
+                continue
+            try:
+                out[col] = float(value)
+            except (TypeError, ValueError):
+                # A text component is a real value that is not a number; the
+                # panel renders it as text rather than pretending it is 0.
+                out[col] = value
+        return {
+            'ok': True,
+            'sample_id': False,
+            'payslip_id': slip.id,
+            'label': self._rd46_preview_label(slip, anonymize=anonymize),
+            'anonymized': bool(anonymize),
+            'values': out,
+        }
+
+    @api.model
+    def preview_keep_as_sample(self, config_id, payslip_id, anonymize=True):
+        """Turn the person currently previewed into a saved sample.
+
+        The counterpart to the copy rule: previewing saves NOTHING, so keeping
+        one has to be an explicit act. Anonymised by default — a saved sample
+        outlives the question that produced it and is visible to everyone who
+        can open the scheme.
+        """
+        if not self._can_edit():
+            raise AccessError(_("You do not have permission to add samples."))
+        config = self._pick_config(config_id)
+        slip = self.env['hr.payslip'].browse(int(payslip_id))
+        if not (config and slip.exists()):
+            return {'ok': False}
+        sample = self.env['hr.formula.sample.data'].create_from_payslip(
+            slip, config, anonymize=bool(anonymize))
+        return {'ok': True, 'sample_id': sample.id, 'name': sample.name}
+
     # ------------------------------------------------------------------
     # edit operations
     # ------------------------------------------------------------------

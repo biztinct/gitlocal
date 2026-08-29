@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.171.0',
+    'version': '19.0.1.172.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -32,6 +32,8 @@
         'views/multisheet_wizard_view_inherit.xml',
         'views/sample_wizard_view_inherit.xml',
         'views/formula_review_templates.xml',
+        # RD46 — "Show the calculation" on the payslip.
+        'views/hr_payslip_calculation_view.xml',
     ],
     'assets': {
         'web.assets_backend': [

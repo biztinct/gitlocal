@@ -236,6 +236,16 @@
                   <span class="psa-emp" t-esc="row.employee"/>
                   <span class="psa-empc" t-esc="row.code"/>
                   <span class="psa-noprov" t-if="!row.has_provenance">no source recorded</span>
+                  <!-- RD46 — this screen answers "where did the value come
+                       from?"; the Formula Engine answers "and what was done
+                       with it?". They are two halves of one question, so the
+                       second is offered from here rather than only from the
+                       payslip form. Opens read-only. -->
+                  <button class="psa-calc" t-on-click="() => this.showCalculation(row.slip_id)"
+                          title="Show how this person's pay was worked out">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="16" y1="18" x2="16" y2="18"/></svg>
+                    Show the calculation
+                  </button>
                 </th>
                 <t t-foreach="windowComponents" t-as="comp" t-key="comp.code">
                   <t t-set="cell" t-value="cellOf(row, comp.code)"/>
