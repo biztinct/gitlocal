@@ -3,6 +3,7 @@
 import { Component, useState, onWillStart, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { IC as KIT_IC } from "@pb_import_kit/js/import_icons";
 
@@ -242,6 +243,31 @@ export class PayrunWizard extends Component {
     get sheetReady() {
         const p = this.state.sheet.preflight;
         return !!(p && p.ok);
+    }
+
+    // ---------------- RECORDS R3: the way out to the Records Desk -----------
+    /**
+     * The desk exists on this database, and its JS actually shipped.
+     *
+     * The server can resolve an `ir.actions.client` record whose component
+     * never registered, and opening one of those is a blank screen rather than
+     * nothing at all — so the presence probe is the REGISTRY
+     * (`plan_launcher.js:204`), not the action. A database without
+     * `pb_records` shows no line.
+     */
+    get hasRecordsDesk() {
+        return registry.category("actions").contains("pb_records_desk");
+    }
+
+    openRecordsDesk() {
+        const configId = (this.state.sheet.gate
+                          && this.state.sheet.gate.config_id) || 0;
+        this.action.doAction("pb_records.action_pb_records_desk", {
+            additionalContext: { records_config_id: configId },
+            clearBreadcrumbs: false,
+        }).catch(() => this.notif.add(
+            _t("The Records Desk is not installed on this database."),
+            { type: "warning" }));
     }
 
     // ---------------- RECORDS R1: update the records, or just this run -------

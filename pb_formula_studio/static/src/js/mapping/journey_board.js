@@ -43,6 +43,8 @@
 import { Component, useState, useRef, onMounted, onWillUnmount, onPatched,
          onWillUpdateProps, useExternalListener } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
+import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { wireGeometry, clampY } from "./mapping_geometry";
 
@@ -71,6 +73,7 @@ export class JourneyBoard extends Component {
     };
 
     setup() {
+        this.action = useService("action");
         this.ui = useState({
             q: "",
             focus: "",          // the id of the node the pointer/keyboard is on
@@ -532,6 +535,34 @@ export class JourneyBoard extends Component {
         this.ui.focus = node.id;
         if (!node.door) { return; }
         this.props.onOpenDoor(node.door);
+    }
+
+    /**
+     * A node's SECONDARY actions — a door out of Mapping altogether.
+     *
+     * `openDoor` can only change which tab you are on, so a screen that lives
+     * in another module cannot be one. These are rendered as small buttons
+     * BESIDE the node (never inside it: a button inside a button is not valid
+     * markup, and the wire geometry reads `body.children`, which is why they
+     * are siblings carrying no `data-id`).
+     *
+     * The probe is the `plan_launcher.js:204` pattern: the server can resolve
+     * an `ir.actions.client` whose JS never shipped, and opening one of those
+     * is a blank screen. A database without `pb_records` renders no button.
+     */
+    nodeActions(node) {
+        const actions = (node && node.actions) || [];
+        return actions.filter(
+            (a) => !a.tag || registry.category("actions").contains(a.tag));
+    }
+
+    runAction(action, ev) {
+        if (ev) { ev.stopPropagation(); }
+        if (!action || !action.xmlid) { return; }
+        this.action.doAction(action.xmlid, {
+            additionalContext: action.params || {},
+            clearBreadcrumbs: false,
+        });
     }
 
     onNodeFocus(node) { this.ui.focus = node.id; }

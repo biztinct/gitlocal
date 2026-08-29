@@ -159,9 +159,94 @@ every single time.
     (`base/models/res_company.py:311`). A test about NOT seeing another company's employees has
     to `write({'company_ids': [(3, other.id)]})` on `env.user` and invalidate, or `env.companies`
     silently contains the company the test is trying to be outside of.
-19. **hoot specifics this phase paid for**: `mountWithCleanup` boots the full web env, which
+19. **hoot specifics R2 paid for**: `mountWithCleanup` boots the full web env, which
     fetches the mail store — without `defineMailModels()` every mounting test dies on
     "could not get model discuss.channel". `toBeTruthy` does not exist (use `toBe(true)` or
     `toHaveLength`). `click(el, {ctrlKey: true})` does not carry the modifier to the handler —
     dispatch a `new MouseEvent("click", {bubbles: true, ctrlKey: true})`. A component that
     listens for keys on itself must be `.focus()`ed before `press()`.
+
+### R3 (2026-08-29)
+
+20. **`openpyxl.load_workbook(read_only=True)` throws the cell COMMENTS away.** A read-only
+    worksheet hands back `ReadOnlyCell`s, and a `ReadOnlyCell` has no `.comment` — which is
+    exactly where a column's technical identity (`id: f:hr.contract:shuipart`) lives, and
+    therefore the whole reason a retyped heading still lands on the right field. The R3 handover
+    specified `read_only=True`; the code loads normally instead, and the 10 MB size guard is what
+    keeps that affordable. Same trap for `sheet_state` on the hidden sheet.
+21. **`hr.employee.barcode` is validated: alphanumeric, no accents, at most 18 characters.** A
+    fixture that mints readable badge ids like `R3-0001` dies in `setUpClass` with "The Badge ID
+    must be alphanumeric without any accents and no longer than 18 characters" — and a
+    `setUpClass` failure counts as ONE error and silently runs none of the class's tests, so the
+    suite total barely moves and the failure is easy to read as unrelated. Use `R30001`.
+22. **`field._description_selection(env)` returns a list of (key, label) TUPLES**, not the
+    `{'key','label'}` dicts the desk's cards carry (`_selection_pairs` builds those). `p['key']`
+    over the raw result is `TypeError: tuple indices must be integers`. Wrap it in `dict()`.
+23. **A blank cell in a FILE is not the same gesture as an emptied cell in the GRID.** On the
+    grid, clearing a cell means "clear this" (`_coerce` treats `''` as an explicit clear). In a
+    file it means nothing at all — the column simply was not filled in. Treating the two the same
+    makes dropping an exported blank template wipe every mapped field of everyone in it. Blank
+    cells are counted (`cells_blank`, said on screen as "15 empty cells were left alone") and
+    never staged.
+24. **An identity heading may collide with a MAPPED field's label, and identity has to win.**
+    ABM maps `hr.employee.work_email`, whose card is labelled "Work Email"; the identity column
+    the export writes is headed "Work email". With label-matching ahead of identity, that column
+    was read as a destination — its own comment ("Identity … It is never imported") became untrue
+    and 15 unchanged emails counted as `same` changes. Order is: header comment → hidden sheet →
+    the three STRICT identity labels → card label → the batch's looser identity spellings
+    (`MSNV`, `emp code`) → ignored. Strict identity before label, loose identity after it: a card
+    genuinely called "Code" must not be eaten by the loose list.
+25. **A `<button>` inside a `<button>` is not valid markup, and the Journey's wire geometry walks
+    `body.children` reading `dataset.id`** (`journey_board.js:387`). A node's secondary action is
+    therefore a SIBLING `<div>` after the node button, carrying no `data-id` — `_measure` reads
+    straight past it and the wires still land on the node.
+26. **`dragenter`/`dragleave` fire for every element the pointer crosses**, so a boolean drop
+    flag turns the overlay off the instant the file moves over the text inside the zone. Keep a
+    DEPTH counter (`+1` on enter, `-1` on leave, reset on drop). The desk's whole-grid veil uses
+    the other half of the same trick: ignore a `dragleave` whose `relatedTarget` is still inside
+    `currentTarget`.
+27. **`_t()` returns a LAZY `TranslatedString` that THROWS when evaluated before translations are
+    loaded** ("Cannot translate string: translations have not been loaded",
+    `translation.js:168`). Concatenating `_t` fragments into a sentence evaluates them, so a
+    PURE function that builds a counted sentence works in the app (mounting loads translations)
+    and dies in hoot. Call `patchTranslations()` from `@web/../tests/web_test_helpers` inside any
+    test that calls such a function directly — at module level it cannot register its cleanup.
+28. **One employee can hold the same string in two identity fields.** The row index is built over
+    `barcode`, `employee_id`, `pb_source_ref` and `identification_id`; on ABM the badge id IS the
+    id-card number, so a naive `bucket.setdefault(code, []).append(id)` lists that person twice
+    and the row is refused as "2 people carry the code …". De-duplicate on the way in.
+29. **Excel's list `DataValidation` is a FORMULA, and a formula is capped at 255 characters** —
+    and its items are comma-separated, so a label containing a comma silently splits into two
+    choices. A long or comma-bearing choice list gets NO dropdown (the header comment carries the
+    values instead); a dropdown missing half its choices is worse than no dropdown.
+30. **On ABM there is no mappable BOOLEAN destination**, so "set it to Yes" is exercised through
+    a selection whose values happen to be `YES`/`NO` (`hr.contract.shuipart`). The boolean path
+    itself is covered by the Python suite, which picks a writable boolean off the registry.
+31. **`_get_latest_contract` per person is a four-MINUTE export on 4,533 people.** It sorts an
+    employee's `contract_ids` in Python AND writes an INFO line naming the candidates, once per
+    call (`payroll_import_batch.py:2950`) — the grid never noticed because it pages 100 at a
+    time, and the export is the one surface that walks the whole roster. RD11's rule (a) applies
+    unchanged: read the fact ONCE for the whole set. `_io_contracts` does it in one `search_read`
+    and picks the winner with the SAME key (`date_start or date.min`, then id) — in Python, not
+    in `ORDER BY`, because PostgreSQL sorts NULLs LAST ascending while that method sorts a
+    date-less contract FIRST, and the two disagree precisely for the contract with no start date.
+    Measured on payobook, 4,533 people × 31 mapped columns: **>4 minutes → 8.7 s** (113 KB
+    workbook); the blank template is 0.6 s. The bank read needs its own prefetch
+    (`employees.mapped('bank_account_ids')`) — it walks a second o2m that the contract prefetch
+    does not cover.
+32. **An `ir.actions.client` XMLID resolves to a DIFFERENT numeric id on every database.** On abm
+    `pb_records.action_pb_records_desk` is action 883; on payobook 883 is the "Pull Data with
+    Options" wizard and the desk is 1343. A `/bizapp/action-<id>` deep link copied between
+    databases silently opens somebody else's screen. Resolve the XMLID through `ir.model.data`
+    per DB before driving a live check.
+33. **A round trip over ALL 42 of ABM's mapped fields reports exactly one change, and it is a
+    DATA defect, not a code one.** Employee "HR ADMIN" carries a Date of Joining in the year 24
+    (`0024-12-01`), and glibc's `strftime('%Y')` — which is what `fields.Date.to_string` uses,
+    and therefore what `_mapped_record_value` returns — does NOT zero-pad, while
+    `date.isoformat()` does. The desk shows `Date of Joining: 24-12-01 → 0024-12-01`. Applying it
+    writes the identical date, so nothing is at risk; the comparison lives in R2's `_same` and is
+    left alone for one corrupt record. **Owner debt: fix that employee's joining date.**
+34. **ABM has two employees carrying the same id-card number** (`066196005153`, one of them LINH
+    DO), so a file keyed on it lists that row as "2 people carry the code … — this row cannot say
+    which one" rather than guessing. Correct behaviour, and the round trip is how it was found.
+    **Owner debt: one of those two codes is wrong.**

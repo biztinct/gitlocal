@@ -16,7 +16,7 @@
 import { describe, expect, test } from "@odoo/hoot";
 import { animationFrame } from "@odoo/hoot-mock";
 import { press, queryAll, queryAllTexts, queryFirst } from "@odoo/hoot-dom";
-import { mountWithCleanup } from "@web/../tests/web_test_helpers";
+import { mountWithCleanup, patchTranslations } from "@web/../tests/web_test_helpers";
 import { defineMailModels } from "@mail/../tests/mail_test_helpers";
 
 import {
@@ -24,6 +24,9 @@ import {
     revertColumn, undo, redo, pasteAt, parseClipboard, toggleRow, selectRange,
     clearSelection, selectLoaded, initialsOf,
 } from "@pb_records/js/records_grid";
+import {
+    RdDropZone, RdFileReview, fileApplyLabel, fileSummaryLine,
+} from "@pb_records/js/records_import";
 
 describe.current.tags("desktop");
 
@@ -359,4 +362,153 @@ test("clearing the selection is a function, not a re-render side effect", async 
     clearSelection(st);
     expect(st.selected).toEqual([]);
     expect(st.allMatching).toBe(false);
+});
+
+// =====================================================================
+//  R3 — a file arrives, and the drawer reads it back
+//
+//  Same rule as the rest of this file: what is pinned here is what the CLIENT
+//  decides on its own — the drag state, the three tabs, and the two sentences
+//  a person reads before pressing Apply. Whether a value is legal is still the
+//  server's answer, and it is tested in `tests/test_records_r3_roundtrip.py`.
+// =====================================================================
+function fire(el, type, extra = {}) {
+    const ev = new Event(type, { bubbles: true, cancelable: true });
+    Object.assign(ev, extra);
+    el.dispatchEvent(ev);
+}
+
+test("the drop overlay appears on dragenter and hides again on dragleave", async () => {
+    await mountWithCleanup(RdDropZone, { props: { onFile: () => {} } });
+    const zone = queryFirst(".rd-drop");
+    expect(queryAll(".rd-drop-over")).toHaveLength(0);
+
+    fire(zone, "dragenter");
+    await animationFrame();
+    expect(queryAll(".rd-drop-over")).toHaveLength(1);
+    expect(queryAllTexts(".rd-drop-over")[0]).toBe("Drop to review changes");
+
+    fire(zone, "dragleave");
+    await animationFrame();
+    expect(queryAll(".rd-drop-over")).toHaveLength(0);
+});
+
+test("crossing on to a child does not flicker the overlay off", async () => {
+    // `dragenter`/`dragleave` fire for every element the pointer crosses, so a
+    // boolean would drop the overlay the instant the file moved over the text
+    // inside the zone. The depth counter is what makes it steady.
+    await mountWithCleanup(RdDropZone, { props: { onFile: () => {} } });
+    const zone = queryFirst(".rd-drop");
+    fire(zone, "dragenter");
+    fire(zone, "dragenter");          // on to the label inside
+    await animationFrame();
+    fire(zone, "dragleave");          // off the label, still over the zone
+    await animationFrame();
+    expect(queryAll(".rd-drop-over")).toHaveLength(1);
+    fire(zone, "dragleave");
+    await animationFrame();
+    expect(queryAll(".rd-drop-over")).toHaveLength(0);
+});
+
+const PEEK = {
+    summary: {
+        rows: 20, people_matched: 19, people_unmatched: 3,
+        changes_ok: 41, changes_same: 6, changes_refused: 2,
+        people_changed: 19, cells_blank: 4, columns_used: 3,
+        columns_ignored: ["Shoe size", "Favourite colour"],
+    },
+    items: [
+        { emp_id: 1, emp_name: "Person 1", field_id: "f:hr.employee:job_title",
+          field_label: "Job title", old_label: "Operator", new_label: "Line Lead",
+          status: "ok", why: "" },
+        { emp_id: 2, emp_name: "Person 2", field_id: "f:hr.contract:shuipart",
+          field_label: "SHUI participation", old_label: "YES", new_label: "",
+          status: "refused", why: "'Maybe' is not one of the choices — use YES, NO" },
+        { emp_id: 3, emp_name: "Person 3", field_id: "f:hr.employee:job_title",
+          field_label: "Job title", old_label: "Fitter", new_label: "Fitter",
+          status: "same", why: "Already set to this." },
+    ],
+    unmatched: [
+        { row: 7, code: "X-9", name: "Nobody Here", email: "", why: "Nobody here matches X-9.",
+          values: { "f:hr.employee:job_title": "Line Lead" } },
+    ],
+};
+
+async function mountReview(props = {}) {
+    return mountWithCleanup(RdFileReview, {
+        props: {
+            summary: PEEK.summary, items: PEEK.items,
+            unmatched: PEEK.unmatched, identity: "code", ...props,
+        },
+    });
+}
+
+test("the file drawer says what the file would do, in one line", async () => {
+    // `_t` returns a LAZY `TranslatedString`, and evaluating one before
+    // translations are loaded THROWS — which is what concatenating `_t`
+    // fragments into a sentence does the instant it is concatenated. Mounting a
+    // component loads them; a pure function called straight from a test does
+    // not. An empty catalogue marks them loaded (RD).
+    patchTranslations();
+    expect(fileSummaryLine(PEEK.summary)).toBe(
+        "This file changes 41 values on 19 people · 3 rows match nobody · "
+        + "2 values need a look · 6 are already set");
+    expect(fileSummaryLine({ changes_ok: 1, people_changed: 1 }))
+        .toBe("This file changes 1 value on 1 person");
+    expect(fileSummaryLine({})).toBe("This file changes nothing yet");
+});
+
+test("the Apply button counts what goes in and what stays behind", async () => {
+    patchTranslations();
+    expect(fileApplyLabel(PEEK.summary)).toBe("Apply 41 · leave 2");
+    expect(fileApplyLabel({ changes_ok: 3 })).toBe("Apply 3 changes");
+    expect(fileApplyLabel({ changes_ok: 1 })).toBe("Apply 1 change");
+    expect(fileApplyLabel({ changes_ok: 0 })).toBe("Nothing to apply");
+});
+
+test("file mode renders three tabs, each counting its own contents", async () => {
+    await mountReview();
+    expect(queryAll(".rd-file-tab")).toHaveLength(3);
+    expect(queryAllTexts(".rd-file-tab .lb"))
+        .toEqual(["Changes", "Unmatched", "Ignored columns"]);
+    // 41 ok + 2 refused are what the Changes tab is about; `same` rows are not
+    // changes and are not counted as any.
+    expect(queryAllTexts(".rd-file-tab .ct")).toEqual(["43", "3", "2"]);
+});
+
+test("the Changes tab shows old to new and never the unchanged rows", async () => {
+    await mountReview();
+    expect(queryAll(".rd-rev-row")).toHaveLength(2);
+    expect(queryAllTexts(".rd-rev-row.ok .nv")[0]).toBe("Line Lead");
+    expect(queryAllTexts(".rd-rev-row.refused .wy")[0])
+        .toBe("'Maybe' is not one of the choices — use YES, NO");
+});
+
+test("arrow keys walk the tabs, and each tab shows its own panel", async () => {
+    await mountReview();
+    queryFirst(".rd-file-tab").focus();
+    await press("ArrowRight");
+    await animationFrame();
+    expect(queryAll(".rd-unmatched")).toHaveLength(1);
+    expect(queryAllTexts(".rd-unmatched-why")[0]).toBe("Nobody here matches X-9.");
+    await press("ArrowRight");
+    await animationFrame();
+    expect(queryAllTexts(".rd-ignored-chip"))
+        .toEqual(["Shoe size", "Favourite colour"]);
+    await press("ArrowLeft");
+    await animationFrame();
+    expect(queryAll(".rd-unmatched")).toHaveLength(1);
+});
+
+test("an unmatched row offers to be matched by hand, and nothing else", async () => {
+    await mountReview();
+    queryFirst(".rd-file-tab").focus();
+    await press("ArrowRight");
+    await animationFrame();
+    expect(queryAll(".rd-unmatched .pbim-btn")).toHaveLength(1);
+    expect(queryAllTexts(".rd-unmatched .pbim-btn")[0]
+           .includes("Find person")).toBe(true);
+    // The typeahead is not on screen until it is asked for — an unmatched row
+    // is a fact first and a task second.
+    expect(queryAll(".rd-picker")).toHaveLength(0);
 });

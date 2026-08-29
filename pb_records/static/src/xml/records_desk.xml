@@ -80,6 +80,131 @@
   </t>
 
   <!-- =================================================================
+       R3 — a file arrives. The depth counter lives in the component; this
+       template only says what the two states look like.
+       ================================================================= -->
+  <t t-name="pb_records.RdDropZone">
+    <div t-attf-class="rd-drop {{ over ? 'over' : '' }} {{ props.busy ? 'busy' : '' }}"
+         t-on-dragenter="onDragEnter" t-on-dragover="onDragOver"
+         t-on-dragleave="onDragLeave" t-on-drop="onDrop">
+      <label class="rd-drop-in">
+        <span class="ic">
+          <t t-if="props.busy"><span class="pbim-spin sm"/></t>
+          <t t-else="" t-out="ic('upload',15)"/>
+        </span>
+        <span class="tx">
+          <span class="lb" t-esc="props.busy ? (props.busyLabel or zoneLabel) : zoneLabel"/>
+          <span t-if="!props.busy" class="sb" t-esc="zoneHint"/>
+        </span>
+        <input type="file" accept=".xlsx,.xlsm,.csv" t-on-change="onPick"
+               style="display:none"/>
+      </label>
+      <div t-if="over" class="rd-drop-over">
+        <t t-out="ic('download',16)"/> <span t-esc="overLabel"/>
+      </div>
+    </div>
+  </t>
+
+  <!-- =================================================================
+       R3 — the review drawer's BODY when the changes came from a file.
+       Three tabs over what the peek found: what would change, which rows
+       found nobody, and which columns were not understood.
+       ================================================================= -->
+  <t t-name="pb_records.RdFileReview">
+    <div class="rd-file">
+
+      <div class="rd-file-tabs" role="tablist" t-on-keydown="onTabKey">
+        <button t-foreach="tabs" t-as="t" t-key="t.key" type="button"
+                role="tab" t-att-aria-selected="isOn(t.key) ? 'true' : 'false'"
+                t-att-tabindex="isOn(t.key) ? 0 : -1"
+                t-attf-class="rd-file-tab {{ isOn(t.key) ? 'on' : '' }}"
+                t-on-click="() => this.show(t.key)">
+          <span class="lb" t-esc="t.label"/>
+          <span class="ct" t-esc="t.count"/>
+        </button>
+      </div>
+
+      <!-- ============================================ what would change -->
+      <div t-if="isOn('changes')" class="rd-file-pane" role="tabpanel">
+        <div class="rd-file-note">
+          <t t-out="ic('users',13)"/> <span t-esc="matchedByLine"/>
+          <t t-if="blankLine"> <span t-esc="blankLine"/></t>
+        </div>
+        <div t-if="!people.length" class="rd-empty sm">
+          <span class="rd-empty-ic"><t t-out="ic('checkCircle',22)"/></span>
+          <h3>Nothing to change</h3>
+          <p t-esc="emptyChanges"/>
+        </div>
+        <div t-foreach="people" t-as="p" t-key="p.id" class="rd-rev-person">
+          <div class="rd-rev-name" t-esc="p.name"/>
+          <div t-foreach="p.rows" t-as="r" t-key="r.field_id"
+               t-attf-class="rd-rev-row {{ r.status }}">
+            <span class="fd" t-esc="r.field_label"/>
+            <span class="ov" t-esc="r.old_label or '—'"/>
+            <span class="ar"><t t-out="ic('arrow',13)"/></span>
+            <span class="nv" t-esc="r.new_label or '—'"/>
+            <span t-if="r.status === 'refused'" class="wy" t-esc="r.why"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================ found nobody -->
+      <div t-if="isOn('unmatched')" class="rd-file-pane" role="tabpanel">
+        <div t-if="!props.unmatched.length" class="rd-empty sm">
+          <span class="rd-empty-ic"><t t-out="ic('checkCircle',22)"/></span>
+          <h3>Every row found its person</h3>
+          <p t-esc="emptyUnmatched"/>
+        </div>
+        <div t-else="" class="rd-file-note warn">
+          <t t-out="ic('alert',13)"/>
+          <span>Nobody is created from a file. Match a row by hand, or leave
+                it — either way nothing here is added to Payobook.</span>
+        </div>
+        <div t-foreach="props.unmatched" t-as="u" t-key="u.row"
+             class="rd-unmatched">
+          <div class="rd-unmatched-top">
+            <span class="rw">Row <t t-esc="u.row"/></span>
+            <span class="nm" t-esc="rowTitle(u)"/>
+          </div>
+          <div class="rd-unmatched-why" t-esc="u.why"/>
+          <div class="rd-unmatched-ct" t-esc="valueCount(u)"/>
+          <button t-if="state.binding !== u_index" type="button"
+                  class="pbim-btn outline pbim-btn-sm"
+                  t-on-click="() => this.startBind(u_index)">
+            <t t-out="ic('search',13)"/> Find person…
+          </button>
+          <div t-else="" class="rd-unmatched-pick">
+            <RdPicker col="pickerCol" lookup="props.lookup"
+                      onPick="(picked) => this.onPicked(u_index, picked)"
+                      onCancel.bind="cancelBind"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ ignored columns -->
+      <div t-if="isOn('ignored')" class="rd-file-pane" role="tabpanel">
+        <div t-if="!ignored.length" class="rd-empty sm">
+          <span class="rd-empty-ic"><t t-out="ic('checkCircle',22)"/></span>
+          <h3>Every column was understood</h3>
+          <p t-esc="emptyIgnored"/>
+        </div>
+        <t t-else="">
+          <div class="rd-file-note">
+            <t t-out="ic('minusCircle',13)"/>
+            <span>These columns are not fields this pay scheme maps, so they
+                  were read past. Nothing in them is used.</span>
+          </div>
+          <div class="rd-ignored">
+            <span t-foreach="ignored" t-as="c" t-key="c_index"
+                  class="rd-ignored-chip" t-esc="c"/>
+          </div>
+        </t>
+      </div>
+
+    </div>
+  </t>
+
+  <!-- =================================================================
        The grid.
        ================================================================= -->
   <t t-name="pb_records.RecordsGrid">
@@ -266,6 +391,35 @@
                 </button>
               </div>
             </div>
+            <!-- R3 — out to a file, and back from one. Side by side, because
+                 they are one gesture with two directions. -->
+            <div class="rd-export">
+              <button type="button" class="pbim-btn ghost"
+                      t-att-disabled="state.exporting"
+                      t-on-click.stop="() => this.exportFile('data')"
+                      t-att-title="'Download the people and columns on screen'">
+                <t t-if="state.exporting"><span class="pbim-spin sm"/></t>
+                <t t-else="" t-out="ic('download',15)"/>
+                <t t-esc="exportLabel"/>
+              </button>
+              <button type="button" class="pbim-btn ghost rd-export-more"
+                      t-att-title="'More ways to export'"
+                      t-on-click.stop="toggleExportMenu">
+                <t t-out="ic('chevronDown',13)"/>
+              </button>
+              <div t-if="state.exportOpen" class="rd-scheme-menu" t-on-click.stop="">
+                <button type="button" t-on-click="() => this.exportFile('data')">
+                  <span class="nm">Export with data</span>
+                  <span class="ct" t-esc="exportCountLabel"/>
+                </button>
+                <button type="button" t-on-click="() => this.exportFile('template')">
+                  <span class="nm">Export blank template</span>
+                  <span class="ct">headings only</span>
+                </button>
+              </div>
+            </div>
+            <RdDropZone onFile.bind="takeFile" busy="state.file.busy"
+                        busyLabel="state.file.name"/>
             <button type="button" class="pbim-btn ghost" t-on-click="openHistory">
               <t t-out="ic('clock',15)"/> History
             </button>
@@ -292,7 +446,20 @@
         </div>
 
         <!-- ============================================= the three zones -->
-        <div t-else="" class="rd-body-wrap">
+        <div t-else="" class="rd-body-wrap"
+             t-on-dragover="onDeskDragOver" t-on-dragleave="onDeskDragLeave"
+             t-on-drop="onDeskDrop">
+
+          <!-- R3 — the file can be dropped ANYWHERE over the grid, not only on
+               the small zone in the header. The veil is the answer to "where do
+               I put this?". -->
+          <div t-if="state.dragging" class="rd-veil">
+            <div class="rd-veil-card">
+              <span class="ic"><t t-out="ic('download',26)"/></span>
+              <b>Drop to review changes</b>
+              <span>Nothing is saved until you have read it.</span>
+            </div>
+          </div>
 
           <!-- WHO -->
           <aside t-attf-class="rd-rail {{ state.railOpen ? '' : 'closed' }}">
@@ -461,6 +628,60 @@
           </div>
         </aside>
 
+        <!-- ========================= Review drawer, in FILE mode (R3) =====
+             The SAME drawer: same chrome, same note field, same Apply. Only
+             the body differs, because what arrived is a file rather than a
+             column somebody typed down. -->
+        <div t-if="state.file.open" class="rd-scrim" t-on-click="closeFile"/>
+        <aside t-if="state.file.open" class="rd-drawer">
+          <div class="rd-drawer-h">
+            <div>
+              <h2>
+                <t t-out="ic('file',15)"/> <t t-esc="state.file.name"/>
+              </h2>
+              <p t-esc="fileSummaryLine"/>
+            </div>
+            <button type="button" t-on-click="closeFile"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="rd-drawer-b">
+            <div t-if="state.file.busy" class="pbim-busy sm">
+              <div class="pbim-spin"/><span>Reading <t t-esc="state.file.name"/>…</span>
+            </div>
+            <t t-else="">
+              <div t-if="state.file.error" class="rd-file-note warn big">
+                <t t-out="ic('alert',15)"/>
+                <span t-esc="state.file.error"/>
+              </div>
+              <div t-if="state.file.wrongScheme" class="rd-file-note warn">
+                <t t-out="ic('layers',13)"/>
+                <span t-esc="wrongSchemeLine"/>
+              </div>
+              <div t-if="state.file.truncated" class="rd-file-note warn">
+                <t t-out="ic('alert',13)"/>
+                <span>Only the first 10,000 rows of this file were read — that
+                      is the most one file carries.</span>
+              </div>
+              <RdFileReview t-if="state.file.summary and !state.file.error"
+                            summary="state.file.summary"
+                            items="state.file.items"
+                            unmatched="state.file.unmatched"
+                            identity="state.file.identity"
+                            lookup="fileLookup"
+                            onBind.bind="bindRow"/>
+            </t>
+          </div>
+          <div class="rd-drawer-f">
+            <input type="text" class="rd-note" t-att-value="state.note"
+                   t-on-input="onNote"
+                   t-att-placeholder="filePlaceholder"/>
+            <button type="button" class="pbim-btn primary"
+                    t-att-disabled="!canApplyFile" t-on-click="applyFile">
+              <t t-if="state.applying"><span class="pbim-spin sm"/> Applying…</t>
+              <t t-else=""><t t-out="ic('check',15)"/> <t t-esc="fileApplyLabel"/></t>
+            </button>
+          </div>
+        </aside>
+
         <!-- =============================================== History drawer -->
         <div t-if="state.history" class="rd-scrim" t-on-click="closeHistory"/>
         <aside t-if="state.history" class="rd-drawer">
@@ -486,6 +707,7 @@
               <div class="rd-hist-line">
                 <span t-esc="histLine(h)"/>
                 <span t-if="h.source === 'undo'" class="rd-tag">Undo</span>
+                <span t-if="h.source === 'import'" class="rd-tag">From a file</span>
                 <span t-if="h.undone" class="rd-tag amber">Already undone</span>
               </div>
               <div class="rd-hist-sub">

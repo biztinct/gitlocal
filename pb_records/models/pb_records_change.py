@@ -35,6 +35,11 @@ class PbRecordsApply(models.Model):
     note = fields.Text(string='Why')
     source = fields.Selection([
         ('desk', 'Records Desk'),
+        # R3. A file is not a different WRITE path — it is the same
+        # `apply_changes`, told where the values came from — but History has to
+        # be able to say "this one arrived in a spreadsheet", because that is
+        # the first question anybody asks about a change they did not make.
+        ('import', 'Imported file'),
         ('undo', 'Undo'),
     ], string='Source', default='desk', required=True, readonly=True)
     # Setup metadata, not payroll history — a scheme that is removed must not be

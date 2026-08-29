@@ -6949,6 +6949,22 @@ class PbFormulaStudio(models.AbstractModel):
             'countLabel': (_("%s mapped field") if emp_total == 1
                            else _("%s mapped fields")) % emp_total
                           if emp_total else _("Nothing mapped yet"),
+            # RECORDS R3 — a SECOND door on the same node. The node's own door
+            # changes which tab you are looking at (`openDoor` switches a MODE
+            # and nothing else); this one leaves Mapping altogether for the
+            # desk where those mapped fields are edited. It is a separate key
+            # rather than a second `door` because the two are not the same kind
+            # of gesture, and the board renders it only when the desk's client
+            # action is actually registered — a database without `pb_records`
+            # must show no button rather than a dead one.
+            'actions': [{
+                'id': 'records_desk',
+                'label': _("Open Records Desk"),
+                'icon': 'database',
+                'tag': 'pb_records_desk',
+                'xmlid': 'pb_records.action_pb_records_desk',
+                'params': {'records_config_id': config.id},
+            }] if emp_total else [],
         })
 
         # ============================================ LANE 2 — feeds & files

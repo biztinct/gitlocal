@@ -244,6 +244,17 @@
                                     <span>Anyone in the file who is not in Payobook yet will be listed, not paid.</span>
                                 </div>
                             </t>
+
+                            <!-- RECORDS R3 — the quiet way out. A pay run is
+                                 where a wrong value is NOTICED; the desk is
+                                 where it is fixed for good. Rendered only when
+                                 that screen exists on this database. -->
+                            <div t-if="hasRecordsDesk" class="pw-recordsline">
+                                Need to change what's on record instead?
+                                <button type="button" class="pw-linkbtn" t-on-click="openRecordsDesk">
+                                    <t t-out="ic('database',13)"/> Open Records Desk
+                                </button>
+                            </div>
                             <t t-else="">
                                 <p class="pw-muted">Choose a file and its columns will be checked against the components below before anything is computed.</p>
                                 <div class="pw-covlist">
