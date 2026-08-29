@@ -258,3 +258,22 @@ $pw-lock-bd: #A7E3D5;
     b { color: #08453E; }
     .pw-oncebox-sub { margin-top: 6px; font-size: 12.5px; color: #0B5F55; }
 }
+
+/* RECORDS R3 — the quiet way out of the pay-data step. Muted on purpose: a
+   pay run is not the place to be sent somewhere else, but it IS the place a
+   wrong value on a record gets noticed. */
+.pw-root .pw-recordsline {
+    margin-top: 16px; padding-top: 12px;
+    border-top: 1px dashed var(--pw-line, #DDE3EE);
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-size: 12px; color: var(--pw-muted, #6E6A85);
+}
+.pw-root .pw-linkbtn {
+    display: inline-flex; align-items: center; gap: 5px;
+    border: none; background: transparent; cursor: pointer; padding: 0;
+    font: inherit; font-size: 12px; font-weight: 700;
+    color: var(--pw-accent, #3A5DAE); text-decoration: underline;
+    text-underline-offset: 3px;
+    svg { flex: none; }
+    &:hover { color: #24408A; }
+}

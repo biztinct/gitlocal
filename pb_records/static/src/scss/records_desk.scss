@@ -556,6 +556,124 @@ $rd-w-data: 194px;
         padding: 8px 14px; box-shadow: none;
     }
 
+    // ======================================================= R3 — the file
+    //
+    //  Export sits beside Import in the header because they are one gesture
+    //  with two directions, and the file that comes back has to feel like the
+    //  grid that went out — hence the drop zone wearing the same pill shape as
+    //  the buttons around it rather than the dashed box every import screen has.
+    .rd-export {
+        position: relative; display: flex; align-items: stretch;
+        .pbim-btn { border-radius: var(--pbim-r) 0 0 var(--pbim-r); }
+        .rd-export-more {
+            border-radius: 0 var(--pbim-r) var(--pbim-r) 0; margin-left: -1px;
+            padding-left: 8px; padding-right: 8px; min-width: 0;
+        }
+        .rd-scheme-menu { min-width: 246px; }
+    }
+
+    .rd-drop {
+        position: relative; flex: none;
+        .rd-drop-in {
+            display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+            border: 1px dashed var(--pbim-line); border-radius: var(--pbim-r);
+            padding: 6px 13px; background: #fff; margin: 0;
+            transition: border-color .14s, background .14s, box-shadow .14s;
+            .ic { display: flex; color: var(--pbim-primary-strong); }
+            .tx { display: flex; flex-direction: column; line-height: 1.15; }
+            .lb { font-size: 12.5px; font-weight: 700; color: var(--pbim-text); }
+            .sb { font-size: 10.5px; color: var(--pbim-muted); }
+        }
+        &:hover .rd-drop-in,
+        &.over .rd-drop-in {
+            border-color: var(--pbim-primary); background: var(--pbim-soft);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+        &.busy .rd-drop-in { cursor: progress; }
+        .rd-drop-over {
+            position: absolute; inset: -3px; z-index: 3; border-radius: var(--pbim-r);
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            background: var(--pbim-primary-dark); color: #fff;
+            font-size: 12px; font-weight: 800; pointer-events: none;
+            animation: rd-fade .12s ease-out;
+        }
+    }
+
+    // Drag ANYWHERE over the grid. The veil is the answer to "where do I put
+    // this?" — a target the size of the screen cannot be missed.
+    .rd-veil {
+        position: absolute; inset: 0; z-index: 60; border-radius: var(--pbim-r-lg);
+        background: rgba(90, 75, 176, .10);
+        backdrop-filter: blur(1.5px);
+        display: grid; place-items: center; pointer-events: none;
+        animation: rd-fade .12s ease-out;
+    }
+    .rd-veil-card {
+        display: flex; flex-direction: column; align-items: center; gap: 5px;
+        background: #fff; border: 2px dashed var(--pbim-primary);
+        border-radius: var(--pbim-r-lg); padding: 26px 40px;
+        box-shadow: var(--pbim-sh-lg);
+        .ic { color: var(--pbim-primary-strong); display: flex;
+              animation: rd-bob 1.4s ease-in-out infinite; }
+        b { font-size: 15px; font-weight: 800; color: var(--pbim-text); }
+        span { font-size: 12px; color: var(--pbim-muted); }
+    }
+    .rd-body-wrap { position: relative; }
+
+    // ------------------------------------------------- the drawer, in file mode
+    .rd-file-tabs {
+        display: flex; gap: 4px; padding: 2px; margin-bottom: 12px;
+        background: var(--pbim-line-2); border-radius: 999px;
+    }
+    .rd-file-tab {
+        flex: 1; display: inline-flex; align-items: center; justify-content: center;
+        gap: 6px; border: none; background: transparent; cursor: pointer;
+        border-radius: 999px; padding: 7px 10px; font: inherit; font-size: 12px;
+        font-weight: 700; color: var(--pbim-muted);
+        transition: background .14s, color .14s;
+        &:hover { color: var(--pbim-text); }
+        &.on { background: #fff; color: var(--pbim-text);
+               box-shadow: var(--pbim-sh); }
+        .ct { font-size: 10.5px; font-weight: 900; border-radius: 999px;
+              padding: 1px 7px; background: var(--pbim-soft);
+              color: var(--pbim-primary-strong); }
+        &.on .ct { background: var(--pbim-soft2); }
+    }
+    .rd-file-pane { animation: rd-rise .18s ease-out both; }
+    .rd-file-note {
+        display: flex; align-items: flex-start; gap: 7px; font-size: 11.5px;
+        color: var(--pbim-muted); margin-bottom: 10px; line-height: 1.45;
+        > :first-child { flex: none; margin-top: 1px; }
+        &.warn { color: var(--pbim-amber); background: var(--pbim-amber-soft);
+                 border-radius: 9px; padding: 8px 10px; }
+        &.big { font-size: 12.5px; font-weight: 600; }
+    }
+    .rd-unmatched {
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        padding: 10px 12px; margin-bottom: 8px; display: flex;
+        flex-direction: column; gap: 4px; align-items: flex-start;
+        animation: rd-rise .18s ease-out both;
+    }
+    .rd-unmatched-top { display: flex; align-items: baseline; gap: 8px;
+                        flex-wrap: wrap;
+        .rw { font-size: 10.5px; font-weight: 900; letter-spacing: .05em;
+              text-transform: uppercase; color: var(--pbim-muted); }
+        .nm { font-size: 12.5px; font-weight: 800; color: var(--pbim-text); }
+    }
+    .rd-unmatched-why { font-size: 11.5px; color: var(--pbim-amber); }
+    .rd-unmatched-ct { font-size: 11px; color: var(--pbim-muted); }
+    .rd-unmatched-pick { position: relative; width: 100%; min-height: 190px;
+        .rd-picker { position: static; width: 100%;
+                     border: 1px solid var(--pbim-line); }
+    }
+    .rd-ignored { display: flex; flex-wrap: wrap; gap: 6px; }
+    .rd-ignored-chip {
+        font-size: 11.5px; font-weight: 700; border-radius: 999px;
+        padding: 4px 11px; background: var(--pbim-line-2);
+        color: var(--pbim-muted); border: 1px solid var(--pbim-line);
+    }
+    .rd-drawer-h h2 { display: flex; align-items: center; gap: 7px; }
+
     // --------------------------------------------------------------- toast
     .rd-toast {
         position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);

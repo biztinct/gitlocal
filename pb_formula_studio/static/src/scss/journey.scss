@@ -179,6 +179,31 @@
 .jny .jny-node:hover .jny-node__go { color: var(--i, #5A4BB0); }
 .jny .jny-bidi { color: var(--i-teal, #0F766E); font-weight: 900; margin-left: 4px; }
 
+/* ---- a node's secondary action (RECORDS R3) --------------------------
+   A door OUT of Mapping. It is a SIBLING of the node, not a child: a button
+   inside a button is not valid markup, and `_measure` walks `body.children`
+   looking for `data-id` — which this row deliberately does not carry, so the
+   wire geometry reads straight past it. The negative margin is what makes it
+   read as part of the card above rather than a loose button. */
+.jny .jny-node__acts {
+    flex: none; margin-top: -4px; display: flex; gap: 6px;
+    padding-left: 28px;
+}
+.jny .jny-act {
+    display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+    border: 1px solid var(--line, #E8E9F3); background: #fff;
+    border-radius: 999px; padding: 4px 11px 4px 9px;
+    font-family: inherit; font-size: 11px; font-weight: 700;
+    color: var(--i, #5A4BB0);
+    transition: border-color .12s ease, background .12s ease;
+    > span:first-child { display: flex; }
+}
+.jny .jny-act:hover { border-color: var(--i, #5A4BB0); background: var(--i-soft, #EDEAF8); }
+.jny .jny-act:focus-visible {
+    outline: none; border-color: var(--i, #5A4BB0);
+    box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8);
+}
+
 /* the connection a pay run actually reads */
 .jny .jny-node.prim { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
 

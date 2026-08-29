@@ -31,12 +31,15 @@ import { RdCellEditor } from "@pb_records/js/records_cells";
 import {
     RecordsGrid, createGridState, dirtyCount, setForRows, clearSelection, PAGE,
 } from "@pb_records/js/records_grid";
+import {
+    RdDropZone, RdFileReview, fileApplyLabel, fileSummaryLine,
+} from "@pb_records/js/records_import";
 
 const FIELDS_KEY = (configId) => `pb_records.fields.${configId}`;
 
 export class PbRecordsDesk extends Component {
     static template = "pb_records.PbRecordsDesk";
-    static components = { RecordsGrid, RdCellEditor };
+    static components = { RecordsGrid, RdCellEditor, RdDropZone, RdFileReview };
     static props = { "*": true };
 
     setup() {
@@ -77,6 +80,16 @@ export class PbRecordsDesk extends Component {
             // "hide fields" gesture every database tool has.
             stripOpen: true,
             pulse: false,
+            // --------------------------------------------------------- R3
+            exportOpen: false,      // the Export split button's menu
+            exporting: "",          // "data" | "template" while building
+            dragging: false,        // a file is over the desk
+            // The dropped file, from `import_peek` — read, never written.
+            file: {
+                open: false, name: "", busy: false, error: "", empty: false,
+                summary: null, changes: [], items: [], unmatched: [],
+                identity: "", wrongScheme: false, truncated: false,
+            },
         });
 
         this.grid = useState(createGridState());
@@ -86,7 +99,16 @@ export class PbRecordsDesk extends Component {
 
         useExternalListener(window, "click", () => {
             this.state.schemeOpen = false;
+            this.state.exportOpen = false;
             this.grid.menu = -1;
+        });
+        // Apply on Cmd/Ctrl-Enter, from anywhere in the drawer. A review a
+        // person has read is a review they want to commit without reaching for
+        // the mouse, and the shortcut is the same one every editor uses to send.
+        useExternalListener(window, "keydown", (ev) => {
+            if (!(ev.ctrlKey || ev.metaKey) || ev.key !== "Enter") { return; }
+            if (this.state.file.open) { ev.preventDefault(); this.applyFile(); }
+            else if (this.state.review) { ev.preventDefault(); this.apply(); }
         });
 
         onWillStart(async () => { await this.boot(); });
@@ -462,6 +484,10 @@ export class PbRecordsDesk extends Component {
     // -------------------------------------------------------------- review
     openReview() {
         if (!this.counts.values) { return; }
+        // One drawer at a time — the grid's changes and a file's changes are
+        // two different things to approve, and stacking them would let Apply
+        // mean either.
+        this.state.file.open = false;
         this.state.review = true;
         this.runPreview();
     }
@@ -602,6 +628,298 @@ export class PbRecordsDesk extends Component {
         this.state.historyRows = data.applies || [];
     }
 
+    // =====================================================================
+    //  R3 — the desk as a file, and that file back as the desk
+    // =====================================================================
+    /**
+     * Export what is on screen. Two shapes, one method.
+     *
+     * `data` is the grid, detached: the people the filters match and the
+     * columns that are picked, with their values in the words the grid shows
+     * them in. `template` is the same file with the value cells empty — the
+     * shape you hand somebody who is going to fill it in.
+     *
+     * The download is a Blob, not a controller: the bytes are already in hand
+     * from the RPC and a controller would be a second, unauthenticated way to
+     * read the same rows (the `pb_people.bulkExport` precedent).
+     */
+    async exportFile(mode) {
+        this.state.exportOpen = false;
+        if (this.state.exporting) { return; }
+        if (!this.state.picked.length) {
+            this.notif.add(
+                _t("Pick a field first — a file needs a column to carry."),
+                { type: "warning" });
+            return;
+        }
+        this.state.exporting = mode;
+        if (this.grid.total > 400) {
+            this.notif.add(
+                this.n(this.grid.total, "Building the file for 1 person…",
+                       "Building the file for %s people…"), { type: "info" });
+        }
+        let res = null;
+        try {
+            res = await this.orm.call("pb.records.desk", "export_records", [], {
+                config_id: this.state.configId,
+                filters: this.plainFilters(),
+                field_ids: this.state.picked,
+                mode,
+            });
+        } catch (e) {
+            this.state.exporting = "";
+            this.notif.add(
+                _t("The file could not be built. %s",
+                   e.message?.data?.message || ""),
+                { type: "danger", sticky: true });
+            return;
+        }
+        this.state.exporting = "";
+        if (!res.ok) {
+            this.notif.add(res.msg, { type: "warning" });
+            return;
+        }
+        this.download(res);
+        if (res.truncated) {
+            // The cap is never silent: a file that quietly stops at 10,000 is a
+            // file somebody re-imports believing it is the whole roster.
+            this.notif.add(
+                _t("%(shown)s of %(total)s people are in the file — that is "
+                   + "the most one file holds. Filter to a department and "
+                   + "export again for the rest.",
+                   { shown: res.rows, total: res.total }),
+                { type: "warning", sticky: true });
+        } else {
+            this.notif.add(
+                mode === "template"
+                    ? _t("Blank template downloaded — %s columns to fill in.",
+                         res.columns)
+                    : this.n(res.rows, "Downloaded — 1 person in the file.",
+                             "Downloaded — %s people in the file."),
+                { type: "success" });
+        }
+    }
+
+    /** base64 to a saved file, without ever leaving the page. */
+    download(res) {
+        const binary = window.atob(res.file_b64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: res.mimetype });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = res.filename;
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    toggleExportMenu() { this.state.exportOpen = !this.state.exportOpen; }
+
+    // ------------------------------------------------------------- dropping
+    onDeskDragOver(ev) {
+        if (!ev.dataTransfer || !(ev.dataTransfer.types || []).includes("Files")) {
+            return;
+        }
+        ev.preventDefault();
+        this.state.dragging = true;
+    }
+
+    onDeskDragLeave(ev) {
+        // Only when the pointer has actually left the desk, not when it crosses
+        // on to a child (`relatedTarget` inside means it has not).
+        if (ev.relatedTarget && ev.currentTarget.contains(ev.relatedTarget)) {
+            return;
+        }
+        this.state.dragging = false;
+    }
+
+    onDeskDrop(ev) {
+        if (!ev.dataTransfer || !ev.dataTransfer.files
+            || !ev.dataTransfer.files.length) { return; }
+        ev.preventDefault();
+        this.state.dragging = false;
+        this.takeFile(ev.dataTransfer.files[0]);
+    }
+
+    /**
+     * Read the file in the browser, then ask the server what it MEANS.
+     *
+     * Nothing is written by this: `import_peek` parses, matches and calls the
+     * same `preview_changes` the grid calls. The drawer that opens is the
+     * review drawer, in file mode.
+     */
+    takeFile(file) {
+        if (!file) { return; }
+        const f = this.state.file;
+        this.state.review = false;      // one drawer at a time
+        Object.assign(f, {
+            open: true, busy: true, error: "", name: file.name, empty: false,
+            summary: null, changes: [], items: [], unmatched: [],
+            identity: "", wrongScheme: false, truncated: false,
+        });
+        this.state.note = "";
+        const reader = new FileReader();
+        reader.onerror = () => {
+            f.busy = false;
+            f.error = _t("That file could not be read from this computer. "
+                         + "Try saving it again and dropping it back.");
+        };
+        reader.onload = async () => {
+            const b64 = String(reader.result).split(",")[1] || "";
+            try {
+                const res = await this.orm.call(
+                    "pb.records.desk", "import_peek", [], {
+                        config_id: this.state.configId,
+                        file_b64: b64,
+                        filename: file.name,
+                    });
+                f.busy = false;
+                if (!res.ok) {
+                    f.error = res.msg;
+                    f.summary = { columns_ignored: res.columns_ignored || [] };
+                    return;
+                }
+                Object.assign(f, {
+                    empty: !!res.empty,
+                    error: res.empty ? res.msg : "",
+                    summary: res.summary,
+                    changes: res.changes || [],
+                    items: res.items || [],
+                    unmatched: res.unmatched || [],
+                    identity: res.identity || "",
+                    wrongScheme: !!res.wrong_scheme,
+                    truncated: !!res.truncated,
+                });
+            } catch (e) {
+                f.busy = false;
+                f.error = e.message?.data?.message
+                    || _t("The file could not be read. Nothing has changed.");
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    closeFile() {
+        // Cancel discards: nothing was ever written, and saying so is what
+        // makes dropping a file safe enough to try.
+        this.state.file.open = false;
+        this.state.file.changes = [];
+        this.state.note = "";
+    }
+
+    get fileSummaryLine() {
+        const f = this.state.file;
+        if (f.busy) { return _t("Reading %s…", f.name); }
+        if (f.error) { return f.error; }
+        return fileSummaryLine(f.summary || {});
+    }
+
+    get fileApplyLabel() { return fileApplyLabel(this.state.file.summary || {}); }
+
+    get canApplyFile() {
+        return !!(this.state.file.summary
+                  && this.state.file.summary.changes_ok
+                  && !this.state.applying);
+    }
+
+    /**
+     * Bind an unmatched row to a person by hand.
+     *
+     * Its values move into `changes` live and the whole file is re-previewed,
+     * because a bound row can still be refused — a wrong choice for a selection
+     * is a wrong choice however the row found its person.
+     */
+    async bindRow(index, picked) {
+        const f = this.state.file;
+        const row = f.unmatched[index];
+        if (!row || !picked || !picked.id) { return; }
+        for (const [fieldId, value] of Object.entries(row.values || {})) {
+            f.changes.push({ emp_id: picked.id, field_id: fieldId, value });
+        }
+        f.unmatched.splice(index, 1);
+        await this.repreviewFile(picked.label);
+    }
+
+    async repreviewFile(name) {
+        const f = this.state.file;
+        f.busy = true;
+        try {
+            const data = await this.orm.call(
+                "pb.records.desk", "preview_changes", [], {
+                    config_id: this.state.configId, changes: f.changes,
+                });
+            f.items = data.items;
+            f.summary = Object.assign({}, f.summary, {
+                changes_ok: data.counts.ok,
+                changes_same: data.counts.same,
+                changes_refused: data.counts.refused,
+                people_changed: data.counts.people,
+                people_matched: (f.summary.people_matched || 0) + 1,
+                people_unmatched: f.unmatched.length,
+            });
+            if (name) {
+                this.notif.add(_t("Row matched to %s.", name), { type: "info" });
+            }
+        } catch (e) {
+            f.error = e.message?.data?.message || String(e);
+        } finally {
+            f.busy = false;
+        }
+    }
+
+    async onLookupPeople(term) {
+        return this.orm.call("pb.records.desk", "lookup_people", [], {
+            term: term || "", limit: 10,
+        });
+    }
+
+    /**
+     * Apply the file — through `apply_changes`, and through nothing else.
+     *
+     * Same method, same whitelist, same audit row, same Undo as the grid. The
+     * only difference is the word `import` on the audit row and the file's name
+     * in the note when nobody typed one.
+     */
+    async applyFile() {
+        if (!this.canApplyFile) { return; }
+        const f = this.state.file;
+        this.state.applying = true;
+        let result = null;
+        try {
+            result = await this.orm.call("pb.records.desk", "apply_changes", [], {
+                config_id: this.state.configId,
+                changes: f.changes,
+                note: (this.state.note || "").trim()
+                      || _t("Imported %s", f.name),
+                source: "import",
+            });
+        } catch (e) {
+            this.state.applying = false;
+            this.notif.add(
+                _t("Nothing was changed — the update could not be sent. %s",
+                   e.message?.data?.message || ""),
+                { type: "danger", sticky: true });
+            return;
+        }
+        this.state.applying = false;
+        this.state.note = "";
+        f.open = false;
+        this.state.toast = {
+            text: this.n(result.written, "Updated 1 value", "Updated %s values")
+                  + " " + this.n(result.people, "on 1 person", "on %s people"),
+            applyId: result.apply_id,
+        };
+        setTimeout(() => {
+            if (this.state.toast && this.state.toast.applyId === result.apply_id) {
+                this.state.toast = null;
+            }
+        }, 10000);
+        await this.reloadKeepingPlace();
+    }
+
     // ---------------------------------------------------------------- doors
     openMapping() {
         this.action.doAction("pb_formula_studio.action_pb_formula_studio", {})
@@ -611,6 +929,32 @@ export class PbRecordsDesk extends Component {
     }
 
     // ---------------------------------------------------------------- copy
+    get exportLabel() {
+        return this.state.exporting === "template"
+            ? _t("Building…")
+            : this.state.exporting ? _t("Building…") : _t("Export");
+    }
+
+    get exportCountLabel() {
+        return this.n(this.grid.total, "1 person", "%s people");
+    }
+
+    get wrongSchemeLine() {
+        return _t("This file was exported from a different pay scheme. The "
+                  + "columns that match this one are used; the rest are "
+                  + "listed under Ignored columns.");
+    }
+
+    get filePlaceholder() {
+        return _t("Why? optional — the file's name is used if you leave this "
+                  + "empty");
+    }
+
+    /** `undefined`, never `null` — a typed optional prop rejects null (W35). */
+    get fileLookup() {
+        return (term) => this.onLookupPeople(term);
+    }
+
     get title() { return _t("Records Desk"); }
     get subtitle() {
         return _t("Update the employee, contract and bank details your pay "

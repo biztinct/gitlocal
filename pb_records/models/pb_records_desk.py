@@ -1281,8 +1281,17 @@ class PbRecordsDesk(models.AbstractModel):
         return str(value)
 
     @api.model
-    def apply_changes(self, config_id=0, changes=None, note=''):
+    def apply_changes(self, config_id=0, changes=None, note='', source='desk'):
+        """Write the `ok` half of `changes`, and file the audit trail for it.
+
+        `source` says where the values came from — the grid (`desk`) or a
+        dropped file (`import`, R3). It is a LABEL on the audit row and nothing
+        else: an import takes this exact path, with this exact whitelist, this
+        exact company scoping and this exact per-value log, because a second
+        write path is a second set of rails to keep in step.
+        """
         self._check_read()
+        source = source if source in ('desk', 'import') else 'desk'
         items, plan, counts = self._evaluate(config_id, changes or [])
         if not plan:
             return {'ok': True, 'apply_id': 0, 'written': 0, 'people': 0,
@@ -1295,7 +1304,7 @@ class PbRecordsDesk(models.AbstractModel):
         apply_rec = self.env['pb.records.apply'].sudo().create({
             'name': '/',
             'note': (note or '').strip() or False,
-            'source': 'desk',
+            'source': source,
             'config_id': configs[:1].id if config_id else False,
             'count_people': 0, 'count_values': 0,
         })

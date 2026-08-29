@@ -36,8 +36,18 @@ Safety rails, all of them tested:
 
 Contract fields are written IN PLACE on the person's current contract — no new
 contract version. That is an owner ruling (2026-08-29), not a shortcut.
+
+RECORDS phase R3 adds the round trip. `export_records` writes the current view
+as an `.xlsx` — the same columns, the same values in the same words, a hidden
+`_payobook` sheet and a header comment per column carrying the technical
+identity so a retyped heading still lands on the right field. `import_peek`
+reads such a file (or any `.xlsx`/`.csv` whose headings match) and answers what
+it WOULD do, through `preview_changes`; applying it is `apply_changes` with
+`source='import'` — the same whitelist, the same audit row, the same Undo. A
+row that matches nobody is listed and can be bound by hand; it is never turned
+into an employee. A blank cell is left alone, never treated as a clear.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -60,6 +70,7 @@ contract version. That is an owner ruling (2026-08-29), not a shortcut.
             'pb_records/static/src/scss/records_desk.scss',
             'pb_records/static/src/js/records_cells.js',
             'pb_records/static/src/js/records_grid.js',
+            'pb_records/static/src/js/records_import.js',
             'pb_records/static/src/js/records_desk.js',
             'pb_records/static/src/js/records_palette.js',
             'pb_records/static/src/xml/records_desk.xml',

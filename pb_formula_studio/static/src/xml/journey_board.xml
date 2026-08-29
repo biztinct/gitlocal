@@ -74,8 +74,8 @@
 
           <div class="jny-lane__b" t-ref="{{ lane.id }}" t-on-scroll="onLaneScroll">
 
-            <button t-foreach="nodesFor(lane.id)" t-as="n" t-key="n.id"
-                    t-att-data-id="n.id" t-att-data-lane="lane.id"
+            <t t-foreach="nodesFor(lane.id)" t-as="n" t-key="n.id">
+            <button t-att-data-id="n.id" t-att-data-lane="lane.id"
                     t-att-class="nodeClass(n)"
                     t-att-title="nodeTitle(n)"
                     t-on-focus="() => this.onNodeFocus(n)"
@@ -147,6 +147,19 @@
 
               <span class="jny-node__go" t-out="ic('chevron', 14)"/>
             </button>
+
+            <!-- RECORDS R3 — a door OUT of Mapping, beside the node rather
+                 than inside it (a button in a button is not valid markup, and
+                 the wire geometry walks `body.children` by `data-id`). -->
+            <div t-if="nodeActions(n).length" class="jny-node__acts">
+              <button t-foreach="nodeActions(n)" t-as="a" t-key="a.id"
+                      type="button" class="jny-act"
+                      t-on-click="(ev) => this.runAction(a, ev)">
+                <span t-out="ic(a.icon || 'external', 13)"/>
+                <span t-esc="a.label"/>
+              </button>
+            </div>
+            </t>
 
             <div t-if="!nodesFor(lane.id).length" class="jny-none">
               <t t-if="ui.q">Nothing here matches the filter.</t>
