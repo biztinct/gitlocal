@@ -34,6 +34,11 @@
             <option value="">Move to department…</option>
             <option t-foreach="state.departments" t-as="dp" t-key="dp_index" t-if="dp.id" t-att-value="dp.id" t-esc="dp.name"/>
           </select>
+          <button t-if="hasRecordsDesk" class="pbim-btn outline pbim-btn-sm"
+                  t-att-disabled="!state.selected.length" t-on-click="bulkUpdate"
+                  title="Change the employee, contract and bank details your pay scheme reads">
+            <t t-out="ic('pencil',14)"/> Bulk update
+          </button>
           <button class="pbim-btn outline pbim-btn-sm" t-on-click="bulkExport"><t t-out="ic('download',14)"/> Export CSV</button>
         </div>
 

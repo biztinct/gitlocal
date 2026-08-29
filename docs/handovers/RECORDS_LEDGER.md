@@ -100,3 +100,68 @@ every single time.
    UI-driven live validation can suddenly be about to compute the whole workforce. Drive
    `attach_spreadsheet` through `call_kw` on a run you created yourself when you need a
    one-person blast radius.
+
+### R2 (2026-08-29)
+
+8. **`_log_contract_component_change` cannot be called on a `.new()` probe.** It writes
+   `'import_batch_id': self.id`, and `self` on a probe is a `NewId` — which cannot be stored,
+   so the create raises. The Records Desk files the identical `hr.contract.advantage.change`
+   row itself, minus that one key, with `change_source='manual'` and
+   `notes='Records Desk apply #<id>'`. Anything else that reaches the batch helpers through a
+   probe must be read for `self.id` before it is used.
+9. **`write_date` is the TRANSACTION timestamp, not the row's.** Odoo defaults it to SQL
+   `now()`, and PostgreSQL's `now()` is the transaction start — so every row written anywhere
+   in one test carries the same stamp and `assertNotEqual(rec.write_date, before)` can never
+   pass. "Did this record change" is asked of the VALUES and of the audit trail
+   (`pb.records.change` has no row for it), never of `write_date`. Cost one red test.
+10. **`0.0 in (None, False)` is `True` in Python.** The emptiness test `raw in (None, False)`
+    therefore blanks every ZERO — on the live walk it made a whole Basic Salary column read
+    empty when every contract holds 0. MJ15 says `0` is a value; test it with
+    `isinstance(raw, (int, float))` or `raw is None`, never with `in`.
+11. **A per-person question over a 4,500-person roster is a 147-SECOND page fetch.** The first
+    Records Desk counted its four facet groups by walking the match set in Python and asking
+    each employee for its latest contract state (`employee.contract_ids.sorted(...)`), four
+    times, on every page. Measured on payobook: 147s for one page of 100. Two rules came out
+    of it, both now in `pb_records_desk.py`: (a) a per-person fact is read ONCE for the whole
+    roster into a dict (`_ctx_states`, one `search_read` over contracts) and every filter and
+    facet reads that dict; (b) the FACETS are computed only when asked for — the client sends
+    `with_facets` on the first page and never again as the window moves. After: 488ms with
+    facets, 125ms without.
+12. **A "virtualised" grid whose scroller is not height-constrained renders everything.**
+    The window size comes from `clientHeight`, which is only meaningful when an ancestor caps
+    it; drop the component into a host that does not (a hoot fixture, a print stylesheet) and
+    the scroller grows to its own content, `clientHeight` becomes 207,000px and all 4,500 rows
+    land in the DOM. Cap the window (`MAX_WINDOW = 120`) rather than trusting the measurement.
+    The hoot test is what caught it, because a test fixture IS that host.
+13. **`sanitize_acc_number` returns a TUPLE `(number, damaged)`**, not a string
+    (`bank_account_util.py:49`). Unpacking it as a string gives `"('123', False)".strip()` and
+    an `AttributeError` three frames away. The `damaged` half is the useful one: a value that
+    WAS there and cannot be trusted is refused with a sentence rather than silently dropped.
+14. **A cell editor's `keydown` must `stopPropagation`, or the grid re-reads the same key.**
+    The editor commits on Enter and closes; the SAME event then bubbles to the grid, which is
+    listening for Enter as "start editing" and — the editor now being closed — opens one on
+    the next row. Symptom on the live walk: every Enter left a stray editor open below. Every
+    key an editor handles stops there (`RdCellEditor.onKey`, `RdPicker.onKey`).
+15. **A typed OPTIONAL OWL prop still rejects `null`** (W35, hit again). `lookupFor(col)`
+    returned `null` for a column with no typeahead and every non-many2one editor died on
+    "Invalid props for component 'RdCellEditor': 'lookup' is not a function". Return
+    `undefined` — that is the only value OWL reads as "absent".
+16. **An XML comment may not contain `--`.** A `<!-- ===== header ===== -->` banner drawn with
+    dashes is not well-formed XML and the OWL template file fails to parse — which surfaces as
+    a dead cockpit, not as a syntax error. Use `=` for rules inside comments, and parse every
+    new template file locally (`xml.dom.minidom.parse`) before deploying it.
+17. **Clearing `/web/assets/%` is NOT enough after changing a JS/SCSS file** — Odoo caches the
+    built bundle in the worker process, so the next request re-serves the old one from memory
+    and the browser sees no change at all (no manifest edit needed for this; C18.53's restart
+    rule is broader than it reads). Ritual after every asset edit: rsync, delete the
+    attachments, `service restart`, hard reload.
+18. **`res.company.create` links the new company to whoever created it**
+    (`base/models/res_company.py:311`). A test about NOT seeing another company's employees has
+    to `write({'company_ids': [(3, other.id)]})` on `env.user` and invalidate, or `env.companies`
+    silently contains the company the test is trying to be outside of.
+19. **hoot specifics this phase paid for**: `mountWithCleanup` boots the full web env, which
+    fetches the mail store — without `defineMailModels()` every mounting test dies on
+    "could not get model discuss.channel". `toBeTruthy` does not exist (use `toBe(true)` or
+    `toHaveLength`). `click(el, {ctrlKey: true})` does not carry the modifier to the handler —
+    dispatch a `new MouseEvent("click", {bubbles: true, ctrlKey: true})`. A component that
+    listens for keys on itself must be `.focus()`ed before `press()`.
