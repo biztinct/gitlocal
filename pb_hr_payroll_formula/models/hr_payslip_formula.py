@@ -499,7 +499,7 @@ class HrPayslipFormula(models.Model):
         # behaves exactly as it did before this phase.
         feed_hits = self._j3_feed_hits_by_rule(config)
 
-        # RECORDS RD45 — rank 4, which this path never had.
+        # RECORDS RD45/RD46 — ranks 4 and 5, which this path never had.
         #
         # `_declared_source_walk` (payroll_import_batch.py:2696) defines the
         # order ONCE: feed > rule > excel > employee_field/contract_field >
@@ -517,22 +517,27 @@ class HrPayslipFormula(models.Model):
         # resolved to its default of 0, every gate took the zero leg, and a run
         # of 36 payslips reported ₫0.00 of deductions.
         #
-        # The rung is the SAME function the batch resolver's tail calls —
-        # `_mapped_record_value` — not a second reading of a record. Nothing
-        # here decides an ORDER; it fills in a rung the order already named.
+        # The rungs are the SAME functions the batch resolver's tail calls —
+        # `_mapped_record_value` and `_contract_component_amounts` — not a
+        # second reading of a record. Nothing here decides an ORDER; it fills in
+        # rungs the order already named.
         #
-        # RANK 5 (the contract component) IS DELIBERATELY NOT ADDED. It is a
-        # rung of the same ladder, but on this path it does not add a source —
-        # it REPLACES a component's declared default with whatever the
-        # contract's advantage line says, including when that line says zero.
-        # Measured on the reference tenant: 612 of its 756 cells read zero,
-        # every one of them a placeholder, and the single component with a
-        # non-zero default (`PAIDLEAVUNUS`, ₫6,750,000) lost it — ₫243,000,000
-        # off the gross of a 36-payslip run, as a side effect of a fix about
-        # insurance. A rung that only ever subtracts is an owner's decision,
-        # not a bug fix's.
+        # RANK 5 (the contract component) IS HERE TOO, and it was the owner's
+        # call rather than this fix's. Adding it is what finally makes the two
+        # resolvers agree: before, the SAME month produced a different gross
+        # depending only on whether a pay-data file had been uploaded, and no
+        # screen could explain the difference.
+        #
+        # It was held back for one round because it does not add a source — it
+        # REPLACES a component's declared default with whatever the contract's
+        # advantage line says, zeros included. On the reference tenant 612 of
+        # 756 such cells read zero and `PAIDLEAVUNUS` lost a ₫6,750,000 default,
+        # ₫243,000,000 off a 36-payslip run. That default turned out to be one
+        # resigning employee's leave payout, copied out of the setup workbook
+        # into the box that means "use this for everyone"; the owner cleared it,
+        # and the rung then costs nothing and closes the inconsistency.
         Batch = self.env['hr.payroll.import.batch']
-        mapping_by_rule = {}
+        mapping_by_rule, component_amounts = {}, {}
         try:
             if config.rule_ids:
                 # `destination_type = 'field'` only, exactly as the batch
@@ -546,13 +551,14 @@ class HrPayslipFormula(models.Model):
                 ])
                 mapping_by_rule = {m.component_id.id: m
                                    for m in mappings if m.component_id}
+            component_amounts = Batch._contract_component_amounts(self.contract_id)
         except Exception:       # noqa: BLE001
             # Same rail as `_j3_feed_hits_by_rule`: a payslip must compute even
             # when the mapping layer is misconfigured or mid-migration.
             _logger.warning(
                 "RD45: could not read record sources for payslip %s",
                 self.id, exc_info=True)
-            mapping_by_rule = {}
+            mapping_by_rule, component_amounts = {}, {}
 
         for rule in input_rules:
             value = rule.default_value
@@ -611,11 +617,12 @@ class HrPayslipFormula(models.Model):
                 src = 'rule' if hit['kind'] == 'rule' else 'feed'
                 key, via = hit['key'], 'connector_mapping'
             else:
-                # RECORDS RD45 — rank 4. Reached ONLY when nothing above
-                # delivered, which is the walk's laziness contract: a component
-                # whose feed answered never touches the record at all.
+                # RECORDS RD45/RD46 — rank 4, then rank 5. Reached ONLY when
+                # nothing above delivered, which is the walk's laziness
+                # contract: a component whose feed answered never touches the
+                # record at all.
                 #
-                # It outranks the contract-wage and worked-days branches
+                # Both rungs outrank the contract-wage and worked-days branches
                 # above, which are this path's untouched tail — so a mapped
                 # field wins over them, and over the default, and over nothing
                 # else. `_blob_is_empty` is THE emptiness test (0 and False are
@@ -632,6 +639,19 @@ class HrPayslipFormula(models.Model):
                     src = 'employee_field'
                     key = mapping.target_field_id.name or None
                     via = 'employee_mapping'
+                else:
+                    # Rank 5, spelled exactly as the batch resolver's tail
+                    # spells it: PRESENCE in the contract's advantage lines
+                    # wins, not truthiness, because a contract line saying zero
+                    # has answered the question (MJ15).
+                    code = Batch._normalize_header_key(rule.code) if rule.code else ''
+                    if code and code in component_amounts:
+                        value = component_amounts[code]
+                        src, key, via = 'contract_component', rule.code, 'contract'
+                    elif rule.is_contract_component:
+                        value = component_amounts.get(code, 0.0)
+                        src, key, via = ('contract_component', rule.code,
+                                         'contract_default')
 
             values[rule.code] = value
             if provenance is not None:

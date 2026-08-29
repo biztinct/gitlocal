@@ -39,3 +39,7 @@ from . import test_journey_j10_record_source
 # payload, the default tick, and the promise that a person's own column band is
 # never silently overruled.
 from . import test_category_review
+
+# RD46 — preview the formulas against a REAL person: the copy rule (a preview
+# never writes to a payslip), the scheme-scoped picker, and the two doors.
+from . import test_rd46_person_preview

@@ -238,6 +238,23 @@ export class PbSourceAtlas extends Component {
         return slipId ? this.openJourney(slipId, code) : undefined;
     }
 
+    // RD46 — "and what was done with it?". This screen names the SOURCE of
+    // each value; the Formula Engine shows the arithmetic that followed. The
+    // payslip's own method builds the action so there is one definition of
+    // what read-only means and what it opens with.
+    async showCalculation(slipId) {
+        try {
+            const act = await this.orm.call("hr.payslip", "action_show_calculation",
+                [[slipId]]);
+            await this.action.doAction(act);
+        } catch (error) {
+            this.notif.add(
+                error?.data?.message || error?.message
+                    || _t("This payslip has no formulas to show."),
+                { type: "warning" });
+        }
+    }
+
     // ---------------------------------------------------------------- download
     async download(lane) {
         this.state.downloading = lane;

@@ -168,6 +168,18 @@ export class PbFormulaStudio extends Component {
             samples: [],
             scenarios: [],              // F14 — what-if overlays per component
             preview: { sample_id: false, values: {} },
+            // RD46 — preview the formulas against a REAL person. `auditMode`
+            // means we arrived from a payslip to explain a payment, so the
+            // formulas are locked; the picker on its own does NOT lock them,
+            // because trying a change against a real case is the point.
+            personPicker: false,        // false | "runs" | "people"
+            personRuns: [],
+            personRunId: false,
+            personPeople: [],
+            personBusy: false,
+            personPayslipId: false,
+            personAnon: false,
+            auditMode: false,
             // dependency-graph payload from get_intelligence (Feature 1); the
             // grid-highlight primitives (Feature 2) walk state.graph.edges.
             graph: { nodes: [], edges: [], execution_order: [], unused: [], cycles: [] },
@@ -569,12 +581,28 @@ export class PbFormulaStudio extends Component {
             // thing that has to happen and the thing nobody ever found on their own.
             const peopleSignal = (a.params && a.params.pbfs_open_people_mapping)
                 || (a.context && a.context.pbfs_open_people_mapping);
+            // RD46 — arriving from a payslip's "Show the calculation": load that
+            // person's numbers and lock the formulas. Read BEFORE the config
+            // branch below so `load()` sees `auditMode` and computes `canEdit`
+            // with it — setting the flag afterwards would leave one render in
+            // which every edit affordance was live.
+            const slipId = (a.params && a.params.pbfs_preview_payslip_id)
+                || (a.context && a.context.pbfs_preview_payslip_id);
+            if ((a.params && a.params.pbfs_readonly)
+                || (a.context && a.context.pbfs_readonly)) {
+                this.state.auditMode = true;
+                this.state.canEdit = false;
+            }
             if (cfgId) {
                 if (!this.state.config || this.state.config.id !== cfgId) await this.load(cfgId);
                 if ((a.params && a.params.open_settings) || (a.context && a.context.open_settings)) {
                     await this.openSettings();
                 }
                 if (peopleSignal && this.state.config) this.openMapping("employee");
+                if (slipId && this.state.config) {
+                    await this.pickPerson(slipId);
+                    this.state.previewDrawer = true;   // the panel IS the answer
+                }
             } else if (!openWiz && !this.state.empty) {
                 // Fresh entry (left-menu "Formula Engine" / dashboard) with no target
                 // config → land on the Payroll-configurations picker so the user
@@ -632,7 +660,10 @@ export class PbFormulaStudio extends Component {
         const d = await this.orm.call("pb.formula.studio", "get_studio_data", [configId || false]);
         this.state.empty = d.empty;
         this.state.configs = d.configs || [];
-        this.state.canEdit = d.can_edit !== false;
+        // RD46 — audit mode reuses the SAME flag a read-only Formula User
+        // lands with, rather than a second lock that would have to be kept in
+        // step with the first.
+        this.state.canEdit = d.can_edit !== false && !this.state.auditMode;
         if (d.empty) { this.state.loaded = true; return; }
         if (prevCfgId && d.config && prevCfgId !== d.config.id) {
             this.state.tests = null;
@@ -798,9 +829,7 @@ export class PbFormulaStudio extends Component {
         if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not save formula"), { type: "warning" }); return; }
         await this.load(cfgId);
         this._applyTests(r.tests);
-        if (sampleId) {
-            this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
-        }
+        await this._rd46RestorePreview(cfgId, sampleId);
         await this._refreshPinned(cfgId);   // W4 — keep pinned sample rows in sync
     }
     async gridValidateLive(formula, excludeRuleId) {
@@ -821,7 +850,7 @@ export class PbFormulaStudio extends Component {
             return;
         }
         await this.load(cfgId);
-        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._rd46RestorePreview(cfgId, sampleId);
         await this._refreshPinned(cfgId);   // W4
     }
     async gridTranslateFormula(ruleId, targetCols) {
@@ -859,7 +888,7 @@ export class PbFormulaStudio extends Component {
         this.notif.add(_t("Filled %(count)s columns", { count: items.length }), { type: "success" });
         await this.load(cfgId);
         this._applyTests(r && r.tests);
-        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._rd46RestorePreview(cfgId, sampleId);
         await this._refreshPinned(cfgId);   // W4
     }
 
@@ -890,7 +919,7 @@ export class PbFormulaStudio extends Component {
         this.notif.add(_t("Pasted %(count)s formulas", { count: saved }), { type: "success" });
         await this.load(cfgId);
         this._applyTests(r && r.tests);
-        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._rd46RestorePreview(cfgId, sampleId);
         await this._refreshPinned(cfgId);   // W4
     }
 
@@ -1073,7 +1102,7 @@ export class PbFormulaStudio extends Component {
         } catch (e) { this.notif.add(_t("Replace failed"), { type: "warning" }); return { ok: false }; }
         await this.load(cfgId);
         this._applyTests(r && r.tests);
-        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._rd46RestorePreview(cfgId, sampleId);
         await this._refreshPinned(cfgId);   // W4
         return r || { ok: true };
     }
@@ -1358,7 +1387,7 @@ export class PbFormulaStudio extends Component {
         this.notif.add(_t("Promoted into %(code)s", { code: r.code }), { type: "success" });
         await this.load(cfgId);   // the rule changed → refresh grid + scenarios + version history
         this._applyTests(r.tests);
-        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._rd46RestorePreview(cfgId, sampleId);
         await this._refreshPinned(cfgId);   // W4
         return r;
     }
@@ -1441,9 +1470,13 @@ export class PbFormulaStudio extends Component {
     toggleLens() { this.setLens(this.lensAll ? "payroll" : "all"); }
     togglePeople() { this.state.peopleOpen = !this.state.peopleOpen; }
     get sampleName() {
+        // RD46 — a real person's label wins over the sample list, because when
+        // one is loaded that IS what the panel is showing.
+        if (this.state.preview && this.state.preview.label) return this.state.preview.label;
         const s = this.state.samples.find(s => s.id === this.state.preview.sample_id);
         return s ? s.name : "—";
     }
+    get previewIsPerson() { return !!this.state.personPayslipId; }
     selectComponent(id) {
         this.state.selectedId = id;
         if (this.state.rawMode) this._seedRaw();   // F12 — re-seed the text editor
@@ -3056,7 +3089,117 @@ export class PbFormulaStudio extends Component {
     // ---- sample switching ----
     // Cycle the active sample among the NON-pinned samples so a pinned sample is
     // never also the active one (W4 invariant, D-F4).
+    // ==================================================================
+    // RD46 — preview against a real person.
+    //
+    // The panel used to offer made-up samples only, and on a scheme with none
+    // it showed a column of zeros — which reads as "the formulas produce
+    // nothing" rather than "nobody has given me anyone to try". Picking a pay
+    // run and then a person fills it with that employee's real numbers.
+    //
+    // ALWAYS A COPY. The server evaluates on an in-memory record and writes
+    // nothing, so a formula edited while somebody's real pay is on screen
+    // cannot reach their payslip. That is why the picker does NOT lock editing:
+    // trying a change against a real case is the whole point of it. Locking
+    // happens only in audit mode, which is a different door (a payslip's
+    // "Show the calculation").
+    // ==================================================================
+    async openPersonPicker() {
+        this.state.personBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "preview_runs",
+                [this.state.config.id]);
+            this.state.personRuns = (r && r.runs) || [];
+            this.state.personPicker = "runs";
+        } finally {
+            this.state.personBusy = false;
+        }
+    }
+    closePersonPicker() { this.state.personPicker = false; }
+
+    async pickPersonRun(runId) {
+        this.state.personBusy = true;
+        this.state.personRunId = runId;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "preview_people",
+                [runId, this.state.config.id]);
+            this.state.personPeople = (r && r.people) || [];
+            this.state.personPicker = "people";
+        } finally {
+            this.state.personBusy = false;
+        }
+    }
+
+    async pickPerson(payslipId) {
+        this.state.personBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "preview_from_payslip",
+                [this.state.config.id, payslipId, this.state.personAnon]);
+            if (r && r.ok) {
+                this.state.preview = r;
+                this.state.personPayslipId = payslipId;
+                this.state.personPicker = false;
+            } else {
+                this.notif.add(_t("Could not read that payslip's numbers."),
+                    { type: "warning" });
+            }
+        } finally {
+            this.state.personBusy = false;
+        }
+    }
+
+    // Back to the made-up samples. Explicit rather than implicit: leaving a
+    // real person on screen by accident is how somebody ends up reading one
+    // employee's pay as if it were the scheme's typical case.
+    async clearPerson() {
+        this.state.personPayslipId = false;
+        const sid = this.state.samples.length ? this.state.samples[0].id : false;
+        this.state.preview = sid
+            ? await this.orm.call("pb.formula.studio", "compute_preview",
+                [this.state.config.id, sid])
+            : { sample_id: false, values: {} };
+    }
+
+    async keepPersonAsSample() {
+        if (!this.state.personPayslipId) return;
+        const r = await this.orm.call("pb.formula.studio", "preview_keep_as_sample",
+            [this.state.config.id, this.state.personPayslipId, true]);
+        if (r && r.ok) {
+            this.notif.add(_t("Kept as sample “%s”", r.name || ""), { type: "success" });
+            await this.load(this.state.config.id);
+        } else {
+            this.notif.add(_t("Could not keep that as a sample."), { type: "warning" });
+        }
+    }
+
+    // Re-apply whatever the panel was showing after a reload. A person preview
+    // has no sample id, so the old `if (sampleId)` guard silently dropped it and
+    // the panel fell back to a sample the moment a formula was saved — exactly
+    // when you most want to see the effect on the person you are looking at.
+    async _rd46RestorePreview(cfgId, sampleId) {
+        if (this.state.personPayslipId) {
+            const r = await this.orm.call("pb.formula.studio", "preview_from_payslip",
+                [cfgId, this.state.personPayslipId, this.state.personAnon]);
+            if (r && r.ok) { this.state.preview = r; return; }
+        }
+        if (sampleId) {
+            this.state.preview = await this.orm.call("pb.formula.studio",
+                "compute_preview", [cfgId, sampleId]);
+        }
+    }
+
+    // Audit mode is a lock against changing a live scheme by accident while
+    // explaining one person's pay. It is NOT a permission boundary — the ACL is
+    // that, and it is unchanged — so the way out is offered plainly rather than
+    // hidden.
+    leaveAuditMode() {
+        this.state.auditMode = false;
+        this.state.canEdit = true;
+    }
+
     async cycleSample() {
+        this.state.personPayslipId = false;   // RD46 — a sample replaces the person
+
         const avail = this.state.samples.filter(s => !this.state.pinnedSamples.includes(s.id));
         if (avail.length < 2) return;
         const idx = avail.findIndex(s => s.id === this.state.preview.sample_id);

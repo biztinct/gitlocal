@@ -686,3 +686,17 @@
         outline-offset: 2px; border-radius: 4px;
     }
 }
+
+/* RD46 — the door from a source to its arithmetic. Quiet until the row is
+   hovered: the grid's job is the sources, and a button shouting on every one
+   of 4,500 rows would bury them. */
+.psa-calc {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 6px;
+    padding: 3px 8px; border: 1px solid var(--line, #E2E8F0); border-radius: 999px;
+    background: #fff; color: var(--muted, #64748B);
+    font-size: 10.5px; font-weight: 700; font-family: inherit; cursor: pointer;
+    opacity: 0; transition: opacity .12s ease, color .12s ease, border-color .12s ease;
+}
+.psa-calc svg { width: 12px; height: 12px; }
+tr:hover .psa-calc, .psa-calc:focus-visible { opacity: 1; }
+.psa-calc:hover { color: #4F46E5; border-color: #C7D2FE; background: #EEF2FF; }

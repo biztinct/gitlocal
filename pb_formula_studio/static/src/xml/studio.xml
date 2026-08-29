@@ -1538,9 +1538,27 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
               </button>
             </div>
+            <!-- RD46 — audit banner. Says whose pay this is, why nothing can be
+                 edited, and offers the way out rather than hiding it: the lock
+                 guards against an accidental change, it is not a permission. -->
+            <div t-if="state.auditMode" class="tp-audit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <div class="tp-audit-tx">
+                <b>How this pay was worked out</b>
+                <span>Formulas are locked here so a real payment can be read safely.</span>
+              </div>
+              <button class="tp-audit-go" t-on-click="leaveAuditMode">Unlock to edit</button>
+            </div>
             <div class="tp-selrow">
               <button class="tp-sel" t-on-click="cycleSample"><t t-esc="sampleName"/>
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <!-- RD46 — the door to a real person. Sits beside the sample
+                   chooser rather than replacing it: made-up samples are still
+                   the right thing for designing a formula from scratch. -->
+              <button class="tp-person" t-on-click="openPersonPicker"
+                      title="Preview with a real employee's numbers">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </button>
               <button t-if="canPinSample" class="tp-pin" t-on-click="pinActiveSample"
                       title="Pin this sample as an extra value row in the grid">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
@@ -1554,9 +1572,62 @@
                 </button>
               </span>
             </div>
-            <t t-if="!state.samples.length">
+            <!-- Who is on screen, and how to put them away again. -->
+            <div t-if="previewIsPerson" class="tp-personbar">
+              <span class="tp-personwho">
+                Real numbers<t t-if="state.preview.anonymized"> · name hidden</t>
+              </span>
+              <button class="tp-personact" t-on-click="keepPersonAsSample"
+                      t-if="state.canEdit" title="Save these numbers as a reusable sample">Keep as sample</button>
+              <button class="tp-personact" t-on-click="clearPerson" title="Back to sample data">Clear</button>
+            </div>
+
+            <!-- Two steps, run then person, because a scheme with 4,500
+                 payslips cannot offer one flat list of people. -->
+            <div t-if="state.personPicker" class="tp-pick">
+              <div class="tp-pick-h">
+                <b t-if="state.personPicker === 'runs'">Which pay run?</b>
+                <b t-else="">Which employee?</b>
+                <button class="tp-pick-x" t-on-click="closePersonPicker" title="Close">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+              <div t-if="state.personBusy" class="tp-pick-busy">Loading…</div>
+              <t t-elif="state.personPicker === 'runs'">
+                <div t-if="!state.personRuns.length" class="tp-pick-empty">
+                  This scheme has not produced any payslips yet, so there is
+                  nobody to preview.
+                </div>
+                <button t-foreach="state.personRuns" t-as="r" t-key="r.id"
+                        class="tp-pick-row" t-on-click="() => this.pickPersonRun(r.id)">
+                  <span class="nm" t-esc="r.name"/>
+                  <span class="mt"><t t-esc="r.count"/> payslips</span>
+                </button>
+              </t>
+              <t t-else="">
+                <button class="tp-pick-back" t-on-click="openPersonPicker">← Pay runs</button>
+                <div t-if="!state.personPeople.length" class="tp-pick-empty">
+                  No payslips in this run were worked out by this scheme.
+                </div>
+                <button t-foreach="state.personPeople" t-as="p" t-key="p.payslip_id"
+                        class="tp-pick-row" t-on-click="() => this.pickPerson(p.payslip_id)">
+                  <span class="nm" t-esc="p.name"/>
+                  <!-- Zero means the payslip was computed entirely on scheme
+                       defaults — the one most likely to be queried. -->
+                  <span t-attf-class="mt {{ p.sourced ? '' : 'warn' }}">
+                    <t t-if="p.sourced"><t t-esc="p.sourced"/> real inputs</t>
+                    <t t-else="">all defaults</t>
+                  </span>
+                </button>
+              </t>
+            </div>
+
+            <t t-if="!state.samples.length and !previewIsPerson">
               <div class="tp-nosample">
-                <p>No sample data yet — generate one to see live values.</p>
+                <p>No sample data yet — generate one, or preview a real employee.</p>
+                <button class="pbfs-btn soft sm" t-on-click="openPersonPicker">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Preview a real employee
+                </button>
                 <button class="pbfs-btn soft sm" t-on-click="generateSampleData">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Generate sample data
                 </button>
