@@ -59,6 +59,28 @@ export const CONTRACT_GATE = [
     "pb_demo.group_payobook_demo",
 ];
 
+/**
+ * Where a later module bolts a lens onto this hub.
+ *
+ *     registry.category(PEOPLE_LENSES).add("records", {
+ *         key, icon, label, Component, groups,
+ *         propsFromContext(ctx) { return { ... }; },   // optional
+ *     }, { sequence: 40 });
+ *
+ * A REGISTRY rather than an import, and the direction of the dependency is the
+ * whole reason: `pb_records` depends on this hub (it is mounted inside it), so
+ * this hub cannot import `pb_records` back without a cycle no manifest can
+ * express. The soft-registry pattern is the one `pb_people`'s employee drawer
+ * already uses (`people.js:53`) — absent module, absent lens, no error.
+ *
+ * `propsFromContext` exists because <HubShell/> hands a lens only
+ * `{embedded, ...def.props}` and never the action — so a lens that needs the
+ * deep link ("open on these twelve people") gets it by reading the arrival
+ * context ONCE here, at config time, which is also what keeps the lens props
+ * identity-stable across renders (W21).
+ */
+export const PEOPLE_LENSES = "pb_people_hub_lens";
+
 export class PbPeopleHub extends Component {
     static template = "pb_people_hub.PbPeopleHub";
     static components = { HubShell };
@@ -77,10 +99,24 @@ export class PbPeopleHub extends Component {
                   Component: PbPeople, groups: EMPLOYEE_GATE },
                 { key: "contracts", icon: "file", label: _t("Contracts"),
                   Component: PbContracts, groups: CONTRACT_GATE },
+                // Bolted-on lenses sit between the two cockpits and the Plan
+                // launcher — after the records a person IS, before the plan for
+                // the people they will be.
+                ...this.extraLenses(),
                 { key: "plan", icon: "trendingUp", label: _t("Plan"),
                   Component: PlanLauncher, groups: PLAN_GATE },
             ],
         };
+    }
+
+    /** Lenses other modules registered, resolved ONCE (never in a getter, W21). */
+    extraLenses() {
+        const ctx = (this.props.action && this.props.action.context) || {};
+        return registry.category(PEOPLE_LENSES).getAll().map((def) => {
+            const props = typeof def.propsFromContext === "function"
+                ? def.propsFromContext(ctx) : (def.props || {});
+            return { ...def, props };
+        });
     }
 
     /** The cog. A CLICK handler — the shell calls it, nothing else does. */

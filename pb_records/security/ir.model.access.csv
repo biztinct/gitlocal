@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_records_apply_hr,pb.records.apply hr,model_pb_records_apply,hr.group_hr_user,1,1,1,0
+access_pb_records_apply_officer,pb.records.apply payroll officer,model_pb_records_apply,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
+access_pb_records_apply_system,pb.records.apply system,model_pb_records_apply,base.group_system,1,1,1,1
+access_pb_records_change_hr,pb.records.change hr,model_pb_records_change,hr.group_hr_user,1,1,1,0
+access_pb_records_change_officer,pb.records.change payroll officer,model_pb_records_change,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
+access_pb_records_change_system,pb.records.change system,model_pb_records_change,base.group_system,1,1,1,1

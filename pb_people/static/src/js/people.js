@@ -151,6 +151,38 @@ export class PbPeople extends Component {
             this.notif.add(_t("%(count)s employees moved.", { count: res.count }), { type: "success" });
         this.state.selected = []; this.state.bulkDept = ""; await this.load();
     }
+    /**
+     * The Records Desk, opened on the people currently ticked.
+     *
+     * A PROBE, not a dependency (the same soft-registry reasoning as
+     * `drawerCmp` above): `pb_records` depends on this module, so importing it
+     * back would be a cycle, and a hard import of a module that may not be
+     * installed takes the whole bundle down with an unmet dependency (C18.53).
+     * The action registry holding the desk's tag is proof its JS shipped.
+     */
+    get hasRecordsDesk() {
+        return registry.category("actions").contains("pb_records_desk");
+    }
+
+    async bulkUpdate() {
+        if (!this.state.selected.length) { return; }
+        try {
+            await this.action.doAction("pb_people_hub.action_pb_people_hub", {
+                clearBreadcrumbs: true,
+                additionalContext: {
+                    // `pb_lens` is the hub arrival protocol (hub_nav.js); the
+                    // employee ids ride beside it and the hub hands them to the
+                    // lens as props.
+                    pb_lens: "records",
+                    records_employee_ids: [...this.state.selected],
+                },
+            });
+        } catch (e) {
+            this.notif.add(_t("The Records Desk is not available on this database."),
+                           { type: "warning" });
+        }
+    }
+
     bulkExport() {
         const ids = this.state.selected.length ? this.state.selected : this.filteredPeople.map(p => p.id);
         const rows = this.state.people.filter(p => ids.includes(p.id));
