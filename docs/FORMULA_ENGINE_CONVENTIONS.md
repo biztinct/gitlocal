@@ -1625,3 +1625,14 @@ number from the handovers — keep the numbering stable.
      chain before reporting a cause** — did it sync, did it link, did the
      resolver read it, did the formula get a value, is the value used. Each
      answer looks like the whole answer.
+145. **The design bar is binding on every design or implementation request in this project
+     (owner mandate, 2026-08-29): "extreme WOW, intuitive, out-of-this-world experience, best in
+     class."** Concretely, every handover and every surface must: name its **hero moment**; have
+     **zero dead-ends** (empty, loading, error, partial and huge states all designed; every failure
+     names its reason and its next step); use **plain language** over code vocabulary on every
+     label, toast and summary; use **motion with purpose** (enter/exit, progress, state change —
+     never decorative jitter); offer **keyboard + bulk ergonomics** wherever rows are involved
+     (multi-select, shift-range, paste, undo); and be **measured against the best SaaS tool in
+     that category, not stock Odoo**. Lucide/SVG icons, never emoji; never the word "Odoo" in a
+     user-visible string. Paste this paragraph verbatim into every handover's Design section and
+     have the phase report score itself against it.

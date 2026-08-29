@@ -88,3 +88,8 @@ from . import test_net_role_classifier
 # an allowance: the quantity gate, the band signal, and the shelf that moves
 # while the walk stays exactly where Phase 1 left it.
 from . import test_net_role_quantity
+
+# RECORDS R1 — a pay file that feeds one run and is then forgotten: the
+# neutrality rail (md5 + counter), the writeback that does not happen, and the
+# row for someone who is not in Payobook yet.
+from . import test_records_r1_one_time

@@ -27,6 +27,9 @@
             <div class="nm" t-esc="d.name"/>
             <div class="pbim-hero-chips">
               <span class="pbim-chip"><t t-out="ic('upload',13)"/> <t t-esc="d.source"/></span>
+              <span t-if="d.one_time" class="pbim-chip pbbc-chip--once"
+                    title="The values in this file fed one pay run and were then forgotten.">
+                <t t-out="ic('shield',13)"/> This run only — no records were updated</span>
               <span t-if="d.config" class="pbim-chip"><t t-out="ic('sigma',13)"/> <t t-esc="d.config"/></span>
               <span t-if="d.date_from" class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="d.date_from"/> → <t t-esc="d.date_to"/></span>
               <span t-if="d.company" class="pbim-chip"><t t-out="ic('briefcase',13)"/> <t t-esc="d.company"/></span>

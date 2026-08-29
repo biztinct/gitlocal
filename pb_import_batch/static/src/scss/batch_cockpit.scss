@@ -4,6 +4,10 @@
 
     .pbbc-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 
+    // RECORDS R1 — the batch that changed nothing says so beside its source.
+    // Teal, shield, same vocabulary as the pay-run wizard that produced it.
+    .pbbc-chip--once { background: #ECFDF7; color: #0B5F55; box-shadow: inset 0 0 0 1px #A7E3D5; }
+
     // hero: push the state badge to the right
     .pbbc-hero-state { margin-left: auto; flex: 0 0 auto; }
     .pbbc-hero .pbim-badge { font-size: 12px; padding: 5px 12px; }

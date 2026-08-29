@@ -31,6 +31,48 @@ const STEP_LABELS = {
 const STEPS_PLAIN = ["period", "compute", "review"];
 const STEPS_SHEET = ["period", "data", "compute", "review"];
 
+// ---------------------------------------------------------------- RECORDS R1
+// "Update Payobook" vs "This run only". The two modes and the three things that
+// follow from a mode are PURE functions of it, exported so they can be asserted
+// headlessly (hoot) without mounting the wizard — and so the screen, the button
+// and the server call can never disagree about what was chosen.
+export const MODE_UPDATE = "update";
+export const MODE_ONCE = "once";
+export const SHEET_MODES = [MODE_UPDATE, MODE_ONCE];
+
+/** The pay-data step's slice of state, so "the default is update" is one fact. */
+export function freshSheetMode() { return MODE_UPDATE; }
+
+/** Radio-group keyboard: arrows/Home/End move, anything else leaves it alone. */
+export function nextSheetMode(mode, key) {
+    const i = Math.max(0, SHEET_MODES.indexOf(mode));
+    switch (key) {
+        case "ArrowRight": case "ArrowDown":
+            return SHEET_MODES[(i + 1) % SHEET_MODES.length];
+        case "ArrowLeft": case "ArrowUp":
+            return SHEET_MODES[(i - 1 + SHEET_MODES.length) % SHEET_MODES.length];
+        case "Home": return SHEET_MODES[0];
+        case "End": return SHEET_MODES[SHEET_MODES.length - 1];
+        default: return mode;
+    }
+}
+
+/** The primary button says which run you are about to do — never just "Continue". */
+export function continueLabel(mode) {
+    return mode === MODE_ONCE ? "Continue — this run only" : "Continue with this file";
+}
+
+/** True when the chosen mode must leave every record untouched. */
+export function isOneTime(mode) { return mode === MODE_ONCE; }
+
+/**
+ * The positional arguments `attach_spreadsheet` is called with. The 7th is the
+ * one-time flag; building it here is what the hoot test asserts.
+ */
+export function attachArgs(runId, configId, fileB64, fileName, dateStart, dateEnd, mode) {
+    return [runId, configId, fileB64, fileName, dateStart, dateEnd, isOneTime(mode)];
+}
+
 export class PayrunWizard extends Component {
     static template = "pb_payrun_wizard.PayrunWizard";
     static props = ["*"];
@@ -64,6 +106,10 @@ export class PayrunWizard extends Component {
                 dragging: false,
                 error: "",         // the server's own refusal, shown on the step
                 skipped: false,    // the user looked at the list and went on without a file
+                // RECORDS R1 — 'update' (save the values to the records) or
+                // 'once' (feed this run and change nothing). Chosen in front of
+                // the coverage list, never assumed.
+                mode: freshSheetMode(),
             },
         });
         onWillStart(async () => {
@@ -196,6 +242,33 @@ export class PayrunWizard extends Component {
     get sheetReady() {
         const p = this.state.sheet.preflight;
         return !!(p && p.ok);
+    }
+
+    // ---------------- RECORDS R1: update the records, or just this run -------
+    get sheetOnce() { return isOneTime(this.state.sheet.mode); }
+    get sheetContinueLabel() { return continueLabel(this.state.sheet.mode); }
+
+    setSheetMode(mode) {
+        if (SHEET_MODES.includes(mode)) { this.state.sheet.mode = mode; }
+    }
+
+    /** Radio-group semantics: arrows move the choice, Enter/Space confirm it. */
+    onModeKey(ev, mode) {
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+            ev.preventDefault();
+            this.setSheetMode(mode);
+            return;
+        }
+        const next = nextSheetMode(this.state.sheet.mode, ev.key);
+        if (next !== this.state.sheet.mode) {
+            ev.preventDefault();
+            this.setSheetMode(next);
+            // Keep the focus with the choice the person just made, or the arrow
+            // keys stop working after the first press.
+            const root = ev.currentTarget.closest(".pw-modes");
+            const el = root && root.querySelector(`[data-mode="${next}"]`);
+            if (el) { el.focus(); }
+        }
     }
 
     onDragOver(ev) { ev.preventDefault(); this.state.sheet.dragging = true; }
@@ -366,11 +439,14 @@ export class PayrunWizard extends Component {
         let batch = null;
         if (sheet.file_b64 && this.wantsSheet) {
             this.state.progress = null;
-            this.state.busyMsg = "Loading " + (sheet.file_name || "the pay data file") + "…";
+            this.state.busyMsg = "Loading " + (sheet.file_name || "the pay data file")
+                + (isOneTime(sheet.mode) ? " for this run only…" : "…");
             batch = await this.orm.silent.call(
                 "pb.payrun.wizard", "attach_spreadsheet",
-                [run_id, (sheet.preflight && sheet.preflight.config_id) || sheet.gate.config_id,
-                 sheet.file_b64, sheet.file_name, date_start, date_end]);
+                attachArgs(
+                    run_id,
+                    (sheet.preflight && sheet.preflight.config_id) || sheet.gate.config_id,
+                    sheet.file_b64, sheet.file_name, date_start, date_end, sheet.mode));
             if (!batch || !batch.ok) {
                 sheet.error = (batch && batch.msg) || "The pay data file could not be loaded.";
                 // Nothing was computed, so the empty run it would have gone into

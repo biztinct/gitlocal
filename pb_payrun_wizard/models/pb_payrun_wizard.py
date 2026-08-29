@@ -917,8 +917,13 @@ class PbPayrunWizard(models.AbstractModel):
 
     @api.model
     def attach_spreadsheet(self, run_id, config_id, file_b64, filename,
-                           date_start, date_end):
+                           date_start, date_end, one_time=False):
         """Load this month's pay file INTO the run that already exists.
+
+        `one_time` (RECORDS R1) is the "this run only" choice: the file feeds
+        THIS run's payslips and nothing is written to any employee, contract or
+        bank record — see `payroll_import_batch.action_process`. It is additive
+        and defaults False, so every existing caller keeps today's behaviour.
 
         `payslip_run_id` is set on the batch BEFORE processing, which is what
         makes the created payslips land in this run instead of a second one
@@ -945,6 +950,13 @@ class PbPayrunWizard(models.AbstractModel):
             return {'ok': False, 'msg': _("No file was received.")}
 
         Batch = self.env['hr.payroll.import.batch'].sudo()
+        once = bool(one_time)
+        # Belt and braces: the one-time branch does not depend on these, but a
+        # batch that says "save nothing" must not also be carrying a standing
+        # instruction to create people.
+        once_vals = {'one_time': True,
+                     'auto_create_employees': False,
+                     'auto_create_contracts': False} if once else {}
         try:
             with self.env.cr.savepoint():
                 batch = Batch.create({
@@ -957,6 +969,7 @@ class PbPayrunWizard(models.AbstractModel):
                     'date_to': date_end or run.date_end,
                     'import_file': file_b64,
                     'import_filename': filename or 'pay-data.xlsx',
+                    **once_vals,
                 })
                 batch.action_load_file()
                 batch.action_match_employees()
@@ -978,6 +991,21 @@ class PbPayrunWizard(models.AbstractModel):
                 "unchanged. Ask an administrator to check the log.")}
 
         lines = batch.import_line_ids
+        # RECORDS R1 — the rows a one-time file refused to pay because the
+        # person is not in Payobook yet. They ride in `errors` too, so the
+        # wizard's existing "Review exceptions" list shows them without a
+        # second code path, and separately so the summary can COUNT them.
+        # The test is STRUCTURAL (an error line that matched nobody), not a
+        # string compare: `pb_hr_payroll_formula` is not a dependency of this
+        # module — the whole method is guarded on the model merely existing —
+        # so its sentence constant cannot be imported here.
+        unmatched_lines = lines.filtered(
+            lambda l: l.state == 'error' and not l.employee_id) if once else lines.browse()
+        unmatched = [{
+            'emp': (line.employee_name or line.employee_code
+                    or _("Row %s") % (line.sequence or '?')),
+            'why': line.error_message or '',
+        } for line in unmatched_lines][:100]
         errors = [{
             'emp': (line.employee_name or line.employee_code
                     or _("Row %s") % (line.sequence or '?')),
@@ -1007,6 +1035,9 @@ class PbPayrunWizard(models.AbstractModel):
             'filename': batch.import_filename or '',
             'errors': errors,
             'fed_components': fed,
+            'one_time': once,
+            'unmatched': unmatched,
+            'unmatched_count': len(unmatched),
         }
 
     @api.model

@@ -162,10 +162,55 @@
                                 <t t-out="ic('alert',14)"/> <span t-esc="state.sheet.error"/>
                             </div>
                             <button class="pw-btn ghost pw-btn--sm" t-if="state.sheet.file_name" t-on-click="clearSheetFile">Choose a different file</button>
+
+                            <!-- RECORDS R1 — what this file is for: a lasting
+                                 change, or just this run. Shown only once a file
+                                 is actually in hand, so the step keeps one
+                                 question at a time. -->
+                            <t t-if="state.sheet.file_name">
+                                <h4 class="pw-modes-h">What should these values do?</h4>
+                                <div class="pw-modes" role="radiogroup"
+                                     aria-label="What should these values do?"
+                                     data-coach="pw-paymode">
+                                    <div t-attf-class="pw-mode {{ state.sheet.mode === 'update' ? 'on' : '' }}"
+                                         role="radio" data-mode="update"
+                                         t-att-aria-checked="state.sheet.mode === 'update' ? 'true' : 'false'"
+                                         t-att-tabindex="state.sheet.mode === 'update' ? 0 : -1"
+                                         t-on-click="() => this.setSheetMode('update')"
+                                         t-on-keydown="(ev) => this.onModeKey(ev, 'update')">
+                                        <span class="pw-mode-ic"><t t-out="ic('database',18)"/></span>
+                                        <span class="pw-mode-tx">
+                                            <b>Update Payobook</b>
+                                            <span>Values are saved to employee and contract records and used from now on.</span>
+                                        </span>
+                                        <span class="pw-mode-dot"><t t-if="state.sheet.mode === 'update'"><t t-out="ic('check',13)"/></t></span>
+                                    </div>
+                                    <div t-attf-class="pw-mode {{ state.sheet.mode === 'once' ? 'on' : '' }}"
+                                         role="radio" data-mode="once"
+                                         t-att-aria-checked="state.sheet.mode === 'once' ? 'true' : 'false'"
+                                         t-att-tabindex="state.sheet.mode === 'once' ? 0 : -1"
+                                         t-on-click="() => this.setSheetMode('once')"
+                                         t-on-keydown="(ev) => this.onModeKey(ev, 'once')">
+                                        <span class="pw-mode-ic"><t t-out="ic('shield',18)"/></span>
+                                        <span class="pw-mode-tx">
+                                            <b>This run only</b>
+                                            <span>Used just this once. Nothing in Payobook changes — good for a one-off bonus or a correction.</span>
+                                        </span>
+                                        <span class="pw-mode-dot"><t t-if="state.sheet.mode === 'once'"><t t-out="ic('check',13)"/></t></span>
+                                    </div>
+                                </div>
+                            </t>
                         </div>
 
                         <div class="pw-sec" data-coach="pw-coverage">
-                            <h4>Coverage</h4>
+                            <h4>Coverage
+                                <!-- The hero moment made visible: when the run is
+                                     one-time, the panel says so before anything
+                                     is computed. -->
+                                <span class="pw-lockchip" t-if="sheetOnce and state.sheet.file_name">
+                                    <t t-out="ic('shield',13)"/> Payobook stays exactly as it is
+                                </span>
+                            </h4>
                             <t t-if="state.sheet.checking">
                                 <div class="pw-busy pw-busy--inline"><div class="pw-spin"></div><div>Reading the column headings…</div></div>
                             </t>
@@ -193,6 +238,10 @@
                                 </div>
                                 <div class="pw-note" t-if="pf.missing.length">
                                     The missing components will use their fallback values for this run.
+                                </div>
+                                <div class="pw-note pw-note--lock" t-if="sheetOnce">
+                                    <t t-out="ic('shield',13)"/>
+                                    <span>Anyone in the file who is not in Payobook yet will be listed, not paid.</span>
                                 </div>
                             </t>
                             <t t-else="">
@@ -238,12 +287,29 @@
                                   class="pw-warn-line" t-esc="e"/>
                         </p>
                         <!-- NETROLE P3: what the file did, and what running without one cost. -->
-                        <p class="pw-muted" t-if="state.summary.sheet">
+                        <p class="pw-muted" t-if="state.summary.sheet and !state.summary.sheet.one_time">
                             <t t-esc="state.summary.sheet.filename"/> fed
                             <b><t t-esc="state.summary.sheet.fed_components.length"/></b> component(s)
                             across <t t-esc="state.summary.sheet.rows"/> row(s) and produced
                             <b><t t-esc="state.summary.sheet.created"/></b> payslip(s) in this run.
                         </p>
+                        <!-- RECORDS R1 — a person must never be unsure which mode
+                             they ran. The one-time run says so in its own line. -->
+                        <div class="pw-oncebox" t-if="state.summary.sheet and state.summary.sheet.one_time">
+                            <t t-out="ic('shield',16)"/>
+                            <div>
+                                <p>
+                                    <t t-esc="state.summary.sheet.filename"/> fed
+                                    <b><t t-esc="state.summary.sheet.fed_components.length"/></b> component(s)
+                                    across <t t-esc="state.summary.sheet.rows"/> row(s) —
+                                    <b>used once; nothing was saved to any employee, contract or bank record.</b>
+                                </p>
+                                <p class="pw-oncebox-sub" t-if="state.summary.sheet.unmatched_count">
+                                    <b><t t-esc="state.summary.sheet.unmatched_count"/></b> row(s) were for people
+                                    not in Payobook and were not paid — see Review exceptions.
+                                </p>
+                            </div>
+                        </div>
                         <div class="pw-fallback" t-if="(state.summary.skipped_components || []).length">
                             <t t-out="ic('alert',14)"/>
                             <span>
@@ -291,7 +357,10 @@
                 </button>
                 <!-- Skipping is a CHOICE made in front of the list, never a default. -->
                 <button class="pw-btn ghost" data-coach="pw-skipsheet" t-if="stepKey === 'data'" t-on-click="runWithoutSheet">Run without a spreadsheet</button>
-                <button class="pw-btn primary" t-if="stepKey === 'data'" t-att-disabled="!sheetReady" t-on-click="continueWithSheet">Continue with this file <t t-out="ic('arrow',14)"/></button>
+                <button t-attf-class="pw-btn primary {{ sheetOnce ? 'pw-btn--lock' : '' }}"
+                        t-if="stepKey === 'data'" t-att-disabled="!sheetReady" t-on-click="continueWithSheet">
+                    <t t-if="sheetOnce"><t t-out="ic('shield',14)"/></t>
+                    <t t-esc="sheetContinueLabel"/> <t t-out="ic('arrow',14)"/></button>
                 <button class="pw-btn primary" t-if="stepKey === 'compute'" t-on-click="() => this.gotoKey('review')">Review exceptions <t t-out="ic('arrow',14)"/></button>
                 <button class="pw-btn primary" t-if="stepKey === 'review'" t-on-click="openRun">Open Payroll <t t-out="ic('arrow',14)"/></button>
             </div>

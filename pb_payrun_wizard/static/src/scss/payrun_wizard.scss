@@ -172,3 +172,89 @@
 }
 .pw-pname { flex: 1 1 auto; }
 .pw-pmeta { flex: 0 0 auto; color: var(--pw-muted, #64748B); }
+
+// ------------------------------------- RECORDS R1: update, or just this run
+// Two cards, one question. The "this run only" side is teal and carries a
+// shield everywhere it appears — the chip, the note, the button and the
+// summary — so the mode is recognisable at a glance rather than read.
+$pw-lock: #0E8577;
+$pw-lock-bg: #ECFDF7;
+$pw-lock-bd: #A7E3D5;
+
+.pw-sec .pw-modes-h, .pw-modes-h {
+    margin-top: 16px;
+    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--pw-muted, #6E6A85); font-weight: 700;
+}
+.pw-modes { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+.pw-mode {
+    display: grid; grid-template-columns: 32px 1fr 18px; align-items: start; gap: 10px;
+    background: #fff; border: 1px solid var(--pw-border, #D5DEEE); border-radius: 12px;
+    padding: 11px 12px; cursor: pointer;
+    // Motion with purpose: the card lifts as it is chosen and settles back when
+    // it is not. 160ms, transform + shadow only — nothing reflows, nothing jitters.
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;
+
+    .pw-mode-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px;
+        background: #F4F5FB; color: var(--pw-muted, #6E6A85); transition: background .16s ease, color .16s ease; }
+    .pw-mode-tx { display: flex; flex-direction: column; gap: 2px; }
+    .pw-mode-tx b { font-size: 13.5px; color: var(--pw-ink, #1B1733); }
+    .pw-mode-tx span { font-size: 12px; line-height: 1.45; color: var(--pw-muted, #6E6A85); }
+    .pw-mode-dot { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+        border: 2px solid var(--pw-border, #D5DEEE); color: #fff; margin-top: 6px;
+        transition: background .16s ease, border-color .16s ease; }
+
+    &:hover { border-color: var(--pw-soft2, #DDD6F2); background: #FBFBFE; }
+    &:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(90, 75, 176, .22); }
+
+    &.on {
+        transform: translateY(-2px);
+        border-color: var(--pw-brand, #5A4BB0); background: #FAF9FE;
+        box-shadow: 0 6px 18px rgba(90, 75, 176, .14);
+        .pw-mode-ic { background: var(--pw-soft, #EDEAF8); color: var(--pw-brand, #5A4BB0); }
+        .pw-mode-dot { background: var(--pw-brand, #5A4BB0); border-color: var(--pw-brand, #5A4BB0); }
+    }
+    &[data-mode="once"].on {
+        border-color: $pw-lock; background: $pw-lock-bg;
+        box-shadow: 0 6px 18px rgba(14, 133, 119, .16);
+        .pw-mode-ic { background: #D7F3EB; color: $pw-lock; }
+        .pw-mode-dot { background: $pw-lock; border-color: $pw-lock; }
+        &:focus-visible { box-shadow: 0 0 0 3px rgba(14, 133, 119, .25); }
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pw-mode, .pw-mode.on { transition: none; transform: none; }
+}
+
+.pw-lockchip {
+    display: inline-flex; align-items: center; gap: 5px; margin-left: 8px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .02em; text-transform: none;
+    color: $pw-lock; background: $pw-lock-bg; border: 1px solid $pw-lock-bd;
+    border-radius: 999px; padding: 3px 9px;
+    animation: pw-lockchip-in .18s ease both;
+    svg { vertical-align: -.15em; }
+}
+@keyframes pw-lockchip-in { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+
+.pw-root .pw-note--lock {
+    display: flex; align-items: flex-start; gap: 7px;
+    color: $pw-lock; background: $pw-lock-bg; border: 1px solid $pw-lock-bd; font-weight: 600;
+    svg { flex: none; margin-top: 1px; }
+}
+
+.pw-root .pw-btn.pw-btn--lock {
+    background: $pw-lock; border-color: $pw-lock;
+    &:hover { background: #0B6E63; }
+}
+
+.pw-oncebox {
+    display: flex; align-items: flex-start; gap: 10px; text-align: left;
+    margin: 14px auto 0; max-width: 620px;
+    color: #0B5F55; background: $pw-lock-bg; border: 1px solid $pw-lock-bd;
+    border-radius: 12px; padding: 12px 14px; font-size: 13px; line-height: 1.5;
+    > svg { flex: none; color: $pw-lock; margin-top: 1px; }
+    p { margin: 0; }
+    b { color: #08453E; }
+    .pw-oncebox-sub { margin-top: 6px; font-size: 12.5px; color: #0B5F55; }
+}
