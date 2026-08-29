@@ -502,6 +502,44 @@ $rd-w-data: 194px;
         &.refused { background: var(--pbim-amber-soft); }
     }
 
+    // ------------------------------------------------- R4 D2 — one row, many people
+    //
+    //  A bulk change reads as ONE sentence with a count, not as 140 copies of
+    //  itself. Closed by default and one click from the names, because the
+    //  count is what is being approved and the names are what is being checked.
+    .rd-rev-grp {
+        margin-bottom: 6px; border-radius: 9px; overflow: hidden;
+        background: var(--pbim-soft); border: 1px solid transparent;
+        animation: rd-rise .2s ease-out both;
+        transition: border-color .14s;
+        &.open { border-color: var(--pbim-primary); }
+        &.refused { background: var(--pbim-amber-soft); }
+    }
+    .rd-rev-grp-head {
+        display: grid; align-items: center; width: 100%; text-align: left;
+        grid-template-columns: auto 1fr auto auto auto auto;
+        gap: 7px; padding: 8px 11px; border: none; background: transparent;
+        font: inherit; font-size: 12px; cursor: pointer;
+        &:hover { background: rgba(90, 75, 176, .06); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: -2px; }
+        .cv { display: flex; color: var(--pbim-primary-strong); }
+        .fd { font-weight: 700; color: var(--pbim-text); min-width: 0;
+              white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ov { color: var(--pbim-muted); text-decoration: line-through; }
+        .ar { color: var(--pbim-primary); display: flex; }
+        .nv { font-weight: 800; color: var(--pbim-primary-strong); }
+        .ct { display: inline-flex; align-items: center; gap: 5px;
+              font-size: 11px; font-weight: 900; border-radius: 999px;
+              padding: 3px 9px; background: #fff; color: var(--pbim-primary-strong);
+              box-shadow: var(--pbim-sh); white-space: nowrap; }
+    }
+    .rd-rev-grp-why { font-size: 11.5px; color: var(--pbim-amber);
+                      padding: 0 11px 8px; }
+    .rd-rev-grp-names {
+        font-size: 11.5px; color: var(--pbim-muted); line-height: 1.5;
+        padding: 0 11px 10px; animation: rd-rise .16s ease-out both;
+    }
+
     .rd-hist {
         border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
         padding: 11px 13px; margin-bottom: 9px; display: flex;
@@ -566,10 +604,34 @@ $rd-w-data: 194px;
         position: relative; display: flex; align-items: stretch;
         .pbim-btn { border-radius: var(--pbim-r) 0 0 var(--pbim-r); }
         .rd-export-more {
-            border-radius: 0 var(--pbim-r) var(--pbim-r) 0; margin-left: -1px;
-            padding-left: 8px; padding-right: 8px; min-width: 0;
+            // The seam is the FIRST button's right border, not a 1px overlap
+            // of the two. `margin-left: -1px` drew the same line by putting
+            // one clickable box on top of the other, and the R4 sweep is
+            // right to call a 1px occlusion of a button an occlusion.
+            border-radius: 0 var(--pbim-r) var(--pbim-r) 0; border-left: none;
+            padding-left: 9px; padding-right: 9px; min-width: 0;
         }
         .rd-scheme-menu { min-width: 246px; }
+    }
+
+    // R4 D3 — one component, two layouts. Wide, it is two controls side by
+    // side, and they carry their own row rather than relying on a fragment
+    // landing in the header's flex the way two loose siblings would.
+    .rd-filepair { display: flex; align-items: center; gap: 8px; }
+
+    // Narrow, the same three commands are one menu, wearing the scheme menu's
+    // own shell so a folded header introduces no new furniture.
+    .rd-filemenu {
+        position: relative;
+        .rd-scheme-menu { min-width: 262px; }
+    }
+    .rd-filemenu-up {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; padding: 9px 11px; border-radius: var(--pbim-r-sm);
+        cursor: pointer; margin: 0;
+        &:hover { background: var(--pbim-soft); }
+        .nm { font-size: 12.5px; font-weight: 700; color: var(--pbim-text); }
+        .ct { font-size: 11px; color: var(--pbim-muted); }
     }
 
     .rd-drop {

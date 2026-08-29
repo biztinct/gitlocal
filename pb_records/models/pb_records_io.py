@@ -614,6 +614,105 @@ class PbRecordsDeskIo(models.AbstractModel):
             code or email or name)
 
     @api.model
+    def _io_probe_guard(self, file_b64, filename):
+        """`(raw, is_csv, refusal)` — the three things both readers need first.
+
+        Shared by the probe and the peek so a file refused by one is refused by
+        the other in the same words. A sentence that changes between two calls
+        about the same file is a sentence nobody trusts.
+        """
+        name = (filename or '').strip().lower()
+        try:
+            raw = base64.b64decode(file_b64 or '')
+        except Exception:       # noqa: BLE001 — a malformed upload
+            raw = b''
+        if not raw:
+            return b'', False, _("That file is empty.")
+        if len(raw) > MAX_BYTES:
+            return b'', False, _(
+                "That file is larger than 10 MB. Export a smaller slice — "
+                "filter to one department and try again.")
+        if name.endswith('.csv'):
+            return raw, True, ''
+        if not name.endswith(('.xlsx', '.xlsm')):
+            return b'', False, _(
+                "This is not a spreadsheet. Drop an .xlsx or a .csv file.")
+        return raw, False, ''
+
+    @api.model
+    def import_probe(self, file_b64='', filename=''):
+        """How many rows this file holds. Nothing else, and nothing written.
+
+        R4 D6. `import_peek` parses, indexes the whole roster, matches every
+        row and previews every value — on a 4,500-row file that is a wait, and
+        a busy veil that only spins does not say whether it is a wait of one
+        second or thirty. This is the cheap half of that work, split out so the
+        veil can say the size of the job: *"Matching 4,512 rows to people…"*.
+
+        `read_only=True` here and NOT in `_io_read_xlsx` (RD20), because the
+        difference between the two is exactly the cell COMMENTS — which a row
+        count does not need and a column identity cannot live without.
+
+        Advisory by construction: every failure returns `{'ok': False}` with a
+        reason and the client carries on to the peek, which will refuse the
+        same file in the same words. A count is a courtesy, never a gate.
+        """
+        self._check_read()
+        raw, is_csv, refusal = self._io_probe_guard(file_b64, filename)
+        if refusal:
+            return {'ok': False, 'msg': refusal, 'rows': 0}
+        cap = MAX_ROWS + 2
+        try:
+            if is_csv:
+                rows = self._io_probe_csv(raw, cap)
+            else:
+                rows = self._io_probe_xlsx(raw, cap)
+        except Exception as err:       # noqa: BLE001 — a file, not a bug
+            _logger.info("Records Desk: could not count rows in %s (%s)",
+                         filename, err)
+            return {'ok': False, 'rows': 0, 'msg': _(
+                "That file could not be opened as a spreadsheet.")}
+        # The heading row is not a row of data, and the count on screen is a
+        # count of people, not of lines in a file.
+        return {'ok': True, 'rows': max(0, rows - 1),
+                'truncated': rows >= cap}
+
+    @api.model
+    def _io_probe_xlsx(self, raw, cap):
+        import openpyxl
+        wb = openpyxl.load_workbook(io.BytesIO(raw), read_only=True,
+                                    data_only=True)
+        try:
+            sheet = None
+            for name in wb.sheetnames:
+                if name == META_SHEET:
+                    continue
+                if wb[name].sheet_state == 'visible':
+                    sheet = wb[name]
+                    break
+            if sheet is None:
+                return 0
+            seen = 0
+            for row in sheet.iter_rows(values_only=True):
+                if row and any(v not in (None, '') for v in row):
+                    seen += 1
+                    if seen >= cap:
+                        break
+            return seen
+        finally:
+            wb.close()
+
+    @api.model
+    def _io_probe_csv(self, raw, cap):
+        seen = 0
+        for row in self._io_read_csv(raw):
+            if row and any(v not in (None, '') for v in row):
+                seen += 1
+                if seen >= cap:
+                    break
+        return seen
+
+    @api.model
     def import_peek(self, config_id=0, file_b64='', filename=''):
         """Read a file and say what it WOULD do. Writes nothing, ever.
 
@@ -624,22 +723,9 @@ class PbRecordsDeskIo(models.AbstractModel):
         """
         self._check_read()
         name = (filename or '').strip()
-        lower = name.lower()
-        try:
-            raw = base64.b64decode(file_b64 or '')
-        except Exception:       # noqa: BLE001 — a malformed upload
-            raw = b''
-        if not raw:
-            return {'ok': False, 'msg': _("That file is empty.")}
-        if len(raw) > MAX_BYTES:
-            return {'ok': False, 'msg': _(
-                "That file is larger than 10 MB. Export a smaller slice — "
-                "filter to one department and try again.")}
-
-        is_csv = lower.endswith('.csv')
-        if not is_csv and not lower.endswith(('.xlsx', '.xlsm')):
-            return {'ok': False, 'msg': _(
-                "This is not a spreadsheet. Drop an .xlsx or a .csv file.")}
+        raw, is_csv, refusal = self._io_probe_guard(file_b64, name)
+        if refusal:
+            return {'ok': False, 'msg': refusal}
 
         meta = {'config_id': 0, 'by_index': {}}
         comments = {}

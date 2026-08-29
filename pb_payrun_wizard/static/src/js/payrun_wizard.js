@@ -74,6 +74,62 @@ export function attachArgs(runId, configId, fileB64, fileName, dateStart, dateEn
     return [runId, configId, fileB64, fileName, dateStart, dateEnd, isOneTime(mode)];
 }
 
+// ---------------------------------------------------------------- RECORDS R4
+// D4 — "not in Payobook yet" is ONE fact about the file, not N exceptions.
+//
+// A one-time file feeds this run and saves nothing, so a row for somebody the
+// system has never heard of cannot be paid and cannot be created: it is listed
+// and left. Thirty of those rows read as thirty separate problems, which is
+// what the flat list made them. They are one problem — "these people are not on
+// the payroll yet" — with one next step, and the next step is NOT the Records
+// Desk (there is nothing to edit for a person who does not exist). It is the
+// Import door, which is what adds people, and it appears only where that door
+// actually exists on the database.
+
+/**
+ * Split the run's exceptions into the unmatched block and everything else.
+ *
+ * The two arrive overlapping — `attach_spreadsheet` returns the unmatched rows
+ * both inside `errors` (so the flat list has always shown them) and separately
+ * (so they can be counted) — and a row must appear in exactly one place here,
+ * or the same person is a problem twice.
+ */
+export function splitExceptions(exceptions, unmatched) {
+    const missing = unmatched || [];
+    const claimed = new Set(missing.map((u) => [u.emp, u.why].join("|")));
+    const rest = (exceptions || []).filter(
+        (e) => !claimed.has([e.emp, e.why].join("|")));
+    return { missing, rest };
+}
+
+/** The heading over the block — a sentence, with the count inside it. */
+export function notInPayobookHeading(count) {
+    return count === 1
+        ? "1 person in the file is not in Payobook yet — they were listed, not paid"
+        : `${count} people in the file are not in Payobook yet — they were listed, not paid`;
+}
+
+/**
+ * The door that adds people, or "" when this database has no such door.
+ *
+ * Probed through the ACTIONS REGISTRY rather than by trying the action and
+ * catching: an offer that fails when it is taken is worse than an offer that
+ * was never made, and `pb_import_wizard` is not a dependency of this module.
+ */
+export function importDoor(actions) {
+    try {
+        return actions && actions.contains("pb_import_wizard")
+            ? "pb_import_wizard.action_pb_import_wizard" : "";
+    } catch {
+        return "";
+    }
+}
+
+/** The names, one per line — what "Copy names" puts on the clipboard. */
+export function exceptionNames(missing) {
+    return (missing || []).map((u) => u.emp).filter(Boolean).join("\n");
+}
+
 export class PayrunWizard extends Component {
     static template = "pb_payrun_wizard.PayrunWizard";
     static props = ["*"];
@@ -148,6 +204,54 @@ export class PayrunWizard extends Component {
     ic(n, s = 16) { return markup(`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n] || IC.check}</svg>`); }
     vnd(n) { n = n || 0; if (n >= 1e9) return "₫" + (n / 1e9).toFixed(1) + "B"; if (n >= 1e6) return "₫" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "₫" + (n / 1e3).toFixed(0) + "K"; return "₫" + Math.round(n); }
     get wantsSheet() { const g = this.state.sheet.gate; return !!(g && g.wanted); }
+
+    // ------------------------------------------------------ RECORDS R4 (D4)
+    /** The rows that named somebody Payobook has never heard of. */
+    get missingPeople() { return (this.state.summary && this.state.summary.unmatched) || []; }
+
+    get missingHeading() { return notInPayobookHeading(this.missingPeople.length); }
+
+    /** Every exception, however it is grouped — what "Need review" counts. */
+    get needReview() {
+        const s = this.state.summary || {};
+        return (s.flagged || 0) + (s.exceptions ? s.exceptions.length : 0)
+            + this.missingPeople.length;
+    }
+
+    /** "" when this database has no Import door, and then no button is offered. */
+    get importDoorAction() { return importDoor(registry.category("actions")); }
+
+    openImportWizard() {
+        const door = this.importDoorAction;
+        if (!door) { return; }
+        this.action.doAction(door, { clearBreadcrumbs: true })
+            .catch(() => this.notif.add(
+                "The Import screen is not installed on this database.",
+                { type: "warning" }));
+    }
+
+    async copyMissingNames() {
+        const text = exceptionNames(this.missingPeople);
+        if (!text) { return; }
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch {
+            // A clipboard a browser refuses is not a dead end: the same text
+            // goes into a selected textarea the user can copy by hand.
+            const area = document.createElement("textarea");
+            area.value = text;
+            area.style.position = "fixed";
+            area.style.opacity = "0";
+            document.body.appendChild(area);
+            area.select();
+            try { document.execCommand("copy"); } catch { /* nothing else to try */ }
+            area.remove();
+        }
+        this.notif.add(
+            this.missingPeople.length === 1
+                ? "1 name copied." : `${this.missingPeople.length} names copied.`,
+            { type: "info" });
+    }
     get stepKeys() { return this.wantsSheet ? STEPS_SHEET : STEPS_PLAIN; }
     get steps() { return this.stepKeys.map((k) => STEP_LABELS[k]); }
     get stepKey() { return this.stepKeys[this.state.step - 1] || "period"; }
@@ -507,9 +611,16 @@ export class PayrunWizard extends Component {
         const summary = await this.orm.silent.call("pb.payrun.wizard", "get_summary", [run_id]);
         // A row the file could not process is an exception in exactly the sense
         // this wizard already means it: something a person has to look at.
-        summary.exceptions = exceptions
-            .concat((batch && batch.errors) || [])
-            .concat((sync && sync.unroutable) || []);
+        // RECORDS R4 D4 — except the rows that name somebody who is not in
+        // Payobook at all: those are one block with one next step, and they are
+        // taken OUT of the flat list rather than listed in both places.
+        const split = splitExceptions(
+            exceptions
+                .concat((batch && batch.errors) || [])
+                .concat((sync && sync.unroutable) || []),
+            (batch && batch.unmatched) || []);
+        summary.exceptions = split.rest;
+        summary.unmatched = split.missing;
         // Payslips prepare_run claimed from the period were never computed here,
         // so they must be counted as done or the result reads "computed 0 of 152".
         // Payslips the pay data file created are done for the same reason.

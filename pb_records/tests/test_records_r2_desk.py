@@ -19,7 +19,7 @@ import json
 import os
 import re
 
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.modules.module import get_module_path
 from odoo.tests import TransactionCase, tagged
 
@@ -573,8 +573,41 @@ class TestRecordsR2Desk(TransactionCase):
     # =====================================================================
     # 9 — another company's employee is invisible and unwritable
     # =====================================================================
+    def _second_company(self):
+        """Another company to be outside of — created, borrowed, or neither.
+
+        On the golden TEMPLATE database `res.company.create` raises
+        `ValidationError: You must have at least an administrator user.`: that
+        database is scrubbed of its administrator by construction, so the
+        constraint that counts them has nothing to count and refuses the write
+        that links the new company to its creator (RD18; W159 for the same fact
+        met from the other side, `res.users.create`).
+
+        The ladder is create → borrow an existing company → skip with the
+        reason. Deleting the case was never an option: company scoping is a
+        SECURITY rail, and it must keep being tested on every database that can
+        test it. A skip says out loud which database cannot.
+        """
+        Company = self.env['res.company']
+        try:
+            with self.env.cr.savepoint():
+                company = Company.create({'name': 'RD Other Co'})
+                self.env.flush_all()
+                return company
+        except (ValidationError, UserError) as err:
+            self.env.invalidate_all()
+            reason = str(err)
+        existing = Company.sudo().search([('id', '!=', self.company.id)], limit=1)
+        if existing:
+            return existing
+        self.skipTest(
+            "This database refuses res.company.create (%s) and has only one "
+            "company, so the company-scoping case has nothing to be outside "
+            "of. Run it on a database with an active administrator." % reason)
+        return Company
+
     def test_09_company_scoping_hides_and_refuses(self):
-        other = self.env['res.company'].create({'name': 'RD Other Co'})
+        other = self._second_company()
         stranger = self.Employee.create({
             'name': 'RD Stranger', 'company_id': other.id})
         # `res.company.create` LINKS the new company to whoever created it
