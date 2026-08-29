@@ -24,14 +24,43 @@
  * was, because "the same drawer" has to be literally true or the promise is
  * only a visual resemblance.
  */
-import { Component, useState } from "@odoo/owl";
+import { Component, useState, useExternalListener } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { RdPicker } from "@pb_records/js/records_cells";
+import { RdReviewList, grouped } from "@pb_records/js/records_review";
 
-/** One count, in the right number. Never `1 changes`. */
+/** One count, in the right number, and grouped. Never `1 changes`. */
 function n(count, one, many) {
-    return count === 1 ? _t(one) : _t(many, count);
+    return count === 1 ? _t(one) : _t(many, grouped(count));
+}
+
+/**
+ * Below this the header's file controls fold into one menu (R4 D3).
+ *
+ * 1440 rather than a round 1280 because the crowding starts well before the
+ * buttons actually collide: at 1366 the scheme pill, Export, its chevron, the
+ * drop zone, History and Review are already shoulder to shoulder, and Review is
+ * the one that must stay whole at every width.
+ */
+export const NARROW_AT = 1440;
+
+/** The header layout, as a function of one number. */
+export function isNarrow(width) { return Number(width || 0) < NARROW_AT; }
+
+/**
+ * What the veil says while a file is being read (R4 D6).
+ *
+ * Two calls, one veil: the first is a cheap parse that only counts the rows,
+ * and the moment it answers the sentence stops being "please wait" and becomes
+ * the size of the job — *"Matching 4,512 rows to people…"*. A wait a person can
+ * estimate is a wait they will sit through.
+ */
+export function readingLine(name, rows) {
+    if (!rows) { return _t("Reading %s…", name || _t("the file")); }
+    return rows === 1
+        ? _t("Matching 1 row to people…")
+        : _t("Matching %s rows to people…", grouped(rows));
 }
 
 /**
@@ -67,7 +96,7 @@ export function fileApplyLabel(summary) {
     if (!s.changes_ok) { return _t("Nothing to apply"); }
     if (s.changes_refused) {
         return _t("Apply %(ok)s · leave %(bad)s",
-                  { ok: s.changes_ok, bad: s.changes_refused });
+                  { ok: grouped(s.changes_ok), bad: grouped(s.changes_refused) });
     }
     return n(s.changes_ok, "Apply 1 change", "Apply %s changes");
 }
@@ -144,11 +173,72 @@ export class RdDropZone extends Component {
 }
 
 // ---------------------------------------------------------------------------
+//  RdFileMenu — the two directions, in the space there is
+// ---------------------------------------------------------------------------
+/**
+ * Export out, import in — side by side when the header is wide enough, and one
+ * File menu when it is not.
+ *
+ * A separate component rather than two branches in the desk's template for the
+ * reason every breakpoint should be: the decision is one boolean, the two
+ * layouts offer exactly the same three commands, and both can be mounted and
+ * asserted without a desk, a scheme or a server behind them.
+ */
+export class RdFileMenu extends Component {
+    static template = "pb_records.RdFileMenu";
+    static components = { RdDropZone };
+    static props = {
+        narrow: { type: Boolean, optional: true },
+        exporting: { type: String, optional: true },
+        busy: { type: Boolean, optional: true },
+        busyLabel: { type: String, optional: true },
+        countLabel: { type: String, optional: true },
+        // (mode) => void, mode is "data" | "template"
+        onExport: { type: Function },
+        // (File) => void
+        onFile: { type: Function },
+    };
+
+    setup() {
+        this.state = useState({ open: false });
+        // Anywhere else closes it. The menu itself stops the click, so a
+        // choice inside it is not also a dismissal of the thing it opened.
+        useExternalListener(window, "click", () => { this.state.open = false; });
+    }
+
+    ic(name, size = 16) { return ic(name, size); }
+
+    toggle() { this.state.open = !this.state.open; }
+
+    pickExport(mode) {
+        this.state.open = false;
+        this.props.onExport(mode);
+    }
+
+    onPick(ev) {
+        const file = ev.target.files && ev.target.files[0];
+        this.state.open = false;
+        if (file) { this.props.onFile(file); }
+        ev.target.value = "";
+    }
+
+    get exportLabel() {
+        return this.props.exporting ? _t("Building…") : _t("Export");
+    }
+
+    get fileLabel() {
+        if (this.props.exporting) { return _t("Building…"); }
+        if (this.props.busy) { return _t("Reading…"); }
+        return _t("File");
+    }
+}
+
+// ---------------------------------------------------------------------------
 //  RdFileReview — the drawer's body, in file mode
 // ---------------------------------------------------------------------------
 export class RdFileReview extends Component {
     static template = "pb_records.RdFileReview";
-    static components = { RdPicker };
+    static components = { RdPicker, RdReviewList };
     static props = {
         summary: { type: Object },
         items: { type: Array },
@@ -201,21 +291,11 @@ export class RdFileReview extends Component {
         this.show(keys[next]);
     }
 
-    /** Only the rows worth reading: an unchanged value is not a change. */
+    /** Only the rows worth reading: an unchanged value is not a change.
+     *  How they are then FOLDED is `RdReviewList`'s job, and it is the same
+     *  folding the grid's own drawer does (R4 D2). */
     get rows() {
         return this.props.items.filter((i) => i.status !== "same");
-    }
-
-    get people() {
-        const byPerson = new Map();
-        for (const item of this.rows) {
-            if (!byPerson.has(item.emp_id)) {
-                byPerson.set(item.emp_id,
-                             { id: item.emp_id, name: item.emp_name, rows: [] });
-            }
-            byPerson.get(item.emp_id).rows.push(item);
-        }
-        return [...byPerson.values()];
     }
 
     get matchedByLine() { return identityLine(this.props.identity || ""); }

@@ -80,6 +80,51 @@
   </t>
 
   <!-- =================================================================
+       R4 D2 — the review list, folded.
+
+       One list, used by BOTH drawers. A change that lands on three or more
+       people is one row with a count and a chevron; everything else stays
+       per person, exactly as it read before. The group head is a real
+       button, so Enter and Space open it without a keydown handler of its
+       own, and `aria-expanded` says which state it is in.
+       ================================================================= -->
+  <t t-name="pb_records.RdReviewList">
+    <div class="rd-revlist">
+      <t t-foreach="blocks" t-as="b" t-key="b.type === 'group' ? b.key : 'p' + b.id">
+
+        <div t-if="b.type === 'group'"
+             t-attf-class="rd-rev-grp {{ b.status }} {{ isOpen(b.key) ? 'open' : '' }}">
+          <button type="button" class="rd-rev-grp-head"
+                  t-att-aria-expanded="isOpen(b.key) ? 'true' : 'false'"
+                  t-on-click="() => this.toggle(b.key)">
+            <span class="cv"><t t-out="ic(isOpen(b.key) ? 'chevronDown' : 'chevron', 13)"/></span>
+            <span class="fd" t-esc="b.field_label"/>
+            <span class="ov" t-esc="b.old_label or '—'"/>
+            <span class="ar"><t t-out="ic('arrow',13)"/></span>
+            <span class="nv" t-esc="b.new_label or '—'"/>
+            <span class="ct"><t t-out="ic('users',12)"/> <t t-esc="countLabel(b.count)"/></span>
+          </button>
+          <div t-if="b.why" class="rd-rev-grp-why" t-esc="b.why"/>
+          <div t-if="isOpen(b.key)" class="rd-rev-grp-names" t-esc="namesLabel(b)"/>
+        </div>
+
+        <div t-else="" class="rd-rev-person">
+          <div class="rd-rev-name" t-esc="b.name"/>
+          <div t-foreach="b.rows" t-as="r" t-key="r.field_id"
+               t-attf-class="rd-rev-row {{ r.status }}">
+            <span class="fd" t-esc="r.field_label"/>
+            <span class="ov" t-esc="r.old_label or '—'"/>
+            <span class="ar"><t t-out="ic('arrow',13)"/></span>
+            <span class="nv" t-esc="r.new_label or '—'"/>
+            <span t-if="r.status === 'refused'" class="wy" t-esc="r.why"/>
+          </div>
+        </div>
+
+      </t>
+    </div>
+  </t>
+
+  <!-- =================================================================
        R3 — a file arrives. The depth counter lives in the component; this
        template only says what the two states look like.
        ================================================================= -->
@@ -103,6 +148,78 @@
         <t t-out="ic('download',16)"/> <span t-esc="overLabel"/>
       </div>
     </div>
+  </t>
+
+  <!-- =================================================================
+       R4 D3 — out to a file and back from one, in the space there is.
+
+       Wide, the two directions stand side by side: an Export split button and
+       a drop zone you can also click. Under 1440px the same three commands are
+       one File menu, because the header's last inch belongs to Review — the
+       only button on this screen that writes anything. Dropping a file
+       anywhere over the grid works at every width either way.
+       ================================================================= -->
+  <t t-name="pb_records.RdFileMenu">
+    <t t-if="props.narrow">
+      <div class="rd-filemenu">
+        <button type="button" class="pbim-btn ghost rd-filemenu-btn"
+                t-att-title="'Export or import a file'"
+                t-on-click.stop="toggle">
+          <t t-if="props.exporting or props.busy"><span class="pbim-spin sm"/></t>
+          <t t-else="" t-out="ic('file',15)"/>
+          <span t-esc="fileLabel"/>
+          <t t-out="ic('chevronDown',13)"/>
+        </button>
+        <div t-if="state.open" class="rd-scheme-menu" t-on-click.stop="">
+          <button type="button" t-on-click="() => this.pickExport('data')">
+            <span class="nm">Export with data</span>
+            <span class="ct" t-esc="props.countLabel"/>
+          </button>
+          <button type="button" t-on-click="() => this.pickExport('template')">
+            <span class="nm">Export blank template</span>
+            <span class="ct">headings only</span>
+          </button>
+          <div class="rd-menu-sep"/>
+          <label class="rd-filemenu-up">
+            <span class="nm">Import a file</span>
+            <span class="ct">.xlsx or .csv</span>
+            <input type="file" accept=".xlsx,.xlsm,.csv" t-on-change="onPick"
+                   style="display:none"/>
+          </label>
+        </div>
+      </div>
+    </t>
+    <t t-else="">
+      <div class="rd-filepair">
+      <div class="rd-export">
+        <button type="button" class="pbim-btn ghost"
+                t-att-disabled="props.exporting"
+                t-on-click.stop="() => this.pickExport('data')"
+                t-att-title="'Download the people and columns on screen'">
+          <t t-if="props.exporting"><span class="pbim-spin sm"/></t>
+          <t t-else="" t-out="ic('download',15)"/>
+          <t t-esc="exportLabel"/>
+        </button>
+        <button type="button" class="pbim-btn ghost rd-export-more"
+                t-att-title="'More ways to export'"
+                t-on-click.stop="toggle">
+          <t t-out="ic('chevronDown',13)"/>
+        </button>
+        <div t-if="state.open" class="rd-scheme-menu" t-on-click.stop="">
+          <button type="button" t-on-click="() => this.pickExport('data')">
+            <span class="nm">Export with data</span>
+            <span class="ct" t-esc="props.countLabel"/>
+          </button>
+          <button type="button" t-on-click="() => this.pickExport('template')">
+            <span class="nm">Export blank template</span>
+            <span class="ct">headings only</span>
+          </button>
+        </div>
+      </div>
+      <RdDropZone onFile="props.onFile" busy="props.busy"
+                  busyLabel="props.busyLabel"/>
+      </div>
+    </t>
   </t>
 
   <!-- =================================================================
@@ -130,22 +247,12 @@
           <t t-out="ic('users',13)"/> <span t-esc="matchedByLine"/>
           <t t-if="blankLine"> <span t-esc="blankLine"/></t>
         </div>
-        <div t-if="!people.length" class="rd-empty sm">
+        <div t-if="!rows.length" class="rd-empty sm">
           <span class="rd-empty-ic"><t t-out="ic('checkCircle',22)"/></span>
           <h3>Nothing to change</h3>
           <p t-esc="emptyChanges"/>
         </div>
-        <div t-foreach="people" t-as="p" t-key="p.id" class="rd-rev-person">
-          <div class="rd-rev-name" t-esc="p.name"/>
-          <div t-foreach="p.rows" t-as="r" t-key="r.field_id"
-               t-attf-class="rd-rev-row {{ r.status }}">
-            <span class="fd" t-esc="r.field_label"/>
-            <span class="ov" t-esc="r.old_label or '—'"/>
-            <span class="ar"><t t-out="ic('arrow',13)"/></span>
-            <span class="nv" t-esc="r.new_label or '—'"/>
-            <span t-if="r.status === 'refused'" class="wy" t-esc="r.why"/>
-          </div>
-        </div>
+        <RdReviewList t-if="rows.length" items="props.items"/>
       </div>
 
       <!-- ================================================ found nobody -->
@@ -392,34 +499,13 @@
               </div>
             </div>
             <!-- R3 — out to a file, and back from one. Side by side, because
-                 they are one gesture with two directions. -->
-            <div class="rd-export">
-              <button type="button" class="pbim-btn ghost"
-                      t-att-disabled="state.exporting"
-                      t-on-click.stop="() => this.exportFile('data')"
-                      t-att-title="'Download the people and columns on screen'">
-                <t t-if="state.exporting"><span class="pbim-spin sm"/></t>
-                <t t-else="" t-out="ic('download',15)"/>
-                <t t-esc="exportLabel"/>
-              </button>
-              <button type="button" class="pbim-btn ghost rd-export-more"
-                      t-att-title="'More ways to export'"
-                      t-on-click.stop="toggleExportMenu">
-                <t t-out="ic('chevronDown',13)"/>
-              </button>
-              <div t-if="state.exportOpen" class="rd-scheme-menu" t-on-click.stop="">
-                <button type="button" t-on-click="() => this.exportFile('data')">
-                  <span class="nm">Export with data</span>
-                  <span class="ct" t-esc="exportCountLabel"/>
-                </button>
-                <button type="button" t-on-click="() => this.exportFile('template')">
-                  <span class="nm">Export blank template</span>
-                  <span class="ct">headings only</span>
-                </button>
-              </div>
-            </div>
-            <RdDropZone onFile.bind="takeFile" busy="state.file.busy"
-                        busyLabel="state.file.name"/>
+                 they are one gesture with two directions.
+                 R4 D3 — and under 1440px they are one FILE menu instead, so
+                 Review never has to compete with them for the last inch. -->
+            <RdFileMenu narrow="state.narrow" exporting="state.exporting"
+                        busy="state.file.busy" busyLabel="state.file.name"
+                        countLabel="exportCountLabel"
+                        onExport.bind="exportFile" onFile.bind="takeFile"/>
             <button type="button" class="pbim-btn ghost" t-on-click="openHistory">
               <t t-out="ic('clock',15)"/> History
             </button>
@@ -605,19 +691,9 @@
             <div t-if="state.previewing" class="pbim-busy sm">
               <div class="pbim-spin"/><span>Checking…</span>
             </div>
-            <div t-foreach="reviewGroups" t-as="p" t-key="p.id" class="rd-rev-person">
-              <div class="rd-rev-name" t-esc="p.name"/>
-              <div t-foreach="p.rows" t-as="r" t-key="r.field_id"
-                   t-attf-class="rd-rev-row {{ r.status }}">
-                <span class="fd" t-esc="r.field_label"/>
-                <span class="ov" t-esc="r.old_label or '—'"/>
-                <span class="ar"><t t-out="ic('arrow',13)"/></span>
-                <span class="nv" t-esc="r.new_label or '—'"/>
-                <span t-if="r.status === 'refused'" class="wy" t-esc="r.why"/>
-              </div>
-            </div>
+            <RdReviewList items="state.preview.items"/>
           </div>
-          <div class="rd-drawer-f">
+          <div class="rd-drawer-f" t-attf-style="padding-bottom:{{ 14 + state.footSafe }}px">
             <input type="text" class="rd-note" t-att-value="state.note" t-on-input="onNote"
                    placeholder="Why? optional — shows in History"/>
             <button type="button" class="pbim-btn primary" t-att-disabled="!canApply or state.applying"
@@ -644,8 +720,11 @@
             <button type="button" t-on-click="closeFile"><t t-out="ic('x',16)"/></button>
           </div>
           <div class="rd-drawer-b">
+            <!-- R4 D6 — a veil with a real sentence. The row count comes back
+                 from a first, cheap call, so the wait says how big the job is
+                 instead of only that there is one. -->
             <div t-if="state.file.busy" class="pbim-busy sm">
-              <div class="pbim-spin"/><span>Reading <t t-esc="state.file.name"/>…</span>
+              <div class="pbim-spin"/><span t-esc="fileBusyLine"/>
             </div>
             <t t-else="">
               <div t-if="state.file.error" class="rd-file-note warn big">
@@ -670,7 +749,7 @@
                             onBind.bind="bindRow"/>
             </t>
           </div>
-          <div class="rd-drawer-f">
+          <div class="rd-drawer-f" t-attf-style="padding-bottom:{{ 14 + state.footSafe }}px">
             <input type="text" class="rd-note" t-att-value="state.note"
                    t-on-input="onNote"
                    t-att-placeholder="filePlaceholder"/>

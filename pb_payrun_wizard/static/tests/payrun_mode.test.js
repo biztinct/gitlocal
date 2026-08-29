@@ -17,6 +17,10 @@ import {
     MODE_UPDATE,
     nextSheetMode,
     SHEET_MODES,
+    exceptionNames,
+    importDoor,
+    notInPayobookHeading,
+    splitExceptions,
 } from "@pb_payrun_wizard/js/payrun_wizard";
 
 describe.current.tags("headless");
@@ -67,4 +71,71 @@ test("attach_spreadsheet is called with the mode as its 7th argument", () => {
     expect(once.slice(0, 6)).toEqual(base);
     expect(update[6]).toBe(false);
     expect(once[6]).toBe(true);
+});
+
+// =====================================================================
+//  RECORDS R4 — D4: "not in Payobook yet" is one fact, not N exceptions
+//
+//  The Review step used to list every unmatched row beside every other
+//  exception, which made thirty rows read as thirty problems. They are one
+//  problem with one next step, and the next step is the door that ADDS people
+//  — never the Records Desk, which has nothing to edit for somebody who does
+//  not exist yet.
+// =====================================================================
+
+test("the unmatched rows come out of the flat list exactly once", () => {
+    // `attach_spreadsheet` returns them BOTH ways: inside `errors` (which the
+    // flat list has always shown) and separately so they can be counted. A row
+    // that appeared in both would be a person flagged twice.
+    const unmatched = [
+        { emp: "R1 Nobody", why: "This person is not in Payobook yet." },
+        { emp: "R2 Nobody", why: "This person is not in Payobook yet." },
+    ];
+    const exceptions = [
+        ...unmatched,
+        { emp: "Real Person", why: "Net is negative." },
+    ];
+    const split = splitExceptions(exceptions, unmatched);
+    expect(split.missing).toHaveLength(2);
+    expect(split.rest).toHaveLength(1);
+    expect(split.rest[0].emp).toBe("Real Person");
+});
+
+test("nothing unmatched leaves the exception list exactly as it was", () => {
+    const exceptions = [{ emp: "Real Person", why: "Net is zero." }];
+    const split = splitExceptions(exceptions, []);
+    expect(split.missing).toEqual([]);
+    expect(split.rest).toEqual(exceptions);
+    // …and a run with no file at all is still the empty case, not a crash.
+    expect(splitExceptions(undefined, undefined).rest).toEqual([]);
+});
+
+test("the heading counts the people and says what happened to them", () => {
+    expect(notInPayobookHeading(1)).toBe(
+        "1 person in the file is not in Payobook yet — they were listed, not paid");
+    expect(notInPayobookHeading(30)).toBe(
+        "30 people in the file are not in Payobook yet — they were listed, not paid");
+    // and never names the engine (white-label rule)
+    for (const n of [1, 30]) {
+        expect(notInPayobookHeading(n).toLowerCase().includes("odoo")).toBe(false);
+    }
+});
+
+test("the 'Add these people' door is offered only where it exists", () => {
+    const registered = { contains: (key) => key === "pb_import_wizard" };
+    const bare = { contains: () => false };
+    expect(importDoor(registered)).toBe("pb_import_wizard.action_pb_import_wizard");
+    expect(importDoor(bare)).toBe("");
+    // A registry that throws is a database without the door, not a crash on
+    // the Review step of a finished pay run.
+    expect(importDoor({ contains: () => { throw new Error("nope"); } })).toBe("");
+    expect(importDoor(null)).toBe("");
+});
+
+test("Copy names copies the names, one per line", () => {
+    expect(exceptionNames([{ emp: "A One" }, { emp: "B Two" }]))
+        .toBe("A One\nB Two");
+    // A row that named nobody has no name to copy and does not leave a blank.
+    expect(exceptionNames([{ emp: "" }, { emp: "B Two" }])).toBe("B Two");
+    expect(exceptionNames([])).toBe("");
 });

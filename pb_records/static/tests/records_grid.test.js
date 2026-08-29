@@ -15,7 +15,7 @@
  */
 import { describe, expect, test } from "@odoo/hoot";
 import { animationFrame } from "@odoo/hoot-mock";
-import { press, queryAll, queryAllTexts, queryFirst } from "@odoo/hoot-dom";
+import { click, press, queryAll, queryAllTexts, queryFirst } from "@odoo/hoot-dom";
 import { mountWithCleanup, patchTranslations } from "@web/../tests/web_test_helpers";
 import { defineMailModels } from "@mail/../tests/mail_test_helpers";
 
@@ -25,8 +25,12 @@ import {
     clearSelection, selectLoaded, initialsOf,
 } from "@pb_records/js/records_grid";
 import {
-    RdDropZone, RdFileReview, fileApplyLabel, fileSummaryLine,
+    RdDropZone, RdFileMenu, RdFileReview, fileApplyLabel, fileSummaryLine,
+    isNarrow, readingLine,
 } from "@pb_records/js/records_import";
+import {
+    RdReviewList, footerReserve, isOnTop, reviewBlocks, GROUP_MIN, SAFE_GAP,
+} from "@pb_records/js/records_review";
 
 describe.current.tags("desktop");
 
@@ -511,4 +515,221 @@ test("an unmatched row offers to be matched by hand, and nothing else", async ()
     // The typeahead is not on screen until it is asked for — an unmatched row
     // is a fact first and a task second.
     expect(queryAll(".rd-picker")).toHaveLength(0);
+});
+
+// =====================================================================
+//  R4 — the defect round
+//
+//  Four of the six defects are decisions the client makes with what the
+//  server already said: how the review list FOLDS (D2), how far the drawer's
+//  footer must stay off the corner (D1), which header layout a width gets
+//  (D3), and what the veil says while a file is being read (D6). All four are
+//  pure functions or one-prop components, and all four are asserted here.
+// =====================================================================
+
+/** N people, all given the identical change. */
+function bulkItems(count, extra = {}) {
+    const out = [];
+    for (let i = 1; i <= count; i++) {
+        out.push({
+            emp_id: i, emp_name: `Person ${i}`,
+            field_id: "f:hr.contract:shuipart", field_label: "SHUI participation",
+            old_label: "YES", new_label: "NO", status: "ok", why: "",
+            ...extra,
+        });
+    }
+    return out;
+}
+
+test("140 people with the identical change are one row, not 140", async () => {
+    const blocks = reviewBlocks(bulkItems(140));
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].type).toBe("group");
+    expect(blocks[0].count).toBe(140);
+    expect(blocks[0].names).toHaveLength(140);
+    expect(blocks[0].field_label).toBe("SHUI participation");
+    expect(blocks[0].old_label).toBe("YES");
+    expect(blocks[0].new_label).toBe("NO");
+});
+
+test("three is the threshold, and two people stay two people", async () => {
+    expect(GROUP_MIN).toBe(3);
+    expect(reviewBlocks(bulkItems(2)).map((b) => b.type))
+        .toEqual(["person", "person"]);
+    expect(reviewBlocks(bulkItems(3)).map((b) => b.type)).toEqual(["group"]);
+});
+
+test("mixed changes stay per person, beside the group they are not in", async () => {
+    const mixed = [
+        ...bulkItems(3),
+        { emp_id: 90, emp_name: "Odd One", field_id: "f:hr.employee:job_title",
+          field_label: "Job title", old_label: "Operator", new_label: "Line Lead",
+          status: "ok", why: "" },
+        { emp_id: 91, emp_name: "Other One", field_id: "f:hr.employee:job_title",
+          field_label: "Job title", old_label: "Fitter", new_label: "Line Lead",
+          status: "ok", why: "" },
+    ];
+    const blocks = reviewBlocks(mixed);
+    expect(blocks.map((b) => b.type)).toEqual(["group", "person", "person"]);
+    // A row that is already set is not a change and is in neither shape.
+    const withSame = reviewBlocks([
+        ...mixed,
+        { emp_id: 92, emp_name: "Same One", field_id: "f:hr.employee:job_title",
+          field_label: "Job title", old_label: "Fitter", new_label: "Fitter",
+          status: "same", why: "" },
+    ]);
+    expect(withSame).toHaveLength(3);
+});
+
+test("a refusal folds separately from an accepted change of the same shape", async () => {
+    const blocks = reviewBlocks([
+        ...bulkItems(4),
+        ...bulkItems(3, { status: "refused", why: "Not one of the choices." })
+            .map((i, n) => ({ ...i, emp_id: 500 + n, emp_name: `Bad ${n}` })),
+    ]);
+    expect(blocks).toHaveLength(2);
+    expect(blocks.map((b) => b.status)).toEqual(["ok", "refused"]);
+    expect(blocks[1].why).toBe("Not one of the choices.");
+});
+
+test("the folded list renders one group row that opens to the names", async () => {
+    patchTranslations();
+    await mountWithCleanup(RdReviewList, { props: { items: bulkItems(140) } });
+    expect(queryAll(".rd-rev-grp")).toHaveLength(1);
+    expect(queryAll(".rd-rev-row")).toHaveLength(0);
+    expect(queryAllTexts(".rd-rev-grp-head .ct")[0]).toBe("140 people");
+    expect(queryAll(".rd-rev-grp-names")).toHaveLength(0);
+
+    // The head is a real `<button>` carrying `aria-expanded`, which is what
+    // makes Enter and Space work without a key handler of its own — and a
+    // second handler beside the native one would fire the toggle twice
+    // (RD14's lesson, met from the other side). So what is pinned here is the
+    // element and the state it advertises; the browser supplies the keys, and
+    // the live walk is where that is watched happening.
+    expect(queryFirst(".rd-rev-grp-head").tagName).toBe("BUTTON");
+    expect(queryFirst(".rd-rev-grp-head").getAttribute("aria-expanded"))
+        .toBe("false");
+
+    await click(".rd-rev-grp-head");
+    await animationFrame();
+    expect(queryAll(".rd-rev-grp-names")).toHaveLength(1);
+    expect(queryFirst(".rd-rev-grp-head").getAttribute("aria-expanded"))
+        .toBe("true");
+    expect(queryAllTexts(".rd-rev-grp-names")[0].includes("Person 140"))
+        .toBe(true);
+
+    await click(".rd-rev-grp-head");
+    await animationFrame();
+    expect(queryAll(".rd-rev-grp-names")).toHaveLength(0);
+});
+
+test("three mixed changes render three rows and no group", async () => {
+    patchTranslations();
+    const items = [
+        { emp_id: 1, emp_name: "One", field_id: "f:hr.employee:job_title",
+          field_label: "Job title", old_label: "A", new_label: "B",
+          status: "ok", why: "" },
+        { emp_id: 2, emp_name: "Two", field_id: "f:hr.employee:job_title",
+          field_label: "Job title", old_label: "C", new_label: "D",
+          status: "ok", why: "" },
+        { emp_id: 3, emp_name: "Three", field_id: "f:hr.contract:shuipart",
+          field_label: "SHUI participation", old_label: "YES", new_label: "NO",
+          status: "ok", why: "" },
+    ];
+    await mountWithCleanup(RdReviewList, { props: { items } });
+    expect(queryAll(".rd-rev-row")).toHaveLength(3);
+    expect(queryAll(".rd-rev-grp")).toHaveLength(0);
+    expect(queryAllTexts(".rd-rev-name")).toEqual(["One", "Two", "Three"]);
+});
+
+test("the drawer footer clears whatever floats over the corner", async () => {
+    // A pill 48px tall sitting 24px off the bottom of a 900px window, inside
+    // the drawer's own column (the drawer is 466px wide, right-aligned in a
+    // 1600px viewport).
+    const view = { height: 900, left: 1134, right: 1600 };
+    const pill = { left: 1470, right: 1576, top: 828, bottom: 876 };
+    const reserve = footerReserve([pill], view);
+    expect(reserve).toBe(900 - 828 + SAFE_GAP);
+    // …and the Apply button therefore starts above the pill's top edge.
+    expect(reserve).toBeGreaterThan(view.height - pill.top);
+
+    // Two stacked controls reserve down from the HIGHER one, once.
+    const coach = { left: 1450, right: 1576, top: 736, bottom: 786 };
+    expect(footerReserve([pill, coach], view)).toBe(900 - 736 + SAFE_GAP);
+
+    // Nothing there, nothing reserved — the drawer does not pad itself for a
+    // control that is not installed.
+    expect(footerReserve([], view)).toBe(0);
+    // A control somewhere else on screen is not in the way.
+    expect(footerReserve([{ left: 10, right: 120, top: 828, bottom: 876 }],
+                         view)).toBe(0);
+});
+
+test("a control the drawer covers reserves nothing", async () => {
+    // The two corner helpers stack differently — the copilot pill paints over
+    // the drawer, the coach launcher sits under it — and reserving for the
+    // covered one would push Apply up to clear something nobody can see. The
+    // browser is asked, at the control's own centre.
+    const box = { left: 1470, right: 1576, top: 828, bottom: 876,
+                  width: 106, height: 48 };
+    const pill = { getBoundingClientRect: () => box, contains: () => false };
+    const overIt = { contains: () => false };
+    expect(isOnTop(pill, { elementFromPoint: () => pill })).toBe(true);
+    expect(isOnTop(pill, { elementFromPoint: () => overIt })).toBe(false);
+    // A control with no box on screen is not on top of anything.
+    const gone = { getBoundingClientRect: () => ({ left: 0, right: 0, top: 0,
+                                                   bottom: 0, width: 0, height: 0 }),
+                   contains: () => false };
+    expect(isOnTop(gone, { elementFromPoint: () => gone })).toBe(false);
+});
+
+test("under 1440 the header is one File menu, and at 1440 it is not", async () => {
+    expect(isNarrow(1280)).toBe(true);
+    expect(isNarrow(1439)).toBe(true);
+    expect(isNarrow(1440)).toBe(false);
+    expect(isNarrow(1600)).toBe(false);
+    expect(isNarrow(1920)).toBe(false);
+});
+
+test("the narrow header offers all three file commands in one menu", async () => {
+    patchTranslations();
+    const seen = [];
+    await mountWithCleanup(RdFileMenu, {
+        props: {
+            narrow: true, countLabel: "3 people",
+            onExport: (mode) => seen.push(mode), onFile: () => {},
+        },
+    });
+    expect(queryAll(".rd-filemenu")).toHaveLength(1);
+    // The split button and the drop zone are the WIDE layout, and they are not
+    // also here — one control per command, never two.
+    expect(queryAll(".rd-export")).toHaveLength(0);
+    expect(queryAll(".rd-drop")).toHaveLength(0);
+
+    await click(".rd-filemenu-btn");
+    await animationFrame();
+    expect(queryAllTexts(".rd-scheme-menu .nm"))
+        .toEqual(["Export with data", "Export blank template", "Import a file"]);
+    await click(".rd-scheme-menu button");
+    await animationFrame();
+    expect(seen).toEqual(["data"]);
+});
+
+test("the wide header keeps the split button beside the drop zone", async () => {
+    patchTranslations();
+    await mountWithCleanup(RdFileMenu, {
+        props: { narrow: false, countLabel: "3 people",
+                 onExport: () => {}, onFile: () => {} },
+    });
+    expect(queryAll(".rd-export")).toHaveLength(1);
+    expect(queryAll(".rd-drop")).toHaveLength(1);
+    expect(queryAll(".rd-filemenu")).toHaveLength(0);
+});
+
+test("the veil says how big the job is as soon as it knows", async () => {
+    patchTranslations();
+    expect(readingLine("march.xlsx", 0)).toBe("Reading march.xlsx…");
+    expect(readingLine("march.xlsx", 4512))
+        .toBe("Matching 4,512 rows to people…");
+    expect(readingLine("march.xlsx", 1)).toBe("Matching 1 row to people…");
 });

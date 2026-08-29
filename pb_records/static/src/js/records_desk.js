@@ -22,7 +22,9 @@
  * in `arrivalParams`, because a deep link into the desk is R3's whole door and
  * a surface that only works inside one host is a surface that has to be forked.
  */
-import { Component, useState, onWillStart, useExternalListener } from "@odoo/owl";
+import {
+    Component, useState, onWillStart, onMounted, onPatched, useExternalListener,
+} from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -32,14 +34,18 @@ import {
     RecordsGrid, createGridState, dirtyCount, setForRows, clearSelection, PAGE,
 } from "@pb_records/js/records_grid";
 import {
-    RdDropZone, RdFileReview, fileApplyLabel, fileSummaryLine,
+    RdFileMenu, RdFileReview, fileApplyLabel, fileSummaryLine,
+    isNarrow, readingLine,
 } from "@pb_records/js/records_import";
+import { RdReviewList, grouped, measureReserve } from "@pb_records/js/records_review";
 
 const FIELDS_KEY = (configId) => `pb_records.fields.${configId}`;
 
 export class PbRecordsDesk extends Component {
     static template = "pb_records.PbRecordsDesk";
-    static components = { RecordsGrid, RdCellEditor, RdDropZone, RdFileReview };
+    static components = {
+        RecordsGrid, RdCellEditor, RdFileMenu, RdFileReview, RdReviewList,
+    };
     static props = { "*": true };
 
     setup() {
@@ -81,7 +87,6 @@ export class PbRecordsDesk extends Component {
             stripOpen: true,
             pulse: false,
             // --------------------------------------------------------- R3
-            exportOpen: false,      // the Export split button's menu
             exporting: "",          // "data" | "template" while building
             dragging: false,        // a file is over the desk
             // The dropped file, from `import_peek` — read, never written.
@@ -89,7 +94,15 @@ export class PbRecordsDesk extends Component {
                 open: false, name: "", busy: false, error: "", empty: false,
                 summary: null, changes: [], items: [], unmatched: [],
                 identity: "", wrongScheme: false, truncated: false,
+                rows: 0,            // R4 D6 — what the cheap first call counted
             },
+            // --------------------------------------------------------- R4
+            // The header folds its file controls under 1440px (D3), and the
+            // drawer footer keeps clear of whatever floats over the corner
+            // (D1). Both are measurements, so both live in state rather than
+            // in a media query the JS cannot read back.
+            narrow: isNarrow(window.innerWidth),
+            footSafe: 0,
         });
 
         this.grid = useState(createGridState());
@@ -99,7 +112,6 @@ export class PbRecordsDesk extends Component {
 
         useExternalListener(window, "click", () => {
             this.state.schemeOpen = false;
-            this.state.exportOpen = false;
             this.grid.menu = -1;
         });
         // Apply on Cmd/Ctrl-Enter, from anywhere in the drawer. A review a
@@ -111,7 +123,33 @@ export class PbRecordsDesk extends Component {
             else if (this.state.review) { ev.preventDefault(); this.apply(); }
         });
 
+        // R4 — the header layout and the footer's safe area are both facts
+        // about the window, and both change without the desk being touched.
+        useExternalListener(window, "resize", () => {
+            this.state.narrow = isNarrow(window.innerWidth);
+            this.measureFooter();
+        });
+        onMounted(() => this.measureFooter());
+        // A drawer that has just opened is a drawer whose footer has just
+        // arrived; measure it once it is in the DOM, not before.
+        onPatched(() => this.measureFooter());
+
         onWillStart(async () => { await this.boot(); });
+    }
+
+    /**
+     * How far the drawer's footer must sit above the bottom of the screen.
+     *
+     * The copilot pill and the coach launcher are fixed to the same corner the
+     * drawer is, they belong to other modules, and neither may be moved from
+     * here — so the drawer, which arrived last, makes room. Measured live
+     * because the stack is one control on some tenants and three on others,
+     * and a guessed constant is a guess that ages badly (RD35).
+     */
+    measureFooter() {
+        const open = this.state.review || this.state.file.open;
+        const safe = open ? measureReserve() : 0;
+        if (safe !== this.state.footSafe) { this.state.footSafe = safe; }
     }
 
     ic(n, s = 16) { return ic(n, s); }
@@ -355,7 +393,9 @@ export class PbRecordsDesk extends Component {
      * sentence that cannot count is a sentence they stop trusting. Every
      * counted string on this surface goes through here.
      */
-    n(count, one, many) { return count === 1 ? _t(one) : _t(many, count); }
+    n(count, one, many) {
+        return count === 1 ? _t(one) : _t(many, grouped(count));
+    }
 
     get reviewLabel() {
         const c = this.counts;
@@ -366,7 +406,7 @@ export class PbRecordsDesk extends Component {
     get matchLine() {
         const n = this.grid.total;
         if (n === 1) { return _t("1 person matches"); }
-        return _t("%s people match", n);
+        return _t("%s people match", grouped(n));
     }
 
     /**
@@ -494,18 +534,6 @@ export class PbRecordsDesk extends Component {
 
     closeReview() { this.state.review = false; }
 
-    get reviewGroups() {
-        const byPerson = new Map();
-        for (const item of this.state.preview.items) {
-            if (item.status === "same") { continue; }
-            if (!byPerson.has(item.emp_id)) {
-                byPerson.set(item.emp_id, { id: item.emp_id, name: item.emp_name, rows: [] });
-            }
-            byPerson.get(item.emp_id).rows.push(item);
-        }
-        return [...byPerson.values()];
-    }
-
     get reviewSummary() {
         const c = this.state.preview.counts || {};
         const parts = [
@@ -515,14 +543,15 @@ export class PbRecordsDesk extends Component {
         if (c.refused) {
             parts.push(this.n(c.refused, "1 needs a look", "%s need a look"));
         }
-        if (c.same) { parts.push(_t("%s already set", c.same)); }
+        if (c.same) { parts.push(_t("%s already set", grouped(c.same))); }
         return parts.join(" · ");
     }
 
     get applyLabel() {
         const c = this.state.preview.counts || {};
         if (c.refused) {
-            return _t("Apply %(ok)s · leave %(bad)s", { ok: c.ok || 0, bad: c.refused });
+            return _t("Apply %(ok)s · leave %(bad)s",
+                      { ok: grouped(c.ok || 0), bad: grouped(c.refused) });
         }
         return this.n(c.ok || 0, "Apply 1 change", "Apply %s changes");
     }
@@ -644,7 +673,6 @@ export class PbRecordsDesk extends Component {
      * read the same rows (the `pb_people.bulkExport` precedent).
      */
     async exportFile(mode) {
-        this.state.exportOpen = false;
         if (this.state.exporting) { return; }
         if (!this.state.picked.length) {
             this.notif.add(
@@ -716,8 +744,6 @@ export class PbRecordsDesk extends Component {
         URL.revokeObjectURL(url);
     }
 
-    toggleExportMenu() { this.state.exportOpen = !this.state.exportOpen; }
-
     // ------------------------------------------------------------- dropping
     onDeskDragOver(ev) {
         if (!ev.dataTransfer || !(ev.dataTransfer.types || []).includes("Files")) {
@@ -750,6 +776,14 @@ export class PbRecordsDesk extends Component {
      * Nothing is written by this: `import_peek` parses, matches and calls the
      * same `preview_changes` the grid calls. The drawer that opens is the
      * review drawer, in file mode.
+     *
+     * TWO calls, one veil (R4 D6). `import_probe` is a parse and a count and
+     * nothing else — no matching, no preview — so it answers in a moment and
+     * the wait can say how big the job is: *"Matching 4,512 rows to people…"*.
+     * A progress STREAM would be the over-engineered answer to the same
+     * question; a sentence with the real number in it is the honest one. The
+     * probe is advisory: if it fails, the peek still runs and the veil simply
+     * keeps saying "Reading …".
      */
     takeFile(file) {
         if (!file) { return; }
@@ -758,7 +792,7 @@ export class PbRecordsDesk extends Component {
         Object.assign(f, {
             open: true, busy: true, error: "", name: file.name, empty: false,
             summary: null, changes: [], items: [], unmatched: [],
-            identity: "", wrongScheme: false, truncated: false,
+            identity: "", wrongScheme: false, truncated: false, rows: 0,
         });
         this.state.note = "";
         const reader = new FileReader();
@@ -770,6 +804,11 @@ export class PbRecordsDesk extends Component {
         reader.onload = async () => {
             const b64 = String(reader.result).split(",")[1] || "";
             try {
+                const probe = await this.orm.call(
+                    "pb.records.desk", "import_probe", [], {
+                        file_b64: b64, filename: file.name,
+                    }).catch(() => null);
+                if (probe && probe.ok && f.busy) { f.rows = probe.rows || 0; }
                 const res = await this.orm.call(
                     "pb.records.desk", "import_peek", [], {
                         config_id: this.state.configId,
@@ -812,9 +851,14 @@ export class PbRecordsDesk extends Component {
 
     get fileSummaryLine() {
         const f = this.state.file;
-        if (f.busy) { return _t("Reading %s…", f.name); }
+        if (f.busy) { return readingLine(f.name, f.rows); }
         if (f.error) { return f.error; }
         return fileSummaryLine(f.summary || {});
+    }
+
+    /** The veil's own sentence — the same one, so the two never disagree. */
+    get fileBusyLine() {
+        return readingLine(this.state.file.name, this.state.file.rows);
     }
 
     get fileApplyLabel() { return fileApplyLabel(this.state.file.summary || {}); }
@@ -929,12 +973,6 @@ export class PbRecordsDesk extends Component {
     }
 
     // ---------------------------------------------------------------- copy
-    get exportLabel() {
-        return this.state.exporting === "template"
-            ? _t("Building…")
-            : this.state.exporting ? _t("Building…") : _t("Export");
-    }
-
     get exportCountLabel() {
         return this.n(this.grid.total, "1 person", "%s people");
     }

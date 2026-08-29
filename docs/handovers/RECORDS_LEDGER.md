@@ -250,3 +250,127 @@ every single time.
     DO), so a file keyed on it lists that row as "2 people carry the code … — this row cannot say
     which one" rather than guessing. Correct behaviour, and the round trip is how it was found.
     **Owner debt: one of those two codes is wrong.**
+
+### R4 (2026-08-29)
+
+35. **Two floating helpers, two stacking answers — so reserve space only for what
+    is actually PAINTED on top.** The desk's drawer is fixed to the bottom-right
+    corner and so are the copilot pill (`.payai-floating-pill`) and the coach
+    launcher (`.lrn-fab`, "Stuck?"), both owned by other modules. They stack
+    differently: the pill is drawn ABOVE the drawer and stays clickable through
+    it; the launcher sits below and the drawer simply covers it. Reserving a
+    bottom safe area for both pushed the Apply button 168px off the bottom to
+    clear a control nobody could see. `measureReserve` therefore filters the
+    named list through `isOnTop` — `elementFromPoint` at the control's own
+    centre, MJ7's disproof used as the rule rather than as a check — and
+    reserves 108px, which is the pill and the pill only. Measured, never
+    guessed: the stack is two controls on this tenant and three on one that
+    still has the retired tour launcher.
+36. **A `margin-left: -1px` between the two halves of a split button IS an
+    overlap of two clickable boxes, and the sweep is right to say so.** The
+    Export button and its chevron drew their shared seam by putting one on top
+    of the other; a click in that 1px column hits the chevron. Draw the seam
+    with the FIRST button's right border and `border-left: none` on the second
+    — identical to look at, and the R4 sweep goes from one overlap to zero.
+37. **A synthetic `KeyboardEvent` never activates a `<button>`.** Only a
+    TRUSTED key event makes the browser synthesise the click, so
+    `el.dispatchEvent(new KeyboardEvent("keydown", {key: "Enter"}))` on a
+    focused button does nothing at all and reads as "the keyboard does not
+    work". A hoot test therefore pins the ELEMENT (a real `<button>` carrying
+    `aria-expanded`) and its state, never the key; the keys are proved in the
+    live walk with Chrome-MCP `press_key`, which goes through CDP and is
+    trusted. (Confirmed on the desk: Enter opens the group, Space closes it,
+    and focus survives the OWL re-render.)
+38. **A second key handler beside a native button's own is a double toggle.**
+    RD14 said an editor's `keydown` must `stopPropagation` or the grid re-reads
+    the key; the same fact from the other side says a `<button>` needs NO
+    `keydown` handler for Enter/Space, and adding one fires the action twice.
+39. **`res.company.create` is refused on the golden template database** —
+    `ValidationError: You must have at least an administrator user.`, the same
+    constraint W159 met through `res.users.create`, reached this time because
+    creating a company writes the creator's `company_ids`. There is no
+    precedent in this repo for creating one there, so the company-scoping case
+    walks a ladder — create, else borrow an existing second company, else
+    `skipTest` naming the reason. A security rail is never deleted to make a
+    run green; a skip says out loud which database cannot test it.
+40. **Chrome-MCP `resize_page` silently does nothing unless that page is the
+    SELECTED tab.** `window.innerWidth` stayed at 1600 through two resizes and
+    a reload, which read as "the breakpoint does not work" — the desk was
+    innocent. `select_page {bringToFront: true}` first, then resize; and always
+    assert `window.innerWidth` before believing a width-dependent screenshot.
+41. **Never read the clipboard back inside `evaluate_script`.**
+    `navigator.clipboard.readText()` waits on a permission prompt that cannot
+    be answered from CDP and the whole call times out (`Runtime.callFunctionOn
+    timed out`), which looks like a hang in the page. Assert the TOAST the copy
+    produced instead — that is what the user sees anyway.
+42. **`?debug=1` puts the live component tree in reach, and that is how a
+    surface that would otherwise require WRITING payroll gets validated
+    read-only.** `odoo.__WOWL_DEBUG__.root` is set only in debug mode; walking
+    `__owl__.children` to the `PayrunWizard` and assigning `state.summary` +
+    `state.step` renders the finished Review step exactly as a real run would,
+    with no run, no payslip and no batch created — which is the only way to
+    walk D4 on abm without breaking the neutrality rail (36 payslips,
+    `7dbeb2df1ff76ab1de11d7e43448d8f4`).
+43. **A source file that `grep` reports no match in, while `sed`/`cat` clearly
+    show the text, has a NUL byte in it.** `file` says `data` rather than
+    "Unicode text", and grep treats the whole file as binary and stays silent —
+    including for the pattern you are checking your own edit with. It happened
+    twice in one session, both times where a template literal's separator
+    should have been (`` `${a} ${b}` `` written out as `` `${a}\x00${b}` ``).
+    Prefer `JSON.stringify([...])` or `[a, b].join("|")` for a composite key,
+    and when grep and your eyes disagree, run `file` before doubting the grep.
+44. **`onPatched` may set state, provided the write is guarded.** The footer's
+    safe area can only be measured once the drawer is in the DOM, so it is
+    measured in `onPatched` — which re-renders, which patches again. The guard
+    is a plain inequality (`if (safe !== this.state.footSafe)`), and the render
+    settles after exactly one extra pass. Without it, the desk spins.
+
+---
+
+## Close-out (2026-08-29)
+
+**The programme is complete.** One-time pay data (R1), the Records Desk (R2),
+the export/import round trip (R3) and the defect round (R4) are live on `abm`,
+`payobook` and `payobook_template`. `acme` is excluded by owner ruling.
+
+**Final module versions**
+
+| Module | Version | Carries |
+|---|---|---|
+| `pb_records` | `19.0.1.2.0` | the desk, the round trip, R4's four client defects + `import_probe` |
+| `pb_payrun_wizard` | `19.0.1.16.0` | the "This run only" mode cards and R4's grouped one-time exceptions |
+| `pb_hr_payroll_formula` | (unchanged by R4) | `one_time` on the batch, R1's `attach_spreadsheet` shape |
+| `pb_formula_studio` | (unchanged by R4) | R3's Journey door |
+
+**The four commits**
+
+| Phase | Commit | Subject |
+|---|---|---|
+| R1 | `6fbbe1b4` | use a pay-data file once without updating records |
+| R2 | `2bc0aee2` | Records Desk — bulk update of the scheme's mapped fields |
+| R3 | `42a43687` | export the desk to Excel and import it back through the same review + apply path |
+| R4 | *(this phase)* | review grouping, apply-button clearance, file menu, one-time exception grouping, template-DB test |
+
+**Owner debts, all still open**
+
+1. **The 16-red pre-existing test set** on the scoped tag run
+   (`/pb_records,/pb_payrun_wizard`, abm): six `TestRunAdoptsThePeriod` and ten
+   `TestSpreadsheetStep`/`TestSyncPlan` errors, every one of them the same
+   fixture cause — `null value in column "code" of relation
+   "hr_integration_endpoint"`. Identical before and after R4. On the wider tag
+   run that also takes `/pb_formula_studio` the set is 26. None is a Records
+   defect and none was touched.
+2. **HR ADMIN's Date of Joining is in the year 24** (`0024-12-01`, RD33). The
+   desk reports `24-12-01 → 0024-12-01` on a full round trip because glibc does
+   not zero-pad `%Y` while `date.isoformat()` does. Applying it writes the same
+   date, so nothing is at risk — but the record is wrong.
+3. **Two abm employees share the id-card number `066196005153`** (one of them
+   LINH DO, RD34), so a file keyed on it refuses that row rather than guessing.
+   One of the two codes is wrong.
+4. **`connector_id` is unset on every scheme** (the standing JOURNEY debt,
+   RD6). An Excel batch therefore produces no `pb_source_ref`, and a file keyed
+   on the source system's own employee code matches nobody. Key live files on
+   `identification_id` until it is set.
+5. **`payobook_template` has no active users**, so it can never be UI-smoked and
+   any suite that creates a user or a company skips there (RD39, W159). It is a
+   database for `-u`, not for personas.

@@ -317,7 +317,8 @@
                                 </p>
                                 <p class="pw-oncebox-sub" t-if="state.summary.sheet.unmatched_count">
                                     <b><t t-esc="state.summary.sheet.unmatched_count"/></b> row(s) were for people
-                                    not in Payobook and were not paid — see Review exceptions.
+                                    not in Payobook yet and were not paid — they are listed together on the
+                                    next step, with a way to add them.
                                 </p>
                             </div>
                         </div>
@@ -332,7 +333,7 @@
                         <div class="pw-statpills" data-coach="pw-pills">
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.count"/><div class="l">Payslips</div></div>
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.computed"/><div class="l">Computed</div></div>
-                            <div class="pw-statpill"><div class="n" t-esc="state.summary.flagged + (state.summary.exceptions ? state.summary.exceptions.length : 0)"/><div class="l">Need review</div></div>
+                            <div class="pw-statpill"><div class="n" t-esc="needReview"/><div class="l">Need review</div></div>
                         </div>
                     </div>
                 </t>
@@ -340,6 +341,36 @@
                 <!-- Step 3 -->
                 <t t-elif="stepKey === 'review' and state.summary">
                     <t t-set="exc" t-value="state.summary.exceptions || []"/>
+                    <!-- RECORDS R4 D4 — the rows that name somebody who is not
+                         in Payobook are ONE fact with one next step, above the
+                         list rather than scattered through it. The door is the
+                         Import screen (which adds people), never the Records
+                         Desk (there is nothing yet to edit). -->
+                    <div t-if="missingPeople.length" class="pw-missing"
+                         data-coach="pw-missing">
+                        <div class="pw-missing-h">
+                            <t t-out="ic('users',15)"/>
+                            <b t-esc="missingHeading"/>
+                        </div>
+                        <p class="pw-muted">
+                            Nobody is created from a pay data file. Add them first
+                            and their pay will come through on the next run.
+                        </p>
+                        <div class="pw-missing-names">
+                            <span t-foreach="missingPeople" t-as="u" t-key="u_index"
+                                  class="pw-missing-chip" t-att-title="u.why"
+                                  t-esc="u.emp"/>
+                        </div>
+                        <div class="pw-missing-acts">
+                            <button t-if="importDoorAction" class="pw-btn primary sm"
+                                    t-on-click="openImportWizard">
+                                <t t-out="ic('upload',14)"/> Add these people
+                            </button>
+                            <button class="pw-btn ghost sm" t-on-click="copyMissingNames">
+                                <t t-out="ic('copy',14)"/> Copy names
+                            </button>
+                        </div>
+                    </div>
                     <t t-if="exc.length or state.summary.flagged">
                         <p class="pw-muted mb">These items need a look before approval:</p>
                         <div class="pw-list" data-coach="pw-exceptions">
@@ -351,7 +382,7 @@
                             </t>
                         </div>
                     </t>
-                    <t t-else="">
+                    <t t-if="!exc.length and !state.summary.flagged and !missingPeople.length">
                         <div class="pw-result"><div class="pw-result-ic ok"><t t-out="ic('check',30)"/></div><h3>No exceptions</h3><p class="pw-muted">All <t t-esc="state.summary.count"/> payslips look clean.</p></div>
                     </t>
                 </t>

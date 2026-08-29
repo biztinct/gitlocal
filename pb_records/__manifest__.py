@@ -46,8 +46,14 @@ it WOULD do, through `preview_changes`; applying it is `apply_changes` with
 `source='import'` — the same whitelist, the same audit row, the same Undo. A
 row that matches nobody is listed and can be bound by hand; it is never turned
 into an employee. A blank cell is left alone, never treated as a clear.
+
+RECORDS phase R4 is the defect round: the review drawer folds a change that
+lands on three or more people into one counted row, the drawer's footer keeps
+clear of the floating helpers other modules pin to the same corner, the header's
+export/import controls fold into one File menu under 1440px, and a dropped file
+says how many rows it is matching while it matches them.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -70,6 +76,7 @@ into an employee. A blank cell is left alone, never treated as a clear.
             'pb_records/static/src/scss/records_desk.scss',
             'pb_records/static/src/js/records_cells.js',
             'pb_records/static/src/js/records_grid.js',
+            'pb_records/static/src/js/records_review.js',
             'pb_records/static/src/js/records_import.js',
             'pb_records/static/src/js/records_desk.js',
             'pb_records/static/src/js/records_palette.js',
