@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Run Payroll Wizard',
     'summary': 'Guided multi-step Run Payroll cockpit (Select period → Compute → Review → Approve)',
-    'version': '19.0.1.13.0',
+    'version': '19.0.1.14.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -21,6 +21,10 @@
             'pb_payrun_wizard/static/src/scss/payrun_wizard.scss',
             'pb_payrun_wizard/static/src/js/payrun_wizard.js',
             'pb_payrun_wizard/static/src/xml/payrun_wizard.xml',
+        ],
+        # Loaded only by /web/tests — never part of the backend bundle.
+        'web.assets_unit_tests': [
+            'pb_payrun_wizard/static/tests/**/*',
         ],
     },
     'installable': True,

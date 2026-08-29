@@ -35,6 +35,15 @@ _logger = logging.getLogger(__name__)
 # call (see `shape_only`); it exists so the merge has something to key on.
 _SHAPE_PROBE = '\x00pb-shape-probe'
 
+# RECORDS R1 — the two refusals a one-time file can hand back, in the words the
+# person reading the exception list needs: what happened, why, and what it cost
+# them (the row was not paid). Module constants so the wizard, the tests and the
+# screen all quote the SAME sentence.
+ONE_TIME_NO_EMPLOYEE = (
+    "Not in Payobook yet — a one-time file saves nothing, so this row was not paid")
+ONE_TIME_NO_CONTRACT = (
+    "No contract to pay against — a one-time file creates none")
+
 
 def json_serializer(obj):
     """Custom JSON serializer for objects not serializable by default json code"""
@@ -269,6 +278,16 @@ class HrPayrollImportBatch(models.Model):
         string='Match by Email',
         default=True,
         help="If code match fails, try matching by email"
+    )
+    # RECORDS R1 — the file feeds ONE pay run and is then forgotten. Default
+    # False everywhere: a batch created by the Import door, an API feed or an
+    # older test behaves exactly as it always has.
+    one_time = fields.Boolean(
+        string="Use these values once",
+        default=False,
+        help="The file feeds this pay run only. Nothing is saved to employee, "
+             "contract or bank records, and no new employees or contracts are "
+             "created."
     )
 
     # Payslip Settings
@@ -1400,6 +1419,9 @@ class HrPayrollImportBatch(models.Model):
         created_employees = self.env['hr.employee']
         created_contracts = self.env['hr.contract']
         created_payslips = self.env['hr.payslip']
+        # RECORDS R1 — read once: the whole batch is one mode, and a flag read
+        # per line inside the loop would invite a mid-run change of meaning.
+        one_time = bool(self.one_time)
 
         try:
             for line in self.import_line_ids.filtered(lambda l: l.state in ['validated', 'matched', 'unmatched']):
@@ -1421,6 +1443,15 @@ class HrPayrollImportBatch(models.Model):
                         if employee:
                             line.employee_id = employee.id
                             line.is_new_employee = False
+                        elif one_time:
+                            # RECORDS R1 — one-time means NOTHING is saved,
+                            # newcomers included (owner ruling). The row is
+                            # listed as an exception in the person's own words,
+                            # never quietly created.
+                            HrPayrollImportBatch._one_time_branch_entered += 1
+                            line.state = 'error'
+                            line.error_message = ONE_TIME_NO_EMPLOYEE
+                            continue
                         elif self.auto_create_employees:
                             employee = self._create_employee(line)
                             created_employees |= employee
@@ -1433,34 +1464,52 @@ class HrPayrollImportBatch(models.Model):
                         continue
 
                     raw_data = line.get_raw_data()
-                    # Backfill the source key on an employee who was matched
-                    # rather than created — including everyone who predates
-                    # this field — so the NEXT run finds them by it directly
-                    # instead of falling back down the mappable rungs.
-                    self._stamp_source_ref(employee, line)
-                    self._update_employee_from_raw_data(employee, raw_data, line=line)
-
-                    # Step 1b: Bank destinations (COLROLES P3). Deliberately its own
-                    # try/except: an unparseable bank cell is a detail of one row, and
-                    # failing the whole line over it would throw away the payslip too.
-                    try:
-                        self._sync_employee_bank_account(employee, raw_data, line=line)
-                    except Exception as bank_error:      # noqa: BLE001 — see above
-                        _logger.exception(
-                            "Bank sync failed for line %s (employee %s): %s",
-                            line.id, employee.id, bank_error)
-
-                    # Step 2: Ensure contract exists
-                    contract = self._get_latest_contract(employee)
-                    if not contract and self.auto_create_contracts:
-                        contract = self._create_contract(employee, line)
-                        created_contracts |= contract
+                    if one_time:
+                        # RECORDS R1 — steps 1b/2/3 are the writeback, and a
+                        # one-time file skips every one of them: no source
+                        # stamp, no employee fields, no bank account, no
+                        # contract update, no contract components, and no
+                        # record created. Step 4 still reads the FILE for every
+                        # component the file feeds (`_declared_source_walk`
+                        # returns the line blob before any record rung), so the
+                        # payslip is the same as an updating run's; components
+                        # the file does not carry fall to the record as it
+                        # stands today, which is precisely "use it once".
+                        HrPayrollImportBatch._one_time_branch_entered += 1
+                        contract = self._get_latest_contract(employee)
+                        if not contract:
+                            line.state = 'error'
+                            line.error_message = ONE_TIME_NO_CONTRACT
+                            continue
                     else:
-                        self._update_contract_from_raw_data(
-                            contract, raw_data, line=line)
+                        # Backfill the source key on an employee who was matched
+                        # rather than created — including everyone who predates
+                        # this field — so the NEXT run finds them by it directly
+                        # instead of falling back down the mappable rungs.
+                        self._stamp_source_ref(employee, line)
+                        self._update_employee_from_raw_data(employee, raw_data, line=line)
 
-                    # Step 3: Sync contract components from import data
-                    contract = self._sync_contract_components(line, contract)
+                        # Step 1b: Bank destinations (COLROLES P3). Deliberately its own
+                        # try/except: an unparseable bank cell is a detail of one row, and
+                        # failing the whole line over it would throw away the payslip too.
+                        try:
+                            self._sync_employee_bank_account(employee, raw_data, line=line)
+                        except Exception as bank_error:      # noqa: BLE001 — see above
+                            _logger.exception(
+                                "Bank sync failed for line %s (employee %s): %s",
+                                line.id, employee.id, bank_error)
+
+                        # Step 2: Ensure contract exists
+                        contract = self._get_latest_contract(employee)
+                        if not contract and self.auto_create_contracts:
+                            contract = self._create_contract(employee, line)
+                            created_contracts |= contract
+                        else:
+                            self._update_contract_from_raw_data(
+                                contract, raw_data, line=line)
+
+                        # Step 3: Sync contract components from import data
+                        contract = self._sync_contract_components(line, contract)
 
                     # Step 4: Create payslip with formula-based lines
                     if self.create_payslips:
@@ -1502,8 +1551,9 @@ class HrPayrollImportBatch(models.Model):
                     self._create_mid_cycle_carryovers(created_payslips, payslip_run=run)
 
             self.state = 'done'
-            self._log("Processing complete. Created: %d employees, %d contracts, %d payslips" % (
-                len(created_employees), len(created_contracts), len(created_payslips)
+            self._log("Processing complete. Created: %d employees, %d contracts, %d payslips%s" % (
+                len(created_employees), len(created_contracts), len(created_payslips),
+                " — one-time — no record was updated" if one_time else ""
             ))
 
         except Exception as e:
@@ -2460,6 +2510,20 @@ class HrPayrollImportBatch(models.Model):
     @api.model
     def _sourcing_shared_counter(self):
         return HrPayrollImportBatch._shared_resolution_entered
+
+    #: RECORDS R1 neutrality instrument. Counts every line on which the
+    #: one-time branch of `action_process` was taken. A batch that did not ask
+    #: for one-time pay data must leave this at zero — "the new path never
+    #: executed" is a stronger claim than "the numbers agreed" (S3/J9 rule).
+    _one_time_branch_entered = 0
+
+    @api.model
+    def _records_reset_one_time_counter(self):
+        HrPayrollImportBatch._one_time_branch_entered = 0
+
+    @api.model
+    def _records_one_time_counter(self):
+        return HrPayrollImportBatch._one_time_branch_entered
 
     @api.model
     def _record_dest_spec(self, mapping):

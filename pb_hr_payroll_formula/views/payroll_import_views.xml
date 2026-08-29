@@ -215,9 +215,13 @@
                                 <group string="Employee Matching">
                                     <field name="match_by_code"/>
                                     <field name="match_by_email"/>
-                                    <field name="auto_create_employees"/>
+                                    <field name="auto_create_employees"
+                                           invisible="one_time"/>
                                     <field name="auto_create_contracts"
-                                           invisible="not auto_create_employees"/>
+                                           invisible="one_time or not auto_create_employees"/>
+                                </group>
+                                <group string="Records">
+                                    <field name="one_time"/>
                                 </group>
                                 <group string="Payslip Options">
                                     <field name="create_payslips"/>
@@ -282,6 +286,7 @@
                 <separator/>
                 <filter string="Excel Import" name="excel" domain="[('source_type', '=', 'excel')]"/>
                 <filter string="API Data Store" name="api_data_store" domain="[('source_type', '=', 'api_data_store')]"/>
+                <filter string="Used once" name="one_time" domain="[('one_time', '=', True)]"/>
                 <separator/>
                 <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
                 <separator/>

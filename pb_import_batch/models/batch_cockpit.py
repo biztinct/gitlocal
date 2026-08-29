@@ -94,6 +94,9 @@ class PbImportBatchCockpit(models.AbstractModel):
             'state_label': STATE_LABEL.get(b.state, b.state),
             'source': SOURCE_LABEL.get(b.source_type, b.source_type or '—'),
             'source_type': b.source_type,
+            # RECORDS R1 — a batch that changed no record has to say so on the
+            # screen someone opens afterwards to ask "what did this do?".
+            'one_time': bool(getattr(b, 'one_time', False)),
             'config': b.formula_config_id.name or '',
             'company': b.company_id.name or '',
             'period': b.payroll_period or '',

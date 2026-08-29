@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Import Batch',
     'summary': 'Batch-detail cockpit (OWL) + powder-blue fallback form for payroll imports',
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
