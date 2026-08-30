@@ -1547,6 +1547,23 @@ export class PbFormulaStudio extends Component {
     stageLabel() { return { draft: _t("Draft"), testing: _t("Testing"), validated: _t("Validated"), active: _t("Active"), archived: _t("Archived") }[this.state.config.state] || this.state.config.state; }
     nextLabel() { return { draft: _t("Start testing"), testing: _t("Validate"), validated: _t("Activate"), active: _t("Active") }[this.state.config.state] || _t("Advance"); }
     isDeduction(c) { return c.group === "Deductions"; }
+    // RD47 — THE MINUS SIGN IS ABOUT ARITHMETIC, NOT ABOUT FILING.
+    //
+    // It used to be drawn whenever a component sat in the Deductions column,
+    // which conflated two different questions: "where do I look for this?" and
+    // "is this taken off net pay?". `TAXABLEINCOM` and `OTNONTAXABLE` are
+    // working figures the net formula neither adds nor subtracts — the
+    // classifier calls them `info` — yet both were shown as negative amounts,
+    // ₫10,890,152 of Taxable Income rendered as −₫10,890,152.
+    //
+    // A minus now means exactly one thing: the net pay formula subtracts this.
+    // Where the classifier has no verdict the column is still the best guess
+    // available, so the old behaviour is the fallback rather than the rule.
+    showsMinus(c) {
+        if (!c) return false;
+        if (c.net_role) return c.net_role === "deduction";
+        return this.isDeduction(c);
+    }
     // A component that reduces the total: grouped as a Deduction OR whose own
     // formula is defined as a negative value (e.g. Loan Repayment = "=-F2", which
     // the name/group heuristic misses). Used to render "+deduction" as "−".

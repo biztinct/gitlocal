@@ -43,3 +43,7 @@ from . import test_category_review
 # RD46 — preview the formulas against a REAL person: the copy rule (a preview
 # never writes to a payslip), the scheme-scoped picker, and the two doors.
 from . import test_rd46_person_preview
+
+# RD47 — two display faults: a real earning drawn as a deduction (substring
+# matching, again), and a formula payslip that could not be saved at all.
+from . import test_rd47_group_and_required
