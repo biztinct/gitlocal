@@ -98,3 +98,7 @@ from . import test_records_r1_one_time
 # employee or contract field could not be read at all unless the run carried a
 # pay-data file, which is what made ABM's June deductions read ₫0.00.
 from . import test_records_r5_record_rung
+
+# RD49 — stop fetching feeds nothing reads, and fetch last month on a schedule
+# so a pay run never waits for the sync.
+from . import test_rd49_sync_cost

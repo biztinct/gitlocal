@@ -1477,6 +1477,14 @@ export class PbFormulaStudio extends Component {
         return s ? s.name : "—";
     }
     get previewIsPerson() { return !!this.state.personPayslipId; }
+    // RD48 — the selected component's error FOR THE PERSON ON SCREEN, or none.
+    // Empty when a sample is loaded, so the stored message keeps its old
+    // meaning everywhere it already had one.
+    get personError() {
+        if (!this.previewIsPerson || !this.selected) return "";
+        const errs = (this.state.preview && this.state.preview.errors) || {};
+        return errs[this.selected.code] || "";
+    }
     selectComponent(id) {
         this.state.selectedId = id;
         if (this.state.rawMode) this._seedRaw();   // F12 — re-seed the text editor

@@ -1436,3 +1436,10 @@
     .g2-src.s-constant, .g2-src.s-none { color: #94A3B8; }
     .g2-src.src-diff { color: var(--amber); }
 }
+
+/* RD48 — an error box that says WHOSE result it describes. The soft variant is
+   the "your person is fine, this message is the sample's" case: it must not
+   read as an alarm, because nothing is wrong with the pay in front of you. */
+.ed-errbox.soft { background: var(--bg, #F8FAFC); border-color: var(--line, #E2E8F0); color: var(--muted, #64748B); }
+.ed-errbox.soft b { color: #475569; }
+.ed-errbox .ed-err-old { margin-top: 6px; font-size: 11.5px; opacity: .75; white-space: pre-wrap; }

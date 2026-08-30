@@ -1142,7 +1142,24 @@
                     <span t-else="" class="dep-pill">— none —</span>
                   </div>
                 </div>
-                <div t-if="!selected.is_valid and selected.validation_message" class="ed-errbox" t-esc="selected.validation_message"/>
+                <!-- RD48 — WHOSE ERROR IS THIS? The stored message belongs to
+                     whatever the formula last ran against with diagnostics on,
+                     which is a sample; a read-only preview of a real person
+                     writes none. So while a person is loaded the panel shows
+                     THIS person's result, and says plainly when the failure was
+                     the sample's rather than theirs. -->
+                <div t-if="personError" class="ed-errbox">
+                  <b>This did not work out for <t t-esc="state.preview.label"/>.</b>
+                  <div t-esc="personError"/>
+                </div>
+                <div t-elif="previewIsPerson and !selected.is_valid and selected.validation_message"
+                     class="ed-errbox soft">
+                  <b>This worked out fine for <t t-esc="state.preview.label"/>.</b>
+                  <div>The message below is from sample data, not from a real
+                       pay run — it is kept until the formula is next checked.</div>
+                  <div class="ed-err-old" t-esc="selected.validation_message"/>
+                </div>
+                <div t-elif="!selected.is_valid and selected.validation_message" class="ed-errbox" t-esc="selected.validation_message"/>
 
                 <!-- T1.6 — circular-reference explainer (only when this component is in a cycle) -->
                 <div t-if="selectedCycle" class="pbfs-cycbox">
