@@ -404,6 +404,11 @@ def apply_kind(kind, number):
 LEFT_STATUS_WORDS = frozenset((
     'RESIGNED', 'TERMINATED', 'INACTIVE', 'LEFT', 'EXITED', 'SEPARATED',
     'RETIRED', 'DISMISSED', 'ENDED', 'CLOSED',
+    # RD60 — a spreadsheet names the PERSON, not the event: the reference
+    # tenant's own file says RESIGNEE. Left out, it read as unrecognised
+    # wording, which this table (rightly) treats as "still employed" — so a
+    # leaver came back into the run ticked by default.
+    'RESIGNEE', 'RESIGNATION',
     'NGHI VIEC', 'DA NGHI', 'THOI VIEC',
 ))
 

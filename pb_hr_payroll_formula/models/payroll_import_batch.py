@@ -804,6 +804,12 @@ class HrPayrollImportBatch(models.Model):
         for rec in store_records:
             ext_id = rec.employee_external_id or ('_unknown_%s' % rec.id)
             grouped.setdefault(ext_id, {}).update(rec.get_mappable_data())
+        # RD60 — one person, one row here too. The top-up's own comment says it
+        # must read the feed exactly as a primary load would, and a primary load
+        # now folds the two spellings of an external id together.
+        grouped = {primary: {k: v for member in members
+                             for k, v in grouped[member].items()}
+                   for primary, members in self._store_groups_by_person(grouped)}
         rows = []
         for ext_id, data in grouped.items():
             code, name, email = self._identity_from_store_row(data, ext_id)
@@ -859,6 +865,37 @@ class HrPayrollImportBatch(models.Model):
         would — a promise two copies of a list cannot keep.
         """
         return ('data_type', '!=', False)
+
+    def _store_groups_by_person(self, merged_by_ext):
+        """Fold ``{ext_id: data}`` so that ONE PERSON IS ONE ROW.
+
+        RD60 — the store keys a row by `employee_external_id`, and a connected
+        system does not necessarily spell that the same way in every feed. Zoho
+        does not: the employee form answers with `EmployeeID` (`11094`) and the
+        salary form with `Employee_ID.ID` (`811648000007178001`), so the same
+        152 people were staged under 304 external ids. Grouping by that id alone
+        produced 304 import lines — an employee row and a salary row for every
+        person, neither one complete, each looking like somebody who is missing
+        half their data.
+
+        The employee CODE is what the two spellings agree on, and it is already
+        how every other loader identifies a person, so it is the fold key here.
+        A row that carries no code at all keeps its own external id: two people
+        we cannot name must never be merged into one on the strength of both
+        being anonymous.
+
+        Returns ``[(primary_ext_id, [ext_id, …]), …]`` in first-seen order.
+        """
+        order, members = [], {}
+        for ext_id, data in merged_by_ext.items():
+            code = self._normalize_code(self._extract_field(
+                data, list(EXTERNAL_CODE_HEADER_CANDIDATES)) or '')
+            key = code or ('\x00ext:%s' % ext_id)
+            if key not in members:
+                members[key] = []
+                order.append(key)
+            members[key].append(ext_id)
+        return [(members[k][0], members[k]) for k in order]
 
     def _identity_from_store_row(self, raw_data, ext_id=None):
         """Employee code / name / email as the DATA STORE loader has always read them."""
@@ -929,6 +966,26 @@ class HrPayrollImportBatch(models.Model):
             employee_data[ext_id]['store_records'] |= rec
             # Merge mappable data (extracted + computed)
             employee_data[ext_id]['merged_data'].update(rec.get_mappable_data())
+
+        # RD60 — and now fold the spellings of one person together. Re-merged
+        # in record order (`sorted('id')`) rather than by updating the two
+        # part-rows into each other, so on a key both feeds carry it is the
+        # LATER pull that wins — the same "newest statement of a fact" rule the
+        # employment-status read uses.
+        folded = {}
+        for primary, members in self._store_groups_by_person(
+                {e: d['merged_data'] for e, d in employee_data.items()}):
+            recs = DataStore
+            for member in members:
+                recs |= employee_data[member]['store_records']
+            merged = {}
+            for rec in recs.sorted('id'):
+                merged.update(rec.get_mappable_data())
+            folded[primary] = {'store_records': recs, 'merged_data': merged}
+        if len(folded) != len(employee_data):
+            self._log("Folded %d staged identities into %d people" % (
+                len(employee_data), len(folded)))
+        employee_data = folded
 
         # Clear existing lines
         self.import_line_ids.unlink()

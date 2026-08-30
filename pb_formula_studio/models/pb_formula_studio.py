@@ -7546,8 +7546,14 @@ class PbFormulaStudio(models.AbstractModel):
         batch = None
         if Batch is not None:
             try:
+                # RD60 — `create_payslips` keeps a RECORD REFRESH out of this
+                # lane. A refresh is a batch too, so without the leaf the node
+                # narrated "the last pay run" using a payload that produced no
+                # payslip at all — five of them landed on the reference tenant
+                # in one afternoon, each one newer than the run it hid.
                 batch = Batch.sudo().search(
-                    [('formula_config_id', '=', config.id), ('state', '=', 'done')],
+                    [('formula_config_id', '=', config.id), ('state', '=', 'done'),
+                     ('create_payslips', '=', True)],
                     order='id desc', limit=1)
             except Exception as e:      # noqa: BLE001
                 _logger.warning("J5: batch lookup failed: %s: %s",
@@ -8150,7 +8156,16 @@ class PbFormulaStudio(models.AbstractModel):
         contexts = [{'id': b.id, 'name': b.name} for b in batches]
         batch = Batch.browse(int(batch_id)) if batch_id else Batch.browse()
         if not batch:
-            batch = (batches.filtered(lambda b: b.formula_config_id.id == config.id and b.import_line_ids)[:1]
+            # RD60 — prefer a batch that fed a pay run. A record refresh is a
+            # batch, and the newest one is usually a refresh, so the board's
+            # opening view drifted onto the connected system's columns instead
+            # of the columns the last run was actually mapped from. Still only a
+            # PREFERENCE: with nothing but refreshes on file, showing their
+            # columns beats showing an empty board.
+            pay_data = batches.filtered(lambda b: b.create_payslips)
+            batch = (pay_data.filtered(lambda b: b.formula_config_id.id == config.id and b.import_line_ids)[:1]
+                     or batches.filtered(lambda b: b.formula_config_id.id == config.id and b.import_line_ids)[:1]
+                     or pay_data.filtered(lambda b: b.import_line_ids)[:1]
                      or batches.filtered(lambda b: b.import_line_ids)[:1] or batches[:1])
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
             .sorted(key=lambda r: r.sequence)
