@@ -104,19 +104,34 @@ class TestRd47GroupAndRequired(TransactionCase):
                                   net_role='deduction')
         self.assertEqual(_group_for(with_verdict), 'Deductions')
 
-    def test_01h_an_employer_cost_is_left_exactly_where_it_was(self):
-        """Deliberately NOT remapped — see `_NET_ROLE_GROUP`.
+    def test_01h_an_employer_cost_gets_its_own_section(self):
+        """RD50 — what every serious payroll product does with these.
 
-        Four buckets, and an employer contribution is a fifth thing: money going
-        out, but not off this person's net pay. Filing it under Deductions would
-        draw a minus and say something false. Left on the lexicon and flagged,
-        rather than quietly moved.
+        An employer contribution is money going out but NOT off this person's
+        net pay. ADP, Workday and Gusto all print it under its own heading, and
+        so does this product's own payslip ("Employer contributions" is already
+        a separate section there). Filing it among the employee's deductions
+        would draw a minus and state something false about their pay.
         """
-        with_role = self._rule('CONSSOCIINS8', 'Constant Social Ins. - 17.5%',
-                               net_role='employer_cost')
-        without = self._rule('CONSSOCIINS9', 'Constant Social Ins. - 17.5%',
-                             net_role=False)
-        self.assertEqual(_group_for(with_role), _group_for(without))
+        from odoo.addons.pb_formula_studio.models.pb_formula_studio import (
+            EMPLOYER_GROUP)
+        rule = self._rule('CONSSOCIINS8', 'Constant Social Ins. - 17.5%',
+                          net_role='employer_cost')
+        self.assertEqual(_group_for(rule), EMPLOYER_GROUP)
+        self.assertNotEqual(_group_for(rule), 'Deductions',
+                            "never netted against the employee's pay")
+
+    def test_01i_an_employer_cost_carries_no_minus(self):
+        """The section is the half of it; the sign is the half that misleads."""
+        import os
+        from odoo.modules.module import get_module_path
+        path = os.path.join(get_module_path('pb_formula_studio'),
+                            'static', 'src', 'js', 'formula_studio.js')
+        with open(path, encoding='utf-8') as fh:
+            body = fh.read().split('showsMinus(c) {', 1)[1].split('\n    }', 1)[0]
+        self.assertIn('"deduction"', body)
+        self.assertNotIn('employer', body,
+                         "only a deduction is subtracted from net pay")
 
     def test_01g_an_input_is_an_input_whatever_its_role(self):
         rule = self._rule('SHUIPARTICIP', 'SHUI Participation',

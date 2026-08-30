@@ -19,6 +19,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 # MAPFIX A — one code generator for every path that names a column.
 from odoo.addons.pb_hr_payroll_formula.models import component_code as component_code_mod
+from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier
 
 _logger = logging.getLogger(__name__)
 
@@ -76,6 +77,13 @@ _NET_CODES = {'NET', 'NETPAY', 'NET_PAY', 'NETSALARY', 'TAKEHOME', 'TAKE_HOME'}
 # outline reads as "the payroll" plus "the people data it travels with".
 PEOPLE_GROUP = 'People & Data'
 
+#: RD50 — employer contributions are their OWN section, which is what every
+#: serious payroll product does: they are a cost to the company, not money taken
+#: off this person's pay, and netting them against pay is a misstatement. The
+#: payslip already prints them under their own heading; the studio now agrees
+#: with it instead of filing them among the employee's deductions.
+EMPLOYER_GROUP = 'Employer contributions'
+
 
 #: RD47 — `net_role` -> the studio's display group. The classifier already
 #: decided whether a component is added to net pay, taken off it, or neither;
@@ -84,17 +92,16 @@ _NET_ROLE_GROUP = {
     'earning': 'Earnings',
     'deduction': 'Deductions',
     'net': 'Totals',
-    # 'employer_cost' and 'info' are deliberately ABSENT.
-    #
-    # The panel has four buckets and an employer contribution is a fifth thing:
-    # it is money going out, but NOT off this person's net pay, so filing it
-    # under Deductions would draw it with a minus and say something false. The
-    # payslip already treats it separately ("Employer contributions" is its own
-    # section). Giving it a bucket of its own is a design change, not a bug fix,
-    # so it is left exactly where it was — on the lexicon — and flagged rather
-    # than quietly moved. Same for 'info', which is neither added nor
-    # subtracted; the lexicon is a better guess at where a reader will look for
-    # it than "Earnings" would be.
+    # RD50 — the fifth bucket, on the owner's ruling to follow what the market
+    # does. An employer contribution is money going out but NOT off this
+    # person's net pay, so it belongs beside the payslip's own "Employer
+    # contributions" heading rather than among the employee's deductions.
+    'employer_cost': EMPLOYER_GROUP,
+    # 'info' stays ABSENT on purpose: a component that is neither added nor
+    # subtracted (a working figure like Taxable Income) has no natural column,
+    # and the name lexicon is a better guess at where a reader will look for it
+    # than "Earnings" would be. What matters — that it is not drawn as a
+    # negative — is settled by `showsMinus`, not by the column.
 }
 
 
@@ -1253,6 +1260,9 @@ class PbFormulaStudio(models.AbstractModel):
                 # drew "Taxable Income" as a negative.
                 'net_role': getattr(r, 'net_role', False) or '',
                 'is_text_component': bool(r.is_text_component),
+                # RD52 — the panel formats from the component's own type; a
+                # bank account number must never reach the currency formatter.
+                'value_kind': getattr(r, 'value_kind', None) or 'money',
                 'is_visible_in_grid': bool(r.is_visible_in_grid),
                 # SOURCING S4 — ONE nested object, not five sibling keys, so every
                 # render site reads one path and an older client degrades to "no
@@ -2156,18 +2166,40 @@ class PbFormulaStudio(models.AbstractModel):
             _logger.warning("RD46: preview failed for payslip %s: %s",
                             slip.id, exc)
             return dict(empty, reason='error')
-        by_code = {r.code: r.column_letter
-                   for r in config.rule_ids if r.code and r.column_letter}
+        # RD52 — A COMPONENT'S OWN TYPE DECIDES WHETHER TO FLOAT IT.
+        #
+        # `float(value)` was applied to everything that would take it, and a
+        # bank account number takes it: `float('0071002638698')` succeeds and
+        # returns 71002638698.0 — the leading zeros gone, and then rendered as
+        # ₫71,002,638,698 in the panel. ID card numbers, insurance book numbers
+        # and PIT numbers all read as enormous sums of money on screen.
+        #
+        # This is the SAME fault VALUEKIND fixed in the import resolver
+        # (`normalize_input_value`: "a component whose value is not a number is
+        # now kept exactly as it arrived"), arriving again on a path written
+        # after it. The rule's own `value_kind` is the answer, with
+        # `is_text_component` as the belt-and-braces for a scheme whose
+        # components were never classified.
+        by_rule = {r.code: r for r in config.rule_ids if r.code}
         out = {}
         for code, value in (values or {}).items():
-            col = by_code.get(code)
+            rule = by_rule.get(code)
+            col = rule.column_letter if rule else None
             if not col:
+                continue
+            # `wants_number` is the codebase's ONE definition of "should this
+            # be a number", shared with the wire, the resolver and the payslip
+            # line rail so they cannot drift into four opinions.
+            if not value_kind_classifier.wants_number(
+                    getattr(rule, 'value_kind', None)) \
+                    or bool(getattr(rule, 'is_text_component', False)):
+                out[col] = value if value not in (None, False) else ''
                 continue
             try:
                 out[col] = float(value)
             except (TypeError, ValueError):
-                # A text component is a real value that is not a number; the
-                # panel renders it as text rather than pretending it is 0.
+                # Typed as a number but not one — keep what arrived rather than
+                # pretending it is 0.
                 out[col] = value
         return {
             'ok': True,

@@ -1778,6 +1778,88 @@ class HrIntegrationConnector(models.Model):
                 employee_ids, date_from, date_to, kinds=kinds)
         return connector.fetch_payroll_data(employee_ids, date_from, date_to)
 
+    def action_probe_salary_bulk(self, sample=8):
+        """RD51 — prove the bulk salary read agrees with the per-employee one.
+
+        Reads the whole salary form ONCE and, for a sample of employees, also
+        asks Zoho the old way — then reports where the two disagree. It writes
+        nothing and computes nothing; it exists so "the fast path returns the
+        same numbers" is something measured against the live tenant rather than
+        argued from the code.
+
+        Returns a dict the caller can read: how many employees the bulk read
+        covered, how many of the sample matched, and the first few differences
+        in full.
+        """
+        self.ensure_one()
+        connector = self._get_connector_instance()
+        if not hasattr(connector, '_salary_index'):
+            return {'ok': False, 'reason': 'This connector has no bulk read.'}
+        # The convention in this connector is that the ENTRY POINT
+        # authenticates — `fetch_payroll_data` does it and every `_get_*`
+        # helper assumes it has been done. A probe that reads the form directly
+        # has to do the same, or Zoho answers "The provided OAuth token is
+        # invalid" and the probe reports a parity failure that is entirely its
+        # own doing. (It did, on the first run.)
+        try:
+            if not connector.authenticate():
+                return {'ok': False,
+                        'reason': 'Zoho would not authenticate this connection.'}
+        except Exception as exc:            # noqa: BLE001
+            return {'ok': False, 'reason': 'Zoho refused the connection: %s' % exc}
+        Store = self.env['hr.api.data.store'].sudo()
+        rows = Store.search([('connector_id', '=', self.id),
+                             ('data_type', '=', 'employee')])
+        ext_ids, seen = [], set()
+        for row in rows:
+            ext = (row.employee_external_id or '').strip()
+            if ext and ext not in seen:
+                seen.add(ext)
+                ext_ids.append(ext)
+        if not ext_ids:
+            return {'ok': False, 'reason': 'No employee rows to probe with.'}
+
+        index = connector._salary_index()
+        checked, agreed, diffs = 0, 0, []
+        for ext in ext_ids[:int(sample or 8)]:
+            bulk = index.get(ext) or {}
+            # The old path, forced: bypass the index so the two are independent.
+            saved, connector._salary_cache = connector._salary_cache, {}
+            try:
+                single = connector._get_employee_salary(ext) or {}
+            except Exception as exc:        # noqa: BLE001
+                single = {'__error__': str(exc)}
+            finally:
+                connector._salary_cache = saved
+            checked += 1
+            if bulk == single:
+                agreed += 1
+            elif len(diffs) < 3:
+                diffs.append({
+                    'employee_external_id': ext,
+                    'bulk_keys': sorted(bulk)[:12],
+                    'single_keys': sorted(single)[:12],
+                    'bulk_base': bulk.get('Base_Salary'),
+                    'single_base': single.get('Base_Salary'),
+                })
+        # How many DIFFERENT base salaries the bulk read sees. One distinct
+        # value across a whole workforce is the signature of the defect this
+        # probe found: the per-employee search returned the same row for
+        # everybody, so every employee's pay was one person's pay.
+        bases = {}
+        for key, row in index.items():
+            bases.setdefault(str(row.get('Base_Salary') or ''), set()).add(key)
+        return {
+            'ok': True,
+            'employees_in_store': len(ext_ids),
+            'employees_indexed_by_bulk': len(index),
+            'checked': checked,
+            'agreed': agreed,
+            'bulk_distinct_base_salaries': len(bases),
+            'bulk_base_sample': sorted(bases)[:8],
+            'differences': diffs,
+        }
+
     def _mapped_feed_kinds(self):
         """Which feed kinds this connector's active wires actually read.
 

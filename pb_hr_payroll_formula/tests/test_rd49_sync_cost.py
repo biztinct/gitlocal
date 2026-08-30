@@ -210,6 +210,35 @@ class TestRd49SyncCost(TransactionCase):
         self.assertIn('attendance', asked['types'])
         self.assertNotIn('leave', asked['types'])
 
+    def test_02g_the_outcome_is_recorded_as_a_state_not_only_prose(self):
+        """RD53 — "did it fail?" must be answerable without reading a sentence."""
+        conn = self._connector()
+        conn.cron_pull_enabled = True
+        self.Connector.cron_pull_previous_month()
+        self.assertEqual(conn.cron_pull_last_state, 'skipped')
+
+        healthy = self._connector('RD53 ok')
+        healthy.cron_pull_enabled = True
+        self._wire(healthy, 'salary', 'RD53PAY')
+        self.patch(type(self.Connector), 'action_pull_data',
+                   lambda self, **kw: True)
+        self.Connector.cron_pull_previous_month()
+        self.assertEqual(healthy.cron_pull_last_state, 'ok')
+
+    def test_02h_running_it_by_hand_needs_the_switch_on_first(self):
+        """What you test must be what the schedule will do."""
+        from odoo.exceptions import UserError
+        conn = self._connector()
+        self._wire(conn, 'salary', 'RD53PAY2')
+        with self.assertRaises(UserError):
+            conn.action_fetch_last_month_now()
+
+    def test_02i_the_status_call_answers_the_whole_question_at_once(self):
+        status = self.Connector.rd53_fetch_status()
+        self.assertTrue(status['scheduled'])
+        self.assertTrue(status['next_run'])
+        self.assertIsInstance(status['connectors'], list)
+
     def test_02f_the_job_never_computes_payroll(self):
         """Nobody should find a pay run they did not start."""
         import inspect

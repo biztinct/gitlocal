@@ -1152,12 +1152,18 @@
                   <b>This did not work out for <t t-esc="state.preview.label"/>.</b>
                   <div t-esc="personError"/>
                 </div>
-                <div t-elif="previewIsPerson and !selected.is_valid and selected.validation_message"
-                     class="ed-errbox soft">
-                  <b>This worked out fine for <t t-esc="state.preview.label"/>.</b>
-                  <div>The message below is from sample data, not from a real
-                       pay run — it is kept until the formula is next checked.</div>
-                  <div class="ed-err-old" t-esc="selected.validation_message"/>
+                <!-- RD50 — when a real person's numbers are on screen and the
+                     formula worked for them, the panel says NOTHING. It used to
+                     show the stored message greyed out, "for context"; the
+                     owner's answer was that an old error still reads as an
+                     error and frightens people away from a payslip that is
+                     perfectly fine. The message is not lost — it stays on the
+                     component and in the log for whoever is debugging the
+                     formula, which is a different job from reading one
+                     person's pay. -->
+                <div t-elif="previewIsPerson" class="ed-okbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                  This worked out for <t t-esc="state.preview.label"/>.
                 </div>
                 <div t-elif="!selected.is_valid and selected.validation_message" class="ed-errbox" t-esc="selected.validation_message"/>
 
