@@ -25,12 +25,30 @@
                         invisible="not cron_pull_enabled"
                         help="Run the monthly fetch immediately, exactly as the
                               schedule will run it."/>
+                <button name="action_refresh_records_now"
+                        string="Update records now"
+                        type="object"
+                        invisible="not cron_writeback_enabled"
+                        confirm="This writes the connected system's values onto
+                                 the matching Employee, Contract and Bank
+                                 records. It does not create any payslips."
+                        help="Bring the records into step immediately, without
+                              waiting for the schedule."/>
             </xpath>
 
             <xpath expr="//sheet" position="inside">
                 <group string="Automatic monthly fetch" name="rd53_cron">
                     <group>
                         <field name="cron_pull_enabled"/>
+                        <!-- RD54 — fetching and WRITING are different acts, so
+                             they are different switches. The warning is not
+                             decoration: once this is on, the connected system
+                             owns every mapped field and a spreadsheet
+                             correction will be put back at the next fetch. -->
+                        <field name="cron_writeback_enabled"
+                               invisible="not cron_pull_enabled"/>
+                        <field name="cron_writeback_last_result" readonly="1"
+                               invisible="not cron_writeback_last_result"/>
                         <!-- The outcome first, because that is the question.
                              Nothing shows until it has actually run once —
                              an empty row would read as "nothing happened"
@@ -46,6 +64,13 @@
                         <field name="cron_pull_last_result"
                                invisible="not cron_pull_last_run"/>
                     </group>
+                    <div colspan="2" class="text-warning"
+                         invisible="not cron_writeback_enabled">
+                        While this is on, the connected system is the source of
+                        truth for every mapped field. A value corrected in a
+                        spreadsheet will be put back at the next fetch unless
+                        you unmap that field from the feed.
+                    </div>
                     <div colspan="2" class="text-muted"
                          invisible="cron_pull_enabled">
                         Off. Payroll will wait for the sync each month until

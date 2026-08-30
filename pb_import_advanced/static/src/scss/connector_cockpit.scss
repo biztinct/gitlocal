@@ -379,3 +379,27 @@
         .pbcc-oauth-connect { align-items: flex-start; flex-direction: column; }
     }
 }
+
+/* RD58 — the automatic monthly fetch, on the screen people actually open.
+   Two switches because fetching and writing are different acts; the warning is
+   load-bearing, not decoration — the second one hands the connected system
+   ownership of every mapped field. */
+.pbcc-sched { display: flex; flex-direction: column; gap: 12px; }
+.pbcc-sched-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pbcc-sched-next { font-size: 12px; color: var(--pbim-muted, #64748B); }
+.pbcc-sw { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.pbcc-sw input { margin-top: 3px; flex-shrink: 0; width: 15px; height: 15px; cursor: pointer; }
+.pbcc-sw-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pbcc-sw-tx b { font-size: 13px; }
+.pbcc-sw-tx span { font-size: 12px; color: var(--pbim-muted, #64748B); line-height: 1.45; }
+.pbcc-sched-warn { display: flex; align-items: flex-start; gap: 8px; padding: 9px 12px; border-radius: 9px;
+                   background: #FFFBEB; color: #92400E; font-size: 12px; line-height: 1.45; }
+.pbcc-sched-warn svg { flex-shrink: 0; margin-top: 1px; }
+.pbcc-sched-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.pbcc-sched-last { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--pbim-muted, #64748B); flex-wrap: wrap; }
+.pbcc-sched-dot { width: 8px; height: 8px; border-radius: 999px; background: #94A3B8; flex-shrink: 0; }
+.pbcc-sched-dot.ok { background: #10B981; }
+.pbcc-sched-dot.failed { background: #EF4444; }
+.pbcc-sched-dot.skipped { background: #F59E0B; }
+.pbcc-sched-msg { color: #475569; }
+.pbcc-sched-off { font-size: 12px; color: var(--pbim-muted, #64748B); }

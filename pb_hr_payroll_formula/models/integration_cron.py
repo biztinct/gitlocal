@@ -60,6 +60,22 @@ class HrIntegrationConnector(models.Model):
         ('failed', 'Could not fetch'),
     ], string="Last automatic fetch outcome", readonly=True, copy=False)
 
+    #: RD54 — whether the scheduled fetch also brings the records into step.
+    #: Separate from `cron_pull_enabled` because fetching and WRITING are
+    #: different acts with different consequences, and somebody may reasonably
+    #: want the first without the second.
+    cron_writeback_enabled = fields.Boolean(
+        string="Also update employee and contract records",
+        default=False,
+        help="After fetching, write the mapped values onto the Employee, "
+             "Contract and Bank records — so Payobook matches the connected "
+             "system without anybody having to run a load by hand. The "
+             "connected system becomes the source of truth for every mapped "
+             "field.")
+
+    cron_writeback_last_result = fields.Char(
+        string="Last record update", readonly=True, copy=False)
+
     cron_pull_last_rows = fields.Integer(
         string="Rows fetched last time", readonly=True, copy=False,
         help="How many records the last scheduled fetch brought in. Zero after "
@@ -163,6 +179,9 @@ class HrIntegrationConnector(models.Model):
                     period_to=period_to,
                     triggered_by='cron',
                 )
+                if connector.cron_writeback_enabled:
+                    connector._rd54_writeback_from_store(
+                        period_from, period_to)
                 arrived = Store.search_count(
                     [('connector_id', '=', connector.id)]) - before
                 stamp['cron_pull_last_state'] = 'ok'
@@ -241,4 +260,138 @@ class HrIntegrationConnector(models.Model):
                 'rows': c.cron_pull_last_rows or 0,
                 'message': c.cron_pull_last_result or '',
             } for c in connectors],
+        }
+
+    # ------------------------------------------------------------------
+    # RD54 — bring the records into step, using the ONE writeback there is.
+    # ------------------------------------------------------------------
+    def _rd54_writeback_from_store(self, period_from, period_to):
+        """Run a pay-data load from the store, WITHOUT producing payroll.
+
+        WHY A LOAD AND NOT A NEW WRITE PATH. The four seams that write to
+        Employee, Bank, Contract and contract components live inside
+        `action_process`, and they encode a great deal that must not be
+        re-implemented: the source-key backfill, the bank assembly, the mapping
+        priority (a field the connected system feeds is written from the
+        connected system, not from a spreadsheet), and the per-line error
+        isolation. A second implementation would be a second answer to "what
+        does this field become", which is the failure this codebase keeps
+        paying for.
+
+        `create_payslips = False` is what makes it safe: steps 1–3 write the
+        records, step 4 is skipped, and nobody finds a pay run they did not
+        start. That flag is the batch's own, not a new one.
+
+        THE CONSEQUENCE, stated plainly because it is the point rather than a
+        side effect: for every mapped field the connected system becomes the
+        source of truth. A value corrected by spreadsheet will be put back at
+        the next fetch unless the field is unmapped from the feed.
+        """
+        self.ensure_one()
+        # Callers hand these in as dates (the cron) or as strings (the pay-run
+        # wizard, from the browser). Coerce once here rather than making every
+        # caller remember, and fall back to last month if either is unusable —
+        # a refresh with no period would load the whole store.
+        period_from = fields.Date.to_date(period_from) if period_from else None
+        period_to = fields.Date.to_date(period_to) if period_to else None
+        Batch = self.env['hr.payroll.import.batch'].sudo()
+        config = self.env['hr.formula.config'].sudo().search(
+            [('connector_id', '=', self.id), ('state', '=', 'active')], limit=1)
+        if not config:
+            self.cron_writeback_last_result = _(
+                "No active payroll scheme uses this connection, so there is "
+                "nothing to map records from.")
+            return False
+        # RD57 — NO PERIOD UNLESS THE CALLER MEANT ONE.
+        #
+        # `action_load_from_data_store` filters the store by period, and a
+        # refresh that invented "last month" found nothing: the salary rows had
+        # been pulled for JUNE and the refresh asked for JULY, so it failed with
+        # "no extracted data" having looked straight past 608 perfectly good
+        # rows. Master data — a wage, a bank account, an employment status — is
+        # not period-shaped anyway; it is simply the latest thing the connected
+        # system said.
+        #
+        # The cron still passes its period, because it has just pulled exactly
+        # that period and means it. The button passes none and refreshes from
+        # whatever the store currently holds.
+        #
+        # AND IT CREATES NOBODY. `auto_create_*` off: a REFRESH updates what
+        # exists. Inventing an employee or a contract is a decision somebody
+        # takes on a load they are watching, not a side effect of a button
+        # called "update records" or of a schedule running at 2am.
+        vals = {
+            'name': _("Record refresh %s") % fields.Datetime.to_string(
+                fields.Datetime.now())[:16],
+            'source_type': 'api_data_store',
+            'connector_id': self.id,
+            'formula_config_id': config.id,
+            # The whole point: records yes, payroll no.
+            'create_payslips': False,
+            'auto_create_employees': False,
+            'auto_create_contracts': False,
+        }
+        if period_from and period_to:
+            vals.update({'date_from': period_from, 'date_to': period_to})
+        batch = Batch.create(vals)
+        try:
+            batch.action_load_from_data_store()
+            batch.action_match_employees()
+            batch.action_process()
+        except Exception as exc:            # noqa: BLE001
+            self.cron_writeback_last_result = _(
+                "Could not update records: %s") % exc
+            _logger.exception("RD54: record refresh failed for %s",
+                              self.display_name)
+            # RD60 — DO NOT LEAVE THE HUSK BEHIND.
+            #
+            # The commonest failure is "there is nothing staged to load", which
+            # raises before a single line exists — and the empty draft batch
+            # survived it. Two of them accumulated on the reference tenant in an
+            # afternoon and went on appearing in every batch picker, in the
+            # Mapping board's opening view and in "the newest batch", each one
+            # newer than the pay data it stood in front of.
+            #
+            # Only a batch that did NOTHING is removed. Once lines exist, a
+            # failure is a partial write and the record of it has to survive:
+            # `state` and the line errors are the only account of what changed.
+            try:
+                if batch.exists() and batch.state == 'draft' \
+                        and not batch.import_line_ids:
+                    batch.unlink()
+            except Exception:       # noqa: BLE001
+                # Tidying up must never replace the failure it was tidying after.
+                _logger.warning("RD60: could not remove the empty refresh batch",
+                                exc_info=True)
+            return False
+        # `import_line_ids`, not `line_ids` — the batch's rows have carried that
+        # name since it was written, and the shorter one belongs to a payslip.
+        lines = batch.import_line_ids
+        done = len(lines.filtered(lambda l: l.state == 'processed'))
+        failed = len(lines.filtered(lambda l: l.state == 'error'))
+        self.cron_writeback_last_result = _(
+            "%(done)s records updated, %(failed)s could not be matched.",
+            done=done, failed=failed)
+        _logger.info("RD54: %s — %s records updated, %s failed",
+                     self.display_name, done, failed)
+        return True
+
+    def action_refresh_records_now(self):
+        """Bring the records into step right now, from whatever was last pulled.
+
+        Deliberately period-less: the button means "make Payobook agree with the
+        connected system", and the store already holds the most recent answer.
+        Guessing a month is how this failed the first time it was run.
+        """
+        self.ensure_one()
+        self._rd54_writeback_from_store(None, None)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _("Records refreshed"),
+                'message': self.cron_writeback_last_result or _("Nothing to report."),
+                'type': 'success',
+                'sticky': False,
+            },
         }

@@ -167,8 +167,69 @@ class PbConnectorCockpit(models.AbstractModel):
             # why not. Three booleans and a sentence; never a credential.
             'field_fetch': c.field_fetch_capability(),
             'next_actions': self._connector_actions(c),
+            # RD58 — the schedule, on the screen people actually open.
+            #
+            # RD49/RD53 put "is the automatic fetch on, and did it run?" on the
+            # native connector form. Nobody uses that form: this cockpit is the
+            # connector, and the two switches were invisible — reported as
+            # missing within the hour. A setting nobody can find is a setting
+            # that does not exist.
+            'schedule': self._schedule_state(c),
             'error': None,
         }
+
+    def _schedule_state(self, c):
+        """Is the monthly fetch on, when does it next run, what did it do?
+
+        One block, because it is one question. Degrades to `available: False`
+        rather than raising: an older database without the fields must still be
+        able to open its connectors.
+        """
+        if 'cron_pull_enabled' not in c._fields:
+            return {'available': False}
+        cron = self.env.ref(
+            'pb_hr_payroll_formula.ir_cron_pull_previous_month',
+            raise_if_not_found=False)
+        return {
+            'available': True,
+            'enabled': bool(c.cron_pull_enabled),
+            'writeback': bool(c.cron_writeback_enabled),
+            'next_run': str(cron.nextcall or '')[:16] if cron else '',
+            'scheduled': bool(cron and cron.active),
+            'last_run': str(c.cron_pull_last_run or '')[:16],
+            'state': c.cron_pull_last_state or '',
+            'state_label': dict(
+                c._fields['cron_pull_last_state'].selection
+            ).get(c.cron_pull_last_state, ''),
+            'rows': c.cron_pull_last_rows or 0,
+            'message': c.cron_pull_last_result or '',
+            'writeback_message': c.cron_writeback_last_result or '',
+        }
+
+    @api.model
+    def set_schedule(self, connector_id, enabled=None, writeback=None):
+        """Turn the monthly fetch — and the record update — on or off.
+
+        Writing is separate from fetching because they are different acts:
+        one refreshes a copy, the other changes employee and contract records
+        and hands the connected system ownership of every mapped field.
+        """
+        c = self.env['hr.integration.connector'].browse(int(connector_id)).exists()
+        if not c:
+            return {'ok': False, 'msg': _('That connection no longer exists.')}
+        if not c.has_access('write'):
+            return {'ok': False, 'msg': _('You cannot change this connection.')}
+        vals = {}
+        if enabled is not None:
+            vals['cron_pull_enabled'] = bool(enabled)
+            # Writing without fetching is meaningless, and leaving it armed
+            # while the fetch is off is a switch that lies.
+            if not enabled:
+                vals['cron_writeback_enabled'] = False
+        if writeback is not None:
+            vals['cron_writeback_enabled'] = bool(writeback)
+        c.write(vals)
+        return {'ok': True, 'schedule': self._schedule_state(c)}
 
     # ============================================== one sync truth per screen
     def _sync_truth(self, c):
