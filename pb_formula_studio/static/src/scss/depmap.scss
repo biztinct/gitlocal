@@ -87,3 +87,8 @@
   .pbfs-dep .dp-stats { display: none; }
   .pbfs-dep .dp-legend .dp-legend-hint { display: none; }
 }
+
+/* RD50 — employer contributions, their own colour because they are their own
+   section: a cost to the company, never netted against the employee's pay. */
+.pbfs-dep .dp-chip.dg-employer .dp-dot { background: #7C3AED; } .pbfs-dep .dp-chip.dg-employer { border-color: #DDD3F7; }
+.pbfs-dep .dep-node.dg-employer .dn-accent { fill: #7C3AED; } .pbfs-dep .dep-node.dg-employer .dn-col { fill: #7C3AED; }

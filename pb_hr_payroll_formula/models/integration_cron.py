@@ -28,6 +28,7 @@ import logging
 from datetime import date
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -48,6 +49,22 @@ class HrIntegrationConnector(models.Model):
     cron_pull_last_result = fields.Char(
         string="Last automatic fetch result", readonly=True, copy=False,
         help="What the last scheduled fetch did, or why it could not.")
+
+    #: RD53 — the OUTCOME, not the prose. A person checking whether the fetch
+    #: ran wants a colour before they want a sentence, and "it failed" must be
+    #: answerable without reading. Kept beside the message rather than parsed
+    #: out of it.
+    cron_pull_last_state = fields.Selection([
+        ('ok', 'Fetched'),
+        ('skipped', 'Nothing to fetch'),
+        ('failed', 'Could not fetch'),
+    ], string="Last automatic fetch outcome", readonly=True, copy=False)
+
+    cron_pull_last_rows = fields.Integer(
+        string="Rows fetched last time", readonly=True, copy=False,
+        help="How many records the last scheduled fetch brought in. Zero after "
+             "a successful run means the connected system had nothing for that "
+             "period — which is a different thing from the fetch failing.")
 
     @api.model
     def _rd49_previous_month(self, today=None):
@@ -121,6 +138,8 @@ class HrIntegrationConnector(models.Model):
             try:
                 kinds = connector._mapped_feed_kinds()
                 if not kinds:
+                    stamp['cron_pull_last_state'] = 'skipped'
+                    stamp['cron_pull_last_rows'] = 0
                     stamp['cron_pull_last_result'] = _(
                         "Skipped — no active field mappings, so there is "
                         "nothing to fetch for.")
@@ -133,15 +152,25 @@ class HrIntegrationConnector(models.Model):
                 # it is always pulled even when no component maps a field from
                 # it — without it the rest attaches to nobody.
                 data_types = sorted(set(kinds) | {'employee'})
+                # Counted before and after so the report can say what ARRIVED,
+                # not merely that the call returned. A fetch that brought in
+                # nothing must not look like one that brought in everything.
+                Store = self.env['hr.api.data.store'].sudo()
+                before = Store.search_count([('connector_id', '=', connector.id)])
                 connector.action_pull_data(
                     data_types=data_types,
                     period_from=period_from,
                     period_to=period_to,
                     triggered_by='cron',
                 )
+                arrived = Store.search_count(
+                    [('connector_id', '=', connector.id)]) - before
+                stamp['cron_pull_last_state'] = 'ok'
+                stamp['cron_pull_last_rows'] = max(arrived, 0)
                 stamp['cron_pull_last_result'] = _(
-                    "Fetched %(kinds)s for %(from)s to %(to)s.",
-                    kinds=', '.join(data_types),
+                    "Fetched %(kinds)s for %(from)s to %(to)s — %(rows)s new "
+                    "records.",
+                    kinds=', '.join(data_types), rows=max(arrived, 0),
                     **{'from': fields.Date.to_string(period_from),
                        'to': fields.Date.to_string(period_to)})
                 _logger.info("RD49: %s fetched %s for %s..%s",
@@ -150,9 +179,66 @@ class HrIntegrationConnector(models.Model):
             except Exception as exc:        # noqa: BLE001
                 # One connector's outage must not stop the others, and it must
                 # not disappear either.
+                stamp['cron_pull_last_state'] = 'failed'
                 stamp['cron_pull_last_result'] = _(
                     "Could not fetch: %s") % exc
                 _logger.exception(
                     "RD49: automatic fetch failed for %s", connector.display_name)
             connector.write(stamp)
         return True
+
+    # ------------------------------------------------------------------
+    # RD53 — "did it run, and when?" as a screen rather than a guess.
+    # ------------------------------------------------------------------
+    def action_fetch_last_month_now(self):
+        """Run the monthly fetch for THIS connector, right now.
+
+        The schedule is monthly, so without this the only way to find out
+        whether it works is to wait until the 5th. It runs the same code the
+        cron runs — not a second implementation of it — so what it proves is
+        what will happen.
+        """
+        self.ensure_one()
+        if not self.cron_pull_enabled:
+            raise UserError(_(
+                "“%s” is not set to fetch automatically. Tick “Fetch last "
+                "month automatically” first, so that what you test here is "
+                "what the schedule will do.") % self.display_name)
+        self.cron_pull_previous_month()
+        self.invalidate_recordset()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _("Fetch finished"),
+                'message': self.cron_pull_last_result or _("Nothing to report."),
+                'type': ('danger' if self.cron_pull_last_state == 'failed'
+                         else 'success'),
+                'sticky': self.cron_pull_last_state == 'failed',
+            },
+        }
+
+    @api.model
+    def rd53_fetch_status(self):
+        """What the schedule is doing, for whoever is wondering.
+
+        One call, because the question is one question: is it on, when does it
+        next run, when did it last run, and what happened.
+        """
+        cron = self.env.ref(
+            'pb_hr_payroll_formula.ir_cron_pull_previous_month',
+            raise_if_not_found=False)
+        connectors = self.search([('active', '=', True)])
+        return {
+            'scheduled': bool(cron and cron.active),
+            'next_run': fields.Datetime.to_string(cron.nextcall) if cron else '',
+            'connectors': [{
+                'id': c.id,
+                'name': c.display_name,
+                'enabled': bool(c.cron_pull_enabled),
+                'last_run': fields.Datetime.to_string(c.cron_pull_last_run) or '',
+                'state': c.cron_pull_last_state or '',
+                'rows': c.cron_pull_last_rows or 0,
+                'message': c.cron_pull_last_result or '',
+            } for c in connectors],
+        }

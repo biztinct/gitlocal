@@ -79,6 +79,11 @@ class ZohoConnector(BaseHRConnector):
         # `_leave_rows`.
         self._leave_cache_key = None
         self._leave_cache = []
+        # RD51 — the whole salary form, read once per pull. `None` means "not
+        # read yet"; an empty dict means "read and it told us nothing", and the
+        # two must stay distinguishable or a failed read would be cached as an
+        # answer.
+        self._salary_cache = None
 
     # ==========================================
     # CONFIGURED URL RESOLUTION
@@ -632,6 +637,67 @@ class ZohoConnector(BaseHRConnector):
 
         return payroll_data
 
+    def _salary_index(self) -> Dict[str, Dict[str, Any]]:
+        """The WHOLE salary form, read once and indexed by employee.
+
+        RD51 — this is the expensive half of a sync. `_get_employee_salary`
+        asks Zoho for ONE employee's salary row, so a 152-person tenant makes
+        152 sequential requests for a form that fits in one page of 200. The
+        whole form is one or two requests, and matching is arithmetic.
+
+        (Leave was already read this way — `_leave_rows`, whole form, cached.
+        Attendance genuinely has no bulk endpoint on this plan: `getUserReport`
+        is per user. So salary is the one that can be collapsed.)
+
+        INDEXED UNDER EVERY NAME THE CALLER MIGHT USE. A salary row carries the
+        employee's NUMBER in `Employee_ID` ('11708') and the employee record's
+        Zoho id in `Employee_ID.ID` ('811648000007178001'), and callers hold
+        one or the other depending on which feed they came from. Indexing both
+        is cheaper than being wrong about which one arrives.
+
+        ORDER IS PRESERVED, not re-sorted. The per-employee search returned
+        `rows[0]`, so the bulk read keeps the FIRST row per employee for the
+        same reason — an employee with a salary history would otherwise
+        silently change which revision payroll used. Extra rows are counted and
+        logged, because "this tenant has salary history" is something the
+        person running payroll should be told rather than have decided for
+        them.
+        """
+        if self._salary_cache is not None:
+            return self._salary_cache
+        index: Dict[str, Dict[str, Any]] = {}
+        extras = 0
+        try:
+            rows = self._paged_form_rows(
+                'zohosalary', self.SALARY_PATH, "the salary form",
+                {'dateFormat': 'yyyy-MM-dd'})
+        except Exception as exc:            # noqa: BLE001
+            # A failed bulk read must not lose the sync: the caller falls back
+            # to asking per employee, which is what it did before this existed.
+            _logger.warning("Zoho salary bulk read failed (%s); "
+                            "falling back to one request per employee.", exc)
+            self._salary_cache = {}
+            return self._salary_cache
+        for row in rows:
+            keys = {str(row.get('Employee_ID') or '').strip(),
+                    str(row.get('Employee_ID.ID') or '').strip()}
+            claimed = False
+            for key in keys:
+                if not key:
+                    continue
+                if key in index:
+                    continue
+                index[key] = row
+                claimed = True
+            if not claimed and keys - {''}:
+                extras += 1
+        _logger.info(
+            "Zoho salary form read in bulk: %s rows, %s employees indexed, "
+            "%s later revisions ignored (the first row per employee wins, as "
+            "the per-employee search did).", len(rows), len(index), extras)
+        self._salary_cache = index
+        return index
+
     def _get_employee_salary(self, employee_id: str) -> Dict[str, Any]:
         """
         Get salary details for an employee.
@@ -642,17 +708,35 @@ class ZohoConnector(BaseHRConnector):
         Returns:
             Salary data dictionary
         """
-        params = {
-            'searchField': 'Employee_ID.Zoho_ID',
-            'searchOperator': 'Is',
-            'searchText': employee_id,
-            'dateFormat': 'yyyy-MM-dd',
-        }
-        response = self._feed_request(
-            'zohosalary', self.SALARY_PATH, params=params)
-        rows = self._result_rows(
-            self._payload(response, "the salary form"))
-        return rows[0] if rows else {}
+        # RD51 — the whole form, read once and matched here. See `_salary_index`
+        # for why this replaced a per-employee request entirely.
+        index = self._salary_index()
+        hit = index.get(str(employee_id or '').strip())
+        if hit is not None:
+            return hit
+        # RD51 — THE FALLBACK IS DELIBERATELY EMPTY, NOT A SEARCH.
+        #
+        # What used to be here searched `searchField='Employee_ID.Zoho_ID'`.
+        # That field DOES NOT EXIST on the salary form — the real ones are
+        # `Employee_ID` (the employee number) and `Employee_ID.ID` (the record
+        # id). Zoho does not reject an unknown search field: it ignores it and
+        # returns the first page of the whole form. So `rows[0]` was THE SAME
+        # ROW for every employee, and every person in the tenant was given one
+        # person's salary — ₫12,500,000 across all 152 contracts on the
+        # reference tenant, where Zoho actually holds 60 different values
+        # between ₫10,033,520 and ₫117,978,000.
+        #
+        # A search that cannot be trusted to filter must not be used as a
+        # fallback: it would silently reinstate the defect for exactly the
+        # employees the bulk read could not place. Returning nothing is honest,
+        # and `_transform_data_to_formula_inputs` already treats a missing
+        # value as "this source said nothing" and falls through to the next
+        # rung of the ladder.
+        _logger.warning(
+            "Zoho salary: no row for employee %s in the salary form. Returning "
+            "nothing rather than guessing — the per-employee search this "
+            "replaced returned the same row for everybody.", employee_id)
+        return {}
 
     def _get_employee_attendance(
         self,

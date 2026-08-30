@@ -102,3 +102,7 @@ from . import test_records_r5_record_rung
 # RD49 — stop fetching feeds nothing reads, and fetch last month on a schedule
 # so a pay run never waits for the sync.
 from . import test_rd49_sync_cost
+
+# RD51 — the per-employee Zoho salary search ignored its filter and returned the
+# same row for everybody: one person's pay for 152 people.
+from . import test_rd51_salary_identity

@@ -49,8 +49,12 @@ import { ROLES, roleMeta, roleIcon, roleLabel, roleHint } from "./mapping/mappin
 // in pb_formula_studio.py. It is deliberately LAST: the payroll reads top-down and
 // the data it travels with collects underneath.
 const PEOPLE_GROUP = "People & Data";
-const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals", PEOPLE_GROUP];
-const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669", people: "#64748B" };
+// RD50 — employer contributions get their own section, as every serious
+// payroll product shows them: a cost to the company, never netted against the
+// employee's pay. Must match `EMPLOYER_GROUP` in pb_formula_studio.py.
+const EMPLOYER_GROUP = "Employer contributions";
+const GROUPS = ["Inputs", "Earnings", "Deductions", EMPLOYER_GROUP, "Totals", PEOPLE_GROUP];
+const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", employer: "#7C3AED", total: "#059669", people: "#64748B" };
 
 // COLROLES P2 — the role vocabulary moved DOWN to `mapping/mapping_roles.js` in
 // JOURNEY J1, because the mapping board's lane chips need it too and they now
@@ -1540,6 +1544,18 @@ export class PbFormulaStudio extends Component {
     // F11 — typed cell display: format a value by its component's number_format
     // (percentage shows ×100 with %, integer/number drop the currency symbol).
     fmtTyped(comp, v) {
+        // RD52 — A TEXT COMPONENT IS NEVER MONEY.
+        //
+        // `isNaN("0071002638698")` is FALSE — JavaScript coerces a numeric
+        // string — so a bank account number fell straight through to the
+        // currency formatter and the panel showed ₫71,002,638,698. ID card
+        // numbers, insurance book numbers and PIT numbers all read as enormous
+        // sums. The component knows what it is; ask it before formatting.
+        if (comp && (comp.is_text_component || comp.value_kind === "string"
+                     || comp.value_kind === "boolean" || comp.value_kind === "date")) {
+            return (v === null || v === undefined || v === "") ? "—" : String(v);
+        }
+        if (typeof v === "string" && v.trim() !== "" && isNaN(Number(v))) return v;
         if (v === null || v === undefined || isNaN(v)) return "—";
         const nf = comp && comp.number_format;
         if (nf === "percentage") return (Math.round(v * 10000) / 100).toLocaleString("en-US") + "%";
@@ -1581,7 +1597,7 @@ export class PbFormulaStudio extends Component {
         return (c.excel_formula || "").replace(/^=/, "").trim().startsWith("-");
     }
     ring(score) { const C = 2 * Math.PI * 19; return { dash: C, offset: C * (1 - (score || 0) / 100) }; }
-    catKey(group) { return { Inputs: "info", Earnings: "earn", Deductions: "ded", Totals: "total", [PEOPLE_GROUP]: "people" }[group] || "earn"; }
+    catKey(group) { return { Inputs: "info", Earnings: "earn", Deductions: "ded", [EMPLOYER_GROUP]: "employer", Totals: "total", [PEOPLE_GROUP]: "people" }[group] || "earn"; }
     colOf(c) { return c ? CAT_COLOR[this.catKey(c.group)] : "#4F46E5"; }
 
     // ---- dependency highlighting ----
@@ -3554,7 +3570,7 @@ export class PbFormulaStudio extends Component {
     get budgetEditByGroup() {
         const e = this.state.budgetEdit;
         if (!e) return [];
-        const order = ["Earnings", "Deductions", "Totals", "Inputs"];
+        const order = ["Earnings", "Deductions", EMPLOYER_GROUP, "Totals", "Inputs"];
         const seen = {};
         const groups = [];
         for (const row of e.rows) {
@@ -3627,7 +3643,7 @@ export class PbFormulaStudio extends Component {
     get offerGroups() {
         const r = this.state.offerResult;
         if (!r || !r.rows) return [];
-        const order = ["Earnings", "Deductions", "Totals", "Inputs"];
+        const order = ["Earnings", "Deductions", EMPLOYER_GROUP, "Totals", "Inputs"];
         const seen = {}, groups = [];
         for (const row of r.rows) {
             const g = row.group || "Earnings";

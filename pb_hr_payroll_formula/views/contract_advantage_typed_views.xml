@@ -2,23 +2,65 @@
 <odoo>
     <!--
       Contract components can hold text as well as an amount (COLROLES / CR-A3).
-      The list lives in om_hr_payroll's contract form; this inherited view adds the
-      two new columns there rather than editing that module, so nothing outside
+      The list lives in om_hr_payroll's contract form; this inherited view adds
+      the new columns there rather than editing that module, so nothing outside
       pb_hr_payroll_formula has to be upgraded to show them.
 
-      Text Value shows by default because a component that has one is exactly the
-      case somebody is looking for; Value Type is hidden by default because it is a
-      property of the template, not of this line.
+      RD50 — A TEXT COMPONENT HAD NOWHERE TO SHOW ITSELF.
+
+      The Text Value column was added, and that was not enough: every row still
+      rendered three money cells, so a text component read as
+      "0.00 · 0.00 · 0.00" with an empty column somewhere off to the right. On a
+      contract with twenty-one components, four of them text, nothing on screen
+      said which four — and the meaningless zeros were louder than the one cell
+      that mattered. The owner's words: "it shows only float values".
+
+      So the row now shows the cells that MEAN something for its type and blanks
+      the rest. Per-row, not per-column: one list holds both kinds, and hiding a
+      whole column would take the amounts away from the seventeen components
+      that do have one.
+
+      `value_type` is `column_invisible` rather than an optional column,
+      deliberately. An optional column a person has switched off is not fetched,
+      and every modifier below reads it — the row would then fall back to
+      showing everything, which is the bug this fixes, arriving quietly and only
+      for whoever had toggled that column.
     -->
     <record id="view_hr_contract_form_typed_components" model="ir.ui.view">
         <field name="name">hr.contract.form.typed.components</field>
         <field name="model">hr.contract</field>
         <field name="inherit_id" ref="om_hr_payroll.hr_contract_form_inherit"/>
         <field name="arch" type="xml">
+            <!-- The type has to be IN the list for the row modifiers to read it,
+                 and must never be shown: it is a property of the template, not
+                 of this line, and it is already said by which cells appear. -->
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='advantage_template_code']"
+                   position="after">
+                <field name="value_type" column_invisible="1"/>
+            </xpath>
+
+            <!-- Money cells: nothing for a text component to put in them. -->
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='advantage_lower_bound']"
+                   position="attributes">
+                <attribute name="invisible">value_type == 'text'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='advantage_upper_bound']"
+                   position="attributes">
+                <attribute name="invisible">value_type == 'text'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='amount']"
+                   position="attributes">
+                <attribute name="invisible">value_type == 'text'</attribute>
+            </xpath>
+
+            <!-- …and the text cell is the one that means something there.
+                 Not `optional`: a component whose only value lives in this
+                 column must not depend on somebody having switched it on. -->
             <xpath expr="//field[@name='advantages_ids']/list/field[@name='amount']"
                    position="after">
-                <field name="text_value" optional="show"/>
-                <field name="value_type" optional="hide"/>
+                <field name="text_value"
+                       invisible="value_type != 'text'"
+                       placeholder="Type the value…"/>
             </xpath>
         </field>
     </record>
