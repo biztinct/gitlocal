@@ -77,6 +77,27 @@ _NET_CODES = {'NET', 'NETPAY', 'NET_PAY', 'NETSALARY', 'TAKEHOME', 'TAKE_HOME'}
 PEOPLE_GROUP = 'People & Data'
 
 
+#: RD47 — `net_role` -> the studio's display group. The classifier already
+#: decided whether a component is added to net pay, taken off it, or neither;
+#: this is a translation of that answer, not a second opinion about it.
+_NET_ROLE_GROUP = {
+    'earning': 'Earnings',
+    'deduction': 'Deductions',
+    'net': 'Totals',
+    # 'employer_cost' and 'info' are deliberately ABSENT.
+    #
+    # The panel has four buckets and an employer contribution is a fifth thing:
+    # it is money going out, but NOT off this person's net pay, so filing it
+    # under Deductions would draw it with a minus and say something false. The
+    # payslip already treats it separately ("Employer contributions" is its own
+    # section). Giving it a bucket of its own is a design change, not a bug fix,
+    # so it is left exactly where it was — on the lexicon — and flagged rather
+    # than quietly moved. Same for 'info', which is neither added nor
+    # subtracted; the lexicon is a better guess at where a reader will look for
+    # it than "Earnings" would be.
+}
+
+
 def _group_for(rule):
     code = (rule.code or '').upper()
     name = (rule.name or '').lower()
@@ -87,6 +108,25 @@ def _group_for(rule):
         return PEOPLE_GROUP
     if rule.column_type == 'input':
         return 'Inputs'
+    # RD47 — ASK THE CLASSIFIER BEFORE GUESSING FROM THE NAME.
+    #
+    # The lexicon below is SUBSTRING matching, and this codebase has paid for
+    # that before: NETROLE replaced `_get_default_category`'s 'SI'/'TAX'-in-code
+    # test after it invented ₫5.06bn of phantom deductions. The same test
+    # survived here, where it decides which side of the Live Preview a number
+    # sits on and whether it is drawn with a minus in front of it — so
+    # `ACTUBASISALA` ("Actual Basic salary") read as a DEDUCTION, because
+    # "ba-SI-sala" contains SI, and the panel showed a real earning of
+    # ₫9,937,500 as −₫9,937,500. `TAXABLEINCOM` and the SI-HI-UI constants went
+    # the same way.
+    #
+    # `net_role` is the sign-propagation classifier's own verdict — it had
+    # `ACTUBASISALA` right as `earning` the whole time. It is asked first, and
+    # the lexicon is left as the fallback for a component the classifier has not
+    # reached (`info`, or a database whose formula module predates the field).
+    role = getattr(rule, 'net_role', False)
+    if role in _NET_ROLE_GROUP:
+        return _NET_ROLE_GROUP[role]
     if any(k in code or k in name for k in ('NET', 'GROSS', 'TOTAL', 'thực nhận', 'tổng')):
         return 'Totals'
     if any(k in code or k in name for k in ('SI', 'HI', 'UI', 'PIT', 'TAX', 'DED', 'insurance', 'deduction', 'bảo hiểm', 'thuế')):
@@ -1206,6 +1246,12 @@ class PbFormulaStudio(models.AbstractModel):
                 'column_role': r.column_role or 'payroll',
                 'column_role_source': r.column_role_source or 'auto',
                 'is_contract_component': bool(r.is_contract_component),
+                # RD47 — what the NET PAY formula does with this component, sent
+                # so the panel can decide the MINUS SIGN from the arithmetic
+                # rather than from which column the component is filed under.
+                # Those are two different questions and conflating them is what
+                # drew "Taxable Income" as a negative.
+                'net_role': getattr(r, 'net_role', False) or '',
                 'is_text_component': bool(r.is_text_component),
                 'is_visible_in_grid': bool(r.is_visible_in_grid),
                 # SOURCING S4 — ONE nested object, not five sibling keys, so every

@@ -1635,11 +1635,11 @@
             </t>
             <t t-foreach="state.components" t-as="c" t-key="c.id">
               <div t-att-data-col="c.col"
-                   t-attf-class="tp-row {{ isDeduction(c) ? 'ded' : '' }} {{ isDep(c.col) ? 'dep' : '' }} {{ isOutcome(c.col) ? 'outcome' : '' }}"
+                   t-attf-class="tp-row {{ showsMinus(c) ? 'ded' : '' }} {{ isDep(c.col) ? 'dep' : '' }} {{ isOutcome(c.col) ? 'outcome' : '' }}"
                    t-attf-style="{{ depStyle(c) }}"
                    t-on-click="() => this.selectComponent(c.id)">
                 <span class="nm"><span class="c" t-esc="c.col"/><t t-esc="c.name"/></span>
-                <span class="v"><t t-if="isDeduction(c)">−</t><t t-esc="previewVal(c.col)"/></span>
+                <span class="v"><t t-if="showsMinus(c)">−</t><t t-esc="previewVal(c.col)"/></span>
               </div>
             </t>
           </div>

@@ -7,7 +7,6 @@
         <field name="arch" type="xml">
             <xpath expr="//form/header" position="inside">
                 <field name="calculation_method" invisible="1"/>
-                <field name="struct_id" invisible="1"/>
                 <!-- Also offered on a payslip NOT yet marked as formula but with
                      no salary structure either: that is the payslip showing 0.00
                      the button exists to repair, and hiding it there left the
@@ -23,7 +22,22 @@
                  via the formula engine), yet the native form marks struct_id
                  required whenever a contract is set — and readonly here — so Confirm
                  would fail "Missing required fields" with no way to fix it. Only
-                 require a structure for non-formula payslips. -->
+                 require a structure for non-formula payslips.
+
+                 RD47 — AND IT HAD TO REACH THE FIELD IN THE SHEET. This xpath
+                 matches the FIRST `struct_id` in document order, and the header
+                 insert above used to add one — so the relaxed condition landed
+                 on the duplicate this view had just created, and the real field
+                 in the sheet kept `required="contract_id"`. Every formula
+                 payslip therefore refused to save with "Missing required
+                 fields", from Confirm, from Cancel Payslip and from any button
+                 that saves first; it went unnoticed because the run-level
+                 buttons never open the payslip form. The header field is gone
+                 (a modifier can read any field in the view, wherever it sits),
+                 so this xpath now reaches the one that was always the problem.
+                 Verified on the served arch, not on the source: two `struct_id`
+                 fields with two different `required` expressions is exactly
+                 what reading only this file hides. -->
             <xpath expr="//field[@name='struct_id']" position="attributes">
                 <attribute name="required">contract_id and calculation_method != 'formula'</attribute>
             </xpath>
