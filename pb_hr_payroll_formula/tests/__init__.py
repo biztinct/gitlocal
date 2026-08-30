@@ -106,3 +106,11 @@ from . import test_rd49_sync_cost
 # RD51 — the per-employee Zoho salary search ignored its filter and returned the
 # same row for everybody: one person's pay for 152 people.
 from . import test_rd51_salary_identity
+
+# RD54/RD56 — the records come into step from the connected system without
+# anybody remembering to, and the refresh never makes payroll.
+from . import test_rd54_record_refresh
+
+# RD60 — the collateral of a record refresh: "the newest batch" was load-bearing
+# in four places, and the connected system spells one employee key two ways.
+from . import test_rd60_signal_and_identity

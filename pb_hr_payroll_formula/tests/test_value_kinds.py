@@ -441,6 +441,15 @@ class TestValueKinds(common.TransactionCase):
                          "unknown wording must never mean 'has left'")
         self.assertFalse(vkc.is_left_status(''))
         self.assertFalse(vkc.is_left_status(False))
+        # RD60 — a spreadsheet names the person, not the event. The reference
+        # tenant's own file says RESIGNEE, and while that was unrecognised the
+        # leaver came back into the run ticked by default.
+        self.assertTrue(vkc.is_left_status('RESIGNEE'))
+        self.assertTrue(vkc.is_left_status('Resignation'))
+        self.assertFalse(vkc.is_left_status('LONG LEAVE'),
+                         "on leave is not gone — they are still owed a payslip")
+        self.assertFalse(vkc.is_left_status('NEW HIIRE'),
+                         "including the tenant's own typo for it")
 
     def test_30_the_classifier_suggests_a_signal_but_never_overrules(self):
         self.r_loc.write({'payroll_signal': 'employment_status'})

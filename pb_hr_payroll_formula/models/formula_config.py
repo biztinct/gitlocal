@@ -12,6 +12,12 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+# RD60 — how far back `employee_signal_map` looks for somebody's employment
+# status. Deep enough that a run of small correction files, or a refresh that
+# pulled only salaries, does not lose the roster's statuses; shallow enough that
+# the Run Payroll wizard never walks a year of history to draw four chips.
+_SIGNAL_STATUS_BATCH_SCAN = 8
+
 
 class HrFormulaConfig(models.Model):
     """
@@ -1760,11 +1766,16 @@ class HrFormulaConfig(models.Model):
         self.ensure_one()
         Line = self.env['hr.payroll.import.line'].sudo()
         Batch = self.env['hr.payroll.import.batch'].sudo()
-        batch = Batch.search([('formula_config_id', '=', self.id),
-                              ('state', '=', 'done')], order='id desc', limit=1)
+        # RD59 — same reason as `employee_signal_map`: a record refresh is a
+        # batch, and "the newest batch" must mean the newest PAY DATA. Sampling
+        # a refresh's payload would teach the value-kind classifier about a
+        # payload no payslip was ever computed from.
+        pay_data = [('formula_config_id', '=', self.id),
+                    ('create_payslips', '=', True)]
+        batch = Batch.search(pay_data + [('state', '=', 'done')],
+                             order='id desc', limit=1)
         if not batch:
-            batch = Batch.search([('formula_config_id', '=', self.id)],
-                                 order='id desc', limit=1)
+            batch = Batch.search(pay_data, order='id desc', limit=1)
         if not batch:
             return {}
         lines = Line.search([('batch_id', '=', batch.id)], limit=limit)
@@ -2424,7 +2435,7 @@ class HrFormulaConfig(models.Model):
             lambda r: r.payroll_signal == signal)[:1]
 
     def employee_signal_map(self, limit=5000):
-        """``{employee_id: {'status': str, 'hours': float}}`` from the newest batch.
+        """``{employee_id: {'status': str, 'hours': float}}`` for this run.
 
         Read from `hr_payroll_import_line.raw_data_json` — what the source
         actually delivered — because on a scheme-driven tenant the Payobook
@@ -2440,11 +2451,42 @@ class HrFormulaConfig(models.Model):
             return {}
 
         Batch = self.env['hr.payroll.import.batch'].sudo()
-        batch = Batch.search([('formula_config_id', '=', self.id),
-                              ('state', '=', 'done')], order='id desc', limit=1) \
-            or Batch.search([('formula_config_id', '=', self.id)],
-                            order='id desc', limit=1)
-        if not batch:
+        # RD59/RD60 — THE TWO SIGNALS DO NOT COME FROM THE SAME PLACE.
+        #
+        # Both used to be read from "the newest batch", and that single rule was
+        # wrong in two different directions on the same afternoon:
+        #
+        #   * RD54's record refresh is a batch. The moment one ran, the Run
+        #     Payroll wizard read employment status from ITS payload instead of
+        #     the month's pay data — and a salary-only refresh carries no status
+        #     at all, so every chip collapsed into "Not stated": 160 employees
+        #     offered with no way to exclude leavers, on a screen that had been
+        #     filtering correctly an hour earlier.
+        #   * Pinning both signals to the newest PAY DATA then landed on a
+        #     twelve-row correction file, which states a status for four people
+        #     and says nothing about the other 148. Same empty chips, opposite
+        #     cause.
+        #
+        # They are different KINDS of fact, so they get different rules:
+        #
+        #   HOURS  belong to a period. Only this run's own pay data may say how
+        #          many hours somebody worked this month; a refresh pulled on a
+        #          different day is not evidence about June.
+        #   STATUS belongs to the person. It is true until it changes, and the
+        #          freshest statement of it wins WHOEVER made it — the newest
+        #          batch that actually names a status for that employee, read
+        #          per person rather than per batch. A payload that is silent
+        #          about somebody is silent, not an assertion that they have no
+        #          status.
+        pay_data = [('formula_config_id', '=', self.id),
+                    ('create_payslips', '=', True)]
+        run_batch = Batch.search(pay_data + [('state', '=', 'done')],
+                                 order='id desc', limit=1) \
+            or Batch.search(pay_data, order='id desc', limit=1)
+        status_batches = Batch.search(
+            [('formula_config_id', '=', self.id)],
+            order='id desc', limit=_SIGNAL_STATUS_BATCH_SCAN)
+        if not (run_batch or status_batches):
             return {}
 
         wires = {}
@@ -2470,28 +2512,52 @@ class HrFormulaConfig(models.Model):
 
         status_keys = keys_for(status_rule)
         hours_keys = keys_for(hours_rule)
+        Line = self.env['hr.payroll.import.line'].sudo()
 
+        def rows_of(batch):
+            for line in Line.search([('batch_id', '=', batch.id)], limit=limit):
+                if not line.employee_id:
+                    continue
+                try:
+                    raw = json.loads(line.raw_data_json or '{}')
+                except (TypeError, ValueError):
+                    continue
+                if not isinstance(raw, dict):
+                    continue
+                yield line.employee_id.id, {
+                    Batchm._normalize_header_key(k): v
+                    for k, v in raw.items() if isinstance(k, str)}
+
+        # Hours — this run's pay data and nothing else (see the note above).
         out = {}
-        for line in self.env['hr.payroll.import.line'].sudo().search(
-                [('batch_id', '=', batch.id)], limit=limit):
-            if not line.employee_id:
-                continue
-            try:
-                raw = json.loads(line.raw_data_json or '{}')
-            except (TypeError, ValueError):
-                continue
-            if not isinstance(raw, dict):
-                continue
-            indexed = {Batchm._normalize_header_key(k): v
-                       for k, v in raw.items() if isinstance(k, str)}
-            status = next((indexed[k] for k in status_keys if indexed.get(k)), '')
-            hours = next((indexed[k] for k in hours_keys if k in indexed), 0.0)
-            try:
-                hours = float(str(hours).replace(',', '') or 0.0)
-            except (TypeError, ValueError):
-                hours = 0.0
-            out[line.employee_id.id] = {'status': str(status or '').strip(),
-                                        'hours': hours}
+        if run_batch:
+            for emp_id, indexed in rows_of(run_batch):
+                hours = next((indexed[k] for k in hours_keys if k in indexed), 0.0)
+                try:
+                    hours = float(str(hours).replace(',', '') or 0.0)
+                except (TypeError, ValueError):
+                    hours = 0.0
+                out[emp_id] = {'status': '', 'hours': hours}
+
+        # Status — newest first, and the FIRST batch to name one for a person
+        # wins. `setdefault`-by-hand rather than a plain write: a later (older)
+        # batch must not overwrite a fresher statement, and a batch that is
+        # silent about somebody must not overwrite one that spoke.
+        answered = set()
+        for batch in status_batches:
+            for emp_id, indexed in rows_of(batch):
+                if emp_id in answered:
+                    continue
+                status = next(
+                    (indexed[k] for k in status_keys if indexed.get(k)), '')
+                status = str(status or '').strip()
+                if not status:
+                    continue
+                answered.add(emp_id)
+                if emp_id in out:
+                    out[emp_id]['status'] = status
+                else:
+                    out[emp_id] = {'status': status, 'hours': 0.0}
         return out
 
     def employment_status_options(self):
