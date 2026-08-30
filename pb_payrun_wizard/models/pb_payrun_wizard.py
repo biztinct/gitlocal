@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import base64
 import logging
-from datetime import date
+from datetime import date, datetime, time as dtime
 from dateutil.relativedelta import relativedelta
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
@@ -694,6 +694,27 @@ class PbPayrunWizard(models.AbstractModel):
         endpoint_id = int(step.get('endpoint_id') or 0)
         if not connector or not endpoint_id:
             return out
+        # RD55 — DON'T FETCH WHAT IS ALREADY HERE.
+        #
+        # The scheduled fetch (RD49) was supposed to take the wait out of a pay
+        # run, and on its own it did not: the wizard rebuilt its plan from every
+        # mapped feed and pulled all of them regardless, so the owner still
+        # watched "Syncing Zoho People…" after the data had been fetched
+        # overnight. Fetching early only helps if something declines to fetch
+        # again.
+        #
+        # FRESH means: this feed already holds data for THIS period, pulled
+        # since the period ended. Not "pulled recently" — a pull from the middle
+        # of the month saw a month that had not finished, and re-reading a
+        # complete month is cheap while trusting an incomplete one is not.
+        fresh = self._rd55_feed_is_fresh(connector, endpoint_id, vals)
+        if fresh:
+            out['skipped'] = True
+            out['pulled'] = fresh
+            out['note'] = _(
+                "%(label)s was already fetched — using that.",
+                label=out['label'])
+            return out
         try:
             connector.action_pull_endpoint(
                 endpoint_id,
@@ -708,6 +729,105 @@ class PbPayrunWizard(models.AbstractModel):
             out['error'] = _("%(label)s could not be reached: %(why)s",
                              label=out['label'], why=exc)
         return out
+
+    @api.model
+    def update_records_from_feed(self, vals=None):
+        """RD56 — bring employee and contract records into step, from the feed.
+
+        The pay run with no spreadsheet wrote nothing to any record, so a
+        tenant running payroll from a connected system watched its contracts
+        drift further from it every month while the payslips stayed right: 152
+        contracts all reading one person's salary while 29 different salaries
+        were being paid.
+
+        ONE BUTTON, NO SECOND CHOICE. The spreadsheet path offers "Update
+        Payobook" or "This run only" because a FILE can legitimately be a
+        one-off — a bonus, a correction. A connected system is the source of
+        truth by definition, so there is nothing to decide.
+
+        It writes records and creates NO payslips. The run is computed
+        afterwards exactly as before, so pressing this changes what the records
+        say and never what the wizard does next.
+
+        Reuses the connector's own refresh, which reuses the one writeback
+        there is (`action_process` with `create_payslips=False`) — the mapping
+        priority, the bank assembly and the per-row error isolation all come
+        with it rather than being written a second time.
+        """
+        vals = vals or {}
+        Connector = self.env.get('hr.integration.connector')
+        if Connector is None:
+            return {'ok': False, 'msg': _("No connected system is set up.")}
+        config = self._payrun_config(vals)
+        connector = config.connector_id if config else None
+        if not connector:
+            return {'ok': False, 'msg': _(
+                "This payroll scheme is not linked to a connected system, so "
+                "there is nothing to bring the records into step with.")}
+        date_start = vals.get('date_start')
+        date_end = vals.get('date_end')
+        try:
+            connector.sudo()._rd54_writeback_from_store(date_start, date_end)
+        except Exception as exc:        # noqa: BLE001 — never break the step
+            _logger.exception("RD56: record update failed before payroll")
+            return {'ok': False, 'msg': _(
+                "The records could not be updated: %s") % exc}
+        connector.invalidate_recordset()
+        return {'ok': True,
+                'msg': connector.sudo().cron_writeback_last_result or _(
+                    "Records are up to date.")}
+
+    @api.model
+    def _payrun_config(self, vals=None):
+        """The scheme this run is about, or an empty recordset."""
+        vals = vals or {}
+        Config = self.env.get('hr.formula.config')
+        if Config is None:
+            return Config
+        cfg_id = vals.get('config_id') or vals.get('formula_config_id')
+        if cfg_id:
+            found = Config.sudo().browse(int(cfg_id)).exists()
+            if found:
+                return found
+        domain = [('state', '=', 'active'), ('connector_id', '!=', False)]
+        if 'company_id' in Config._fields and self.env.companies:
+            domain += ['|', ('company_id', '=', False),
+                       ('company_id', 'in', self.env.companies.ids)]
+        return Config.sudo().search(domain, limit=1)
+
+    @api.model
+    def _rd55_feed_is_fresh(self, connector, endpoint_id, vals):
+        """How many rows this feed already holds for the period, if it is safe
+        to reuse them — otherwise 0.
+
+        THE TEST IS THE PERIOD, NOT THE CLOCK. A pull made while the month was
+        still running saw an unfinished month, so "pulled two hours ago" is not
+        a reason to trust it. The data must have arrived AFTER the period ended.
+
+        Never raises and answers 0 on any doubt: a wasted fetch costs a minute,
+        a skipped one costs a pay run computed on last month's numbers.
+        """
+        try:
+            Store = self.env.get('hr.api.data.store')
+            if Store is None:
+                return 0
+            date_end = vals.get('date_end')
+            if not date_end:
+                return 0
+            after = fields.Date.to_date(date_end)
+            if not after:
+                return 0
+            return Store.sudo().search_count([
+                ('connector_id', '=', connector.id),
+                ('endpoint_id', '=', endpoint_id),
+                ('create_date', '>', fields.Datetime.to_datetime(
+                    datetime.combine(after, dtime.min))),
+                ('state', 'not in', ('archived', 'error')),
+            ])
+        except Exception:       # noqa: BLE001 — see docstring
+            _logger.warning("RD55: could not judge feed freshness; fetching.",
+                            exc_info=True)
+            return 0
 
     def _spreadsheet_configs(self):
         """Every scheme in view whose components declare a spreadsheet column.

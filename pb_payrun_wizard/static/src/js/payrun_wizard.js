@@ -413,6 +413,31 @@ export class PayrunWizard extends Component {
         const f = ev.target.files && ev.target.files[0];
         this._takeFile(f);
     }
+    // RD56 — one button, and it does exactly what it says: writes the
+    // connected system's values onto the matching employee and contract
+    // records. It creates NO payslips; the run is computed afterwards exactly
+    // as it always was.
+    async updateRecordsFromFeed() {
+        this.state.sheet.recordsBusy = true;
+        this.state.sheet.recordsMsg = "";
+        this.state.sheet.error = "";
+        try {
+            const r = await this.orm.call(
+                "pb.payrun.wizard", "update_records_from_feed",
+                [{ ...this.state.form }]);
+            if (r && r.ok) {
+                this.state.sheet.recordsMsg = r.msg || "";
+            } else {
+                this.state.sheet.error = (r && r.msg) || "";
+            }
+        } catch (e) {
+            console.warn("pb_payrun_wizard: record update failed", e);
+            this.state.sheet.error = "The records could not be updated.";
+        } finally {
+            this.state.sheet.recordsBusy = false;
+        }
+    }
+
     clearSheetFile() {
         Object.assign(this.state.sheet, {
             file_b64: "", file_name: "", preflight: null, error: "",
@@ -541,6 +566,14 @@ export class PayrunWizard extends Component {
             try {
                 const r = await this.orm.silent.call(
                     "pb.payrun.wizard", "sync_step", [steps[i], payload]);
+                // RD55 — a feed already fetched for this period is not synced
+                // again. Say so rather than showing a spinner for work that did
+                // not happen: "it was quick" and "it was skipped" look
+                // identical otherwise, and only one of them is a reason to
+                // trust the numbers.
+                if (r && r.skipped) {
+                    this.state.busyMsg = (r.note || steps[i].label);
+                }
                 sync.ran = true;
                 sync.connectors.push(r);
                 if (r && r.error) { sync.errors.push(r.error); }

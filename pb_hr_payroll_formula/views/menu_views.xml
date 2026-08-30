@@ -78,6 +78,15 @@
               action="action_payroll_load_pay_data"
               sequence="20"/>
 
+    <!-- RD54 — the same load, starting on the connected system instead of a
+         file. Beside the one above rather than replacing it: both sources are
+         legitimate and which one you want is a decision, not a default. -->
+    <menuitem id="menu_import_from_feed"
+              name="Load From Connected System…"
+              parent="menu_formula_import"
+              action="action_payroll_load_from_feed"
+              sequence="25"/>
+
     <!-- Integration Submenu -->
     <menuitem id="menu_formula_integrations"
               name="Integrations"

@@ -39,6 +39,13 @@ SOURCE_LABEL = {
 LAUNCH_CANDIDATES = [
     ('pb_hr_payroll_formula.action_payroll_load_pay_data',
      'Load Pay Data', 'This period’s numbers — upload, review matches, commit', 'upload', True),
+    # RD54 — the same load with no upload. It was always possible and had no
+    # door: the reference tenant's only load read the connected system, and
+    # nobody ran a second one because every button started on a file.
+    ('pb_hr_payroll_formula.action_payroll_load_from_feed',
+     'Load From Connected System',
+     'This period’s numbers straight from the connected system — no file to upload',
+     'cloud-download', False),
     ('pb_import_advanced.action_pb_multisheet_wizard',
      'Set up columns from Excel', 'One-off setup: turn a workbook’s columns into scheme components', 'table', False),
     ('pb_import_advanced.action_pb_employee_wizard',

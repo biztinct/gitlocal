@@ -103,6 +103,79 @@
           </div>
         </div>
 
+        <!-- ==== RD58 — the automatic monthly fetch ====
+             Put here and not on the native connector form because this cockpit
+             IS the connector as far as anyone using the product is concerned;
+             the two switches were shipped on a form nobody opens and were
+             reported missing within the hour.
+
+             Two switches, because fetching and WRITING are different acts with
+             different consequences, and the second hands the connected system
+             ownership of every mapped field. -->
+        <div class="pbim-panel pbcc-sched" t-if="d.schedule and d.schedule.available">
+          <div class="pbcc-sched-h">
+            <h2 class="pbim-h2"><t t-out="ic('clock',16)"/> Automatic monthly fetch</h2>
+            <span class="pbcc-sched-next" t-if="d.schedule.enabled and d.schedule.next_run">
+              Next run <b t-esc="d.schedule.next_run"/>
+            </span>
+          </div>
+
+          <label class="pbcc-sw">
+            <input type="checkbox" t-att-checked="d.schedule.enabled"
+                   t-att-disabled="!canWrite or state.schedBusy"
+                   t-on-change="(ev) => this.setSchedule({enabled: ev.target.checked})"/>
+            <span class="pbcc-sw-tx">
+              <b>Fetch last month automatically</b>
+              <span>On the 5th of each month, pull the previous month from this
+                    system so a pay run never waits for it.</span>
+            </span>
+          </label>
+
+          <label class="pbcc-sw" t-if="d.schedule.enabled">
+            <input type="checkbox" t-att-checked="d.schedule.writeback"
+                   t-att-disabled="!canWrite or state.schedBusy"
+                   t-on-change="(ev) => this.setSchedule({writeback: ev.target.checked})"/>
+            <span class="pbcc-sw-tx">
+              <b>Also update employee and contract records</b>
+              <span>Write the mapped values onto Employee, Contract and Bank
+                    records after each fetch.</span>
+            </span>
+          </label>
+
+          <!-- Not decoration: once this is on, a value corrected by hand comes
+               back at the next fetch. Say so where the switch is. -->
+          <div class="pbcc-sched-warn" t-if="d.schedule.writeback">
+            <t t-out="ic('alert',14)"/>
+            <span>This system is now the source of truth for every mapped field.
+                  A value corrected in Payobook will be replaced at the next
+                  fetch unless you unmap that field.</span>
+          </div>
+
+          <div class="pbcc-sched-acts" t-if="d.schedule.enabled and canWrite">
+            <button class="pbim-btn outline pbim-btn-sm"
+                    t-att-disabled="state.schedBusy"
+                    t-on-click="() => this.runAction('action_fetch_last_month_now')">
+              <t t-out="ic('refresh',14)"/> Fetch last month now</button>
+            <button t-if="d.schedule.writeback" class="pbim-btn pbim-btn-sm"
+                    t-att-disabled="state.schedBusy"
+                    t-on-click="() => this.runAction('action_refresh_records_now')">
+              <t t-out="ic('database',14)"/> Update records now</button>
+          </div>
+
+          <div class="pbcc-sched-last" t-if="d.schedule.last_run">
+            <span t-attf-class="pbcc-sched-dot {{ d.schedule.state }}"/>
+            <span><b t-esc="d.schedule.state_label"/> · <t t-esc="d.schedule.last_run"/></span>
+            <span class="pbcc-sched-msg" t-esc="d.schedule.message"/>
+          </div>
+          <div class="pbcc-sched-last" t-if="d.schedule.writeback_message">
+            <span class="pbcc-sched-dot ok"/>
+            <span class="pbcc-sched-msg" t-esc="d.schedule.writeback_message"/>
+          </div>
+          <div class="pbcc-sched-off" t-if="!d.schedule.enabled">
+            Off — every pay run will fetch this system's data while you wait.
+          </div>
+        </div>
+
         <!-- ==== the feeds ====
              One connector, many APIs. Each chip is a feed: what kind of record
              it produces, when it last ran, how it went, what it has in the

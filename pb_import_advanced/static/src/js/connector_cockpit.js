@@ -80,6 +80,9 @@ export class ConnectorCockpit extends Component {
             // which endpoint is mid-pull (id), so one chip spins and the rest
             // of the strip stays usable
             syncing: 0,
+            // RD58 — the schedule's own switches; separate from `busy` so
+            // flicking one does not grey the whole cockpit.
+            schedBusy: false,
             // ditto for the C6 vendor field-list fetch, which is a different
             // call with a different failure mode and must not borrow `syncing`
             // — one spinner for two verbs is a strip that lies about which one
@@ -156,9 +159,30 @@ export class ConnectorCockpit extends Component {
             this.state.busy = false;
         }
     }
+    // RD58 — turn the monthly fetch, and the record update, on or off.
+    async setSchedule(changes) {
+        this.state.schedBusy = true;
+        try {
+            const r = await this.orm.call(MODEL, "set_schedule",
+                [this.connectorId, changes.enabled, changes.writeback]);
+            if (r && r.ok && this.state.detail) {
+                this.state.detail.schedule = r.schedule;
+            } else if (r && r.msg) {
+                this.notif.add(r.msg, { type: "warning" });
+            }
+        } catch (e) {
+            console.warn("connector cockpit: schedule change failed", e);
+            this.notif.add("That could not be changed.", { type: "warning" });
+        } finally {
+            this.state.schedBusy = false;
+        }
+    }
+
     runAction(method) {
         const msg = { action_test_connection: "Testing connection…", action_pull_data: "Pulling data…",
-                      action_fetch_available_fields: "Fetching fields…", action_disconnect: "Disconnecting…" }[method] || "Working…";
+                      action_fetch_available_fields: "Fetching fields…", action_disconnect: "Disconnecting…",
+                      action_fetch_last_month_now: "Fetching last month…",
+                      action_refresh_records_now: "Updating records…" }[method] || "Working…";
         const args = [this.connectorId, method];
         if (method === "action_pull_data") {
             // Only the pull reads a window; the other three take none and must

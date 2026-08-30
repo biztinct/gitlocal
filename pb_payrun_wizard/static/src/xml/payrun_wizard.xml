@@ -158,6 +158,35 @@
                             <div class="pw-hint" t-if="!state.sheet.file_name and state.sheet.gate.filename_hint">
                                 Last time this scheme read <b t-esc="state.sheet.gate.filename_hint"/>.
                             </div>
+
+                            <!-- RD56 — NO FILE IS NOT THE SAME AS NOTHING TO DO.
+                                 A pay run with no spreadsheet wrote nothing to
+                                 any record, so a tenant that runs payroll from
+                                 the connected system saw its contracts drift
+                                 further from it every month while the payslips
+                                 stayed right — 152 contracts all reading one
+                                 person's salary. One button, no second choice:
+                                 the file has its two cards because a file can
+                                 be a one-off, and the connected system is the
+                                 source of truth by definition. -->
+                            <div class="pw-feedsync" t-if="!state.sheet.file_name">
+                                <div class="pw-feedsync-tx">
+                                    <b>No file this month?</b>
+                                    <span>Bring employee and contract records into
+                                    step with the connected system first — the
+                                    values it delivered will be saved and used
+                                    from now on.</span>
+                                </div>
+                                <button class="pw-btn pw-btn--sm"
+                                        t-att-disabled="state.sheet.recordsBusy"
+                                        t-on-click="updateRecordsFromFeed">
+                                    <t t-if="state.sheet.recordsBusy">Updating…</t>
+                                    <t t-else="">Update records</t>
+                                </button>
+                            </div>
+                            <div class="pw-hint" t-if="state.sheet.recordsMsg">
+                                <t t-out="ic('check',13)"/> <span t-esc="state.sheet.recordsMsg"/>
+                            </div>
                             <div class="pw-err" t-if="state.sheet.error">
                                 <t t-out="ic('alert',14)"/> <span t-esc="state.sheet.error"/>
                             </div>

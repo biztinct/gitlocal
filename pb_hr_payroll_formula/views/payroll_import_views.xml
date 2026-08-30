@@ -457,4 +457,23 @@
         <field name="code">action = env['hr.payroll.import.batch'].action_open_guided_import(source_type='excel')</field>
     </record>
 
+    <!-- RD54 — THE SAME DOOR, FOR THE CONNECTED SYSTEM.
+
+         A load has always been able to read the API data store instead of a
+         workbook — the reference tenant's only load, the one that created 152
+         contracts, was exactly that. But the door above opens on the
+         spreadsheet step, so the option was reachable only by somebody who
+         already knew the flow had a source picker. Nobody had run one since
+         the day the tenant was set up, and the records drifted for four days
+         while the payslips stayed right.
+
+         Same flow, same steps, same guided review — it starts on the source
+         that needs no upload. -->
+    <record id="action_payroll_load_from_feed" model="ir.actions.server">
+        <field name="name">Load From Connected System</field>
+        <field name="model_id" ref="pb_hr_payroll_formula.model_hr_payroll_import_batch"/>
+        <field name="state">code</field>
+        <field name="code">action = env['hr.payroll.import.batch'].action_open_guided_import(source_type='api_data_store')</field>
+    </record>
+
 </odoo>
