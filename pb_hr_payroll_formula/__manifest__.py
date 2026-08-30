@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.104.0',
+    'version': '19.0.1.107.0',
+    # RD49 — put the monthly fetch on the 5th at 02:00 (see hooks.py).
+    'post_init_hook': 'rd49_schedule_monthly_fetch',
     'category': 'Human Resources/Payroll',
     'summary': 'State-of-the-art Excel-like formula-based salary calculation engine',
     'description': """
@@ -71,6 +73,8 @@ License: LGPL-3
         # the endpoints whose `code` its rows quote, for the same
         # read-top-down-and-the-story-holds reason.
         'data/integration_endpoint_fields.xml',
+        # RD49 — the monthly 'fetch last month' schedule (opt-in per connector).
+        'data/integration_cron_data.xml',
         'data/transformation_rule_templates.xml',
         'data/formula_snippet_data.xml',
 

@@ -1753,10 +1753,44 @@ class HrIntegrationConnector(models.Model):
         return connector.fetch_employees(filters)
 
     def fetch_payroll_data(self, employee_ids, date_from, date_to):
-        """Fetch payroll data for specific employees and period"""
+        """Fetch payroll data for specific employees and period.
+
+        RD49 — asks for only the feed kinds this connector's ACTIVE wires read.
+        The Zoho pull makes three requests per employee (salary, attendance,
+        leave); on the reference tenant nothing maps a leave field, so a third
+        of a 456-request sync was fetching data no component could ever use.
+
+        The argument is passed ONLY to an implementation whose signature accepts
+        it. Seven connectors implement this method and most still take three
+        arguments; a keyword they do not declare would turn a saving into a
+        TypeError mid-sync.
+        """
         self.ensure_one()
         connector = self._get_connector_instance()
+        kinds = self._mapped_feed_kinds()
+        try:
+            import inspect
+            params = inspect.signature(connector.fetch_payroll_data).parameters
+        except (TypeError, ValueError):     # noqa: BLE001 — builtins, C impls
+            params = {}
+        if kinds and 'kinds' in params:
+            return connector.fetch_payroll_data(
+                employee_ids, date_from, date_to, kinds=kinds)
         return connector.fetch_payroll_data(employee_ids, date_from, date_to)
+
+    def _mapped_feed_kinds(self):
+        """Which feed kinds this connector's active wires actually read.
+
+        Empty means "cannot tell" — no wires, or wires with no endpoint — and
+        every caller reads that as "fetch everything", which is what happened
+        before this existed. Never guess a SMALLER set from missing data: the
+        cost of an unnecessary request is a slower sync, the cost of a missing
+        one is a payslip computed on nothing.
+        """
+        self.ensure_one()
+        kinds = {m.endpoint_id.data_type
+                 for m in self._sync_mapping_ids() if m.endpoint_id}
+        return sorted(k for k in kinds if k)
 
     def _sync_mapping_ids(self):
         """Field mappings that are load-bearing for sync (F114/D114.2): only

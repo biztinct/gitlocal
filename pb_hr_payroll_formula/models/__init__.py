@@ -83,3 +83,6 @@ from . import payroll_retro_adjustment
 # `hr.formula.rule` and `hr.formula.config` without declaring either (Odoo 19
 # adds model classes in import order, W84's family).
 from . import formula_net_role
+
+# RD49 — fetch last month's data on a schedule, so a pay run never waits for it.
+from . import integration_cron

@@ -45,3 +45,14 @@ def certify_module_templates(env, module_name):
         _logger.info(
             "F113 certification PASSED for %s (module %s): %d tests",
             template.code, module_name, report.get('total', 0))
+
+
+def rd49_schedule_monthly_fetch(env):
+    """Point the 'fetch last month' schedule at the next 5th at 02:00.
+
+    In a hook and not in the data file because `ir.cron.nextcall` is required
+    and an eval expression there fails the whole module load when anything
+    about it is wrong — the `numbercall` incident, which aborted every module in
+    the same upgrade. See `_rd49_next_fifth`.
+    """
+    env['hr.integration.connector']._rd49_schedule_first_run()

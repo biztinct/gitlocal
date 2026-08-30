@@ -571,7 +571,8 @@ class ZohoConnector(BaseHRConnector):
         self,
         employee_ids: List[str],
         date_from: str,
-        date_to: str
+        date_to: str,
+        kinds: Optional[List[str]] = None,
     ) -> Dict[str, Dict[str, Any]]:
         """
         Fetch payroll-related data for employees.
@@ -591,14 +592,38 @@ class ZohoConnector(BaseHRConnector):
 
         payroll_data = {}
 
+        # RD49 — DON'T FETCH WHAT NOTHING READS.
+        #
+        # This loop is the slow part of a sync: one employee at a time, THREE
+        # requests each. For 152 people that is 456 sequential HTTP round trips
+        # and several minutes of somebody waiting to run payroll.
+        #
+        # A third of them were pure waste. `kinds` is the set of feed kinds the
+        # connector's wires actually point at, and on the reference tenant no
+        # component reads a leave field at all — yet leave was pulled for every
+        # employee, every time. `None` means "no caller opinion" and keeps the
+        # historic behaviour of fetching everything, so nothing changes for a
+        # caller that has not been taught to ask.
+        wanted = set(kinds) if kinds else {'salary', 'attendance', 'leave'}
+        skipped = {'salary', 'attendance', 'leave'} - wanted
+        if skipped:
+            _logger.info(
+                "Zoho payroll pull: skipping %s for %s employees — no active "
+                "mapping reads them (saves ~%s requests)",
+                ', '.join(sorted(skipped)), len(employee_ids),
+                len(skipped) * len(employee_ids))
+
         for emp_id in employee_ids:
             try:
-                data = {
-                    'employee_id': emp_id,
-                    'salary': self._get_employee_salary(emp_id),
-                    'attendance': self._get_employee_attendance(emp_id, date_from, date_to),
-                    'leave': self._get_employee_leave(emp_id, date_from, date_to),
-                }
+                data = {'employee_id': emp_id}
+                if 'salary' in wanted:
+                    data['salary'] = self._get_employee_salary(emp_id)
+                if 'attendance' in wanted:
+                    data['attendance'] = self._get_employee_attendance(
+                        emp_id, date_from, date_to)
+                if 'leave' in wanted:
+                    data['leave'] = self._get_employee_leave(
+                        emp_id, date_from, date_to)
                 payroll_data[emp_id] = data
 
             except Exception as e:

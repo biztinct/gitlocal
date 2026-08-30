@@ -2144,7 +2144,14 @@ class PbFormulaStudio(models.AbstractModel):
             # to give the shared evaluator a `config_id` to read; no row is
             # created, so previewing a hundred people leaves no trace.
             probe = self.env['hr.formula.sample.data'].new({'config_id': config.id})
-            values = probe._evaluate_rules_with_dependencies(inputs, readonly=True)
+            # RD48 — collect the errors THIS person's numbers produce. The
+            # component's stored error belongs to whatever ran last with
+            # diagnostics on (a sample), and a read-only preview writes none —
+            # so without this the panel shows a sample's "division by zero"
+            # beside a real Standard Working Hour of 198.
+            failures = {}
+            values = probe._evaluate_rules_with_dependencies(
+                inputs, readonly=True, errors=failures)
         except Exception as exc:        # noqa: BLE001
             _logger.warning("RD46: preview failed for payslip %s: %s",
                             slip.id, exc)
@@ -2169,6 +2176,9 @@ class PbFormulaStudio(models.AbstractModel):
             'label': self._rd46_preview_label(slip, anonymize=anonymize),
             'anonymized': bool(anonymize),
             'values': out,
+            # Keyed by CODE, because the error box is rendered from the selected
+            # component and that is what it knows itself by.
+            'errors': {code: msg for code, msg in (failures or {}).items()},
         }
 
     @api.model

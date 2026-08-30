@@ -566,7 +566,8 @@ class HrFormulaSampleData(models.Model):
             _logger.error(f"Error computing formula results: {e}", exc_info=True)
             return {'error': str(e)}
 
-    def _evaluate_rules_with_dependencies(self, input_values, readonly=False):
+    def _evaluate_rules_with_dependencies(self, input_values, readonly=False,
+                                          errors=None):
         """Evaluate rules using dependency order to handle forward references.
 
         ``readonly=True`` guarantees ZERO writes: the dependency-metadata
@@ -574,7 +575,19 @@ class HrFormulaSampleData(models.Model):
         rule) is skipped, and formulas run through the ``_run_formula`` overlay
         with ``write_diagnostics=False`` instead of ``evaluate()``. Required
         for read-only RPC paths (the W54 Problems-rail detection runs on every
-        panel open — it must never touch production rules)."""
+        panel open — it must never touch production rules).
+
+        RD48 — ``errors`` is an optional caller-supplied dict, filled with
+        ``{code: message}`` for every formula that raised. An OUT-PARAMETER, so
+        the return value and every existing caller are untouched.
+
+        It exists because a component's STORED error (``last_evaluation_error``)
+        is a message from whatever data the formula last ran against WITH
+        diagnostics on — usually a sample — while a read-only preview of a REAL
+        person deliberately writes none. The panel could therefore show "float
+        division by zero" beside a Standard Working Hour of 198, because a
+        sample where that hour was 0 had failed days earlier. An error that
+        belongs to THIS subject has to travel with THIS evaluation."""
         self.ensure_one()
         rules = self.config_id.rule_ids
         if not rules:
@@ -619,6 +632,8 @@ class HrFormulaSampleData(models.Model):
                 except Exception as e:
                     _logger.warning("Formula evaluation error for %s: %s", rule.code, e)
                     results[rule.code] = 0.0
+                    if errors is not None:
+                        errors[rule.code] = str(e)
         # Second pass to resolve forward references not captured in dependency parsing.
         for _pass in range(2):
             changed = False
@@ -632,6 +647,11 @@ class HrFormulaSampleData(models.Model):
                 except Exception as e:
                     _logger.warning("Formula re-evaluation error for %s: %s", rule.code, e)
                     value = 0.0
+                    if errors is not None:
+                        errors[rule.code] = str(e)
+                else:
+                    if errors is not None:
+                        errors.pop(rule.code, None)
                 if results.get(rule.code) != value:
                     results[rule.code] = value
                     changed = True
