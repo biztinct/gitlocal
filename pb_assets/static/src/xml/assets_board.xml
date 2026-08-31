@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Assets board.
+
+       Section comments use `=` rules and never spell a CSS custom property:
+       a doubled hyphen inside an XML comment is a parse error that takes
+       every t-name in the file down with it.
+       ==================================================================== -->
+  <t t-name="pb_assets.PbAssetsBoard">
+    <div class="pbim pbim-page ast"
+         t-att-class="{ 'ast--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading the register…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel ast-empty">
+          <div class="ast-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>The register is looked after by HR and IT</h2>
+          <p>This is where every laptop, phone, card and account the company
+             hands out is tracked — who has it, since when, and what state it
+             came back in. Ask your HR administrator to add you to the asset
+             team and this screen fills in.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="ast-head">
+            <div class="ast-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Assets</h1>
+              <p class="pbim-sub">Everything the company lends out — the things
+                 people carry and the accounts they sign in with.</p>
+            </div>
+            <div class="ast-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the register again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button class="pbim-btn ghost" t-on-click="() => this.exportFile('inventory')"
+                      title="Everything on this board, as a spreadsheet">
+                <t t-out="ic('download',15)"/> Export
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openRequests">
+                <t t-out="ic('list',15)"/> Requests
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn outline"
+                      t-on-click="askOpen">
+                <t t-out="ic('inbox',15)"/> New request
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="addAsk">
+                <t t-out="ic('plus',16)"/> Add an item
+              </button>
+            </div>
+          </div>
+
+          <!-- ====================== the numbers ====================== -->
+          <div class="pbim-stats ast-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('package',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.total or 0"/>
+                <div class="l">Items on the books</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic green"><t t-out="ic('user',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.assigned or 0"/>
+                <div class="l">Out with people</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('archive',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.spare or 0"/>
+                <div class="l">Spare in the cupboard</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.repair }">
+              <div class="pbim-stat-ic amber"><t t-out="ic('wrench',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.repair or 0"/>
+                <div class="l">Under repair</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('key',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.digital_live or 0"/>
+                <div class="l">Accounts live</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.leavers_holding }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.leavers_holding or 0"/>
+                <div class="l">Leavers still holding</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================= segments ======================= -->
+          <div class="pbim-seg ast-seg">
+            <button t-attf-class="pbim-segbtn {{ state.segment === 'items' ? 'on' : '' }}"
+                    t-on-click="() => this.setSegment('items')">
+              <t t-out="ic('package',14)"/> The register
+            </button>
+            <button t-attf-class="pbim-segbtn {{ state.segment === 'requests' ? 'on' : '' }}"
+                    t-on-click="() => this.setSegment('requests')">
+              <t t-out="ic('inbox',14)"/> Requests
+              <span t-if="state.kpis.open_requests" class="ast-seg-c"
+                    t-esc="state.kpis.open_requests"/>
+            </button>
+          </div>
+
+          <!-- ================================================================
+               THE REGISTER
+               ================================================================ -->
+          <t t-if="state.segment === 'items'">
+
+            <!-- ======================== filters ======================== -->
+            <div class="pbim-panel ast-filters" t-if="state.rows.length">
+              <div class="ast-filter-row">
+                <div class="ast-search">
+                  <t t-out="ic('search',15)"/>
+                  <input type="text" t-att-value="state.q" t-on-input="onSearch"
+                         placeholder="Search by code, name, serial or person…"/>
+                </div>
+                <select class="ast-in ast-country" t-on-change="onCountry"
+                        aria-label="Country">
+                  <option value="0">Every country</option>
+                  <option t-foreach="state.countries" t-as="co" t-key="co.id"
+                          t-att-value="co.id"
+                          t-att-selected="co.id === state.countryId"
+                          t-esc="co.name"/>
+                </select>
+                <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="clearFilters">
+                  <t t-out="ic('x',14)"/> Clear
+                </button>
+              </div>
+              <div class="ast-filter-row">
+                <div class="pbim-chips">
+                  <button t-foreach="state.kinds" t-as="kd" t-key="kd.id"
+                          t-if="countFor('kind', kd.id)"
+                          t-attf-class="pbim-fchip {{ state.kind === kd.id ? 'on' : '' }}"
+                          t-on-click="() => this.setKind(kd.id)">
+                    <t t-out="ic(kd.id === 'digital' ? 'key' : 'package', 13)"/>
+                    <span t-esc="kd.label"/>
+                    <span class="c" t-esc="countFor('kind', kd.id)"/>
+                  </button>
+                </div>
+                <div class="pbim-chips">
+                  <button t-foreach="statusChips" t-as="st" t-key="st.id"
+                          t-attf-class="pbim-fchip {{ state.status === st.id ? 'on' : '' }}"
+                          t-on-click="() => this.setStatus(st.id)">
+                    <span t-esc="st.label"/>
+                    <span class="c" t-esc="countFor('state', st.id)"/>
+                  </button>
+                </div>
+              </div>
+              <div class="ast-filter-row" t-if="categoryChips.length">
+                <div class="pbim-chips">
+                  <button t-foreach="categoryChips" t-as="ct" t-key="ct.id"
+                          t-attf-class="pbim-fchip {{ state.categoryId === ct.id ? 'on' : '' }}"
+                          t-on-click="() => this.setCategory(ct.id)">
+                    <t t-out="ic(ct.icon || 'package', 13)"/>
+                    <span t-esc="ct.name"/>
+                    <span class="c" t-esc="countFor('category', ct.id)"/>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ================== nothing here yet ================== -->
+            <div t-if="!state.rows.length" class="pbim-panel ast-empty">
+              <div class="ast-empty-ic"><t t-out="ic('package',30)"/></div>
+              <h2>The register is empty</h2>
+              <p>Put the first laptop in and Payobook gives it a code, remembers
+                 who has it and reminds the leaving checklist to ask for it back.
+                 Accounts and licences go in here too — they are switched off
+                 rather than handed back.</p>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="addAsk">
+                <t t-out="ic('plus',16)"/> Add the first item
+              </button>
+              <p t-if="!state.canWrite" class="pbim-sub">
+                Ask the asset team to add one.
+              </p>
+            </div>
+
+            <!-- ============ everything filtered away ============ -->
+            <div t-elif="!visibleRows.length" class="pbim-panel ast-empty">
+              <div class="ast-empty-ic"><t t-out="ic('search',30)"/></div>
+              <h2>Nothing matches</h2>
+              <p>There are <t t-esc="state.rows.length"/> items on the books, but
+                 none of them fits what you asked for.</p>
+              <button class="pbim-btn outline" t-on-click="clearFilters">
+                <t t-out="ic('x',15)"/> Clear the filters
+              </button>
+            </div>
+
+            <!-- ======================== the table ======================== -->
+            <div t-else="" class="pbim-panel ast-tablewrap">
+              <table class="pbim-table ast-table">
+                <thead>
+                  <tr>
+                    <th class="ast-tick">
+                      <input type="checkbox" t-on-change="pickAllVisible"
+                             t-att-checked="state.picked.length and state.picked.length === visibleRows.length"
+                             aria-label="Select every item shown"/>
+                    </th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>With</th>
+                    <th>Country</th>
+                    <th class="ast-r">Cost</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="visibleRows" t-as="row" t-key="row.id"
+                      t-attf-class="ast-row {{ isPicked(row.id) ? 'is-picked' : '' }}"
+                      t-on-click="() => this.openAsset(row.id)">
+                    <td class="ast-tick" t-on-click.stop="">
+                      <input type="checkbox" t-att-checked="isPicked(row.id)"
+                             t-on-change="() => this.togglePick(row.id)"
+                             t-attf-aria-label="Select {{ row.code }}"/>
+                    </td>
+                    <td>
+                      <div class="ast-item">
+                        <span class="ast-ic"><t t-out="catIcon(row)"/></span>
+                        <span class="ast-item-tx">
+                          <span class="nm" t-esc="row.name"/>
+                          <span class="mt">
+                            <t t-esc="row.code"/>
+                            <t t-if="row.serial"> · <t t-esc="row.serial"/></t>
+                          </span>
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="pbim-chip" t-esc="row.category"/>
+                    </td>
+                    <td>
+                      <span t-attf-class="pbim-badge {{ row.tone }}">
+                        <span class="d"/><t t-esc="row.state_label"/>
+                      </span>
+                      <span t-if="row.warranty === 'over'"
+                            class="pbim-badge muted ast-warr">
+                        <span class="d"/>Out of warranty
+                      </span>
+                      <span t-elif="row.warranty === 'soon'"
+                            class="pbim-badge warn ast-warr">
+                        <span class="d"/>Warranty ending
+                      </span>
+                    </td>
+                    <td>
+                      <span t-if="row.employee" class="ast-who">
+                        <span class="ast-av" t-esc="row.initials"/>
+                        <t t-esc="row.employee"/>
+                      </span>
+                      <span t-else="" class="ast-dash">—</span>
+                    </td>
+                    <td t-esc="row.country or '—'"/>
+                    <td class="ast-r" t-esc="money(row) or '—'"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p t-if="state.capped" class="pbim-sub" style="margin-top: 12px;">
+              Showing the newest <t t-esc="state.rows.length"/> items. Narrow the
+              search to reach older ones.
+            </p>
+          </t>
+
+          <!-- ================================================================
+               REQUESTS
+               ================================================================ -->
+          <t t-else="">
+            <div t-if="!state.requests.rows or !state.requests.rows.length"
+                 class="pbim-panel ast-empty">
+              <div class="ast-empty-ic"><t t-out="ic('inbox',30)"/></div>
+              <h2>Nothing has been asked for</h2>
+              <p>A request is how somebody says “this person needs a laptop”. It
+                 goes to their manager, then to you — and Payobook looks for one
+                 already sitting spare before anybody buys anything.</p>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="askOpen">
+                <t t-out="ic('plus',16)"/> Ask for something
+              </button>
+            </div>
+
+            <div t-else="" class="pbim-panel ast-tablewrap">
+              <table class="pbim-table ast-table">
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>For</th>
+                    <th>What</th>
+                    <th>Needed by</th>
+                    <th>Approval</th>
+                    <th>Progress</th>
+                    <th>Spare found</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="state.requests.rows" t-as="req" t-key="req.id"
+                      class="ast-row" t-on-click="openRequests">
+                    <td><span class="nm" t-esc="req.name"/></td>
+                    <td t-esc="req.employee or '—'"/>
+                    <td t-esc="req.category"/>
+                    <td t-esc="day(req.needed_by)"/>
+                    <td>
+                      <span t-attf-class="pbim-badge {{ req.state === 'approved' ? 'ok' : (req.state === 'refused' ? 'err' : 'info') }}">
+                        <span class="d"/><t t-esc="req.state_label"/>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="pbim-chip" t-esc="req.fulfilment_label"/>
+                    </td>
+                    <td>
+                      <t t-esc="req.asset or req.spare or '—'"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </t>
+
+        </t>
+      </div>
+
+      <!-- ==================================================================
+           THE BULK BAR — it appears only when something is ticked, and it
+           says what it is about to act on before it offers to act.
+           ================================================================== -->
+      <div t-if="state.picked.length and state.segment === 'items'"
+           class="ast-bulk">
+        <span class="ast-bulk-n">
+          <t t-esc="state.picked.length"/> selected
+        </span>
+        <button class="pbim-btn ghost pbim-btn-sm" t-on-click="clearPicked">
+          <t t-out="ic('x',14)"/> Clear
+        </button>
+        <div class="pbim-modal__sp"/>
+        <button class="pbim-btn ghost pbim-btn-sm" t-on-click="exportPicked">
+          <t t-out="ic('download',14)"/> Export these
+        </button>
+        <button t-if="state.canWrite" class="pbim-btn primary pbim-btn-sm"
+                t-on-click="bulkAsk">
+          <t t-out="ic('refresh',14)"/> Change status
+        </button>
+      </div>
+
+      <!-- ==================================================================
+           THE DRAWER — one item's whole life.
+           ================================================================== -->
+      <div t-if="state.drawer" class="ast-scrim" t-on-click="closeDrawer">
+        <div class="ast-drawer" t-on-click.stop="">
+
+          <div class="ast-drawer-head">
+            <div class="ast-drawer-top">
+              <span class="ast-ic lg"><t t-out="catIcon(state.drawer.asset)"/></span>
+              <div class="ast-drawer-id">
+                <div class="nm" t-esc="state.drawer.asset.name"/>
+                <div class="mt">
+                  <t t-esc="state.drawer.asset.code"/>
+                  · <t t-esc="state.drawer.asset.category"/>
+                  · <t t-esc="state.drawer.asset.country"/>
+                </div>
+              </div>
+              <button class="ast-x" t-on-click="closeDrawer" title="Close">
+                <t t-out="ic('x',16)"/>
+              </button>
+            </div>
+
+            <div class="ast-drawer-chips">
+              <span t-attf-class="pbim-badge {{ state.drawer.asset.tone }}">
+                <span class="d"/><t t-esc="state.drawer.asset.state_label"/>
+              </span>
+              <span t-if="state.drawer.asset.employee" class="pbim-chip">
+                <t t-out="ic('user',13)"/><t t-esc="state.drawer.asset.employee"/>
+              </span>
+              <span t-if="state.drawer.asset.warranty === 'over'"
+                    class="pbim-badge muted">
+                <span class="d"/>Out of warranty
+              </span>
+              <span t-elif="state.drawer.asset.warranty === 'soon'"
+                    class="pbim-badge warn">
+                <span class="d"/>Warranty ends <t t-esc="day(state.drawer.asset.warranty_end)"/>
+              </span>
+              <span t-if="state.drawer.asset.reused" class="pbim-chip">
+                <t t-out="ic('rotate',13)"/>Passed on
+              </span>
+            </div>
+
+            <div class="ast-drawer-acts" t-if="state.drawer.can_write">
+              <button t-if="!state.drawer.asset.employee_id"
+                      class="pbim-btn primary pbim-btn-sm"
+                      t-on-click="() => this.handAsk('assign')">
+                <t t-out="ic('user',14)"/> Give to someone
+              </button>
+              <button t-if="state.drawer.asset.employee_id"
+                      class="pbim-btn primary pbim-btn-sm"
+                      t-on-click="() => this.handAsk('transfer')">
+                <t t-out="ic('arrowLeftRight',14)"/> Move to someone else
+              </button>
+              <button t-foreach="state.drawer.next_states" t-as="ns"
+                      t-key="ns.id" class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="() => this.setState(ns.id)">
+                <t t-esc="ns.label"/>
+              </button>
+              <button class="pbim-btn ghost pbim-btn-sm"
+                      t-if="state.drawer.asset.employee_id"
+                      t-on-click="() => this.exportEmployee(state.drawer.asset.employee_id)">
+                <t t-out="ic('download',14)"/> Their items
+              </button>
+            </div>
+          </div>
+
+          <div class="ast-drawer-body">
+
+            <!-- ==================== the facts ==================== -->
+            <div class="ast-sec-h">The item</div>
+            <div class="ast-kv">
+              <div t-if="state.drawer.asset.serial">
+                <span>Serial / address</span><b t-esc="state.drawer.asset.serial"/>
+              </div>
+              <div t-if="state.drawer.asset.model_name">
+                <span>Make and model</span><b t-esc="state.drawer.asset.model_name"/>
+              </div>
+              <div t-if="state.drawer.asset.cost">
+                <span>Cost</span>
+                <b>
+                  <t t-esc="money(state.drawer.asset)"/>
+                  <t t-if="state.drawer.asset.cost_usd">
+                    (<t t-esc="usd(state.drawer.asset)"/>)
+                  </t>
+                </b>
+              </div>
+              <div t-if="state.drawer.asset.purchase_date">
+                <span>Bought on</span><b t-esc="day(state.drawer.asset.purchase_date)"/>
+              </div>
+              <div t-if="state.drawer.asset.warranty_end">
+                <span>Warranty ends</span><b t-esc="day(state.drawer.asset.warranty_end)"/>
+              </div>
+              <div t-if="state.drawer.asset.invoice_ref">
+                <span>Invoice</span><b t-esc="state.drawer.asset.invoice_ref"/>
+              </div>
+              <div t-if="state.drawer.asset.supplier_note">
+                <span>Bought from</span><b t-esc="state.drawer.asset.supplier_note"/>
+              </div>
+              <div t-if="state.drawer.asset.movable_note">
+                <span>Where it can go</span><b t-esc="state.drawer.asset.movable_note"/>
+              </div>
+            </div>
+            <p t-if="state.drawer.asset.notes" class="ast-notes"
+               t-esc="state.drawer.asset.notes"/>
+
+            <!-- ==================== who has had it ==================== -->
+            <div class="ast-sec-h">Who has had it</div>
+            <div t-if="!state.drawer.timeline.length" class="pbim-empty">
+              Nobody has been given this item yet.
+            </div>
+            <div t-else="" class="ast-tl">
+              <div t-foreach="state.drawer.timeline" t-as="entry"
+                   t-key="entry.id"
+                   t-attf-class="ast-step {{ entry.open ? 'is-open' : 'is-done' }}">
+                <div class="ast-step-h">
+                  <span class="ast-av" t-esc="entry.initials"/>
+                  <div class="nm" t-esc="entry.employee"/>
+                  <span t-if="entry.open" class="pbim-badge ok">
+                    <span class="d"/>Has it now
+                  </span>
+                  <span t-else="" class="pbim-badge muted">
+                    <span class="d"/>Returned
+                  </span>
+                </div>
+                <div class="ast-step-meta">
+                  <span><t t-esc="day(entry.from)"/></span>
+                  <span t-if="entry.to">→ <t t-esc="day(entry.to)"/></span>
+                  <span t-else="">→ today</span>
+                  <span t-if="entry.by">· given by <t t-esc="entry.by"/></span>
+                  <span t-if="entry.confirmed" class="ok">
+                    · confirmed by them
+                  </span>
+                  <span t-elif="entry.open" class="warn">
+                    · not yet confirmed
+                  </span>
+                </div>
+                <div class="ast-cond" t-if="entry.condition_out or entry.condition_in">
+                  <div t-if="entry.condition_out">
+                    <span>Out</span><b t-esc="entry.condition_out"/>
+                  </div>
+                  <div t-if="entry.condition_in">
+                    <span>Back</span><b t-esc="entry.condition_in"/>
+                  </div>
+                </div>
+                <div class="ast-step-acts"
+                     t-if="entry.open and state.drawer.can_write">
+                  <button class="pbim-btn outline pbim-btn-sm"
+                          t-on-click="() => this.backAsk(entry)">
+                    <t t-out="ic('undo',14)"/> Take it back
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ====================== requests ====================== -->
+            <t t-if="state.drawer.requests.length">
+              <div class="ast-sec-h">Requests it answered</div>
+              <div t-foreach="state.drawer.requests" t-as="rq" t-key="rq.id"
+                   class="ast-rowline">
+                <t t-out="ic('inbox',16)"/>
+                <div class="g">
+                  <div class="nm" t-esc="rq.name"/>
+                  <div class="mt">
+                    <t t-esc="rq.employee"/> · <t t-esc="rq.fulfilment_label"/>
+                  </div>
+                </div>
+                <span class="pbim-badge info">
+                  <span class="d"/><t t-esc="rq.state_label"/>
+                </span>
+              </div>
+            </t>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           ADD AN ITEM
+           ================================================================== -->
+      <div t-if="state.add" class="pbim-modal-scrim" t-on-click="addCancel">
+        <div class="pbim-modal" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">Add an item</div>
+              <div class="pbim-modal__sub">Payobook gives it a code as soon as
+                you save — country, category, and its number in that country.</div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="ast-x" t-on-click="addCancel"><t t-out="ic('x',16)"/></button>
+          </div>
+
+          <div class="pbim-modal__body ast-dlg-body">
+            <div class="ast-field">
+              <label for="ast-name">What is it?</label>
+              <input id="ast-name" class="ast-in" type="text"
+                     t-att-value="state.add.name"
+                     t-on-input="(ev) => this.state.add.name = ev.target.value"
+                     placeholder="e.g. MacBook Air 13"/>
+            </div>
+            <div class="ast-grid2">
+              <div class="ast-field">
+                <label for="ast-cat">Category</label>
+                <select id="ast-cat" class="ast-in"
+                        t-on-change="(ev) => this.state.add.categoryId = Number(ev.target.value)">
+                  <option t-foreach="state.categories" t-as="ct" t-key="ct.id"
+                          t-att-value="ct.id"
+                          t-att-selected="ct.id === state.add.categoryId">
+                    <t t-esc="ct.name"/> (<t t-esc="ct.code"/>)
+                  </option>
+                </select>
+              </div>
+              <div class="ast-field">
+                <label for="ast-country">Country</label>
+                <select id="ast-country" class="ast-in"
+                        t-on-change="(ev) => this.state.add.countryId = Number(ev.target.value)">
+                  <option t-foreach="state.countriesAll" t-as="co" t-key="co.id"
+                          t-att-value="co.id"
+                          t-att-selected="co.id === state.add.countryId"
+                          t-esc="co.name"/>
+                </select>
+              </div>
+            </div>
+            <div class="ast-grid2">
+              <div class="ast-field">
+                <label for="ast-serial">Serial number or address</label>
+                <input id="ast-serial" class="ast-in" type="text"
+                       t-att-value="state.add.serial"
+                       t-on-input="(ev) => this.state.add.serial = ev.target.value"
+                       placeholder="e.g. C02XY or name@company.com"/>
+              </div>
+              <div class="ast-field">
+                <label for="ast-model">Make and model</label>
+                <input id="ast-model" class="ast-in" type="text"
+                       t-att-value="state.add.modelName"
+                       t-on-input="(ev) => this.state.add.modelName = ev.target.value"/>
+              </div>
+            </div>
+            <div class="ast-grid3">
+              <div class="ast-field">
+                <label for="ast-cost">Cost</label>
+                <input id="ast-cost" class="ast-in" type="number" min="0"
+                       t-att-value="state.add.cost"
+                       t-on-input="(ev) => this.state.add.cost = ev.target.value"/>
+              </div>
+              <div class="ast-field">
+                <label for="ast-bought">Bought on</label>
+                <input id="ast-bought" class="ast-in" type="date"
+                       t-att-value="state.add.purchaseDate"
+                       t-on-change="(ev) => this.state.add.purchaseDate = ev.target.value"/>
+              </div>
+              <div class="ast-field">
+                <label for="ast-warr">Warranty ends</label>
+                <input id="ast-warr" class="ast-in" type="date"
+                       t-att-value="state.add.warrantyEnd"
+                       t-on-change="(ev) => this.state.add.warrantyEnd = ev.target.value"/>
+              </div>
+            </div>
+            <div class="ast-grid2">
+              <div class="ast-field">
+                <label for="ast-inv">Invoice reference</label>
+                <input id="ast-inv" class="ast-in" type="text"
+                       t-att-value="state.add.invoiceRef"
+                       t-on-input="(ev) => this.state.add.invoiceRef = ev.target.value"/>
+              </div>
+              <div class="ast-field">
+                <label for="ast-sup">Bought from</label>
+                <input id="ast-sup" class="ast-in" type="text"
+                       t-att-value="state.add.supplierNote"
+                       t-on-input="(ev) => this.state.add.supplierNote = ev.target.value"/>
+              </div>
+            </div>
+            <label class="ast-check">
+              <input type="checkbox" t-att-checked="state.add.isReused"
+                     t-on-change="(ev) => this.state.add.isReused = ev.target.checked"/>
+              <span>Somebody has used this before</span>
+            </label>
+          </div>
+
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="addCancel">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="state.add.busy"
+                    t-on-click="addSave">
+              <t t-out="ic('plus',15)"/> Add it
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           HAND IT OVER  /  MOVE IT ON
+           ================================================================== -->
+      <div t-if="state.hand" class="pbim-modal-scrim" t-on-click="handCancel">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">
+                <t t-if="state.hand.mode === 'transfer'">Move it to somebody else</t>
+                <t t-else="">Give it to someone</t>
+              </div>
+              <div class="pbim-modal__sub">
+                <t t-if="state.hand.mode === 'transfer'">The person who has it now
+                  hands it back and the next person takes it, in one step.</t>
+                <t t-else="">Write down what state it is in — it is the only
+                  record of how it looked when it went out.</t>
+              </div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="ast-x" t-on-click="handCancel"><t t-out="ic('x',16)"/></button>
+          </div>
+
+          <div class="pbim-modal__body ast-dlg-body">
+            <div class="ast-field">
+              <label for="ast-who">Who is it for?</label>
+              <input id="ast-who" class="ast-in" type="text"
+                     t-att-value="state.hand.term" t-on-input="onHandInput"
+                     placeholder="Start typing a name…"/>
+              <div t-if="state.hand.results.length and !state.hand.empId"
+                   class="ast-results">
+                <button t-foreach="state.hand.results" t-as="emp" t-key="emp.id"
+                        type="button" class="ast-result"
+                        t-on-click="() => this.pickHandEmployee(emp)">
+                  <span class="ast-av" t-esc="emp.initials"/>
+                  <span>
+                    <span class="nm" t-esc="emp.name"/><br/>
+                    <span class="mt"><t t-esc="emp.job or emp.dept or '—'"/></span>
+                  </span>
+                </button>
+              </div>
+              <p t-if="state.hand.empId" class="pbim-sub">
+                <t t-out="ic('check',13)"/> <t t-esc="state.hand.empName"/>
+              </p>
+            </div>
+            <div t-if="state.hand.mode === 'transfer'" class="ast-field">
+              <label for="ast-cin">What state is it coming back in?</label>
+              <input id="ast-cin" class="ast-in" type="text"
+                     t-att-value="state.hand.conditionIn"
+                     t-on-input="(ev) => this.state.hand.conditionIn = ev.target.value"
+                     placeholder="e.g. small scratch on the lid"/>
+            </div>
+            <div class="ast-field">
+              <label for="ast-cout">What state is it going out in?</label>
+              <input id="ast-cout" class="ast-in" type="text"
+                     t-att-value="state.hand.conditionOut"
+                     t-on-input="(ev) => this.state.hand.conditionOut = ev.target.value"
+                     placeholder="e.g. as new, charger and case included"/>
+            </div>
+          </div>
+
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="handCancel">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="state.hand.busy"
+                    t-on-click="handSubmit">
+              <t t-out="ic('check',15)"/> Hand it over
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           TAKE IT BACK
+           ================================================================== -->
+      <div t-if="state.back" class="pbim-modal-scrim" t-on-click="backCancel">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">Take it back</div>
+              <div class="pbim-modal__sub">From <t t-esc="state.back.who"/>.</div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="ast-x" t-on-click="backCancel"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbim-modal__body ast-dlg-body">
+            <div class="ast-field">
+              <label for="ast-back">What state is it in?</label>
+              <textarea id="ast-back" class="ast-in" rows="3"
+                        t-att-value="state.back.condition"
+                        t-on-input="(ev) => this.state.back.condition = ev.target.value"
+                        placeholder="e.g. working, charger missing"/>
+            </div>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="backCancel">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="backSubmit">
+              <t t-out="ic('undo',15)"/> Take it back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           ASK FOR SOMETHING
+           ================================================================== -->
+      <div t-if="state.ask" class="pbim-modal-scrim" t-on-click="askCancel">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">Ask for something</div>
+              <div class="pbim-modal__sub">It goes to their manager first.
+                Payobook looks for a spare one before anybody buys.</div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="ast-x" t-on-click="askCancel"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbim-modal__body ast-dlg-body">
+            <div class="ast-field">
+              <label for="ast-forwho">Who is it for?</label>
+              <input id="ast-forwho" class="ast-in" type="text"
+                     t-att-value="state.ask.term" t-on-input="onAskInput"
+                     placeholder="Start typing a name…"/>
+              <div t-if="state.ask.results.length and !state.ask.empId"
+                   class="ast-results">
+                <button t-foreach="state.ask.results" t-as="emp" t-key="emp.id"
+                        type="button" class="ast-result"
+                        t-on-click="() => this.pickAskEmployee(emp)">
+                  <span class="ast-av" t-esc="emp.initials"/>
+                  <span>
+                    <span class="nm" t-esc="emp.name"/><br/>
+                    <span class="mt"><t t-esc="emp.job or emp.dept or '—'"/></span>
+                  </span>
+                </button>
+              </div>
+              <p t-if="state.ask.empId" class="pbim-sub">
+                <t t-out="ic('check',13)"/> <t t-esc="state.ask.empName"/>
+              </p>
+            </div>
+            <div class="ast-grid2">
+              <div class="ast-field">
+                <label for="ast-what">What do they need?</label>
+                <select id="ast-what" class="ast-in"
+                        t-on-change="(ev) => this.state.ask.categoryId = Number(ev.target.value)">
+                  <option t-foreach="state.categories" t-as="ct" t-key="ct.id"
+                          t-att-value="ct.id"
+                          t-att-selected="ct.id === state.ask.categoryId"
+                          t-esc="ct.name"/>
+                </select>
+              </div>
+              <div class="ast-field">
+                <label for="ast-by">Needed by</label>
+                <input id="ast-by" class="ast-in" type="date"
+                       t-att-value="state.ask.neededBy"
+                       t-on-change="(ev) => this.state.ask.neededBy = ev.target.value"/>
+              </div>
+            </div>
+            <div class="ast-field">
+              <label for="ast-why">Why (optional)</label>
+              <textarea id="ast-why" class="ast-in" rows="2"
+                        t-att-value="state.ask.justification"
+                        t-on-input="(ev) => this.state.ask.justification = ev.target.value"
+                        placeholder="e.g. joining on the 15th, field role"/>
+            </div>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="askCancel">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="state.ask.busy"
+                    t-on-click="askSubmit">
+              <t t-out="ic('send',15)"/> Send it
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           CHANGE THE STATUS OF EVERYTHING TICKED
+           ================================================================== -->
+      <div t-if="state.bulk" class="pbim-modal-scrim" t-on-click="bulkCancel">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">Change the status</div>
+              <div class="pbim-modal__sub">
+                <t t-esc="state.picked.length"/> item(s). Anything currently out
+                with somebody is taken back first.
+              </div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="ast-x" t-on-click="bulkCancel"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbim-modal__body ast-dlg-body">
+            <div class="ast-field">
+              <label for="ast-bulk">New status</label>
+              <select id="ast-bulk" class="ast-in"
+                      t-on-change="(ev) => this.state.bulk.stateId = ev.target.value">
+                <option t-foreach="bulkStates" t-as="bs" t-key="bs.id"
+                        t-att-value="bs.id"
+                        t-att-selected="bs.id === state.bulk.stateId"
+                        t-esc="bs.label"/>
+              </select>
+            </div>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="bulkCancel">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="state.bulk.busy"
+                    t-on-click="bulkSubmit">
+              <t t-out="ic('check',15)"/> Change them
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

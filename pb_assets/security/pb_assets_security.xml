@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         THE LADDER. Two tiers, in the Odoo 19 shape (a privilege record,
+         not `category_id` on the group, which no longer exists):
+
+           user     look at the register and see who has what
+           manager  add items, hand them over, take them back, approve
+                    requests and change a status
+
+         Nobody is hardcoded in. The administrator reaches the manager tier
+         through `base.user_admin`, and the lifecycle administrator gets it
+         by implication — the person who runs joiners and leavers is the
+         person who has to be able to reclaim a laptop.
+         ================================================================== -->
+
+    <record id="module_category_assets" model="ir.module.category">
+        <field name="name">Assets</field>
+        <field name="sequence">53</field>
+    </record>
+
+    <record id="res_groups_privilege_assets" model="res.groups.privilege">
+        <field name="name">Assets</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_assets"/>
+    </record>
+
+    <record id="group_assets_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_assets"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">See the asset register and who is holding what.</field>
+    </record>
+
+    <record id="group_assets_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_assets"/>
+        <field name="implied_ids" eval="[(4, ref('group_assets_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Add items, hand them over, take them back, approve requests and change a status.</field>
+    </record>
+
+    <!-- The lifecycle administrator runs the joiners and the leavers, so the
+         asset manager tier comes with the job. Additive: this only ADDS an
+         implication to P0's group, it does not restate it. -->
+    <record id="pb_lifecycle.group_lifecycle_admin" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('pb_assets.group_assets_manager'))]"/>
+    </record>
+
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY SCOPE. The domain every Payobook model uses: a record with
+         no company is shared, everything else is scoped to the companies
+         the reader is actually working in.
+         ================================================================== -->
+
+    <record id="rule_asset_category_company" model="ir.rule">
+        <field name="name">Asset category: company</field>
+        <field name="model_id" ref="model_pb_asset_category"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_asset_company" model="ir.rule">
+        <field name="name">Asset: company</field>
+        <field name="model_id" ref="model_pb_asset"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_asset_assignment_company" model="ir.rule">
+        <field name="name">Asset handover: company</field>
+        <field name="model_id" ref="model_pb_asset_assignment"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_asset_request_company" model="ir.rule">
+        <field name="name">Asset request: company</field>
+        <field name="model_id" ref="model_pb_asset_request"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHAT A PERSON MAY SEE OF THEIR OWN.
+
+         An employee's own handovers and their own items — nothing else.
+         Both rules are group rules, and Odoo ORs group rules together, so
+         somebody who also holds an asset tier is not narrowed by these.
+
+         `/my/assets` does not depend on them (the route resolves the
+         employee from the session and reads under sudo), but a portal user
+         who reaches a record another way must still be answered correctly.
+         ================================================================== -->
+
+    <record id="rule_asset_assignment_own" model="ir.rule">
+        <field name="name">Asset handover: mine</field>
+        <field name="model_id" ref="model_pb_asset_assignment"/>
+        <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_asset_own" model="ir.rule">
+        <field name="name">Asset: mine</field>
+        <field name="model_id" ref="model_pb_asset"/>
+        <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('current_employee_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- The asset team sees everything in its companies. -->
+    <record id="rule_asset_assignment_team" model="ir.rule">
+        <field name="name">Asset handover: the asset team</field>
+        <field name="model_id" ref="model_pb_asset_assignment"/>
+        <field name="groups" eval="[(4, ref('group_assets_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_asset_team" model="ir.rule">
+        <field name="name">Asset: the asset team</field>
+        <field name="model_id" ref="model_pb_asset"/>
+        <field name="groups" eval="[(4, ref('group_assets_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- A request is the requester's, their manager's, or the team's. -->
+    <record id="rule_asset_request_own" model="ir.rule">
+        <field name="name">Asset request: mine</field>
+        <field name="model_id" ref="model_pb_asset_request"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('employee_id.user_id', '=', user.id), ('manager_id.user_id', '=', user.id), ('create_uid', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_asset_request_team" model="ir.rule">
+        <field name="name">Asset request: the asset team</field>
+        <field name="model_id" ref="model_pb_asset_request"/>
+        <field name="groups" eval="[(4, ref('group_assets_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</data>
+</odoo>
