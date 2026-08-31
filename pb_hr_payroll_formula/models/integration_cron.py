@@ -25,10 +25,12 @@ WHAT IT WILL NOT DO:
 """
 import calendar
 import logging
-from datetime import date
+from datetime import date, timedelta
+
+import pytz
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -82,6 +84,218 @@ class HrIntegrationConnector(models.Model):
              "a successful run means the connected system had nothing for that "
              "period — which is a different thing from the fetch failing.")
 
+    # ------------------------------------------------------------------
+    # SC-2 — the CADENCE belongs to the connector, not to the job.
+    #
+    # RD49 shipped one global cron: monthly, on the 5th, at 02:00 UTC, for
+    # everybody. The owner's requirement is a per-connection schedule — daily,
+    # weekly on a chosen day, monthly on a chosen date, or the last day of the
+    # month, at a time on the COMPANY's clock. The `ir.cron` record therefore
+    # becomes a DISPATCHER that ticks hourly and runs only the connectors
+    # whose own `sync_next_run` has come due.
+    # ------------------------------------------------------------------
+    SYNC_WEEKDAYS = [
+        ('0', 'Monday'), ('1', 'Tuesday'), ('2', 'Wednesday'),
+        ('3', 'Thursday'), ('4', 'Friday'), ('5', 'Saturday'), ('6', 'Sunday'),
+    ]
+
+    sync_frequency = fields.Selection([
+        ('daily', 'Every day'),
+        ('weekly', 'Every week'),
+        ('monthly_day', 'Every month, on a chosen day'),
+        ('monthly_last', 'Every month, on the last day'),
+    ], string="Fetch how often", default='monthly_day',
+        help="How often the automatic fetch runs. Daily and weekly fetches "
+             "read the current month (plus, early in a new month, the month "
+             "just closed); monthly fetches read the month just closed.")
+    sync_weekday = fields.Selection(
+        SYNC_WEEKDAYS, string="Fetch on", default='0',
+        help="Which day of the week a weekly fetch runs.")
+    sync_day_of_month = fields.Integer(
+        string="Fetch on day", default=5,
+        help="Which day of the month a monthly fetch runs (1–28). For "
+             "month-end, choose 'Every month, on the last day' instead — it "
+             "is right in short months too.")
+    sync_time = fields.Float(
+        string="Fetch at", default=2.0,
+        help="The time of day the fetch runs, on the company's clock.")
+    sync_next_run = fields.Datetime(
+        string="Next scheduled fetch", readonly=True, copy=False,
+        help="When the automatic fetch next runs (stored in UTC; screens "
+             "show it on the company's clock). Recomputed whenever the "
+             "schedule changes and after every run.")
+
+    @api.constrains('sync_day_of_month', 'sync_time')
+    def _check_sync_schedule(self):
+        for c in self:
+            if not 1 <= (c.sync_day_of_month or 5) <= 28:
+                raise ValidationError(_(
+                    "Choose a day between 1 and 28. For the end of the "
+                    "month, pick 'Every month, on the last day' — that is "
+                    "correct in short months too."))
+            if not 0.0 <= (c.sync_time or 0.0) < 24.0:
+                raise ValidationError(_(
+                    "The fetch time must be a time of day."))
+
+    #: The fields whose change moves `sync_next_run`. `cron_pull_enabled` is
+    #: deliberately NOT among them: switching the fetch ON with no schedule
+    #: touched leaves `sync_next_run` empty, which the dispatcher reads as
+    #: "due now" — so an enable is followed by a first fetch within the hour
+    #: and THEN settles onto the cadence. That keeps RD49's contract ("the
+    #: job looked, and recorded that") and matches what a person enabling a
+    #: fetch expects to happen next. The cockpit's schedule editor always
+    #: sends the schedule fields, so an edited cadence stamps immediately.
+    _SC2_SCHEDULE_FIELDS = ('sync_frequency', 'sync_weekday',
+                            'sync_day_of_month', 'sync_time')
+
+    def write(self, vals):
+        res = super().write(vals)
+        if any(f in vals for f in self._SC2_SCHEDULE_FIELDS) \
+                and 'sync_next_run' not in vals \
+                and not self.env.context.get('sc2_stamping'):
+            for c in self:
+                if c.cron_pull_enabled:
+                    c.with_context(sc2_stamping=True).sync_next_run = \
+                        c._sync_next_occurrence()
+        return res
+
+    def _sync_tzinfo(self):
+        """The clock this connector's schedule is written on.
+
+        The company's, because a payroll schedule is a statement about the
+        company's working day — the pb_schedule family's rule ("localize
+        before you say a time out loud") applied to the sync.
+        """
+        self.ensure_one()
+        name = (self.company_id.partner_id.tz
+                or self.env.user.tz or 'UTC')
+        try:
+            return pytz.timezone(name)
+        except Exception:                       # pragma: no cover — bad tz name
+            return pytz.UTC
+
+    def _sync_next_occurrence(self, now=None):
+        """The next moment this connector's schedule names, as naive UTC.
+
+        Computed on the company's clock and converted at the end — the
+        local→UTC round trip `pb_ess_workforce` uses, because doing the
+        arithmetic in UTC is how "02:00" quietly becomes 09:00 in Vietnam.
+        """
+        self.ensure_one()
+        tz = self._sync_tzinfo()
+        now = now or fields.Datetime.now()
+        local = pytz.UTC.localize(now).astimezone(tz)
+        hour = int(self.sync_time or 0.0)
+        minute = int(round(((self.sync_time or 0.0) - hour) * 60))
+        if minute >= 60:
+            hour, minute = hour + 1, 0
+        base = local.replace(hour=hour, minute=minute,
+                             second=0, microsecond=0)
+        freq = self.sync_frequency or 'monthly_day'
+        if freq == 'daily':
+            target = base if base > local else base + timedelta(days=1)
+        elif freq == 'weekly':
+            ahead = (int(self.sync_weekday or 0) - local.weekday()) % 7
+            target = base + timedelta(days=ahead)
+            if target <= local:
+                target += timedelta(days=7)
+        elif freq == 'monthly_last':
+            target = base.replace(
+                day=calendar.monthrange(local.year, local.month)[1])
+            if target <= local:
+                year, month = ((local.year, local.month + 1)
+                               if local.month < 12 else (local.year + 1, 1))
+                target = base.replace(
+                    year=year, month=month,
+                    day=calendar.monthrange(year, month)[1])
+        else:                                   # monthly_day
+            dom = min(max(self.sync_day_of_month or 5, 1), 28)
+            target = base.replace(day=dom)
+            if target <= local:
+                year, month = ((local.year, local.month + 1)
+                               if local.month < 12 else (local.year + 1, 1))
+                target = target.replace(year=year, month=month)
+        # Re-anchor the naive local result in its zone before converting: the
+        # replace() arithmetic above carries the ORIGINAL offset across a DST
+        # boundary, and localize() of the naive value is what corrects it.
+        naive = target.replace(tzinfo=None)
+        try:
+            aware = tz.localize(naive)
+        except Exception:                       # pragma: no cover — DST edge
+            aware = tz.localize(naive, is_dst=False)
+        return aware.astimezone(pytz.UTC).replace(tzinfo=None)
+
+    def _sync_window_pulls(self, today=None):
+        """Which period(s) a scheduled fetch asks for — owner's ruling.
+
+        Monthly cadence keeps RD49's window exactly: the month just closed.
+        Daily and weekly fetch the CURRENT month — and during the first seven
+        days of a new month ALSO the month just closed, so a late correction
+        still arrives before that month's pay run is finalised. Never any
+        other window: inventing a period is how the record refresh failed the
+        first time it ran (RD57).
+
+        Ordered oldest-first, so a caller that wants "the freshest window"
+        takes the last one.
+        """
+        self.ensure_one()
+        today = today or fields.Date.context_today(self)
+        if (self.sync_frequency or 'monthly_day') in ('daily', 'weekly'):
+            windows = []
+            if today.day <= 7:
+                windows.append(self._rd49_previous_month(today))
+            windows.append((
+                today.replace(day=1),
+                date(today.year, today.month,
+                     calendar.monthrange(today.year, today.month)[1])))
+            return windows
+        return [self._rd49_previous_month(today)]
+
+    def _sync_next_run_local(self):
+        """`sync_next_run` on the company's clock, as a short display string.
+
+        Empty when nothing is scheduled. Localised HERE so no screen ever
+        prints the stored UTC value raw — the RD58 cockpit did exactly that
+        and read seven hours early on the Vietnamese tenant.
+        """
+        self.ensure_one()
+        if not self.sync_next_run:
+            return ''
+        local = pytz.UTC.localize(self.sync_next_run).astimezone(
+            self._sync_tzinfo())
+        return local.strftime('%a %d %b, %H:%M')
+
+    def _sync_schedule_sentence(self):
+        """The schedule as one plain sentence, composed server-side so every
+        screen says the same thing."""
+        self.ensure_one()
+        tz = self._sync_tzinfo()
+        hour = int(self.sync_time or 0.0)
+        minute = int(round(((self.sync_time or 0.0) - hour) * 60))
+        if minute >= 60:
+            hour, minute = hour + 1, 0
+        at = '%02d:%02d' % (hour, minute)
+        place = (tz.zone or 'UTC').split('/')[-1].replace('_', ' ')
+        freq = self.sync_frequency or 'monthly_day'
+        if freq == 'daily':
+            when = _("every day")
+        elif freq == 'weekly':
+            when = _("every %s") % dict(self.SYNC_WEEKDAYS).get(
+                self.sync_weekday or '0', 'Monday')
+        elif freq == 'monthly_last':
+            when = _("on the last day of each month")
+        else:
+            when = _("on day %s of each month") % min(
+                max(self.sync_day_of_month or 5, 1), 28)
+        sentence = _("Runs %(when)s at %(at)s (%(place)s time).",
+                     when=when, at=at, place=place)
+        if self.sync_next_run:
+            local = pytz.UTC.localize(
+                self.sync_next_run).astimezone(tz)
+            sentence += _(" Next run: %s.") % local.strftime(
+                '%a %d %b, %H:%M')
+        return sentence
+
     @api.model
     def _rd49_previous_month(self, today=None):
         """First and last day of the month before `today`.
@@ -120,90 +334,131 @@ class HrIntegrationConnector(models.Model):
 
     @api.model
     def _rd49_schedule_first_run(self):
-        """Point the schedule at the next 5th, without disturbing a set one.
+        """Keep the DISPATCHER ticking hourly, and give it a first tick.
 
-        Called from the module's post-install hook. It only moves a `nextcall`
-        that is still the install-time default, so an owner who has since
-        chosen their own time keeps it across every later upgrade.
+        SC-2 changed what this hook protects. The owner's chosen time no
+        longer lives on the cron record at all — it lives in each connector's
+        own schedule fields, which nothing here touches. The cron is only the
+        hourly dispatcher, so all this has to guarantee is that it ticks:
+        hourly cadence (older databases still carry RD49's monthly one) and a
+        `nextcall` that is not stuck in the past.
         """
         cron = self.env.ref(
             'pb_hr_payroll_formula.ir_cron_pull_previous_month',
             raise_if_not_found=False)
         if not cron:
             return False
-        target = self._rd49_next_fifth()
-        # A `nextcall` in the past (or within the hour) is the default the
-        # record was created with; anything else is somebody's decision.
+        vals = {}
+        if (cron.interval_type, cron.interval_number) != ('hours', 1):
+            vals.update({'interval_type': 'hours', 'interval_number': 1})
         if not cron.nextcall or cron.nextcall <= fields.Datetime.now():
-            cron.sudo().nextcall = target
-            _logger.info("RD49: first automatic fetch scheduled for %s", target)
+            vals['nextcall'] = fields.Datetime.now() + timedelta(minutes=15)
+        if vals:
+            cron.sudo().write(vals)
+            _logger.info("SC-2: dispatcher tick set — %s", vals)
         return True
 
     @api.model
     def cron_pull_previous_month(self):
-        """Fetch the previous month for every connector that opted in."""
-        period_from, period_to = self._rd49_previous_month()
+        """SC-2 — the hourly DISPATCHER. (The name is kept: the shipped cron
+        record and older databases point here.)
+
+        Ticks hourly and runs only the connectors whose own `sync_next_run`
+        has come due — an empty `sync_next_run` counts as due, so a connector
+        enabled before the schedule fields existed still runs. After each
+        connector, due or failed alike, its next occurrence is stamped:
+        cadence is the schedule's job, retrying is not.
+        """
+        now = fields.Datetime.now()
         connectors = self.search([('cron_pull_enabled', '=', True),
                                   ('active', '=', True)])
         if not connectors:
             _logger.info("RD49: no connector is set to fetch automatically.")
             return True
-
-        for connector in connectors:
-            stamp = {'cron_pull_last_run': fields.Datetime.now()}
+        due = connectors.filtered(
+            lambda c: not c.sync_next_run or c.sync_next_run <= now)
+        if not due:
+            _logger.info(
+                "SC-2: %d scheduled connection(s); none due at %s.",
+                len(connectors), now)
+            return True
+        for connector in due:
+            connector._sync_run_one()
             try:
-                kinds = connector._mapped_feed_kinds()
-                if not kinds:
-                    stamp['cron_pull_last_state'] = 'skipped'
-                    stamp['cron_pull_last_rows'] = 0
-                    stamp['cron_pull_last_result'] = _(
-                        "Skipped — no active field mappings, so there is "
-                        "nothing to fetch for.")
-                    connector.write(stamp)
-                    _logger.warning(
-                        "RD49: %s has no active mappings; skipped.",
-                        connector.display_name)
-                    continue
-                # The employee feed is the roster every other feed joins to, so
-                # it is always pulled even when no component maps a field from
-                # it — without it the rest attaches to nobody.
-                data_types = sorted(set(kinds) | {'employee'})
-                # Counted before and after so the report can say what ARRIVED,
-                # not merely that the call returned. A fetch that brought in
-                # nothing must not look like one that brought in everything.
-                Store = self.env['hr.api.data.store'].sudo()
-                before = Store.search_count([('connector_id', '=', connector.id)])
+                connector.with_context(sc2_stamping=True).sync_next_run = \
+                    connector._sync_next_occurrence()
+            except Exception:       # noqa: BLE001 — cadence must survive
+                _logger.warning(
+                    "SC-2: could not stamp the next run for %s",
+                    connector.display_name, exc_info=True)
+        return True
+
+    def _sync_run_one(self):
+        """Run ONE connector's scheduled fetch: the RD49 body, per connector.
+
+        Shared by the dispatcher and the cockpit's "Fetch now" button, so what
+        the button proves is what the schedule will do. The window(s) come
+        from the connector's own cadence (`_sync_window_pulls`); the record
+        writeback, when armed, reads the FRESHEST window pulled.
+        """
+        self.ensure_one()
+        connector = self
+        stamp = {'cron_pull_last_run': fields.Datetime.now()}
+        try:
+            kinds = connector._mapped_feed_kinds()
+            if not kinds:
+                stamp['cron_pull_last_state'] = 'skipped'
+                stamp['cron_pull_last_rows'] = 0
+                stamp['cron_pull_last_result'] = _(
+                    "Skipped — no active field mappings, so there is "
+                    "nothing to fetch for.")
+                connector.write(stamp)
+                _logger.warning(
+                    "RD49: %s has no active mappings; skipped.",
+                    connector.display_name)
+                return True
+            # The employee feed is the roster every other feed joins to, so
+            # it is always pulled even when no component maps a field from
+            # it — without it the rest attaches to nobody.
+            data_types = sorted(set(kinds) | {'employee'})
+            # Counted before and after so the report can say what ARRIVED,
+            # not merely that the call returned. A fetch that brought in
+            # nothing must not look like one that brought in everything.
+            Store = self.env['hr.api.data.store'].sudo()
+            before = Store.search_count([('connector_id', '=', connector.id)])
+            windows = connector._sync_window_pulls()
+            for period_from, period_to in windows:
                 connector.action_pull_data(
                     data_types=data_types,
                     period_from=period_from,
                     period_to=period_to,
                     triggered_by='cron',
                 )
-                if connector.cron_writeback_enabled:
-                    connector._rd54_writeback_from_store(
-                        period_from, period_to)
-                arrived = Store.search_count(
-                    [('connector_id', '=', connector.id)]) - before
-                stamp['cron_pull_last_state'] = 'ok'
-                stamp['cron_pull_last_rows'] = max(arrived, 0)
-                stamp['cron_pull_last_result'] = _(
-                    "Fetched %(kinds)s for %(from)s to %(to)s — %(rows)s new "
-                    "records.",
-                    kinds=', '.join(data_types), rows=max(arrived, 0),
-                    **{'from': fields.Date.to_string(period_from),
-                       'to': fields.Date.to_string(period_to)})
-                _logger.info("RD49: %s fetched %s for %s..%s",
-                             connector.display_name, data_types,
-                             period_from, period_to)
-            except Exception as exc:        # noqa: BLE001
-                # One connector's outage must not stop the others, and it must
-                # not disappear either.
-                stamp['cron_pull_last_state'] = 'failed'
-                stamp['cron_pull_last_result'] = _(
-                    "Could not fetch: %s") % exc
-                _logger.exception(
-                    "RD49: automatic fetch failed for %s", connector.display_name)
-            connector.write(stamp)
+            if connector.cron_writeback_enabled:
+                connector._rd54_writeback_from_store(
+                    windows[-1][0], windows[-1][1])
+            arrived = Store.search_count(
+                [('connector_id', '=', connector.id)]) - before
+            stamp['cron_pull_last_state'] = 'ok'
+            stamp['cron_pull_last_rows'] = max(arrived, 0)
+            stamp['cron_pull_last_result'] = _(
+                "Fetched %(kinds)s for %(from)s to %(to)s — %(rows)s new "
+                "records.",
+                kinds=', '.join(data_types), rows=max(arrived, 0),
+                **{'from': fields.Date.to_string(windows[0][0]),
+                   'to': fields.Date.to_string(windows[-1][1])})
+            _logger.info("RD49: %s fetched %s for %s..%s",
+                         connector.display_name, data_types,
+                         windows[0][0], windows[-1][1])
+        except Exception as exc:        # noqa: BLE001
+            # One connector's outage must not stop the others, and it must
+            # not disappear either.
+            stamp['cron_pull_last_state'] = 'failed'
+            stamp['cron_pull_last_result'] = _(
+                "Could not fetch: %s") % exc
+            _logger.exception(
+                "RD49: automatic fetch failed for %s", connector.display_name)
+        connector.write(stamp)
         return True
 
     # ------------------------------------------------------------------
@@ -223,7 +478,9 @@ class HrIntegrationConnector(models.Model):
                 "“%s” is not set to fetch automatically. Tick “Fetch last "
                 "month automatically” first, so that what you test here is "
                 "what the schedule will do.") % self.display_name)
-        self.cron_pull_previous_month()
+        # SC-2 — THIS connector's run, not everybody's, and without moving
+        # its schedule: running it by hand is a test, not an occurrence.
+        self._sync_run_one()
         self.invalidate_recordset()
         return {
             'type': 'ir.actions.client',
@@ -259,6 +516,12 @@ class HrIntegrationConnector(models.Model):
                 'state': c.cron_pull_last_state or '',
                 'rows': c.cron_pull_last_rows or 0,
                 'message': c.cron_pull_last_result or '',
+                # SC-2 — the connector's OWN cadence (additive keys).
+                'frequency': c.sync_frequency or 'monthly_day',
+                'next_run': (fields.Datetime.to_string(c.sync_next_run)
+                             if c.sync_next_run else ''),
+                'sentence': (c._sync_schedule_sentence()
+                             if c.cron_pull_enabled else ''),
             } for c in connectors],
         }
 

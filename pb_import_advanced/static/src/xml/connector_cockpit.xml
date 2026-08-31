@@ -114,10 +114,19 @@
              ownership of every mapped field. -->
         <div class="pbim-panel pbcc-sched" t-if="d.schedule and d.schedule.available">
           <div class="pbcc-sched-h">
-            <h2 class="pbim-h2"><t t-out="ic('clock',16)"/> Automatic monthly fetch</h2>
+            <h2 class="pbim-h2"><t t-out="ic('clock',16)"/> Automatic fetch</h2>
             <span class="pbcc-sched-next" t-if="d.schedule.enabled and d.schedule.next_run">
               Next run <b t-esc="d.schedule.next_run"/>
             </span>
+          </div>
+
+          <!-- SC-4 — a scheme that switched its api lane off still fetches
+               (for record updates), but its pay runs don't read this system.
+               Said here, where the fetch is armed. -->
+          <div class="pbcc-sched-warn" t-if="d.api_lane_off_schemes and d.api_lane_off_schemes.length">
+            <t t-out="ic('alert',14)"/>
+            <span>Pay runs for <b t-esc="d.api_lane_off_schemes.join(', ')"/> don't read
+                  this system — switched off in the scheme's sources settings.</span>
           </div>
 
           <label class="pbcc-sw">
@@ -125,11 +134,52 @@
                    t-att-disabled="!canWrite or state.schedBusy"
                    t-on-change="(ev) => this.setSchedule({enabled: ev.target.checked})"/>
             <span class="pbcc-sw-tx">
-              <b>Fetch last month automatically</b>
-              <span>On the 5th of each month, pull the previous month from this
-                    system so a pay run never waits for it.</span>
+              <b>Fetch this system's data automatically</b>
+              <span>On the schedule below, so a pay run never waits for a
+                    sync.</span>
             </span>
           </label>
+
+          <!-- SC-2 — WHEN it runs is the owner's choice, made here: how often,
+               which day, what time — on the company's clock. The sentence
+               underneath is composed by the server so every screen agrees. -->
+          <div class="pbcc-sched-edit" t-if="d.schedule.enabled and d.schedule.editable">
+            <div class="pbcc-sched-row" role="group" aria-label="How often">
+              <button t-foreach="schedFreqs" t-as="f" t-key="f[0]" type="button"
+                      t-attf-class="pbcc-seg {{ d.schedule.frequency === f[0] ? 'on' : '' }}"
+                      t-att-disabled="!canWrite or state.schedBusy"
+                      t-on-click="() => this.schedEdit({frequency: f[0]})">
+                <t t-esc="f[1]"/></button>
+            </div>
+            <div class="pbcc-sched-row" t-if="d.schedule.frequency === 'weekly'"
+                 role="group" aria-label="Which day">
+              <button t-foreach="schedDays" t-as="w" t-key="w[0]" type="button"
+                      t-attf-class="pbcc-seg sm {{ d.schedule.weekday === w[0] ? 'on' : '' }}"
+                      t-att-disabled="!canWrite or state.schedBusy"
+                      t-on-click="() => this.schedEdit({weekday: w[0]})">
+                <t t-esc="w[1]"/></button>
+            </div>
+            <div class="pbcc-sched-row pbcc-sched-when">
+              <label t-if="d.schedule.frequency === 'monthly_day'" class="pbcc-sched-lb">
+                On day
+                <select class="pbcc-sched-sel"
+                        t-att-disabled="!canWrite or state.schedBusy"
+                        t-on-change="(ev) => this.schedEdit({day_of_month: parseInt(ev.target.value)})">
+                  <option t-foreach="schedDayOptions" t-as="n" t-key="n"
+                          t-att-value="n" t-att-selected="n === d.schedule.day_of_month ? 'selected' : undefined"
+                          t-esc="n"/>
+                </select>
+              </label>
+              <label class="pbcc-sched-lb">
+                At
+                <input type="time" class="pbcc-sched-time" t-att-value="schedTimeStr"
+                       t-att-disabled="!canWrite or state.schedBusy"
+                       t-on-change="(ev) => this.schedEditTime(ev.target.value)"/>
+              </label>
+              <span class="pbcc-sched-tz" t-esc="d.schedule.tz_label"/>
+            </div>
+            <div class="pbcc-sched-sentence" t-if="d.schedule.sentence" t-esc="d.schedule.sentence"/>
+          </div>
 
           <label class="pbcc-sw" t-if="d.schedule.enabled">
             <input type="checkbox" t-att-checked="d.schedule.writeback"
@@ -155,7 +205,7 @@
             <button class="pbim-btn outline pbim-btn-sm"
                     t-att-disabled="state.schedBusy"
                     t-on-click="() => this.runAction('action_fetch_last_month_now')">
-              <t t-out="ic('refresh',14)"/> Fetch last month now</button>
+              <t t-out="ic('refresh',14)"/> Run the fetch now</button>
             <button t-if="d.schedule.writeback" class="pbim-btn pbim-btn-sm"
                     t-att-disabled="state.schedBusy"
                     t-on-click="() => this.runAction('action_refresh_records_now')">
