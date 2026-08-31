@@ -168,8 +168,8 @@ without owner approval between them.
 | Phase | Module(s) | Status |
 |---|---|---|
 | P0 | pb_lifecycle — journey engine, letters, reminders, Lifecycle mission + hub + Journeys cockpit | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass) |
-| P1 | pb_zoho_bridge — inbound webhook, event rules, CSV fallback | pending |
-| P2 | pb_assets | pending |
+| P1 | pb_zoho_bridge — inbound webhook, event rules, CSV fallback | **DONE** (live on `payobook`, 19.0.1.0.0) |
+| P2 | pb_assets — register, handovers, requests, People-hub Assets lens, `/my/assets` | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass) |
 | P3 | pb_onboarding (+ journey timeline, new-hire pulse, living org chart wow) | pending |
 | P4 | pb_offboarding | pending |
 | P5 | pb_probation | pending |
@@ -287,3 +287,58 @@ without owner approval between them.
   constraint on `external_event_id`, the second sighting of an event must be written with
   that field EMPTY (Postgres keeps NULLs distinct) and a `duplicate_of_id` pointer
   instead. Writing the key again turns an idempotent skip into an integrity error.
+
+### P2 (pb_assets, 2026-09-01)
+
+- **R22 — a PARTIAL unique index needs an explicit flush, or a legitimate handover is
+  refused.** `pb_asset_assignment` carries
+  `CREATE UNIQUE INDEX ... (asset_id) WHERE state = 'open'` (a plain unique constraint
+  would forbid the SECOND completed loan of the same laptop, which is the history the
+  table exists to keep). A transfer closes one row and opens the next in one breath —
+  and Odoo 19 leaves the `write` in the towrite buffer while the immediately following
+  `create` flushes its own INSERT first, so the index sees two open rows and the user
+  gets a raw Postgres message on a perfectly legal action. `self.env.flush_all()` at the
+  end of the CLOSING method makes the order a property of that method rather than of
+  every caller's luck.
+- **R23 — `currency._convert()` with no rate returns the amount UNCHANGED.** It does not
+  raise and it does not answer zero: 32,000,000 ₫ comes back as "32,000,000 USD", which
+  is not a rounding error but a lie by a factor of twenty-six thousand. On this database
+  every currency reports `rate = 1.0` for the operating company, so EVERY conversion is
+  silently a no-op. Test for it before showing the number: two DIFFERENT currencies
+  reported at the SAME rate means nobody has told the database what a dong is worth, and
+  the honest answer is to show nothing.
+- **R24 — `read_group` is gone on Odoo 19.** `_read_group(domain, groupby, aggregates)`
+  replaces it and returns a list of TUPLES whose first element is a recordset, not dicts
+  with `('id', 'name')` pairs. Keep a `mapped()` fallback around it.
+- **R25 — ordering a Selection-backed list by `kind` sorts alphabetically, not by
+  importance.** `_order = 'kind, sequence, name'` put every DIGITAL category above every
+  physical one, so the "Add an item" dialog defaulted to *Email account* on a register
+  that is mostly laptops. Let the `sequence` column carry both the grouping and the
+  priority, and never let a dialog's default fall out of an incidental sort.
+- **R26 — equal-specificity CSS is decided by SOURCE ORDER, and a kit file's later
+  generic rule wins.** `.ast-country { width: 190px }` in the filters block was overruled
+  by `.ast-in { width: 100% }` two hundred lines below it; the country picker ate its own
+  row and pushed the filter chips down. Qualify the narrow rule (`.ast-in.ast-country`)
+  rather than moving blocks around.
+- **R27 — a country list has TWO jobs and needs two lists.** The FILTER bar must offer
+  only countries the data actually uses (a filter that matches nothing is a broken
+  promise), but the ADD dialog must offer every country or the register can never grow
+  past the office it started in. Ship `countries` and `countries_all` separately, and
+  default the dialog to `env.company.country_id` — an alphabetical world list defaults a
+  Vietnamese user to Afghanistan.
+- **R28 — fold accents before slugging a filename, never strip them.** A plain
+  `[^A-Za-z0-9]` pass turns "Bùi Hữu Dũng" into `B_i_H_u_D_ng`, which nobody can read and
+  which collides with every other name of the same shape. NFKD + drop combining marks,
+  then hand-map `đ`/`Đ` (Vietnamese `đ` carries no combining mark, so NFKD leaves it).
+  Same finding as the MAPFIX component-code fix — it is worth doing once, centrally.
+- **R29 — the ESS demo logins are PASSWORDLESS by design (`pb_demo`, C18.14).** They are
+  not broken accounts; an admin sets a password at demo time. P2's portal tests set
+  `RizeP2!2026` on `ess1.demo@payobook.com` (employee 10080) and
+  `ess2.demo@payobook.com` (employee 9884). **Owner debt: clear those passwords at
+  programme end**, exactly as with uid 2065.
+- **R30 — a journey-opening extension must be idempotent, because it is reached twice.**
+  `pb.journey.case.action_open()` and the connected system's `_after_offboard` BOTH lead
+  to the same case, since `pb.zoho.pipeline._open_case()` already calls `action_open()`
+  itself. The append helper de-duplicates on the FINISHED task name ("Return: VN-LT-00001
+  MacBook"), which is the only identity such a task has. Anything P3–P11 bolts onto a
+  journey hook needs the same treatment.
