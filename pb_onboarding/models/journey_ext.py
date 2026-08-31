@@ -29,6 +29,8 @@ their own handlers from their own modules by overriding
 every phase that came after.
 """
 
+import base64
+import json
 import logging
 from datetime import datetime, time, timedelta
 
@@ -223,7 +225,7 @@ class PbJourneyTask(models.Model):
             return False
         attachment = self.env['ir.attachment'].sudo().create({
             'name': 'welcome.ics',
-            'datas': __import__('base64').b64encode(ics),
+            'datas': base64.b64encode(ics),
             'mimetype': 'text/calendar',
             'res_model': 'pb.journey.task',
             'res_id': self.id,
@@ -349,7 +351,6 @@ class PbJourneyTask(models.Model):
             out['avatar'] = '%s/web/image/hr.employee/%s/avatar_256' % (
                 base, emp.id)
         try:
-            import json
             form = self.case_id.task_ids.filtered(
                 lambda t: t.step_kind == 'form' and t.payload_json)[:1]
             if form:

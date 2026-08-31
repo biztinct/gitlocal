@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- noupdate="1", as every other mail template in this codebase is: a
+             tenant that has reworded one of these must not have it reverted by
+             the next upgrade. Outgoing debranding rides automatically
+             (biz_mail_debrand).
+
+             EVERY ONE OF THESE IS SENT WITH AN EXPLICIT `email_to` in
+             `email_values`. A template's own rendered address can reach
+             mail.mail EMPTY, and the message is then created, queued and
+             addressed to nobody with no error anywhere (R6). The `email_to`
+             field below is kept as documentation of who it is FOR. -->
+
+        <!-- ============== the day-one introduction (with the .ics) ============== -->
+        <record id="mail_template_day1_intro" model="mail.template">
+            <field name="name">Onboarding: day-one introduction</field>
+            <field name="model_id" ref="pb_lifecycle.model_pb_journey_task"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+            <field name="subject">Welcome, {{ object.employee_id.name }} — your first day</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                    <p>Hello,</p>
+                    <p>
+                        <strong><t t-out="object.employee_id.name or ''"/></strong>
+                        joins us on
+                        <strong><t t-out="object.case_id.anchor_date or object.due_date or ''"/></strong>.
+                    </p>
+                    <p>
+                        The introduction meeting is in the calendar invitation attached to
+                        this email — open it once and it lands in your diary. It is a first
+                        walk through the team, the first week, and what "going well" looks
+                        like at thirty days.
+                    </p>
+                    <p t-if="object.employee_id.parent_id">
+                        Their manager is
+                        <t t-out="object.employee_id.parent_id.name or ''"/>.
+                    </p>
+                    <br/>
+                    See you there,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- ================= the welcome card, to their new team ================= -->
+        <!-- Ruling D7: a DESIGNED CARD inside the day-one email, not a file
+             somebody has to open. Every colour is a literal and every style is
+             inline, because an email client will not fetch a stylesheet and
+             half of them will not fetch a remote image either. -->
+        <record id="mail_template_welcome_poster" model="mail.template">
+            <field name="name">Onboarding: welcome card for the team</field>
+            <field name="model_id" ref="pb_lifecycle.model_pb_journey_task"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="subject">Say hello to {{ object.employee_id.name }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                    <t t-set="card" t-value="object.poster_payload()"/>
+                    <p style="font-size:14px; margin:0 0 18px;">
+                        Someone new is joining us. Say hello when you see them.
+                    </p>
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+                           style="max-width:520px; border-collapse:separate; border-spacing:0;
+                                  border:1px solid #E2E8F0; border-radius:18px; overflow:hidden;
+                                  background:#FFFFFF;">
+                        <tr>
+                            <td style="background:#5A4BB0; padding:26px 28px; color:#FFFFFF;">
+                                <div style="font-size:11px; font-weight:800; letter-spacing:.18em;
+                                            text-transform:uppercase; opacity:.85;">New joiner</div>
+                                <div style="font-size:26px; font-weight:800; margin-top:6px; line-height:1.2;">
+                                    <t t-out="card['name']"/>
+                                </div>
+                                <div t-if="card['job']" style="font-size:14px; opacity:.9; margin-top:4px;">
+                                    <t t-out="card['job']"/><t t-if="card['dept']"> · <t t-out="card['dept']"/></t>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr t-if="card['avatar']">
+                            <td style="padding:22px 28px 0; text-align:center;">
+                                <img t-att-src="card['avatar']" width="96" height="96"
+                                     t-att-alt="card['name']"
+                                     style="width:96px; height:96px; border-radius:50%; object-fit:cover;
+                                            border:3px solid #EDEAF8;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:22px 28px 26px;">
+                                <t t-if="card['facts']">
+                                    <t t-foreach="card['facts']" t-as="fact">
+                                        <div style="margin-bottom:14px;">
+                                            <div style="font-size:11px; font-weight:800; letter-spacing:.06em;
+                                                        text-transform:uppercase; color:#64748B;">
+                                                <t t-out="fact['label']"/>
+                                            </div>
+                                            <div style="font-size:14px; margin-top:3px; line-height:1.5;">
+                                                <t t-out="fact['value']"/>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <div style="font-size:14px; color:#64748B; line-height:1.6;">
+                                        Ask <t t-out="card['first']"/> about themselves — they have
+                                        not told us their story yet, and that is a better first
+                                        conversation than this card could ever be.
+                                    </div>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                    <br/>
+                    Thank you,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- =============== the manager is asked to name a buddy =============== -->
+        <record id="mail_template_buddy_nominate" model="mail.template">
+            <field name="name">Onboarding: name a buddy</field>
+            <field name="model_id" ref="pb_lifecycle.model_pb_journey_task"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="subject">Who will be {{ object.employee_id.name }}'s buddy?</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                    <p>Hello,</p>
+                    <p>
+                        <strong><t t-out="object.employee_id.name or ''"/></strong>
+                        is joining your team. A buddy is the colleague who shows them where
+                        everything is for the first few months — not a mentor, not a second
+                        manager, just someone to ask the small questions.
+                    </p>
+                    <p>
+                        Open the New joiners screen and pick one. Payobook shows who is
+                        eligible and why, and puts the catch-ups in the diary for you.
+                    </p>
+                    <br/>
+                    Thank you,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- ================== you have been asked to be a buddy ================== -->
+        <record id="mail_template_buddy_to_buddy" model="mail.template">
+            <field name="name">Onboarding: you are a buddy</field>
+            <field name="model_id" ref="model_pb_buddy_nomination"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="email_to">{{ object.chosen_id.work_email or '' }}</field>
+            <field name="subject">You are {{ object.employee_id.name }}'s buddy</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                    <p>Hello <t t-out="object.chosen_id.name or ''"/>,</p>
+                    <p>
+                        You have been asked to be the buddy for
+                        <strong><t t-out="object.employee_id.name or ''"/></strong>,
+                        who is joining us
+                        <t t-if="object.case_id.anchor_date">on <t t-out="object.case_id.anchor_date"/></t>.
+                    </p>
+                    <p>
+                        It is a small job and it matters more than it sounds: be the person
+                        they can ask the questions they would feel silly asking their manager.
+                        A short catch-up every couple of weeks is plenty.
+                    </p>
+                    <p>
+                        The catch-ups are already in your diary. You can see them, write down
+                        what was said, and flag anything HR should look at, on your
+                        <strong>My buddy</strong> page.
+                    </p>
+                    <br/>
+                    Thank you,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- ==================== your buddy is going to be … ==================== -->
+        <record id="mail_template_buddy_to_joiner" model="mail.template">
+            <field name="name">Onboarding: meet your buddy</field>
+            <field name="model_id" ref="model_pb_buddy_nomination"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+            <field name="subject">Meet your buddy, {{ object.chosen_id.name }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                    <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                    <p>
+                        <strong><t t-out="object.chosen_id.name or ''"/></strong>
+                        <t t-if="object.chosen_id.job_title"> (<t t-out="object.chosen_id.job_title"/>)</t>
+                        is your buddy.
+                    </p>
+                    <p>
+                        They are the person to ask anything at all — where the good coffee is,
+                        who to talk to about a system, what a word in a meeting meant. Nothing
+                        is too small, that is the entire point.
+                    </p>
+                    <p t-if="object.chosen_id.work_email">
+                        You can reach them at <t t-out="object.chosen_id.work_email"/>.
+                    </p>
+                    <br/>
+                    Welcome aboard,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- ====================== how is it going so far? ====================== -->
+        <record id="mail_template_newhire_pulse" model="mail.template">
+            <field name="name">Onboarding: how is it going?</field>
+            <field name="model_id" ref="model_pb_newhire_pulse"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+            <field name="subject">How is it going so far?</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                    <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                    <p>
+                        You have been with us a little while now. One tap, one question, and
+                        it is the whole of what we are asking: <strong>how is it going?</strong>
+                    </p>
+                    <p style="margin: 24px 0;">
+                        <a t-att-href="object._token_url()"
+                           style="background:#5A4BB0; color:#ffffff; padding:12px 24px; border-radius:10px;
+                                  text-decoration:none; font-weight:700; display:inline-block;">
+                            Tell us in one tap
+                        </a>
+                    </p>
+                    <p style="font-size:13px; color:#64748B;">
+                        Your answer is not anonymous, on purpose — if something is not right we
+                        want to be able to call you about it rather than read a number.
+                    </p>
+                    <br/>
+                    Thank you,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

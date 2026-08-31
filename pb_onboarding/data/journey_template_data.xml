@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE JOINING CHECKLIST, in full.
+
+         P0 shipped a five-step SKELETON so that the engine had something to
+         run on day one. This is the real thing, and it REPLACES rather than
+         competes with it: the skeleton is deactivated below, because two
+         active checklists for the same journey type is a coin toss over
+         which one a joiner gets, and `pick_for` would only ever say "the
+         newest one wins" in a warning nobody reads.
+
+         The skeleton is DEACTIVATED, never deleted. Checklists already used
+         by a running journey keep their link for reporting, and a tenant who
+         preferred the short version turns it back on in one click.
+
+         COMPANY-LESS on purpose (R8): `company_id` defaults to the loading
+         user's own company, which on a multi-company database makes a seeded
+         checklist invisible to every OTHER company — and the record rule is
+         `company_id = False OR in company_ids` precisely so a shared
+         checklist can exist.
+         ================================================================== -->
+
+    <record id="pb_lifecycle.journey_template_onboarding" model="pb.journey.template">
+        <field name="active" eval="False"/>
+        <field name="note">Replaced by "New joiner — the full welcome", which
+            does everything this one did and sends the welcome card, the
+            day-one invitation and the sign-in details by itself. Turn this
+            back on if you prefer the short version.</field>
+    </record>
+
+    <record id="journey_template_rize_onboarding" model="pb.journey.template">
+        <field name="name">New joiner — the full welcome</field>
+        <field name="case_type">onboarding</field>
+        <field name="sequence">5</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Everything that happens around someone's first day,
+            from the laptop twelve days before to the welcome session a week
+            after. The dates all move with the joining date, so a checklist
+            written once keeps working. Four of these steps send themselves on
+            the day they are due — the welcome card, the day-one invitation,
+            the sign-in details and the note to the manager.</field>
+    </record>
+
+    <!-- ========== before they arrive ========== -->
+    <record id="step_rize_buddy" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">10</field>
+        <field name="name">Choose their buddy</field>
+        <field name="description">Pick the colleague who will show them the ropes. Payobook shows who is eligible and why, and puts the catch-ups in the diary.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">case_open</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+        <field name="automation_key">buddy_invite</field>
+        <field name="escalation_days">3</field>
+    </record>
+
+    <record id="step_rize_laptop" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">20</field>
+        <field name="name">Laptop and equipment</field>
+        <field name="description">A request is raised automatically when this journey opens, and a spare is suggested before anything is bought. The machine should be on the desk and set up before they walk in.</field>
+        <field name="assignee_rule">it</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">-12</field>
+        <field name="step_kind">task</field>
+        <field name="automation_key">asset_laptop</field>
+        <field name="escalation_days">2</field>
+    </record>
+
+    <record id="step_rize_access" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">30</field>
+        <field name="name">Tool access</field>
+        <field name="description">Email, chat and the systems they will use on day one. Nothing to chase on their first morning.</field>
+        <field name="assignee_rule">it</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">-5</field>
+        <field name="step_kind">task</field>
+        <field name="escalation_days">2</field>
+    </record>
+
+    <record id="step_rize_intro_form" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">40</field>
+        <field name="name">Tell us about you</field>
+        <field name="description">A few lines from the joiner, which become the card their new team gets on day one. No login needed — the link is theirs.</field>
+        <field name="assignee_rule">candidate</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">-1</field>
+        <field name="step_kind">form</field>
+        <field name="form_questions_json">[{"key": "nickname", "label": "What would you like to be called?", "type": "text"}, {"key": "hometown", "label": "Where are you from?", "type": "text"}, {"key": "facts", "label": "Three things about you nobody would guess", "type": "text"}, {"key": "hobbies", "label": "What do you do when you are not working?", "type": "text"}, {"key": "ask_me", "label": "Something people can always ask you about", "type": "text"}]</field>
+    </record>
+
+    <!-- ========== the first day ========== -->
+    <record id="step_rize_poster" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">50</field>
+        <field name="name">Welcome card to the team</field>
+        <field name="description">Sends itself on the joining day: a designed card built from their own answers, emailed to their team and nobody else.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">email</field>
+        <field name="automation_key">poster</field>
+    </record>
+
+    <record id="step_rize_day1" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">60</field>
+        <field name="name">Day-one introduction</field>
+        <field name="description">Sends itself on the joining day: an invitation to the manager and the joiner, with the meeting attached so it lands in both diaries.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">email</field>
+        <field name="automation_key">day1_ics</field>
+    </record>
+
+    <record id="step_rize_credentials" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">70</field>
+        <field name="name">Send their sign-in details</field>
+        <field name="description">Their account was made the day their record arrived. This is the day it is handed over — not before, so a link cannot be sitting in an inbox for three weeks.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">email</field>
+        <field name="automation_key">credentials</field>
+    </record>
+
+    <!-- ========== the first weeks ========== -->
+    <record id="step_rize_data" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">80</field>
+        <field name="name">Finish your own details</field>
+        <field name="description">Bank account, emergency contact, address, documents — everything payroll needs before the first pay run. The joiner does this themselves from their own profile page.</field>
+        <field name="assignee_rule">employee</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">3</field>
+        <field name="step_kind">task</field>
+        <field name="escalation_days">3</field>
+    </record>
+
+    <record id="step_rize_orientation" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_onboarding"/>
+        <field name="sequence">90</field>
+        <field name="name">Welcome session</field>
+        <field name="description">They are put into the next session automatically when this journey opens. This step is the reminder that it actually happened.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">7</field>
+        <field name="step_kind">task</field>
+    </record>
+
+</data>
+</odoo>

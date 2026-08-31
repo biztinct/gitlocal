@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. These three are
+         SETTINGS screens, reached from the cog and the command bar rather
+         than from a rail item: the day-to-day surface is the New joiners
+         lens on the Lifecycle hub. -->
+
+    <!-- ================================================================ -->
+    <!--  HR partner rules                                                -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hrbp_rule_list" model="ir.ui.view">
+        <field name="name">pb.hrbp.rule.list</field>
+        <field name="model">pb.hrbp.rule</field>
+        <field name="arch" type="xml">
+            <list string="HR partner rules" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="department_id" optional="show"
+                       placeholder="Any team"/>
+                <field name="country_id" optional="show"
+                       placeholder="Any country"/>
+                <field name="hrbp_user_id"/>
+                <field name="note" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hrbp_rule_search" model="ir.ui.view">
+        <field name="name">pb.hrbp.rule.search</field>
+        <field name="model">pb.hrbp.rule</field>
+        <field name="arch" type="xml">
+            <search string="HR partner rules">
+                <field name="hrbp_user_id"/>
+                <field name="department_id"/>
+                <field name="country_id"/>
+                <filter name="inactive" string="Turned off"
+                        domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="by_person" string="HR partner"
+                            context="{'group_by': 'hrbp_user_id'}"/>
+                    <filter name="by_dept" string="Team"
+                            context="{'group_by': 'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_hrbp_rule" model="ir.actions.act_window">
+        <field name="name">HR partner rules</field>
+        <field name="res_model">pb.hrbp.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Say who looks after whom</p>
+            <p>Rules are read from the top and the first one that fits is used.
+               Leave the team or the country empty to mean "any" — a single rule
+               with neither set is a working setup for a company with one HR
+               person. Anybody whose HR partner was chosen by hand keeps them,
+               whatever these say.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Welcome sessions                                                -->
+    <!-- ================================================================ -->
+    <record id="view_pb_orientation_batch_list" model="ir.ui.view">
+        <field name="name">pb.orientation.batch.list</field>
+        <field name="model">pb.orientation.batch</field>
+        <field name="arch" type="xml">
+            <list string="Welcome sessions">
+                <field name="batch_date"/>
+                <field name="attendee_count" string="People"/>
+                <field name="location" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'upcoming'"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_orientation_batch_form" model="ir.ui.view">
+        <field name="name">pb.orientation.batch.form</field>
+        <field name="model">pb.orientation.batch</field>
+        <field name="arch" type="xml">
+            <form string="Welcome session">
+                <header>
+                    <button name="action_done" string="Mark as held"
+                            type="object" class="btn-primary"
+                            invisible="state != 'upcoming'"/>
+                    <button name="action_reopen" string="Back to upcoming"
+                            type="object" invisible="state == 'upcoming'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="upcoming,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="batch_date"/>
+                            <field name="location"
+                                   placeholder="Meeting room, or a link"/>
+                        </group>
+                        <group>
+                            <field name="attendee_count"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Who is coming" name="attendees">
+                            <field name="attendee_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="What was covered, who ran it."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_orientation_batch" model="ir.actions.act_window">
+        <field name="name">Welcome sessions</field>
+        <field name="res_model">pb.orientation.batch</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No sessions yet</p>
+            <p>Nobody should sit through the welcome session alone. Payobook
+               puts each joiner into the first session on or after their start
+               date, and creates the session if there is not one — so this list
+               fills itself in as people arrive.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  New joiner checks (read mostly; HR answers nothing here)        -->
+    <!-- ================================================================ -->
+    <record id="view_pb_newhire_pulse_list" model="ir.ui.view">
+        <field name="name">pb.newhire.pulse.list</field>
+        <field name="model">pb.newhire.pulse</field>
+        <field name="arch" type="xml">
+            <list string="New joiner checks" create="false"
+                  decoration-danger="red_flag == True">
+                <field name="employee_id"/>
+                <field name="day_mark"/>
+                <field name="due_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'answered'"/>
+                <field name="score_word" string="How it is going"/>
+                <field name="comment" optional="show"/>
+                <field name="red_flag" string="Needs attention"
+                       widget="boolean_toggle" readonly="1"/>
+                <field name="answered_at" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_newhire_pulse_search" model="ir.ui.view">
+        <field name="name">pb.newhire.pulse.search</field>
+        <field name="model">pb.newhire.pulse</field>
+        <field name="arch" type="xml">
+            <search string="New joiner checks">
+                <field name="employee_id"/>
+                <filter name="red" string="Needs attention"
+                        domain="[('red_flag', '=', True)]"/>
+                <filter name="answered" string="Answered"
+                        domain="[('state', '=', 'answered')]"/>
+                <filter name="waiting" string="Not answered yet"
+                        domain="[('state', 'in', ('planned', 'sent'))]"/>
+                <group>
+                    <filter name="by_mark" string="When"
+                            context="{'group_by': 'day_mark'}"/>
+                    <filter name="by_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_newhire_pulse" model="ir.actions.act_window">
+        <field name="name">New joiner checks</field>
+        <field name="res_model">pb.newhire.pulse</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No checks yet</p>
+            <p>Every new joiner is asked one question at day 7, day 30 and day
+               60: how is it going. A one or a two puts their name in front of
+               their HR contact the same day.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The New joiners cockpit, as an action RECORD                    -->
+    <!--  Test URL: /odoo/action-pb_onboarding_board                      -->
+    <!--  Its real home is the Lifecycle hub's New joiners lens.          -->
+    <!-- ================================================================ -->
+    <record id="action_pb_onboarding_board" model="ir.actions.client">
+        <field name="name">New joiners</field>
+        <field name="tag">pb_onboarding_board</field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The two people, on the employee form                            -->
+    <!-- ================================================================ -->
+    <record id="view_hr_employee_form_onboarding" model="ir.ui.view">
+        <field name="name">hr.employee.form.onboarding</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <!-- Anchored on a FIELD, never on a group's string: an xpath that
+                 selects by [@string=...] is not reliable on Odoo 19 view
+                 inheritance, and a label is also the first thing a translation
+                 changes underneath you. -->
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="hrbp_user_id"
+                       options="{'no_create': True}"
+                       placeholder="Filled in from the rules when they join"/>
+                <field name="buddy_id"
+                       options="{'no_create': True}"
+                       placeholder="Chosen from the New joiners screen"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
