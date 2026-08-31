@@ -106,6 +106,9 @@ class PbContracts(models.AbstractModel):
             'contracts': rows,
             'total': self._safe(lambda: C.search_count(DOM)),
             'shown': len(rows),
+            # CD-1: the contract drawer's bundled read exists on this build, so
+            # the list can offer it without probing for the method first.
+            'has_360': True,
         }
 
     # ------------------------------------------------------------------ detail
