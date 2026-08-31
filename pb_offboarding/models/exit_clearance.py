@@ -22,7 +22,7 @@ from odoo.exceptions import AccessError, UserError
 
 from .offboarding_common import (
     CLEARANCE_DEPTS, CLEARANCE_DEPT_LABEL, CLEARANCE_ORDER, CLEARANCE_STATES,
-    GROUP_MANAGER, P_DEPT_USER,
+    GROUP_MANAGER, P_DEPT_USER, counted,
 )
 
 _logger = logging.getLogger(__name__)
@@ -102,8 +102,8 @@ class PbExitClearance(models.Model):
         if vals_list:
             made = self.sudo().create(vals_list)
             case.message_post(body=_(
-                "%(count)s clearance(s) added for this exit: %(who)s.",
-                count=len(made),
+                "%(count)s added for this exit: %(who)s.",
+                count=counted(len(made), _('clearance'), _('clearances')),
                 who=', '.join(CLEARANCE_DEPT_LABEL.get(v['dept'], v['dept'])
                               for v in vals_list)))
             existing |= made

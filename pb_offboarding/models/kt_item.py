@@ -189,9 +189,10 @@ class PbJourneyCaseKt(models.Model):
                               '%s', self.id)
             return False
         self.sudo().write({'kt_last_ping': today or fields.Date.today()})
+        open_now = len(self.kt_item_ids.filtered(lambda k: k.state != 'done'))
         self.message_post(body=_(
-            "%(count)s handover item(s) are still open — %(who)s have been "
-            "reminded.",
-            count=len(self.kt_item_ids.filtered(lambda k: k.state != 'done')),
+            "%(what)s still open — %(who)s have been reminded.",
+            what=(_("One handover item is") if open_now == 1
+                  else _("%s handover items are", open_now)),
             who=', '.join(to)))
         return True

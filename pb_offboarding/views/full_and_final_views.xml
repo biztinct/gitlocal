@@ -41,12 +41,11 @@
                 <div class="alert alert-success" role="status"
                      invisible="not pb_closed">
                     <strong>This settlement is closed.</strong>
-                    Everything that was holding it had been signed off.
-                    <field name="pb_closed_by" readonly="1" nolabel="1"
-                           class="oe_inline"/>
-                    closed it on
-                    <field name="pb_closed_at" readonly="1" nolabel="1"
-                           class="oe_inline"/>.
+                    Everything that was holding it had been signed off. Closed
+                    by <field name="pb_closed_by" readonly="1" nolabel="1"
+                              class="oe_inline"/>
+                    on <field name="pb_closed_at" readonly="1" nolabel="1"
+                              class="oe_inline"/>
                 </div>
                 <div class="alert alert-success" role="status"
                      invisible="pb_closed or not pb_ready">

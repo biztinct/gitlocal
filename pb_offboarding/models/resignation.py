@@ -43,7 +43,8 @@ from odoo.exceptions import AccessError, UserError
 
 from .offboarding_common import (
     GROUP_MANAGER, P_EXIT_FEEDBACK_DAYS, P_RESIGN_MAIL, RESIGNATION_SOURCES,
-    RESIGNATION_STATES, RESIGNATION_WITHDRAWABLE, first_name, flag, number,
+    RESIGNATION_STATES, RESIGNATION_WITHDRAWABLE, counted, first_name,
+    flag, number,
 )
 
 _logger = logging.getLogger(__name__)
@@ -464,8 +465,8 @@ class PbResignation(models.Model):
         case.action_open()
         self.sudo().case_id = case.id
         self.message_post(body=_(
-            "The leaving checklist is open — %(count)s step(s).",
-            count=len(case.task_ids)))
+            "The leaving checklist is open — %s.",
+            counted(len(case.task_ids), _('step'), _('steps'))))
         return case
 
     def _ensure_case_extras(self):

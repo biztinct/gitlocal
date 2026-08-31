@@ -146,8 +146,14 @@
                     <strong><t t-out="object.employee_id.name or ''"/></strong>
                     is leaving
                     <t t-if="object.anchor_date">on <t t-out="object.anchor_date or ''"/></t>,
-                    and <strong><t t-out="object.kt_open_count or 0"/></strong>
-                    thing(s) still have not been handed over.
+                    and
+                    <t t-if="object.kt_open_count == 1">
+                        <strong>one thing</strong> still has not been handed over.
+                    </t>
+                    <t t-else="">
+                        <strong><t t-out="object.kt_open_count or 0"/> things</strong>
+                        still have not been handed over.
+                    </t>
                 </p>
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
                         style="max-width:560px; border-collapse:collapse; margin:14px 0;">

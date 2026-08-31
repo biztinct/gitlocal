@@ -408,9 +408,13 @@ export class PbExitsBoard extends Component {
     async runAutomation() {
         const res = await this.call("run_automation", []);
         if (res) {
+            const n = (c, one, many) => c + " " + (c === 1 ? one : many);
             this.notif.add(
-                _t("%(steps)s step(s) ran, %(pings)s handover reminder(s) sent.",
-                   { steps: res.auto_steps || 0, pings: res.kt_pings || 0 }),
+                _t("%(steps)s ran, %(pings)s sent, %(made)s filled in.",
+                   { steps: n(res.auto_steps || 0, _t("step"), _t("steps")),
+                     pings: n(res.kt_pings || 0, _t("reminder"), _t("reminders")),
+                     made: n(res.clearances_made || 0, _t("clearance"),
+                             _t("clearances")) }),
                 { type: "success" });
             await this.refresh();
         }

@@ -223,6 +223,17 @@ class PbExits(models.AbstractModel):
             raise UserError(_("That leaving checklist is no longer there."))
         detail = self.env['pb.journeys'].get_case(case.id)
         detail['leaver'] = self._row(case)
+        # P0's task payload does not carry "does this step run itself" — the
+        # mechanism is P3's and P0 predates it. Annotate here rather than
+        # widening `pb.journeys`: without it the drawer offers "Run it now" on
+        # a step a person has to do, and the server refuses it. An offer the
+        # server would refuse is worse than no offer (W29).
+        auto = {t.id: (t.is_automatic, t.automation_key or '')
+                for t in case.task_ids}
+        for row in detail.get('tasks') or []:
+            is_auto, key = auto.get(row.get('id'), (False, ''))
+            row['auto'] = bool(is_auto)
+            row['auto_key'] = key
         detail['kt'] = [{
             'id': k.id,
             'topic': k.topic or '',
@@ -364,8 +375,9 @@ class PbExits(models.AbstractModel):
                 "Nothing was sent. %s",
                 task.auto_error or _(
                     "It may be waiting for something else — a settlement that "
-                    "is not closed yet, or a switch that is off in the "
-                    "settings.")))
+                    "is not closed yet, a switch that is off in the settings, "
+                    "or more people to write to than the cap allows. The log "
+                    "says which.")))
         return True
 
     @api.model

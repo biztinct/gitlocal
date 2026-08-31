@@ -32,7 +32,7 @@ from odoo.exceptions import AccessError
 
 from .offboarding_common import (
     AUTOMATION_KEY_LABEL, GROUP_MANAGER, P_FAREWELL_CAP, P_FAREWELL_MAIL,
-    P_KT_PING_DAYS, P_KT_PING_MAIL, first_name, flag, number,
+    P_KT_PING_DAYS, P_KT_PING_MAIL, counted, first_name, flag, number,
 )
 
 _logger = logging.getLogger(__name__)
@@ -192,9 +192,11 @@ class PbJourneyTaskOffboarding(models.Model):
             months = max(0, (self.case_id.anchor_date.year - joined.year) * 12
                          + self.case_id.anchor_date.month - joined.month)
             if months >= 12:
-                years = _(' after %s year(s) with us', months // 12)
+                years = _(' after %s with us',
+                          counted(months // 12, _('year'), _('years')))
             elif months:
-                years = _(' after %s month(s) with us', months)
+                years = _(' after %s with us',
+                          counted(months, _('month'), _('months')))
         return _(
             "Today is %(who)s's last day%(years)s. Thank you for everything "
             "you have put in — the door is always open, and we wish you well "
@@ -240,7 +242,8 @@ class PbJourneyTaskOffboarding(models.Model):
         template.sudo().send_mail(
             self.id, force_send=False,
             email_values={'email_to': ','.join(team), 'auto_delete': False})
-        return _('Farewell note sent to %s colleague(s).', len(team))
+        return _('Farewell note sent to %s.',
+                 counted(len(team), _('colleague'), _('colleagues')))
 
     # ------------------------------------------------------- the last documents
     def _auto_postexit_doc(self):
@@ -287,14 +290,50 @@ class PbJourneyCaseOffboardingCron(models.Model):
         counts = super()._cron_lifecycle_reminders() or {}
         if not isinstance(counts, dict):
             counts = {'base': counts}
-        try:
-            counts['kt_pings'] = self._run_kt_pings()
-        except Exception:               # noqa: BLE001 — one piece, one grave
-            _logger.exception('pb_offboarding: handover reminders failed')
-            counts['kt_pings'] = 0
-        _logger.info('pb_offboarding: %s handover reminder(s) sent',
-                     counts.get('kt_pings'))
+        for key, fn in (('clearances_made', self._backfill_clearances),
+                        ('kt_pings', self._run_kt_pings)):
+            try:
+                counts[key] = fn()
+            except Exception:           # noqa: BLE001 — one piece, one grave
+                _logger.exception('pb_offboarding: %s failed', key)
+                counts[key] = 0
+        _logger.info(
+            'pb_offboarding: %s clearance(s) filled in, %s handover '
+            'reminder(s) sent',
+            counts.get('clearances_made'), counts.get('kt_pings'))
         return counts
+
+    @api.model
+    def _backfill_clearances(self):
+        """The four rows, for the exits that were already running.
+
+        THIS IS PART OF THE GATE, not tidying. A leaving checklist opened
+        before this module existed has no clearance rows at all — and
+        `pending_for()` then answers "nothing is pending", which is true and
+        useless: the settlement gate's clearance probe passes VACUOUSLY and
+        somebody's last payment goes out with nobody having signed anything.
+        A gate that is silent about a question nobody asked is not a gate.
+
+        Idempotent by construction: `ensure_for_case` creates only the desks
+        that are missing, so this is a no-op from the second run onwards.
+        """
+        Case = self.sudo()
+        made = 0
+        for case in Case.search([('case_type', '=', 'offboarding'),
+                                 ('state', 'in', ('draft', 'active',
+                                                  'on_hold'))],
+                                limit=_RUN_CAP):
+            try:
+                before = self.env['pb.exit.clearance'].sudo().search_count(
+                    [('case_id', '=', case.id)])
+                if before >= 4:
+                    continue
+                after = len(case.ensure_exit_clearances())
+                made += max(0, after - before)
+            except Exception:           # noqa: BLE001
+                _logger.exception('pb_offboarding: clearances for journey %s',
+                                  case.id)
+        return made
 
     @api.model
     def _run_kt_pings(self, today=None):
@@ -326,6 +365,7 @@ class PbJourneyCaseOffboardingCron(models.Model):
             raise AccessError(_(
                 "Only the HR team can run the leaving steps by hand."))
         return {
+            'clearances_made': self._backfill_clearances(),
             'auto_steps': self._run_auto_steps(),
             'kt_pings': self._run_kt_pings(),
         }

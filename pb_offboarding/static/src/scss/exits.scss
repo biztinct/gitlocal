@@ -349,7 +349,20 @@
     }
 
     // --------------------------------------------------- the dialogs
-    .exb-modal { width: 560px; max-width: 100%; }
+    // THE KIT'S `.pbim-modal` HAS NO PADDING AND IS A COLUMN FLEX BOX. That
+    // is deliberate — it is built for the `__head` / `__body` / `__foot`
+    // rails, which carry their own — but a free-form dialog that only sets a
+    // width inherits `padding: 0` and `overflow: hidden`, so its heading is
+    // clipped flush against the left edge and its textarea runs off the right
+    // one. A dialog that writes its own contents pads itself and scrolls
+    // itself.
+    .exb-modal {
+        width: 560px; max-width: 100%;
+        display: block; padding: 22px 24px 20px; overflow: auto;
+
+        h2 { font-size: 18px; font-weight: 800; color: var(--pbim-ink);
+             margin: 0 0 4px; }
+    }
     .exb-lbl {
         display: block; font-size: 11px; font-weight: 800; letter-spacing: .05em;
         text-transform: uppercase; color: var(--pbim-muted);
