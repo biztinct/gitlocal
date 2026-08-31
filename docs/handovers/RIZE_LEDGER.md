@@ -12,7 +12,10 @@ without owner approval between them.
 ## Target & credentials
 
 - Implement/deploy ONLY on the live `payobook` database at https://payobook.com. No other DB.
-- Admin login for browser validation: `ash@biztinct.com` / `{withheld: apex-admin-legacy}`.
+- Admin login for browser validation: `ash@biztinct.com` / `{withheld: rize-admin}`
+  (reset 2026-09-01 per owner pre-authorization — the owner gets this password in the
+  final report). Secondary test account: `igc1.validator` / `{withheld: rize-p0-validator}` (user id 2065,
+  email rize.validator@payobook.local — DEACTIVATE at programme end).
 - Live server ssh alias: `Payobook19v2`. Odoo 19 CE, service `odoo-server`, config
   `/etc/odoo-server.conf`, DB `payobook`, log `/var/log/odoo/odoo-server.log`, passwordless sudo.
 
