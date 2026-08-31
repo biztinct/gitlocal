@@ -2843,3 +2843,45 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   fine; (3) the same applies to every `grep`/`md5sum` against
   `/odoo/odoo-server/addons` in a deploy check — a `Permission denied` in the
   middle of a verification table is a missing row, not a passing one.
+- **CD1 `hr.contract.create` auto-creates one `hr.contract.advantage` per
+  EXISTING template, so on a live tenant "add a component" has nothing to
+  offer.** (CONTRACT DRAWER CD-1.) `om_hr_payroll/models/hr_contract.py:118`
+  loops every `hr.contract.advantage.template` at create time. On abm,
+  contract 1051 therefore carries 21 component lines and
+  `components['addable']` comes back EMPTY — every template is already on the
+  contract. The add path is still correct and still tested (a template created
+  AFTER the contract is offered), but CD-2 must not build an "Add a component"
+  affordance that is empty on every real record: the realistic gesture is
+  *edit the zero-valued line*, not *add a missing one*. The same override is
+  why a fixture must create its templates BEFORE its contract to get lines at
+  all, and one template afterwards to have anything addable to assert on.
+- **CD2 `biz.audit.entry` stores `str(value)`, so an unformatted money field
+  reads "12500000.0 → 72000000.0" to a user.** (CONTRACT DRAWER CD-1, found on
+  live abm data, not in the suite.) `_biz_audit_display`
+  (`biz_audit_trail/models/biz_audit_mixin.py:110`) falls through to
+  `str(value)` for monetary fields, and the entry keeps that string forever.
+  Any consumer that shows the trail must re-format money itself
+  (`_cd_history_value`) and re-title the row from its own vocabulary — the
+  stored `field_label` is the model's word ("Wage"), not the screen's
+  ("Monthly wage"). The entry shape CD-2 can rely on: `model_name`, `res_id`,
+  `res_display`, `field_name`, `field_label`, `old_value`, `new_value`,
+  `user_id`, `stamp`, `company_id`, `_order = 'stamp desc, id desc'`.
+- **CD3 A plain `hr.group_hr_user` cannot read `hr.contract` AT ALL on this
+  build, so an ACL fixture needs a contract group as well.** (CONTRACT DRAWER
+  CD-1.) `hr_contract/security/ir.model.access.csv` grants `hr.contract` only
+  to `group_hr_contract_manager` (rwcu) and `group_hr_contract_employee_manager`
+  (read only) — the HR-user group appears nowhere. A "reads but cannot write"
+  persona is therefore `hr.group_hr_user` + `group_hr_contract_employee_manager`,
+  AND the fixture employee must sit under that persona (`parent_id.user_id`)
+  or `ir_rule_hr_contract_employee_manager` hides the contract entirely. A
+  corollary for any 360-style payload: the m2o LABELS in it (department,
+  schedule, structure) must be read with `sudo()`, or a reader who may see the
+  contract but not the catalogue behind it gets an access error instead of a
+  drawer.
+- **CD4 W159 confirmed again, and the answer is to run the suite TWICE.**
+  (CONTRACT DRAWER CD-1.) `res.users.create` still raises "You must have at
+  least an administrator user." on `payobook_template`, so the two persona
+  cases skip there. Running the identical scoped suite on `payobook` — where
+  the module has to be upgraded anyway, and where `TransactionCase` rolls
+  everything back — turned 24 passes + 2 skips into 26 passes. Rule: a phase
+  with an ACL case reports BOTH runs, never the template one alone.

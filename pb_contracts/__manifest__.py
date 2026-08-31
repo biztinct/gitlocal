@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Contracts Cockpit',
     'summary': 'Bespoke contracts landing + detail cockpit (light-teal People identity)',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
