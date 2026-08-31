@@ -77,12 +77,16 @@ class HrFullFinalSettlement(models.Model):
 
         try:
             tasks = self.env['pb.journey.case'].blocking_tasks_for(emp.id)
-            if tasks:
+            names = tasks.mapped('name')
+            if len(names) == 1:
                 out.append(_(
-                    "%(count)s step(s) on the leaving checklist are not done: "
-                    "%(what)s.",
-                    count=len(tasks),
-                    what=joined_sentence(tasks.mapped('name'))))
+                    "One step on the leaving checklist is not done: %s.",
+                    joined_sentence(names)))
+            elif names:
+                out.append(_(
+                    "%(count)s steps on the leaving checklist are not done: "
+                    "%(which)s.",
+                    count=len(names), which=joined_sentence(names)))
         except Exception:               # noqa: BLE001
             _logger.exception('pb_offboarding: could not read the leaving '
                               'checklist for employee %s', emp.id)
@@ -92,13 +96,16 @@ class HrFullFinalSettlement(models.Model):
 
         try:
             pending = self.env['pb.exit.clearance'].pending_for(emp.id)
-            if pending:
+            desks = [CLEARANCE_DEPT_LABEL.get(c.dept, c.dept or '')
+                     for c in pending]
+            if len(desks) == 1:
                 out.append(_(
-                    "%(count)s clearance(s) still open: %(what)s.",
-                    count=len(pending),
-                    what=joined_sentence([
-                        CLEARANCE_DEPT_LABEL.get(c.dept, c.dept or '')
-                        for c in pending], limit=4)))
+                    "The %s clearance is still open.", desks[0]))
+            elif desks:
+                out.append(_(
+                    "%(count)s clearances are still open: %(which)s.",
+                    count=len(desks),
+                    which=joined_sentence(desks, limit=4)))
         except Exception:               # noqa: BLE001
             _logger.exception('pb_offboarding: could not read the clearances '
                               'for employee %s', emp.id)
@@ -108,14 +115,14 @@ class HrFullFinalSettlement(models.Model):
 
         try:
             items = self.env['pb.asset'].open_items_for(emp.id)
-            tangible = items.get('tangible') or []
-            if tangible:
+            kit = [('%s %s' % (i.get('code') or '', i.get('name') or '')).strip()
+                   for i in (items.get('tangible') or [])]
+            if len(kit) == 1:
+                out.append(_("%s has not come back.", kit[0]))
+            elif kit:
                 out.append(_(
-                    "%(count)s item(s) have not come back: %(what)s.",
-                    count=len(tangible),
-                    what=joined_sentence([
-                        ('%s %s' % (i.get('code') or '', i.get('name') or ''))
-                        .strip() for i in tangible])))
+                    "%(count)s items have not come back: %(which)s.",
+                    count=len(kit), which=joined_sentence(kit)))
         except Exception:               # noqa: BLE001
             _logger.exception('pb_offboarding: could not read the equipment '
                               'register for employee %s', emp.id)
@@ -173,6 +180,13 @@ class HrFullFinalSettlement(models.Model):
                         rec.pb_closed_at.date()) if rec.pb_closed_at else '',
                     who=rec.pb_closed_by.name or _('somebody')))
             blockers = rec._pb_blocker_list()
+            if len(blockers) == 1:
+                raise UserError(_(
+                    "%(who)s's settlement cannot be closed yet. %(what)s\n\n"
+                    "Sort that out and press Close again — nothing here is "
+                    "lost in the meantime.",
+                    who=rec.employee_id.name or _('This person'),
+                    what=blockers[0]))
             if blockers:
                 raise UserError(_(
                     "%(who)s's settlement cannot be closed yet.\n\n%(what)s\n\n"
