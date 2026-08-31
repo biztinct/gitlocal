@@ -158,6 +158,27 @@
                and everything still to be ready.</p>
           </div>
 
+          <!-- ============ the filters match nobody ============
+               A board that answers a filter with a blank page is a dead end:
+               the reader cannot tell "nobody matches" from "it is still
+               loading" from "it broke". Say which it is, and offer the way
+               back in the same breath. -->
+          <div t-elif="!visibleRows.length" class="pbim-panel obb-empty">
+            <div class="obb-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>Nobody matches that</h2>
+            <!-- The whole sentence is ONE expression. Split across several
+                 t-esc nodes, OWL collapses the newline between them and the
+                 page reads "There are2 new joiners". -->
+            <p>
+              <t t-esc="state.rows.length === 1
+                        ? 'There is 1 new joiner on this board, but it does not fit the filters you have set.'
+                        : 'There are ' + state.rows.length + ' new joiners on this board, but none of them fits the filters you have set.'"/>
+            </p>
+            <button class="pbim-btn primary" t-on-click="clearFilters">
+              <t t-out="ic('x',15)"/> Clear the filters
+            </button>
+          </div>
+
           <!-- ======================= the people ======================= -->
           <div t-else="" class="obb-grid">
             <div t-foreach="visibleRows" t-as="row" t-key="row.id"
