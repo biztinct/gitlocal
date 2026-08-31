@@ -1,0 +1,21 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_notice_policy_staff,Notice policy read for staff,model_pb_notice_policy,base.group_user,1,0,0,0
+access_pb_notice_policy_manager,Notice policy manager,model_pb_notice_policy,pb_lifecycle.group_lifecycle_manager,1,0,0,0
+access_pb_notice_policy_admin,Notice policy admin,model_pb_notice_policy,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_notice_policy_system,Notice policy system,model_pb_notice_policy,base.group_system,1,1,1,1
+access_pb_resignation_staff,Resignation mine and my team's,model_pb_resignation,base.group_user,1,1,0,0
+access_pb_resignation_portal,Resignation mine (portal),model_pb_resignation,base.group_portal,1,0,0,0
+access_pb_resignation_user,Resignation read,model_pb_resignation,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_resignation_manager,Resignation manager,model_pb_resignation,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_resignation_admin,Resignation admin,model_pb_resignation,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_resignation_system,Resignation system,model_pb_resignation,base.group_system,1,1,1,1
+access_pb_exit_clearance_staff,Exit clearance mine to sign,model_pb_exit_clearance,base.group_user,1,1,0,0
+access_pb_exit_clearance_user,Exit clearance read,model_pb_exit_clearance,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_exit_clearance_manager,Exit clearance manager,model_pb_exit_clearance,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_exit_clearance_admin,Exit clearance admin,model_pb_exit_clearance,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_exit_clearance_system,Exit clearance system,model_pb_exit_clearance,base.group_system,1,1,1,1
+access_pb_kt_item_staff,Handover item mine,model_pb_kt_item,base.group_user,1,1,0,0
+access_pb_kt_item_user,Handover item read,model_pb_kt_item,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_kt_item_manager,Handover item manager,model_pb_kt_item,pb_lifecycle.group_lifecycle_manager,1,1,1,1
+access_pb_kt_item_admin,Handover item admin,model_pb_kt_item,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_kt_item_system,Handover item system,model_pb_kt_item,base.group_system,1,1,1,1

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE LEAVING CHECKLIST, in full.
+
+         P0 shipped a four-step SKELETON so the engine had something to run
+         on day one. This is the real thing, and it REPLACES rather than
+         competes with it: the skeleton is deactivated below, because two
+         active checklists for the same journey type is a coin toss over
+         which one a leaver gets, and `pick_for` would only ever say "the
+         newest one wins" in a warning nobody reads.
+
+         The skeleton is DEACTIVATED, never deleted. Checklists already used
+         by a running journey keep their link for reporting, and a tenant who
+         preferred the short version turns it back on in one click.
+
+         WHAT IS NOT SEEDED HERE, on purpose:
+           * the equipment steps. P2 appends one "Return: ..." step per item
+             the person actually has, the moment the checklist opens — a
+             seeded step called "return your equipment" would be a second,
+             vaguer copy of a list that already exists;
+           * the clearances. They are ROWS on a board (`pb.exit.clearance`),
+             not steps, because a clearance is owed by a DESK and the person
+             at that desk changes without the leaver's checklist knowing.
+
+         COMPANY-LESS on purpose (R8): `company_id` defaults to the loading
+         user's own company, which on a multi-company database makes a seeded
+         checklist invisible to every OTHER company.
+
+         Section comments are ruled with `=` and never with hyphens: a
+         doubled hyphen inside an XML comment is a parse error that takes the
+         whole file with it (R35).
+         ================================================================== -->
+
+    <record id="pb_lifecycle.journey_template_offboarding" model="pb.journey.template">
+        <field name="active" eval="False"/>
+        <field name="note">Replaced by "Leaver — the full exit", which does
+            everything this one did and adds the knowledge handover, the exit
+            conversation, the settlement letter and the farewell note. The
+            clearances moved onto their own board. Turn this back on if you
+            prefer the short version.</field>
+    </record>
+
+    <record id="journey_template_rize_offboarding" model="pb.journey.template">
+        <field name="name">Leaver — the full exit</field>
+        <field name="case_type">offboarding</field>
+        <field name="sequence">5</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Everything between a resignation being agreed and
+            the last payment going out. The dates all move with the last
+            working day, so a checklist written once keeps working. Four of
+            these steps do themselves on the day they are due — the experience
+            letter, the settlement letter, the farewell note and the
+            month-later reminder about paperwork. Two of them hold the final
+            settlement until they are done.</field>
+    </record>
+
+    <!-- ========== before the last day ========== -->
+    <record id="step_off_handover_plan" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_offboarding"/>
+        <field name="sequence">10</field>
+        <field name="name">Handover plan</field>
+        <field name="description">Who picks up what, written down and agreed with the person leaving. List each piece on the handover list so it can be tracked rather than remembered.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">-20</field>
+        <field name="step_kind">task</field>
+        <field name="blocking_ff" eval="True"/>
+        <field name="escalation_days">3</field>
+    </record>
+
+    <record id="step_off_kt" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_offboarding"/>
+        <field name="sequence">20</field>
+        <field name="name">Knowledge handed over</field>
+        <field name="description">Every item on the handover list actually handed over, with the notes somewhere a colleague can open them. While anything is still open the HR team is reminded every fifteen days.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">-15</field>
+        <field name="step_kind">task</field>
+        <field name="blocking_ff" eval="True"/>
+        <field name="escalation_days">5</field>
+    </record>
+
+    <record id="step_off_feedback" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_offboarding"/>
+        <field name="sequence">30</field>
+        <field name="name">Exit conversation</field>
+        <field name="description">The questionnaire was created and sent when this checklist opened — they can answer it without signing in, and the link stays open for three weeks after their last day. This step is the conversation itself, and the chase if they have not answered.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">-7</field>
+        <field name="step_kind">task</field>
+        <field name="escalation_days">3</field>
+    </record>
+
+    <record id="step_off_clearances" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_offboarding"/>
+        <field name="sequence">40</field>
+        <field name="name">Clearances signed off</field>
+        <field name="description">IT, HR, Finance and Admin each sign the exit off on the clearance board. Chase the ones still open — the final settlement cannot be closed until all four are answered.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">-1</field>
+        <field name="step_kind">task</field>
+        <field name="escalation_days">2</field>
+    </record>
+
+    <!-- ========== the last day ========== -->
+    <record id="step_off_farewell" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_offboarding"/>
+        <field name="sequence">50</field>
+        <field name="name">Farewell note to the team</field>
+        <field name="description">Sends itself on the last day, to their own team and nobody else. Edit the wording on the Exits board beforehand. Switched off until somebody turns it on, so nothing goes out by accident.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">email</field>
+        <field name="automation_key">farewell</field>
+    </record>
+
+    <!-- ========== after the last day ========== -->
+    <record id="step_off_experience" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_offboarding"/>
+        <field name="sequence">60</field>
+        <field name="name">Experience letter</field>
+        <field name="description">Prepares itself the day after they leave: the letter is written from the template, filed in their documents and emailed to them, so they leave with it in hand.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">1</field>
+        <field name="step_kind">letter</field>
+        <field name="automation_key">experience_letter</field>
+        <field name="letter_template_id" ref="pb_lifecycle.letter_template_experience"/>
+    </record>
+
+    <record id="step_off_ff_cover" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_offboarding"/>
+        <field name="sequence">70</field>
+        <field name="name">Final settlement letter</field>
+        <field name="description">Waits for the settlement to be closed, then writes the covering letter with the agreed figures on it and emails it. It will not go out before the settlement is closed, however many times it is run.</field>
+        <field name="assignee_rule">finance</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">7</field>
+        <field name="step_kind">letter</field>
+        <field name="automation_key">ff_cover</field>
+        <field name="letter_template_id" ref="letter_template_ff_cover"/>
+        <field name="escalation_days">7</field>
+    </record>
+
+    <record id="step_off_postexit" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_rize_offboarding"/>
+        <field name="sequence">80</field>
+        <field name="name">Post-exit documents filed</field>
+        <field name="description">A month later: the resignation, the experience letter, the settlement statement and anything the authorities needed, all filed against the record. Payobook sends the reminder; a person ticks the box.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">30</field>
+        <field name="step_kind">task</field>
+        <field name="automation_key">postexit_doc</field>
+        <field name="escalation_days">7</field>
+    </record>
+
+</data>
+</odoo>

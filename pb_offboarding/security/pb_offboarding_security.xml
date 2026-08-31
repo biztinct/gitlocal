@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         NO NEW GROUP LADDER. An exit is not a separate permission from the
+         rest of the employee lifecycle — the board lives inside the
+         Lifecycle hub and answers a question about the same cases — so
+         these models ride P0's user / manager / administrator tiers, the
+         same call P3 made for the same reason. A fifth ladder would be a
+         group nobody would know to grant, and the first symptom would be an
+         empty board on a database full of leavers.
+
+         WHAT IS DIFFERENT HERE, and why there are `base.group_user` rows in
+         the access list at all: two of the people this module needs are NOT
+         in the HR team by definition.
+
+           * the LINE MANAGER, who has to be able to see and advance their
+             own person's resignation. A chain whose second step can only be
+             taken by somebody in the HR group is a chain HR takes every
+             step of, which is not an approval;
+           * the OWNER OF A DESK — an IT manager, a finance controller — who
+             has to be able to say the laptop came back without being given
+             the run of the lifecycle.
+
+         Both are granted at the ACCESS-LIST level and narrowed HERE, which
+         is the standard shape: the list says what the model allows, the rule
+         says which rows.
+         ================================================================== -->
+
+    <record id="rule_notice_policy_company" model="ir.rule">
+        <field name="name">Notice policy: company</field>
+        <field name="model_id" ref="model_pb_notice_policy"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_resignation_company" model="ir.rule">
+        <field name="name">Resignation: company</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_exit_clearance_company" model="ir.rule">
+        <field name="name">Exit clearance: company</field>
+        <field name="model_id" ref="model_pb_exit_clearance"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_kt_item_company" model="ir.rule">
+        <field name="name">Handover item: company</field>
+        <field name="model_id" ref="model_pb_kt_item"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHO SEES WHOSE RESIGNATION.
+
+         A resignation is the most private record in this module — it is
+         somebody saying they are leaving, in their own words, before their
+         colleagues know. So a plain internal user sees THEIR OWN and the
+         ones of the people who report to them, and nothing else. The
+         lifecycle manager tier — the HR team — sees the board.
+
+         Both are group rules, and Odoo ORs group rules together, so an HR
+         person who also holds the plain user tier is not narrowed by the
+         tighter one.
+         ================================================================== -->
+
+    <record id="rule_resignation_own" model="ir.rule">
+        <field name="name">Resignation: mine and my team's</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_resignation_all" model="ir.rule">
+        <field name="name">Resignation: the HR team</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- The employee's own page. It reads through the controller under sudo
+         after the route has proved the record is theirs, so this rule is the
+         second lock rather than the first: a portal session that reached the
+         model another way still only ever sees its own row. -->
+    <record id="rule_resignation_portal" model="ir.rule">
+        <field name="name">Resignation: my own (portal)</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHO SEES WHICH CLEARANCE AND WHICH HANDOVER ITEM.
+
+         The desk owner sees the rows they have to sign, and the person
+         leaving sees their own. Everything else is the HR team's.
+         ================================================================== -->
+
+    <record id="rule_exit_clearance_own" model="ir.rule">
+        <field name="name">Exit clearance: mine to sign</field>
+        <field name="model_id" ref="model_pb_exit_clearance"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('owner_user_id', '=', user.id), ('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_exit_clearance_all" model="ir.rule">
+        <field name="name">Exit clearance: the HR team</field>
+        <field name="model_id" ref="model_pb_exit_clearance"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_kt_item_own" model="ir.rule">
+        <field name="name">Handover item: mine</field>
+        <field name="model_id" ref="model_pb_kt_item"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('from_employee_id.user_id', '=', user.id), ('to_employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_kt_item_all" model="ir.rule">
+        <field name="name">Handover item: the HR team</field>
+        <field name="model_id" ref="model_pb_kt_item"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</data>
+
+    <!-- ==================================================================
+         The reference on a resignation. Outside `noupdate` so a database
+         that has never seen one gets it, and so the padding can be
+         corrected by an upgrade rather than by hand.
+         ================================================================== -->
+    <record id="seq_pb_resignation" model="ir.sequence">
+        <field name="name">Resignation</field>
+        <field name="code">pb.resignation</field>
+        <field name="prefix">RES/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>
