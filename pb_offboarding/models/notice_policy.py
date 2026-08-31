@@ -49,10 +49,28 @@ class PbNoticePolicy(models.Model):
 
     # ------------------------------------------------------------- the answer
     @api.model
+    def _as_employee(self, employee):
+        """Accept a record OR an id.
+
+        Both public entry points here are reachable over JSON-RPC, where a
+        recordset argument arrives as a plain integer — and an integer walks
+        straight past `if not employee`, answers False to every `getattr`, and
+        the caller silently gets the fallback notice period instead of the
+        country's. Coerce once, at the door, rather than in three callers.
+        """
+        if isinstance(employee, int):
+            return self.env['hr.employee'].sudo().browse(employee).exists()
+        if isinstance(employee, (list, tuple)) and employee:
+            return self.env['hr.employee'].sudo().browse(
+                int(employee[0])).exists()
+        return employee
+
+    @api.model
     def policy_for(self, employee):
         """The policy that covers this person. The country's own beats the
         shared one; a company's own beats a shared one; nothing found is not an
         error — the module falls back to its own parameter."""
+        employee = self._as_employee(employee)
         if not employee:
             return self.browse()
         country = self._employee_country(employee)
@@ -70,6 +88,7 @@ class PbNoticePolicy(models.Model):
     @api.model
     def days_for(self, employee):
         """The notice this person owes, in days. Never raises, never zero."""
+        employee = self._as_employee(employee)
         try:
             policy = self.policy_for(employee)
             if policy and policy.days > 0:

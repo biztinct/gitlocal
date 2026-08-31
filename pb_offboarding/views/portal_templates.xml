@@ -140,7 +140,7 @@
                 can take it back at any point until HR agrees it.
               </p>
 
-              <button type="submit" class="pbme-btn pbof-send">
+              <button type="submit" class="pbme-btn pbme-btn--primary pbof-send">
                 Hand in my notice
               </button>
             </form>
@@ -190,9 +190,16 @@
           <div class="pbme-card">
             <div class="pbme-card-title">Where it is up to</div>
             <div class="pbme-stepper pbof-stepper">
+              <!-- t-attf-class, NEVER a t-att-class dict. Server-side QWeb is
+                   not OWL: a dict handed to t-att-class is rendered as its
+                   Python repr, AND t-att-class REPLACES the static class
+                   attribute rather than adding to it, so the row loses
+                   .pbme_step and wears the repr of the dict as its class name.
+                   (And this comment is ruled with `=` and spells no modifier
+                   class, because a doubled hyphen inside an XML comment is a
+                   parse error that takes the whole file with it, R35.) -->
               <div t-foreach="trail" t-as="stg" t-key="stg['key']"
-                   class="pbme-step"
-                   t-att-class="{'pbme-step--done': stg['done'], 'pbme-step--current': stg['current']}">
+                   t-attf-class="pbme-step #{stg['done'] and 'pbme-step--done' or ''} #{stg['current'] and 'pbme-step--current' or ''}">
                 <span class="pbme-step-dot"/>
                 <span class="pbme-step-lab" t-esc="stg['label']"/>
               </div>
@@ -243,8 +250,7 @@
               here so you know what is happening.
             </p>
             <div t-foreach="steps" t-as="stp" t-key="stp['id']"
-                 class="pbof-step"
-                 t-att-class="{'pbof-step--done': stp['settled'], 'pbof-step--mine': stp['mine'], 'pbof-step--late': stp['overdue']}">
+                 t-attf-class="pbof-step #{stp['settled'] and 'pbof-step--done' or ''} #{stp['mine'] and 'pbof-step--mine' or ''} #{stp['overdue'] and 'pbof-step--late' or ''}">
               <span class="pbof-step-dot">
                 <t t-if="stp['settled']">
                   <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="13"/></t>
@@ -291,7 +297,7 @@
                 needs no sign-in, and the link keeps working after you have
                 left.
               </p>
-              <a t-att-href="feedback_link" class="pbme-btn pbof-send"
+              <a t-att-href="feedback_link" class="pbme-btn pbme-btn--primary pbof-send"
                  target="_blank" rel="noopener noreferrer">
                 <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'chat'"/><t t-set="isz" t-value="15"/></t>
                 Answer the questions

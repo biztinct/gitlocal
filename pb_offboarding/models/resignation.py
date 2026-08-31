@@ -187,6 +187,8 @@ class PbResignation(models.Model):
 
         Returns `{'days', 'lwd'}`. One implementation, so the date the employee
         page shows and the date a form would have filled in cannot disagree.
+        `employee` may be a record or an id — the policy coerces it, because
+        over JSON-RPC a recordset argument arrives as a plain integer.
         """
         days = self.env['pb.notice.policy'].days_for(employee)
         return {'days': days,
@@ -597,8 +599,9 @@ class PbResignation(models.Model):
 
         The live one if there is one; otherwise the most recent, so the page
         can say "you took this back on the 4th" rather than pretending nothing
-        ever happened.
+        ever happened. A record or an id — see `prefill_for`.
         """
+        employee = self.env['pb.notice.policy']._as_employee(employee)
         if not employee:
             return self.browse()
         live = self.sudo().search([
