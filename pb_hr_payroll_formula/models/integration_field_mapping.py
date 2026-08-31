@@ -937,6 +937,12 @@ Example: value * 1.1 if value > 1000 else value
                     'label': f.label or f.path,
                     'provenance': 'catalog',
                     'catalog_kind': 'feed',
+                    # SC-1 — how this claim is KNOWN, so the board can tell an
+                    # invented sample ("e.g.") from a real one, and "never
+                    # arrived" from "not in the last sync".
+                    'origin': f.origin or 'discovered',
+                    'last_seen': (fields.Datetime.to_string(f.last_seen)
+                                  if f.last_seen else ''),
                     'required': bool(f.is_required),
                     'notes': f.notes or '',
                     'feed': f.endpoint_id.name or f.endpoint_id.code or '',

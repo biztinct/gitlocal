@@ -451,8 +451,15 @@ class HrIntegrationConnector(models.Model):
         result['fields'] = self.action_sync_endpoint_field_catalog()
         return result
 
-    def action_sync_endpoint_field_catalog(self):
+    def action_sync_endpoint_field_catalog(self, force_templates=False):
         """Instantiate this vendor's endpoint-FIELD templates on this connector.
+
+        `force_templates` (SC-1) is the EXPLICIT-RESTORE door: a live system
+        never receives shipped paper implicitly (see the gate below), but an
+        operator deliberately restoring the shipped catalogue — or a test
+        recreating the pre-SC-1 world — may ask for it by name. Rows created
+        this way still carry `origin='template'`, so the board still marks
+        their samples as illustrations and the purge can still find them.
 
         CREATE-ONLY, matched on `(endpoint_id, path)`, with `active_test=False`
         so a row an operator deactivated still owns its path and is not
@@ -472,6 +479,17 @@ class HrIntegrationConnector(models.Model):
         Endpoint = self.env['hr.integration.endpoint']
         if not (Endpoint._schema_ready() and Field._schema_ready()):
             return {'created': 0, 'skipped': 0, 'unresolved': 0}
+        # SC-1 — a LIVE system's catalogue is never seeded from the shipped
+        # paper. Zoho and Excel can be ASKED what they deliver (discovery) and
+        # SHOW what they deliver (observation, on every pull), so an invented
+        # field list adds nothing but the exact confusion that mapped payroll
+        # to `Salary` while the payload carried `Base_Salary`. Simulated
+        # systems (demo, darwin) keep their templates: their sample record IS
+        # the system.
+        if self.FIELD_FETCH_SUPPORT.get(self.connector_type) == 'live' \
+                and not force_templates:
+            return {'created': 0, 'skipped': 0, 'unresolved': 0,
+                    'suppressed': True}
 
         endpoints = Endpoint.with_context(active_test=False).search(
             [('connector_id', '=', self.id)])
@@ -505,6 +523,7 @@ class HrIntegrationConnector(models.Model):
                 'sequence': t.sequence or 10,
                 'is_legacy_abm': t.is_legacy_abm,
                 'active': t.active,
+                'origin': 'template',
             })
             taken.add(key)
 
@@ -681,6 +700,11 @@ class HrIntegrationConnector(models.Model):
                     fresh['label'] = label
                 if dtype != row.source_data_type:
                     fresh['source_data_type'] = dtype
+                # SC-1 — the vendor's metadata just confirmed this path, so a
+                # row that was only shipped paper stops being fiction. Never
+                # the other way: `observed` outranks both and stays.
+                if getattr(row, 'origin', '') == 'template':
+                    fresh['origin'] = 'discovered'
                 if fresh:
                     row.write(fresh)
                     updated += 1
@@ -695,6 +719,7 @@ class HrIntegrationConnector(models.Model):
                 'sample_value': self._sample_str(item.get('sample_value')),
                 'is_required': bool(item.get('required')),
                 'sequence': 20,
+                'origin': 'discovered',
             })
         if vals_list:
             Field.create(vals_list)
@@ -718,6 +743,157 @@ class HrIntegrationConnector(models.Model):
         if value is None or value is False or value == '':
             return False
         return str(value)[:128]
+
+    # ==========================================
+    # SC-1 — OBSERVATION: the catalogue learns from what actually arrives
+    # ==========================================
+    #
+    # How many freshly pulled rows per feed the observation pass flattens.
+    # Each key only has to be seen once, so a handful of rows per feed is
+    # plenty — the same argument `_LIVE_SAMPLE_PER_FEED` makes on the board's
+    # live layer, made here about write cost instead of read cost.
+    _OBSERVE_ROWS_PER_FEED = 20
+
+    def _observe_endpoint_fields(self, records):
+        """Upsert the field catalogue from rows a pull just wrote.
+
+        Called at the end of every successful pull, over the store rows that
+        pull produced. For each feed it flattens a bounded sample of payloads
+        (`raw_payload` + `extracted_data` — NOT `computed_data`: keys Payobook
+        computes are not the vendor's shape, and the board already carries
+        them through the transformation-rule layer) and then, per
+        `(endpoint_id, path)`:
+
+          * a NEW path becomes a row with `origin='observed'`, a REAL sample
+            and an inferred type;
+          * an EXISTING row gets `last_seen` refreshed, its sample replaced by
+            the real one when a non-empty value arrived, and its origin
+            promoted to `observed` — template and discovered rows graduate the
+            moment the field is seen in real data, and nothing ever demotes.
+
+        This is why a live system needs no shipped paper: after one pull the
+        catalogue lists exactly what that system sends, with what it really
+        looks like. Never raises — a catalogue bookkeeping failure must not
+        turn a successful pull into a failed one.
+        """
+        self.ensure_one()
+        Field = self.env['hr.integration.endpoint.field']
+        Endpoint = self.env['hr.integration.endpoint']
+        FM = self.env['hr.integration.field.mapping']
+        if not records:
+            return
+        try:
+            if not (Endpoint._schema_ready() and Field._schema_ready()):
+                return
+            # Group this pull's rows by the feed they belong to. A row stored
+            # without an endpoint (the legacy full-pull path on a connector
+            # with several feeds per data type) is resolved the way
+            # `_stamp_endpoint` resolves it: first feed of its data type.
+            by_ep, fallback = {}, {}
+            for rec in records:
+                ep = rec.endpoint_id
+                if not ep:
+                    dt = rec.data_type
+                    if dt not in fallback:
+                        fallback[dt] = Endpoint.search(
+                            [('connector_id', '=', self.id),
+                             ('data_type', '=', dt)],
+                            order='sequence, id', limit=1)
+                    ep = fallback[dt]
+                if not ep:
+                    continue
+                rows = by_ep.setdefault(ep.id, [])
+                if len(rows) < self._OBSERVE_ROWS_PER_FEED:
+                    rows.append(rec)
+            if not by_ep:
+                return
+
+            now = fields.Datetime.now()
+            existing = {
+                (f.endpoint_id.id, f.path): f
+                for f in Field.with_context(active_test=False).search(
+                    [('endpoint_id', 'in', list(by_ep))])}
+            # `_infer_source_type` speaks the store's vocabulary; the field
+            # speaks the mapping's. `list` and anything unrecognised fall
+            # through to 'string' rather than to a wrong opinion.
+            type_map = {'string': 'string', 'integer': 'integer',
+                        'float': 'float', 'boolean': 'boolean',
+                        'date': 'date', 'datetime': 'datetime'}
+            vals_list = []
+            for ep_id, rows in by_ep.items():
+                seen = {}
+                for rec in rows:
+                    for source in (rec.raw_payload, rec.extracted_data):
+                        if isinstance(source, dict):
+                            FM._flatten_source(source, '', seen)
+                for path, item in seen.items():
+                    row = existing.get((ep_id, path))
+                    sample = self._sample_str(item.get('sample'))
+                    if row is None:
+                        vals_list.append({
+                            'endpoint_id': ep_id,
+                            'path': path,
+                            'label': item.get('label') or path,
+                            'source_data_type': type_map.get(
+                                item.get('type'), 'string'),
+                            'sample_value': sample,
+                            'sequence': 30,
+                            'origin': 'observed',
+                            'last_seen': now,
+                        })
+                        continue
+                    fresh = {'last_seen': now}
+                    if row.origin != 'observed':
+                        fresh['origin'] = 'observed'
+                    if sample and sample != row.sample_value:
+                        fresh['sample_value'] = sample
+                    row.write(fresh)
+            if vals_list:
+                Field.create(vals_list)
+                _logger.info(
+                    "SC-1: connector %s catalogued %d newly observed fields",
+                    self.id, len(vals_list))
+        except Exception:       # noqa: BLE001 — bookkeeping, never the pull
+            _logger.warning(
+                "SC-1: field observation failed on connector %s; the pull "
+                "itself is unaffected", self.id, exc_info=True)
+
+    def _sc1_purge_fictional_rows(self):
+        """Delete this connector's never-observed shipped-paper rows.
+
+        Only on a connector whose system can really be asked and observed
+        (`FIELD_FETCH_SUPPORT == 'live'`), and only rows that are still
+        `origin='template'` — i.e. never confirmed by vendor metadata and
+        never seen in a payload. A fictional row a wire still points at is
+        KEPT: deleting it would orphan the feed routing of a mapping the
+        operator drew, and it renders truthfully amber instead.
+
+        Returns the number of rows deleted. Called by the 19.0.1.116.0
+        migration; kept as a model method so it is testable and re-runnable.
+        """
+        self.ensure_one()
+        Field = self.env['hr.integration.endpoint.field']
+        if not Field._schema_ready():
+            return 0
+        if self.FIELD_FETCH_SUPPORT.get(self.connector_type) != 'live':
+            return 0
+        wired = {
+            m.source_field for m in self.env[
+                'hr.integration.field.mapping'].with_context(
+                    active_test=False).search(
+                        [('connector_id', '=', self.id)])
+            if m.source_field}
+        rows = Field.with_context(active_test=False).search(
+            [('connector_id', '=', self.id), ('origin', '=', 'template')])
+        doomed = rows.filtered(lambda f: f.path not in wired)
+        count = len(doomed)
+        if count:
+            _logger.info(
+                "SC-1: connector %s: deleting %d fictional catalogue rows "
+                "(%d kept because a mapping still names them)",
+                self.id, count, len(rows) - count)
+            doomed.unlink()
+        return count
 
     def _stamp_endpoint(self, data_type, status, error=False,
                         period_from=None, period_to=None):
@@ -1224,6 +1400,8 @@ class HrIntegrationConnector(models.Model):
             # refresh, because nothing ever wrote `computed_data` on these rows.
             # Same helper, same rules, scoped to what this pull produced.
             self._run_transformation_rules(pulled)
+            # SC-1 — the catalogue learns from what just arrived.
+            self._observe_endpoint_fields(pulled)
             now = fields.Datetime.now()
             outcome = ('partial' if results['errors'] and results['pulled']
                        else 'failed' if results['errors'] else 'success')
@@ -1513,6 +1691,8 @@ class HrIntegrationConnector(models.Model):
                 ('pull_date', '>=', fields.Datetime.now()),
             ])
             self._run_transformation_rules(new_records)
+            # SC-1 — the catalogue learns from what just arrived.
+            self._observe_endpoint_fields(new_records)
 
         except Exception as e:
             self.write({
