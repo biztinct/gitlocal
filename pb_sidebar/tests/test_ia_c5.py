@@ -35,6 +35,11 @@ TARGET_RAIL = [
     ('operate', 20, True, [
         ('pb_payhub.item_pay_run', 10, 'zap', 'Pay Run'),
         ('pb_people_hub.item_people', 20, 'users', 'People'),
+        # RIZE P0. A journey is about a PERSON and it is work you do rather
+        # than something you look up, so it sits beside People — and at 25,
+        # which lands it there without renumbering either neighbour (W18: a
+        # sequence is a claim, and moving one is a migration).
+        ('pb_lifecycle.item_lifecycle', 25, 'refresh-cw', 'Lifecycle'),
         ('pb_mission.item_workforce', 30, 'compass', 'Workforce'),
     ]),
     ('understand', 30, True, [
@@ -119,6 +124,7 @@ MATCH_TAGS = {
     'pb_people_hub.item_people': [
         'pb_people_hub', 'pb_people', 'pb_contracts', 'pb_employee_detail',
         'pb_contract_detail', 'wfp_dashboard'],
+    'pb_lifecycle.item_lifecycle': ['pb_lifecycle_hub', 'pb_journeys'],
     'pb_mission.item_workforce': [
         'pb_workforce', 'pb_today', 'pb_schedule', 'pb_time_hub', 'pb_timeoff',
         'pb_ot_desk', 'pb_trips', 'pb_team', 'pb_attendance_weekgrid',
@@ -140,6 +146,10 @@ MATCH_MODELS = {
     'pb_payhub.item_pay_run': [
         'hr.payslip.run', 'hr.payslip', 'hr.payroll.import.batch'],
     'pb_people_hub.item_people': ['hr.employee', 'hr.contract'],
+    'pb_lifecycle.item_lifecycle': [
+        'pb.journey.case', 'pb.journey.task', 'pb.journey.template',
+        'pb.letter.template', 'pb.hr.letter', 'pb.employee.checkin',
+        'pb.feedback.request'],
     'pb_settings.item_settings': [
         'hr.integration.connector', 'hr.formula.config', 'hr.payroll.structure',
         'hr.salary.rule', 'vietnam.insurance.policy', 'vietnam.tax.table',
@@ -531,6 +541,9 @@ class TestIaCycle5MatchMatrix(TransactionCase):
             ('the users list', dict(xmlid='base.action_res_users'), 'Settings'),
             ('the formula studio', dict(tag='pb_formula_studio'), 'Settings'),
             ('the learn journey', dict(tag='learn_journey'), 'Learn'),
+            ('the Lifecycle hub', dict(tag='pb_lifecycle_hub'), 'Lifecycle'),
+            ('the journeys cockpit', dict(tag='pb_journeys'), 'Lifecycle'),
+            ('a journey', dict(model='pb.journey.case'), 'Lifecycle'),
         ]
         wrong = []
         for what, how, expected in cases:

@@ -61,6 +61,14 @@ const ICONS = {
     "book-open":'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     // ---- Phase J (Audit & Compliance) ----
     "scroll-text":'<path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/>',
+    // ---- RIZE P0 (Employee Lifecycle) ----
+    // OPERATE > Lifecycle. Lucide `refresh-cw`: a cycle, which is what a
+    // lifecycle is, and visibly different from `rotate`/`activity` at 20px.
+    // Added HERE and nowhere else — this set is CLOSED, a name that is not in
+    // it renders a plain circle with no error anywhere, and
+    // `test_every_rail_icon_exists_in_the_fixed_set` is what catches a rail
+    // item shipping without its path.
+    "refresh-cw":'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
 };
 
 // App (root-menu) xmlids that own the Payobook sidebar. In any other app the
