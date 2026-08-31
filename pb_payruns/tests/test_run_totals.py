@@ -298,6 +298,11 @@ class TestUnsourcedRun(TransactionCase):
             'date_to': '2026-06-30', 'company_id': self.company.id,
             'payslip_run_id': self.run.id,
             'calculation_method': method,
+            # The count deliberately skips a slip with NO provenance blob —
+            # that predates the recording and is unmeasurable, not zero
+            # (see `_compute_pb_totals`). This fixture is a MEASURED slip.
+            'formula_input_sources':
+                '{"BASE": {"src": "none", "via": "default"}}',
             'pb_sourced_inputs': sourced})
 
     def test_a_run_computed_on_defaults_is_counted(self):

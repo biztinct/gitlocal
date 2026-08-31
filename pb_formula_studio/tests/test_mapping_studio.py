@@ -226,6 +226,8 @@ class TestMappingStudio(TransactionCase):
         ep = self._endpoint(conn, 'c2_stamp', 'employee')
         foreign = self._endpoint(other, 'c2_foreign', 'employee')
         basic = cfg.rule_ids[0]
+        # Mapping is refused to a field the system has never sent (0cefae0e).
+        self._store(conn, 'employee', {'basic': 18500000})
 
         self.Studio.api_mapping_create(cfg.id, conn.id, 'f:basic', basic.id, ep.id)
         m = self.FM.search([('connector_id', '=', conn.id),

@@ -279,7 +279,10 @@ class TestBankDestinations(common.TransactionCase):
         # It is now sealed on the board, and the server says so too.
         item = next(i for i in self.Studio.employee_mapping_data(self.config.id)['left']
                     if i['id'] == self.rule_join.id)
-        self.assertFalse(item['meta']['wirable'])
+        # `.get`: the left card's meta stopped carrying an explicit `wirable`
+        # key for sealed rows in a later board revision; absent and False both
+        # mean "cannot be wired", which is the claim under test.
+        self.assertFalse(item['meta'].get('wirable'))
         self.assertFalse(self.Studio.employee_mapping_create(
             self.config.id, False, self.rule_join.id, 'f:hr.employee:job_title')['ok'])
 

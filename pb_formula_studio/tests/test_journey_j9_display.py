@@ -46,6 +46,12 @@ class TestJourneyJ9Display(TransactionCase):
     def _world(self, name='J9 Display'):
         conn = self.Connector.create({'name': 'J9 Conn',
                                       'connector_type': 'demo'})
+        # SC-1 follow-through: `api_mapping_create` refuses a field the system
+        # has never sent (commit 0cefae0e), so the key these tests draw has to
+        # have arrived at least once.
+        self.env['hr.api.data.store'].create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'raw_payload': {'Gas': 250000}})
         cfg = self.Config.create({
             'name': name, 'code': name.upper().replace(' ', '')[:32],
             'country_code': 'VN', 'state': 'active',

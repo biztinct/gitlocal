@@ -422,6 +422,11 @@ class TestJourneyTransformations(TransactionCase):
         cfg = self._config('J4 Kind Feed')
         conn = self._connector()
         self._trule(conn, 'OTHRSX')
+        # Mapping is refused to a field the system has never sent (0cefae0e):
+        # a PLAIN feed field, unlike the rule output above, must have arrived.
+        self.env['hr.api.data.store'].create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'raw_payload': {'Basic_Salary': 18500000}})
         self.Studio.api_mapping_create(cfg.id, conn.id, 'Basic_Salary',
                                        self.deps.id, False)
         self.assertEqual(self.deps.source_binding, 'feed')

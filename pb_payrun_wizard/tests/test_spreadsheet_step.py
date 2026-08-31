@@ -287,8 +287,11 @@ class TestSyncPlan(TransactionCase):
             'name': 'Sync plan system', 'connector_type': 'demo'})
 
     def _endpoint(self, data_type, name):
+        # `code` became NOT NULL when the connector cockpit made feed codes
+        # load-bearing; a code-less fixture dies on the constraint now.
         return self.env['hr.integration.endpoint'].create({
             'connector_id': self.connector.id,
+            'code': 'pwsync_%s' % name.lower().replace(' ', '_')[:24],
             'name': name, 'data_type': data_type})
 
     def _wire(self, endpoint, source_field):
