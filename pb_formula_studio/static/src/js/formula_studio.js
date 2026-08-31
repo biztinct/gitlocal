@@ -3949,6 +3949,66 @@ export class PbFormulaStudio extends Component {
         if (i >= 0) cur.splice(i, 1); else cur.push(id);
         this.state.setDraft[field] = cur;
     }
+
+    // ---- SC-3/SC-4 — the Sources card (which lanes feed this scheme) ----
+    _srcOrder() {
+        const d = this.state.setDraft || {};
+        const order = String(d.source_priority || "api,excel,records")
+            .split(",").map((s) => s.trim())
+            .filter((s) => ["api", "excel", "records"].includes(s));
+        for (const k of ["api", "excel", "records"]) {
+            if (!order.includes(k)) order.push(k);
+        }
+        return order;
+    }
+    get srcLaneList() {
+        const d = this.state.setDraft || {};
+        const meta = this.cfgMeta("source_lane_counts") || {};
+        const L = {
+            api: { label: _t("Connected system"),
+                   sub: _t("values arriving from the connected HR system"),
+                   on: d.source_api_enabled !== false },
+            excel: { label: _t("Spreadsheet"),
+                     sub: _t("the pay data file uploaded for a run"),
+                     on: d.source_excel_enabled !== false },
+            records: { label: _t("Payobook records"),
+                       sub: _t("employee, contract and amount data kept here"),
+                       on: d.source_records_enabled !== false },
+        };
+        return this._srcOrder().map((k, i) => ({
+            key: k, rank: i + 1, count: meta[k] || 0, ...L[k],
+        }));
+    }
+    srcLaneMove(key, dir) {
+        const order = this._srcOrder();
+        const i = order.indexOf(key);
+        const j = i + dir;
+        if (i < 0 || j < 0 || j >= order.length) return;
+        [order[i], order[j]] = [order[j], order[i]];
+        this.state.setDraft.source_priority = order.join(",");
+    }
+    srcLaneToggle(key) {
+        const field = "source_" + key + "_enabled";
+        this.state.setDraft[field] = this.state.setDraft[field] === false;
+    }
+    get srcLaneSentence() {
+        const on = this.srcLaneList.filter((l) => l.on);
+        if (!on.length) {
+            return _t("All sources are off — components use only their own formulas and fixed values.");
+        }
+        let s = _t("Order: ") + on.map((l) => l.label).join(" → ") + ". ";
+        if (on[0].key === "records") {
+            s += _t("Payobook records are the source of truth: a value already held is never overwritten — lower sources may only fill empty boxes.");
+        } else {
+            s += _t("A lower source is used only where every higher one is silent.");
+        }
+        return s;
+    }
+    get srcLaneWarnings() {
+        return this.srcLaneList
+            .filter((l) => !l.on && l.count)
+            .map((l) => _t("%(n)s component(s) currently take values from “%(lane)s” — they will fall through to the next source.", { n: l.count, lane: l.label }));
+    }
     async saveSettings() {
         if (this.state.settingsBusy) return;
         this.state.settingsBusy = true;

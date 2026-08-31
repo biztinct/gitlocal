@@ -1060,17 +1060,35 @@ export class MappingCanvas extends Component {
     provChip(it) {
         if (!it || !it.prov) { return null; }
         if (it.drift) {
-            return { label: _t("not sent"), tone: "warn",
-                     hint: _t("This feed has synced and did not carry this field. It may have been renamed or switched off at the source.") };
+            // SC-1 — two different kinds of missing, told apart by whether the
+            // field has EVER been seen in real data.
+            return it.lastSeen
+                ? { label: _t("not in last sync"), tone: "warn",
+                    hint: _t("This field has arrived before (last seen %(date)s), but the most recent sync did not carry it. It may have been renamed or switched off at the source.", { date: it.lastSeen }) }
+                : { label: _t("never arrived"), tone: "warn",
+                    hint: _t("This feed has synced and has never carried this field. It exists only in the source system's definition.") };
         }
         if (it.prov === "catalog") {
-            return it.provKind === "computed"
-                ? { label: _t("computed"), tone: "calc",
-                    hint: it.note || _t("Payobook computes this from the records this feed returns.") }
-                : { label: _t("expected"), tone: "exp",
-                    hint: it.note
-                          ? _t("Expected from the vendor's catalogue. %(note)s", { note: it.note })
-                          : _t("Expected from the vendor's catalogue. The first sync will confirm it.") };
+            if (it.provKind === "computed") {
+                return { label: _t("computed"), tone: "calc",
+                         hint: it.note || _t("Payobook computes this from the records this feed returns.") };
+            }
+            // SC-1 — say how the claim is known. Only shipped paper gets the
+            // "example, not your data" warning; an observed row is real.
+            if (it.provOrigin === "observed") {
+                return { label: _t("seen before"), tone: "exp",
+                         hint: it.lastSeen
+                               ? _t("This field has arrived in real data (last seen %(date)s). The sample beside it is a real value.", { date: it.lastSeen })
+                               : _t("This field has arrived in real data. The sample beside it is a real value.") };
+            }
+            if (it.provOrigin === "template") {
+                return { label: _t("expected"), tone: "exp",
+                         hint: _t("From the catalogue shipped with Payobook — the source system has not confirmed it, and the sample beside it is an example, not your data.") };
+            }
+            return { label: _t("expected"), tone: "exp",
+                     hint: it.note
+                           ? _t("Declared by the source system's own definition. %(note)s", { note: it.note })
+                           : _t("Declared by the source system's own definition. The first sync will confirm it.") };
         }
         if (it.prov === "odoo") {
             return { label: _t("Payobook field"), tone: "odoo",

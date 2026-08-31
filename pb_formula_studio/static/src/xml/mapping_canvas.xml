@@ -160,10 +160,12 @@
                     <div t-if="dirNote(it)" t-attf-class="mc-item-dir {{ it.meta.direction }}"
                          t-att-title="dirNote(it)"><span class="mc-item-dir__g" t-esc="it.meta.direction === 'two_way' ? '⇆' : '→'"/><t t-esc="dirNote(it)"/></div>
                     <!-- what the data looks like. A live sample is a value that
-                         arrived; a catalogue sample is an example, and the `e.g.`
-                         is the whole difference between the two. -->
-                    <div t-if="it.sample" t-attf-class="mc-item-sample {{ it.prov === 'catalog' ? 'eg' : '' }}">
-                      <span t-if="it.prov === 'catalog'" class="mc-item-sample__k">e.g.</span><t t-esc="it.sample"/>
+                         arrived; only a SHIPPED-PAPER catalogue sample is an
+                         invented example, and the `e.g.` marks exactly that
+                         (SC-1). A catalogue row observed in real data carries a
+                         REAL sample and shows it plain. -->
+                    <div t-if="it.sample" t-attf-class="mc-item-sample {{ it.prov === 'catalog' and it.provOrigin === 'template' ? 'eg' : '' }}">
+                      <span t-if="it.prov === 'catalog' and it.provOrigin === 'template'" class="mc-item-sample__k">e.g.</span><t t-esc="it.sample"/>
                     </div>
                   </div>
                   <!-- MAPFIX D3 — ONE trigger, of a fixed width, IN the flow.

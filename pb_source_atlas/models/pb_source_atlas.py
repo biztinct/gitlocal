@@ -378,8 +378,39 @@ class PbSourceAtlas(models.AbstractModel):
                         values.get(code, computed.get(code)))
 
         slip_total = len(rows)
-        for lane in LANES:
+        # SC-4 — the lanes render in the SCHEME's configured priority order,
+        # and a lane the scheme switched off says so rather than posing as an
+        # empty one. Declared lanes (constants, calculated) and the fallback
+        # lane keep their tail position.
+        lane_defs = list(LANES)
+        lane_enabled = {}
+        try:
+            cfg_ids = sorted({cfg for _s, _e, cfg, *_r in rows if cfg})
+            Config = self.env['hr.formula.config'].sudo()
+            config = Config.browse(cfg_ids[0]) if cfg_ids else Config
+            if config and config.exists() \
+                    and 'source_priority' in Config._fields:
+                token_of = {'feed': 'api', 'rule': 'api', 'excel': 'excel',
+                            'employee_field': 'records',
+                            'contract_component': 'records'}
+                order = [t.strip() for t in
+                         (config.source_priority or '').split(',')
+                         if t.strip() in ('api', 'excel', 'records')]
+                for token in ('api', 'excel', 'records'):
+                    if token not in order:
+                        order.append(token)
+                pos = {t: i for i, t in enumerate(order)}
+                lane_defs.sort(
+                    key=lambda l: pos.get(token_of.get(l['key']), 99))
+                for lane in lane_defs:
+                    token = token_of.get(lane['key'])
+                    lane_enabled[lane['key']] = (
+                        token is None or config._source_lane_ok(token))
+        except Exception:       # noqa: BLE001 — display, never the atlas
+            lane_enabled = {}
+        for lane in lane_defs:
             key = lane['key']
+            enabled = lane_enabled.get(key, True)
             employees = len(lane_employees.get(key, ()))
             payload['lanes'].append({
                 'key': key,
@@ -387,7 +418,9 @@ class PbSourceAtlas(models.AbstractModel):
                 'icon': lane['icon'],
                 'tone': lane['tone'],
                 'kind': lane['kind'],
-                'blurb': lane['blurb'],
+                'enabled': enabled,
+                'blurb': (lane['blurb'] if enabled else
+                          _("Switched off in this scheme's sources settings.")),
                 'components': len(lane_components.get(key, ())),
                 'employees': employees,
                 'cells': lane_cells.get(key, 0),

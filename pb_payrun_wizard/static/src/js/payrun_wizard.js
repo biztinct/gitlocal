@@ -204,6 +204,13 @@ export class PayrunWizard extends Component {
     ic(n, s = 16) { return markup(`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n] || IC.check}</svg>`); }
     vnd(n) { n = n || 0; if (n >= 1e9) return "₫" + (n / 1e9).toFixed(1) + "B"; if (n >= 1e6) return "₫" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "₫" + (n / 1e3).toFixed(0) + "K"; return "₫" + Math.round(n); }
     get wantsSheet() { const g = this.state.sheet.gate; return !!(g && g.wanted); }
+    // SC-4 — the scheme's source lanes, from the gate payload. Everything
+    // defaults ON so an old server changes nothing about this screen.
+    get lanes() {
+        const g = this.state.sheet.gate;
+        return (g && g.lanes)
+            || { api: true, excel: true, records: true, records_first: false };
+    }
 
     // ------------------------------------------------------ RECORDS R4 (D4)
     /** The rows that named somebody Payobook has never heard of. */

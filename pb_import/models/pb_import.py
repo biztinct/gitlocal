@@ -68,6 +68,24 @@ class PbImport(models.AbstractModel):
             return default
 
     @api.model
+    def _sc4_lane_availability(self):
+        """`{'excel': bool, 'api': bool}` — does ANY active scheme still allow
+        the lane? Defaults to True on databases that predate the setting."""
+        out = {'excel': True, 'api': True}
+        try:
+            Config = self.env.get('hr.formula.config')
+            if Config is None or 'source_excel_enabled' not in Config._fields:
+                return out
+            configs = Config.sudo().search([('state', '!=', 'archived')])
+            if not configs:
+                return out
+            out['excel'] = any(c.source_excel_enabled for c in configs)
+            out['api'] = any(c.source_api_enabled for c in configs)
+        except Exception as e:      # noqa: BLE001 — doors, never the cockpit
+            _logger.debug("SC-4 lane availability failed: %s", e)
+        return out
+
+    @api.model
     def get_import_data(self):
         company = self.env.company
         co_ids = self.env.companies.ids or [company.id]
@@ -131,8 +149,22 @@ class PbImport(models.AbstractModel):
                 lambda: self.env['hr.integration.connector'].search_count([]))
 
         # ---------- launch buttons ----------
+        # SC-4 — a door is offered only when SOME active scheme still allows
+        # its lane. The pay-data upload hides when every scheme has switched
+        # spreadsheets off; the connected-system load hides when every scheme
+        # has switched the connected system off. Setup wizards (columns from
+        # Excel, scheme from a file) stay: they build schemes, they are not a
+        # pay-run source.
+        lane_doors = {
+            'pb_hr_payroll_formula.action_payroll_load_pay_data': 'excel',
+            'pb_hr_payroll_formula.action_payroll_load_from_feed': 'api',
+        }
+        allowed = self._sc4_lane_availability()
         launches = []
         for xmlid, label, desc, icon, primary in LAUNCH_CANDIDATES:
+            lane = lane_doors.get(xmlid)
+            if lane and not allowed.get(lane, True):
+                continue
             try:
                 if self.env.ref(xmlid, raise_if_not_found=False):
                     launches.append({'xmlid': xmlid, 'label': label, 'desc': desc,
