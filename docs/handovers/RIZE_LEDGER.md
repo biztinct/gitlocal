@@ -162,6 +162,11 @@ without owner approval between them.
   Payobook→Zoho outbound ON HOLD (stub, don't build).
 - Scope: all 10 modules + all 6 wow features (journey timeline, recognition wall, new-hire
   pulse, living org chart, budget heat view, anniversary engine).
+- **D9 (owner, 2026-09-01): do NOT clean up demo/test data created during phase testing —
+  payobook.com is a demo database.** Every handover's "clean up test records" test case is
+  hereby waived: leave test employees/journeys/records in place (tidy is nice, deletion is
+  not required). Test users/passwords still get LISTED in reports for the final summary,
+  and mails must still go to safe @example.com/test addresses.
 
 ## Phase plan & status
 
