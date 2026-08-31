@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.118.0',
+    'version': '19.0.1.119.0',
     # RD49 — put the monthly fetch on the 5th at 02:00 (see hooks.py).
     'post_init_hook': 'rd49_schedule_monthly_fetch',
     'category': 'Human Resources/Payroll',

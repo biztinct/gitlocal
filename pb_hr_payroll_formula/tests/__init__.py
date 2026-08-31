@@ -130,3 +130,7 @@ from . import test_sc2_sync_schedule
 # SC-3 — a scheme chooses which sources feed it and who wins; the order binds
 # both resolvers AND the writeback (fill-empty only, never overwrite).
 from . import test_sc3_source_lanes
+
+# SC-5 — a status word from outside lands in the box; the coercion matches a
+# label as well as a value, so vendor capitalisation cannot silence a mapping.
+from . import test_sc5_status_words

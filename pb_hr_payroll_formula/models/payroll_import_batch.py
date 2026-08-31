@@ -1817,6 +1817,24 @@ class HrPayrollImportBatch(models.Model):
         if value in (None, ''):
             return None
 
+        # SC-5 — CALLERS HAND THIS TWO DIFFERENT THINGS AND ONE OF THEM LIES.
+        #
+        # `_sync_employee_contract_mirror_fields` passes `record._fields[name]`
+        # (the real Python field); `_get_mapping_updates` passes
+        # `mapping.target_field_id`, an `ir.model.fields` ROW. Most branches
+        # survive that because `ttype`/`relation` mirror `type`/`comodel_name` —
+        # but `ir.model.fields.selection` is a Char that is empty for every
+        # field declared in Python, so the selection branch computed an EMPTY
+        # allow-list and refused every value it was ever given. That is why all
+        # 164 abm contracts held a blank employment status while the mapping
+        # board showed the wire as healthy: the destination was never even
+        # asked what it accepts. Resolve to the Python field once, here, so
+        # neither caller has to know.
+        if getattr(field, '_name', None) == 'ir.model.fields':
+            resolved = record._fields.get(field.name) if record is not None else None
+            if resolved is not None:
+                field = resolved
+
         field_type = getattr(field, 'ttype', None) or getattr(field, 'type', None)
         if field_type == 'many2one':
             name_value = str(value).strip()
@@ -1895,7 +1913,25 @@ class HrPayrollImportBatch(models.Model):
                     field.name,
                     selection,
                 )
-            return str(value) if str(value) in allowed else None
+            text = str(value)
+            if text in allowed:
+                return text
+            # SC-5 — an exact match against the stored VALUES is too strict for a
+            # source we do not control. Zoho sends "Active"; the value is 'active'.
+            # Falling through to None wrote nothing AND said nothing, which is how
+            # 164 contracts kept a blank status while the mapping looked correct.
+            # Match the label too, and ignore case and surrounding space on both.
+            probe = text.strip().lower()
+            if not probe:
+                return None
+            labels = {}
+            for entry in (selection or []):
+                if isinstance(entry, (list, tuple)) and len(entry) >= 2:
+                    labels[str(entry[1]).strip().lower()] = entry[0]
+            for key in allowed:
+                if str(key).strip().lower() == probe:
+                    return key
+            return labels.get(probe)
 
         return str(value)
 
