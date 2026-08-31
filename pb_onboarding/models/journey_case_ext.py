@@ -33,6 +33,31 @@ CHECKIN_PLAN = (('d30', 30), ('d60', 60), ('d90', 90))
 class PbJourneyCase(models.Model):
     _inherit = 'pb.journey.case'
 
+    def _generate_tasks(self):
+        """Carry `automation_key` from the checklist step onto the step itself.
+
+        P0 builds its task values from a FIXED dict, which is the right shape
+        for it — a template is read once and the task is the case's own copy —
+        but it means a field added by a later phase is silently dropped, and
+        the only symptom is a step that never runs itself. So this copies the
+        key across immediately after, from `step_id`, which is the link P0
+        keeps for exactly this kind of reporting.
+
+        It writes only where the task's own key is EMPTY, so a key set by hand
+        on one running case is never overwritten.
+        """
+        tasks = super()._generate_tasks()
+        try:
+            for task in tasks:
+                key = task.step_id.automation_key if task.step_id else False
+                if key and not task.automation_key:
+                    task.automation_key = key
+        except Exception:               # noqa: BLE001 — never lose a checklist
+            _logger.exception(
+                'pb_onboarding: could not carry the automation keys onto '
+                'journey %s', self.id)
+        return tasks
+
     def action_open(self):
         res = super().action_open()
         for rec in self:
