@@ -159,12 +159,12 @@
         .pbc-rail-step {
             flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
             position: relative; color: var(--mut); font-size: 12px; font-weight: 600;
-            .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--line); border: 2px solid var(--line); z-index: 1; }
+            .pbc-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--line); border: 2px solid var(--line); z-index: 1; }
             &:not(:last-child)::after {
                 content: ""; position: absolute; top: 6px; left: 50%; width: 100%; height: 2px; background: var(--line);
             }
-            &.done { color: var(--p); .dot { background: var(--p); border-color: var(--p); } &::after { background: var(--p); } }
-            &.current { color: var(--p); .dot { background: var(--surf); border-color: var(--p); box-shadow: 0 0 0 4px var(--p-s); } }
+            &.done { color: var(--p); .pbc-dot { background: var(--p); border-color: var(--p); } &::after { background: var(--p); } }
+            &.current { color: var(--p); .pbc-dot { background: var(--surf); border-color: var(--p); box-shadow: 0 0 0 4px var(--p-s); } }
         }
     }
 
@@ -278,16 +278,253 @@
     }
     .pbc-tl-more { margin-top: 14px; text-align: center; font-size: 12px; color: var(--mut); }
 
+    // =================================================================
+    //  CD-3 — editing in place
+    // =================================================================
+
+    // ---- "you may look, not change" ----
+    // ONE honest sentence at the top of Terms, instead of a panel full of
+    // disabled controls that each have to be discovered and dismissed.
+    .pbc-locked {
+        display: flex; align-items: center; gap: 9px; margin-bottom: 16px;
+        border: 1px solid var(--line); border-radius: var(--r-sm);
+        background: var(--bg); padding: 10px 13px;
+        font-size: 12.5px; font-weight: 600; color: var(--mut);
+        svg { color: var(--mut); flex: none; }
+    }
+
+    // ---- the editable cell ----
+    // A cell that can be changed lifts a faint indigo tint and shows a pencil.
+    // A cell that cannot does neither and is not tab-reachable: it has to look
+    // inert, not merely fail to respond.
+    .pbc-cell {
+        position: relative; transition: background .12s ease, border-color .12s ease;
+        .k .pen { margin-left: auto; opacity: 0; transition: opacity .12s ease;
+                  svg { color: var(--p); } }
+        &.editable {
+            cursor: pointer;
+            &:hover { background: var(--p-s); border-color: var(--p); }
+            &:hover .k .pen, &:focus-visible .k .pen, &.editing .k .pen { opacity: 1; }
+            &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+        }
+        &.staged {
+            border-color: var(--p); background: var(--p-s);
+            .v { color: var(--p-d); }
+        }
+        &.refused { border-color: var(--rose); background: var(--rose-s); }
+        .v { min-height: 21px; line-height: 21px; }
+    }
+    // "what it will become" is the thing being decided; "what it was" is the
+    // thing being checked, so both are on screen at once.
+    .pbc-was {
+        font-size: 11px; color: var(--mut); text-decoration: line-through;
+        font-variant-numeric: tabular-nums;
+    }
+    // A refusal is a red dot with a sentence under its own cell, never a modal
+    // (`pb_records/static/src/js/records_desk.js:412`).
+    // The modifier is `full`, NOT `row`: `.row` is Bootstrap's grid class and
+    // `.row > * { width: 100% }` inflated the 6px dot into a 32px bar. The dot
+    // is namespaced for the same reason — six other cockpits style a `.dot`.
+    .pbc-refuse {
+        display: flex; align-items: flex-start; gap: 6px; margin-top: 3px;
+        font-size: 11.5px; font-weight: 600; color: var(--rose); line-height: 1.35;
+        .pbc-dot { width: 6px; height: 6px; border-radius: 50%;
+                   background: var(--rose); flex: none; margin-top: 5px; }
+        &.full { padding: 4px 12px 8px; }
+    }
+    // Amber, and never a blocker: information about what the next pay run does.
+    .pbc-note {
+        display: flex; align-items: flex-start; gap: 6px; padding: 2px 12px 6px;
+        font-size: 11.5px; font-weight: 600; color: var(--amber); line-height: 1.35;
+        svg { flex: none; margin-top: 2px; }
+        &:last-child { padding-bottom: 9px; }
+    }
+
+    // ---- the editor itself ----
+    // It replaces the value in the SAME box at the SAME height: the underline
+    // is drawn with a negative margin so turning a cell into an input moves
+    // nothing else on the panel.
+    .pbc-ed {
+        display: flex; align-items: center; gap: 5px; min-width: 0;
+        // The wrapper is only focusable so a kind with no input of its own has
+        // somewhere for Escape to land; the control inside shows the focus.
+        &:focus { outline: none; }
+        &.pop { display: block; height: 21px; }
+        &.num { justify-content: flex-end; }
+    }
+    .pbc-in {
+        // `* { box-sizing: border-box }` is set at the top of this file, so
+        // `height: 21px` ALREADY contains the 2px underline. An extra
+        // `margin-bottom: -2px` to "pay for the border" subtracted it twice
+        // and shifted everything below the cell up by 2px the moment it
+        // became an editor. Measured on the live walk.
+        flex: 1; min-width: 0; height: 21px; line-height: 21px;
+        border: none; border-bottom: 2px solid var(--p);
+        padding: 0; background: transparent; outline: none;
+        font: inherit; font-size: 14.5px; font-weight: 600; color: var(--ink);
+        font-family: inherit;
+        &.num { text-align: right; font-variant-numeric: tabular-nums; }
+        &:focus { border-bottom-color: var(--p-d); }
+    }
+    .pbc-cur { font-size: 12px; font-weight: 700; color: var(--mut); flex: none; }
+    // The cell keeps showing what it holds while the list floats over it, so
+    // opening a picker never reads as "the value was cleared".
+    .pbc-resting {
+        display: block; font-size: 14.5px; font-weight: 600; color: var(--p);
+        line-height: 21px; overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    // YES / NO as two buttons, not a checkbox: a checkbox says nothing about
+    // which of the two words is the current one.
+    .pbc-bool { display: flex; gap: 5px; height: 21px; }
+    .pbc-bool-b {
+        flex: 1; height: 21px; padding: 0 9px; border-radius: 6px; cursor: pointer;
+        border: 1px solid var(--line); background: var(--surf);
+        font: inherit; font-family: inherit; font-size: 11px; font-weight: 800;
+        color: var(--mut); line-height: 1;
+        &:hover { border-color: var(--p); color: var(--p); background: var(--p-s); }
+        &.on { border-color: var(--p); background: var(--p); color: #fff; }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+    }
+
+    // ---- the picker ----
+    // `position: fixed`, because the drawer body scrolls and would otherwise
+    // clip the list against its own edge. Its coordinates are corrected for a
+    // transformed ancestor in `CdPicker.place()`.
+    .pbc-pick {
+        &:focus { outline: none; }
+        position: fixed; z-index: 60; display: flex; flex-direction: column;
+        max-height: 292px; background: var(--surf);
+        border: 1px solid var(--p); border-radius: var(--r-sm);
+        box-shadow: 0 12px 32px rgba(16, 12, 40, .18);
+        overflow: hidden; text-align: left;
+    }
+    .pbc-pick-s {
+        display: flex; align-items: center; gap: 7px; padding: 8px 10px;
+        border-bottom: 1px solid var(--line2);
+        .ic { color: var(--mut); display: inline-flex; }
+        input {
+            flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+            font: inherit; font-family: inherit; font-size: 12.5px; color: var(--ink);
+        }
+    }
+    .pbc-pick-spin {
+        width: 13px; height: 13px; border-radius: 50%; flex: none;
+        border: 2px solid var(--p-s); border-top-color: var(--p);
+        animation: pbc-spin .8s linear infinite;
+    }
+    .pbc-pick-l { overflow-y: auto; padding: 4px; }
+    .pbc-pick-r {
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        width: 100%; border: none; background: none; cursor: pointer;
+        padding: 7px 9px; border-radius: 7px; text-align: left;
+        font: inherit; font-family: inherit; font-size: 12.5px; font-weight: 600;
+        color: var(--ink);
+        .lb { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ck { opacity: 0; color: var(--p); display: inline-flex; flex: none; }
+        &.on { background: var(--p-s); color: var(--p-d); .ck { opacity: 1; } }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: -2px; }
+    }
+    .pbc-pick-e { padding: 12px 10px; font-size: 12px; color: var(--mut); }
+    // Only ever rendered for an optional field: offering "leave empty" on a
+    // required one is an offer the server declines (W29).
+    .pbc-pick-c {
+        border: none; border-top: 1px solid var(--line2); background: var(--bg);
+        padding: 8px 12px; cursor: pointer; text-align: left;
+        font: inherit; font-family: inherit; font-size: 12px; font-weight: 700;
+        color: var(--mut);
+        &:hover { color: var(--rose); background: var(--rose-s); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: -2px; }
+    }
+
+    // ---- components, being changed ----
+    .pbc-comp-w {
+        border: 1px solid var(--line); border-radius: var(--r-sm);
+        background: var(--surf); overflow: hidden;
+        transition: border-color .12s ease, background .12s ease;
+        .pbc-comp { border: none; border-radius: 0; background: none; }
+        &.editable .pbc-comp { cursor: pointer; }
+        &.editable:hover { border-color: var(--p); }
+        &.editable:hover .pbc-comp-x { opacity: 1; }
+        &.staged { border-color: var(--p); background: var(--p-s); }
+        &.refused { border-color: var(--rose); background: var(--rose-s); }
+        // A staged removal greys the row and offers Undo; it does NOT vanish,
+        // because a row that disappears before it is saved cannot be put back.
+        &.removed {
+            background: var(--bg); opacity: .62;
+            .pbc-comp-v, .n { text-decoration: line-through; }
+        }
+        .pbc-comp:focus-visible { outline: 2px solid var(--p); outline-offset: -2px; }
+    }
+    .pbc-comps { .pbc-comp-w:hover .pbc-comp { background: none; } }
+    .pbc-comps.new { margin-top: 8px; }
+    .pbc-comp {
+        grid-template-columns: 108px minmax(0, 1fr) auto auto;
+    }
+    .pbc-comp-x {
+        border: 1px solid transparent; background: none; cursor: pointer;
+        width: 28px; height: 28px; border-radius: 8px; color: var(--mut);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity .12s ease;
+        &:hover { color: var(--rose); background: var(--rose-s); border-color: var(--rose-s); }
+        &:focus-visible { opacity: 1; outline: 2px solid var(--p); outline-offset: 1px; }
+    }
+    .pbc-comp-u {
+        border: 1px solid var(--line); background: var(--surf); cursor: pointer;
+        border-radius: 8px; padding: 4px 9px; color: var(--p);
+        display: inline-flex; align-items: center; gap: 5px;
+        font: inherit; font-family: inherit; font-size: 11.5px; font-weight: 800;
+        &:hover { border-color: var(--p); background: var(--p-s); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+    }
+    .pbc-comp-new {
+        display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px; background: var(--p-s); color: var(--p);
+    }
+
     // ---- footer ----
     .pbc-foot {
         flex: none; border-top: 1px solid var(--line); background: var(--surf);
-        padding: 12px 22px; display: flex; align-items: center; gap: 10px;
+        position: relative; min-height: 58px;
         // LEFT-aligned on purpose: the app's floating assistant pill sits over
         // the bottom-right corner of every screen, and a right-aligned button
         // here disappears under it. CD-3's Save bar takes the right-hand side
         // and must keep clear of the pill with padding, not by hoping.
-        justify-content: flex-start;
+        display: flex; align-items: center;
     }
+    .pbc-foot-rest {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 22px; width: 100%;
+        transition: opacity .12s ease;
+        &.off { opacity: 0; pointer-events: none; }
+    }
+    // The Save bar lies OVER the resting row rather than replacing it, so
+    // staging the first change slides a bar up without changing the panel's
+    // height by a single pixel.
+    //
+    // The right padding is the assistant pill's real footprint, measured, not
+    // guessed: it rests as a 56px circle (a 36px avatar in 10px of padding)
+    // at `right: 24px`, so it owns the rightmost 80px of every screen. 96px
+    // leaves the Save button a 16px gap from it (ledger CD9).
+    .pbc-savebar {
+        position: absolute; inset: 0; z-index: 2;
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 96px 12px 22px; background: var(--surf);
+        transform: translateY(100%); opacity: 0; pointer-events: none;
+        transition: transform .12s cubic-bezier(.22, .61, .36, 1), opacity .12s ease;
+        &.on { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    }
+    .pbc-grow { flex: 1; }
+    // "Full form" is demoted to a text link the moment there is work to save:
+    // it is still there, it is simply no longer the thing to press.
+    .pbc-link {
+        border: none; background: none; cursor: pointer; padding: 4px 0;
+        font: inherit; font-family: inherit; font-size: 12px; font-weight: 700;
+        color: var(--mut); text-decoration: underline; text-underline-offset: 3px;
+        &:hover { color: var(--p); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; border-radius: 4px; }
+    }
+    .pbc-wage .v.staged { color: var(--p); }
 
     // ---- narrow ----
     @media (max-width: 620px) {
@@ -305,5 +542,10 @@
         .pbc-scrim { transition: none; }
         .pbc-tab-ink { transition: none; }
         .pbc-spin { animation: none; }
+        // CD-3: the Save bar still arrives, it simply stops travelling to get
+        // there — and the same for every hover tint and the pencil.
+        .pbc-savebar, .pbc-foot-rest { transition: none; }
+        .pbc-cell, .pbc-comp-w, .pbc-comp-x, .pbc-cell .k .pen { transition: none; }
+        .pbc-pick-spin { animation: none; }
     }
 }
