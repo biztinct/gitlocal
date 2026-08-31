@@ -156,6 +156,23 @@ export const IC = {
     save:         '<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',
     undo:         '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>',
     info:         '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+
+    // RIZE P2 — the asset register. `package` is the register itself (and the
+    // People hub's Assets lens); `laptop`, `smartphone`, `monitor`, `idCard`
+    // wear the physical categories; `key` and `appWindow` the digital ones;
+    // `wrench` is "under repair", `archive` is the spares cupboard, `powerOff`
+    // is a switched-off account. Shared registry, never a module-local map
+    // (W2), Lucide paths only — no emoji, no FontAwesome.
+    package:      '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="m7.5 4.27 9 5.15"/>',
+    laptop:       '<rect width="18" height="12" x="3" y="4" rx="2"/><path d="M2 20h20"/>',
+    smartphone:   '<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
+    monitor:      '<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>',
+    idCard:       '<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M9 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/><path d="M6 16a3 3 0 0 1 6 0"/><path d="M15 10h4M15 14h4"/>',
+    key:          '<path d="m15.5 7.5 3 3L22 7l-3-3"/><path d="m18 10-1.5 1.5"/><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/>',
+    appWindow:    '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="M2 10h20"/><path d="M6 7h.01M10 7h.01"/>',
+    wrench:       '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/>',
+    archive:      '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
+    powerOff:     '<path d="M18.36 6.64A9 9 0 1 1 5.64 6.64"/><path d="M12 2v10"/>',
 };
 
 /**
