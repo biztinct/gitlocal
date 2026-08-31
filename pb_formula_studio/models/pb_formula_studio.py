@@ -5590,6 +5590,13 @@ class PbFormulaStudio(models.AbstractModel):
                 'active': bool(cfg.active),
                 'column_count': len(rules),
                 'input_count': len(rules.filtered(lambda r: r.column_type == 'input')),
+                # SC-4 — which source lanes this scheme allows, so the studio
+                # can hide the tabs of a lane that is off.
+                'lanes': {
+                    'api': bool(getattr(cfg, 'source_api_enabled', True)),
+                    'excel': bool(getattr(cfg, 'source_excel_enabled', True)),
+                    'records': bool(getattr(cfg, 'source_records_enabled', True)),
+                },
             })
 
         Batch = self.env['hr.payroll.import.batch']
@@ -5753,6 +5760,12 @@ class PbFormulaStudio(models.AbstractModel):
                            else ep_group),
                  'prov': f.get('provenance') or 'live',
                  'provKind': f.get('catalog_kind') or '',
+                 # SC-1 — the two keys the canvas needs to stop treating all
+                 # catalogue rows alike: only a `template` row's sample is
+                 # fiction (the "e.g." marker), and a `last_seen` date turns
+                 # "not sent" into "not in the last sync".
+                 'provOrigin': f.get('origin') or '',
+                 'lastSeen': (f.get('last_seen') or '')[:10],
                  'drift': bool(f.get('expected_missing')),
                  'note': f.get('notes') or '',
                  'lineage': lineage_by_key.get(f['path']),
@@ -5906,16 +5919,19 @@ class PbFormulaStudio(models.AbstractModel):
     _MAPPABLE_PROVENANCE = ('live', 'computed')
 
     def _field_provenance(self, conn, path):
-        """Where `path` comes from: 'live', 'computed', 'catalog', 'odoo' or ''."""
+        """The discovery item for `path`, or `{}` — read its `provenance`.
+
+        SC-1 widened the return from a bare provenance string to the whole
+        item: the refusal below now also needs `origin`, because a catalogue
+        row OBSERVED in real data is not the same claim as one copied from
+        shipped paper. Single caller (`_refuse_unarrived_field`).
+        """
         FM = self.env['hr.integration.field.mapping']
         try:
             fields_ = FM.get_available_source_fields(conn.id) or []
         except Exception:       # noqa: BLE001 — a lookup must not block a draw
-            return ''
-        found = next((f for f in fields_ if f.get('path') == path), None)
-        if not found:
-            return ''
-        return found.get('provenance') or ''
+            return {}
+        return next((f for f in fields_ if f.get('path') == path), None) or {}
 
     def _connector_has_live_fields(self, conn):
         """Has anything at all ever arrived from this connected system?"""
@@ -5937,8 +5953,16 @@ class PbFormulaStudio(models.AbstractModel):
         A transformation rule's output is exempt: this platform computes it, so
         it legitimately exists before any record is pulled.
         """
-        prov = self._field_provenance(conn, path)
+        found = self._field_provenance(conn, path)
+        prov = found.get('provenance') or ''
         if prov in self._MAPPABLE_PROVENANCE:
+            return None
+        # SC-1 — a catalogue row the observation pass has SEEN in real data is
+        # a real field. The recent-rows sample window can miss a sparse key
+        # (one that only some people carry), and refusing to map a field that
+        # has genuinely arrived would be this guard overclaiming in the other
+        # direction.
+        if prov == 'catalog' and found.get('origin') == 'observed':
             return None
         if not self._connector_has_live_fields(conn):
             return {'ok': False, 'needs_fetch': True, 'connector_id': conn.id,
@@ -6092,6 +6116,13 @@ class PbFormulaStudio(models.AbstractModel):
         sealed = self._mc_refuse_sealed(rule)
         if sealed:
             return sealed
+        # SC-4 — the api lane's refusal on the board itself.
+        cfg = rule.config_id
+        if cfg and not getattr(cfg, 'source_api_enabled', True):
+            return {'ok': False, 'msg': _(
+                "This scheme does not read the connected system — its "
+                "sources settings switched that off. Turn the lane back on "
+                "in the scheme's settings to draw this line.")}
         refusal = self._refuse_unarrived_field(conn, src)
         if refusal:
             return refusal
@@ -8326,6 +8357,13 @@ class PbFormulaStudio(models.AbstractModel):
         sealed = self._mc_refuse_sealed(rule)
         if sealed:
             return sealed
+        # SC-4 — the excel lane's refusal on the board itself.
+        if rule.config_id and not getattr(
+                rule.config_id, 'source_excel_enabled', True):
+            return {'ok': False, 'msg': _(
+                "This scheme does not take pay data files — its sources "
+                "settings switched spreadsheets off. Turn the lane back on "
+                "in the scheme's settings to bind this column.")}
         replaced = self._binding_replaced(rule, 'excel', col)
         if resolve == 'replace':
             FM = self.env.get('hr.integration.field.mapping')
@@ -11733,6 +11771,10 @@ class PbFormulaStudio(models.AbstractModel):
         'credit_account_id', 'company_id',
         'use_proration', 'proration_basis', 'proration_component_ids', 'proration_rounding',
         'use_auto_retro', 'retro_component_id',
+        # SC-3/SC-4 — the Sources card: which lanes feed this scheme, and in
+        # what order. The generic get/save loop carries them for free.
+        'source_api_enabled', 'source_excel_enabled', 'source_records_enabled',
+        'source_priority',
     )
     _CFG_M2O = ('structure_id', 'connector_id', 'payroll_journal_id', 'debit_account_id',
                 'credit_account_id', 'company_id', 'retro_component_id')
@@ -11789,7 +11831,38 @@ class PbFormulaStudio(models.AbstractModel):
             'cycle_types': _sel('cycle_type'),
             'proration_bases': _sel('proration_basis'),
             'multi_company': len(self.env['res.company'].search([])) > 1,
+            # SC-4 — the Sources card's consequence chips: how many components
+            # currently take values from each lane, so switching one off can
+            # say what falls through instead of asking for blind faith.
+            'source_lane_counts': self._source_lane_counts(c),
         }
+
+    @api.model
+    def _source_lane_counts(self, c):
+        """`{'api': n, 'excel': n, 'records': n}` — components fed per lane."""
+        counts = {'api': 0, 'excel': 0, 'records': 0}
+        try:
+            for rule in c.rule_ids:
+                kinds = {s.kind for s in rule.source_ids
+                         if (s.key or '').strip()}
+                if kinds & {'feed', 'rule'}:
+                    counts['api'] += 1
+                if 'excel' in kinds:
+                    counts['excel'] += 1
+            FM = self.env.get('hr.integration.field.mapping')
+            if FM is not None:
+                counts['api'] = max(counts['api'], FM.sudo().search_count([
+                    ('target_rule_id.config_id', '=', c.id),
+                    ('active_state', '=', 'active')]))
+            Mapping = self.env.get('hr.payslip.import.mapping')
+            records = len(c.rule_ids.filtered('is_contract_component'))
+            if Mapping is not None:
+                records += Mapping.sudo().search_count([
+                    ('salary_structure_id', '=', c.id)])
+            counts['records'] = records
+        except Exception:       # noqa: BLE001 — chips, never the dialog
+            pass
+        return counts
 
     @api.model
     def get_config_settings(self, config_id):

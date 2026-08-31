@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.175.0',
+    'version': '19.0.1.177.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -38,6 +38,7 @@
     'assets': {
         'web.assets_backend': [
             'pb_formula_studio/static/src/scss/studio.scss',
+            'pb_formula_studio/static/src/scss/sources_card.scss',
             'pb_formula_studio/static/src/scss/grid.scss',
             'pb_formula_studio/static/src/scss/studio_responsive.scss',
             'pb_formula_studio/static/src/scss/import_wizard.scss',

@@ -297,6 +297,12 @@ export class MappingStudio extends Component {
             configId: def.config_id || 0,
             fellBack: def.fell_back || [],
         });
+        // SC-4 — a deep link (or a remembered mode) that names a tab this
+        // scheme's lane config hides lands on the Journey instead of on a
+        // board whose tab does not exist.
+        if (!this.modes.some((m) => m.id === this.state.mode)) {
+            this.state.mode = (this.modes[0] || {}).id || "journey";
+        }
         // A deep link that lands on a DIFFERENT scheme than it named is the
         // worst bug class in this codebase, so it is said out loud rather than
         // absorbed (W76.3/W117).
@@ -540,8 +546,23 @@ export class MappingStudio extends Component {
         this.state.cmd = { token: this.state.cmd.token + 1, kind: "suggested" };
     }
 
-    get modes() { return MODES; }
-    get mode() { return MODES.find((m) => m.id === this.state.mode) || MODES[0]; }
+    get modes() {
+        // SC-4 — a lane the scheme switched off takes its tab with it. The
+        // server refuses the writes either way; this removes the door.
+        const cfg = (this.state.configs || []).find(
+            (c) => c.id === this.state.configId);
+        const lanes = cfg && cfg.lanes;
+        if (!lanes) { return MODES; }
+        return MODES.filter((m) => {
+            if (m.id === "api" && !lanes.api) { return false; }
+            if (m.id === "import" && !lanes.excel) { return false; }
+            return true;
+        });
+    }
+    get mode() {
+        return this.modes.find((m) => m.id === this.state.mode)
+            || this.modes[0] || MODES[0];
+    }
 
     // ================================================================== board
     /** The adapter prefix; `null` means the bespoke cycle adapter. */

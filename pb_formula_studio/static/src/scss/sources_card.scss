@@ -1,0 +1,62 @@
+// SC-3/SC-4 — the Sources card in the scheme settings dialog: three lanes,
+// ranked and switchable. Payobook design system: indigo #5A4BB0, white
+// surfaces, semantic accents, no gradients.
+.pbcfg-sources {
+  .src-lanes { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .src-lane {
+    display: flex; align-items: center; gap: 12px;
+    border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px 14px;
+    background: #FAFAFE; transition: opacity .15s ease;
+    &.off {
+      opacity: .55;
+      .src-nm b { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+    }
+  }
+  .src-rank {
+    font-family: var(--o-font-monospace, ui-monospace, monospace);
+    font-weight: 600; font-size: 13px; color: #5A4BB0; background: #EDEAF8;
+    border-radius: 8px; width: 28px; height: 28px; flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .src-ic {
+    width: 34px; height: 34px; border-radius: 9px; flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    svg { width: 17px; height: 17px; }
+    &.api { background: #E8EFFD; color: #2563EB; }
+    &.excel { background: #E7F3EC; color: #2E7D4F; }
+    &.records { background: #EDEAF8; color: #5A4BB0; }
+  }
+  .src-nm {
+    display: flex; flex-direction: column; min-width: 0;
+    b { font-size: 14.5px; }
+    .src-sub { font-size: 12px; color: #64748B; }
+  }
+  .src-count {
+    margin-left: auto; font-size: 12px; color: #64748B; white-space: nowrap;
+    background: #fff; border: 1px solid #E2E8F0; border-radius: 999px;
+    padding: 3px 10px;
+  }
+  .src-ctl { display: flex; align-items: center; gap: 6px; margin-left: 10px; flex: 0 0 auto; }
+  .src-count + .src-ctl { margin-left: 10px; }
+  .src-lane .src-ctl:first-of-type { margin-left: auto; }
+  .src-btn {
+    width: 28px; height: 28px; border-radius: 8px; padding: 0;
+    border: 1px solid #D6DBE8; background: #fff; color: #64748B;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    svg { width: 15px; height: 15px; }
+    &:hover:not(:disabled) { color: #5A4BB0; border-color: #CBC2EE; }
+    &:disabled { opacity: .35; cursor: default; }
+  }
+  .src-tog { margin: 0 0 0 4px; }
+  .src-sentence {
+    margin-top: 14px; background: #EDEAF8; border: 1px solid #CBC2EE;
+    border-radius: 10px; padding: 12px 16px; font-size: 13.5px;
+  }
+  .src-warns { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .src-warn {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: #FBF0E1; border: 1px solid #EAD3AC; border-radius: 9px;
+    padding: 9px 12px; font-size: 13px; color: #7C4A03;
+    svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; }
+  }
+}

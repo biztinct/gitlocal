@@ -169,7 +169,7 @@
                                  the file has its two cards because a file can
                                  be a one-off, and the connected system is the
                                  source of truth by definition. -->
-                            <div class="pw-feedsync" t-if="!state.sheet.file_name">
+                            <div class="pw-feedsync" t-if="!state.sheet.file_name and lanes.api">
                                 <div class="pw-feedsync-tx">
                                     <b>No file this month?</b>
                                     <span>Bring employee and contract records into
@@ -210,7 +210,10 @@
                                         <span class="pw-mode-ic"><t t-out="ic('database',18)"/></span>
                                         <span class="pw-mode-tx">
                                             <b>Update Payobook</b>
-                                            <span>Values are saved to employee and contract records and used from now on.</span>
+                                            <!-- SC-4 — truthful caption: when Payobook records rank
+                                                 first, this can only FILL empty boxes. -->
+                                            <span t-if="lanes.records_first">Only empty record boxes are filled — Payobook records are the source of truth here and are never overwritten.</span>
+                                            <span t-else="">Values are saved to employee and contract records and used from now on.</span>
                                         </span>
                                         <span class="pw-mode-dot"><t t-if="state.sheet.mode === 'update'"><t t-out="ic('check',13)"/></t></span>
                                     </div>

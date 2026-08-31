@@ -258,7 +258,7 @@
 
           <!-- tabs -->
           <div class="pbcfg-tabs">
-            <t t-foreach="[['setup','Setup'],['automation','Automation'],['intelligence','Intelligence']]" t-as="tb" t-key="tb[0]">
+            <t t-foreach="[['setup','Setup'],['sources','Sources'],['automation','Automation'],['intelligence','Intelligence']]" t-as="tb" t-key="tb[0]">
               <button t-attf-class="{{ state.settingsTab === tb[0] ? 'on' : '' }}" t-on-click="() => this.setSettingsTab(tb[0])" t-esc="tb[1]"/>
             </t>
           </div>
@@ -363,6 +363,51 @@
                   <label class="ce-tog"><input type="checkbox" t-att-checked="state.setDraft.use_auto_retro" t-on-change="(ev)=>this.setCfgField('use_auto_retro',ev)"/><span>Enable auto retro</span></label>
                   <div t-if="state.setDraft.use_auto_retro" class="ce-field" style="margin-top:14px"><label>Retro target component</label>
                     <CfgCombo options="cfgMeta('components')" value="state.setDraft.retro_component_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('retro_component_id', id)"/></div>
+                </div>
+              </div>
+            </t>
+
+            <!-- SOURCES (SC-3/SC-4) — which sources feed this scheme, and who
+                 wins. The order binds the pay run AND the record updates: a
+                 lower source may fill an empty box, never overwrite one. -->
+            <t t-elif="state.settingsTab === 'sources'">
+              <div class="pbcfg-grid">
+                <div class="ce-sec pbcfg-sources">
+                  <div class="ce-sec-h">Where pay values come from</div>
+                  <div class="ce-sec-sub">Use the arrows to set who wins; switch a source off to stop this scheme reading it. A lower source is used only where every higher one is silent — and it may only fill an empty record box, never overwrite one.</div>
+                  <div class="src-lanes">
+                    <t t-foreach="srcLaneList" t-as="ln" t-key="ln.key">
+                      <div t-attf-class="src-lane {{ ln.on ? '' : 'off' }}">
+                        <span class="src-rank" t-esc="ln.rank"/>
+                        <span t-attf-class="src-ic {{ ln.key }}">
+                          <svg t-if="ln.key === 'api'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                          <svg t-elif="ln.key === 'excel'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M10 13v4"/></svg>
+                          <svg t-else="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+                        </span>
+                        <span class="src-nm">
+                          <b t-esc="ln.label"/>
+                          <span class="src-sub" t-esc="ln.sub"/>
+                        </span>
+                        <span class="src-count" t-if="ln.count"><t t-esc="ln.count"/> components read this</span>
+                        <span class="src-ctl">
+                          <button class="src-btn" type="button" title="Move up" t-att-disabled="ln_index === 0"
+                                  t-on-click="() => this.srcLaneMove(ln.key, -1)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button>
+                          <button class="src-btn" type="button" title="Move down" t-att-disabled="ln_index === srcLaneList.length - 1"
+                                  t-on-click="() => this.srcLaneMove(ln.key, 1)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+                          <label class="ce-tog src-tog"><input type="checkbox" t-att-checked="ln.on" t-on-change="() => this.srcLaneToggle(ln.key)"/><span/></label>
+                        </span>
+                      </div>
+                    </t>
+                  </div>
+                  <div class="src-sentence" t-esc="srcLaneSentence"/>
+                  <div class="src-warns" t-if="srcLaneWarnings.length">
+                    <div class="src-warn" t-foreach="srcLaneWarnings" t-as="w" t-key="w_index">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                      <span t-esc="w"/>
+                    </div>
+                  </div>
                 </div>
               </div>
             </t>

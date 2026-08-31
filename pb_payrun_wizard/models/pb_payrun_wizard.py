@@ -666,6 +666,11 @@ class PbPayrunWizard(models.AbstractModel):
         each one and count them.
         """
         vals = vals or {}
+        # SC-4 — a scheme that switched the connected system off syncs
+        # NOTHING before its runs: no steps, and no unroutable-wire advisories
+        # about a lane that is not in play.
+        if not self._payrun_lanes(vals).get('api', True):
+            return {'steps': [], 'unroutable': []}
         # Returned here, and added to the run's exceptions ONCE by the client:
         # `compute_batch` runs per chunk of employees, and a per-run advisory
         # appended there is a per-run advisory reported N times (the workforce
@@ -685,6 +690,13 @@ class PbPayrunWizard(models.AbstractModel):
         vals = vals or {}
         step = step or {}
         out = {'label': step.get('label') or '', 'pulled': 0, 'error': ''}
+        # SC-4 — server-side refusal, not only a hidden button: a stale client
+        # replaying a plan must not pull for a scheme whose api lane is off.
+        if not self._payrun_lanes(vals).get('api', True):
+            out['error'] = _(
+                "This scheme does not read the connected system — its "
+                "sources settings switched that off.")
+            return out
         if step.get('blocked'):
             out['error'] = _("%(label)s was not synced — %(why)s.",
                              label=out['label'], why=step['blocked'])
@@ -755,6 +767,11 @@ class PbPayrunWizard(models.AbstractModel):
         with it rather than being written a second time.
         """
         vals = vals or {}
+        # SC-4 — the api lane's server-side refusal.
+        if not self._payrun_lanes(vals).get('api', True):
+            return {'ok': False, 'msg': _(
+                "This scheme does not read the connected system — its "
+                "sources settings switched that off.")}
         Connector = self.env.get('hr.integration.connector')
         if Connector is None:
             return {'ok': False, 'msg': _("No connected system is set up.")}
@@ -776,6 +793,30 @@ class PbPayrunWizard(models.AbstractModel):
         return {'ok': True,
                 'msg': connector.sudo().cron_writeback_last_result or _(
                     "Records are up to date.")}
+
+    @api.model
+    def _payrun_lanes(self, vals=None):
+        """SC-4 — this run's scheme's source lanes, for the wizard's chrome.
+
+        `{'api', 'excel', 'records', 'records_first'}` — booleans a template
+        can read. Everything defaults to True (today's world) when the scheme
+        cannot be resolved or predates the setting, so nothing disappears on
+        an old database.
+        """
+        out = {'api': True, 'excel': True, 'records': True,
+               'records_first': False}
+        try:
+            config = self._payrun_config(vals)
+            if config and 'source_priority' in config._fields:
+                out['api'] = bool(config.source_api_enabled)
+                out['excel'] = bool(config.source_excel_enabled)
+                out['records'] = bool(config.source_records_enabled)
+                order = config._source_lane_order()
+                out['records_first'] = bool(order) and order[0] == 'records'
+        except Exception:       # noqa: BLE001 — chrome, never the run
+            _logger.warning("SC-4: could not read the scheme's source lanes",
+                            exc_info=True)
+        return out
 
     @api.model
     def _payrun_config(self, vals=None):
@@ -856,6 +897,13 @@ class PbPayrunWizard(models.AbstractModel):
         configs = Config.search(domain)
         if not configs:
             return []
+        # SC-3/SC-4 — a scheme whose spreadsheet lane is switched off wants no
+        # file, whatever its components declare. Filtered HERE because this
+        # method decides whether the upload STEP exists at all.
+        configs = configs.filtered(
+            lambda c: getattr(c, 'source_excel_enabled', True))
+        if not configs:
+            return []
         sources = self.env['hr.formula.rule.source'].sudo().search([
             ('kind', '=', 'excel'), ('rule_id.config_id', 'in', configs.ids)])
         by_config = {}
@@ -907,19 +955,24 @@ class PbPayrunWizard(models.AbstractModel):
         with "no file wanted" and a loud log line (C7 — the failure is visible
         to whoever reads the log, and the run still happens).
         """
+        # SC-4 — the run's source lanes travel WITH the gate, whether or not a
+        # file is wanted, so the wizard can show or hide its sync steps and
+        # its "Update records" button from ONE server answer.
+        lanes = self._payrun_lanes(vals)
         try:
             entries = self._spreadsheet_configs()
         except Exception:       # noqa: BLE001
             _logger.exception(
                 "Payrun wizard: could not read the schemes' spreadsheet "
                 "columns; the pay-data step is hidden for this run.")
-            return {'wanted': False}
+            return {'wanted': False, 'lanes': lanes}
         if not entries:
-            return {'wanted': False}
+            return {'wanted': False, 'lanes': lanes}
         chosen = entries[0]
         cfg = chosen['config']
         return {
             'wanted': True,
+            'lanes': lanes,
             'config_id': cfg.id,
             'config_name': cfg.display_name or cfg.name or '',
             'components': chosen['components'],
@@ -1066,6 +1119,12 @@ class PbPayrunWizard(models.AbstractModel):
         if not config:
             return {'ok': False,
                     'msg': _("That payroll scheme no longer exists.")}
+        # SC-4 — the excel lane's server-side refusal. The step is already
+        # hidden; this stops a stale client, a script, or a bookmark.
+        if not getattr(config, 'source_excel_enabled', True):
+            return {'ok': False, 'msg': _(
+                "This scheme does not take pay data files — its sources "
+                "settings switched spreadsheets off.")}
         if not file_b64:
             return {'ok': False, 'msg': _("No file was received.")}
 
