@@ -101,7 +101,16 @@ class TestJourneyGuardrails(TransactionCase):
         })
 
     def _connector(self, name='J3 Guard'):
-        return self.Connector.create({'name': name, 'connector_type': 'demo'})
+        conn = self.Connector.create({'name': name, 'connector_type': 'demo'})
+        # SC-1 follow-through: mapping is refused to a field the system has
+        # never sent (commit 0cefae0e), so the keys these tests draw must have
+        # ARRIVED. One staged payload makes them live, which is also the more
+        # honest fixture — abm's wires were all drawn onto delivered fields.
+        self.env['hr.api.data.store'].create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'raw_payload': {'Base': 18500000, 'Base2': 19000000,
+                            'JobA': 'Clerk', 'JobB': 'Senior Clerk'}})
+        return conn
 
     def _wire(self, conn, rule, key):
         return self.FieldMapping.create({
