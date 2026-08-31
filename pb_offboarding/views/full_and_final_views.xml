@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The gate, on the settlement's own form.
+
+         Everything here is ADDITIVE and lives in this module: not one line of
+         `pb_hr_fullandfinal` is touched, so the deployment is a plain install
+         and the settlement calculation stays exactly what it was.
+
+         The xpaths select by NAME and by structure, never by `[@string=...]` —
+         view inheritance in Odoo 19 will not select on a string attribute, and
+         a translated label would move the target in any case.
+         ================================================================== -->
+
+    <record id="view_full_and_final_form_gate" model="ir.ui.view">
+        <field name="name">hr.full.final.settlement.form.gate</field>
+        <field name="model">hr.full.final.settlement</field>
+        <field name="inherit_id" ref="pb_hr_fullandfinal.view_full_and_final_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//form/header" position="inside">
+                <button name="action_pb_close" type="object"
+                        string="Close settlement" class="btn-primary"
+                        invisible="pb_closed"
+                        confirm="Closing says this settlement is finished and may be paid. Carry on?"/>
+                <button name="action_pb_reopen" type="object"
+                        string="Re-open" invisible="not pb_closed"
+                        groups="pb_lifecycle.group_lifecycle_manager"/>
+            </xpath>
+
+            <xpath expr="//form/sheet" position="before">
+                <field name="pb_closed" invisible="1"/>
+                <field name="pb_ready" invisible="1"/>
+            </xpath>
+
+            <!-- The banner reads as a sentence, not as a status word. A person
+                 arriving at a settlement that will not close needs to know what
+                 to go and do, and "Not ready" is not that. -->
+            <xpath expr="//form/sheet/div[hasclass('oe_title')]" position="before">
+                <div class="alert alert-success" role="status"
+                     invisible="not pb_closed">
+                    <strong>This settlement is closed.</strong>
+                    Everything that was holding it had been signed off.
+                    <field name="pb_closed_by" readonly="1" nolabel="1"
+                           class="oe_inline"/>
+                    closed it on
+                    <field name="pb_closed_at" readonly="1" nolabel="1"
+                           class="oe_inline"/>.
+                </div>
+                <div class="alert alert-success" role="status"
+                     invisible="pb_closed or not pb_ready">
+                    <strong>Nothing is outstanding.</strong>
+                    The equipment is back, every clearance is answered and the
+                    leaving checklist is done. Press <em>Close settlement</em>
+                    when you are happy with the figures.
+                </div>
+                <div class="alert alert-warning" role="alert"
+                     invisible="pb_closed or pb_ready">
+                    <strong>This cannot be closed yet.</strong>
+                    <field name="pb_blockers" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+
+            <xpath expr="//field[@name='import_batch_id']" position="after">
+                <field name="pb_case_id" readonly="1"
+                       invisible="not pb_case_id"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_full_and_final_tree_gate" model="ir.ui.view">
+        <field name="name">hr.full.final.settlement.list.gate</field>
+        <field name="model">hr.full.final.settlement</field>
+        <field name="inherit_id" ref="pb_hr_fullandfinal.view_full_and_final_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='source']" position="after">
+                <field name="pb_closed" string="Closed" optional="show"
+                       widget="boolean_toggle" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_full_and_final_search_gate" model="ir.ui.view">
+        <field name="name">hr.full.final.settlement.search.gate</field>
+        <field name="model">hr.full.final.settlement</field>
+        <field name="inherit_id" ref="pb_hr_fullandfinal.view_full_and_final_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='source_auto']" position="after">
+                <separator/>
+                <filter name="pb_open" string="Not closed yet"
+                        domain="[('pb_closed', '=', False)]"/>
+                <filter name="pb_done" string="Closed"
+                        domain="[('pb_closed', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

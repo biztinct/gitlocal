@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. The day-to-day surface
+         is the Exits lens on the Lifecycle hub; these are the records behind
+         it, reached from the board, from the command bar and from a
+         resignation's own chatter. -->
+
+    <!-- ================================================================ -->
+    <!--  Resignations                                                    -->
+    <!-- ================================================================ -->
+    <record id="view_pb_resignation_list" model="ir.ui.view">
+        <field name="name">pb.resignation.list</field>
+        <field name="model">pb.resignation</field>
+        <field name="arch" type="xml">
+            <list string="Resignations" create="0">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id" optional="show"/>
+                <field name="manager_id" optional="hide"/>
+                <field name="submit_date" optional="show"/>
+                <field name="requested_lwd" optional="show"/>
+                <field name="approved_lwd" optional="show"/>
+                <field name="source" optional="hide"/>
+                <field name="regrettable" optional="hide" widget="boolean_toggle"
+                       groups="pb_lifecycle.group_lifecycle_manager"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-info="state in ('submitted', 'manager_ok')"
+                       decoration-muted="state in ('withdrawn', 'refused')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_resignation_form" model="ir.ui.view">
+        <field name="name">pb.resignation.form</field>
+        <field name="model">pb.resignation</field>
+        <field name="arch" type="xml">
+            <form string="Resignation">
+                <header>
+                    <button name="action_submit" type="object" string="Hand it in"
+                            class="btn-primary" invisible="not can_submit"/>
+                    <button name="action_manager_approve" type="object"
+                            string="Pass to HR" class="btn-primary"
+                            invisible="not can_manager_approve"/>
+                    <button name="action_hr_approve" type="object"
+                            string="Approve" class="btn-primary"
+                            invisible="not can_hr_approve"
+                            confirm="Approving writes the agreed last working day onto this person's record and opens their leaving checklist. Carry on?"/>
+                    <button name="action_refuse" type="object"
+                            string="Not accepted" invisible="not can_refuse"/>
+                    <button name="action_withdraw" type="object"
+                            string="Take it back" invisible="not can_withdraw"
+                            confirm="This resignation will be taken back and nothing will change on the employee record. Carry on?"/>
+                    <button name="action_open_case" type="object"
+                            string="Leaving checklist" class="btn-secondary"
+                            invisible="not case_id"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,manager_ok,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <field name="can_submit" invisible="1"/>
+                    <field name="can_manager_approve" invisible="1"/>
+                    <field name="can_hr_approve" invisible="1"/>
+                    <field name="can_refuse" invisible="1"/>
+                    <field name="can_withdraw" invisible="1"/>
+                    <group>
+                        <group string="Who">
+                            <field name="employee_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="manager_id"/>
+                            <field name="department_id"/>
+                            <field name="source" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="When">
+                            <field name="submit_date"/>
+                            <field name="notice_days"/>
+                            <field name="requested_lwd"
+                                   readonly="state not in ('draft', 'submitted')"/>
+                            <field name="approved_lwd"
+                                   readonly="state == 'approved'"
+                                   help="What HR agreed. Leave it empty and the date they asked for is used."/>
+                            <field name="departure_reason_id"
+                                   readonly="state == 'approved'"/>
+                            <field name="case_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Why they are leaving">
+                        <field name="reason_text" nolabel="1"
+                               placeholder="In their own words…"
+                               readonly="state not in ('draft', 'submitted')"/>
+                    </group>
+                    <group string="HR only"
+                           groups="pb_lifecycle.group_lifecycle_manager">
+                        <field name="regrettable"/>
+                        <field name="hr_note"
+                               placeholder="Anything worth remembering about this one…"/>
+                    </group>
+                    <notebook>
+                        <page string="Who agreed what" name="approval">
+                            <field name="approval_widget_json"
+                                   widget="biz_approval_stepper" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_resignation_search" model="ir.ui.view">
+        <field name="name">pb.resignation.search</field>
+        <field name="model">pb.resignation</field>
+        <field name="arch" type="xml">
+            <search string="Resignations">
+                <field name="employee_id"/>
+                <field name="name"/>
+                <field name="department_id"/>
+                <filter name="live" string="Still open"
+                        domain="[('state', 'in', ('draft', 'submitted', 'manager_ok'))]"/>
+                <filter name="approved" string="Agreed"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="regrettable" string="Sorry to lose them"
+                        domain="[('regrettable', '=', True)]"
+                        groups="pb_lifecycle.group_lifecycle_manager"/>
+                <group>
+                    <filter name="by_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="by_dept" string="Team"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter name="by_month" string="Last working day"
+                            context="{'group_by': 'approved_lwd'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_resignation" model="ir.actions.act_window">
+        <field name="name">Resignations</field>
+        <field name="res_model">pb.resignation</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody has handed one in</p>
+            <p>A resignation is filed by the person leaving, from their own
+               page. Their manager sees it, then HR agrees the last working day
+               — and only then does anything change on the employee record.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Notice policies                                                 -->
+    <!-- ================================================================ -->
+    <record id="view_pb_notice_policy_list" model="ir.ui.view">
+        <field name="name">pb.notice.policy.list</field>
+        <field name="model">pb.notice.policy</field>
+        <field name="arch" type="xml">
+            <list string="Notice policies" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="country_id" placeholder="Any country"/>
+                <field name="days"/>
+                <field name="note" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_notice_policy" model="ir.actions.act_window">
+        <field name="name">Notice policies</field>
+        <field name="res_model">pb.notice.policy</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">How much notice people give</p>
+            <p>Read from the top; the first policy that fits the country
+               somebody works in is used. It fills in the last working day on
+               their resignation before they type anything — HR still agrees the
+               real date when they approve it.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Clearances and handover items                                   -->
+    <!-- ================================================================ -->
+    <record id="view_pb_exit_clearance_list" model="ir.ui.view">
+        <field name="name">pb.exit.clearance.list</field>
+        <field name="model">pb.exit.clearance</field>
+        <field name="arch" type="xml">
+            <list string="Clearances" create="0">
+                <field name="employee_id"/>
+                <field name="dept"/>
+                <field name="owner_user_id"/>
+                <field name="note" optional="hide"/>
+                <field name="cleared_by" optional="hide"/>
+                <field name="cleared_at" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'cleared'"
+                       decoration-warning="state == 'pending'"
+                       decoration-muted="state == 'na'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_exit_clearance" model="ir.actions.act_window">
+        <field name="name">Exit clearances</field>
+        <field name="res_model">pb.exit.clearance</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing is waiting to be signed off</p>
+            <p>Four rows appear here the moment somebody's leaving checklist
+               opens — IT, HR, Finance and Admin. The final settlement cannot be
+               closed until every one of them has been answered.</p>
+        </field>
+    </record>
+
+    <record id="view_pb_kt_item_list" model="ir.ui.view">
+        <field name="name">pb.kt.item.list</field>
+        <field name="model">pb.kt.item</field>
+        <field name="arch" type="xml">
+            <list string="Handover items" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="case_id" optional="show"/>
+                <field name="employee_id" optional="hide"/>
+                <field name="topic"/>
+                <field name="to_employee_id"/>
+                <field name="doc_link" optional="show" widget="url"/>
+                <field name="notes" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'todo'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_kt_item" model="ir.actions.act_window">
+        <field name="name">Handover items</field>
+        <field name="res_model">pb.kt.item</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing is waiting to be handed over</p>
+            <p>One row per thing the person leaving has to pass on — the
+               system, the client, the report. While any of them is open the HR
+               team is reminded every fifteen days.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The lens's own doors                                            -->
+    <!-- ================================================================ -->
+    <!-- Declared as RECORDS rather than reached by bare tag (W98): a bare tag
+         is synthesised with no action NAME, and anything returning through a
+         breadcrumb lands on a crumb labelled "Unnamed".
+
+         Test URL: /odoo/action-pb_exits_board  (the lens on its own)
+                   /odoo/action-pb_lifecycle_hub  (inside the Lifecycle hub) -->
+    <record id="action_pb_exits_board" model="ir.actions.client">
+        <field name="name">Exits</field>
+        <field name="tag">pb_exits_board</field>
+    </record>
+
+</odoo>

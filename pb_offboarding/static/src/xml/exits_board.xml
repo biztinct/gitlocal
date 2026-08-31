@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Exits lens.
+
+       Section comments use `=` rules and never spell a CSS custom property,
+       because a doubled hyphen inside an XML comment is a parse error that
+       takes every t-name in the file down with it (W22/R35).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators and the whole template dies with a
+       compile error pointing at nothing useful (R1). The clearance loop is
+       `cl`, the month loop is `mo`.
+       ==================================================================== -->
+  <t t-name="pb_offboarding.PbExitsBoard">
+    <div class="pbim pbim-page exb"
+         t-att-class="{ 'exb--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading the exits…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no lifecycle access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel exb-empty">
+          <div class="exb-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>Exits are looked after by the HR team</h2>
+          <p>This is where everybody leaving in the next few weeks is tracked —
+             what they still have to hand over, what they are still holding,
+             who has signed them off and whether their last payment can go out.
+             Ask your HR administrator to add you to the lifecycle team and
+             this screen fills in.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="exb-head">
+            <div class="exb-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Exits</h1>
+              <p class="pbim-sub">Everybody leaving, and everything that has to
+                 be finished before the last payment goes out.</p>
+            </div>
+            <div class="exb-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the board again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openClearances">
+                <t t-out="ic('shieldCheck',15)"/> All clearances
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openPolicies">
+                <t t-out="ic('calendar',15)"/> Notice policies
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="runAutomation"
+                      title="Run today's automatic steps and reminders now">
+                <t t-out="ic('zap',15)"/> Run today's steps
+              </button>
+            </div>
+          </div>
+
+          <!-- ====================== the numbers ====================== -->
+          <div class="pbim-stats exb-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('powerOff',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.leaving or 0"/>
+                <div class="l">Leaving this month</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic green"><t t-out="ic('check',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.gone or 0"/>
+                <div class="l">Last day has passed</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.blocked }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('banknote',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.blocked or 0"/>
+                <div class="l">Settlements held up</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ warn: state.kpis.clearances }">
+              <div class="pbim-stat-ic amber"><t t-out="ic('shieldCheck',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.clearances or 0"/>
+                <div class="l">Clearances still open</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ warn: state.kpis.assets }">
+              <div class="pbim-stat-ic amber"><t t-out="ic('package',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.assets or 0"/>
+                <div class="l">Items not back yet</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================== filters ======================== -->
+          <div class="pbim-panel exb-filters" t-if="state.rows.length">
+            <div class="exb-filter-row">
+              <div class="exb-search">
+                <t t-out="ic('search',15)"/>
+                <input type="text" t-att-value="state.q" t-on-input="onSearch"
+                       placeholder="Search by name, job or team…"/>
+              </div>
+              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="clearFilters">
+                <t t-out="ic('x',14)"/> Clear
+              </button>
+            </div>
+            <div class="exb-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.months" t-as="mo" t-key="mo.id"
+                        t-attf-class="pbim-fchip {{ state.month === mo.id ? 'on' : '' }}"
+                        t-on-click="() => this.setMonth(mo.id)">
+                  <span t-esc="monthLabel(mo.id)"/>
+                  <span class="c" t-esc="mo.count"/>
+                </button>
+              </div>
+              <div class="pbim-chips">
+                <button t-foreach="state.departments" t-as="dp" t-key="dp.id"
+                        t-attf-class="pbim-fchip {{ state.dept === dp.id ? 'on' : '' }}"
+                        t-on-click="() => this.setDept(dp.id)">
+                  <span t-esc="dp.label"/>
+                  <span class="c" t-esc="dp.count"/>
+                </button>
+              </div>
+            </div>
+            <div class="exb-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.countries" t-as="ct" t-key="ct.id"
+                        t-attf-class="pbim-fchip {{ state.country === ct.id ? 'on' : '' }}"
+                        t-on-click="() => this.setCountry(ct.id)">
+                  <span t-esc="ct.label"/>
+                  <span class="c" t-esc="ct.count"/>
+                </button>
+                <button t-attf-class="pbim-fchip {{ state.blockedOnly ? 'on' : '' }}"
+                        t-on-click="toggleBlocked">
+                  <t t-out="ic('alert',13)"/> Something is holding it up
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================== nothing here yet ================== -->
+          <div t-if="!state.rows.length" class="pbim-panel exb-empty">
+            <div class="exb-empty-ic"><t t-out="ic('powerOff',30)"/></div>
+            <h2>Nobody is leaving just now</h2>
+            <p>When a leaving checklist opens — because HR approved a
+               resignation, or because the connected system announced a
+               departure — the person appears here with their last day, what
+               they still hold, who has signed them off and whether their final
+               settlement can be closed.</p>
+          </div>
+
+          <!-- ============ the filters match nobody ============
+               A board that answers a filter with a blank page is a dead end:
+               the reader cannot tell "nobody matches" from "it is still
+               loading" from "it broke". Say which it is, and offer the way
+               back in the same breath. The whole sentence is ONE expression,
+               because OWL collapses the newline between two t-esc nodes and
+               the page then reads "There are2 people leaving" (R34). -->
+          <div t-elif="!visibleRows.length" class="pbim-panel exb-empty">
+            <div class="exb-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>Nobody matches that</h2>
+            <p>
+              <t t-esc="state.rows.length === 1
+                        ? 'There is 1 person on this board, but they do not fit the filters you have set.'
+                        : 'There are ' + state.rows.length + ' people on this board, but none of them fits the filters you have set.'"/>
+            </p>
+            <button class="pbim-btn primary" t-on-click="clearFilters">
+              <t t-out="ic('x',15)"/> Clear the filters
+            </button>
+          </div>
+
+          <!-- ======================= the people ======================= -->
+          <div t-else="" class="exb-grid">
+            <div t-foreach="visibleRows" t-as="row" t-key="row.id"
+                 class="pbim-panel exb-card"
+                 t-att-class="{ 'is-blocked': isBlocked(row), 'is-done': row.ff.closed }">
+
+              <div class="exb-card-top" t-on-click="() => this.openExit(row.id)">
+                <img class="exb-av" t-att-src="row.avatar" t-att-alt="row.employee"/>
+                <div class="exb-who">
+                  <div class="exb-name" t-esc="row.employee"/>
+                  <div class="exb-job">
+                    <t t-esc="row.job"/><t t-if="row.job and row.dept"> · </t><t t-esc="row.dept"/>
+                  </div>
+                </div>
+                <div class="exb-when">
+                  <div class="exb-when-d" t-esc="day(row.lwd)"/>
+                  <div class="exb-when-w" t-esc="row.when"/>
+                </div>
+              </div>
+
+              <!-- ==== the four lights: the hero of this board ==== -->
+              <div class="exb-clear">
+                <span class="exb-clear-l">Signed off by</span>
+                <div class="exb-lights">
+                  <button t-foreach="row.clearances" t-as="cl" t-key="cl.dept"
+                          t-attf-class="exb-light exb-light--{{ clearanceCls(cl.state) }}"
+                          t-att-title="clearanceTitle(cl)"
+                          t-att-disabled="!state.canWrite and cl.state !== 'pending'"
+                          t-on-click="() => this.askClear(row, cl)">
+                    <span class="exb-light-d" t-esc="cl.label"/>
+                  </button>
+                </div>
+              </div>
+
+              <div class="exb-bar" t-att-title="row.progress + '% of the checklist done'">
+                <span class="exb-bar-f" t-attf-style="width: {{ row.progress }}%"/>
+              </div>
+              <div class="exb-bar-l">
+                <span><t t-esc="row.progress"/>% done</span>
+                <span t-if="row.overdue" class="exb-late">
+                  <t t-out="ic('clock',12)"/> <t t-esc="row.overdue"/> overdue
+                </span>
+                <span t-elif="row.open_tasks"><t t-esc="row.open_tasks"/> still to do</span>
+              </div>
+
+              <div class="exb-facts">
+                <div class="exb-fact">
+                  <span class="exb-fact-l">Still holding</span>
+                  <span t-if="row.assets" class="exb-fact-v warn">
+                    <t t-esc="row.assets"/> item(s)
+                  </span>
+                  <span t-else="" class="exb-fact-v muted">Nothing</span>
+                </div>
+                <div class="exb-fact">
+                  <span class="exb-fact-l">Handover</span>
+                  <span t-if="row.kt_open" class="exb-fact-v warn">
+                    <t t-esc="row.kt_open"/> of <t t-esc="row.kt_total"/> open
+                  </span>
+                  <span t-elif="row.kt_total" class="exb-fact-v">All handed over</span>
+                  <span t-else="" class="exb-fact-v muted">Nothing listed</span>
+                </div>
+                <div class="exb-fact">
+                  <span class="exb-fact-l">Resignation</span>
+                  <span class="exb-fact-v" t-esc="row.resignation_label"/>
+                </div>
+                <div class="exb-fact">
+                  <span class="exb-fact-l">Exit conversation</span>
+                  <span t-if="row.feedback_done" class="exb-fact-v">Answered</span>
+                  <span t-elif="row.feedback" class="exb-fact-v muted">Waiting</span>
+                  <span t-else="" class="exb-fact-v muted">Not asked</span>
+                </div>
+              </div>
+
+              <div class="exb-ff">
+                <span t-attf-class="pbim-badge {{ ffChip(row).cls }}"
+                      t-esc="ffChip(row).text"/>
+                <span t-if="row.ff.id and row.ff.net" class="exb-ff-n">
+                  <t t-esc="row.ff.net.toLocaleString()"/> <t t-esc="row.ff.currency"/>
+                </span>
+              </div>
+
+              <div class="exb-card-act">
+                <button class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openExit(row.id)">
+                  Open their exit
+                </button>
+                <button t-if="state.canWrite and row.ff.id and row.ff.ready and !row.ff.closed"
+                        class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="() => this.closeSettlement(row)">
+                  <t t-out="ic('banknote',13)"/> Close settlement
+                </button>
+                <button t-if="state.canWrite and row.kt_open"
+                        class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.nudgeKt(row)">
+                  <t t-out="ic('mail',13)"/> Nudge
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p t-if="state.capped" class="exb-capped">
+            Showing the first <t t-esc="state.rows.length"/>. Narrow it down with
+            a filter to see the rest.
+          </p>
+
+        </t>
+      </div>
+
+      <!-- ==================================================================
+           THE DRAWER: one exit, whole.
+           ================================================================== -->
+      <div t-if="state.drawer" class="exb-scrim" t-on-click="closeDrawer">
+        <div class="exb-drawer" t-on-click.stop="">
+          <div class="exb-drawer-head">
+            <img class="exb-av exb-av--lg" t-att-src="state.drawer.leaver.avatar"
+                 t-att-alt="state.drawer.leaver.employee"/>
+            <div>
+              <h2 t-esc="state.drawer.leaver.employee"/>
+              <p>
+                <t t-esc="state.drawer.leaver.job"/>
+                <t t-if="state.drawer.leaver.dept"> · <t t-esc="state.drawer.leaver.dept"/></t>
+              </p>
+              <p class="exb-drawer-when">
+                <t t-out="ic('powerOff',13)"/>
+                <t t-esc="day(state.drawer.leaver.lwd)"/> · <t t-esc="state.drawer.leaver.when"/>
+              </p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <!-- ==== the money, said plainly ==== -->
+          <div class="exb-gate"
+               t-att-class="{ ok: state.drawer.leaver.ff.closed or state.drawer.leaver.ff.ready }">
+            <div class="exb-gate-h">
+              <t t-out="ic('banknote',16)"/>
+              <b t-if="state.drawer.leaver.ff.closed">The final settlement is closed</b>
+              <b t-elif="!state.drawer.leaver.ff.id">There is no final settlement yet</b>
+              <b t-elif="state.drawer.leaver.ff.ready">Nothing is holding the final settlement</b>
+              <b t-else="">The final settlement cannot be closed yet</b>
+            </div>
+            <ul t-if="state.drawer.leaver.ff.blockers.length" class="exb-gate-list">
+              <li t-foreach="state.drawer.leaver.ff.blockers" t-as="bl"
+                  t-key="bl_index" t-esc="bl"/>
+            </ul>
+            <div class="exb-gate-act">
+              <button t-if="state.canWrite and state.drawer.leaver.ff.id and !state.drawer.leaver.ff.closed"
+                      class="pbim-btn primary pbim-btn-sm"
+                      t-on-click="() => this.closeSettlement(state.drawer.leaver)">
+                Close settlement
+              </button>
+              <button class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="() => this.openSettlement(state.drawer.leaver)">
+                Open the settlement
+              </button>
+              <button t-if="state.drawer.leaver.resignation_id"
+                      class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="() => this.openResignation(state.drawer.leaver)">
+                Open the resignation
+              </button>
+              <button class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="() => this.openCase(state.drawer.leaver)">
+                Open the checklist
+              </button>
+            </div>
+          </div>
+
+          <!-- ==== what they are still holding ==== -->
+          <h3 class="exb-drawer-h3">Still with them</h3>
+          <div t-if="!state.drawer.assets.total" class="exb-drawer-none">
+            Nothing of ours is out with this person.
+          </div>
+          <div t-foreach="state.drawer.assets.tangible" t-as="it"
+               t-key="'t' + it.id" class="exb-item">
+            <t t-out="ic('package',14)"/>
+            <b><t t-esc="it.code"/> <t t-esc="it.name"/></b>
+            <span class="pbim-badge warn">has to come back</span>
+          </div>
+          <div t-foreach="state.drawer.assets.digital" t-as="it"
+               t-key="'d' + it.id" class="exb-item">
+            <t t-out="ic('appWindow',14)"/>
+            <b><t t-esc="it.code"/> <t t-esc="it.name"/></b>
+            <span class="pbim-badge muted">to switch off</span>
+          </div>
+
+          <!-- ==== the handover ==== -->
+          <h3 class="exb-drawer-h3">
+            Handover
+            <button t-if="state.canWrite" class="exb-h3-btn"
+                    t-on-click="() => this.askKt(state.drawer.leaver)">
+              <t t-out="ic('plus',13)"/> Add
+            </button>
+          </h3>
+          <div t-if="!state.drawer.kt.length" class="exb-drawer-none">
+            Nothing has been listed yet. Add what has to be passed on and it can
+            be tracked instead of remembered.
+          </div>
+          <div t-foreach="state.drawer.kt" t-as="kti" t-key="kti.id"
+               class="exb-kt" t-att-class="{ 'is-done': kti.state === 'done' }">
+            <div class="exb-kt-l">
+              <b t-esc="kti.topic"/>
+              <span t-attf-class="pbim-badge {{ kti.state === 'done' ? 'ok' : 'warn' }}"
+                    t-esc="kti.state_label"/>
+            </div>
+            <div class="exb-kt-m">
+              <span t-if="kti.to">to <t t-esc="kti.to"/></span>
+              <span t-else="" class="muted">nobody is named to pick this up</span>
+              <a t-if="kti.link" t-att-href="kti.link" target="_blank"
+                 rel="noopener noreferrer">the notes</a>
+              <button t-if="state.canWrite and kti.state !== 'done'"
+                      class="exb-kt-btn"
+                      t-on-click="() => this.settleKt(kti, true)">
+                Mark handed over
+              </button>
+            </div>
+          </div>
+
+          <!-- ==== the exit conversation ==== -->
+          <h3 class="exb-drawer-h3" t-if="state.drawer.feedback">
+            Exit conversation
+          </h3>
+          <div t-if="state.drawer.feedback" class="exb-fb">
+            <div t-if="state.drawer.feedback.answers.length">
+              <div t-foreach="state.drawer.feedback.answers" t-as="ans"
+                   t-key="ans_index" class="exb-fb-a">
+                <span class="exb-fb-q" t-esc="ans.label"/>
+                <p t-esc="ans.value"/>
+              </div>
+            </div>
+            <div t-else="" class="exb-drawer-none">
+              They have not answered yet. The link is open until
+              <t t-esc="state.drawer.feedback.window_end"/>.
+              <button t-if="state.canWrite" class="exb-kt-btn"
+                      t-on-click="() => this.sendInvite(state.drawer.leaver)">
+                Send it again
+              </button>
+            </div>
+          </div>
+
+          <!-- ==== the farewell wording ==== -->
+          <h3 class="exb-drawer-h3" t-if="state.drawer.farewell">
+            Farewell note
+          </h3>
+          <div t-if="state.drawer.farewell" class="exb-fw">
+            <p t-esc="state.drawer.farewell.draft"/>
+            <div class="exb-fw-m">
+              <span>Goes out on <t t-esc="state.drawer.farewell.due"/></span>
+              <button t-if="state.canWrite and state.drawer.farewell.state !== 'done'"
+                      class="exb-kt-btn"
+                      t-on-click="() => this.askFarewell(state.drawer.leaver)">
+                Change the wording
+              </button>
+            </div>
+          </div>
+
+          <!-- ==== the checklist ==== -->
+          <h3 class="exb-drawer-h3">Still to do</h3>
+          <div t-if="!drawerOpenTasks.length" class="exb-drawer-none">
+            Everything on the checklist is settled.
+          </div>
+          <div t-foreach="drawerOpenTasks" t-as="tk" t-key="tk.id" class="exb-task">
+            <div class="exb-task-l">
+              <b t-esc="tk.name"/>
+              <span t-if="tk.blocking" class="pbim-badge err">holds the money</span>
+              <span t-attf-class="pbim-badge {{ tk.overdue ? 'err' : 'info' }}"
+                    t-esc="tk.due or 'no date'"/>
+            </div>
+            <p t-if="tk.description" class="exb-task-d" t-esc="tk.description"/>
+            <div class="exb-task-m">
+              <span t-if="tk.assignee">with <t t-esc="tk.assignee"/></span>
+              <span t-esc="tk.kind_label"/>
+              <button t-if="state.canWrite" class="exb-kt-btn"
+                      t-on-click="() => this.runStep(tk)">
+                Run it now
+              </button>
+            </div>
+          </div>
+
+          <h3 class="exb-drawer-h3" t-if="drawerDoneTasks.length">Done</h3>
+          <div t-foreach="drawerDoneTasks" t-as="tk" t-key="tk.id"
+               class="exb-task is-done">
+            <div class="exb-task-l">
+              <b t-esc="tk.name"/>
+              <span class="pbim-badge ok" t-esc="tk.state_label"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           SIGN A DESK OFF. The note is the point: "laptop back, screen
+           missing" is a sentence the next person can act on.
+           ================================================================== -->
+      <div t-if="state.clearing" class="pbim-modal-scrim" t-on-click="cancelClear">
+        <div class="pbim-modal exb-modal" t-on-click.stop="">
+          <h2><t t-esc="state.clearing.desk"/> clearance for <t t-esc="state.clearing.who"/></h2>
+          <p class="pbim-sub">Signing this off says your desk has nothing
+             outstanding. The final settlement waits for all four.</p>
+          <label class="exb-lbl">Anything worth writing down</label>
+          <textarea class="exb-ta" rows="3" t-att-value="state.clearing.note"
+                    t-on-input="onClearNote"
+                    placeholder="Laptop and charger back, screen still with them…"/>
+          <p t-if="state.clearing.owner" class="pbim-sub exb-owner">
+            This desk is <t t-esc="state.clearing.owner"/>'s.
+          </p>
+          <div class="exb-modal-act">
+            <button class="pbim-btn ghost" t-on-click="cancelClear">Cancel</button>
+            <button class="pbim-btn ghost" t-on-click="() => this.doClear(true)">
+              Nothing to sign off
+            </button>
+            <button class="pbim-btn primary" t-on-click="() => this.doClear(false)">
+              <t t-out="ic('check',15)"/> Sign it off
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== ADD A HANDOVER ITEM =================== -->
+      <div t-if="state.kt" class="pbim-modal-scrim" t-on-click="cancelKt">
+        <div class="pbim-modal exb-modal" t-on-click.stop="">
+          <h2>What is <t t-esc="state.kt.who"/> handing over?</h2>
+          <p class="pbim-sub">One row per thing somebody else has to be able to
+             pick up. While any of them is open the HR team is reminded every
+             fifteen days.</p>
+          <label class="exb-lbl">What it is</label>
+          <input type="text" class="exb-in" t-att-value="state.kt.topic"
+                 t-on-input="onKtTopic"
+                 placeholder="The monthly commission file, the Acme account…"/>
+          <label class="exb-lbl">Where the notes are</label>
+          <input type="text" class="exb-in" t-att-value="state.kt.link"
+                 t-on-input="onKtLink"
+                 placeholder="A link to the document or the folder"/>
+          <div class="exb-modal-act">
+            <button class="pbim-btn ghost" t-on-click="cancelKt">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveKt">
+              Add it
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== THE FAREWELL WORDING =================== -->
+      <div t-if="state.farewell" class="pbim-modal-scrim" t-on-click="cancelFarewell">
+        <div class="pbim-modal exb-modal" t-on-click.stop="">
+          <h2>The farewell note for <t t-esc="state.farewell.who"/></h2>
+          <p class="pbim-sub">This goes to their own team on their last day, and
+             nowhere else. Leave it as it is or write your own.</p>
+          <textarea class="exb-ta" rows="6" t-att-value="state.farewell.text"
+                    t-on-input="onFarewellText"/>
+          <div class="exb-modal-act">
+            <button class="pbim-btn ghost" t-on-click="cancelFarewell">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveFarewell">
+              Save the wording
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>
