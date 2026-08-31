@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_zoho_event_rule_integration,arrival rule integration,model_pb_zoho_event_rule,pb_hr_payroll_base.group_payroll_integration_user,1,0,0,0
+access_pb_zoho_event_rule_lifecycle_user,arrival rule lifecycle user,model_pb_zoho_event_rule,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_zoho_event_rule_lifecycle_manager,arrival rule lifecycle manager,model_pb_zoho_event_rule,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_zoho_event_rule_lifecycle_admin,arrival rule lifecycle admin,model_pb_zoho_event_rule,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_zoho_event_rule_system,arrival rule system,model_pb_zoho_event_rule,base.group_system,1,1,1,1
+access_pb_zoho_inbox_integration,arrival integration,model_pb_zoho_inbox,pb_hr_payroll_base.group_payroll_integration_user,1,0,0,0
+access_pb_zoho_inbox_lifecycle_user,arrival lifecycle user,model_pb_zoho_inbox,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_zoho_inbox_lifecycle_manager,arrival lifecycle manager,model_pb_zoho_inbox,pb_lifecycle.group_lifecycle_manager,1,1,0,0
+access_pb_zoho_inbox_lifecycle_admin,arrival lifecycle admin,model_pb_zoho_inbox,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_zoho_inbox_system,arrival system,model_pb_zoho_inbox,base.group_system,1,1,1,1
+access_pb_zoho_upload_wizard_integration,joiner file upload integration,model_pb_zoho_upload_wizard,pb_hr_payroll_base.group_payroll_integration_user,1,1,1,1
+access_pb_zoho_upload_wizard_lifecycle_manager,joiner file upload lifecycle manager,model_pb_zoho_upload_wizard,pb_lifecycle.group_lifecycle_manager,1,1,1,1
+access_pb_zoho_upload_wizard_system,joiner file upload system,model_pb_zoho_upload_wizard,base.group_system,1,1,1,1
