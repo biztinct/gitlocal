@@ -176,7 +176,7 @@ without owner approval between them.
 | P1 | pb_zoho_bridge — inbound webhook, event rules, CSV fallback | **DONE** (live on `payobook`, 19.0.1.0.0) |
 | P2 | pb_assets — register, handovers, requests, People-hub Assets lens, `/my/assets` | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass) |
 | P3 | pb_onboarding (+ journey timeline, new-hire pulse, living org chart wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
-| P4 | pb_offboarding | pending |
+| P4 | pb_offboarding — resignation, clearances, handover, the settlement gate, Exits lens, /my/resignation | **DONE** (live on `payobook`, 19.0.1.0.0, T1-T16 pass) |
 | P5 | pb_probation | pending |
 | P6 | pb_pip | pending |
 | P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | pending |
@@ -414,3 +414,66 @@ without owner approval between them.
   unrelated palette rows then depends on registration order rather than on a
   number anybody chose. **P3 moved to 2400-2420; P4 onwards start at 2500**,
   and count the seed file rather than trusting the comment in it.
+
+### P4 (pb_offboarding, 2026-09-01)
+
+- **R42 — `t-att-class` with a DICT is an OWL thing, and server-side QWeb is
+  not OWL.** `<div class="pbme-step" t-att-class="{'pbme-step--done': x}">`
+  compiles, renders and produces
+  `class="{'pbme-step--done': True, 'pbme-step--current': False}"` — the
+  Python dict's REPR, written into the attribute. Worse, `t-att-class`
+  REPLACES the static `class=` rather than adding to it, so the element also
+  loses the class every rule was written against. No error, no warning: the
+  resignation status stepper simply rendered as four lines of unstyled text
+  with no dots. In a `<template>` (portal, website, reports) the only correct
+  form is `t-attf-class="base #{cond and 'mod' or ''}"`. Inside
+  `static/src/xml` OWL templates the dict form is right and merges with the
+  static class — the two look identical and behave completely differently.
+- **R43 — a public `@api.model` helper that takes a RECORD is called with an
+  INTEGER over JSON-RPC.** A recordset argument does not survive the wire; it
+  arrives as a plain id. An integer walks straight past `if not employee`,
+  answers `False` to every `getattr`, and — inside the try/except that every
+  one of these helpers correctly has — silently returns the FALLBACK. P4's
+  notice policy offered a Vietnamese leaver 30 days instead of 45 with no
+  error anywhere and no wrong-looking screen. Any public method whose argument
+  is a record must coerce at the door (`pb.notice.policy._as_employee`), and
+  any RPC validation of one must be read with this in mind before it is
+  believed.
+- **R44 — a gate that has nothing to check PASSES.** `pb.exit.clearance
+  .pending_for()` answers "nothing pending" for a leaving checklist that has
+  no clearance rows at all — which is true, and which meant the final
+  settlement gate waved through every exit opened before this module existed.
+  A probe over a set that is empty because it was never populated is
+  indistinguishable from a probe over a set that is empty because everything
+  is done. Any phase that adds a REQUIRED companion record to an existing
+  parent has to backfill the parents that already exist, and the backfill
+  belongs in the daily job (idempotent) rather than in a migration nobody
+  reruns. P4's `_backfill_clearances()` is the shape.
+- **R45 — the kit's `.pbim-modal` carries NO padding and IS a column flex
+  box.** Deliberately: it is built for the `__head` / `__body` / `__foot`
+  rails, which pad themselves. A free-form dialog that only sets a width
+  therefore inherits `padding: 0` and `overflow: hidden`, and its heading is
+  clipped flush against the left edge while its textarea runs off the right.
+  A dialog that writes its own contents must set `display: block`, its own
+  padding and its own `overflow: auto`. (P3's `.obb-modal` sets a width and
+  nothing else — worth a look the next time somebody opens the buddy dialog.)
+- **R46 — bracketed plurals are the tell.** "9 step(s)", "1 clearance(s)",
+  "2 thing(s)" is how a screen announces it was written by a programme rather
+  than by a person, and this product's whole voice is the other thing. Use
+  `offboarding_common.counted(n, one, many)` (or the same two lines inline in
+  JS/QWeb). Log lines keep the shorthand — nobody reads a log for its prose.
+- **R47 — a mail queued with `force_send=False` on THIS database goes out
+  within the second.** The hourly queue cron is not what sends it; something
+  flushes at commit. R37's advice to cancel test traffic still applies but the
+  window is far smaller than "an hour": cancel in the same script that sent,
+  and assume anything addressed to a real mailbox has already arrived. Test
+  with `@example.com` addresses only — and note that the lifecycle-manager
+  fallback puts `ash@biztinct.com` on every HR notification, so the owner sees
+  test traffic whatever you do.
+- **R48 — `hr.full.final.settlement` has no chatter and P4 deliberately did
+  not give it one.** Adding `mail.thread` to a model the payroll batch creates
+  in bulk is a change with a blast radius far wider than an exit. The closure
+  note goes to the leaving checklist's chatter, which is where somebody would
+  look for it anyway. Its `_sql_constraints` list is also silently ignored on
+  Odoo 19, so the "one settlement per employee per date" rule is not actually
+  enforced — a pre-existing hole, not P4's, but do not rely on it.
