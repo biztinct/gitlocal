@@ -2897,6 +2897,91 @@ class HrPayrollImportBatch(models.Model):
         win = hits[0]
         return win['value'], win
 
+    def _rd62_wire_raw_value(self, raw_data, rule, line=None):
+        """The value THE LINE ON THE MAPPING BOARD points at. Last resort.
+
+        RD62 — THE BOARD DREW A LINE THE WRITEBACK COULD NOT SEE.
+
+        Two consumers read a scheme column, and until now only one of them read
+        the operator's own wiring:
+
+          * the PAYSLIP does. `_feed_values_for` applies the wires, their
+            transforms and the empty-value guard, and every number on a
+            feed-driven payslip comes through them.
+          * the RECORD WRITEBACK did not. With nothing declared it looked the
+            column up by its OWN spellings — `data_source_field`, name, code —
+            and if the connected system happened to spell the key differently,
+            it wrote nothing and said nothing.
+
+        On the reference tenant that is exactly what happened to Employee Code:
+        the board shows a confirmed wire from `EmployeeID`, the component is
+        called "Employee Code", the two do not match as text, and so 152
+        employee records kept an ID-card number in the employee-code box. A
+        spreadsheet keyed on the payroll number then matched nobody and created
+        eleven duplicate people. The owner's question was the right one: *if the
+        mapping I draw is of no use, why am I drawing it?*
+
+        SO IT IS A FALLBACK AND NOT A REORDER. It fires only where the writeback
+        would otherwise have written NOTHING AT ALL, so no value any database
+        holds today can change meaning — a wire cannot displace a declared
+        source, a spreadsheet column, or a header that already answered. What it
+        can do is fill a box that has been empty since the wire was drawn.
+
+        Routed through `_feed_values_for` rather than a raw key read, because
+        that is the one definition of "what did the feed say" in this codebase:
+        the transform on the wire runs, and J3's empty-value guard applies, so
+        the record is written with the same value the payslip computed from.
+        """
+        if not rule:
+            return None, False
+        config = self.formula_config_id
+        if not config:
+            return None, False
+        try:
+            connector = config._resolve_feed_connector()
+        except Exception:       # noqa: BLE001
+            connector = config.connector_id
+        if not connector:
+            return None, False
+        FieldMapping = self.env['hr.integration.field.mapping']
+        # `active_state` — only a CONFIRMED wire may write to somebody's record.
+        # A suggestion is Payobook's guess, and a guess that silently edits an
+        # employee record is the thing this whole ladder exists to prevent.
+        wire = FieldMapping.sudo().search([
+            ('connector_id', '=', connector.id),
+            ('target_rule_id', '=', rule.id),
+            ('active_state', '=', 'active'),
+            ('source_field', '!=', False),
+        ], limit=1)
+        if not wire:
+            return None, False
+        for blob in self._writeback_blobs(raw_data, line=line).values():
+            if not blob:
+                continue
+            for hit in FieldMapping._feed_values_for(wire, blob):
+                # AS DELIVERED, for a wire that states no transformation.
+                #
+                # `_feed_values_for` exists to feed the PAYSLIP, and on the way
+                # past it may coerce to float: `source_data_type` defaults to
+                # 'number', so a wire drawn without an explicit type on a
+                # component nobody has classified turns `'11094'` into
+                # `11094.0`. `_coerce_mapped_value` would then write the string
+                # "11094.0" into the employee-code box — a new defect wearing
+                # the fix's clothes, and one that would go on failing to match
+                # the spreadsheet exactly as before.
+                #
+                # So a `direct` wire hands back what arrived, which is also what
+                # the header path hands back, and the DESTINATION FIELD decides
+                # its own type. A wire that really does transform (a rounding, a
+                # python expression, a stated default for an empty source) keeps
+                # its result — somebody asked for that.
+                raw = blob.get(hit['key'])
+                if wire.transformation_type in ('direct', False, None, '') \
+                        and not self._blob_is_empty(raw):
+                    return raw, True
+                return hit['value'], True
+        return None, False
+
     def _writeback_raw_value(self, raw_data, rule, mapping=None, line=None,
                              contract=None, employee=None,
                              component_amounts=None, allow_column_letter=False):
@@ -2924,8 +3009,11 @@ class HrPayrollImportBatch(models.Model):
         declared = [d for d in rule.declared_sources()
                     if d['kind'] in ('excel', 'feed', 'rule') and d['key']]
         if not declared:
-            return self._get_rule_raw_value(
+            value, has_value = self._get_rule_raw_value(
                 raw_data, rule, allow_column_letter=allow_column_letter)
+            if has_value:
+                return value, has_value
+            return self._rd62_wire_raw_value(raw_data, rule, line=line)
         blobs = self._writeback_blobs(raw_data, line=line)
         candidates = self._rule_header_candidates(
             rule, allow_column_letter=allow_column_letter)

@@ -114,3 +114,7 @@ from . import test_rd54_record_refresh
 # RD60 — the collateral of a record refresh: "the newest batch" was load-bearing
 # in four places, and the connected system spells one employee key two ways.
 from . import test_rd60_signal_and_identity
+
+# RD62 — the record writeback now honours the line drawn on the mapping board
+# when nothing else answers. "If the mapping I draw is of no use, why draw it?"
+from . import test_rd62_board_wire_writeback
