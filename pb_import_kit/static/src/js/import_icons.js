@@ -137,6 +137,17 @@ export const IC = {
     sparkles:     '<path d="M9.94 14.34 12 20l2.06-5.66L20 12l-5.94-2.34L12 4l-2.06 5.66L4 12z"/><path d="M19 4v3M17.5 5.5h3"/>',
     chevronDown:  '<path d="m6 9 6 6 6-6"/>',
     arrowLeftRight: '<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+
+    // CONTRACT DRAWER CD-2 — the contract slide-over. `history` titles the
+    // change log, `creditCard` the bank/pay-method chip, `award` the pay grade,
+    // `stamp` the tax number and `hash` the component code column. Added to the
+    // SHARED registry, never to a module-local map (W2); the employee vault's
+    // own `pev_icons.js` predates that rule and is not a precedent.
+    history:      '<path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/>',
+    creditCard:   '<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/>',
+    award:        '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
+    stamp:        '<path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 2 1 2 1 3.5V13"/>',
+    hash:         '<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
 };
 
 /**

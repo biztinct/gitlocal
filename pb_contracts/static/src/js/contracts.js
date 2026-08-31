@@ -27,9 +27,34 @@ export class PbContracts extends Component {
             loaded: false, currency: "", kpis: {}, structures: [],
             contracts: [], total: 0,
             search: "", status: "all", structure: "", dateFilter: "all", from: "", to: "",
+            drawerContractId: null,
         });
         onWillStart(async () => { await this.load(); });
+        // deep link: ?contract=<id>, or an action param, opens the drawer when
+        // it is registered — otherwise it is simply ignored and the roster
+        // renders as it always did.
+        const p = (this.props.action && (this.props.action.params || this.props.action.context)) || {};
+        let cid = p.contract || p.contract_id || p.active_id;
+        if (!cid) {
+            try { cid = new URLSearchParams(window.location.search).get("contract"); } catch (e) { cid = null; }
+        }
+        if (cid && this.drawerCmp) { this.state.drawerContractId = Number(cid); }
     }
+
+    // Soft component registry (the People precedent): the drawer registers
+    // itself here, so this file carries no hard import of it and the cockpit
+    // still works with the full-page contract screen if it is ever absent.
+    get drawerCmp() {
+        const r = registry.category("pb_contracts_drawer");
+        return r.contains("contract_360") ? r.get("contract_360") : null;
+    }
+    // Props come off stable state and a bound closure, exactly as
+    // `people.js:57` builds them; the mount point's `t-key` is the contract id,
+    // so switching records remounts and the panel slides in again.
+    get drawerProps() {
+        return { contractId: this.state.drawerContractId, onClose: () => this.closeDrawer() };
+    }
+    closeDrawer() { this.state.drawerContractId = null; }
 
     async load() {
         const d = await this.orm.call("pb.contracts", "get_board", []);
@@ -95,6 +120,7 @@ export class PbContracts extends Component {
 
     openContract(id) {
         if (!id) return;
+        if (this.drawerCmp) { this.state.drawerContractId = Number(id); return; }
         this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_detail", name: "Contract", params: { contract_id: id } });
     }
     newContract() {

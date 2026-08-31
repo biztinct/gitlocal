@@ -204,8 +204,10 @@ class TestCd1Contract360(TransactionCase):
              'wage_masked', 'ends_label', 'ends_tone', 'pipeline',
              'next_actions'})
         self.assertEqual(payload['header']['contract_id'], self.contract.id)
+        # `explainer` joined the contract in CD-2: the calm sentence above a
+        # grid of zeroes is composed server-side so there is one author of it.
         self.assertEqual(set(payload['components']),
-                         {'rows', 'count', 'total', 'addable'})
+                         {'rows', 'count', 'total', 'explainer', 'addable'})
         self.assertEqual(set(payload['history']), {'rows', 'total', 'shown'})
 
     # =====================================================================

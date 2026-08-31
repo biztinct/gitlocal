@@ -93,6 +93,12 @@
           <button class="ppl-link" t-on-click="openAll">Open full contract list →</button>
         </div>
       </div>
+
+      <!-- The contract drawer, mounted only when it registered itself into the
+           soft "pb_contracts_drawer" registry. t-key on the id forces a
+           remount, and therefore a fresh slide-in, when switching records. -->
+      <t t-if="state.drawerContractId and drawerCmp"
+         t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerContractId"/>
     </div>
   </t>
 

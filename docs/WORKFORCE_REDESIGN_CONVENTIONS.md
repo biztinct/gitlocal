@@ -2885,3 +2885,46 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   the module has to be upgraded anyway, and where `TransactionCase` rolls
   everything back — turned 24 passes + 2 skips into 26 passes. Rule: a phase
   with an ACL case reports BOTH runs, never the template one alone.
+
+- **CD5 `hr.formula.rule.source.kind` only has THREE values —
+  `excel | feed | rule`** (`pb_hr_payroll_formula/models/formula_rule_source.py
+  :55-59`), so `declared_sources()` can never return `employee_field`,
+  `contract_field` or `bank_account`. Those three are RANK-4 names that live on
+  `hr.payslip.import.mapping` and every consumer splices them in itself
+  (`pb_formula_studio._source_record_dests`, the batch's
+  `_declared_source_plan`, and now `pb_contracts._cd_winning_bucket`). Only
+  `contract_component` comes out of `declared_sources()` on the records lane.
+  Anyone reading the spec's kind list and expecting them from the rule will
+  quietly get "no source".
+
+- **CD6 A live connector wire is folded in AT THE FEED RANK, not as an
+  override.** CD-2's handover said "if a live wire exists and the api lane is
+  enabled, prefer api". Implemented literally that beats a scheme that has
+  deliberately demoted its connected system below its records, which is exactly
+  the thing SC-3 was built to respect. `_cd_winning_bucket` therefore appends
+  the wire as a `feed` entry at `rank.index('feed')` and lets the sort decide —
+  identical behaviour on every scheme at the default `api,excel,records` order,
+  truthful on the ones that changed it. Same treatment the studio gives it.
+
+- **CD7 The "grid of zeroes" explainer is decided by DOMINANCE, not
+  unanimity.** The handover asked for the sentence only when EVERY row is
+  non-records. Measured on abm contract 1051: 20 rows `excel`, 1 row `records`
+  — the literal rule hid the sentence on the very tenant it was written for. It
+  now shows whenever the dominant source is not the contract, and a records
+  minority softens "Every component below" to "Most of the components below". A
+  records-DOMINATED grid still gets no sentence: there a zero is a gap to fix,
+  and a soothing line would hide it.
+
+- **CD8 One row, one date.** `_cd_history` sorts the merged stream by the
+  change stamp but CD-1 labelled a component change with its EFFECTIVE date.
+  On abm contract 1103 that put six rows reading "01 Nov 2026" under a month
+  band reading "Aug 2026" — the client groups by the sort key, as it must.
+  `when_label` now follows `when`. Rule for any merged timeline: the date shown
+  on a row and the date it is ordered by are the same date, or the month
+  separators lie.
+
+- **CD9 The floating assistant pill owns the bottom-right corner of every
+  screen.** A drawer footer with `justify-content: flex-end` puts its only
+  button underneath it (`Full form` rendered as "Full …" on abm). Drawer
+  footers left-align; anything that must sit right needs real clearance, not
+  hope.

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       CD-2 — the contract drawer, read-only.
+
+       W22: an XML comment may NOT contain a double hyphen; OWL templates are
+       XML, and one such comment is a parse error that kills every t-name in
+       the file and blanks the whole backend bundle. Separators use "====".
+
+       W23: one `class` attribute per element. `t-att-class` and `t-attf-class`
+       compile to the SAME attribute and the last one wins, so a static
+       class="..." is only ever paired with a t-att-class object.
+
+       W96: no expression is evaluated here that is not a component method; a
+       template is compiled against the component and nothing else.
+       ================================================================== -->
+
+  <t t-name="pb_contracts.Contract360Drawer">
+    <div class="pbc pbim">
+      <div class="pbc-scrim" t-att-class="{ 'shown': state.shown }" t-on-click="close"/>
+      <aside class="pbc-drawer" t-att-class="{ 'shown': state.shown }" t-on-click.stop="">
+
+        <!-- ==================== loading / gone ==================== -->
+        <div t-if="!state.loaded" class="pbc-busy"><div class="pbc-spin"/><span>Opening the contract…</span></div>
+
+        <t t-elif="d.error">
+          <div class="pbc-head">
+            <div class="pbc-head-id"><div class="pbc-head-tx"><h2>Contract</h2></div></div>
+            <div class="pbc-head-side">
+              <button class="pbc-x" title="Close" t-on-click="close"><t t-out="ic('x',18)"/></button>
+            </div>
+          </div>
+          <div class="pbc-empty"><t t-out="ic('alert',30)"/><p t-esc="d.error"/></div>
+        </t>
+
+        <t t-else="">
+          <!-- ==================== header ==================== -->
+          <div class="pbc-head">
+            <div class="pbc-head-id">
+              <div class="pbc-ava" t-att-style="header.avatar ? ('background-image:url(' + header.avatar + ')') : ''">
+                <span t-if="!header.avatar" t-esc="header.initials || '?'"/>
+              </div>
+              <div class="pbc-head-tx">
+                <h2 t-esc="header.employee || '—'"/>
+                <div class="pbc-ref" t-esc="header.reference || '—'"/>
+                <div class="pbc-chips">
+                  <span class="pbc-chip" t-if="header.job"><t t-out="ic('briefcase',13)"/> <t t-esc="header.job"/></span>
+                  <span class="pbc-chip" t-if="header.dept"><t t-out="ic('building',13)"/> <t t-esc="header.dept"/></span>
+                  <span t-attf-class="pbc-chip tone-{{ header.ends_tone || 'muted' }}">
+                    <t t-out="ic('calendar',13)"/> <t t-esc="header.ends_label || '—'"/>
+                  </span>
+                  <span t-attf-class="pbc-chip tone-{{ stateTone(header.state) }}">
+                    <t t-out="ic('fileText',13)"/> <t t-esc="header.state_label || '—'"/>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="pbc-head-side">
+              <div class="pbc-wage">
+                <span class="l">Monthly wage</span>
+                <span class="v" t-att-class="{ 'masked': header.wage_masked }"
+                      t-att-title="header.wage_masked ? 'Visible to payroll managers only' : ''"
+                      t-esc="wageDisplay || '—'"/>
+              </div>
+              <button class="pbc-x" title="Close" t-on-click="close"><t t-out="ic('x',18)"/></button>
+            </div>
+          </div>
+
+          <!-- ==================== tabs ==================== -->
+          <div class="pbc-tabs">
+            <button class="pbc-tab" t-att-class="{ 'on': state.tab === 'terms' }" t-on-click="() => this.setTab('terms')">
+              <t t-out="ic('fileText',15)"/> Terms
+            </button>
+            <button class="pbc-tab" t-att-class="{ 'on': state.tab === 'components' }" t-on-click="() => this.setTab('components')">
+              <t t-out="ic('banknote',15)"/> Components
+              <span class="pbc-tab-c" t-if="compCount" t-esc="compCount"/>
+            </button>
+            <button class="pbc-tab" t-att-class="{ 'on': state.tab === 'history' }" t-on-click="() => this.setTab('history')">
+              <t t-out="ic('history',15)"/> History
+              <span class="pbc-tab-c" t-if="histCount" t-esc="histCount"/>
+            </button>
+            <span class="pbc-tab-ink" t-att-style="inkStyle"/>
+          </div>
+
+          <div class="pbc-body">
+
+            <!-- ==================== TERMS ==================== -->
+            <t t-if="state.tab === 'terms'">
+              <div class="pbc-rail" t-if="pipeline.length">
+                <t t-foreach="pipeline" t-as="st" t-key="st.key">
+                  <div class="pbc-rail-step" t-att-class="{ 'done': st.done, 'current': st.current }">
+                    <span class="dot"/><span class="lbl" t-esc="st.label"/>
+                  </div>
+                </t>
+              </div>
+
+              <div class="pbc-acts" t-if="nextActions.length">
+                <span class="pbc-acts-l">Next step</span>
+                <t t-foreach="nextActions" t-as="act" t-key="act.method">
+                  <button class="pbim-btn ghost" title="Opens the full contract screen, where this happens"
+                          t-on-click="openFullScreen">
+                    <t t-out="ic(act.icon,14)"/> <t t-esc="act.label"/>
+                  </button>
+                </t>
+              </div>
+
+              <t t-foreach="terms" t-as="grp" t-key="grp.key">
+                <div class="pbc-sec" t-if="grp.fields.length">
+                  <div class="pbc-sec-h"><t t-out="groupIcon(grp.key)"/> <span t-esc="grp.label"/></div>
+                  <div class="pbc-grid">
+                    <t t-foreach="grp.fields" t-as="f" t-key="f.name">
+                      <div class="pbc-cell" t-att-class="{ 'tone-warn': f.tone === 'warn' }">
+                        <span class="k"><t t-out="fieldIcon(f.name)"/> <t t-esc="f.label"/></span>
+                        <span class="v" t-esc="f.display || '—'"/>
+                        <span class="pbc-hint" t-if="f.hint" t-esc="f.hint"/>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+              </t>
+
+              <div class="pbc-stats" t-if="readiness.length">
+                <t t-foreach="readiness" t-as="chip" t-key="chip.key">
+                  <span class="pbc-stat" t-att-class="{ 'ok': chip.ok, 'off': !chip.ok }">
+                    <t t-out="readyIcon(chip.key)"/> <t t-esc="chip.label"/>
+                  </span>
+                </t>
+              </div>
+            </t>
+
+            <!-- ==================== COMPONENTS ==================== -->
+            <t t-if="state.tab === 'components'">
+              <div class="pbc-explain" t-if="components.explainer">
+                <t t-out="ic('alert',16)"/> <span t-esc="components.explainer"/>
+              </div>
+
+              <div class="pbc-comps" t-if="compRows.length">
+                <t t-foreach="compRows" t-as="row" t-key="row.id">
+                  <div class="pbc-comp">
+                    <span class="pbc-comp-code" t-esc="row.code || '—'"/>
+                    <div class="pbc-comp-id">
+                      <span class="n" t-esc="row.name || '—'"/>
+                      <span class="pbc-comp-tags">
+                        <span t-attf-class="pbc-comp-from tone-{{ row.fills_tone || 'muted' }}" t-esc="row.fills_label || '—'"/>
+                        <span class="pbc-comp-warn" t-if="row.requires_new_contract">usually starts a new contract</span>
+                      </span>
+                    </div>
+                    <div class="pbc-comp-r">
+                      <span class="pbc-comp-v" t-esc="row.display || '—'"/>
+                      <span class="pbc-comp-b" t-if="row.bounded and row.bounds_hint" t-esc="row.bounds_hint"/>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+              <div t-else="" class="pbc-empty">
+                <t t-out="ic('banknote',30)"/>
+                <p>This contract carries no components.</p>
+                <small>Components are the named amounts a pay run reads off a contract.</small>
+              </div>
+
+              <div class="pbc-comp-add" t-if="addable.length">
+                <button class="pbim-btn ghost" title="Opens the full contract form, where a component can be added"
+                        t-on-click="openFullForm">
+                  <t t-out="ic('plus',15)"/> Add a component
+                </button>
+              </div>
+            </t>
+
+            <!-- ==================== HISTORY ==================== -->
+            <t t-if="state.tab === 'history'">
+              <div t-if="!(history.rows || []).length" class="pbc-empty">
+                <t t-out="ic('history',30)"/>
+                <p>Nothing has changed on this contract yet.</p>
+                <small>Every change made from now on is listed here.</small>
+              </div>
+
+              <t t-else="">
+                <div class="pbc-tl">
+                  <t t-foreach="historyRows()" t-as="row" t-key="row.key">
+                    <div t-if="row.sep" class="pbc-tl-sep"><span t-esc="row.label"/></div>
+                    <div t-else="" t-attf-class="pbc-tl-item tone-{{ row.tone || 'indigo' }}">
+                      <span class="pbc-tl-ic" t-out="kindIcon(row.kind)"/>
+                      <div class="pbc-tl-body">
+                        <div class="pbc-tl-l1">
+                          <span class="t" t-esc="row.title || '—'"/>
+                          <span class="when" t-esc="row.when_label || '—'" t-att-title="row.when"/>
+                        </div>
+                        <div class="pbc-tl-d" t-if="hasDelta(row)">
+                          <span class="from" t-esc="row.from || '—'"/>
+                          <span class="arr" t-out="ic('arrow',13)"/>
+                          <span class="to" t-esc="row.to || '—'"/>
+                        </div>
+                        <div class="pbc-tl-a">
+                          <span class="src" t-esc="row.source || '—'"/>
+                          <span class="who" t-if="row.actor" t-esc="row.actor"/>
+                        </div>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+                <div class="pbc-tl-more" t-if="hasMoreHistory" t-esc="historyCountLabel()"/>
+              </t>
+            </t>
+
+          </div>
+
+          <!-- ==================== footer ====================
+               Its own block, so CD-3 can put the Save bar here and demote
+               "Full form" to a small link without a rewrite. -->
+          <div class="pbc-foot">
+            <button class="pbim-btn ghost" t-on-click="openFullForm">
+              <t t-out="ic('external',15)"/> Full form
+            </button>
+          </div>
+        </t>
+      </aside>
+    </div>
+  </t>
+
+</templates>
