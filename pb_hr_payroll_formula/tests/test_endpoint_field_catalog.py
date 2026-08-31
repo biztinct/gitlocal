@@ -223,6 +223,36 @@ class TestEndpointFieldCatalogue(TransactionCase):
         self.assertFalse(every['OT_Type']['expected_missing'],
                          "nor has the overtime feed")
 
+    def test_04b_a_busier_feed_does_not_silence_a_quieter_one(self):
+        """RD61 — the drift badge must not be an artefact of our own paging.
+
+        The "what actually arrived" layer read the twenty newest staged rows
+        ACROSS THE WHOLE CONNECTOR. One feed pulling more recently than the
+        others therefore filled every slot, and the board flagged all of their
+        fields as "this feed has synced and did not carry this field" — a claim
+        about the vendor made out of a fact about us. On the reference tenant a
+        salary-only refresh turned 83 of 122 fields amber, `Employeestatus`
+        among them, while the employee feed was delivering it for all 152 people.
+        """
+        conn = self._zoho()
+        self.Store.create({
+            'connector_id': conn.id, 'data_type': 'employee',
+            'raw_payload': {'EmployeeID': 'VN9003', 'Employeestatus': 'Active'}})
+        # …and then a much busier, much more recent pull on a different feed.
+        self.Store.create([{
+            'connector_id': conn.id, 'data_type': 'salary',
+            'raw_payload': {'Employee_ID': 'VN9003', 'Base_Salary': 19510000},
+        } for _ in range(40)])
+
+        every = {f['path']: f for f in
+                 self.Mapping.get_available_source_fields(conn.id)}
+
+        self.assertEqual(every['Employeestatus']['provenance'], 'live',
+                         "the employee feed delivered it and the board must "
+                         "still be able to see that")
+        self.assertFalse(every['Employeestatus']['expected_missing'])
+        self.assertFalse(every['EmployeeID']['expected_missing'])
+
     # --------------------------------------------------------------- test 5
     #
     # The fifteen source_fields Cycle 4 seeded on abm, read out of that database

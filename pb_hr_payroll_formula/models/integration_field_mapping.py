@@ -12,6 +12,12 @@ from .integration_endpoint import SOURCE_DATA_TYPES
 
 _logger = logging.getLogger(__name__)
 
+# RD61 — how many staged rows PER FEED the field board reads to decide what a
+# connected system actually delivers. The layer only needs each key once, so a
+# handful is enough; what matters is that every feed is represented, because a
+# feed absent from the sample has all of its fields badged "not sent".
+_LIVE_SAMPLE_PER_FEED = 8
+
 
 class HrIntegrationFieldMapping(models.Model):
     """
@@ -783,7 +789,33 @@ Example: value * 1.1 if value > 1000 else value
                        ('endpoint_id', '=', False)]
 
         # ---- layer 1: what actually arrived
-        stores = Store.search(domain, order='pull_date desc, id desc', limit=20)
+        #
+        # RD61 — SAMPLE EVERY FEED, NOT THE TWENTY NEWEST ROWS.
+        #
+        # This was one `limit=20` across the whole connector, and the board that
+        # reads it flags any catalogue field the sample does not contain as
+        # amber "not sent — this feed has synced and did not carry this field".
+        # The moment ONE feed pulled more recently than the others, its rows
+        # filled all twenty slots and every field of every other feed went
+        # amber: on the reference tenant, a salary-only refresh turned 83 of 122
+        # fields orange, including `Employeestatus`, which the employee feed
+        # delivers for all 152 people. The badge was making a claim about the
+        # vendor out of a fact about our own paging.
+        #
+        # `expected_missing` was already careful to be a per-FEED claim (see
+        # `synced_types` below); the evidence it rests on has to be per-feed too.
+        # A few rows from each feed is plenty — the layer only needs each key
+        # once — and it costs one small query per feed instead of one.
+        if scoped:
+            stores = Store.search(domain, order='pull_date desc, id desc', limit=20)
+        else:
+            stores = Store.browse()
+            for feed_type, in Store._read_group(domain, ['data_type']):
+                if not feed_type:
+                    continue
+                stores |= Store.search(
+                    domain + [('data_type', '=', feed_type)],
+                    order='pull_date desc, id desc', limit=_LIVE_SAMPLE_PER_FEED)
         live = {}
         for store in stores:
             for source in (store.raw_payload, store.extracted_data, store.computed_data):
