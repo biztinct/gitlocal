@@ -1,0 +1,29 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_journey_template_user,journey checklist user,model_pb_journey_template,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_journey_template_admin,journey checklist admin,model_pb_journey_template,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_journey_template_step_user,journey checklist step user,model_pb_journey_template_step,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_journey_template_step_admin,journey checklist step admin,model_pb_journey_template_step,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_journey_case_user,journey user,model_pb_journey_case,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_journey_case_manager,journey manager,model_pb_journey_case,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_journey_case_admin,journey admin,model_pb_journey_case,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_journey_task_user,journey step user,model_pb_journey_task,pb_lifecycle.group_lifecycle_user,1,1,0,0
+access_pb_journey_task_manager,journey step manager,model_pb_journey_task,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_journey_task_admin,journey step admin,model_pb_journey_task,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_employee_checkin_user,check-in user,model_pb_employee_checkin,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_employee_checkin_manager,check-in manager,model_pb_employee_checkin,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_employee_checkin_admin,check-in admin,model_pb_employee_checkin,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_feedback_request_manager,feedback request manager,model_pb_feedback_request,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_feedback_request_admin,feedback request admin,model_pb_feedback_request,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_letter_template_user,letter template user,model_pb_letter_template,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_letter_template_admin,letter template admin,model_pb_letter_template,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_hr_letter_user,letter user,model_pb_hr_letter,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_hr_letter_manager,letter manager,model_pb_hr_letter,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_hr_letter_admin,letter admin,model_pb_hr_letter,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_journey_template_system,journey checklist system,model_pb_journey_template,base.group_system,1,1,1,1
+access_pb_journey_template_step_system,journey checklist step system,model_pb_journey_template_step,base.group_system,1,1,1,1
+access_pb_journey_case_system,journey system,model_pb_journey_case,base.group_system,1,1,1,1
+access_pb_journey_task_system,journey step system,model_pb_journey_task,base.group_system,1,1,1,1
+access_pb_employee_checkin_system,check-in system,model_pb_employee_checkin,base.group_system,1,1,1,1
+access_pb_feedback_request_system,feedback request system,model_pb_feedback_request,base.group_system,1,1,1,1
+access_pb_letter_template_system,letter template system,model_pb_letter_template,base.group_system,1,1,1,1
+access_pb_hr_letter_system,letter system,model_pb_hr_letter,base.group_system,1,1,1,1

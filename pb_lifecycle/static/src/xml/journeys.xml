@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Journeys cockpit.
+
+       Section comments use `=` rules and never spell a CSS custom property,
+       because a doubled hyphen inside an XML comment is a parse error that
+       takes every t-name in the file down with it (W22/W72).
+       ==================================================================== -->
+  <t t-name="pb_lifecycle.PbJourneys">
+    <div class="pbim pbim-page lcj"
+         t-att-class="{ 'lcj--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading journeys…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no lifecycle access ============
+             An empty board that explains itself, never an access dialog:
+             the facade answers `allowed: false` on purpose so this screen
+             can say what it is and who to ask. -->
+        <div t-if="!state.allowed" class="pbim-panel lcj-empty">
+          <div class="lcj-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>Journeys are looked after by the HR team</h2>
+          <p>This is where every joiner, leaver and probation is tracked step by
+             step. Ask your HR administrator to add you to the lifecycle team
+             and this screen fills in.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="lcj-head">
+            <div class="lcj-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Journeys</h1>
+              <p class="pbim-sub">Everything that has to happen around a person —
+                 joining, leaving, probation — with a date on it and a name
+                 beside it.</p>
+            </div>
+            <div class="lcj-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the board again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button t-if="state.canAdmin" class="pbim-btn ghost"
+                      t-on-click="openTemplates">
+                <t t-out="ic('list',15)"/> Checklists
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openLetters">
+                <t t-out="ic('fileText',15)"/> Letters
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="startAsk">
+                <t t-out="ic('plus',16)"/> Start a journey
+              </button>
+            </div>
+          </div>
+
+          <!-- ====================== the numbers ====================== -->
+          <div class="pbim-stats lcj-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('activity',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.active or 0"/>
+                <div class="l">Running now</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.overdue }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('clock',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.overdue or 0"/>
+                <div class="l">Steps overdue</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic amber"><t t-out="ic('calendar',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.due_week or 0"/>
+                <div class="l">Due in 7 days</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.red_flags or 0"/>
+                <div class="l">Need attention</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic green"><t t-out="ic('fileText',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.letters_month or 0"/>
+                <div class="l">Letters this month</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================== filters ======================== -->
+          <div class="pbim-panel lcj-filters" t-if="state.rows.length">
+            <div class="lcj-filter-row">
+              <div class="lcj-search">
+                <t t-out="ic('search',15)"/>
+                <input type="text" t-att-value="state.q" t-on-input="onSearch"
+                       placeholder="Search by name, team or journey…"/>
+              </div>
+              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="clearFilters">
+                <t t-out="ic('x',14)"/> Clear
+              </button>
+            </div>
+            <div class="lcj-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.types" t-as="tp" t-key="tp.id"
+                        t-if="state.typeCounts[tp.id]"
+                        t-attf-class="pbim-fchip {{ state.type === tp.id ? 'on' : '' }}"
+                        t-on-click="() => this.setType(tp.id)">
+                  <t t-out="typeIcon(tp.id)"/>
+                  <span t-esc="tp.label"/>
+                  <span class="c" t-esc="state.typeCounts[tp.id]"/>
+                </button>
+              </div>
+              <div class="pbim-chips">
+                <button t-foreach="state.states" t-as="st" t-key="st.id"
+                        t-attf-class="pbim-fchip {{ state.lifeState === st.id ? 'on' : '' }}"
+                        t-on-click="() => this.setState(st.id)">
+                  <span t-esc="st.label"/>
+                </button>
+                <button t-attf-class="pbim-fchip {{ state.lateOnly ? 'on' : '' }}"
+                        t-on-click="toggleLate">
+                  <t t-out="ic('clock',13)"/> Running late
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================== nothing here yet ================== -->
+          <div t-if="!state.rows.length" class="pbim-panel lcj-empty">
+            <div class="lcj-empty-ic"><t t-out="ic('sunrise',30)"/></div>
+            <h2>No journeys yet</h2>
+            <p>A journey is the checklist around one person — the laptop before
+               day one, the clearances before the last day, the check-in at
+               thirty days. Start one here, or let them open by themselves when
+               the connected system announces a joiner.</p>
+            <button t-if="state.canWrite" class="pbim-btn primary"
+                    t-on-click="startAsk">
+              <t t-out="ic('plus',16)"/> Start a journey
+            </button>
+            <p t-if="!state.canWrite" class="pbim-sub">
+              Ask the HR team to start one for you.
+            </p>
+          </div>
+
+          <!-- ============ everything filtered away ============ -->
+          <div t-elif="!visibleRows.length" class="pbim-panel lcj-empty">
+            <div class="lcj-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>Nothing matches</h2>
+            <p>There are <t t-esc="state.rows.length"/> journeys running, but
+               none of them fits what you asked for.</p>
+            <button class="pbim-btn outline" t-on-click="clearFilters">
+              <t t-out="ic('x',15)"/> Clear the filters
+            </button>
+          </div>
+
+          <!-- ======================= the board ======================= -->
+          <div t-else="" class="lcj-board">
+            <button t-foreach="visibleRows" t-as="row" t-key="row.id"
+                    type="button"
+                    t-attf-class="pbim-card lcj-card {{ row.late ? 'is-late' : '' }}"
+                    t-on-click="() => this.openCase(row.id)">
+              <div class="lcj-card-top">
+                <img t-if="row.avatar" class="lcj-av" t-att-src="row.avatar"
+                     t-att-alt="row.employee"/>
+                <div t-else="" class="lcj-av" t-esc="row.initials"/>
+                <div class="lcj-card-id">
+                  <div class="nm" t-esc="row.employee"/>
+                  <div class="mt">
+                    <t t-esc="row.job or row.dept or '—'"/>
+                  </div>
+                </div>
+                <span t-attf-class="pbim-badge {{ caseStateCls(row.state) }}">
+                  <span class="d"/><t t-esc="row.state_label"/>
+                </span>
+              </div>
+
+              <div class="lcj-card-chips">
+                <span class="pbim-chip">
+                  <t t-out="typeIcon(row.type)"/><t t-esc="row.type_label"/>
+                </span>
+                <span t-if="row.open_tasks" class="pbim-chip">
+                  <t t-esc="row.open_tasks"/> to do
+                </span>
+                <span t-if="row.overdue" class="pbim-badge err">
+                  <span class="d"/><t t-esc="row.overdue"/> overdue
+                </span>
+                <span t-if="row.red_flags" class="pbim-badge err">
+                  <span class="d"/>Needs attention
+                </span>
+              </div>
+
+              <div class="lcj-bar">
+                <i t-attf-style="width: {{ row.progress }}%;"/>
+              </div>
+              <div class="lcj-bar-lab">
+                <span><t t-esc="row.progress"/>% done</span>
+                <span t-if="row.next_due">
+                  Next <t t-esc="day(row.next_due)"/> · <t t-esc="relative(row.next_due)"/>
+                </span>
+                <span t-else="">Nothing outstanding</span>
+              </div>
+            </button>
+          </div>
+
+          <p t-if="state.capped" class="pbim-sub" style="margin-top: 12px;">
+            Showing the most recent <t t-esc="state.rows.length"/> journeys.
+            Narrow the search to see older ones.
+          </p>
+
+        </t>
+      </div>
+
+      <!-- ==================================================================
+           THE DRAWER. Fixed to the viewport, over a scrim, so it resolves
+           against the root rather than the hub canvas.
+           ================================================================== -->
+      <div t-if="state.drawer" class="lcj-scrim" t-on-click="closeDrawer">
+        <div class="lcj-drawer" t-on-click.stop="">
+
+          <div class="lcj-drawer-head">
+            <div class="lcj-drawer-top">
+              <img t-if="state.drawer.case.avatar" class="lcj-av"
+                   t-att-src="state.drawer.case.avatar"/>
+              <div t-else="" class="lcj-av" t-esc="state.drawer.case.initials"/>
+              <div class="lcj-drawer-id">
+                <div class="nm" t-esc="state.drawer.case.employee"/>
+                <div class="mt">
+                  <t t-esc="state.drawer.case.type_label"/>
+                  <t t-if="state.drawer.case.anchor_date">
+                    · <t t-esc="day(state.drawer.case.anchor_date)"/>
+                  </t>
+                  <t t-if="state.drawer.template"> · <t t-esc="state.drawer.template"/></t>
+                </div>
+              </div>
+              <button class="lcj-x" t-on-click="closeDrawer" title="Close">
+                <t t-out="ic('x',16)"/>
+              </button>
+            </div>
+
+            <div class="lcj-bar" style="margin-top: 13px;">
+              <i t-attf-style="width: {{ state.drawer.case.progress }}%;"/>
+            </div>
+            <div class="lcj-bar-lab">
+              <span><t t-esc="state.drawer.case.progress"/>% done ·
+                <t t-esc="state.drawer.case.open_tasks"/> still to do</span>
+              <span t-attf-class="pbim-badge {{ caseStateCls(state.drawer.case.state) }}">
+                <span class="d"/><t t-esc="state.drawer.case.state_label"/>
+              </span>
+            </div>
+
+            <div class="lcj-drawer-acts" t-if="state.drawer.can_write">
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="addStepAsk">
+                <t t-out="ic('plus',14)"/> Add a step
+              </button>
+              <button t-if="state.drawer.case.state === 'active'"
+                      class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="() => this.caseAction('hold', 'Journey put on hold.')">
+                <t t-out="ic('minusCircle',14)"/> Put on hold
+              </button>
+              <button t-if="state.drawer.case.state === 'on_hold'"
+                      class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="() => this.caseAction('resume', 'Journey resumed.')">
+                <t t-out="ic('play',14)"/> Resume
+              </button>
+              <button t-if="['active','on_hold'].includes(state.drawer.case.state)"
+                      class="pbim-btn outline pbim-btn-sm"
+                      t-on-click="() => this.caseAction('done', 'Journey finished.')">
+                <t t-out="ic('check',14)"/> Finish
+              </button>
+              <button t-if="state.drawer.case.state !== 'cancelled'"
+                      class="pbim-btn danger pbim-btn-sm"
+                      t-on-click="() => this.caseAction('cancel', 'Journey cancelled.')">
+                <t t-out="ic('x',14)"/> Cancel
+              </button>
+            </div>
+          </div>
+
+          <div class="lcj-drawer-body">
+
+            <!-- ================= what is still open ================= -->
+            <div class="lcj-sec-h">Still to do</div>
+            <div t-if="!openTasks.length" class="pbim-empty">
+              Nothing outstanding on this journey.
+            </div>
+            <div t-else="" class="lcj-tl">
+              <div t-foreach="openTasks" t-as="task" t-key="task.id"
+                   t-attf-class="lcj-step {{ task.overdue ? 'is-late' : (task_index === 0 ? 'is-next' : '') }}">
+                <div class="lcj-step-h">
+                  <div class="nm" t-esc="task.name"/>
+                  <span t-if="task.blocking" class="pbim-badge warn"
+                        title="The final settlement waits for this one">
+                    <span class="d"/>Holds the money
+                  </span>
+                  <span t-attf-class="pbim-badge {{ stateCls(task.state) }}">
+                    <span class="d"/><t t-esc="task.state_label"/>
+                  </span>
+                </div>
+                <div t-if="task.description" class="lcj-step-desc"
+                     t-esc="task.description"/>
+                <div class="lcj-step-meta">
+                  <span class="who" t-if="task.assignee" t-esc="task.assignee"/>
+                  <span class="who" t-else="">
+                    <t t-esc="task.rule_label or 'Nobody yet'"/>
+                  </span>
+                  <span t-if="task.due">· <t t-esc="day(task.due)"/></span>
+                  <span t-if="task.overdue" class="late">
+                    · <t t-esc="relative(task.due)"/>
+                  </span>
+                  <span t-elif="task.due">· <t t-esc="relative(task.due)"/></span>
+                  <span t-if="task.kind_label">· <t t-esc="task.kind_label"/></span>
+                  <span t-if="task.escalated" class="late">· escalated</span>
+                </div>
+                <div class="lcj-step-acts" t-if="state.drawer.can_write">
+                  <button class="pbim-btn primary pbim-btn-sm"
+                          t-on-click="() => this.taskDone(task.id)">
+                    <t t-out="ic('check',14)"/> Done
+                  </button>
+                  <button class="pbim-btn ghost pbim-btn-sm"
+                          t-on-click="() => this.reassignAsk(task)">
+                    <t t-out="ic('user',14)"/> Hand over
+                  </button>
+                  <button class="pbim-btn ghost pbim-btn-sm"
+                          t-on-click="() => this.taskSkipAsk(task)">
+                    <t t-out="ic('minusCircle',14)"/> Skip
+                  </button>
+                  <button t-if="task.link" class="pbim-btn ghost pbim-btn-sm"
+                          t-on-click="() => this.copyLink(task.link)"
+                          title="A private link the person can answer without a login">
+                    <t t-out="ic('link',14)"/> Copy link
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==================== what is settled ==================== -->
+            <t t-if="settledTasks.length">
+              <div class="lcj-sec-h">Finished</div>
+              <div class="lcj-tl">
+                <div t-foreach="settledTasks" t-as="task" t-key="task.id"
+                     t-attf-class="lcj-step {{ task.state === 'skipped' ? 'is-skipped' : 'is-done' }}">
+                  <div class="lcj-step-h">
+                    <div class="nm" t-esc="task.name"/>
+                    <span t-attf-class="pbim-badge {{ stateCls(task.state) }}">
+                      <span class="d"/><t t-esc="task.state_label"/>
+                    </span>
+                  </div>
+                  <div class="lcj-step-meta">
+                    <span t-if="task.done_by">by <t t-esc="task.done_by"/></span>
+                    <span t-if="task.done_at">· <t t-esc="task.done_at"/></span>
+                    <span t-if="task.note">· <t t-esc="task.note"/></span>
+                  </div>
+                </div>
+              </div>
+            </t>
+
+            <!-- ====================== check-ins ====================== -->
+            <t t-if="state.drawer.checkins.length">
+              <div class="lcj-sec-h">Check-ins</div>
+              <div t-foreach="state.drawer.checkins" t-as="ci" t-key="ci.id"
+                   t-attf-class="lcj-row {{ ci.red_flag ? 'is-flag' : '' }}">
+                <t t-out="ic(ci.red_flag ? 'alert' : 'smile', 16)"/>
+                <div class="g">
+                  <div class="nm" t-esc="ci.kind_label"/>
+                  <div class="mt">
+                    <t t-esc="day(ci.date)"/>
+                    <t t-if="ci.owner"> · <t t-esc="ci.owner"/></t>
+                    <t t-if="ci.red_flag_note"> · <t t-esc="ci.red_flag_note"/></t>
+                  </div>
+                </div>
+                <span class="pbim-badge" t-esc="ci.state"/>
+              </div>
+            </t>
+
+            <!-- ======================== letters ======================== -->
+            <t t-if="state.drawer.letters.length">
+              <div class="lcj-sec-h">Letters</div>
+              <!-- `ltr`, never `lt`: OWL's expression compiler treats `lt` as
+                   the LESS-THAN operator, so a loop variable of that name is
+                   emitted into the generated function as a bare `<` and the
+                   whole template fails to compile. Same for `gt`, `lte`, `gte`
+                   and `and`/`or`. -->
+              <div t-foreach="state.drawer.letters" t-as="ltr" t-key="ltr.id"
+                   class="lcj-row">
+                <t t-out="ic('fileText',16)"/>
+                <div class="g"><div class="nm" t-esc="ltr.name"/></div>
+                <a t-if="ltr.attachment_id" class="pbim-btn ghost pbim-btn-sm"
+                   t-attf-href="/web/content/{{ ltr.attachment_id }}?download=true">
+                  <t t-out="ic('download',14)"/> PDF
+                </a>
+                <span t-attf-class="pbim-badge {{ ltr.state === 'sent' ? 'ok' : 'info' }}"
+                      t-esc="ltr.state"/>
+              </div>
+            </t>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           START A JOURNEY
+           ================================================================== -->
+      <div t-if="state.start" class="pbim-modal-scrim" t-on-click="startCancel">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">Start a journey</div>
+              <div class="pbim-modal__sub">Pick the person and what is
+                happening. The checklist fills the steps in for you.</div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="lcj-x" t-on-click="startCancel"><t t-out="ic('x',16)"/></button>
+          </div>
+
+          <div class="pbim-modal__body lcj-dlg-body">
+            <div class="lcj-field">
+              <label for="lcj-emp">Who is it for?</label>
+              <input id="lcj-emp" class="lcj-in" type="text"
+                     t-att-value="state.start.term" t-on-input="onStartInput"
+                     placeholder="Start typing a name…"/>
+              <div t-if="state.start.results.length and !state.start.empId"
+                   class="lcj-results">
+                <button t-foreach="state.start.results" t-as="emp" t-key="emp.id"
+                        type="button" class="lcj-result"
+                        t-on-click="() => this.pickEmployee(emp)">
+                  <span class="lcj-av" style="width:30px;height:30px;border-radius:9px;font-size:11px;"
+                        t-esc="emp.initials"/>
+                  <span>
+                    <span class="nm" t-esc="emp.name"/><br/>
+                    <span class="mt"><t t-esc="emp.job or emp.dept or '—'"/></span>
+                  </span>
+                </button>
+              </div>
+              <p t-if="state.start.empId" class="pbim-sub">
+                <t t-out="ic('check',13)"/> <t t-esc="state.start.empName"/>
+              </p>
+            </div>
+
+            <div class="lcj-grid2">
+              <div class="lcj-field">
+                <label for="lcj-type">What is happening?</label>
+                <select id="lcj-type" class="lcj-in" t-on-change="onStartType">
+                  <option t-foreach="state.types" t-as="tp" t-key="tp.id"
+                          t-att-value="tp.id"
+                          t-att-selected="tp.id === state.start.caseType"
+                          t-esc="tp.label"/>
+                </select>
+              </div>
+              <div class="lcj-field">
+                <label for="lcj-anchor" t-esc="anchorLabel"/>
+                <input id="lcj-anchor" class="lcj-in" type="date"
+                       t-att-value="state.start.anchor" t-on-change="onStartAnchor"/>
+              </div>
+            </div>
+
+            <div class="lcj-field">
+              <label for="lcj-tpl">Which checklist?</label>
+              <select id="lcj-tpl" class="lcj-in" t-on-change="onStartTemplate">
+                <option value="0">Pick the best one for me</option>
+                <option t-foreach="startTemplates" t-as="tpl" t-key="tpl.id"
+                        t-att-value="tpl.id">
+                  <t t-esc="tpl.name"/> (<t t-esc="tpl.steps"/> steps)
+                </option>
+              </select>
+              <p t-if="!startTemplates.length" class="pbim-sub">
+                There is no checklist for this yet — the journey opens empty and
+                you can add the steps by hand.
+              </p>
+            </div>
+          </div>
+
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="startCancel">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="state.start.busy"
+                    t-on-click="startSubmit">
+              <t t-out="ic('play',15)"/> Start it
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           A REASON, ASKED FOR IN WORDS
+           ================================================================== -->
+      <div t-if="state.prompt" class="pbim-modal-scrim" t-on-click="promptCancel">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div class="pbim-modal__ttl" t-esc="state.prompt.title"/>
+            <div class="pbim-modal__sp"/>
+            <button class="lcj-x" t-on-click="promptCancel"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbim-modal__body lcj-dlg-body">
+            <div class="lcj-field">
+              <label for="lcj-reason" t-esc="state.prompt.label"/>
+              <textarea id="lcj-reason" class="lcj-in" rows="3"
+                        t-att-placeholder="state.prompt.placeholder"
+                        t-att-value="state.prompt.value"
+                        t-on-input="onPromptInput"/>
+            </div>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost" t-on-click="promptCancel">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="promptOk">Save it</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           HAND A STEP TO SOMEBODY ELSE
+           ================================================================== -->
+      <div t-if="state.picker" class="pbim-modal-scrim"
+           t-on-click="() => this.state.picker = null">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div class="pbim-modal__ttl">Hand this step over</div>
+            <div class="pbim-modal__sp"/>
+            <button class="lcj-x" t-on-click="() => this.state.picker = null">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body lcj-dlg-body">
+            <div class="lcj-field">
+              <label for="lcj-user">Who should own it now?</label>
+              <input id="lcj-user" class="lcj-in" type="text"
+                     t-att-value="state.picker.term" t-on-input="onPickerInput"
+                     placeholder="Start typing a name…"/>
+              <div class="lcj-results" t-if="state.picker.results.length">
+                <button t-foreach="state.picker.results" t-as="u" t-key="u.id"
+                        type="button" class="lcj-result"
+                        t-on-click="() => this.pickUser(u.id)">
+                  <span class="nm" t-esc="u.name"/>
+                </button>
+              </div>
+              <p t-else="" class="pbim-sub">Nobody matches that name.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           ADD A STEP NOBODY THOUGHT OF
+           ================================================================== -->
+      <div t-if="state.addStep" class="pbim-modal-scrim"
+           t-on-click="() => this.state.addStep = null">
+        <div class="pbim-modal is-narrow" t-on-click.stop="">
+          <div class="pbim-modal__head">
+            <div>
+              <div class="pbim-modal__ttl">Add a step</div>
+              <div class="pbim-modal__sub">It joins this journey only. To change
+                it for everybody, edit the checklist.</div>
+            </div>
+            <div class="pbim-modal__sp"/>
+            <button class="lcj-x" t-on-click="() => this.state.addStep = null">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbim-modal__body lcj-dlg-body">
+            <div class="lcj-field">
+              <label for="lcj-sname">What has to happen?</label>
+              <input id="lcj-sname" class="lcj-in" type="text"
+                     t-att-value="state.addStep.name"
+                     t-on-input="(ev) => this.state.addStep.name = ev.target.value"
+                     placeholder="e.g. Order a second monitor"/>
+            </div>
+            <div class="lcj-field">
+              <label for="lcj-sdesc">Any detail (optional)</label>
+              <textarea id="lcj-sdesc" class="lcj-in" rows="2"
+                        t-att-value="state.addStep.description"
+                        t-on-input="(ev) => this.state.addStep.description = ev.target.value"/>
+            </div>
+            <div class="lcj-grid2">
+              <div class="lcj-field">
+                <label for="lcj-sdue">Due</label>
+                <input id="lcj-sdue" class="lcj-in" type="date"
+                       t-att-value="state.addStep.due"
+                       t-on-change="(ev) => this.state.addStep.due = ev.target.value"/>
+              </div>
+              <div class="lcj-field">
+                <label>Money</label>
+                <label class="lcj-check">
+                  <input type="checkbox" t-att-checked="state.addStep.blocking"
+                         t-on-change="(ev) => this.state.addStep.blocking = ev.target.checked"/>
+                  <span>Hold the final settlement until this is done</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="pbim-modal__foot">
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn ghost"
+                    t-on-click="() => this.state.addStep = null">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="addStepSave">
+              <t t-out="ic('plus',15)"/> Add it
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

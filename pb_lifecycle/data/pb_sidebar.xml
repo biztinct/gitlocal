@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13), as every hub's own rail record is: a
+     frozen file means the next cycle that touches this record cannot move it
+     without shipping a migration. The record lives HERE rather than in
+     `pb_sidebar` so a database without this module simply has no such entry,
+     instead of a rail button pointing at an action that will not resolve (W79). -->
+<odoo noupdate="0">
+
+    <!-- OPERATE › Lifecycle — between People and Workforce.
+
+         WHERE IT SITS, and why. The rail's operate section is the working day:
+         Pay Run (10), People (20), Workforce (30). A journey is about a PERSON
+         and it is work you do, not something you look up — so it belongs beside
+         People rather than under Understand, and sequence 25 puts it there
+         without renumbering the two either side of it (W18: a sequence is a
+         claim, and moving a neighbour is a migration).
+
+         UNGATED, and that is the same decision `pb_mission.item_workforce`
+         made. The hub's lenses ask their own question client-side and the
+         facades refuse for themselves — `pb.journeys._can_read()` answers an
+         EMPTY BOARD rather than an access dialog, so a persona with no
+         lifecycle group who clicks this gets a screen that explains itself
+         instead of an error. A gate here would take the door away from a
+         manager who owns one step and nothing else.
+
+         The icon is `refresh-cw` — a cycle, which is what a lifecycle is. It is
+         added to the CLOSED `ICONS` set in `pb_sidebar/static/src/js/pb_sidebar.js`
+         in the same change; a name that is not in that set renders a plain
+         circle and logs nothing at all. -->
+    <record id="item_lifecycle" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="name">Lifecycle</field>
+        <field name="icon">refresh-cw</field>
+        <field name="sequence">25</field>
+        <field name="action_xmlid">pb_lifecycle.action_pb_lifecycle_hub</field>
+        <field name="action_tag">pb_lifecycle_hub</field>
+        <field name="match_action_tags">pb_lifecycle_hub,pb_journeys</field>
+        <field name="match_models">pb.journey.case,pb.journey.task,pb.journey.template,pb.letter.template,pb.hr.letter,pb.employee.checkin,pb.feedback.request</field>
+    </record>
+
+</odoo>

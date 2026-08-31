@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Declared as RECORDS rather than reached by bare tag (W98): a bare tag
+         is synthesised with no action NAME, and anything that later returns
+         through a breadcrumb comes back to a crumb labelled "Unnamed". The rail
+         item names the hub record, which is also what gives it something to
+         resolve.
+
+         Test URLs: /odoo/action-pb_lifecycle_hub   (the mission)
+                    /odoo/action-pb_journeys        (the cockpit on its own) -->
+
+    <record id="action_pb_lifecycle_hub" model="ir.actions.client">
+        <field name="name">Lifecycle</field>
+        <field name="tag">pb_lifecycle_hub</field>
+    </record>
+
+    <record id="action_pb_journeys" model="ir.actions.client">
+        <field name="name">Journeys</field>
+        <field name="tag">pb_journeys</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================== the Lifecycle hub
+       The whole surface is the kit's shell. Section comments use `=` rules
+       and never spell a CSS custom property, because a doubled hyphen inside
+       an XML comment is a parse error that takes every t-name in the file
+       down with it (W22/W72). -->
+  <t t-name="pb_lifecycle.PbLifecycleHub">
+    <HubShell config="config" action="props.action or {}"/>
+  </t>
+
+</templates>
