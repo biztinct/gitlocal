@@ -175,8 +175,25 @@ class PbConnectorCockpit(models.AbstractModel):
             # missing within the hour. A setting nobody can find is a setting
             # that does not exist.
             'schedule': self._schedule_state(c),
+            # SC-4 — active schemes bound here whose api lane is OFF: their
+            # pay runs don't read this system, and the banner says so.
+            'api_lane_off_schemes': self._api_lane_off_schemes(c),
             'error': None,
         }
+
+    def _api_lane_off_schemes(self, c):
+        """SC-4 — names of active schemes on this connection whose pay runs
+        no longer read it (api lane off). Empty on older databases."""
+        try:
+            Config = self.env.get('hr.formula.config')
+            if Config is None or 'source_api_enabled' not in Config._fields:
+                return []
+            return Config.sudo().search([
+                ('connector_id', '=', c.id), ('state', '=', 'active'),
+                ('source_api_enabled', '=', False),
+            ]).mapped('display_name')
+        except Exception:       # noqa: BLE001 — a banner, never the screen
+            return []
 
     def _schedule_state(self, c):
         """Is the monthly fetch on, when does it next run, what did it do?
@@ -190,7 +207,7 @@ class PbConnectorCockpit(models.AbstractModel):
         cron = self.env.ref(
             'pb_hr_payroll_formula.ir_cron_pull_previous_month',
             raise_if_not_found=False)
-        return {
+        state = {
             'available': True,
             'enabled': bool(c.cron_pull_enabled),
             'writeback': bool(c.cron_writeback_enabled),
@@ -204,15 +221,41 @@ class PbConnectorCockpit(models.AbstractModel):
             'rows': c.cron_pull_last_rows or 0,
             'message': c.cron_pull_last_result or '',
             'writeback_message': c.cron_writeback_last_result or '',
+            'editable': False,
         }
+        # SC-2 — the connector's own cadence, when the database has it. The
+        # next-run value and the sentence are composed SERVER-SIDE, on the
+        # company's clock, so this screen can never print raw UTC again.
+        if 'sync_frequency' in c._fields:
+            tz = c._sync_tzinfo()
+            state.update({
+                'editable': True,
+                'frequency': c.sync_frequency or 'monthly_day',
+                'weekday': c.sync_weekday or '0',
+                'day_of_month': c.sync_day_of_month or 5,
+                'time': c.sync_time or 0.0,
+                'tz_label': _("%s time") % (tz.zone or 'UTC').split(
+                    '/')[-1].replace('_', ' '),
+                'sentence': (c._sync_schedule_sentence()
+                             if c.cron_pull_enabled else ''),
+                'next_run': c._sync_next_run_local(),
+            })
+        return state
 
     @api.model
-    def set_schedule(self, connector_id, enabled=None, writeback=None):
-        """Turn the monthly fetch — and the record update — on or off.
+    def set_schedule(self, connector_id, enabled=None, writeback=None,
+                     schedule=None):
+        """Turn the automatic fetch — and the record update — on or off, and
+        (SC-2) set WHEN it runs.
 
         Writing is separate from fetching because they are different acts:
         one refreshes a copy, the other changes employee and contract records
         and hands the connected system ownership of every mapped field.
+
+        `schedule` is `{frequency, weekday, day_of_month, time}` from the
+        editor; every value is whitelisted here because it arrives straight
+        from the browser. Writing any of them restamps `sync_next_run` (the
+        connector model's own write hook does that).
         """
         c = self.env['hr.integration.connector'].browse(int(connector_id)).exists()
         if not c:
@@ -228,6 +271,19 @@ class PbConnectorCockpit(models.AbstractModel):
                 vals['cron_writeback_enabled'] = False
         if writeback is not None:
             vals['cron_writeback_enabled'] = bool(writeback)
+        if schedule and 'sync_frequency' in c._fields:
+            freq = schedule.get('frequency')
+            if freq in ('daily', 'weekly', 'monthly_day', 'monthly_last'):
+                vals['sync_frequency'] = freq
+            weekday = schedule.get('weekday')
+            if weekday is not None and str(weekday) in dict(c.SYNC_WEEKDAYS):
+                vals['sync_weekday'] = str(weekday)
+            dom = schedule.get('day_of_month')
+            if isinstance(dom, int) and 1 <= dom <= 28:
+                vals['sync_day_of_month'] = dom
+            at = schedule.get('time')
+            if isinstance(at, (int, float)) and 0 <= at < 24:
+                vals['sync_time'] = float(at)
         c.write(vals)
         return {'ok': True, 'schedule': self._schedule_state(c)}
 

@@ -159,12 +159,17 @@ export class ConnectorCockpit extends Component {
             this.state.busy = false;
         }
     }
-    // RD58 — turn the monthly fetch, and the record update, on or off.
+    // RD58 — turn the fetch, and the record update, on or off.
+    // SC-2 — and say WHEN it runs (`changes.schedule`).
     async setSchedule(changes) {
         this.state.schedBusy = true;
         try {
             const r = await this.orm.call(MODEL, "set_schedule",
-                [this.connectorId, changes.enabled, changes.writeback]);
+                [this.connectorId], {
+                    enabled: changes.enabled,
+                    writeback: changes.writeback,
+                    schedule: changes.schedule,
+                });
             if (r && r.ok && this.state.detail) {
                 this.state.detail.schedule = r.schedule;
             } else if (r && r.msg) {
@@ -176,6 +181,40 @@ export class ConnectorCockpit extends Component {
         } finally {
             this.state.schedBusy = false;
         }
+    }
+
+    // ------------------------------------------------- SC-2 schedule editor
+    get schedFreqs() {
+        return [["daily", _t("Daily")], ["weekly", _t("Weekly")],
+                ["monthly_day", _t("Monthly")],
+                ["monthly_last", _t("Last day of month")]];
+    }
+    get schedDays() {
+        return [["0", _t("Mon")], ["1", _t("Tue")], ["2", _t("Wed")],
+                ["3", _t("Thu")], ["4", _t("Fri")], ["5", _t("Sat")],
+                ["6", _t("Sun")]];
+    }
+    get schedDayOptions() {
+        return Array.from({ length: 28 }, (_, i) => i + 1);
+    }
+    get schedTimeStr() {
+        const t = (this.d.schedule && this.d.schedule.time) || 0;
+        const h = Math.floor(t);
+        const m = Math.round((t - h) * 60);
+        return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+    }
+    schedEdit(patch) {
+        // The whole schedule travels each time, so the server never has to
+        // guess which half of a half-filled editor the user meant.
+        const s = this.d.schedule || {};
+        return this.setSchedule({ schedule: {
+            frequency: s.frequency, weekday: s.weekday,
+            day_of_month: s.day_of_month, time: s.time, ...patch,
+        } });
+    }
+    schedEditTime(value) {
+        const [h, m] = String(value || "0:0").split(":").map(Number);
+        return this.schedEdit({ time: (h || 0) + ((m || 0) / 60) });
     }
 
     runAction(method) {

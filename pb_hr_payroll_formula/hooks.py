@@ -48,11 +48,13 @@ def certify_module_templates(env, module_name):
 
 
 def rd49_schedule_monthly_fetch(env):
-    """Point the 'fetch last month' schedule at the next 5th at 02:00.
+    """Make sure the scheduled-fetch DISPATCHER ticks (SC-2: hourly).
 
-    In a hook and not in the data file because `ir.cron.nextcall` is required
-    and an eval expression there fails the whole module load when anything
-    about it is wrong — the `numbercall` incident, which aborted every module in
-    the same upgrade. See `_rd49_next_fifth`.
+    The per-connector cadence lives on the connectors themselves; this only
+    guarantees the dispatcher record has an hourly interval and a `nextcall`
+    that is not stuck in the past. In a hook and not in the data file because
+    `ir.cron.nextcall` is required and an eval expression there fails the
+    whole module load when anything about it is wrong — the `numbercall`
+    incident, which aborted every module in the same upgrade.
     """
     env['hr.integration.connector']._rd49_schedule_first_run()

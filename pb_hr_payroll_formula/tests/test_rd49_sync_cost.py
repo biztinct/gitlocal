@@ -148,7 +148,9 @@ class TestRd49SyncCost(TransactionCase):
         """
         cron = self.env.ref('pb_hr_payroll_formula.ir_cron_pull_previous_month')
         self.assertTrue(cron.active)
-        self.assertEqual(cron.interval_type, 'months')
+        # SC-2 — the cron is the hourly DISPATCHER now; the cadence lives on
+        # each connector's own schedule fields.
+        self.assertEqual(cron.interval_type, 'hours')
         self.assertEqual(cron.interval_number, 1)
         self.assertIn('cron_pull_previous_month', cron.code)
         for gone in ('numbercall', 'doall'):
