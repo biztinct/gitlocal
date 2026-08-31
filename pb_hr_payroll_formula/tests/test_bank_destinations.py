@@ -276,15 +276,14 @@ class TestBankDestinations(common.TransactionCase):
         self.assertEqual(self.rule_join.column_role, 'contract')
         self.assertEqual(self.rule_join.column_role_source, 'user')
 
-        # It is now sealed on the board, and the server says so too.
+        # MF-B2 WITHDREW the seal this block used to assert: "a wire may now
+        # be drawn from any card, and drawing one demotes the component" —
+        # the refusal is gone by design, and the card's badge is what tells
+        # the reader where the value lands today.
         item = next(i for i in self.Studio.employee_mapping_data(self.config.id)['left']
                     if i['id'] == self.rule_join.id)
-        # `.get`: the left card's meta stopped carrying an explicit `wirable`
-        # key for sealed rows in a later board revision; absent and False both
-        # mean "cannot be wired", which is the claim under test.
-        self.assertFalse(item['meta'].get('wirable'))
-        self.assertFalse(self.Studio.employee_mapping_create(
-            self.config.id, False, self.rule_join.id, 'f:hr.employee:job_title')['ok'])
+        self.assertEqual(item['meta'].get('badgeTone'), 'text',
+                         "the card must say it is kept on the contract as text")
 
         # Detach is allowed while no contract carries a value for the code…
         self.assertTrue(self.Studio.employee_mapping_detach_component(self.rule_join.id)['ok'])
