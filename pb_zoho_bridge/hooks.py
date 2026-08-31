@@ -39,6 +39,47 @@ def _ensure_defaults(env):
         Param.set_param('pb_zoho_bridge.auto_create_logins', '1')
 
 
+def _best_company(env):
+    """The company this connector should belong to.
+
+    NOT `search([], limit=1)`, which is the lowest id — and on a database that
+    has been through a few years of setup the lowest id is "Your Company", the
+    empty shell nobody works in. The connector's company is stamped onto every
+    arrival and onto every employee created from one, and the company record
+    rule then hides those rows from everybody who works in the REAL company.
+    The screen shows "Nothing has arrived yet" over a database that has just
+    received twenty joiners, and nothing anywhere says why. Caught in P1
+    validation on the live database.
+
+    So: the company with the MOST EMPLOYEES, which is the operating company by
+    definition and needs no configuration to be right. An existing Zoho
+    connector's company is the second answer rather than the first, because
+    "there is already a Zoho connector here" turned out to be a weaker signal
+    than it looks — this database has three, and the oldest of them belongs to
+    a seven-person company that nobody runs payroll in. The lowest id survives
+    only as the last resort, for a database where neither question has an
+    answer yet.
+
+    Whichever it picks, it is a DEFAULT and not a decision: the company is a
+    plain editable field on the connector, and an owner who wants the arrivals
+    somewhere else changes it there.
+    """
+    Company = env['res.company'].sudo()
+    companies = Company.search([])
+    if not companies:
+        return companies
+    Employee = env['hr.employee'].sudo().with_context(active_test=False)
+    best = max(companies,
+               key=lambda c: Employee.search_count([('company_id', '=', c.id)]))
+    if Employee.search_count([('company_id', '=', best.id)]):
+        return best
+    existing = env['hr.integration.connector'].sudo().with_context(
+        active_test=False).search(
+        [('connector_type', '=', 'zoho'), ('company_id', '!=', False)],
+        order='id', limit=1)
+    return existing.company_id if existing.company_id else companies[:1]
+
+
 def _ensure_inbound_connector(env):
     Connector = env['hr.integration.connector'].sudo()
     existing = Connector.with_context(active_test=False).search(
@@ -48,7 +89,7 @@ def _ensure_inbound_connector(env):
         if not existing.api_key:
             existing.write({'api_key': secrets.token_urlsafe(32)})
         return existing
-    company = env['res.company'].sudo().search([], order='id', limit=1)
+    company = _best_company(env)
     connector = Connector.create({
         'name': CONNECTOR_NAME,
         'connector_type': 'zoho',

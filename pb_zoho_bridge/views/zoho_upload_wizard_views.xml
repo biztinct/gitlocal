@@ -74,7 +74,7 @@
                     </div>
                     <notebook>
                         <page string="Row by row" name="preview">
-                            <field name="preview_json" widget="text"
+                            <field name="preview_lines" widget="text"
                                    readonly="1" nolabel="1"/>
                         </page>
                     </notebook>

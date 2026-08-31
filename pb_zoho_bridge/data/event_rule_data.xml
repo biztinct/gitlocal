@@ -24,6 +24,57 @@
          is far more expensive than a line in a list.
          ================================================================== -->
 
+    <!-- THE BACKFILL GUARD, and it must stay ABOVE the catch-all below.
+
+         Somebody arriving for the very first time ALREADY marked "Resigned" or
+         "Terminated" is not a joiner. They are a record the connected system
+         has only just started sharing — a backfill, a re-sync, a newly granted
+         permission — and the one thing Payobook must not do is hand them a
+         joining checklist, order them a laptop and email their new manager
+         about their first day. Without these four rules the catch-all below
+         matches them (its status is empty, which means "any"), which is exactly
+         what happened on the live database during P1 validation.
+
+         They review rather than offboard on purpose: Payobook has no history
+         for this person at all, so there is nothing to close down and a human
+         should decide whether they belong here. -->
+
+    <record id="rule_created_resigned_review" model="pb.zoho.event.rule">
+        <field name="sequence">2</field>
+        <field name="trigger">created</field>
+        <field name="match_value">Resigned</field>
+        <field name="action">review</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Someone Payobook has never seen, who has already resigned. That is a record catching up, not a new starter — a person should look at it.</field>
+    </record>
+
+    <record id="rule_created_notice_review" model="pb.zoho.event.rule">
+        <field name="sequence">3</field>
+        <field name="trigger">created</field>
+        <field name="match_value">Notice Period</field>
+        <field name="action">review</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">As above, for the long spelling of a notice period.</field>
+    </record>
+
+    <record id="rule_created_notice_short_review" model="pb.zoho.event.rule">
+        <field name="sequence">4</field>
+        <field name="trigger">created</field>
+        <field name="match_value">Notice</field>
+        <field name="action">review</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">As above, for the short spelling.</field>
+    </record>
+
+    <record id="rule_created_terminated_review" model="pb.zoho.event.rule">
+        <field name="sequence">5</field>
+        <field name="trigger">created</field>
+        <field name="match_value">Terminated</field>
+        <field name="action">review</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Never start a joining checklist for someone who arrives already terminated.</field>
+    </record>
+
     <record id="rule_created_onboard" model="pb.zoho.event.rule">
         <field name="sequence">10</field>
         <field name="trigger">created</field>

@@ -42,11 +42,16 @@ _logger = logging.getLogger(__name__)
 
 class ZohoWebhookController(http.Controller):
 
-    @http.route('/api/zoho/webhook', type='json', auth='public',
+    # `type='jsonrpc'`, not the `type='json'` the Darwin door still uses. They
+    # are the same route — 'json' is an alias — but on Odoo 19 the alias emits a
+    # DeprecationWarning with a full stack trace into the log on EVERY module
+    # load. A new door should not add noise to the log that the next person
+    # debugging a real failure has to read past.
+    @http.route('/api/zoho/webhook', type='jsonrpc', auth='public',
                 methods=['POST'], csrf=False)
     def zoho_webhook(self, connector_id=None, token=None, data_type='employee',
                      records=None, **_kw):
-        # type='json' → the JSON-RPC `params` object is unpacked into these kwargs.
+        # The JSON-RPC `params` object is unpacked into these kwargs.
         token = token or ''
         data_type = data_type or 'employee'
         records = records or []
