@@ -306,26 +306,24 @@
                     </div>
                     <p t-if="c['notes']" class="pbob-connect-note" t-esc="c['notes']"/>
                     <p t-if="c['red_note']" class="pbob-connect-red" t-esc="c['red_note']"/>
-                    <form t-if="not c['done']" method="post"
-                          t-attf-action="/my/buddy/connect/#{c['id']}"
-                          class="pbob-connect-form">
-                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                      <label class="pbme-flabel">
-                        What did you talk about?
-                        <textarea name="notes" rows="2"
-                                  placeholder="A line is plenty."/>
-                      </label>
-                      <label class="pbob-check">
-                        <input type="checkbox" name="red" value="1"/>
-                        <span>Something here needs HR to look at it</span>
-                      </label>
-                      <input class="pbob-inline-in" type="text" name="red_note"
-                             placeholder="If so, what? (optional)"/>
-                      <button type="submit" class="pbme-btn pbme-btn--primary">
-                        <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
-                        Mark this catch-up done
-                      </button>
-                    </form>
+                    <t t-if="not c['done']">
+                      <!-- The form is OPEN on the catch-up that is actually
+                           due and folded away on the ones that are not. Six
+                           identical open forms is a page where the one thing
+                           to do today is indistinguishable from the five that
+                           are weeks off. -->
+                      <t t-if="c['due']">
+                        <t t-call="pb_onboarding.ob_connect_form">
+                          <t t-set="connect" t-value="c"/>
+                        </t>
+                      </t>
+                      <details t-else="" class="pbob-later">
+                        <summary>Write it down early</summary>
+                        <t t-call="pb_onboarding.ob_connect_form">
+                          <t t-set="connect" t-value="c"/>
+                        </t>
+                      </details>
+                    </t>
                   </div>
                 </t>
                 <p t-if="not j['connects']" class="pbme-muted">No catch-ups are
@@ -407,6 +405,29 @@
 
       </div>
     </t>
+  </template>
+
+  <!-- One catch-up's form, called from both branches above so the wording
+       and the field names exist exactly once. -->
+  <template id="ob_connect_form" name="Buddy connect form">
+    <form method="post" t-attf-action="/my/buddy/connect/#{connect['id']}"
+          class="pbob-connect-form">
+      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+      <label class="pbme-flabel">
+        What did you talk about?
+        <textarea name="notes" rows="2" placeholder="A line is plenty."/>
+      </label>
+      <label class="pbob-check">
+        <input type="checkbox" name="red" value="1"/>
+        <span>Something here needs HR to look at it</span>
+      </label>
+      <input class="pbob-inline-in" type="text" name="red_note"
+             placeholder="If so, what? (optional)"/>
+      <button type="submit" class="pbme-btn pbme-btn--primary">
+        <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
+        Mark this catch-up done
+      </button>
+    </form>
   </template>
 
   <!-- ================================================================= -->

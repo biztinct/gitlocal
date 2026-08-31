@@ -20,7 +20,15 @@
     .obb-head-id { flex: 1 1 320px; min-width: 0; }
     .obb-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    .obb-kpis { margin-bottom: 16px; }
+    // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
+    // cockpit knows how many numbers it has. Five, as the Journeys board
+    // beside it has, so the two lenses of one hub line up.
+    .obb-kpis {
+        grid-template-columns: repeat(5, 1fr);
+        margin-bottom: 16px;
+    }
+    @media (max-width: 1180px) { .obb-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .obb-kpis { grid-template-columns: repeat(2, 1fr); } }
 
     // --------------------------------------------------------- filters
     .obb-filters { padding: 14px 16px; margin-bottom: 18px; }
@@ -276,6 +284,14 @@
     }
     .obb-cand-reasons {
         display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px;
+
+        // The kit's badge capitalises every word, which is right for a status
+        // word ("Approved") and wrong for a sentence: it turned
+        // "Only 0 month(s) here" into "Only 0 Month(S) Here". These chips
+        // carry the REASON, in words, so they opt out.
+        .pbim-badge {
+            text-transform: none; font-weight: 600; line-height: 1.35;
+        }
     }
     .obb-cand-go { color: var(--pbim-green); flex: 0 0 auto; }
     .obb-dates {
