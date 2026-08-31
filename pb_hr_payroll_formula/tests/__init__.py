@@ -118,3 +118,15 @@ from . import test_rd60_signal_and_identity
 # RD62 — the record writeback now honours the line drawn on the mapping board
 # when nothing else answers. "If the mapping I draw is of no use, why draw it?"
 from . import test_rd62_board_wire_writeback
+
+# SC-1 — the catalogue tells the truth: no shipped-paper fields on a live
+# system, real samples observed from real payloads, fiction purged.
+from . import test_sc1_catalog_truth
+
+# SC-2 — each connection fetches on its own schedule, on the company's clock;
+# the cron is only the hourly dispatcher.
+from . import test_sc2_sync_schedule
+
+# SC-3 — a scheme chooses which sources feed it and who wins; the order binds
+# both resolvers AND the writeback (fill-empty only, never overwrite).
+from . import test_sc3_source_lanes
