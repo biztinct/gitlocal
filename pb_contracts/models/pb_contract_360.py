@@ -111,6 +111,44 @@ _SOURCE_SENTENCE = {
 }
 _FEED_SENTENCE = "From the connected system"
 
+# --- CD-2 §2.1 — where a component's value actually comes from -------------
+#
+# CD-1 found that a live contract already carries EVERY advantage template
+# (`hr.contract.create`, `om_hr_payroll/models/hr_contract.py:118`) and that on
+# abm every stored amount is genuinely 0.0, because abm's numbers arrive per pay
+# run. A grid of twenty-one zeroes reads as a broken screen and is not one — so
+# each row states where its value is really filled from.
+#
+# The five buckets, their sentence and their tone chip. ONE author of the words.
+_FILLS = {
+    'records': ("Held on this contract", 'indigo'),
+    'api':     ("From the connected system", 'cyan'),
+    'excel':   ("From a pay data file", 'green'),
+    'rule':    ("Worked out by a formula", 'slate'),
+    'none':    ("Not fed by anything", 'muted'),
+}
+
+# `hr.formula.rule` source KINDS → the bucket a reader understands. The ladder
+# itself is NEVER re-derived here: `rule.declared_sources()` already filters by
+# the scheme's enabled lanes and orders by its configured priority (SOURCECTL
+# SC-3), and `rule._config_kind_rank()` is the single accessor for that order.
+_KIND_BUCKET = {
+    'feed': 'api',
+    'rule': 'rule',
+    'excel': 'excel',
+    'employee_field': 'records',
+    'contract_field': 'records',
+    'bank_account': 'records',
+    'contract_component': 'records',
+}
+
+# The tail of the explainer sentence, per dominant bucket (§2.2).
+_EXPLAIN_TAIL = {
+    'api': "reads the connected system",
+    'excel': "reads a pay data file",
+    'rule': "works the value out with a formula",
+}
+
 
 def _dlabel(value):
     """'01 Jun 2026' from a date, or an empty string."""
@@ -206,22 +244,193 @@ class PbContracts(models.AbstractModel):
         return {'ok': False, 'error': _("That contract is no longer here.")}
 
     @api.model
-    def _cd_rule_by_code(self, codes):
+    def _cd_rule_by_code(self, codes, company=None):
         """The string-code join onto `hr.formula.rule` — the same one
         `_get_or_create_advantage_template` uses. The rules module may be
-        absent, and then every component is simply an amount (rail 7/8)."""
+        absent, and then every component is simply an amount (rail 7/8).
+
+        CD-2: one code can exist in more than one scheme on a tenant that runs
+        several. The one that answers for THIS contract is the live scheme of
+        the contract's own company; id order only breaks a remaining tie, so
+        the answer is stable between two reads of the same drawer.
+        """
         out = {}
         codes = [c for c in (codes or []) if c]
         Rule = self.env.get('hr.formula.rule')
         if Rule is None or not codes:
             return out
+
+        def preference(rule):
+            config = rule.config_id
+            same_company = bool(company and config
+                                and config.company_id.id == company.id)
+            live = bool(config and config.state == 'active')
+            return (0 if same_company else 1, 0 if live else 1, rule.id)
+
         try:
-            for rule in Rule.sudo().search([('code', 'in', codes)], order='id'):
+            found = Rule.sudo().search([('code', 'in', codes)], order='id')
+            for rule in sorted(found, key=preference):
                 out.setdefault(rule.code, rule)
         except Exception:   # noqa: BLE001
             _logger.debug("Contract drawer: component rules unavailable",
                           exc_info=True)
         return out
+
+    # ------------------------------------------------- CD-2: what fills a row
+    @api.model
+    def _cd_fills(self, rules_by_code):
+        """`{code: (bucket, label, tone)}` — where each component is REALLY
+        filled from, for the scheme that owns it.
+
+        The ladder is not re-derived here and must never be: `declared_sources()`
+        already filters by the scheme's ENABLED lanes and orders by its
+        CONFIGURED priority (SOURCECTL SC-3), and `_config_kind_rank()` is the
+        one accessor for that order. This method only folds in the two things
+        that live outside the rule — the mapped record destination and a live
+        connector wire — at the rank the resolver reads them, then names the
+        winner in a sentence.
+
+        BOUNDED QUERY BUDGET (§2.1.6): one statement for the record
+        destinations, one for the live wires, and prefetched field reads after
+        that. Twenty-one rows cost the same as two.
+        """
+        fills = {}
+        if not rules_by_code:
+            return fills
+        rules = None
+        try:
+            Rule = self.env.get('hr.formula.rule')
+            if Rule is None:
+                return fills
+            rules = Rule.sudo().browse([r.id for r in rules_by_code.values()])
+        except Exception:       # noqa: BLE001 — no scheme is a valid world
+            return fills
+
+        dests = self._cd_record_dests(rules)
+        wired = self._cd_live_wires(rules)
+
+        for code, rule in rules_by_code.items():
+            try:
+                bucket = self._cd_winning_bucket(rule, dests, wired)
+                fills[code] = (bucket,) + _FILLS[bucket]
+            except Exception:   # noqa: BLE001 — one odd rule may not blank the
+                                # whole grid (rail 10)
+                _logger.debug("Contract drawer: source unknown for %s", code,
+                              exc_info=True)
+        return fills
+
+    @api.model
+    def _cd_winning_bucket(self, rule, dests, wired):
+        """The FIRST source the scheme would read, as one of the five buckets."""
+        rank = rule._config_kind_rank()
+        # (position in the scheme's own order, kind) — sorted stably, so a
+        # declared source beats a folded-in one at the same position.
+        entries = [(rank.index(spec['kind']), spec['kind'])
+                   for spec in rule.declared_sources()
+                   if spec.get('kind') in rank]
+
+        # J10 — the mapped record destination is not in `declared_sources()`
+        # (it belongs to the CONFIG, not the rule) and is spliced in at the
+        # records lane, exactly where the resolver's tail reads it. The three
+        # record kinds sit in one contiguous block and all mean the same thing
+        # to a reader, so the earliest of them that the scheme still enables is
+        # the position; the destination_type is not worth a join for that.
+        if rule.id in dests:
+            record_ranks = [rank.index(k) for k in
+                            ('employee_field', 'contract_field',
+                             'bank_account') if k in rank]
+            if record_ranks:
+                entries.append((min(record_ranks), 'employee_field'))
+
+        # A live wire drawn on the Mapping board means the connected system
+        # feeds this component even though `declared_sources()` deliberately
+        # excludes wires. It is folded in AT THE FEED RANK rather than as a
+        # blanket override, so a scheme that has switched the connected system
+        # off, or demoted it below its records, is still told the truth.
+        if rule.id in wired and 'feed' in rank:
+            entries.append((rank.index('feed'), 'feed'))
+
+        if not entries:
+            return 'none'
+        entries.sort(key=lambda e: e[0])
+        return _KIND_BUCKET.get(entries[0][1], 'none')
+
+    @api.model
+    def _cd_record_dests(self, rules):
+        """Rule ids that a mapping lands on an employee/contract/bank record.
+
+        ONE statement for the whole set. `hr.payslip.import.mapping` is the
+        employee-field board's model — NOT `hr.integration.field.mapping`,
+        which is the vendor feed's; conflating the two is exactly what turns
+        "Held on this contract" into "From the connected system".
+        """
+        if self.env.get('hr.payslip.import.mapping') is None or not rules:
+            return set()
+        try:
+            self.env.cr.execute(
+                "SELECT DISTINCT component_id FROM hr_payslip_import_mapping "
+                "WHERE component_id IN %s", (tuple(rules.ids),))
+            return {row[0] for row in self.env.cr.fetchall() if row[0]}
+        except Exception:       # noqa: BLE001
+            _logger.debug("Contract drawer: record destinations unavailable",
+                          exc_info=True)
+            return set()
+
+    @api.model
+    def _cd_live_wires(self, rules):
+        """Rule ids an ACTIVE mapping row on the Mapping board points at.
+
+        ONE search for the whole set. `suggested` and `ignored` rows are not
+        read by a pay run, so they are not a source (F114).
+        """
+        Mapping = self.env.get('hr.integration.field.mapping')
+        if Mapping is None or not rules:
+            return set()
+        try:
+            domain = [('target_rule_id', 'in', rules.ids)]
+            if 'active_state' in Mapping._fields:
+                domain.append(('active_state', '=', 'active'))
+            return set(Mapping.sudo().search(domain).mapped('target_rule_id').ids)
+        except Exception:       # noqa: BLE001
+            _logger.debug("Contract drawer: live wires unavailable",
+                          exc_info=True)
+            return set()
+
+    @api.model
+    def _cd_explainer(self, rows, raw_total):
+        """The calm line above a grid of zeroes (§2.2), composed ONCE here so
+        there is a single author of the sentence.
+
+        It appears only when the contract itself holds nothing, and only when
+        the contract is NOT where these values are meant to live — a zero on a
+        component the contract genuinely owns is a fact to fix, not something
+        to explain away. That is why a `records`-dominated grid gets no
+        sentence at all.
+
+        CD-2 measured: the handover asked for "EVERY row is non-records", and
+        on abm contract 1051 exactly one row of twenty-one is records-held. The
+        literal rule would have hidden the sentence on the very tenant it was
+        written for, so the test is DOMINANCE and a records minority only
+        softens "Every" to "Most of the". Reported as a spec deviation.
+        """
+        if not rows or raw_total:
+            return False
+        buckets = [row.get('fills_from') for row in rows]
+        fed = [b for b in buckets if b and b != 'none']
+        if not fed:
+            return _("Nothing is stored on the contract itself, and nothing "
+                     "is feeding these components yet.")
+        dominant = max(set(fed), key=fed.count)
+        tail = _EXPLAIN_TAIL.get(dominant)
+        if not tail:
+            # `records` is dominant: the contract IS the intended home, so a
+            # grid of zeroes is a gap, and a soothing sentence would hide it.
+            return False
+        if any(b == 'records' for b in buckets):
+            return _("Nothing is stored on the contract itself. Most of the "
+                     "components below are filled when a pay run %s.") % tail
+        return _("Nothing is stored on the contract itself. Every component "
+                 "below is filled when a pay run %s.") % tail
 
     # =================================================================
     # 2.1 — the bundled read
@@ -260,7 +469,8 @@ class PbContracts(models.AbstractModel):
             'components': self._safe(
                 lambda: self._cd_components(contract, symbol, can_write,
                                             unmask),
-                default={'rows': [], 'count': 0, 'total': 0.0, 'addable': []}),
+                default={'rows': [], 'count': 0, 'total': 0.0,
+                         'explainer': False, 'addable': []}),
             'history': self._safe(
                 lambda: self._cd_history(contract, symbol, unmask),
                 default={'rows': [], 'total': 0, 'shown': 0}),
@@ -439,7 +649,10 @@ class PbContracts(models.AbstractModel):
             key=lambda l: ((l.advantage_template_code or '').upper(), l.id))
 
         rules = self._cd_rule_by_code(
-            [l.advantage_template_code for l in lines])
+            [l.advantage_template_code for l in lines],
+            company=contract.company_id or self.env.company)
+        # CD-2 §2.1 — computed ONCE for the whole set, never per row.
+        fills = self._safe(lambda: self._cd_fills(rules), default={})
 
         rows = []
         total = 0.0
@@ -451,6 +664,7 @@ class PbContracts(models.AbstractModel):
             upper = line.advantage_upper_bound or 0.0
             bounded = not (lower == 0 and upper == 0)
             rule = rules.get(code)
+            fill = fills.get(code) or (('none',) + _FILLS['none'])
             if value_type == 'text':
                 text_value = (line.text_value or '') if typed else ''
                 display = text_value or '—'
@@ -476,6 +690,10 @@ class PbContracts(models.AbstractModel):
                     rule.requires_new_contract) if rule else False,
                 'template_id': template.id or False,
                 'writable': can_write,
+                # CD-2 §2.1 — a zero here is not a broken screen; this says why.
+                'fills_from': fill[0],
+                'fills_label': fill[1],
+                'fills_tone': fill[2],
             })
 
         used = set(lines.mapped('advantage_template_id').ids)
@@ -496,6 +714,11 @@ class PbContracts(models.AbstractModel):
 
         return {'rows': rows, 'count': len(rows),
                 'total': total if unmask else False,
+                # The explainer reads the RAW total, not the masked one: a
+                # reader who may not see money still deserves to be told the
+                # contract holds nothing (`False == 0` would have said it for
+                # the wrong reason).
+                'explainer': self._cd_explainer(rows, total),
                 'addable': addable}
 
     @api.model
@@ -545,8 +768,13 @@ class PbContracts(models.AbstractModel):
                 '_sort': fields.Datetime.to_string(when) if when else '',
                 'kind': 'component',
                 'when': fields.Datetime.to_string(when) if when else '',
-                'when_label': _dlabel(change.effective_date or (
-                    when.date() if when else False)),
+                # CD-2, found on screen: this used to label the row with the
+                # EFFECTIVE date while the stream sorts by the change stamp, so
+                # abm contract 1103 showed six rows dated "01 Nov 2026" under a
+                # month band reading "Aug 2026". One row, one date: the date the
+                # change was made, which is the one the timeline is ordered by.
+                'when_label': _dlabel((when.date() if when else False)
+                                      or change.effective_date),
                 'title': template.name or change.advantage_template_code or '—',
                 'from': old,
                 'to': new,
