@@ -1,0 +1,502 @@
+<title>Where Pay Data Comes From</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F6F7FB; --surface:#FFFFFF; --surface2:#FAFAFE;
+    --ink:#1E1B2E; --muted:#5B6478; --faint:#8A91A5;
+    --brand:#5A4BB0; --brand-deep:#241F52; --brand-hov:#4A3D96;
+    --brand-soft:#EDEAF8; --brand-mid:#CBC2EE;
+    --good:#2E7D4F; --good-soft:#E7F3EC;
+    --info:#2563EB; --info-soft:#E8EFFD;
+    --warn:#B45309; --warn-soft:#FBF0E1;
+    --bad:#DC2668;  --bad-soft:#FCE9F0;
+    --border:#E2E8F0; --border2:#D6DBE8;
+    --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px -12px rgba(30,27,46,.12);
+    --r:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+      --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+      --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-hov:#BCB1EE;
+      --brand-soft:#2B2648; --brand-mid:#3D3766;
+      --good:#5CBF8A; --good-soft:#1D3229;
+      --info:#7CA5F5; --info-soft:#1E2A44;
+      --warn:#E5A455; --warn-soft:#3A2C18;
+      --bad:#F07AA4;  --bad-soft:#3D2030;
+      --border:#33304D; --border2:#403C5E;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+    --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+    --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-hov:#BCB1EE;
+    --brand-soft:#2B2648; --brand-mid:#3D3766;
+    --good:#5CBF8A; --good-soft:#1D3229;
+    --info:#7CA5F5; --info-soft:#1E2A44;
+    --warn:#E5A455; --warn-soft:#3A2C18;
+    --bad:#F07AA4;  --bad-soft:#3D2030;
+    --border:#33304D; --border2:#403C5E;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Public Sans",-apple-system,"Segoe UI",Arial,sans-serif;
+    font-size:16px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px; margin:0 auto; padding:0 24px 96px}
+  h1,h2,h3{font-family:"Sora","Public Sans",sans-serif; text-wrap:balance; margin:0}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+  svg.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+  /* ---------- hero ---------- */
+  header.hero{padding:64px 0 36px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);background:var(--brand-soft);border:1px solid var(--brand-mid);border-radius:999px;padding:6px 14px}
+  header.hero h1{font-size:clamp(30px,4.6vw,46px);font-weight:800;line-height:1.12;margin:20px 0 14px;letter-spacing:-.015em}
+  .lede{font-size:18px;color:var(--muted);max-width:62ch;margin:0}
+  .lede strong{color:var(--ink)}
+  .fivechips{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .fivechips span{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow)}
+  .fivechips svg.ic{width:15px;height:15px;color:var(--brand)}
+
+  /* ---------- sections ---------- */
+  section{margin-top:64px}
+  .sechead{display:flex;align-items:flex-start;gap:14px;margin-bottom:8px}
+  .secnum{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-soft);border-radius:8px;padding:5px 9px;margin-top:4px;flex:none}
+  .sechead h2{font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .secsub{color:var(--muted);max-width:68ch;margin:6px 0 24px;font-size:16px}
+
+  /* ---------- incident strip ---------- */
+  .incidents{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:28px}
+  .inc{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--bad);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+  .inc h3{font-size:15px;font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+  .inc h3 svg.ic{color:var(--bad);width:16px;height:16px}
+  .inc p{margin:0;font-size:14px;color:var(--muted)}
+  .inc p b{color:var(--ink)}
+
+  /* ---------- before / after ---------- */
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:760px){.ba{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+  .panel .cap{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:12px 18px;border-bottom:1px solid var(--border)}
+  .panel.before .cap{color:var(--bad);background:var(--bad-soft)}
+  .panel.after  .cap{color:var(--good);background:var(--good-soft)}
+  .panel .bd{padding:18px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .panel p.note{margin:0;font-size:13.5px;color:var(--muted)}
+  .panel p.note b{color:var(--ink)}
+
+  /* field-card mocks */
+  .fcard{border:1px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--surface2);display:flex;align-items:center;gap:12px}
+  .fcard .fname{font-weight:600;font-size:14px;min-width:0}
+  .fcard .fsample{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);margin-left:auto;text-align:right;white-space:nowrap}
+  .fcard .fsample i{font-style:normal;color:var(--faint);margin-right:4px}
+  .tag{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap;flex:none}
+  .tag.amber{color:var(--warn);background:var(--warn-soft)}
+  .tag.green{color:var(--good);background:var(--good-soft)}
+  .tag.grey{color:var(--muted);background:var(--surface);border:1px solid var(--border)}
+  .fcard.dead{opacity:.62}
+  .fcard.dead .fname{text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:var(--bad)}
+
+  /* ---------- schedule mock ---------- */
+  .schedmock{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:22px;display:flex;flex-direction:column;gap:16px}
+  .segrow{display:flex;flex-wrap:wrap;gap:8px}
+  .seg{border:1px solid var(--border2);background:var(--surface2);color:var(--muted);border-radius:999px;padding:7px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit}
+  .seg.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  :root[data-theme="dark"] .seg.on{color:#141221}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg.on{color:#141221}}
+  .seg:focus-visible,.lanebtn:focus-visible,.toggle:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .schedsentence{font-size:16.5px;background:var(--brand-soft);border:1px solid var(--brand-mid);border-radius:10px;padding:14px 18px}
+  .schedsentence b{color:var(--brand-deep)}
+  .subrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13.5px;color:var(--muted)}
+
+  /* ---------- lane stack ---------- */
+  .lanewrap{display:grid;grid-template-columns:minmax(300px,5fr) minmax(280px,4fr);gap:18px;align-items:start}
+  @media (max-width:820px){.lanewrap{grid-template-columns:1fr}}
+  .lanestack{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:10px}
+  .lane{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface2);transition:opacity .15s}
+  .lane .rank{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;color:var(--brand);background:var(--brand-soft);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex:none}
+  .lane .lic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:none}
+  .lane .lic svg.ic{width:17px;height:17px}
+  .lic.api{background:var(--info-soft);color:var(--info)}
+  .lic.excel{background:var(--good-soft);color:var(--good)}
+  .lic.records{background:var(--brand-soft);color:var(--brand)}
+  .lane .lname{font-weight:700;font-size:15px}
+  .lane .lsub{font-size:12.5px;color:var(--muted)}
+  .lane .ctl{margin-left:auto;display:flex;gap:6px;align-items:center}
+  .lanebtn{border:1px solid var(--border2);background:var(--surface);color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+  .lanebtn:hover{color:var(--brand);border-color:var(--brand-mid)}
+  .lanebtn:disabled{opacity:.35;cursor:default}
+  .toggle{width:40px;height:22px;border-radius:999px;border:none;cursor:pointer;position:relative;background:var(--border2);transition:background .15s;flex:none;padding:0}
+  .toggle.on{background:var(--good)}
+  .toggle::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+  .toggle.on::after{left:21px}
+  .lane.off{opacity:.5}
+  .lane.off .lname{text-decoration:line-through;text-decoration-color:var(--faint)}
+  .lanesentence{font-size:14.5px;background:var(--brand-soft);border:1px solid var(--brand-mid);border-radius:10px;padding:12px 16px;margin-top:4px}
+
+  /* winner demo */
+  .windemo{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:10px}
+  .windemo h3{font-size:15px;font-weight:700}
+  .wrow{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:10px;padding:9px 13px;font-size:14px;background:var(--surface2)}
+  .wrow .wsrc{font-weight:600}
+  .wrow .wval{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:13.5px}
+  .wrow.win{border-color:var(--good);background:var(--good-soft)}
+  .wrow.win .wbadge{color:var(--good);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+  .wrow.mute{opacity:.55}
+  .verdict{font-size:13.5px;border-radius:10px;padding:11px 14px;border:1px solid var(--border)}
+  .verdict.shield{background:var(--brand-soft);border-color:var(--brand-mid)}
+  .verdict.fill{background:var(--good-soft);border-color:var(--good)}
+  label.chk{display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--muted);cursor:pointer;user-select:none}
+  label.chk input{accent-color:var(--brand);width:15px;height:15px}
+
+  /* visibility matrix */
+  .mtxwrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);background:var(--surface)}
+  table.mtx{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+  table.mtx th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:left;padding:13px 18px;border-bottom:1px solid var(--border);background:var(--surface2)}
+  table.mtx td{padding:12px 18px;border-bottom:1px solid var(--border);vertical-align:top}
+  table.mtx tr:last-child td{border-bottom:none}
+  table.mtx td.what{font-weight:600;white-space:nowrap}
+  .gone{display:inline-flex;align-items:center;gap:6px;color:var(--bad);font-weight:600;font-size:13.5px}
+  .gone svg.ic{width:14px;height:14px}
+  .stays{display:inline-flex;align-items:center;gap:6px;color:var(--good);font-weight:600;font-size:13.5px}
+  .stays svg.ic{width:14px;height:14px}
+  td .why{display:block;color:var(--muted);font-size:13px;font-weight:400;margin-top:2px;white-space:normal}
+
+  /* guarantees */
+  .guar{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .g{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+  .g .gi{width:36px;height:36px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .g h3{font-size:15.5px;font-weight:700;margin-bottom:6px}
+  .g p{margin:0;font-size:14px;color:var(--muted)}
+
+  /* rollout */
+  .steps{display:flex;flex-direction:column;gap:0;border-left:2px solid var(--brand-mid);margin-left:9px;padding-left:24px}
+  .step{position:relative;padding:4px 0 26px}
+  .step:last-child{padding-bottom:4px}
+  .step::before{content:"";position:absolute;left:-31px;top:9px;width:12px;height:12px;border-radius:50%;background:var(--brand);border:3px solid var(--bg)}
+  .step h3{font-size:16px;font-weight:700;margin-bottom:4px}
+  .step p{margin:0;font-size:14.5px;color:var(--muted);max-width:70ch}
+
+  footer{margin-top:72px;padding-top:24px;border-top:1px solid var(--border);color:var(--faint);font-size:13px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+    <symbol id="i-sheet" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M10 13v4"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.94a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<header class="hero">
+  <span class="eyebrow"><svg class="ic"><use href="#i-shield"/></svg>Design proposal · Payobook</span>
+  <h1>Where Pay Data Comes From</h1>
+  <p class="lede">Five changes with one idea behind them: <strong>you should be able to see, choose and trust every source that feeds a pay run.</strong> Each change below exists because a real problem happened — the problem is shown next to the fix.</p>
+  <div class="fivechips">
+    <span><svg class="ic"><use href="#i-list"/></svg>Only real fields on the board</span>
+    <span><svg class="ic"><use href="#i-cal"/></svg>Sync on your schedule</span>
+    <span><svg class="ic"><use href="#i-check"/></svg>Turn sources on or off</span>
+    <span><svg class="ic"><use href="#i-up"/></svg>You set who wins</span>
+    <span><svg class="ic"><use href="#i-eyeoff"/></svg>Screens follow your choices</span>
+  </div>
+</header>
+
+<!-- ============ problems ============ -->
+<section>
+  <div class="sechead"><span class="secnum">Why</span><h2>The problems this ends</h2></div>
+  <p class="secsub">All four happened on your live setup. None of them announced itself — each one was found only after the numbers looked wrong.</p>
+  <div class="incidents">
+    <div class="inc">
+      <h3><svg class="ic"><use href="#i-alert"/></svg>Invented fields</h3>
+      <p>The mapping board listed <b>50 field names the connected system never sends</b> — with made-up examples like “Nguyen Van An” and “18,500,000”, and Indian tax fields on a Vietnamese payroll. They came from a built-in list, not from your data.</p>
+    </div>
+    <div class="inc">
+      <h3><svg class="ic"><use href="#i-alert"/></svg>Three empty pay runs</h3>
+      <p>Because “Salary” looked real (fake example beside it), it got mapped instead of the field that actually arrives. <b>Three pay runs computed on nothing</b> before the cause was found.</p>
+    </div>
+    <div class="inc">
+      <h3><svg class="ic"><use href="#i-alert"/></svg>Corrections undone</h3>
+      <p>The connected system always wins and always writes into Payobook. <b>Fix a value by spreadsheet and the next sync quietly puts the old one back.</b> There was no way to say “Payobook is the source of truth.”</p>
+    </div>
+    <div class="inc">
+      <h3><svg class="ic"><use href="#i-alert"/></svg>One rigid clock</h3>
+      <p>The sync runs monthly, on the 5th, at a time nobody chose — <b>the same for every client</b>, buried where nobody looks, with no way to say “every Monday morning” or “last day of the month”.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ change 1 ============ -->
+<section>
+  <div class="sechead"><span class="secnum">1</span><h2>An honest field list</h2></div>
+  <p class="secsub">The board will only show two kinds of fields: ones the connected system’s own definition declares, and ones that have actually arrived in real data — with <b>real example values taken from your data</b>, refreshed on every sync. The invented list is deleted.</p>
+  <div class="ba">
+    <div class="panel before">
+      <div class="cap"><svg class="ic"><use href="#i-x"/></svg>Today</div>
+      <div class="bd">
+        <div class="fcard dead"><span class="fname">Salary</span><span class="tag amber">not sent</span><span class="fsample"><i>e.g.</i>18500000</span></div>
+        <div class="fcard dead"><span class="fname">Aadhaar_Number</span><span class="tag amber">not sent</span><span class="fsample"><i>e.g.</i>2345 6789 0123</span></div>
+        <div class="fcard dead"><span class="fname">Name</span><span class="tag amber">not sent</span><span class="fsample"><i>e.g.</i>Nguyen Van An</span></div>
+        <div class="fcard"><span class="fname">Base_Salary</span><span class="tag green">received</span><span class="fsample">11,094,000</span></div>
+        <p class="note">Fiction and fact side by side, styled almost the same. The made-up examples are what made “Salary” look safe to map — and a false “not sent” once pushed Employee Code onto the wrong field.</p>
+      </div>
+    </div>
+    <div class="panel after">
+      <div class="cap"><svg class="ic"><use href="#i-check"/></svg>After</div>
+      <div class="bd">
+        <div class="fcard"><span class="fname">Base_Salary</span><span class="tag green">received</span><span class="fsample">11,094,000</span></div>
+        <div class="fcard"><span class="fname">EmployeeID</span><span class="tag green">received</span><span class="fsample">11094</span></div>
+        <div class="fcard"><span class="fname">Employeestatus</span><span class="tag green">last seen 12 Aug</span><span class="fsample">Active</span></div>
+        <div class="fcard"><span class="fname">ONBOARDING_STATUS</span><span class="tag grey">declared, never arrived</span><span class="fsample">—</span></div>
+        <p class="note">Every example value is <b>your data</b>. “Not sent” splits into two honest stories: <b>declared but never arrived</b> vs <b>arrived before, missing from the last sync</b> — so you always know which kind of missing you’re looking at.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ change 2 ============ -->
+<section>
+  <div class="sechead"><span class="secnum">2</span><h2>Sync on your schedule</h2></div>
+  <p class="secsub">Each connected system gets its own schedule, set right on its screen — daily, weekly on a day you pick, monthly on a date, or the last day of the month, at a time on <b>your clock, not the server’s</b>. Try it:</p>
+  <div class="schedmock">
+    <div class="segrow" id="freqrow" role="group" aria-label="How often">
+      <button class="seg" data-f="daily">Daily</button>
+      <button class="seg on" data-f="weekly">Weekly</button>
+      <button class="seg" data-f="monthly">Monthly</button>
+      <button class="seg" data-f="last">Last day of month</button>
+    </div>
+    <div class="subrow" id="subrow"></div>
+    <div class="schedsentence" id="schedsentence"></div>
+    <p class="note" style="margin:0;font-size:13.5px;color:var(--muted)">A daily or weekly run fetches this month so far — and during the first week of a new month it also re-fetches last month, so late corrections still arrive before you close last month’s pay run.</p>
+  </div>
+</section>
+
+<!-- ============ change 3+4 ============ -->
+<section>
+  <div class="sechead"><span class="secnum">3·4</span><h2>You decide the sources — and who wins</h2></div>
+  <p class="secsub">Every scheme gets a Sources card: three sources you can switch on or off and put in order. The order decides two things at once — <b>whose value a pay run uses</b>, and <b>who is allowed to update Payobook’s stored data</b>. A lower source may fill an empty box, but it can never overwrite what a higher source owns. This demo is live — reorder and watch the outcome change:</p>
+  <div class="lanewrap">
+    <div class="lanestack" id="lanestack" aria-label="Source priority order"></div>
+    <div class="windemo">
+      <h3>Who wins for “Base salary”?</h3>
+      <div id="winrows"></div>
+      <div class="verdict" id="verdict"></div>
+      <label class="chk"><input type="checkbox" id="emptybox">Pretend the Payobook box is empty</label>
+    </div>
+  </div>
+</section>
+
+<!-- ============ change 5 ============ -->
+<section>
+  <div class="sechead"><span class="secnum">5</span><h2>Screens follow your choices</h2></div>
+  <p class="secsub">Switch a source off and every place that offered it steps aside — not just hidden on screen, but refused by the system too, so nothing can slip in through a side door.</p>
+  <div class="mtxwrap">
+    <table class="mtx">
+      <thead><tr><th>If you switch off…</th><th>Goes away</th><th>Stays</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="what">Spreadsheet</td>
+          <td><span class="gone"><svg class="ic"><use href="#i-eyeoff"/></svg>The upload step in Run Payroll</span><span class="why">Plus the spreadsheet import tiles and the spreadsheet tab on the mapping board. Uploading is also refused by the system itself.</span></td>
+          <td><span class="stays"><svg class="ic"><use href="#i-check"/></svg>Everything else</span><span class="why">The run goes straight from period to compute.</span></td>
+        </tr>
+        <tr>
+          <td class="what">Connected system</td>
+          <td><span class="gone"><svg class="ic"><use href="#i-eyeoff"/></svg>The sync steps &amp; “Update records” button</span><span class="why">And the system-fields tab on the mapping board. Sync requests from the wizard are refused too.</span></td>
+          <td><span class="stays"><svg class="ic"><use href="#i-check"/></svg>The connection screen</span><span class="why">With a plain banner explaining that pay runs don’t read it for this scheme.</span></td>
+        </tr>
+        <tr>
+          <td class="what">Payobook records</td>
+          <td><span class="gone"><svg class="ic"><use href="#i-eyeoff"/></svg>Record values as a pay-run source</span><span class="why">Components fall through to the next source in your order.</span></td>
+          <td><span class="stays"><svg class="ic"><use href="#i-check"/></svg>The Records Desk &amp; the ⇆ tab</span><span class="why">Editing employee records by hand is always yours — it is not a pay-run source.</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ guarantees ============ -->
+<section>
+  <div class="sechead"><span class="secnum">✓</span><h2>What keeps this safe</h2></div>
+  <div class="guar">
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-shield"/></svg></div><h3>Nothing changes until you change it</h3><p>Every scheme starts with today’s exact behaviour: all three sources on, connected system first. The new controls change nothing until you touch them.</p></div>
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-shield"/></svg></div><h3>One rulebook, everywhere</h3><p>Runs with a file, runs without a file, and record updates all follow the same order. The same month can never again give two different answers depending on how it was run.</p></div>
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-alert"/></svg></div><h3>Warned before you break something</h3><p>Switching off a source that components currently rely on shows exactly how many, and what they’ll fall back to — before you save.</p></div>
+    <div class="g"><div class="gi"><svg class="ic"><use href="#i-check"/></svg></div><h3>Proven before it ships</h3><p>Twelve numbered checks — including “old behaviour unchanged by default” — run green before deployment to all four databases, then verified live on screen with screenshots.</p></div>
+  </div>
+</section>
+
+<!-- ============ rollout ============ -->
+<section>
+  <div class="sechead"><span class="secnum">Plan</span><h2>How it gets built</h2></div>
+  <div class="steps">
+    <div class="step"><h3>1 · Honest field list</h3><p>Delete the invented fields, capture real examples from every sync, add the “last seen” story to the board.</p></div>
+    <div class="step"><h3>2 · Schedule editor</h3><p>Per-system schedule on the connection screen, in your timezone, with a plain sentence showing the next run.</p></div>
+    <div class="step"><h3>3 · The source engine</h3><p>Teach the pay-run calculation and the record-update machinery to obey your on/off switches and order — including “never overwrite, only fill empty”.</p></div>
+    <div class="step"><h3>4 · The visible layer</h3><p>The Sources card on scheme settings, the wizard that reshapes itself, the gated tiles and tabs — then live checks on your site, with screenshots.</p></div>
+  </div>
+</section>
+
+<footer>
+  <span>Payobook · design proposal</span>
+  <span>Nothing here is built yet — this page is the plan, for your approval.</span>
+</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  /* ---------- schedule demo ---------- */
+  var freq = "weekly", day = "Monday", date = 5, time = "06:00";
+  var subrow = document.getElementById("subrow");
+  var sent = document.getElementById("schedsentence");
+  var WEEK = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  function chip(label,on,fn){
+    var b=document.createElement("button");
+    b.className="seg"+(on?" on":""); b.style.padding="5px 12px"; b.style.fontSize="12.5px";
+    b.textContent=label; b.addEventListener("click",fn); return b;
+  }
+  function renderSub(){
+    subrow.textContent="";
+    if(freq==="weekly"){
+      subrow.appendChild(document.createTextNode("On:"));
+      WEEK.forEach(function(w){ subrow.appendChild(chip(w.slice(0,3), w===day, function(){day=w;renderSub();renderSent();})); });
+    } else if(freq==="monthly"){
+      subrow.appendChild(document.createTextNode("On day:"));
+      [1,5,10,15,20,25,28].forEach(function(d){ subrow.appendChild(chip(String(d), d===date, function(){date=d;renderSub();renderSent();})); });
+    }
+    subrow.appendChild(document.createTextNode("At:"));
+    ["06:00","09:00","20:00"].forEach(function(t){ subrow.appendChild(chip(t, t===time, function(){time=t;renderSub();renderSent();})); });
+  }
+  function renderSent(){
+    var when =
+      freq==="daily"   ? "every day" :
+      freq==="weekly"  ? "every "+day :
+      freq==="monthly" ? "on the "+date+ordinal(date)+" of each month" :
+                         "on the last day of each month";
+    var next =
+      freq==="daily"   ? "tomorrow" :
+      freq==="weekly"  ? "next "+day :
+      freq==="monthly" ? "the coming "+date+ordinal(date) :
+                         "at month-end";
+    sent.innerHTML = "Runs <b>"+when+" at "+time+"</b> (Vietnam time). Next run: <b>"+next+", "+time+"</b>.";
+  }
+  function ordinal(n){ return n===1?"st":n===2?"nd":n===3?"rd":"th"; }
+  document.getElementById("freqrow").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-f]"); if(!b) return;
+    freq=b.getAttribute("data-f");
+    this.querySelectorAll(".seg").forEach(function(s){s.classList.remove("on");});
+    b.classList.add("on"); renderSub(); renderSent();
+  });
+  renderSub(); renderSent();
+
+  /* ---------- lane demo ---------- */
+  var LANES = {
+    api:    {name:"Connected system", sub:"values arriving from your HR system", icon:"i-zap",   cls:"api",    val:"₫11,094,000"},
+    excel:  {name:"Spreadsheet",      sub:"the pay data file you upload",        icon:"i-sheet", cls:"excel",  val:"₫11,500,000"},
+    records:{name:"Payobook records", sub:"employee, contract & amounts kept here", icon:"i-db", cls:"records", val:"₫10,800,000"}
+  };
+  var order=["api","excel","records"];
+  var enabled={api:true,excel:true,records:true};
+  var stack=document.getElementById("lanestack");
+  var winrows=document.getElementById("winrows");
+  var verdict=document.getElementById("verdict");
+  var emptybox=document.getElementById("emptybox");
+
+  function laneRow(key,idx){
+    var L=LANES[key];
+    var row=document.createElement("div");
+    row.className="lane"+(enabled[key]?"":" off");
+    row.innerHTML =
+      '<span class="rank">'+(idx+1)+'</span>'+
+      '<span class="lic '+L.cls+'"><svg class="ic"><use href="#'+L.icon+'"/></svg></span>'+
+      '<span><span class="lname">'+L.name+'</span><br><span class="lsub">'+L.sub+'</span></span>';
+    var ctl=document.createElement("span"); ctl.className="ctl";
+    var up=document.createElement("button"); up.className="lanebtn"; up.disabled=(idx===0);
+    up.setAttribute("aria-label","Move "+L.name+" up");
+    up.innerHTML='<svg class="ic"><use href="#i-up"/></svg>';
+    up.addEventListener("click",function(){ order.splice(idx,1); order.splice(idx-1,0,key); renderAll(); });
+    var dn=document.createElement("button"); dn.className="lanebtn"; dn.disabled=(idx===order.length-1);
+    dn.setAttribute("aria-label","Move "+L.name+" down");
+    dn.innerHTML='<svg class="ic"><use href="#i-down"/></svg>';
+    dn.addEventListener("click",function(){ order.splice(idx,1); order.splice(idx+1,0,key); renderAll(); });
+    var tg=document.createElement("button"); tg.className="toggle"+(enabled[key]?" on":"");
+    tg.setAttribute("role","switch"); tg.setAttribute("aria-checked",String(enabled[key]));
+    tg.setAttribute("aria-label",L.name+" on or off");
+    tg.addEventListener("click",function(){ enabled[key]=!enabled[key]; renderAll(); });
+    ctl.appendChild(up); ctl.appendChild(dn); ctl.appendChild(tg);
+    row.appendChild(ctl);
+    return row;
+  }
+  function sentence(){
+    var on=order.filter(function(k){return enabled[k];});
+    if(!on.length) return "All three sources are off — components use only their own formulas and fixed values.";
+    var parts=on.map(function(k,i){
+      var n=LANES[k].name;
+      return i===0 ? n+" speaks first" : i===1 ? n.toLowerCase()+" may answer when it is silent" : n.toLowerCase()+" answers last";
+    });
+    var s=parts.join("; ")+".";
+    if(on[0]==="records") s+=" A value already in Payobook is never overwritten — the others may only fill empty boxes.";
+    return s.charAt(0).toUpperCase()+s.slice(1);
+  }
+  function renderAll(){
+    stack.textContent="";
+    order.forEach(function(k,i){ stack.appendChild(laneRow(k,i)); });
+    var ls=document.createElement("div"); ls.className="lanesentence"; ls.textContent=sentence();
+    stack.appendChild(ls);
+    renderWin();
+  }
+  function renderWin(){
+    winrows.textContent="";
+    var empty=emptybox.checked;
+    var winner=null;
+    order.forEach(function(k){
+      if(winner) return;
+      if(!enabled[k]) return;
+      if(k==="records" && empty) return;
+      winner=k;
+    });
+    order.forEach(function(k){
+      var L=LANES[k];
+      var r=document.createElement("div");
+      var off=!enabled[k], isWin=(k===winner);
+      var recEmpty=(k==="records"&&empty);
+      r.className="wrow"+(isWin?" win":(off||recEmpty)?" mute":"");
+      r.innerHTML='<span class="lic '+L.cls+'" style="width:26px;height:26px"><svg class="ic" style="width:14px;height:14px"><use href="#'+L.icon+'"/></svg></span>'+
+        '<span class="wsrc">'+L.name+'</span>'+
+        (isWin?'<span class="wbadge">wins</span>':'')+
+        '<span class="wval">'+(off?"switched off":recEmpty?"empty":L.val)+'</span>';
+      winrows.appendChild(r);
+    });
+    if(!winner){
+      verdict.className="verdict";
+      verdict.textContent="No source answers — the component falls back to its own formula or fixed value.";
+    } else if(order.filter(function(k){return enabled[k];})[0]==="records" && !empty){
+      verdict.className="verdict shield";
+      verdict.textContent="Payobook’s ₫10,800,000 is used — and no sync or upload may overwrite it. Your records are the source of truth.";
+    } else if(empty && enabled.records && order.filter(function(k){return enabled[k];})[0]==="records"){
+      verdict.className="verdict fill";
+      verdict.textContent="The box is empty, so "+LANES[winner].name+"’s value is used — and written into the empty box. Filling is allowed; overwriting is not.";
+    } else {
+      verdict.className="verdict";
+      verdict.textContent=LANES[winner].name+"’s value is used for the pay run.";
+    }
+  }
+  emptybox.addEventListener("change",renderWin);
+  renderAll();
+})();
+</script>
