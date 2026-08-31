@@ -25,12 +25,19 @@ what make a catalogue safe to re-run:
      connector create, from "Detect feeds", from "Fetch field list" and from the
      demo seeder, so it will meet rows an operator has relabelled or
      deactivated. Meeting one is a SKIP, never a rewrite.
-  2. **A catalogue row is a claim about the vendor, never about a sync.** It
-     carries `sample_value` as an ILLUSTRATION — the studio labels it
-     "expected", and no code path may promote a catalogue row to "live". The
-     provenance ladder in `get_available_source_fields` is where that is
-     enforced; this file only has to make sure the two can never be confused,
-     which is why there is no `last_seen`-shaped field here at all.
+  2. **A catalogue row says where its claim COMES FROM.** SC-1 (2026-08-31)
+     ended the era of one undifferentiated "catalogue": `origin` now separates
+     a row copied from the shipped vendor paper (`template` — its
+     `sample_value` is an INVENTED illustration), a row the vendor's own
+     metadata API declared (`discovered` — real name, no sample), and a row
+     seen in an actual received payload (`observed` — real name, REAL sample,
+     refreshed on every pull, with `last_seen` saying when). The old rule
+     "no `last_seen`-shaped field here at all" existed because no code path
+     could promote a catalogue row with evidence; the observation pass in
+     `hr.integration.connector._observe_endpoint_fields` IS that path now, so
+     the field exists and means exactly one thing: the newest pull whose
+     payload carried this key. `get_available_source_fields` still enforces
+     that only a payload can make a row render as `live`.
   3. **The schema probe is asked of PostgreSQL, not of the registry.** Same
      argument as `hr.integration.endpoint._schema_ready` (read its docstring):
      the addons tree is shared by every database on the box, so between an rsync
@@ -73,9 +80,27 @@ class HrIntegrationEndpointField(models.Model):
         SOURCE_DATA_TYPES, string='Type', default='string')
     sample_value = fields.Char(
         string='Sample',
-        help="An ILLUSTRATION of what this field looks like, so the Mapping "
-             "Studio can show something before the first sync. It is never "
-             "presented as a value that was actually received.")
+        help="What this field looks like. On a row observed in received data "
+             "this is a REAL value from a real payload; on a template row it "
+             "is an invented illustration, and the Mapping Studio prints "
+             "\"e.g.\" before it so the two can never be confused.")
+    # SC-1 — the three honest answers to "how do we know this field exists?".
+    # `template` is the only origin whose sample is fiction; the board renders
+    # its "e.g." marker from this and from nothing else. Rows created before
+    # the column existed are classified by the 19.0.1.116.0 migration.
+    origin = fields.Selection(
+        [('template', 'Shipped vendor paper'),
+         ('discovered', "Vendor's own metadata"),
+         ('observed', 'Seen in received data')],
+        string='Known from', default='discovered', index=True,
+        help="template: copied from the catalogue shipped with Payobook — an "
+             "expectation, with an invented sample. discovered: the vendor's "
+             "own metadata declared it. observed: it has arrived in real "
+             "data, and the sample beside it is real.")
+    last_seen = fields.Datetime(
+        string='Last seen',
+        help="The newest data pull whose payload carried this field. Empty "
+             "means no pull has ever carried it.")
     is_required = fields.Boolean(string='Required')
     notes = fields.Char(string='Notes')
     sequence = fields.Integer(string='Sequence', default=10)

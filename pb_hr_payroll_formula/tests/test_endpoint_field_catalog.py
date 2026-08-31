@@ -41,9 +41,18 @@ class TestEndpointFieldCatalogue(TransactionCase):
         cls.Rule = cls.env['hr.api.transformation.rule']
 
     def _zoho(self, name='IG-C6 zoho'):
-        """A Zoho connector, which instantiates the SHIPPED catalogues on
-        create — seven feeds and the field rows that belong to them."""
-        return self.Connector.create({'name': name, 'connector_type': 'zoho'})
+        """A Zoho connector WITH the shipped field catalogue instantiated.
+
+        SC-1 stopped seeding shipped paper onto live systems implicitly (a
+        zoho connector now starts with an empty field catalogue and learns
+        from discovery + observation), so this helper asks for the templates
+        through the explicit-restore door. What this suite asserts — the
+        layered merge, drift, live-wins — is about the CATALOG layer's
+        semantics, which are unchanged however the rows arrived.
+        """
+        conn = self.Connector.create({'name': name, 'connector_type': 'zoho'})
+        conn.action_sync_endpoint_field_catalog(force_templates=True)
+        return conn
 
     def _feed(self, conn, code):
         return self.Endpoint.with_context(active_test=False).search(
@@ -72,7 +81,7 @@ class TestEndpointFieldCatalogue(TransactionCase):
         victim = rows.filtered(lambda f: f.path == 'Mobile')
         victim.active = False
 
-        res = conn.action_sync_endpoint_field_catalog()
+        res = conn.action_sync_endpoint_field_catalog(force_templates=True)
         self.assertEqual(res['created'], 0,
                          "the field catalogue is create-only: %s" % res)
         self.assertEqual(target.label, 'Staff number (ABM)')
@@ -92,7 +101,7 @@ class TestEndpointFieldCatalogue(TransactionCase):
         self.Template.create({
             'connector_type': 'zoho', 'endpoint_code': 'zohonosuchfeed',
             'path': 'IG_C6_Ghost', 'label': 'Ghost'})
-        res = conn.action_sync_endpoint_field_catalog()
+        res = conn.action_sync_endpoint_field_catalog(force_templates=True)
         self.assertGreaterEqual(res['unresolved'], 1)
         self.assertFalse(self.Field.search(
             [('endpoint_id.connector_id', '=', conn.id),
@@ -311,12 +320,16 @@ class TestEndpointFieldCatalogue(TransactionCase):
                  self.Mapping.get_available_source_fields(conn.id)}
         self.assertNotIn('IG_C6_No_Such_Field', every)
 
-    def test_05c_rule_outputs_are_catalog_not_live(self):
+    def test_05c_rule_outputs_are_computed_not_live(self):
+        """SOURCING S5 renamed this claim: a transformation-rule output is
+        'computed' — Payobook derives it — which is a MAPPABLE identity and
+        still never `live` without a payload. The original point stands: the
+        one claim that must be earned is `live`."""
         conn = self._zoho('IG-C6 rules')
         conn.action_sync_transformation_rules()
         by_path = {f['path']: f for f in
                    self.Mapping.get_available_source_fields(conn.id)}
-        self.assertEqual(by_path['OTHRS150']['provenance'], 'catalog')
+        self.assertEqual(by_path['OTHRS150']['provenance'], 'computed')
         self.assertEqual(by_path['OTHRS150']['catalog_kind'], 'computed')
         self.assertEqual(by_path['EmployeeID']['catalog_kind'], 'feed')
 
