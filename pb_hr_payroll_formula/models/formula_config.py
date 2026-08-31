@@ -383,6 +383,104 @@ class HrFormulaConfig(models.Model):
     )
 
     # ==========================================
+    # SC-3 — WHICH SOURCES THIS SCHEME MAY USE, AND WHO WINS.
+    #
+    # Three lanes, owner-configured per scheme:
+    #   api     → declared kinds ('feed', 'rule')       — the connected system
+    #   excel   → declared kind  ('excel',)             — the pay data file
+    #   records → kinds ('employee_field', 'contract_field', 'bank_account',
+    #                    'contract_component')          — Payobook's own data
+    #
+    # The PRIORITY answers two questions at once: whose value a pay run uses,
+    # and who may update Payobook's stored data — the writeback already
+    # refuses to write when the winning rung is not a payload, so a scheme
+    # that ranks its records first makes them the source of truth (a lower
+    # lane may only fill a box that is empty). Transformations are not a
+    # lane: they are always available.
+    #
+    # The DEFAULT reproduces `hr.formula.rule._SOURCE_RANK` plus the trailing
+    # contract component EXACTLY, so an untouched scheme behaves bit-for-bit
+    # as it always has.
+    # ==========================================
+    SOURCE_LANES = ('api', 'excel', 'records')
+    _LANE_KINDS = {
+        'api': ('feed', 'rule'),
+        'excel': ('excel',),
+        'records': ('employee_field', 'contract_field', 'bank_account',
+                    'contract_component'),
+    }
+
+    source_api_enabled = fields.Boolean(
+        string='Read the connected system', default=True,
+        help="Off: this scheme's pay runs never read the connected system, "
+             "the sync steps disappear from the Run Payroll wizard, and the "
+             "system-fields mapping tab is hidden.")
+    source_excel_enabled = fields.Boolean(
+        string='Read spreadsheets', default=True,
+        help="Off: this scheme's pay runs take no pay data file — the upload "
+             "step disappears from the Run Payroll wizard and spreadsheet "
+             "imports are refused.")
+    source_records_enabled = fields.Boolean(
+        string='Read Payobook records', default=True,
+        help="Off: mapped employee/contract fields and the contract's amount "
+             "lines are not read as pay-run sources. Editing records by hand "
+             "is always possible — that is not a pay-run source.")
+    source_priority = fields.Char(
+        string='Source priority', default='api,excel,records',
+        help="The order sources win in, highest first, as three tokens: "
+             "api, excel, records. A source lower in the order is used only "
+             "where every higher one is silent, and may only FILL an empty "
+             "box on data a higher source owns — never overwrite it.")
+
+    @api.constrains('source_priority')
+    def _check_source_priority(self):
+        for config in self:
+            tokens = [t.strip() for t in
+                      (config.source_priority or '').split(',') if t.strip()]
+            bad = [t for t in tokens if t not in self.SOURCE_LANES]
+            if bad or len(tokens) != len(set(tokens)):
+                raise ValidationError(_(
+                    "The source order must list each of these once: "
+                    "api, excel, records."))
+
+    def _source_lane_ok(self, lane):
+        """Is `lane` switched on for this scheme? Unknown lanes are on."""
+        self.ensure_one()
+        return {
+            'api': bool(self.source_api_enabled),
+            'excel': bool(self.source_excel_enabled),
+            'records': bool(self.source_records_enabled),
+        }.get(lane, True)
+
+    def _source_lane_order(self):
+        """The ENABLED lanes, highest priority first.
+
+        Tolerant of a partial `source_priority` (missing tokens append in
+        default order) because this string is data, and data ages.
+        """
+        self.ensure_one()
+        tokens = [t.strip() for t in
+                  (self.source_priority or '').split(',')
+                  if t.strip() in self.SOURCE_LANES]
+        for lane in self.SOURCE_LANES:
+            if lane not in tokens:
+                tokens.append(lane)
+        return [t for t in tokens if self._source_lane_ok(t)]
+
+    def _source_kind_rank(self):
+        """The declared-source KIND order this scheme resolves in.
+
+        This is what `hr.formula.rule._config_kind_rank()` hands to the one
+        shared walk — a kind absent from the tuple belongs to a disabled lane
+        and is not read at all.
+        """
+        self.ensure_one()
+        out = []
+        for lane in self._source_lane_order():
+            out.extend(self._LANE_KINDS[lane])
+        return tuple(out)
+
+    # ==========================================
     # STATE & VALIDATION
     # ==========================================
     state = fields.Selection([

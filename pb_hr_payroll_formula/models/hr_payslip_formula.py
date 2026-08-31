@@ -492,12 +492,29 @@ class HrPayslipFormula(models.Model):
         # Get input rules
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input')
 
+        # SC-3 — the scheme's source lanes and their order, on THIS path too.
+        # The two resolvers drifting apart is the defect RD45 closed; a lane
+        # config only one of them honoured would reopen it.
+        try:
+            lane_rank = (config._source_kind_rank()
+                         if 'source_priority' in config._fields else ())
+        except Exception:       # noqa: BLE001 — a bad token must not stop a run
+            lane_rank = ()
+        if not lane_rank:
+            lane_rank = (self.env['hr.formula.rule']._SOURCE_RANK
+                         + ('contract_component',))
+        api_lane_ok = 'feed' in lane_rank
+        records_lane_ok = 'employee_field' in lane_rank
+        records_first = records_lane_ok and (
+            not api_lane_ok
+            or lane_rank.index('employee_field') < lane_rank.index('feed'))
+
         # JOURNEY J3 S4 — read the connected system's data ONCE, not per rule.
         # `_feed_hits_by_rule` returns {rule_id: hit} for the wires that actually
         # delivered something for THIS employee; empty dict when there is no
         # connector, no data, or nothing matched, in which case every branch below
         # behaves exactly as it did before this phase.
-        feed_hits = self._j3_feed_hits_by_rule(config)
+        feed_hits = self._j3_feed_hits_by_rule(config) if api_lane_ok else {}
 
         # RECORDS RD45/RD46 — ranks 4 and 5, which this path never had.
         #
@@ -611,47 +628,63 @@ class HrPayslipFormula(models.Model):
             # empty feed leaves the contract/worked-days/default tail exactly as it
             # was, which is what makes "keep the other source as a fallback" true
             # on this path as well as on the batch one.
+            # RECORDS RD45/RD46 + SC-3 — the feed rung and the record rungs,
+            # read in the SCHEME'S configured order. Laziness is unchanged in
+            # kind: the lower-ranked source is reached only when the higher
+            # one delivered nothing — what SC-3 makes configurable is which
+            # one is higher. `_blob_is_empty` is THE emptiness test (0 and
+            # False are values); the `False`-is-NULL guard is the batch
+            # resolver's, for the same reason it exists there.
             hit = feed_hits.get(rule.id)
-            if hit:
-                value = hit['value']
-                src = 'rule' if hit['kind'] == 'rule' else 'feed'
-                key, via = hit['key'], 'connector_mapping'
-            else:
-                # RECORDS RD45/RD46 — rank 4, then rank 5. Reached ONLY when
-                # nothing above delivered, which is the walk's laziness
-                # contract: a component whose feed answered never touches the
-                # record at all.
-                #
-                # Both rungs outrank the contract-wage and worked-days branches
-                # above, which are this path's untouched tail — so a mapped
-                # field wins over them, and over the default, and over nothing
-                # else. `_blob_is_empty` is THE emptiness test (0 and False are
-                # values); the `False`-is-NULL guard is the batch resolver's,
-                # for the same reason it exists there.
-                mapping = mapping_by_rule.get(rule.id)
+            mapping = (mapping_by_rule.get(rule.id)
+                       if records_lane_ok else None)
+
+            def _from_api(hit=hit):
+                if not hit:
+                    return None
+                return (hit['value'],
+                        'rule' if hit['kind'] == 'rule' else 'feed',
+                        hit['key'], 'connector_mapping')
+
+            def _from_records(rule=rule, mapping=mapping):
+                if not records_lane_ok:
+                    return None
                 mapped = Batch._mapped_record_value(
                     mapping, contract=self.contract_id,
                     employee=self.employee_id) if mapping else None
-                if mapped is False and not Batch._record_dest_is_boolean(mapping):
+                if mapped is False \
+                        and not Batch._record_dest_is_boolean(mapping):
                     mapped = None
                 if not Batch._blob_is_empty(mapped):
-                    value = mapped
-                    src = 'employee_field'
-                    key = mapping.target_field_id.name or None
-                    via = 'employee_mapping'
-                else:
-                    # Rank 5, spelled exactly as the batch resolver's tail
-                    # spells it: PRESENCE in the contract's advantage lines
-                    # wins, not truthiness, because a contract line saying zero
-                    # has answered the question (MJ15).
-                    code = Batch._normalize_header_key(rule.code) if rule.code else ''
-                    if code and code in component_amounts:
-                        value = component_amounts[code]
-                        src, key, via = 'contract_component', rule.code, 'contract'
-                    elif rule.is_contract_component:
-                        value = component_amounts.get(code, 0.0)
-                        src, key, via = ('contract_component', rule.code,
-                                         'contract_default')
+                    return (mapped, 'employee_field',
+                            mapping.target_field_id.name or None,
+                            'employee_mapping')
+                # Rank 5, spelled exactly as the batch resolver's tail spells
+                # it: PRESENCE in the contract's advantage lines wins, not
+                # truthiness, because a contract line saying zero has answered
+                # the question (MJ15).
+                code = Batch._normalize_header_key(rule.code) \
+                    if rule.code else ''
+                if code and code in component_amounts:
+                    return (component_amounts[code], 'contract_component',
+                            rule.code, 'contract')
+                return None
+
+            readers = ((_from_records, _from_api) if records_first
+                       else (_from_api, _from_records))
+            resolved = None
+            for reader in readers:
+                resolved = reader()
+                if resolved:
+                    break
+            if resolved:
+                value, src, key, via = resolved
+            elif records_lane_ok and rule.is_contract_component:
+                code = Batch._normalize_header_key(rule.code) \
+                    if rule.code else ''
+                value = component_amounts.get(code, 0.0)
+                src, key, via = ('contract_component', rule.code,
+                                 'contract_default')
 
             values[rule.code] = value
             if provenance is not None:

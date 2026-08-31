@@ -2622,8 +2622,12 @@ class HrPayrollImportBatch(models.Model):
         """
         plan = list(rule.declared_sources())
         spec = self._record_dest_spec(mapping) if mapping else None
+        # SC-3 — the scheme's configured order; a record destination whose
+        # lane is disabled is not spliced in at all.
+        rank = rule._config_kind_rank()
+        if spec and spec['kind'] not in rank:
+            spec = None
         if spec:
-            rank = self.env['hr.formula.rule']._SOURCE_RANK
             entry = dict(spec)
             # Insert before the first entry that ranks below it — i.e. before
             # the contract component, and after every binding kind.
@@ -2736,7 +2740,16 @@ class HrPayrollImportBatch(models.Model):
                 topup = {}
         primary_origin = 'feed' if self.source_type == 'api_data_store' else 'excel'
         topup_origin = 'excel' if primary_origin == 'feed' else 'feed'
-        return {primary_origin: raw_data or {}, topup_origin: topup}
+        blobs = {primary_origin: raw_data or {}, topup_origin: topup}
+        # SC-3 belt-and-braces: a disabled lane's payload is EMPTY here even if
+        # a batch of that kind somehow exists (upstream refuses to create one).
+        config = self.formula_config_id
+        if config is not None:
+            if not getattr(config, 'source_api_enabled', True):
+                blobs['feed'] = {}
+            if not getattr(config, 'source_excel_enabled', True):
+                blobs['excel'] = {}
+        return blobs
 
     @api.model
     def _blob_is_empty(self, value):
@@ -2787,36 +2800,36 @@ class HrPayrollImportBatch(models.Model):
                          if d['kind'] in ('excel', 'feed', 'rule') and d['key']]
         hits = []
         covered = set()
+        # SC-3 — which payload ORIGINS this scheme may read at all. The plan is
+        # already lane-filtered (declared_sources drops a disabled lane's
+        # rows), but the cross-blob heuristic below reaches into `blobs` by
+        # origin and needs the same gate.
+        rank = rule._config_kind_rank()
+        allowed_origins = {o for o in ('feed', 'excel') if o in rank}
 
-        # ---- rungs 1-3: the declared blob sources, in rank order ----------
-        if 'blob' in tiers:
-            for pos, spec in enumerate(plan):
-                if spec['kind'] not in ('excel', 'feed', 'rule') or not spec['key']:
-                    continue
-                blob = blobs.get(
-                    'feed' if spec['kind'] == 'rule' else spec['kind']) or {}
-                if blob:
-                    covered.add(id(blob))
-                    value, key = self._lookup_in_blob(blob, [spec['key']])
-                    if not self._blob_is_empty(value):
-                        hits.append({'pos': pos, 'kind': spec['kind'],
-                                     'key': key, 'value': value,
-                                     'tier': 'blob'})
+        def eval_blob(pos, spec):
+            origin = 'feed' if spec['kind'] == 'rule' else spec['kind']
+            if origin not in allowed_origins:
+                return
+            blob = blobs.get(origin) or {}
+            if blob:
+                covered.add(id(blob))
+                value, key = self._lookup_in_blob(blob, [spec['key']])
+                if not self._blob_is_empty(value):
+                    hits.append({'pos': pos, 'kind': spec['kind'],
+                                 'key': key, 'value': value, 'tier': 'blob'})
 
+        def eval_heuristic():
             # S3's shape and J9's shape, both preserved exactly. With ONE
             # declared kind the other side is searched unconditionally, because
             # S3 reports it as `ignored` even when the binding won. With TWO OR
             # MORE it is searched only when nothing was found, because J9 wrote
             # it that way and a run carries at most two payloads — so with both
             # kinds declared it is unreachable anyway.
-            #
-            # AND IT RUNS BEFORE THE RECORD TIER, which is not a detail: in the
-            # resolver this heuristic fills `value`, and `value is not None` is
-            # tested BEFORE `get_mapped_input_value` is ever called. A record
-            # read that preempted it here would make the writeback resolve to
-            # something the payslip does not.
             if binding_kinds and (len(binding_kinds) == 1 or not hits):
                 for origin, blob in blobs.items():
+                    if origin not in allowed_origins:
+                        continue
                     if not blob or id(blob) in covered:
                         continue
                     value, key = self._lookup_in_blob(
@@ -2827,18 +2840,11 @@ class HrPayrollImportBatch(models.Model):
                                      'value': value, 'tier': 'blob'})
                         break
 
-        # ---- rungs 4-5: the record, then the contract component -----------
-        # READ ONLY IF NOTHING ABOVE DELIVERED. Case 6 asserts the read did not
-        # happen rather than that the value differs, because a tier that is
-        # merely outranked is still a query per component and still a claim the
-        # card would be making without evidence.
-        if hits:
-            return hits
-        for pos, spec in enumerate(plan):
+        def eval_record_or_component(pos, spec):
             kind = spec['kind']
             if kind in ('employee_field', 'contract_field'):
                 if 'record' not in tiers:
-                    continue
+                    return None
                 value = self._mapped_record_value(
                     mapping, contract=contract, employee=employee)
                 # `False` is how Odoo spells NULL on a Char, a Date and a
@@ -2852,21 +2858,59 @@ class HrPayrollImportBatch(models.Model):
                     value = None
             elif kind == 'bank_account':
                 if 'record' not in tiers:
-                    continue
+                    return None
                 value = self._bank_record_value(mapping, employee=employee)
             elif kind == 'contract_component':
                 if 'component' not in tiers:
-                    continue
+                    return None
                 code = self._normalize_header_key(rule.code) if rule.code else ''
                 value = (component_amounts or {}).get(code)
             else:
-                continue
-            if not self._blob_is_empty(value):
-                hits.append({'pos': pos, 'kind': kind, 'key': spec['key'],
-                             'value': value,
-                             'tier': 'component' if kind == 'contract_component'
-                             else 'record'})
-                break
+                return None
+            if self._blob_is_empty(value):
+                return None
+            return {'pos': pos, 'kind': kind, 'key': spec['key'],
+                    'value': value,
+                    'tier': ('component' if kind == 'contract_component'
+                             else 'record')}
+
+        # SC-3 — ONE ordered pass over the plan, in the SCHEME's order (the
+        # default reproduces the old blob → record → component phases
+        # exactly). Two contracts survive intact:
+        #
+        #   * REPORTING — every allowed blob rung is evaluated, so the caller
+        #     can report losers as `ignored_side` rather than dropping them;
+        #   * LAZINESS — a record/component rung is read ONLY while nothing
+        #     ranked above it has delivered. In a records-first scheme that
+        #     laziness INVERTS its old direction: a record that answers means
+        #     the payloads below it are never even looked at, which is
+        #     precisely "Payobook records are the source of truth".
+        #
+        # The cross-blob heuristic is part of the BLOB tier and fires at the
+        # end of the plan's blob region — after the last blob rung, before any
+        # lower-ranked record rung — never ahead of a record rung that
+        # outranks the payloads.
+        last_blob_pos = max(
+            (pos for pos, spec in enumerate(plan)
+             if spec['kind'] in ('excel', 'feed', 'rule') and spec['key']),
+            default=-1)
+        heuristic_done = False
+        for pos, spec in enumerate(plan):
+            if spec['kind'] in ('excel', 'feed', 'rule'):
+                if 'blob' in tiers and spec['key']:
+                    eval_blob(pos, spec)
+            else:
+                if hits:
+                    return hits
+                hit = eval_record_or_component(pos, spec)
+                if hit:
+                    hits.append(hit)
+                    return hits
+            if pos == last_blob_pos and 'blob' in tiers and not heuristic_done:
+                heuristic_done = True
+                eval_heuristic()
+        if 'blob' in tiers and not heuristic_done:
+            eval_heuristic()
         return hits
 
     @api.model
@@ -2936,6 +2980,12 @@ class HrPayrollImportBatch(models.Model):
             return None, False
         config = self.formula_config_id
         if not config:
+            return None, False
+        # SC-3 — a wire is the CONNECTED SYSTEM speaking. This helper reads
+        # the feed directly (it exists for components with nothing declared),
+        # so the lane gate that normally travels inside `declared_sources()`
+        # has to be applied by hand here.
+        if not getattr(config, 'source_api_enabled', True):
             return None, False
         try:
             connector = config._resolve_feed_connector()
@@ -4036,8 +4086,15 @@ class HrPayrollImportBatch(models.Model):
                 return stripped
             return value
 
+        # SC-3 — the records lane, on or off for this scheme. Off means the
+        # mapped employee/contract fields and the contract's amount lines are
+        # not pay-run sources; an empty `mapping_by_rule` is the cheapest
+        # complete gate for rank 4 (and it restores the column-letter
+        # fallback, exactly as a scheme with no mappings behaves).
+        records_lane_ok = bool(getattr(config, 'source_records_enabled', True)) \
+            if config else True
         mapping_by_rule = {}
-        if config:
+        if config and records_lane_ok:
             rule_ids = config.rule_ids.ids
             if rule_ids:
                 # Field destinations only (COLROLES P3). `has_mapping` below suppresses
@@ -4134,8 +4191,12 @@ class HrPayrollImportBatch(models.Model):
         # a scheme with confirmed wires and no binding read as a scheme with no
         # wires. The resolver falls back to the wires themselves and binds what
         # it finds. See `hr.formula.config._resolve_feed_connector`.
+        # SC-3 — the api lane's gate: a scheme that has switched the connected
+        # system off gets no pre-pass at all, however many wires exist.
         feed_connector = (config._resolve_feed_connector()
-                          if self.source_type == 'api_data_store' else None)
+                          if self.source_type == 'api_data_store'
+                          and getattr(config, 'source_api_enabled', True)
+                          else None)
         if feed_connector:
             connector = feed_connector.sudo()
             FieldMapping = self.env['hr.integration.field.mapping']
@@ -4358,17 +4419,41 @@ class HrPayrollImportBatch(models.Model):
                     HrPayrollImportBatch._sourcing_bound_branch_entered += 1
                     if len(declared) > 1:
                         HrPayrollImportBatch._multi_source_walk_entered += 1
+                    # SC-3 — the FULL walk, not blob-only. With the default
+                    # order a record/component rung is unreachable before the
+                    # tail anyway (the walk stops returning blob hits first,
+                    # and the tail read ranks 4–5 exactly as before), so
+                    # nothing changes for an untouched scheme. What this buys
+                    # is a REORDERED scheme: records-first means the walk
+                    # reads the record BEFORE the payloads, which no tail
+                    # could ever express.
                     hits = self._declared_source_walk(
                         rule, blobs,
+                        mapping=mapping_by_rule.get(rule.id),
+                        contract=contract, employee=employee,
+                        component_amounts=contract_component_amounts,
                         candidates=candidates,
-                        column_candidates=column_candidates,
-                        tiers=('blob',))
+                        column_candidates=column_candidates)
                     if hits:
                         win = hits[0]
                         input_values[rule.code] = normalize_input_value(
                             rule, win['value'])
-                        raw_input_codes.add(rule.code)
+                        if win['tier'] == 'blob':
+                            raw_input_codes.add(rule.code)
                         if prov is not None:
+                            if win['tier'] != 'blob':
+                                # SC-3 — a record/component winner, named in
+                                # the provenance vocabulary the Atlas already
+                                # reads.
+                                prov[rule.code] = input_provenance.entry(
+                                    ('contract_component'
+                                     if win['kind'] == 'contract_component'
+                                     else 'employee_field'),
+                                    key=win['key'] or rule.code,
+                                    via=('contract'
+                                         if win['kind'] == 'contract_component'
+                                         else 'employee_mapping'))
+                                continue
                             # The unused sides are REPORTED, never silently
                             # dropped — the owner's standing rule, and S2's
                             # `ignored_side` rather than a second helper.
@@ -4400,10 +4485,11 @@ class HrPayrollImportBatch(models.Model):
                         input_values[rule.code] = normalize_input_value(rule, mapped_value)
                     else:
                         rule_code = self._normalize_header_key(rule.code) if rule.code else ''
-                        if rule_code and rule_code in contract_component_amounts:
+                        if records_lane_ok and rule_code \
+                                and rule_code in contract_component_amounts:
                             resolved_source = 'contract_component'
                             input_values[rule.code] = contract_component_amounts[rule_code]
-                        elif rule.is_contract_component:
+                        elif records_lane_ok and rule.is_contract_component:
                             resolved_source = 'contract_component_default'
                             input_values[rule.code] = contract_component_amounts.get(rule_code, 0.0)
                         else:

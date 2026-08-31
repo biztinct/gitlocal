@@ -257,8 +257,30 @@ class HrFormulaRule(models.Model):
     _SOURCE_RECORD_KINDS = ('employee_field', 'contract_field', 'bank_account')
     _SOURCE_RANK = ('feed', 'rule', 'excel') + _SOURCE_RECORD_KINDS
 
+    def _config_kind_rank(self):
+        """SC-3 — the source order THIS component's scheme has configured.
+
+        `_SOURCE_RANK` above stays as the class-level DEFAULT (plus the
+        trailing contract component); a scheme that has reordered or disabled
+        its source lanes answers through `hr.formula.config._source_kind_rank`
+        instead. A kind absent from the returned tuple belongs to a DISABLED
+        lane: every consumer filters on membership, so a disabled lane's
+        declared sources simply stop being read — no second gate needed.
+        """
+        self.ensure_one()
+        config = self.config_id
+        if config and 'source_priority' in config._fields:
+            try:
+                return config._source_kind_rank()
+            except Exception:   # noqa: BLE001 — a bad token must not stop a run
+                pass
+        return self._SOURCE_RANK + ('contract_component',)
+
     @api.depends('source_ids.kind', 'source_ids.key', 'source_ids.origin',
-                 'source_ids.set_date', 'source_ids.set_uid')
+                 'source_ids.set_date', 'source_ids.set_uid',
+                 'config_id.source_priority', 'config_id.source_api_enabled',
+                 'config_id.source_excel_enabled',
+                 'config_id.source_records_enabled')
     def _compute_source_binding(self):
         """The highest-ranked declared source, as the five legacy Chars.
 
@@ -267,9 +289,14 @@ class HrFormulaRule(models.Model):
         `_check_source_binding` has nothing to object to, which is what keeps a
         live upgrade from aborting half-way through a scheme of ninety-nine
         columns.
+
+        SC-3 — ranked by the SCHEME's configured order (hence the config
+        fields in `@api.depends`: reordering the lanes must move this stored
+        badge). A disabled lane's declared row is filtered out here too, so
+        the badge never names a source the resolver will not read.
         """
-        rank = self._SOURCE_RANK
         for rule in self:
+            rank = rule._config_kind_rank()
             rows = [s for s in rule.source_ids
                     if s.kind in rank and (s.key or '').strip()]
             rows.sort(key=lambda s: rank.index(s.kind))
@@ -343,15 +370,22 @@ class HrFormulaRule(models.Model):
         because the two live in different modules with different query budgets.
         """
         self.ensure_one()
-        rank = self._SOURCE_RANK
+        # SC-3 — the scheme's configured order, not the class constant. A kind
+        # missing from the rank belongs to a DISABLED lane and is dropped
+        # here, which is the single gate every consumer inherits.
+        rank = self._config_kind_rank()
         rows = [s for s in self.source_ids
                 if s.kind in rank and (s.key or '').strip()]
         rows.sort(key=lambda s: rank.index(s.kind))
         out = [{'kind': s.kind, 'key': (s.key or '').strip(),
                 'origin': s.origin or 'user'} for s in rows]
-        if self.is_contract_component:
-            out.append({'kind': 'contract_component', 'key': '',
-                        'origin': 'user'})
+        if self.is_contract_component and 'contract_component' in rank:
+            comp = {'kind': 'contract_component', 'key': '', 'origin': 'user'}
+            # No longer hardwired last: it sits where the records lane sits.
+            idx = rank.index('contract_component')
+            at = next((i for i, d in enumerate(out)
+                       if rank.index(d['kind']) > idx), len(out))
+            out.insert(at, comp)
         return out
 
     def set_source_binding(self, kind, key, origin='user'):
