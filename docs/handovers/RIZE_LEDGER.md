@@ -399,3 +399,13 @@ without owner approval between them.
 - **R40 — `_read_group` cannot be called over JSON-RPC** (private method), and
   neither can any other `_`-prefixed helper. Aggregates during validation go
   through psql, or through a public facade method written for the purpose.
+- **R41 — the ⌘K seed file's deep links run to 2370, not 2360.**
+  `pb_hub/static/src/js/hub_palette_entries.js` auto-numbers its entries
+  `DEEP_LINK_BASE + (i + 1) * 10` over 37 rows, so the occupied range is
+  2010-2370 and grows every time somebody adds a seeded row. P2 took 2200-2220
+  and P3 was told to take 2300-2320 — both sit ON TOP of seeded entries
+  (`structures` is 2300, `statutory` 2310, `integrations` 2320). It is not an
+  error, because the keys differ and both rows render, but the order of two
+  unrelated palette rows then depends on registration order rather than on a
+  number anybody chose. **P3 moved to 2400-2420; P4 onwards start at 2500**,
+  and count the seed file rather than trusting the comment in it.

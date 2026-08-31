@@ -15,10 +15,20 @@
  *      it independently and answers an EXPLAINED empty board rather than an
  *      access dialog, so this only decides whether the lens is OFFERED.
  *
- *   2. **⌘K palette rows**, in the 2300 deep-link block, clear of P0's
- *      2100-2120 and P2's 2200-2220. The door is an XMLID and never a bare
- *      tag: a bare tag is synthesised with no action NAME, so anything
- *      returning through a breadcrumb lands on a crumb labelled "Unnamed".
+ *   2. **⌘K palette rows**, in the 2400 deep-link block.
+ *
+ *      NOT the 2300 block the handover named. `pb_hub/js/hub_palette_entries`
+ *      auto-numbers its 37 seeded deep links `DEEP_LINK_BASE + (i + 1) * 10`,
+ *      which runs 2010 to 2370 — so 2300/2310/2320 are already `structures`,
+ *      `statutory` and `integrations`. A duplicate sequence is not an error
+ *      (the keys differ, and the palette still renders both), but it makes the
+ *      order of two unrelated rows an accident of registration, which is the
+ *      kind of thing that is only ever noticed as "the palette moved". 2400+
+ *      is clear of the whole seeded range. P4 onwards: start at 2500.
+ *
+ *      The door is an XMLID and never a bare tag: a bare tag is synthesised
+ *      with no action NAME, so anything returning through a breadcrumb lands
+ *      on a crumb labelled "Unnamed".
  *
  * Every icon is from the shared `ic()` registry in pb_import_kit — no
  * module-local map, no emoji.
@@ -50,7 +60,7 @@ palette.add("onboarding_newjoiners", {
     // the module shipped its JS.
     requires: "pb_onboarding_board",
     action: { xmlid: HUB_XMLID, lens: "newjoiners" },
-}, { sequence: 2300 });
+}, { sequence: 2400 });
 
 palette.add("onboarding_sessions", {
     id: "onboarding_sessions",
@@ -60,7 +70,7 @@ palette.add("onboarding_sessions", {
     groups: LIFECYCLE_GATE,
     requires: "pb_onboarding_board",
     action: { xmlid: "pb_onboarding.action_pb_orientation_batch" },
-}, { sequence: 2310 });
+}, { sequence: 2410 });
 
 palette.add("onboarding_hrbp_rules", {
     id: "onboarding_hrbp_rules",
@@ -70,4 +80,4 @@ palette.add("onboarding_hrbp_rules", {
     groups: ["pb_lifecycle.group_lifecycle_admin", "base.group_system"],
     requires: "pb_onboarding_board",
     action: { xmlid: "pb_onboarding.action_pb_hrbp_rule" },
-}, { sequence: 2320 });
+}, { sequence: 2420 });
