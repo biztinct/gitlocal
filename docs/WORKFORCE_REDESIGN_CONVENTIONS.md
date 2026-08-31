@@ -2928,3 +2928,73 @@ Cross-program rules (deploy ritual, formula-input registry, C18.x gotchas) stay 
   button underneath it (`Full form` rendered as "Full …" on abm). Drawer
   footers left-align; anything that must sit right needs real clearance, not
   hope.
+
+- **CD10 `position: fixed` is NOT viewport-relative inside the contract
+  drawer.** (CONTRACT DRAWER CD-3.) `.pbc-drawer.shown` carries
+  `transform: translateX(0)`, and ANY non-`none` transform makes that element
+  the containing block for a fixed-position descendant. A popover placed from
+  `getBoundingClientRect()` (viewport coordinates) therefore lands ~680px to
+  the right of its cell. `CdPicker.place()` measures the error instead of
+  assuming it: read the popover's own rect, subtract the `top/left` currently
+  applied, and the difference is the correction — zero when no ancestor is
+  transformed, so the same code is right either way. The alternative (fixing
+  the transform to `none` on the shown state) would have made the drawer's
+  slide-in silently stop compositing.
+- **CD11 A `useExternalListener(window, "keydown", …, {capture: true})` cannot
+  be stopped by a child's `stopPropagation()`.** (CONTRACT DRAWER CD-3.)
+  Capture runs top-down, so the drawer's Escape-closes handler fires BEFORE
+  the editor's own. `records_cells.js:293`'s `stopPropagation` scar is
+  necessary but not sufficient here: the overlay handler must additionally
+  STAND ASIDE — `if (this.state.edit || this.state.addOpen) { return; }`, plus
+  an `asking` flag so a `ConfirmationDialog`'s own Escape is not answered by
+  re-opening the same dialog. Any overlay that captures a key and also hosts
+  editors owes both halves.
+- **CD12 `row` is Bootstrap's grid class and `.row > * { width: 100% }` is
+  loaded on every backend page.** (CONTRACT DRAWER CD-3.) A modifier written
+  as `class="pbc-refuse row"` turned a `width: 6px` refusal dot into a 32px
+  bar — Bootstrap's `width`/`max-width`/gutter padding on the CHILD, not a
+  specificity loss on the parent. Never use a bare Bootstrap word (`row`,
+  `col`, `card`, `badge`, `active`, `show`, `fade`) as a cockpit modifier.
+  Corollary found in the same fix: `.dot` is styled by six other cockpits, so
+  it was namespaced to `.pbc-dot` — and the rename has to sweep the WHOLE
+  file, because the lifecycle rail used the same class and its three dots
+  disappeared until the rail's rule was renamed too.
+- **CD13 `box-sizing: border-box` means `height` ALREADY contains the border.**
+  (CONTRACT DRAWER CD-3.) `.pbc` sets `* { box-sizing: border-box }`, so an
+  in-cell editor styled `height: 21px; border-bottom: 2px` is 21px tall, not
+  23. The reflex `margin-bottom: -2px` "to pay for the underline" subtracted
+  it twice and moved every cell below by 2px the instant a cell became an
+  editor — exactly the panel shift the phase forbade. Measure the cell top
+  before and after opening an editor; the delta must be 0.
+- **CD14 A child's `onMounted` runs BEFORE its parent's.** (CONTRACT DRAWER
+  CD-3.) The editor's fallback "no input of my own, so focus the first button
+  in my subtree" ran after the popover child had already focused its search
+  box, and `querySelector("button")` found the popover's "Leave empty" and
+  stole focus back. A parent's focus fallback must be scoped to the exact kind
+  that needs it, never to "whatever is in my DOM".
+- **CD15 `NEXT` offers `renew`; `LIFECYCLE` does not whitelist it.**
+  (CONTRACT DRAWER CD-3.) `pb_contracts/models/pb_contracts.py:12,20` — the
+  contextual next-actions map offers `renew` on `open` and `close`, but
+  `run_contract_action` only runs `set_running | terminate | cancel`. A drawer
+  that wires every `next_actions` entry to the server produces a button that
+  silently does nothing. `renew` keeps carrying the person to the full
+  contract screen that owns it.
+- **CD16 The server rounds a decimal into a whole-number term silently.**
+  (CONTRACT DRAWER CD-3.) `_cd_coerce_term`'s integer branch is
+  `int(float(x))`, so `2.5` typed into Dependants saves as `2` and is reported
+  saved. CD-3 refuses it CLIENT-side in the server's own words and holds the
+  key out of the payload, rather than sending a value it knows will be
+  quietly changed. Anything else that grows a whole-number editor owes the
+  same guard — or the server owes a refusal.
+- **CD17 The floating assistant pill measured, not guessed (closes CD9).**
+  (CONTRACT DRAWER CD-3.) On abm at 1600px it is 58×58 at `right: 24px`,
+  `bottom: 24px`, `z-index: 1050` — so it owns the rightmost 82px of the
+  viewport, above a drawer at `z-index: 1041`. A drawer Save bar therefore
+  needs `padding-right: 96px` (82 + a 14px gap), verified live as
+  `saveRight 1504` vs `pill.left 1518`, no overlap.
+- **CD18 An editor kind with no `<input>` has nothing for Escape to land on.**
+  (CONTRACT DRAWER CD-3.) The YES/NO pair and a short non-filterable select
+  render no text box, so `inputRef.el` is null, nothing is focused, and the
+  cell cannot be left without committing. Every kind must focus SOMETHING that
+  carries the keydown handler — the first toggle button, or the popover root
+  with `tabindex="-1"`.
