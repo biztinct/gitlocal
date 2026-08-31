@@ -170,7 +170,7 @@ without owner approval between them.
 | P0 | pb_lifecycle — journey engine, letters, reminders, Lifecycle mission + hub + Journeys cockpit | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass) |
 | P1 | pb_zoho_bridge — inbound webhook, event rules, CSV fallback | **DONE** (live on `payobook`, 19.0.1.0.0) |
 | P2 | pb_assets — register, handovers, requests, People-hub Assets lens, `/my/assets` | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass) |
-| P3 | pb_onboarding (+ journey timeline, new-hire pulse, living org chart wow) | pending |
+| P3 | pb_onboarding (+ journey timeline, new-hire pulse, living org chart wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
 | P4 | pb_offboarding | pending |
 | P5 | pb_probation | pending |
 | P6 | pb_pip | pending |
@@ -342,3 +342,60 @@ without owner approval between them.
   itself. The append helper de-duplicates on the FINISHED task name ("Return: VN-LT-00001
   MacBook"), which is the only identity such a task has. Anything P3–P11 bolts onto a
   journey hook needs the same treatment.
+
+### P3 (pb_onboarding, 2026-09-01)
+
+- **R31 — a column a later phase adds to `pb.journey.template.step` does NOT
+  reach `pb.journey.task`.** P0 builds its task values from a FIXED dict, and
+  that is the right shape for it — a task is the case's own copy of a step, so
+  the copy is deliberate and explicit. But it means P3's `automation_key` was
+  dropped on the floor for all nine steps of the first live arrival, and the
+  only symptom was steps that never ran themselves: no laptop request, and
+  three day-one emails waiting forever for a human. There is no error and
+  nothing in the log. **Extend `_generate_tasks()`, copy from `step_id` right
+  after `super()`, and only where the task's own value is empty** so a value
+  set by hand on a running case survives. Every phase from P4 on that adds a
+  step column has to do the same.
+- **R32 — the kit's `.pbim-stats` is a grid with NO COLUMNS.** That is on
+  purpose (each cockpit knows how many numbers it has), but a lens that does
+  not declare `grid-template-columns` opens on a stack of full-width tiles and
+  looks broken. Copy `.lcj-kpis` (`pb_lifecycle/static/src/scss/journeys.scss:33`):
+  five columns, three under 1180px, two under 700px.
+- **R33 — `.pbim-badge` capitalises every word.** Correct for a status word
+  ("Approved"), wrong for a sentence: the buddy dialog's eligibility reasons
+  rendered as *"Only 0 Month(S) Here — A Buddy Needs At Least 6."* Any badge
+  that carries a SENTENCE has to set `text-transform: none` itself.
+- **R34 — a sentence split across several `t-esc` nodes loses the whitespace
+  between them.** OWL collapses the newline, and the empty state read
+  "There are2 new joiners on this board". Build the whole sentence in ONE
+  expression rather than interleaving text nodes and `t-esc`.
+- **R35 — an XML comment ruled with hyphens is not well-formed XML.**
+  `<!-- ---------- before they arrive ---------- -->` in a data file is a parse
+  error at module load that takes the entire file with it. (W22 again, this
+  time in a `data/` file rather than an OWL template — the rule is the same
+  everywhere: rule section comments with `=`, never `-`.)
+- **R36 — the live server's clock is a DAY BEHIND the agent's local date.** A
+  test that writes `date.today()` from the laptop into a record the cron finds
+  with `due_date <= today` writes tomorrow, the cron finds nothing, and the
+  feature looks broken when it is fine. Take "today" from the server (or write
+  a date safely in the past) whenever a date-driven job is being tested.
+- **R37 — `mail.mail.unlink()` over JSON-RPC cascades into
+  `mail.message.unlink()` and is REFUSED, even for uid 2.** To take test
+  traffic out of the outgoing queue without an SMTP send, write
+  `state = 'cancel'` on the messages instead of deleting them. (This database
+  has a live `smtp.gmail.com` server and an hourly queue cron, so anything
+  left `outgoing` really does go out.)
+- **R38 — `pb.asset.country_id` is NOT NULL and there is no `available`
+  state.** The states are `spare / assigned / repair / to_scrap / scrapped /
+  deactivated`. Creating a test asset without a country is a raw Postgres
+  not-null violation, and writing `available` is a plain ValueError.
+- **R39 — the PORTAL surface has no dark mode at all.** Neither biz_theme's
+  `data-theme="dark"` attribute nor an emulated `prefers-color-scheme: dark`
+  changes a single pixel of `/my/...`: the website frontend is light-only by
+  design, and R20's native-list problem is a BACKEND one. So "check the portal
+  in both themes" is satisfied by checking that every colour resolves — which
+  is why every rule in `portal_onboarding.scss` carries a literal fallback
+  beside its token. Do not go looking for a portal dark palette to fix.
+- **R40 — `_read_group` cannot be called over JSON-RPC** (private method), and
+  neither can any other `_`-prefixed helper. Aggregates during validation go
+  through psql, or through a public facade method written for the purpose.
