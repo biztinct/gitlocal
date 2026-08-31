@@ -237,3 +237,53 @@ without owner approval between them.
   resolved at registry load, which on a fresh install runs before that module's security
   data exists, and it also refuses the very `create` that mints the value. Protect tokens
   with the ACL, the record rule and by never putting them in a view or a payload instead.
+
+### P1 (pb_zoho_bridge, 2026-09-01)
+
+- **R14 — this Odoo 19 build keeps employment fields on a VERSION record, not on
+  `hr_employee`.** `job_title`, `department_id` and friends are `related='version_id.…'`
+  and non-stored, so `SELECT job_title FROM hr_employee` fails with *column does not
+  exist* while the ORM read of the same field works perfectly. Verify employee writes
+  through JSON-RPC / the ORM, never with raw SQL, or a passing write looks like a
+  failure and a failing one can look like a pass. (`hr.version` is where Odoo 19 put
+  what used to be `hr.contract`.)
+- **R15 — the deploy ritual's `echo EXIT=$? >> /tmp/x.log` can silently not run.** Two
+  ways, both hit in one afternoon. (a) The heredoc that writes the run script fails when
+  `/tmp/rize_run.sh` already exists **owned by root** — /tmp's sticky bit blocks the
+  overwrite, the `&&` chain does not cover the `systemd-run` on the next line, and
+  systemd cheerfully re-runs the PREVIOUS PHASE'S script. P1 spent one full cycle
+  watching "EXIT=0" for an install of pb_lifecycle. (b) Once odoo owns the logfile the
+  root shell's append is refused, so no EXIT line is ever written. **Use a fresh
+  per-phase script name written with `sudo tee`, and take the real verdict from
+  `journalctl -u <unit>` plus `ir_module_module.state/latest_version` — never from the
+  presence of an EXIT line.**
+- **R16 — `search([], limit=1)` on `res.company` is the WRONG default company.** It is
+  the lowest id, which on a mature database is "Your Company", the empty shell left by
+  the initial install. Anything scoped to it disappears behind the standard company
+  record rule, and the screen says "nothing here" over a database that is full. Pick the
+  company with the most employees (`_best_company()` in `pb_zoho_bridge/hooks.py`) —
+  that is the operating company by definition and needs no configuration.
+- **R17 — a catch-all rule with an empty match value matches the cases you meant to
+  exclude.** "Someone new arrived → start their joining checklist" also fires for a
+  person whose record reaches Payobook for the first time already marked *Terminated* —
+  a backfill, not a joiner. Any rule table that has a wildcard row needs its guard rows
+  ABOVE the wildcard, and the seed file is the place to ship them.
+- **R18 — `type='json'` on an `http.route` is deprecated on Odoo 19.** It still works
+  (it is an alias for `'jsonrpc'`) but every module load logs a DeprecationWarning WITH
+  A FULL STACK TRACE, which is a lot of noise to read past when hunting a real failure.
+  New routes use `type='jsonrpc'`. The Darwin webhook still uses the old spelling.
+- **R19 — `/api/*` on this box needs the Host header.** The server is multi-tenant with a
+  dbfilter, so `curl http://127.0.0.1:8069/api/...` gets a 404 "No database is selected"
+  rather than the controller. Pass `-H "Host: payobook.com"` when testing locally; the
+  real caller uses `https://payobook.com/...` and is fine.
+- **R20 — dark mode is broken on NATIVE LIST VIEWS, product-wide.** Setting
+  `data-theme="dark"` (biz_theme's own switch, `biz_theme/static/src/scss/biz_variables.scss:276`)
+  leaves list rows with near-white text on a near-white background. It is NOT caused by
+  any one module — P0's own "Journey checklists" list breaks identically. There is also
+  no user-facing toggle that sets the attribute today, so it is latent rather than live.
+  **Do not "fix" it inside a feature phase**; it is a biz_theme job with a blast radius
+  of every screen in the product.
+- **R21 — a duplicate audit row cannot carry the key it duplicates.** With a unique
+  constraint on `external_event_id`, the second sighting of an event must be written with
+  that field EMPTY (Postgres keeps NULLs distinct) and a `duplicate_of_id` pointer
+  instead. Writing the key again turns an idempotent skip into an integrity error.
