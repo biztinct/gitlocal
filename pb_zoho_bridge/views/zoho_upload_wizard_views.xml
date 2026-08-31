@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         Two steps in one dialog. The first writes nothing at all; the
+         second is the only button on the screen that changes anything, and
+         it does not appear until the person has read what it will do.
+         ================================================================== -->
+
+    <record id="view_zoho_upload_wizard_form" model="ir.ui.view">
+        <field name="name">pb.zoho.upload.wizard.form</field>
+        <field name="model">pb.zoho.upload.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Upload a joiner file">
+                <field name="state" invisible="1"/>
+
+                <div invisible="state != 'upload'">
+                    <div class="oe_title">
+                        <h2>Upload a joiner file</h2>
+                    </div>
+                    <p class="text-muted">
+                        Take the employee export your HR team already produces —
+                        a spreadsheet or a CSV — and Payobook will read it the
+                        same way it reads a live push: new people get their
+                        joining checklist, leavers get theirs, and anything it
+                        is not sure about waits for you.
+                    </p>
+                    <group>
+                        <group>
+                            <field name="file_data" filename="filename"
+                                   widget="binary" string="File"/>
+                            <field name="filename" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="status">
+                        <strong>Nothing is written yet.</strong> The next screen
+                        tells you exactly what will happen before anything
+                        changes. The first row of the file must be the column
+                        headings.
+                    </div>
+                </div>
+
+                <div invisible="state != 'preview'">
+                    <div class="oe_title">
+                        <h2>Here is what will happen</h2>
+                    </div>
+                    <div class="alert alert-secondary" role="status">
+                        <field name="summary_note" nolabel="1" readonly="1"/>
+                    </div>
+                    <group>
+                        <group string="What Payobook will do">
+                            <field name="row_count"/>
+                            <field name="new_count"/>
+                            <field name="update_count"/>
+                            <field name="onboard_count"/>
+                            <field name="offboard_count"/>
+                        </group>
+                        <group string="What it will not do">
+                            <field name="review_count"/>
+                            <field name="ignore_count"/>
+                            <field name="duplicate_count"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="status"
+                         invisible="review_count == 0">
+                        Some rows will not be acted on. They go into
+                        <strong>Arrivals that need a look</strong> with the
+                        reason written next to each one — nothing about those
+                        people changes.
+                    </div>
+                    <notebook>
+                        <page string="Row by row" name="preview">
+                            <field name="preview_json" widget="text"
+                                   readonly="1" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </div>
+
+                <footer>
+                    <button name="action_preview" type="object"
+                            string="Check the file" class="btn-primary"
+                            invisible="state != 'upload'"/>
+                    <button name="action_apply" type="object"
+                            string="Apply it" class="btn-primary"
+                            invisible="state != 'preview'"/>
+                    <button name="action_back" type="object"
+                            string="Choose another file" class="btn-secondary"
+                            invisible="state != 'preview'"/>
+                    <button string="Cancel" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_zoho_upload_wizard" model="ir.actions.act_window">
+        <field name="name">Upload a joiner file</field>
+        <field name="res_model">pb.zoho.upload.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

@@ -1155,6 +1155,69 @@ class ZohoConnector(BaseHRConnector):
             "error: %s", len(failures), len(refs), len(rows), failures[0])
 
     # ==========================================
+    # INBOUND PUSH (webhook ingestion)
+    # ==========================================
+
+    def ingest_records(self, data_type: str, records: List[Dict]) -> Dict[str, Any]:
+        """Accept records a Zoho People tenant PUSHED at us.
+
+        `hr.integration.connector.webhook_ingest()` refuses any connector class
+        that does not implement this method, so its existence here is what makes
+        `/api/zoho/webhook` possible at all. The caller has already proved it
+        holds the connector's api key; nothing further is trusted.
+
+        Two things happen, in this order and for a reason. The raw row is stored
+        FIRST, exactly as the Darwin path stores it — that row is the audit
+        trail, it is never edited, and it must survive whatever the second step
+        concludes. Only then are employee records handed to the arrival
+        pipeline, which is where the tenant's own rules decide whether somebody
+        gets a joining checklist.
+
+        The registry probe is load-bearing. `pb_zoho_bridge` is a SEPARATE
+        module and most databases running this engine do not have it: without
+        the guard, `self.env['pb.zoho.pipeline']` would raise KeyError and every
+        pushed record would fail on a database that never asked for the feature.
+        With it, the push degrades to exactly the Darwin behaviour — stored,
+        not applied.
+        """
+        DataStore = self.env['hr.api.data.store'].sudo()
+        parsed_rows = []
+        stored = 0
+        for rec in records:
+            if not isinstance(rec, dict):
+                continue
+            parsed = (self._parse_employee_record(rec)
+                      if data_type == 'employee' else None)
+            eid = str((parsed or {}).get('employee_id')
+                      or rec.get('EmployeeID') or rec.get('employee_id') or '')
+            DataStore.create({
+                'connector_id': self.connector.id,
+                'data_type': data_type if data_type in (
+                    'employee', 'salary', 'attendance', 'leave', 'dependent',
+                    'benefit', 'tax', 'custom') else 'custom',
+                'employee_external_id': eid,
+                'raw_payload': rec,
+                'extracted_data': parsed if parsed else False,
+                'state': 'extracted' if parsed else 'raw',
+                'pull_triggered_by': 'cron',
+            })
+            stored += 1
+            parsed_rows.append(rec)
+
+        applied = {}
+        if data_type == 'employee' and parsed_rows:
+            if 'pb.zoho.pipeline' in self.env:
+                applied = self.env['pb.zoho.pipeline'].sudo().process_records(
+                    parsed_rows, 'webhook',
+                    company_id=self.connector.company_id.id)
+            else:
+                _logger.info(
+                    "Zoho push stored %s employee record(s); the arrival "
+                    "bridge is not installed on this database, so nothing was "
+                    "applied.", stored)
+        return {'stored': stored, 'applied': applied}
+
+    # ==========================================
     # OAUTH FLOW HELPERS
     # ==========================================
 

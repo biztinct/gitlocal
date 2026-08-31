@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY. This is policy, and policy is expected to
+     change: the next phase that learns a new status word must be able to ship
+     it as an edit to this file rather than as a migration. A tenant who edits
+     a seeded rule by hand will have that edit overwritten on the next upgrade,
+     which is the honest trade — their own rules, added as new records, are
+     never touched. -->
+<odoo noupdate="0">
+
+    <!-- ==================================================================
+         WHAT PAYOBOOK DOES WHEN THE CONNECTED SYSTEM SPEAKS.
+
+         Read top to bottom: the first rule that matches wins.
+
+         COMPANY-LESS ON PURPOSE (R8). `company_id` defaults to the company of
+         whoever ran the install, and the company record rule then hides the
+         rule from every OTHER company — so the second company's joiners would
+         silently fall through to "no rule covers this yet" for ever. An empty
+         company means "everywhere", which is what a shipped default is.
+
+         There is no catch-all status rule, and that is the safety property of
+         the whole module: a status word nobody has taught us produces a review
+         row and nothing else. Opening the wrong checklist for the wrong person
+         is far more expensive than a line in a list.
+         ================================================================== -->
+
+    <record id="rule_created_onboard" model="pb.zoho.event.rule">
+        <field name="sequence">10</field>
+        <field name="trigger">created</field>
+        <field name="action">onboard</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Somebody new appeared in the connected system, so they are joining. Payobook adds them and starts their joining checklist.</field>
+    </record>
+
+    <record id="rule_status_resigned" model="pb.zoho.event.rule">
+        <field name="sequence">20</field>
+        <field name="trigger">status</field>
+        <field name="match_value">Resigned</field>
+        <field name="action">offboard</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">They have resigned. Start the leaving checklist so nothing is forgotten before their last day.</field>
+    </record>
+
+    <record id="rule_status_notice" model="pb.zoho.event.rule">
+        <field name="sequence">30</field>
+        <field name="trigger">status</field>
+        <field name="match_value">Notice Period</field>
+        <field name="action">offboard</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">They are working their notice. Same leaving checklist — it is only opened once, so this is safe even after the resignation rule has already run.</field>
+    </record>
+
+    <record id="rule_status_notice_short" model="pb.zoho.event.rule">
+        <field name="sequence">35</field>
+        <field name="trigger">status</field>
+        <field name="match_value">Notice</field>
+        <field name="action">offboard</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">The short spelling of the same thing. A status word is matched exactly (capitals and spacing aside), so both spellings need a rule rather than one clever one.</field>
+    </record>
+
+    <record id="rule_status_terminated" model="pb.zoho.event.rule">
+        <field name="sequence">40</field>
+        <field name="trigger">status</field>
+        <field name="match_value">Terminated</field>
+        <field name="action">review</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">A termination is never handled automatically. It is put in the review list for a person to act on, because the sequence of events matters and often legal advice does too.</field>
+    </record>
+
+    <record id="rule_status_confirmed" model="pb.zoho.event.rule">
+        <field name="sequence">50</field>
+        <field name="trigger">status</field>
+        <field name="match_value">Confirmed</field>
+        <field name="action">update</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">They passed probation in the connected system. Payobook records it; the probation checklist itself is run in Payobook.</field>
+    </record>
+
+    <record id="rule_updated_update" model="pb.zoho.event.rule">
+        <field name="sequence">60</field>
+        <field name="trigger">updated</field>
+        <field name="action">update</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Their details changed — a new title, a new manager, a new phone number. Payobook keeps its copy in step and does nothing else.</field>
+    </record>
+
+</odoo>
