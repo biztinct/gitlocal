@@ -63,7 +63,11 @@ class PbZohoEventRule(models.Model):
         string='And the status word is',
         help='The exact word the connected system sends, for example '
              '"Resigned". Capitals and extra spaces do not matter. '
-             'Leave it empty to match any status.')
+             'Leave it empty to match any status.\n\n'
+             'It narrows a "someone new arrived" rule too, which is how '
+             'Payobook avoids handing a joining checklist to a person whose '
+             'record turns up for the first time already marked as having '
+             'left.')
     action = fields.Selection(
         ACTIONS, string='Then Payobook will', required=True, default='review')
     active = fields.Boolean(default=True)
@@ -76,8 +80,17 @@ class PbZohoEventRule(models.Model):
     def _compute_name(self):
         for rec in self:
             when = TRIGGER_LABEL.get(rec.trigger, rec.trigger or '')
-            if rec.trigger == 'status' and rec.match_value:
-                when = _('Their status becomes "%s"', rec.match_value.strip())
+            if rec.match_value:
+                word = rec.match_value.strip()
+                if rec.trigger == 'status':
+                    when = _('Their status becomes "%s"', word)
+                else:
+                    # A narrowed 'created'/'updated' rule reads as a sentence
+                    # too, or the list shows four identical "Someone new
+                    # arrived" rows that only differ in a column nobody is
+                    # looking at.
+                    when = _('%(when)s and their status is "%(word)s"',
+                             when=when, word=word)
             rec.name = '%s → %s' % (
                 when, ACTION_LABEL.get(rec.action, rec.action or ''))
 

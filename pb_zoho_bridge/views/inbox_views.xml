@@ -112,7 +112,7 @@
                 <separator/>
                 <filter name="filter_today" string="Today"
                         domain="[('received_at', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
-                <group string="Group by">
+                <group>
                     <filter name="group_state" string="Outcome"
                             context="{'group_by': 'state'}"/>
                     <filter name="group_source" string="Came in by"

@@ -21,7 +21,6 @@ still have burned sequences and could still have created a department.
 import base64
 import csv
 import io
-import json
 import logging
 
 from odoo import api, fields, models, _
@@ -56,7 +55,7 @@ class PbZohoUploadWizard(models.TransientModel):
     review_count = fields.Integer(string='Rows needing a look', readonly=True)
     ignore_count = fields.Integer(string='Rows to leave alone', readonly=True)
     duplicate_count = fields.Integer(string='Rows already received', readonly=True)
-    preview_json = fields.Text(string='Row by row', readonly=True)
+    preview_lines = fields.Text(string='Row by row', readonly=True)
     summary_note = fields.Text(string='What will happen', readonly=True)
     result_note = fields.Text(string='What happened', readonly=True)
 
@@ -215,8 +214,11 @@ class PbZohoUploadWizard(models.TransientModel):
             'review_count': counts['review'],
             'ignore_count': counts['ignore'],
             'duplicate_count': counts['duplicate'],
-            'preview_json': json.dumps(lines, indent=2, ensure_ascii=False,
-                                       default=str),
+            # Readable lines, not a JSON dump. The person approving this
+            # upload is an HR administrator deciding whether to press Apply;
+            # they should not have to read a payload to do it.
+            'preview_lines': '\n'.join(
+                '%s  —  %s' % (ln['who'], ln['outcome']) for ln in lines),
             'summary_note': self._summary_sentence(len(rows), counts),
         })
         return self._reopen()
@@ -292,5 +294,5 @@ class PbZohoUploadWizard(models.TransientModel):
         for rec in self:
             if rec.state != 'upload':
                 rec.state = 'upload'
-            rec.preview_json = False
+            rec.preview_lines = False
             rec.summary_note = False
