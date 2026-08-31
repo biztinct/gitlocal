@@ -102,6 +102,13 @@ without owner approval between them.
   SVG path there if new); claim `match_action_tags`/`match_models` nothing else claims;
   update `TARGET_RAIL` in `pb_sidebar/tests/test_ia_c5.py` in the same change. No rail
   sub-items — sub-navigation is the hub lens rail.
+- **Lifecycle hub soft registry (P0, for P5/P6/P10):** registry category
+  `"pb_lifecycle_lenses"`, exported as `LIFECYCLE_LENSES` from
+  `pb_lifecycle/static/src/js/lifecycle_hub.js` (alongside `LIFECYCLE_GATE`). Add with
+  `registry.category(LIFECYCLE_LENSES).add(key, {key, icon, label, Component, groups,
+  propsFromContext?}, {sequence})`; the shipped Journeys lens has no sequence, so start
+  bolted-on lenses at 20. ⌘K sequences taken by P0: mission **190**, deep links **2100**
+  (Start a journey), **2110** (Journey checklists, Admin group), **2120** (Letters).
 - Hub (`pb_hub`): `HubShell` with a STABLE config object built once in setup
   (`{key, brand:{label,icon}, defaultLens, lenses:[...]}`); lenses mount cockpits with
   `embedded: true` (cockpit template branches on `props.embedded` to drop its own H1);
@@ -157,7 +164,7 @@ without owner approval between them.
 
 | Phase | Module(s) | Status |
 |---|---|---|
-| P0 | pb_lifecycle — journey engine, letters, reminders, Lifecycle mission + hub + Journeys cockpit | HANDED OVER |
+| P0 | pb_lifecycle — journey engine, letters, reminders, Lifecycle mission + hub + Journeys cockpit | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass) |
 | P1 | pb_zoho_bridge — inbound webhook, event rules, CSV fallback | pending |
 | P2 | pb_assets | pending |
 | P3 | pb_onboarding (+ journey timeline, new-hire pulse, living org chart wow) | pending |
@@ -172,4 +179,58 @@ without owner approval between them.
 
 ## Gotchas discovered during RIZE phases (append here)
 
-(none yet)
+### P0 (pb_lifecycle, 2026-08-31)
+
+- **R1 — OWL reserves `lt`/`gt`/`lte`/`gte` as OPERATORS.** `t-as="lt"` compiles the
+  loop variable into the generated function as a bare `<`, and the whole template dies
+  with `OwlError: Failed to compile template ... Unexpected token '<'` — pointing at the
+  template, never at the loop. Never name a `t-as` variable `lt`, `gt`, `lte`, `gte`,
+  `and`, `or`, `not`, `in`. (Hit on `t-as="lt"` for letters; renamed to `ltr`.)
+- **R2 — JavaScript has no implicit string concatenation.** A Python habit
+  (`_t("one " "two")`) is a `SyntaxError: missing ) after argument list` that kills the
+  ENTIRE backend asset bundle: every OWL surface in the product goes blank, and the only
+  clue is one console line. Syntax-check new JS before deploying:
+  `sed 's#^import .*$##; s#^export ##' f.js > /tmp/c.mjs && node --check /tmp/c.mjs`.
+- **R3 — `activity_schedule()` lives on `mail.activity.mixin`, not `mail.thread`.** A model
+  that inherits only `mail.thread` raises `AttributeError` on it. Inside a per-record
+  try/except (which the reminder-cron pattern mandates) the job then runs to completion
+  reporting zero nudges, with the real cause only in the log. Inherit
+  `['mail.thread', 'mail.activity.mixin']` on anything that schedules activities.
+- **R4 — a QWeb render context key named `request` shadows the HTTP request.** The page
+  dies with `TypeError: 'Request' object is not subscriptable` and the visitor gets a
+  500. Name the key anything else (`feedback`, `record`, `payload`).
+- **R5 — server-side QWeb has no `t-key`.** Harmless, but it logs
+  `Unknown directives or unused attributes: {'t-key'}` on every render. `t-key` belongs to
+  OWL templates (`static/src/xml`), never to backend/frontend `<template>` views.
+- **R6 — a `mail.template`'s own rendered `email_to` can reach `mail.mail` EMPTY.** The
+  message is created, queued and addressed to nobody, with no error anywhere. The same
+  address passed in `send_mail(..., email_values={'email_to': to})` lands. Proven side by
+  side. **Always pass the recipient explicitly**; keep the template field as documentation.
+- **R7 — `res.users.group_ids` is DIRECT membership only.** Searching it misses everyone
+  who holds a group through `implied_ids` — i.e. most administrators. Odoo 19's
+  `res.groups.all_user_ids` is the transitive set; use it (the vault's expiry-cron
+  precedent predates it and has the same blind spot).
+- **R8 — seed data must be COMPANY-LESS.** `company_id` defaults to the loading user's
+  company, so a seeded record installs onto whichever company ran the install and the
+  `['|',('company_id','=',False),...]` rule then hides it from everyone else. Ship
+  `<field name="company_id" eval="False"/>` on every `noupdate="1"` seed.
+- **R9 — a RELATED STORED `company_id` does not follow a raw-SQL parent update.** It is a
+  real column. A migration that re-points parents must re-point the children explicitly,
+  or the children stay invisible to the very read that uses them.
+- **R10 — a non-stored computed field cannot be used in a search-view `<filter>` domain.**
+  Filter client-side over a payload that already carries the number.
+- **R11 — the odoo log goes to `logfile` in `/etc/odoo-server.conf`, not to stdout.** A
+  detached test run's `> /tmp/x.log` captures almost nothing; test results land in
+  `/var/log/odoo/odoo-server.log`. Add `--logfile=/tmp/x.log` to a test run, or grep the
+  server log. Also: `--no-http` does NOT free port 8069 here — pass `--http-port=8199`;
+  and `--longpolling-port` no longer exists in Odoo 19.
+- **R12 — CREDENTIAL DRIFT.** `ash@biztinct.com` / `plone@123` is **wrong** on the live
+  `payobook` database (answers "Wrong login/password"; the user is uid 2, Mitchell Admin,
+  and is active). P0 validated through the dormant `igc1.validator` account (uid 2065)
+  left by an earlier phase — reactivated, given a temporary password and the System /
+  HR User / Lifecycle Administrator tiers. **Owner debt: get the real admin password, and
+  deactivate uid 2065 when the programme is done.**
+- **R13 — a field-level `groups=` naming a group from the SAME module is a trap.** It is
+  resolved at registry load, which on a fresh install runs before that module's security
+  data exists, and it also refuses the very `create` that mints the value. Protect tokens
+  with the ACL, the record rule and by never putting them in a view or a payload instead.
