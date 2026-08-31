@@ -1,0 +1,304 @@
+// =====================================================================
+//  The New joiners lens — .obb-*
+//
+//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  .pbim-fchip, .pbim-badge, .pbim-modal). This file only says what is
+//  SPECIFIC to a board whose row is a person: the card, the progress bar,
+//  the three pulse dots and the candidate list.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file.
+// =====================================================================
+
+.obb {
+    // ---------------------------------------------------------- header
+    .obb-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    &.obb--embedded .obb-head { margin-bottom: 12px; }
+    .obb-head-id { flex: 1 1 320px; min-width: 0; }
+    .obb-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .obb-kpis { margin-bottom: 16px; }
+
+    // --------------------------------------------------------- filters
+    .obb-filters { padding: 14px 16px; margin-bottom: 18px; }
+    .obb-filter-row {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        & + .obb-filter-row { margin-top: 10px; }
+    }
+    .obb-search {
+        display: flex; align-items: center; gap: 8px; flex: 1 1 260px;
+        border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 8px 12px; color: var(--pbim-muted);
+        background: var(--pbim-surface);
+
+        input {
+            flex: 1; border: none; outline: none; background: transparent;
+            font: inherit; font-size: 13.5px; color: var(--pbim-text);
+            min-width: 0;
+        }
+        &:focus-within {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+    .obb-search--modal { margin: 14px 0 10px; flex: 1 1 auto; }
+
+    // ------------------------------------------------------- the cards
+    .obb-grid {
+        display: grid; gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    }
+    .obb-card {
+        padding: 18px; display: flex; flex-direction: column; gap: 12px;
+        transition: box-shadow .15s, transform .15s, border-color .15s;
+
+        &:hover { box-shadow: var(--pbim-sh-lg); transform: translateY(-2px); }
+        &.is-late { border-color: var(--pbim-amber); }
+        &.is-red { border-color: var(--pbim-rose); }
+    }
+    .obb-card-top {
+        display: flex; align-items: center; gap: 12px; cursor: pointer;
+    }
+    .obb-av {
+        width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
+        border: 2px solid var(--pbim-soft); flex: 0 0 auto;
+    }
+    .obb-av--lg { width: 64px; height: 64px; }
+    .obb-who { flex: 1; min-width: 0; }
+    .obb-name {
+        font-size: 15px; font-weight: 800; color: var(--pbim-ink);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .obb-job {
+        font-size: 12.5px; color: var(--pbim-muted); margin-top: 1px;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .obb-when { text-align: right; flex: 0 0 auto; }
+    .obb-when-d {
+        font-size: 14px; font-weight: 800; color: var(--pbim-primary-strong);
+        font-variant-numeric: tabular-nums;
+    }
+    .obb-when-w { font-size: 11.5px; color: var(--pbim-muted); }
+
+    // ---- progress ----
+    .obb-bar {
+        height: 7px; border-radius: 999px; background: var(--pbim-line-2);
+        overflow: hidden;
+    }
+    .obb-bar-f {
+        display: block; height: 100%; border-radius: 999px;
+        background: var(--pbim-primary);
+        transition: width .5s cubic-bezier(.22, .8, .3, 1);
+    }
+    .obb-bar-l {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 11.5px; color: var(--pbim-muted); margin-top: -6px;
+    }
+    .obb-late {
+        display: inline-flex; align-items: center; gap: 4px;
+        color: var(--pbim-rose); font-weight: 700;
+    }
+
+    // ---- the four facts ----
+    .obb-facts {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 9px 14px;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 12px;
+    }
+    .obb-fact { min-width: 0; }
+    .obb-fact-l {
+        display: block; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .05em; text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+    .obb-fact-v {
+        display: block; font-size: 12.5px; font-weight: 700; margin-top: 2px;
+        color: var(--pbim-text);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+
+        &.muted { color: var(--pbim-muted); font-weight: 500; }
+        .pbim-badge { margin-left: 5px; }
+    }
+    .obb-ask {
+        margin-top: 2px; display: inline-flex; align-items: center; gap: 4px;
+        border: 1px dashed var(--pbim-primary-light, var(--pbim-line));
+        background: transparent; color: var(--pbim-primary-strong);
+        border-radius: 8px; padding: 3px 9px; font-size: 12px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+
+        &:hover { background: var(--pbim-soft); border-style: solid; }
+    }
+
+    // ---- the three dots ----
+    .obb-pulse {
+        display: flex; align-items: center; gap: 9px;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 11px;
+        flex-wrap: wrap;
+    }
+    .obb-pulse-l {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .05em;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+    .obb-dots { display: inline-flex; gap: 5px; }
+    .obb-dot {
+        width: 11px; height: 11px; border-radius: 50%;
+        background: var(--pbim-line); display: inline-block;
+
+        &.obb-dot--idle { background: var(--pbim-line); }
+        &.obb-dot--ok { background: var(--pbim-green); }
+        &.obb-dot--warn { background: var(--pbim-amber); }
+        &.obb-dot--err { background: var(--pbim-rose); }
+        &.obb-dot--muted { background: var(--pbim-line); }
+    }
+    .obb-pulse-w {
+        font-size: 12px; font-weight: 700; color: var(--pbim-text);
+        &.muted { color: var(--pbim-muted); font-weight: 500; }
+    }
+
+    .obb-card-act {
+        display: flex; gap: 8px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 11px;
+    }
+
+    .obb-capped {
+        margin-top: 16px; font-size: 12.5px; color: var(--pbim-muted);
+        text-align: center;
+    }
+
+    // ----------------------------------------------------- empty state
+    .obb-empty { text-align: center; padding: 54px 26px; }
+    .obb-empty-ic {
+        width: 74px; height: 74px; border-radius: 50%; margin: 0 auto 16px;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        display: grid; place-items: center;
+    }
+    .obb-empty h2 { font-size: 18px; font-weight: 800; }
+    .obb-empty p {
+        color: var(--pbim-muted); margin: 8px auto 0; max-width: 520px;
+        line-height: 1.6;
+    }
+
+    // -------------------------------------------------------- drawer
+    // Cloned from the Journeys drawer so the two surfaces on the same hub
+    // slide the same way. It mounts inside this cockpit's own root, which
+    // is why the tokens above it resolve.
+    .obb-scrim {
+        position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1400);
+        background: var(--pbim-scrim, rgba(27, 23, 51, .46));
+        display: flex; justify-content: flex-end;
+    }
+    .obb-drawer {
+        width: 560px; max-width: 100%; height: 100%; overflow: auto;
+        background: var(--pbim-surface); border-left: 1px solid var(--pbim-line);
+        box-shadow: -18px 0 44px rgba(40, 50, 90, .16);
+        padding: 22px 24px 40px;
+        animation: obb-slide .22s cubic-bezier(.22, .8, .3, 1) both;
+    }
+    @keyframes obb-slide { from { transform: translateX(28px); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+        .obb-drawer { animation: none; }
+        .obb-bar-f { transition: none; }
+    }
+
+    .obb-drawer-head {
+        display: flex; align-items: flex-start; gap: 14px;
+        padding-bottom: 16px; border-bottom: 1px solid var(--pbim-line);
+
+        h2 { font-size: 19px; font-weight: 800; margin: 0; color: var(--pbim-ink); }
+        p { font-size: 13px; color: var(--pbim-muted); margin: 2px 0 0; }
+        & > div { flex: 1; min-width: 0; }
+    }
+    .obb-drawer-when {
+        display: inline-flex; align-items: center; gap: 6px;
+        color: var(--pbim-primary-strong) !important; font-weight: 700;
+        margin-top: 6px !important;
+    }
+    .obb-drawer-people {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px; margin: 16px 0 4px;
+    }
+    .obb-mini {
+        background: var(--pbim-bg); border-radius: 11px; padding: 11px 13px;
+
+        span { display: block; font-size: 11.5px; color: var(--pbim-muted); }
+        b { display: block; font-size: 13.5px; margin: 2px 0; }
+    }
+    .obb-mini-l {
+        font-size: 10.5px !important; font-weight: 800; letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+    .obb-drawer-h3 {
+        font-size: 12px; font-weight: 800; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        margin: 22px 0 10px;
+    }
+    .obb-drawer-none {
+        font-size: 13px; color: var(--pbim-muted); padding: 10px 0;
+    }
+    .obb-task {
+        border-top: 1px solid var(--pbim-line-2); padding: 11px 0;
+        &:first-of-type { border-top: none; }
+        &.is-done b { color: var(--pbim-muted); font-weight: 600; }
+    }
+    .obb-task-l {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        b { font-size: 13.5px; flex: 1; min-width: 0; }
+    }
+    .obb-task-d {
+        font-size: 12.5px; color: var(--pbim-muted); margin: 4px 0 0;
+        line-height: 1.5;
+    }
+    .obb-task-m {
+        display: flex; gap: 10px; margin-top: 5px;
+        font-size: 11.5px; color: var(--pbim-muted);
+    }
+
+    // --------------------------------------------------- the dialogs
+    .obb-modal { width: 620px; max-width: 100%; }
+    .obb-cands {
+        max-height: 46vh; overflow: auto; margin: 4px 0 8px;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+    }
+    .obb-cand {
+        display: flex; align-items: center; gap: 12px; padding: 11px 13px;
+        cursor: pointer; border-top: 1px solid var(--pbim-line-2);
+
+        &:first-child { border-top: none; }
+        &:hover { background: var(--pbim-bg); }
+        &.obb-cand--err { opacity: .72; cursor: not-allowed; }
+    }
+    .obb-cand-tx { flex: 1; min-width: 0; }
+    .obb-cand-tx b { font-size: 13.5px; display: block; }
+    .obb-cand-job {
+        font-size: 12px; color: var(--pbim-muted); display: block;
+    }
+    .obb-cand-reasons {
+        display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px;
+    }
+    .obb-cand-go { color: var(--pbim-green); flex: 0 0 auto; }
+    .obb-dates {
+        display: flex; gap: 14px; margin: 12px 0 4px; flex-wrap: wrap;
+
+        label {
+            display: flex; flex-direction: column; gap: 5px; flex: 1 1 160px;
+            font-size: 12px; font-weight: 700; color: var(--pbim-muted);
+        }
+        input {
+            border: 1px solid var(--pbim-line); border-radius: 9px;
+            padding: 9px 11px; font: inherit; font-size: 13px;
+            color: var(--pbim-text); background: var(--pbim-surface);
+        }
+    }
+    .obb-modal-act {
+        display: flex; justify-content: flex-end; gap: 9px; margin-top: 16px;
+    }
+
+    // ---------------------------------------------------------- narrow
+    @media (max-width: 720px) {
+        .obb-grid { grid-template-columns: 1fr; }
+        .obb-facts { grid-template-columns: 1fr; }
+        .obb-drawer { width: 100%; }
+    }
+}
