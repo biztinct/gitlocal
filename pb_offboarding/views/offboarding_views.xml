@@ -91,7 +91,7 @@
                         </group>
                     </group>
                     <group string="Why they are leaving">
-                        <field name="reason_text" nolabel="1"
+                        <field name="reason_text" nolabel="1" colspan="2"
                                placeholder="In their own words…"
                                readonly="state not in ('draft', 'submitted')"/>
                     </group>

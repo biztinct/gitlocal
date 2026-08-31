@@ -230,7 +230,7 @@
                 <div class="exb-fact">
                   <span class="exb-fact-l">Still holding</span>
                   <span t-if="row.assets" class="exb-fact-v warn">
-                    <t t-esc="row.assets"/> item(s)
+                    <t t-esc="row.assets === 1 ? '1 item' : row.assets + ' items'"/>
                   </span>
                   <span t-else="" class="exb-fact-v muted">Nothing</span>
                 </div>
@@ -301,7 +301,8 @@
               <h2 t-esc="state.drawer.leaver.employee"/>
               <p>
                 <t t-esc="state.drawer.leaver.job"/>
-                <t t-if="state.drawer.leaver.dept"> · <t t-esc="state.drawer.leaver.dept"/></t>
+                <t t-if="state.drawer.leaver.job and state.drawer.leaver.dept"> · </t>
+                <t t-esc="state.drawer.leaver.dept"/>
               </p>
               <p class="exb-drawer-when">
                 <t t-out="ic('powerOff',13)"/>
@@ -453,7 +454,7 @@
             <div class="exb-task-m">
               <span t-if="tk.assignee">with <t t-esc="tk.assignee"/></span>
               <span t-esc="tk.kind_label"/>
-              <button t-if="state.canWrite" class="exb-kt-btn"
+              <button t-if="state.canWrite and tk.auto" class="exb-kt-btn"
                       t-on-click="() => this.runStep(tk)">
                 Run it now
               </button>
@@ -485,7 +486,7 @@
                     t-on-input="onClearNote"
                     placeholder="Laptop and charger back, screen still with them…"/>
           <p t-if="state.clearing.owner" class="pbim-sub exb-owner">
-            This desk is <t t-esc="state.clearing.owner"/>'s.
+            <t t-esc="state.clearing.owner"/> owns this desk.
           </p>
           <div class="exb-modal-act">
             <button class="pbim-btn ghost" t-on-click="cancelClear">Cancel</button>

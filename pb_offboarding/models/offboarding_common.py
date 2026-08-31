@@ -166,6 +166,18 @@ def first_name(name):
     return parts[-1] if parts else ''
 
 
+def counted(count, one, many):
+    """"1 step" / "9 steps" — never "9 step(s)".
+
+    A count with a bracketed plural on it is the tell that a screen was
+    written by a programme rather than by a person, and this product's whole
+    voice is the other thing. Every user-visible count in this module goes
+    through here; log lines keep the shorthand, because nobody reads a log for
+    its prose.
+    """
+    return '%s %s' % (count, one if count == 1 else many)
+
+
 def joined_sentence(items, limit=3):
     """"A, B and 4 more" — a list a person can read, never a raw repr.
 
