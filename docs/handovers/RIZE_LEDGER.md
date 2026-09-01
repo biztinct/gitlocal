@@ -1168,3 +1168,32 @@ without owner approval between them.
   an AST sweep** — walk every `pb_*/**/*.py`, flag any Dict literal whose
   `type` is `ir.actions.act_window` and which lacks `views` when its
   enclosing function name appears in any `.js` — must report zero.
+- **R126 — the rail must survive a drill-down; judge the STACK, not the
+  action.** `PbSidebar._resolveVisibility` only asked whether the CURRENT
+  action was ours, which every cockpit drill-down fails: `pb.probation.review`
+  is dotted (the `pb_` prefix test missed it) and `hr.contract` / `hr.employee`
+  / `pb.hr.letter` are not ours by name at all. So "Open the review" / "Their
+  record" replaced the Payobook rail with Odoo's native app menu mid-click —
+  the product changing its own chrome inside one journey. Fix (commit
+  95398c4f): `isPb()` also accepts `pb.`, and new `_openedFromOurs()` reads
+  `window.location.pathname` — Odoo 19 keeps the WHOLE stack in the path
+  (`/bizapp/pb_probation_board/pb.probation.review/4`) — showing the rail when
+  any ANCESTOR segment is a rail-claimed tag/xmlid/model. URL over remembered
+  state: survives refresh + pasted links, self-clears on app change. Trailing
+  segment excluded so a bare `/bizapp/hr.contract/1` gets no rail. **Any new
+  cockpit that opens records needs nothing extra — the path carries it.**
+- **R127 — a monetary field needs BOTH a matched inset and enough width, or
+  the currency symbol prints on the number.** The widget draws the symbol in
+  an absolutely positioned overlay: an invisible ghost copy of the value, then
+  the symbol right after it. It reads correctly only while (a) the overlay and
+  the input share their horizontal padding and (b) the field is wide enough
+  for value + symbol — the ghost carries `max-width:100%`, so a too-narrow
+  field CLAMPS it and the symbol lands mid-number. Both failed here:
+  `vu-form` gave inputs an 11px inset and left the overlay on Odoo's 8px (3px
+  drift), and Odoo's `o_hr_narrow_field` caps the contract wage at 128px —
+  fine for `5,000.00`, hopeless for `12,200,000 ₫`, which rendered `12,200,00₫`.
+  Fixed in `vu_form_engine.scss` (overlay re-pinned to 11px) and
+  `backend.scss` (`o_hr_narrow_field` cap lifted, 9.5rem floor, host
+  `.o_row.mw-50` released so `/ month` does not wrap). **VND/IDR/KHR-sized
+  amounts are this product's norm — never trust a width tuned for two decimal
+  places.** Asset change: purge `ir_attachment` `/web/assets/%` + restart.
