@@ -217,7 +217,7 @@
                         </group>
                     </group>
                     <group string="Why">
-                        <field name="reason" nolabel="1"
+                        <field name="reason" colspan="2" nolabel="1"
                                placeholder="What this is for, in the words the person will read."/>
                     </group>
                 </sheet>
@@ -318,10 +318,10 @@
                         </group>
                     </group>
                     <group string="Reminders already sent">
-                        <field name="reminder_log" nolabel="1" readonly="1"/>
+                        <field name="reminder_log" colspan="2" nolabel="1" readonly="1"/>
                     </group>
                     <group string="Notes">
-                        <field name="notes" nolabel="1"/>
+                        <field name="notes" colspan="2" nolabel="1"/>
                     </group>
                 </sheet>
                 <chatter/>
@@ -384,7 +384,7 @@
                         </group>
                     </group>
                     <group string="What it covers">
-                        <field name="coverage_html" nolabel="1"/>
+                        <field name="coverage_html" colspan="2" nolabel="1"/>
                     </group>
                     <notebook>
                         <page string="People on it">
@@ -448,7 +448,7 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
                 <group string="Finance pack" invisible="not pb_pack_note">
-                    <field name="pb_pack_note" nolabel="1" readonly="1"/>
+                    <field name="pb_pack_note" colspan="2" nolabel="1" readonly="1"/>
                 </group>
             </xpath>
         </field>

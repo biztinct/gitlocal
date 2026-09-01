@@ -61,7 +61,7 @@
                         </group>
                     </group>
                     <group string="Why it is needed">
-                        <field name="justification" nolabel="1"
+                        <field name="justification" colspan="2" nolabel="1"
                                placeholder="What the item is for…"/>
                     </group>
                     <notebook>

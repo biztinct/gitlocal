@@ -74,7 +74,7 @@
                         </group>
                     </group>
                     <group string="Details" invisible="not error_note">
-                        <field name="error_note" nolabel="1" readonly="1"/>
+                        <field name="error_note" colspan="2" nolabel="1" readonly="1"/>
                     </group>
                     <notebook>
                         <page string="What arrived" name="payload">

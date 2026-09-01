@@ -66,6 +66,13 @@
                     title="Do now exactly what the nightly check does">
               <t t-out="ic('clock',15)"/> Take back what has ended
             </button>
+            <!-- Sits with the other actions, at the top. It was at the FOOT of
+                 the roles list, which on a long list meant scrolling past every
+                 role to reach the one control that changes the list itself. -->
+            <button t-if="canManage" class="pbim-btn ghost" t-on-click="openRoleList"
+                    title="Add a role, rename one, or change what it says">
+              <t t-out="ic('list',15)"/> Edit the list of roles
+            </button>
             <button class="pbim-btn primary" t-on-click="openDelegate">
               <t t-out="ic('arrowLeftRight',15)"/> Hand my access over
             </button>
@@ -221,11 +228,6 @@
             </div>
           </div>
 
-          <div class="pbva-foot" t-if="canManage">
-            <button class="pbim-btn ghost" t-on-click="openRoleList">
-              <t t-out="ic('list',14)"/> Edit the list of roles
-            </button>
-          </div>
         </div>
 
         <!-- ========================== the hand-overs ========================== -->
