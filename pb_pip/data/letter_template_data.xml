@@ -29,9 +29,9 @@
          ================================================================== -->
 
     <record id="letter_template_pip" model="pb.letter.template">
-        <field name="name">Improvement plan</field>
+        <field name="name">Growth plan</field>
         <field name="letter_type">pip</field>
-        <field name="subject">Your improvement plan</field>
+        <field name="subject">Your growth plan</field>
         <field name="sequence">30</field>
         <field name="company_id" eval="False"/>
         <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
@@ -39,7 +39,7 @@
             <div>
                 <p>Dear ${employee_name},</p>
                 <p>
-                    Following our conversations, we have agreed an improvement
+                    Following our conversations, we have agreed a growth
                     plan for your work at <strong>${company}</strong>. It runs
                     from <strong>${plan_start}</strong> to
                     <strong>${plan_end}</strong>.

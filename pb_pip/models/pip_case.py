@@ -31,7 +31,7 @@ import json
 import logging
 from datetime import timedelta
 
-from markupsafe import Markup, escape
+from markupsafe import escape
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
@@ -64,7 +64,7 @@ MAX_CHECKINS = 30
 
 class PbPipCase(models.Model):
     _name = 'pb.pip.case'
-    _description = 'Improvement Plan'
+    _description = 'Growth Plan'
     # `mail.activity.mixin` as well as `mail.thread` — R3: `activity_schedule`
     # lives on the ACTIVITY mixin, and a missed check-in raises a to-do.
     _inherit = ['mail.thread', 'mail.activity.mixin']
@@ -92,8 +92,13 @@ class PbPipCase(models.Model):
         index=True, tracking=True, copy=False)
 
     # ---- coaching
-    coaching_html = fields.Html(
-        string='The coaching note', sanitize=True,
+    # PLAIN TEXT, and deliberately. A coaching note is prose somebody types
+    # in a hurry after a difficult conversation; rich text buys nothing here
+    # and costs the one thing that matters — the drawer edits this in a
+    # textarea, and an Html field shown in a textarea puts `<p>` tags in front
+    # of the person writing it.
+    coaching_note = fields.Text(
+        string='The coaching note',
         help='What was said, what was agreed and by when. This is the stage '
              'most of these should end at.')
     coaching_start = fields.Date(string='Coaching started', readonly=True)
@@ -162,12 +167,12 @@ class PbPipCase(models.Model):
     @api.depends('employee_id')
     def _compute_name(self):
         for rec in self:
-            rec.name = _('%s — improvement plan',
+            rec.name = _('%s — growth plan',
                          rec.employee_id.sudo().name or _('Employee'))
 
     def _compute_display_name(self):
         for rec in self:
-            rec.display_name = rec.name or _('Improvement plan')
+            rec.display_name = rec.name or _('Growth plan')
 
     @api.depends('objective_ids.status', 'checkin_ids.state')
     def _compute_progress(self):
@@ -202,8 +207,8 @@ class PbPipCase(models.Model):
             return
         self.weeks = self.template_id.default_weeks or 6
         self.checkin_freq = self.template_id.checkin_freq or 'weekly'
-        if not self.coaching_html and self.template_id.coaching_body_html:
-            self.coaching_html = self.template_id.coaching_body_html
+        if not self.coaching_note and self.template_id.coaching_body:
+            self.coaching_note = self.template_id.coaching_body
 
     # =====================================================================
     #  THE WAY IN. A manager asks; nothing else happens.
@@ -311,7 +316,7 @@ class PbPipCase(models.Model):
         if self._is_hr():
             return True
         raise AccessError(_(
-            "Improvement plans are run by the HR team. Ask them to make the "
+            "Growth plans are run by the HR team. Ask them to make the "
             "change — you can see the request you raised."))
 
     # =====================================================================
@@ -331,10 +336,9 @@ class PbPipCase(models.Model):
             if not rec.hr_owner_user_id:
                 vals['hr_owner_user_id'] = self.env.uid
             if note:
-                vals['coaching_html'] = Markup('<p>%s</p>') % note
-            elif not rec.coaching_html and rec.template_id:
-                vals['coaching_html'] = \
-                    rec.template_id.coaching_body_html or False
+                vals['coaching_note'] = note
+            elif not rec.coaching_note and rec.template_id:
+                vals['coaching_note'] = rec.template_id.coaching_body or False
             rec.sudo().write(vals)
             rec._ensure_coaching_call()
             rec.message_post(body=_(
@@ -365,13 +369,13 @@ class PbPipCase(models.Model):
         self.sudo().coaching_checkin_id = checkin.id
         return checkin
 
-    def action_save_coaching(self, html):
+    def action_save_coaching(self, text):
         """Write down what was said. Available for as long as the plan runs."""
         self.ensure_one()
         self._require_hr()
         if self.state in ('passed', 'failed', 'terminated'):
             raise UserError(_("This plan is closed."))
-        self.sudo().coaching_html = html or False
+        self.sudo().coaching_note = text or False
         self.message_post(body=_("The coaching note was updated."))
         return True
 
@@ -468,7 +472,7 @@ class PbPipCase(models.Model):
                 'These have no "what good looks like" on them, so nobody '
                 'could pass or fail them on evidence: %s.',
                 joined_sentence(missing, limit=4)))
-        if not (self.coaching_html or '').strip():
+        if not (self.coaching_note or '').strip():
             out.append(_(
                 'The coaching note is empty. Write down what was already '
                 'said before the plan starts — it is what makes this fair.'))

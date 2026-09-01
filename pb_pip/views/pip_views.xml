@@ -17,7 +17,7 @@
         <field name="name">pb.pip.case.list</field>
         <field name="model">pb.pip.case</field>
         <field name="arch" type="xml">
-            <list string="Improvement plans" create="0">
+            <list string="Growth plans" create="0">
                 <field name="employee_id"/>
                 <field name="hr_owner_user_id" optional="show"/>
                 <field name="requested_by_user_id" optional="hide"/>
@@ -44,7 +44,7 @@
         <field name="name">pb.pip.case.form</field>
         <field name="model">pb.pip.case</field>
         <field name="arch" type="xml">
-            <form string="Improvement plan">
+            <form string="Growth plan">
                 <header>
                     <button name="action_take_up" type="object"
                             string="Take it up" class="btn-primary"
@@ -99,7 +99,7 @@
                                    placeholder="In the manager's own words."/>
                         </page>
                         <page string="The coaching note" name="coaching">
-                            <field name="coaching_html" nolabel="1"/>
+                            <field name="coaching_note" nolabel="1" placeholder="What was said, what they said was getting in the way, and what you agreed to try…"/>
                         </page>
                         <page string="Objectives" name="objectives">
                             <field name="objective_ids">
@@ -160,7 +160,7 @@
         <field name="name">pb.pip.case.search</field>
         <field name="model">pb.pip.case</field>
         <field name="arch" type="xml">
-            <search string="Improvement plans">
+            <search string="Growth plans">
                 <field name="employee_id"/>
                 <field name="hr_owner_user_id"/>
                 <field name="requested_by_user_id"/>
@@ -184,14 +184,14 @@
     </record>
 
     <record id="action_pb_pip_case" model="ir.actions.act_window">
-        <field name="name">Improvement plans</field>
+        <field name="name">Growth plans</field>
         <field name="res_model">pb.pip.case</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_pb_pip_case_search"/>
         <field name="context">{'search_default_f_open': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Nothing here, and that is good news</p>
-            <p>An improvement plan starts when a manager asks HR to look at how
+            <p>A growth plan starts when a manager asks HR to look at how
                somebody is getting on. Most of those end in a conversation and
                never become a plan at all.</p>
         </field>
@@ -204,7 +204,7 @@
         <field name="name">pb.pip.template.list</field>
         <field name="model">pb.pip.template</field>
         <field name="arch" type="xml">
-            <list string="Improvement plan templates">
+            <list string="Growth plan templates">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="default_weeks"/>
@@ -220,7 +220,7 @@
         <field name="name">pb.pip.template.form</field>
         <field name="model">pb.pip.template</field>
         <field name="arch" type="xml">
-            <form string="Improvement plan template">
+            <form string="Growth plan template">
                 <sheet>
                     <div class="oe_title">
                         <h1><field name="name"
@@ -249,7 +249,7 @@
                         </page>
                         <page string="Coaching note — starting text"
                               name="coaching">
-                            <field name="coaching_body_html" nolabel="1"/>
+                            <field name="coaching_body" nolabel="1"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -258,7 +258,7 @@
     </record>
 
     <record id="action_pb_pip_template" model="ir.actions.act_window">
-        <field name="name">Improvement plan templates</field>
+        <field name="name">Growth plan templates</field>
         <field name="res_model">pb.pip.template</field>
         <field name="view_mode">list,form</field>
         <field name="help" type="html">

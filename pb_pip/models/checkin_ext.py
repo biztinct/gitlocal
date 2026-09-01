@@ -25,5 +25,5 @@ class PbEmployeeCheckin(models.Model):
     _inherit = 'pb.employee.checkin'
 
     pip_case_id = fields.Many2one(
-        'pb.pip.case', string='Improvement plan', index=True,
+        'pb.pip.case', string='Growth plan', index=True,
         ondelete='cascade')

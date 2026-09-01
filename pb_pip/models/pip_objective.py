@@ -15,7 +15,7 @@ from .pip_common import OBJECTIVE_STATES, OBJECTIVE_STATE_LABEL
 
 class PbPipObjective(models.Model):
     _name = 'pb.pip.objective'
-    _description = 'Improvement Plan Objective'
+    _description = 'Growth Plan Objective'
     _order = 'sequence, id'
 
     case_id = fields.Many2one(

@@ -173,6 +173,11 @@ class PbPipPortal(CustomerPortal):
         checkins = [{
             'id': c.id,
             'date': c.scheduled_date,
+            # A DATE A PERSON READS, not the one the database keeps. "3 Sep"
+            # is a day somebody can picture; "2026-09-03" is a field value,
+            # and this is the one page in the product read by somebody who is
+            # already anxious.
+            'label': _friendly(c.scheduled_date),
             'state': c.state,
             'done': c.state == 'done',
             'next': False,
@@ -190,6 +195,7 @@ class PbPipPortal(CustomerPortal):
             'checkins': checkins,
             'days_left': (end - now).days if end else None,
             'elapsed': elapsed,
+            'end_label': _friendly(end),
             'has_letter': bool(case.letter_id and case.letter_id.attachment_id),
             'hr_owner': (case.hr_owner_user_id.name
                          if case.hr_owner_user_id else ''),
@@ -254,3 +260,20 @@ class PbPipPortal(CustomerPortal):
             _logger.exception('pb_pip: could not serve the letter for plan %s',
                               case.id)
             return request.redirect('/my/growth')
+
+
+def _friendly(day):
+    """"3 September" — or "3 September 2027" when it is not this year.
+
+    Written out rather than passed through `format_date`, because the answer
+    has to be the same on the page and in the sentence beside it, and a locale
+    that abbreviates the month differently in two places is a page that looks
+    assembled.
+    """
+    if not day:
+        return ''
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+              'August', 'September', 'October', 'November', 'December']
+    same_year = day.year == date.today().year
+    return '%s %s%s' % (day.day, months[day.month - 1],
+                        '' if same_year else ' %s' % day.year)
