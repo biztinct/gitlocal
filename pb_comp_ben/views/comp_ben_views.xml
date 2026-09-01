@@ -22,6 +22,8 @@
                 <field name="effective_date"/>
                 <field name="monthly_total" optional="show"/>
                 <field name="annual_total"/>
+                <field name="unchecked_count" optional="show"
+                       string="To check"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="company_id" groups="base.group_multi_company"
                        optional="hide"/>
@@ -66,12 +68,23 @@
                         <group>
                             <field name="monthly_total"/>
                             <field name="annual_total"/>
+                            <field name="unchecked_count" readonly="1"
+                                   invisible="not unchecked_count"/>
                             <field name="superseded_by_id" readonly="1"
                                    invisible="not superseded_by_id"/>
                             <field name="company_id"
                                    groups="base.group_multi_company"/>
                         </group>
                     </group>
+                    <div class="alert alert-warning" role="status"
+                         invisible="not unchecked_count">
+                        Some lines that came off the contract have not been
+                        checked yet. They are shown with their numbers but count
+                        towards nothing — a contract component can be a salary
+                        grade or a number of dependants rather than money. Tick
+                        the ones that are really paid, delete the ones that are
+                        not, and then this package can be made current.
+                    </div>
                     <notebook>
                         <page string="What it is made of">
                             <field name="line_ids">
@@ -81,6 +94,7 @@
                                     <field name="kind"/>
                                     <field name="amount"/>
                                     <field name="period"/>
+                                    <field name="checked" widget="boolean_toggle"/>
                                     <field name="annual_amount" readonly="1"/>
                                     <field name="currency_id" column_invisible="True"/>
                                     <field name="note" optional="hide"/>
@@ -420,6 +434,24 @@
         <field name="name">Who is covered</field>
         <field name="res_model">pb.benefit.enrollment</field>
         <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The pack's own story, on the run                                -->
+    <!--  `hr.payslip.run` has no chatter on this build, so the outcome    -->
+    <!--  lives in a field. It is worth nothing if nobody can see it.      -->
+    <!-- ================================================================ -->
+    <record id="view_hr_payslip_run_form_pack" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.finance.pack</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Finance pack" invisible="not pb_pack_note">
+                    <field name="pb_pack_note" nolabel="1" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
     </record>
 
     <!-- ================================================================ -->

@@ -90,8 +90,14 @@ class PbBenefitEnrollment(models.Model):
     def dependants(self):
         """The family list, as rows a page can print. Never raises."""
         self.ensure_one()
+        # The FIELD READ is outside the try on purpose. Inside it, an
+        # AccessError from a missing record rule was swallowed and logged as
+        # "unreadable family list" — a masked permission problem reported as a
+        # data problem, which is how an afternoon gets spent on the wrong file.
+        # The try covers the parse, which is the only thing that can be bad data.
+        raw = self.dependants_json or '[]'
         try:
-            rows = json.loads(self.dependants_json or '[]')
+            rows = json.loads(raw)
         except Exception:                   # noqa: BLE001
             _logger.warning('pb_comp_ben: enrollment %s has an unreadable '
                             'family list', self.id)
