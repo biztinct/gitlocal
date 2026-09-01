@@ -40,7 +40,11 @@ _logger = logging.getLogger(__name__)
 #: words.
 MINE_KIND = {
     'earning': 'Your pay',
-    'statutory': 'What is taken off by law',
+    # 'statutory' gets its heading from the SIGN — see `_kind_label`. The word
+    # covers two opposite things: the share taken off the person's pay, and the
+    # contribution the company makes on top of it. A fixed heading is wrong half
+    # the time, and on a page about somebody's money that matters.
+    'statutory': 'Statutory contributions',
     'benefit': 'Benefits',
     'perquisite': 'Perks',
     'bonus': 'Variable pay',
@@ -144,9 +148,15 @@ class PbCompBenPortal(CustomerPortal):
         return request.render('pb_comp_ben.portal_my_compensation', values)
 
     def _package_groups(self, package):
-        """The lines, grouped the way a person reads them: pay first."""
+        """The lines, grouped the way a person reads them: pay first.
+
+        UNCHECKED LINES ARE NOT SHOWN. They count towards nothing (see
+        `pb.employee.comp._compute_annual_total`) and an active package cannot
+        have any — the activation refuses — so this is belt beside the braces
+        rather than a filter that hides anything a person should see.
+        """
         buckets = {}
-        for line in package.line_ids:
+        for line in package.line_ids.filtered(lambda ln: ln.checked):
             buckets.setdefault(line.kind or 'earning', []).append({
                 'name': line.name or '',
                 'amount': line.amount or 0.0,
@@ -159,15 +169,29 @@ class PbCompBenPortal(CustomerPortal):
             rows = buckets.get(kind)
             if not rows:
                 continue
+            annual = sum(r['annual'] for r in rows)
             out.append({
                 'kind': kind,
-                'label': MINE_KIND.get(kind, COMP_KIND_LABEL.get(kind, kind)),
+                'label': self._kind_label(kind, annual),
                 'rows': rows,
                 'monthly': sum(r['amount'] for r in rows
                                if r['period'] == MINE_PERIOD['monthly']),
-                'annual': sum(r['annual'] for r in rows),
+                'annual': annual,
             })
         return out
+
+    def _kind_label(self, kind, annual):
+        """The heading, and for one kind it depends on which way the money goes.
+
+        A statutory line entered as a NEGATIVE amount is the person's own share
+        coming off their pay; entered as a positive it is what the company pays
+        on top. Both are real, they are opposites, and one fixed heading would be
+        wrong half the time.
+        """
+        if kind == 'statutory':
+            return ('What is taken off by law' if annual < 0
+                    else 'Paid on your behalf by law')
+        return MINE_KIND.get(kind, COMP_KIND_LABEL.get(kind, kind))
 
     def _benefit_cards(self, emp):
         rows = request.env['pb.benefit.enrollment'].sudo().search([

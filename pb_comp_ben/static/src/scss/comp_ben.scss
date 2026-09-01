@@ -383,6 +383,11 @@
         flex: 0 0 auto;
     }
 
+    // R33 — `.pbim-badge` CAPITALISES EVERY WORD. That is right for a single
+    // status word ("Approved") and wrong for a phrase: "Waiting for approval"
+    // rendered as "Waiting For Approval", which is not how anybody writes.
+    .inc-table .pbim-badge { text-transform: none; }
+
     .inc-dash { color: var(--pbim-muted, #64748B); }
 
     .inc-letter {

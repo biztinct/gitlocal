@@ -60,6 +60,8 @@ class PbEmployeeComp(models.Model):
     monthly_total = fields.Monetary(
         compute='_compute_annual_total', store=True, currency_field='currency_id',
         string='A month of this')
+    unchecked_count = fields.Integer(
+        compute='_compute_annual_total', store=True, string='Still to check')
     note = fields.Text(string='Notes')
     company_id = fields.Many2one(
         'res.company', string='Company', index=True,
@@ -75,12 +77,31 @@ class PbEmployeeComp(models.Model):
             rec.name = '%s — %s' % (
                 who, fields.Date.to_string(rec.effective_date) or _('undated'))
 
-    @api.depends('line_ids.annual_amount', 'line_ids.amount', 'line_ids.period')
+    @api.depends('line_ids.annual_amount', 'line_ids.amount', 'line_ids.period',
+                 'line_ids.checked')
     def _compute_annual_total(self):
+        """ONLY CHECKED LINES COUNT, and that is the whole safety rail.
+
+        A contract component is NOT necessarily money. On the live database
+        `Ngạch lương` is a salary GRADE of 60,000,000, `NPT` is a count of
+        dependants (3), and `Tỷ lệ % tạm ứng thưởng` is a ratio (1) — and every
+        one of them is `value_kind = 'money'` with no net role on this tenant,
+        so the pay scheme's own metadata cannot tell them apart either. Summed
+        blindly they turned one person's package into 1,014,240,048 ₫ a year
+        against a wage of 15,000,000 a month.
+
+        So the bootstrap PROPOSES and a person DECIDES: a bootstrapped component
+        arrives unchecked, is shown with its number so it can be judged, counts
+        towards nothing, and `action_activate` refuses while any line is still
+        unchecked. A total that is always true is worth more than a total that
+        arrives already filled in.
+        """
         for rec in self:
-            year = sum(rec.line_ids.mapped('annual_amount'))
+            counted = rec.line_ids.filtered(lambda ln: ln.checked)
+            year = sum(counted.mapped('annual_amount'))
             rec.annual_total = year
             rec.monthly_total = year / 12.0 if year else 0.0
+            rec.unchecked_count = len(rec.line_ids) - len(counted)
 
     # ------------------------------------------------------------------ R56
     def _person(self):
@@ -111,6 +132,18 @@ class PbEmployeeComp(models.Model):
                 raise UserError(_(
                     "There is nothing in this package yet. Add what it is made "
                     "of, or press “Build from the contract”."))
+            unchecked = rec.line_ids.filtered(lambda ln: not ln.checked)
+            if unchecked:
+                raise UserError(_(
+                    "Some of what came off the contract has not been checked "
+                    "yet, so the totals would not be right:\n\n%(names)s\n\n"
+                    "Look at each one. If it is money the person is paid, tick "
+                    "“Checked” and set how often it is paid. If it is not — a "
+                    "salary grade, a number of dependants, a percentage — "
+                    "delete the line.",
+                    names='\n'.join('  • %s (%s)' % (
+                        ln.name or '', '{:,.0f}'.format(ln.amount or 0.0))
+                        for ln in unchecked)))
             previous = self.search([
                 ('employee_id', '=', rec.employee_id.id),
                 ('state', '=', 'active'),
@@ -139,10 +172,16 @@ class PbEmployeeComp(models.Model):
     def action_bootstrap(self):
         """Fill an empty package from the contract that is running today.
 
-        The wage becomes 'Base salary'; every contract component becomes its own
-        line. Amounts a component holds as TEXT (COLROLES typed values — a job
-        grade, a cost centre) are skipped: they are not money and a package that
-        prints "Grade: 0" is a package nobody trusts again.
+        The wage becomes 'Base salary' and is CHECKED — a contract's wage is
+        money by definition. Every contract component becomes its own line and
+        arrives UNCHECKED, because a contract component is not necessarily money
+        (see `_compute_annual_total`); it is shown with its number so somebody
+        can judge it, counts towards nothing until they do, and the package
+        cannot be made current while any line is still unchecked.
+
+        Amounts a component holds as TEXT (COLROLES typed values — a job grade,
+        a cost centre) are skipped outright: a package that prints "Grade: 0" is
+        a package nobody trusts again.
 
         It is EDITABLE afterwards, and that is the point. This is a starting
         position, not a link.
@@ -200,6 +239,7 @@ class PbEmployeeComp(models.Model):
             vals.append({
                 'name': _('Base salary'), 'kind': 'earning',
                 'amount': wage, 'period': 'monthly', 'sequence': seq,
+                'checked': True,
                 'note': _('From the contract.'),
             })
             seq += 10
@@ -217,7 +257,10 @@ class PbEmployeeComp(models.Model):
                 'amount': amount,
                 'period': 'monthly',
                 'sequence': seq,
-                'note': _('Contract component %s.',
+                # Unchecked on purpose — see `_compute_annual_total`.
+                'checked': False,
+                'note': _('From the contract — check this is money paid every '
+                          'month (%s).',
                           (template.code if template else '') or ''),
             })
             seq += 10
@@ -252,9 +295,18 @@ class PbEmployeeCompLine(models.Model):
     name = fields.Char(string='What it is', required=True)
     kind = fields.Selection(COMP_KINDS, string='Kind', default='earning',
                             required=True)
-    amount = fields.Monetary(string='Amount', currency_field='currency_id')
+    amount = fields.Monetary(
+        string='Amount', currency_field='currency_id',
+        help='What the person gets. Enter a NEGATIVE amount for anything that '
+             'comes OFF their pay — their own share of social insurance, for '
+             'example — so the package total is what they actually receive.')
     period = fields.Selection(COMP_PERIODS, string='How often',
                               default='monthly', required=True)
+    checked = fields.Boolean(
+        string='Checked', default=True,
+        help='Somebody has confirmed this really is money the person is paid. '
+             'Lines that came off the contract arrive unchecked and count '
+             'towards nothing until they are looked at.')
     annual_amount = fields.Monetary(
         compute='_compute_annual', store=True, currency_field='currency_id',
         string='A year of it')

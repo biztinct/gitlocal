@@ -83,7 +83,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from .comp_common import (
-    FEEDABLE_RUN_STATES, P_INCENTIVE_CODE, param,
+    FEEDABLE_RUN_STATES, P_INCENTIVE_CODE, counted, param,
 )
 
 _logger = logging.getLogger(__name__)
@@ -308,13 +308,13 @@ class PbOneoffFeed(models.AbstractModel):
         for inc in skipped:
             rows.append({'employee': inc._person().name or '', 'ok': False,
                          'why': _("not in this pay run")})
-        try:
-            run.sudo().message_post(body=_(
-                "%(n)s added to this run as %(code)s, this run only.",
-                n=_('%s award(s)') % len(done), code=code))
-        except Exception:                   # noqa: BLE001 — a note, not the job
-            _logger.debug('pb_comp_ben: could not note the feed on run %s',
-                          run.id)
+        # `hr.payslip.run` HAS NO CHATTER on this build (no `mail.thread`), so
+        # there is nowhere on the run to post this. It is logged, and every
+        # award carries the same sentence in its OWN chatter, which is where
+        # somebody would look for it anyway.
+        _logger.info(
+            'pb_comp_ben: %s award(s) fed into run %s as %s, this run only.',
+            len(done), run.id, code)
         return {
             'ok': bool(done),
             'queued': len(done),
@@ -322,8 +322,11 @@ class PbOneoffFeed(models.AbstractModel):
             'batch': batch.name,
             'code': code,
             'rows': rows,
+            # R46 — bracketed plurals are how a screen announces it was written
+            # by a programme rather than by a person.
             'msg': _("%(n)s went into “%(run)s”.",
-                     n=_('%s award(s)') % len(done), run=run.name or ''),
+                     n=counted(len(done), _('award'), _('awards')),
+                     run=run.name or ''),
         }
 
     @api.model

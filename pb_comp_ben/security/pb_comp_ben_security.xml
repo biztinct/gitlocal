@@ -117,6 +117,20 @@
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
+    <!-- R60 BITES INSIDE A MODULE AS EASILY AS ACROSS ONE. Group rules are
+         ORed, but only over the rules that APPLY. Ship the narrow "my own"
+         rule below without this wide one beside it and the pay team has
+         exactly one applicable group rule — the narrow one — so a pay
+         administrator can read their OWN benefit enrollment and nobody
+         else's. Found live: `read` on the enrollment this phase had just
+         created was refused for uid 2. -->
+    <record id="rule_enrollment_team" model="ir.rule">
+        <field name="name">Benefit enrollment: the pay team</field>
+        <field name="model_id" ref="model_pb_benefit_enrollment"/>
+        <field name="groups" eval="[(4, ref('group_comp_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
     <!-- ==================================================================
          THE LETTER, BORROWED FROM P0 — AND THIS RULE COMES IN A PAIR (R60).
 
