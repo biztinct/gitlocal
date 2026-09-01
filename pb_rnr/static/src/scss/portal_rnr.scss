@@ -1,0 +1,394 @@
+// ===========================================================================
+// pb_rnr — `/my/recognition`.
+//
+// The frontend bundle gets THIS FILE AND NOTHING ELSE. No backend asset is
+// ever leaked into a /my/... page, which is why none of the pbim primitives
+// are reachable here and every rule below stands on its own.
+//
+// R39 — the portal has no dark mode at all: the website frontend is light-only
+// by design, and R20's near-white-on-near-white is a BACKEND list-view problem.
+// "Check both themes" is satisfied by every colour RESOLVING, which is why
+// every rule that reaches for a token carries a literal fallback beside it.
+//
+// Sass `min()`/`max()` with mixed px/% units kills the whole bundle. None here.
+// ===========================================================================
+
+$pbrn-colors: (
+    primary: (#6355C7, #F1EFFC),
+    cyan:    (#0E7490, #E6F6FA),
+    green:   (#15803D, #E9F7EE),
+    amber:   (#B45309, #FDF3E3),
+    rose:    (#BE123C, #FCEDF1),
+    slate:   (#475569, #EEF1F5),
+);
+
+.pbrn {
+    color: #1B1733;
+
+    // ------------------------------------------------------------- notices
+    .pbrn-flash {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+
+    .pbrn-flash--ok { background: #E9F7EE; color: #15803D; }
+    .pbrn-flash--bad { background: #FCEDF1; color: #BE123C; }
+
+    // ---------------------------------------------------------------- hero
+    .pbrn-hero {
+        border-radius: 18px;
+        background: #241F52;
+        color: #FFFFFF;
+        padding: 26px 28px;
+        margin-bottom: 16px;
+    }
+
+    .pbrn-hero-eyebrow {
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #B9B2F0;
+    }
+
+    .pbrn-hero-h {
+        margin: 6px 0 8px;
+        font-size: 25px;
+        font-weight: 800;
+        color: #FFFFFF;
+    }
+
+    .pbrn-hero-s {
+        margin: 0;
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: #C9C3F2;
+        max-width: 620px;
+    }
+
+    // ---------------------------------------------------------------- form
+    .pbrn-form {
+        border: 1px solid #E2E1EF;
+        border-radius: 16px;
+        background: #FFFFFF;
+        padding: 22px 24px;
+        margin-bottom: 26px;
+    }
+
+    .pbrn-flabel {
+        display: block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: #5B6478;
+        margin: 0 0 7px;
+    }
+
+    .pbrn-in {
+        width: 100%;
+        border: 1px solid #E2E1EF;
+        border-radius: 9px;
+        background: #FFFFFF;
+        color: #1B1733;
+        padding: 10px 12px;
+        font-size: 14px;
+        font-family: inherit;
+        margin-bottom: 18px;
+
+        &:focus {
+            outline: none;
+            border-color: #6355C7;
+            box-shadow: 0 0 0 3px rgba(99, 85, 199, .18);
+        }
+    }
+
+    .pbrn-in--sm { margin-bottom: 0; padding: 8px 11px; font-size: 13px; }
+    .pbrn-ta { resize: vertical; line-height: 1.6; }
+
+    .pbrn-values {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        margin-bottom: 18px;
+
+        @media (max-width: 680px) { grid-template-columns: 1fr; }
+    }
+
+    .pbrn-value {
+        display: block;
+        border: 1px solid #E2E1EF;
+        border-radius: 12px;
+        background: #FFFFFF;
+        padding: 11px 13px;
+        cursor: pointer;
+        margin: 0;
+
+        input { margin-right: 8px; }
+    }
+
+    .pbrn-value-b { display: inline-block; vertical-align: middle; }
+
+    .pbrn-value-n {
+        display: block;
+        font-size: 14px;
+        font-weight: 800;
+        color: #1B1733;
+    }
+
+    .pbrn-value-m {
+        display: block;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: #5B6478;
+        margin-top: 2px;
+    }
+
+    .pbrn-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-bottom: 18px;
+
+        input { margin-top: 3px; }
+        span { font-size: 13px; line-height: 1.55; color: #5B6478; }
+    }
+
+    .pbrn-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 10px;
+        background: #6355C7;
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 11px 20px;
+        cursor: pointer;
+        text-decoration: none;
+
+        &:hover { background: #52459F; color: #FFFFFF; }
+    }
+
+    .pbrn-btn--sm { font-size: 13px; padding: 8px 14px; }
+
+    .pbrn-btn--ghost {
+        background: #FFFFFF;
+        color: #5B6478;
+        border: 1px solid #E2E1EF;
+
+        &:hover { background: #F4F4F8; color: #1B1733; }
+    }
+
+    // ------------------------------------------------------------ sections
+    .pbrn-sec { margin-bottom: 28px; }
+
+    .pbrn-sec-h {
+        margin-bottom: 12px;
+
+        h3 { margin: 0; font-size: 17px; font-weight: 800; color: #1B1733; }
+    }
+
+    .pbrn-sec-n {
+        display: block;
+        font-size: 13px;
+        color: #5B6478;
+        margin-top: 3px;
+    }
+
+    // --------------------------------------------------------------- cards
+    .pbrn-cards { display: flex; flex-direction: column; gap: 12px; }
+
+    .pbrn-card {
+        border: 1px solid #E2E1EF;
+        border-radius: 14px;
+        background: #FFFFFF;
+        padding: 16px 18px;
+    }
+
+    .pbrn-card-h {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    .pbrn-card-t { font-size: 14px; font-weight: 800; color: #1B1733; }
+    .pbrn-card-s { font-size: 12.5px; color: #5B6478; }
+
+    .pbrn-when { margin-left: auto; font-size: 12.5px; color: #5B6478; }
+
+    .pbrn-story {
+        margin: 0 0 10px;
+        font-size: 14.5px;
+        line-height: 1.65;
+        color: #1B1733;
+    }
+
+    .pbrn-decide {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #EFEEF6;
+
+        .pbrn-in--sm { width: 240px; max-width: 100%; }
+    }
+
+    .pbrn-av {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        object-fit: cover;
+        background: #F1EFFC;
+        flex: 0 0 auto;
+    }
+
+    .pbrn-av--lg { width: 54px; height: 54px; border-radius: 27px; }
+
+    .pbrn-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 3px 10px;
+        background: #F1EFFC;
+        color: #6355C7;
+    }
+
+    // -------------------------------------------------------------- winners
+    .pbrn-winners { display: flex; gap: 22px; flex-wrap: wrap; }
+    .pbrn-winner { width: 100px; text-align: center; }
+    .pbrn-winner-n {
+        margin-top: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #1B1733;
+    }
+    .pbrn-winner-v { font-size: 12px; color: #6355C7; }
+
+    // ----------------------------------------------------------- the wall
+    .pbrn-wall {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+
+        @media (max-width: 780px) { grid-template-columns: 1fr; }
+    }
+
+    .pbrn-tile {
+        border-radius: 16px;
+        background: #F1EFFC;
+        padding: 16px 18px;
+    }
+
+    .pbrn-tile-f { display: flex; align-items: center; gap: 10px; }
+
+    .pbrn-chip {
+        display: inline-block;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        padding: 4px 11px;
+        margin-bottom: 10px;
+        background: #F1EFFC;
+        color: #6355C7;
+    }
+
+    .pbrn-chip--onwash { background: #FFFFFF; }
+
+    // ------------------------------------------------------ celebrations
+    .pbrn-celeb {
+        border: 1px solid #E2E1EF;
+        border-radius: 14px;
+        background: #FFFFFF;
+        padding: 6px 18px;
+    }
+
+    .pbrn-celeb-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #F1F0F7;
+
+        &:last-child { border-bottom: 0; }
+    }
+
+    .pbrn-celeb-ic { color: #6355C7; display: inline-flex; }
+    .pbrn-celeb-n { font-size: 14px; font-weight: 700; }
+    .pbrn-celeb-w { font-size: 12.5px; color: #5B6478; }
+    .pbrn-celeb-d { margin-left: auto; font-size: 12.5px; color: #5B6478; }
+
+    // ----------------------------------------------------------- mine
+    .pbrn-mine {
+        border: 1px solid #E2E1EF;
+        border-radius: 14px;
+        background: #FFFFFF;
+        padding: 6px 18px;
+    }
+
+    .pbrn-mine-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #F1F0F7;
+
+        &:last-child { border-bottom: 0; }
+    }
+
+    .pbrn-mine-n { font-size: 14px; font-weight: 700; }
+
+    .pbrn-state {
+        margin-left: auto;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 3px 10px;
+        background: #EEF1F5;
+        color: #475569;
+    }
+
+    .pbrn-state--done { background: #E9F7EE; color: #15803D; }
+    .pbrn-state--refused { background: #EEF1F5; color: #475569; }
+
+    // ---------------------------------------------------------------- empty
+    .pbrn-empty {
+        text-align: center;
+        padding: 36px 20px;
+        border: 1px dashed #E2E1EF;
+        border-radius: 16px;
+        color: #5B6478;
+
+        h4 { margin: 10px 0 6px; font-size: 16px; color: #1B1733; }
+        p { margin: 0 auto; max-width: 480px; line-height: 1.6; font-size: 14px; }
+    }
+
+    // ------------------------------------------------------- value colours
+    @each $key, $pair in $pbrn-colors {
+        $ink: nth($pair, 1);
+        $wash: nth($pair, 2);
+
+        .pbrn-chip--#{$key} { color: $ink; background: $wash; }
+
+        .pbrn-tile--#{$key} {
+            background: $wash;
+
+            .pbrn-chip { color: $ink; }
+        }
+
+        .pbrn-value--#{$key} .pbrn-value-n { color: $ink; }
+    }
+}

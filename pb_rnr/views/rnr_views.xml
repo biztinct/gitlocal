@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. The day-to-day surface
+         is the Praise lens on the People hub and the wall on Home; these are
+         the records behind them, reached from the board, from the command bar
+         and from a record's own chatter.
+
+         `<act_window>` and `<report>` shortcut tags are gone from the Odoo 19
+         data-file RNG — every action below is an explicit
+         `<record model="ir.actions.act_window">`. -->
+
+    <!-- ================================================================ -->
+    <!--  Company values                                                  -->
+    <!-- ================================================================ -->
+    <record id="view_pb_company_value_list" model="ir.ui.view">
+        <field name="name">pb.company.value.list</field>
+        <field name="model">pb.company.value</field>
+        <field name="arch" type="xml">
+            <list string="Company values">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="motto"/>
+                <field name="color"/>
+                <field name="nomination_count" string="Times named"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_company_value_form" model="ir.ui.view">
+        <field name="name">pb.company.value.form</field>
+        <field name="model">pb.company.value</field>
+        <field name="arch" type="xml">
+            <form string="Company value">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Ownership"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="motto"
+                                   placeholder="What it looks like on a Tuesday"/>
+                            <field name="color"/>
+                            <field name="icon"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="nomination_count" readonly="1"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="More about it">
+                        <field name="description" nolabel="1"
+                               placeholder="A sentence or two people will actually read when they are picking one."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_company_value" model="ir.actions.act_window">
+        <field name="name">Company values</field>
+        <field name="res_model">pb.company.value</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Say what this company cares about</p>
+            <p>Every piece of praise names one of these, which is how a word on a wall
+               turns into forty real examples anybody can read.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Praise                                                          -->
+    <!-- ================================================================ -->
+    <record id="view_pb_rnr_nomination_list" model="ir.ui.view">
+        <field name="name">pb.rnr.nomination.list</field>
+        <field name="model">pb.rnr.nomination</field>
+        <field name="arch" type="xml">
+            <list string="Praise">
+                <field name="nominee_id"/>
+                <field name="value_id"/>
+                <field name="nominator_id"/>
+                <field name="submitted_at" optional="show"/>
+                <field name="award_amount" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="public" optional="hide"/>
+                <field name="is_winner" optional="hide"/>
+                <field name="cycle_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="outcome" widget="badge" optional="show"
+                       decoration-success="outcome == 'awarded'"
+                       decoration-info="outcome == 'recognised'"
+                       decoration-muted="outcome == 'declined'"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state in ('submitted', 'manager')"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_rnr_nomination_form" model="ir.ui.view">
+        <field name="name">pb.rnr.nomination.form</field>
+        <field name="model">pb.rnr.nomination</field>
+        <field name="arch" type="xml">
+            <form string="Praise">
+                <header>
+                    <button name="action_submit" type="object"
+                            string="Send it to their manager" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_manager_agree" type="object"
+                            string="Agree, send it to HR" class="btn-primary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_recognise" type="object"
+                            string="Recognise it" class="btn-primary"
+                            invisible="state != 'manager'"/>
+                    <button name="action_decline" type="object"
+                            string="Not this time"
+                            invisible="state not in ('draft', 'submitted', 'manager')"/>
+                    <button name="action_make_award" type="object"
+                            string="Raise the award again"
+                            invisible="state != 'done' or not award_amount or incentive_id"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,manager,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="nominee_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="nominator_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="value_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="public"/>
+                        </group>
+                        <group>
+                            <field name="outcome" readonly="1"/>
+                            <field name="award_amount"
+                                   readonly="state == 'done'"/>
+                            <field name="currency_id"/>
+                            <field name="incentive_id" readonly="1"/>
+                            <field name="cycle_id" readonly="1"/>
+                            <field name="is_winner" readonly="1"/>
+                            <field name="submitted_at" readonly="1"/>
+                            <field name="decided_at" readonly="1"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="status"
+                         invisible="not incentive_id">
+                        An award has been raised for this. It still has to be
+                        approved by the pay team and put into a pay run by hand
+                        — nothing is paid until somebody does that.
+                    </div>
+                    <group string="What they did">
+                        <field name="story" nolabel="1"
+                               placeholder="The actual thing that happened."/>
+                    </group>
+                    <group string="Note with the decision">
+                        <field name="decision_note" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_rnr_nomination_search" model="ir.ui.view">
+        <field name="name">pb.rnr.nomination.search</field>
+        <field name="model">pb.rnr.nomination</field>
+        <field name="arch" type="xml">
+            <search string="Praise">
+                <field name="nominee_id"/>
+                <field name="nominator_id"/>
+                <field name="value_id"/>
+                <filter name="f_manager" string="Waiting on a manager"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter name="f_hr" string="Waiting on HR"
+                        domain="[('state', '=', 'manager')]"/>
+                <filter name="f_recognised" string="Recognised"
+                        domain="[('outcome', 'in', ('recognised', 'awarded'))]"/>
+                <filter name="f_awarded" string="With money"
+                        domain="[('outcome', '=', 'awarded')]"/>
+                <filter name="f_winner" string="Chosen for a quarter"
+                        domain="[('is_winner', '=', True)]"/>
+                <group>
+                    <filter name="g_value" string="Value"
+                            context="{'group_by': 'value_id'}"/>
+                    <filter name="g_nominee" string="Person"
+                            context="{'group_by': 'nominee_id'}"/>
+                    <filter name="g_state" string="How far it has got"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="g_cycle" string="Quarter"
+                            context="{'group_by': 'cycle_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_rnr_nomination" model="ir.actions.act_window">
+        <field name="name">Praise</field>
+        <field name="res_model">pb.rnr.nomination</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_rnr_nomination_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody has been thanked yet</p>
+            <p>Anyone can write a piece of praise. It goes to that person's manager
+               first and then to HR, so nothing reaches the wall that two people have
+               not stood behind.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Recognition quarters                                            -->
+    <!-- ================================================================ -->
+    <record id="view_pb_rnr_cycle_list" model="ir.ui.view">
+        <field name="name">pb.rnr.cycle.list</field>
+        <field name="model">pb.rnr.cycle</field>
+        <field name="arch" type="xml">
+            <list string="Recognition quarters">
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="winner_count"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'selecting'"
+                       decoration-muted="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_rnr_cycle_form" model="ir.ui.view">
+        <field name="name">pb.rnr.cycle.form</field>
+        <field name="model">pb.rnr.cycle</field>
+        <field name="arch" type="xml">
+            <form string="Recognition quarter">
+                <header>
+                    <button name="action_close" type="object"
+                            string="Close this quarter"
+                            invisible="state == 'closed'"/>
+                    <button name="action_reopen" type="object"
+                            string="Open it again"
+                            invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Q3 2026"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="winner_count" readonly="1"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="The ones that were chosen">
+                            <field name="top_ids" readonly="1">
+                                <list>
+                                    <field name="nominee_id"/>
+                                    <field name="value_id"/>
+                                    <field name="award_amount"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="outcome"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_rnr_cycle" model="ir.actions.act_window">
+        <field name="name">Recognition quarters</field>
+        <field name="res_model">pb.rnr.cycle</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No quarters yet</p>
+            <p>A quarter is a window. What makes it useful is the roll-up: everybody
+               colleagues named inside it, ranked, so the winners are picked from a
+               table rather than from memory.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  What has already been sent                                      -->
+    <!-- ================================================================ -->
+    <record id="view_pb_rnr_celebration_log_list" model="ir.ui.view">
+        <field name="name">pb.rnr.celebration.log.list</field>
+        <field name="model">pb.rnr.celebration.log</field>
+        <field name="arch" type="xml">
+            <list string="Celebrations already sent">
+                <field name="sent_on"/>
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="stamp"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_rnr_celebration_log" model="ir.actions.act_window">
+        <field name="name">Celebrations already sent</field>
+        <field name="res_model">pb.rnr.celebration.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing has been sent yet</p>
+            <p>One row per person per year. It is what stops the same message going
+               twice when a job is run again.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The two lenses, also reachable on their own                     -->
+    <!-- ================================================================ -->
+    <record id="action_pb_rnr_board" model="ir.actions.client">
+        <field name="name">Praise</field>
+        <field name="tag">pb_rnr_board</field>
+    </record>
+
+    <record id="action_pb_rnr_wall" model="ir.actions.client">
+        <field name="name">The recognition wall</field>
+        <field name="tag">pb_rnr_wall</field>
+    </record>
+
+    <!-- The person's own page. An action record rather than a raw URL, because
+         the command palette knows exactly two doors — a client-action tag and
+         an xmlid — and nothing else. -->
+    <record id="action_my_recognition" model="ir.actions.act_url">
+        <field name="name">My praise</field>
+        <field name="url">/my/recognition</field>
+        <field name="target">self</field>
+    </record>
+
+</odoo>

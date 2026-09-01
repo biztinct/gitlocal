@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       THE MESSAGES THAT NEED A NUMBER.
+
+       These four are `ir.qweb` templates rather than `mail.template`
+       records because each of them is about something that is not a field
+       on anything: how many YEARS somebody has been here, whose week it
+       is, what a whole month looked like. A template that cannot see the
+       one number it is about is a template pretending to be data.
+
+       EMAIL IS NOT A BROWSER. There is no stylesheet, no custom property
+       and no reliable SVG — Gmail strips inline SVG and Outlook draws a
+       broken image over it. So every colour here is a LITERAL, handed in
+       from `rnr_common.VALUE_HEX`, the layout is tables and inline styles,
+       and the structure is carried by type and colour rather than by
+       icons. There are no emoji anywhere in this file.
+
+       R42 — `t-att-class` with a DICT is an OWL thing and this is NOT OWL:
+       in a server-side template a dict is written into the attribute as
+       its Python repr AND it replaces the static class. Everything
+       conditional below is `t-attf-style` with a #{...} interpolation.
+
+       R5 — server-side QWeb has no `t-key`. There is none in this file.
+
+       Section comments are ruled with `=` and never with hyphens (R35).
+       ================================================================== -->
+
+  <!-- ================================================================= -->
+  <!--  The monthly mood board                                           -->
+  <!-- ================================================================= -->
+  <template id="mail_digest" name="Recognition: the monthly mood board">
+    <div style="margin:0;padding:0;background:#F4F4F8;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+             width="100%" style="background:#F4F4F8;padding:24px 12px;">
+        <tr>
+          <td align="center">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                   width="600" style="width:600px;max-width:100%;background:#FFFFFF;border-radius:16px;overflow:hidden;">
+
+              <!-- ========================= the head ========================= -->
+              <tr>
+                <td style="background:#241F52;padding:30px 32px 26px;">
+                  <div style="color:#B9B2F0;font-size:12px;letter-spacing:.10em;text-transform:uppercase;font-weight:700;">
+                    The mood board
+                  </div>
+                  <div style="color:#FFFFFF;font-size:27px;font-weight:800;line-height:1.2;margin-top:6px;">
+                    <t t-esc="month_label"/>
+                  </div>
+                  <div style="color:#C9C3F2;font-size:14px;margin-top:8px;line-height:1.5;">
+                    What people said about each other this month, who joined us,
+                    and who is celebrating next.
+                  </div>
+                </td>
+              </tr>
+
+              <!-- ======================= the winners ======================= -->
+              <tr t-if="winners and winners.get('rows')">
+                <td style="padding:22px 32px 4px;">
+                  <div style="background:#F1EFFC;border-radius:12px;padding:18px 20px;">
+                    <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6355C7;font-weight:700;">
+                      The people of <t t-esc="winners.get('name')"/>
+                    </div>
+                    <table role="presentation" cellpadding="0" cellspacing="0"
+                           border="0" style="margin-top:12px;">
+                      <tr>
+                        <td t-foreach="winners.get('rows')" t-as="win"
+                            style="padding-right:16px;vertical-align:top;text-align:center;">
+                          <img t-attf-src="#{base_url}#{win['avatar']}"
+                               width="52" height="52" alt=""
+                               style="width:52px;height:52px;border-radius:26px;display:block;margin:0 auto 6px;border:2px solid #FFFFFF;"/>
+                          <div style="font-size:13px;font-weight:700;color:#1B1733;">
+                            <t t-esc="win['name']"/>
+                          </div>
+                          <div style="font-size:11px;color:#6355C7;">
+                            <t t-esc="win['value']"/>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- ======================= the stories ======================= -->
+              <tr>
+                <td style="padding:26px 32px 6px;">
+                  <div style="font-size:16px;font-weight:800;color:#1B1733;">
+                    What people noticed
+                  </div>
+                  <div t-if="not stories"
+                       style="margin-top:10px;font-size:14px;color:#5B6478;line-height:1.6;">
+                    Nothing was recognised this month. That is worth knowing too
+                    — somebody near you has almost certainly done something that
+                    deserved saying out loud.
+                  </div>
+                </td>
+              </tr>
+
+              <tr t-foreach="stories" t-as="st">
+                <td style="padding:10px 32px;">
+                  <table role="presentation" cellpadding="0" cellspacing="0"
+                         border="0" width="100%"
+                         t-attf-style="width:100%;background:#{st['wash']};border-radius:14px;">
+                    <tr>
+                      <td style="padding:18px 20px;">
+                        <span t-attf-style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#{st['ink']};background:#FFFFFF;border-radius:999px;padding:4px 11px;">
+                          <t t-esc="st['value']"/>
+                        </span>
+                        <span t-if="st['awarded']"
+                              style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1B1733;background:#FFFFFF;border-radius:999px;padding:4px 11px;margin-left:6px;">
+                          With an award
+                        </span>
+                        <div style="font-size:15px;line-height:1.65;color:#1B1733;margin-top:12px;">
+                          <t t-esc="st['story']"/>
+                        </div>
+                        <table role="presentation" cellpadding="0" cellspacing="0"
+                               border="0" style="margin-top:14px;">
+                          <tr>
+                            <td style="vertical-align:middle;">
+                              <img t-attf-src="#{base_url}#{st['avatar']}"
+                                   width="34" height="34" alt=""
+                                   style="width:34px;height:34px;border-radius:17px;display:block;"/>
+                            </td>
+                            <td style="vertical-align:middle;padding-left:10px;">
+                              <div style="font-size:13px;font-weight:700;color:#1B1733;">
+                                <t t-esc="st['nominee']"/>
+                              </div>
+                              <div style="font-size:12px;color:#5B6478;">
+                                said by <t t-esc="st['nominator']"/>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- ======================= the joiners ======================= -->
+              <tr t-if="joiners">
+                <td style="padding:22px 32px 4px;">
+                  <div style="font-size:16px;font-weight:800;color:#1B1733;">
+                    Who joined us in <t t-esc="month_label"/>
+                  </div>
+                  <table role="presentation" cellpadding="0" cellspacing="0"
+                         border="0" width="100%" style="width:100%;margin-top:12px;">
+                    <tr t-foreach="joiners" t-as="jn">
+                      <td style="padding:6px 0;vertical-align:middle;width:40px;">
+                        <img t-attf-src="#{base_url}#{jn['avatar']}"
+                             width="34" height="34" alt=""
+                             style="width:34px;height:34px;border-radius:17px;display:block;"/>
+                      </td>
+                      <td style="padding:6px 0 6px 10px;vertical-align:middle;">
+                        <span style="font-size:14px;font-weight:700;color:#1B1733;">
+                          <t t-esc="jn['name']"/>
+                        </span>
+                        <span t-if="jn['job']" style="font-size:13px;color:#5B6478;">
+                          — <t t-esc="jn['job']"/>
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- ==================== the celebrations ==================== -->
+              <tr t-if="celebrations">
+                <td style="padding:22px 32px 4px;">
+                  <div style="font-size:16px;font-weight:800;color:#1B1733;">
+                    Celebrating in <t t-esc="next_month_label"/>
+                  </div>
+                  <table role="presentation" cellpadding="0" cellspacing="0"
+                         border="0" width="100%" style="width:100%;margin-top:12px;">
+                    <tr t-foreach="celebrations" t-as="ce">
+                      <td style="padding:5px 0;font-size:14px;color:#1B1733;">
+                        <b><t t-esc="ce['name']"/></b>
+                      </td>
+                      <td style="padding:5px 0;font-size:13px;color:#5B6478;text-align:right;">
+                        <t t-if="ce['kind'] == 'birthday'">Birthday</t>
+                        <t t-else=""><t t-esc="ce['years']"/> years with us</t>
+                        · <t t-esc="ce['day_label']"/>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- ========================= the foot ========================= -->
+              <tr>
+                <td style="padding:26px 32px 30px;">
+                  <a t-attf-href="#{base_url}/my/recognition"
+                     style="background:#6355C7;color:#FFFFFF;text-decoration:none;padding:12px 22px;border-radius:10px;display:inline-block;font-weight:700;font-size:14px;">
+                    Say thank you to somebody
+                  </a>
+                  <div style="font-size:13px;color:#5B6478;margin-top:16px;line-height:1.6;">
+                    Anyone can write one. It goes to that person's manager
+                    first, so nothing appears here that somebody has not
+                    stood behind.
+                  </div>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  Happy birthday                                                   -->
+  <!-- ================================================================= -->
+  <template id="mail_birthday" name="Recognition: happy birthday">
+    <div style="margin:0;padding:0;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
+      <p>Hello <t t-esc="person"/>,</p>
+      <p style="font-size:17px;line-height:1.6;">
+        Happy birthday from all of us.
+      </p>
+      <p style="color:#4A5568;line-height:1.6;">
+        We hope the day is a good one, and that somebody makes you put your
+        laptop down for an hour of it.
+      </p>
+      <br/>
+      Everyone at work<br/>
+    </div>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  A work anniversary                                               -->
+  <!-- ================================================================= -->
+  <template id="mail_anniversary" name="Recognition: a work anniversary">
+    <div style="margin:0;padding:0;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
+      <p>Hello <t t-esc="person"/>,</p>
+      <p style="font-size:17px;line-height:1.6;">
+        <t t-esc="years"/>
+        <t t-if="years == 1"> year</t>
+        <t t-else=""> years</t>
+        with us today. Thank you.
+      </p>
+      <p style="color:#4A5568;line-height:1.6;">
+        A lot of what a company is turns out to be the people who stayed and
+        kept it going. Today is a good day to say so.
+      </p>
+      <br/>
+      Everyone at work<br/>
+    </div>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  A manager's week ahead                                           -->
+  <!-- ================================================================= -->
+  <template id="mail_manager_week" name="Recognition: your team's week ahead">
+    <div style="margin:0;padding:0;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
+      <p>Hello <t t-esc="manager"/>,</p>
+      <p>
+        <t t-esc="count_line"/> in your team have something to celebrate in the
+        next week. A message from you on the day is worth more than anything
+        this system can send.
+      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+             width="100%" style="width:100%;margin:14px 0;">
+        <tr t-foreach="rows" t-as="row">
+          <td style="padding:7px 0;border-bottom:1px solid #E7E5F2;font-size:14px;">
+            <b><t t-esc="row['name']"/></b>
+          </td>
+          <td style="padding:7px 0;border-bottom:1px solid #E7E5F2;font-size:13px;color:#5B6478;text-align:right;">
+            <t t-if="row['kind'] == 'birthday'">Birthday</t>
+            <t t-else=""><t t-esc="row['years']"/> years with us</t>
+            · <t t-esc="row['day_label']"/>
+          </td>
+        </tr>
+      </table>
+      <p style="color:#4A5568;">
+        Nobody's date of birth is shown here, and nobody else has been told.
+      </p>
+      <br/>
+      The recognition team<br/>
+    </div>
+  </template>
+
+</odoo>

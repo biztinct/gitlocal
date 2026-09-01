@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ITS OWN LADDER, FOR THE THIRD TIME IN THIS PROGRAMME.
+
+         Praise carries opinions about people. A declined nomination is a
+         colleague's argument that somebody deserved something and HR's
+         answer that they did not, and "they can already see the joining
+         checklist" is not a reason to hand that over. So access is granted
+         by name: NO implied_ids from any lifecycle, people or pay group in
+         either direction.
+
+         WHAT IS NOT GATED, DELIBERATELY:
+           * WRITING praise. Every signed-in employee may say thank you —
+             recognition only the recognition team may start does not
+             happen, because they were not in the room.
+           * READING THE WALL. The praise that has already been agreed and
+             marked public is visible to every internal user and to every
+             employee on the portal. A wall behind a permission is a
+             cupboard.
+
+         WHAT IS GATED: the BOARD (which shows what was declined) and the
+         DECISION (which can spend money).
+
+         The two facades DO admit `_is_admin()`, the same call P7 made: an
+         administrator locked out of the recognition board cannot fix a
+         quarter that is stuck, and nothing on it is a pay package.
+         ================================================================== -->
+
+    <record id="module_category_rnr" model="ir.module.category">
+        <field name="name">Recognition</field>
+        <field name="sequence">57</field>
+    </record>
+
+    <!-- Odoo 19: `res.groups` has no `category_id`; a privilege carries it. -->
+    <record id="res_groups_privilege_rnr" model="res.groups.privilege">
+        <field name="name">Recognition</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_rnr"/>
+    </record>
+
+    <record id="group_rnr_user" model="res.groups">
+        <field name="name">Recognition team</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_rnr"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Read the recognition board, including praise that was turned down, and look after the company values. Granted by name — it is not part of the general HR permissions.</field>
+    </record>
+
+    <record id="group_rnr_manager" model="res.groups">
+        <field name="name">Recognition lead</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_rnr"/>
+        <field name="implied_ids" eval="[(4, ref('group_rnr_user'))]"/>
+        <!-- The two built-in administrator accounts and NOBODY ELSE. Adding
+             whoever happened to run the upgrade is the failure a ladder like
+             this exists to prevent. -->
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Everything above, plus deciding a piece of praise, attaching money to it, running a quarter and sending the monthly email.</field>
+    </record>
+
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY. Global rules (no `groups`), ANDed with everything below.
+         ================================================================== -->
+
+    <record id="rule_value_company" model="ir.rule">
+        <field name="name">Company value: company</field>
+        <field name="model_id" ref="model_pb_company_value"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_nomination_company" model="ir.rule">
+        <field name="name">Praise: company</field>
+        <field name="model_id" ref="model_pb_rnr_nomination"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_cycle_company" model="ir.rule">
+        <field name="name">Recognition quarter: company</field>
+        <field name="model_id" ref="model_pb_rnr_cycle"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE PAIR (R60/R65). Group rules are ORed, but only over the rules
+         that APPLY — so a narrow rule shipped ALONE is a narrowing, and it
+         narrows the very people the module was written for. The wide rule
+         for the recognition team goes in beside the narrow "mine" rule, in
+         the same file, always.
+         ================================================================== -->
+
+    <record id="rule_nomination_team" model="ir.rule">
+        <field name="name">Praise: the recognition team</field>
+        <field name="model_id" ref="model_pb_rnr_nomination"/>
+        <field name="groups" eval="[(4, ref('group_rnr_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_cycle_team" model="ir.rule">
+        <field name="name">Recognition quarter: the recognition team</field>
+        <field name="model_id" ref="model_pb_rnr_cycle"/>
+        <field name="groups" eval="[(4, ref('group_rnr_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHAT AN ORDINARY EMPLOYEE MAY READ THROUGH THE MODELS.
+
+         The wall and the portal page are read through facades under sudo
+         behind a route that resolves the person from the SESSION, so these
+         rules are not what makes either work. What they cover is an
+         internal user who reaches the model some other way: their own
+         praise — given or received — and the agreed public stories, and
+         nothing else. There is no portal ACL on any model here: the route
+         is the only door, exactly as P6 and P7 left theirs.
+         ================================================================== -->
+
+    <record id="rule_nomination_mine" model="ir.rule">
+        <field name="name">Praise: my own and the public wall</field>
+        <field name="model_id" ref="model_pb_rnr_nomination"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="domain_force">['|', '|', ('nominee_id.user_id', '=', user.id), ('nominator_id.user_id', '=', user.id), '&amp;', '&amp;', ('state', '=', 'done'), ('outcome', 'in', ('recognised', 'awarded')), ('public', '=', True)]</field>
+    </record>
+
+</data>
+</odoo>

@@ -69,6 +69,26 @@ export const STAGE_LENS = {
     1: "run", 2: "runs", 3: "payslips", 4: "deliver", 5: "runs",
 };
 
+/**
+ * Where a later module bolts a lens onto Home.
+ *
+ *     registry.category(HOME_LENSES).add("wall", {
+ *         key, icon, label, Component, groups,
+ *         propsFromContext(ctx) { return { ... }; },   // optional
+ *     }, { sequence: 20 });
+ *
+ * A REGISTRY rather than an import, and the direction of the dependency is the
+ * whole reason: a module that mounts a lens here depends on this hub, so this
+ * hub cannot import it back without a cycle no manifest can express. This is an
+ * exact clone of `pb_people_hub`'s (`people_hub.js:82`) — the same shape P7 gave
+ * `pb_payhub` (R73), for the same reason and with the same properties: absent
+ * module, absent lens, no error.
+ *
+ * The two shipped lenses carry no sequence, so bolted-on ones start at 20 and
+ * land after them.
+ */
+export const HOME_LENSES = "pb_home_hub_lens";
+
 export class PbHomeHub extends Component {
     static template = "pb_home_hub.PbHomeHub";
     static components = { HubShell };
@@ -94,10 +114,23 @@ export class PbHomeHub extends Component {
                   Component: PbDashboard },
                 { key: "approvals", icon: "inbox", label: _t("Approvals"),
                   Component: PbApproval, groups: APPROVAL_GATE },
+                // Bolted-on lenses sit after the two this hub ships — what
+                // needs you first, everything else after.
+                ...this.extraLenses(),
             ],
         };
 
         onWillStart(async () => { await this.loadPeriod(); });
+    }
+
+    /** Lenses other modules registered, resolved ONCE (never in a getter, W21). */
+    extraLenses() {
+        const ctx = (this.props.action && this.props.action.context) || {};
+        return registry.category(HOME_LENSES).getAll().map((def) => {
+            const props = typeof def.propsFromContext === "function"
+                ? def.propsFromContext(ctx) : (def.props || {});
+            return { ...def, props };
+        });
     }
 
     // ------------------------------------------------------------- the period

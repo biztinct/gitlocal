@@ -173,6 +173,11 @@ export const IC = {
     wrench:       '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/>',
     archive:      '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
     powerOff:     '<path d="M18.36 6.64A9 9 0 1 1 5.64 6.64"/><path d="M12 2v10"/>',
+    // RIZE P8 — recognition. `cake` is a birthday on the celebration strip;
+    // work anniversaries wear `sparkles`, praise wears `award`, and all three
+    // already lived here. One shared registry, never a module-local map (W2),
+    // Lucide paths only — no emoji anywhere in this product.
+    cake:         '<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 1 4 1 2.5-1 4-1 2.5 1 4 1 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v1M12 7v2M17 8v1"/>',
 };
 
 /**

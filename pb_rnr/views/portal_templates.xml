@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/my/recognition` reuses `pb_me_portal`'s .pbme kit — the same hero,
+       the same cards — so it looks like it was always part of the
+       employee's own area rather than bolted on. Everything specific to it
+       is under .pbrn.
+
+       ICONS: the backend's ic() registry is a JS module and cannot be
+       called from QWeb, so the handful of glyphs this page uses are inlined
+       here, exactly as pb_lifecycle's token pages, pb_me_portal's ess_icon,
+       pb_onboarding's ob_icon, pb_offboarding's of_icon, pb_pip's pg_icon
+       and pb_comp_ben's cp_icon do. W87: the name is passed with
+       t-value="'name'" and NEVER as a t-set BODY — a body is rendered QWeb
+       and on a website=True page the editor's branding wraps it in markup,
+       so every comparison silently goes false.
+
+       R42: `t-att-class` with a DICT is an OWL thing and this is NOT OWL.
+       In a server-side template the dict is written into the attribute as
+       its Python repr AND it REPLACES the static class. Every conditional
+       class on this page is `t-attf-class` with a #{...} interpolation.
+       (And this comment is ruled with `=`, because a doubled hyphen inside
+       an XML comment is a parse error that takes the whole file with it.)
+
+       R39: the portal has no dark mode at all — the website frontend is
+       light-only by design. "Check both themes" is satisfied by every
+       colour resolving, which is why every rule in portal_rnr.scss carries
+       a literal fallback beside its token.
+       ================================================================== -->
+  <template id="rn_icon" name="Recognition page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbrn-ic">
+      <t t-if="icon == 'award'"><circle cx="12" cy="8" r="6"/><path d="m8.21 13.89-1.2 7.11L12 18.5l4.99 2.5-1.2-7.11"/></t>
+      <t t-elif="icon == 'sparkles'"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></t>
+      <t t-elif="icon == 'cake'"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 1 4 1 2.5-1 4-1 2.5 1 4 1 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v1M12 7v2M17 8v1"/></t>
+      <t t-elif="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'send'"><path d="M14.5 3.5 21 12l-6.5 8.5"/><path d="M3 12h18"/></t>
+      <t t-elif="icon == 'alert'"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_recognition" name="Recognition portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="42">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'recognition'" class="breadcrumb-item active">Recognition</li>
+    </xpath>
+  </template>
+
+  <!-- ============================= home card ============================= -->
+  <template id="portal_my_home_recognition" name="Recognition home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="32">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="has_recognition">
+        <t t-call="portal.portal_docs_entry">
+          <t t-set="title">Recognition</t>
+          <t t-set="text">Say thank you to a colleague, and read what people have said about each other</t>
+          <t t-set="url" t-value="'/my/recognition'"/>
+          <t t-set="config_card" t-value="True"/>
+          <t t-set="placeholder_count" t-value="'recognition_count'"/>
+        </t>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/recognition                                                  -->
+  <!-- ================================================================= -->
+  <template id="portal_my_recognition" name="Recognition (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbrn">
+
+        <!-- ========================= the notices ========================= -->
+        <div class="pbrn-flash pbrn-flash--ok" t-if="notice">
+          <t t-call="pb_rnr.rn_icon">
+            <t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/>
+          </t>
+          <span t-esc="notice"/>
+        </div>
+        <div class="pbrn-flash pbrn-flash--bad" t-if="problem">
+          <t t-call="pb_rnr.rn_icon">
+            <t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/>
+          </t>
+          <span t-esc="problem"/>
+        </div>
+
+        <!-- ========================== the hero ==========================
+             The form IS the hero. Everything else on this page is worth
+             reading; this is the thing the page exists to make happen. -->
+        <div class="pbrn-hero">
+          <div class="pbrn-hero-tx">
+            <div class="pbrn-hero-eyebrow">Recognition</div>
+            <h2 class="pbrn-hero-h">Say thank you to somebody</h2>
+            <p class="pbrn-hero-s">
+              Write down one thing a colleague actually did. It goes to their
+              manager first, then to HR — and once they have both agreed, the
+              whole company can read it.
+            </p>
+          </div>
+        </div>
+
+        <form class="pbrn-form" action="/my/recognition/nominate" method="post">
+          <input type="hidden" name="csrf_token"
+                 t-att-value="request.csrf_token()"/>
+
+          <label class="pbrn-flabel" for="rn_nominee">Who deserves it</label>
+          <select class="pbrn-in" id="rn_nominee" name="nominee_id" required="required">
+            <option value="">Pick a colleague</option>
+            <option t-foreach="colleagues" t-as="col"
+                    t-att-value="col['id']" t-esc="col['name']"/>
+          </select>
+
+          <div class="pbrn-flabel">Which value</div>
+          <div class="pbrn-values">
+            <label t-foreach="values" t-as="val"
+                   t-attf-class="pbrn-value pbrn-value--#{val['color']}">
+              <input type="radio" name="value_id" t-att-value="val['id']"
+                     required="required"/>
+              <span class="pbrn-value-b">
+                <span class="pbrn-value-n" t-esc="val['name']"/>
+                <span class="pbrn-value-m" t-esc="val['motto']"/>
+              </span>
+            </label>
+          </div>
+
+          <label class="pbrn-flabel" for="rn_story">What they did</label>
+          <textarea class="pbrn-in pbrn-ta" id="rn_story" name="story" rows="4"
+                    required="required"
+                    placeholder="One real example. What happened, and why it mattered."/>
+
+          <label class="pbrn-check">
+            <input type="checkbox" name="public" value="1" checked="checked"/>
+            <span>Show it on the recognition wall once it is agreed. Untick to
+                  keep it between them, their manager and HR.</span>
+          </label>
+
+          <button type="submit" class="pbrn-btn">
+            <t t-call="pb_rnr.rn_icon">
+              <t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/>
+            </t>
+            <span>Send it</span>
+          </button>
+        </form>
+
+        <!-- ======================= waiting for you =======================
+             A manager's own step. It is above their own praise on purpose:
+             somebody is waiting. -->
+        <div class="pbrn-sec" t-if="waiting">
+          <div class="pbrn-sec-h">
+            <h3>Waiting for you</h3>
+            <span class="pbrn-sec-n">
+              Your team has been nominated. You are the person who knows whether
+              the story is true.
+            </span>
+          </div>
+          <div class="pbrn-cards">
+            <div class="pbrn-card" t-foreach="waiting" t-as="wt">
+              <div class="pbrn-card-h">
+                <img class="pbrn-av" t-att-src="wt['avatar']" alt=""/>
+                <div>
+                  <div class="pbrn-card-t" t-esc="wt['nominee']"/>
+                  <div class="pbrn-card-s">said by <t t-esc="wt['nominator']"/></div>
+                </div>
+                <span t-attf-class="pbrn-chip pbrn-chip--#{wt['color']}"
+                      t-esc="wt['value']"/>
+              </div>
+              <p class="pbrn-story" t-esc="wt['story']"/>
+              <form action="/my/recognition/decide" method="post"
+                    class="pbrn-decide">
+                <input type="hidden" name="csrf_token"
+                       t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="nomination_id" t-att-value="wt['id']"/>
+                <input class="pbrn-in pbrn-in--sm" type="text" name="note"
+                       placeholder="Anything to add (optional)"/>
+                <button type="submit" name="decision" value="agree"
+                        class="pbrn-btn pbrn-btn--sm">Agree, send it to HR</button>
+                <button type="submit" name="decision" value="decline"
+                        class="pbrn-btn pbrn-btn--sm pbrn-btn--ghost">Not this time</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= the winners ========================= -->
+        <div class="pbrn-sec" t-if="winners and winners.get('rows')">
+          <div class="pbrn-sec-h">
+            <h3 t-esc="winners.get('title')"/>
+          </div>
+          <div class="pbrn-winners">
+            <div class="pbrn-winner" t-foreach="winners.get('rows')" t-as="win">
+              <img class="pbrn-av pbrn-av--lg" t-att-src="win['avatar']" alt=""/>
+              <div class="pbrn-winner-n" t-esc="win['name']"/>
+              <div class="pbrn-winner-v" t-esc="win['value']"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================== the wall ========================== -->
+        <div class="pbrn-sec">
+          <div class="pbrn-sec-h">
+            <h3>What people have said</h3>
+          </div>
+          <div class="pbrn-empty" t-if="not stories">
+            <t t-call="pb_rnr.rn_icon">
+              <t t-set="icon" t-value="'award'"/><t t-set="isz" t-value="28"/>
+            </t>
+            <h4>The wall is empty, for now</h4>
+            <p>
+              Somebody near you has almost certainly done something worth saying
+              out loud this week. Yours could be the first one on it.
+            </p>
+          </div>
+          <div class="pbrn-wall" t-if="stories">
+            <div t-foreach="stories" t-as="sty"
+                 t-attf-class="pbrn-tile pbrn-tile--#{sty['color']}">
+              <span class="pbrn-chip pbrn-chip--onwash" t-esc="sty['value']"/>
+              <p class="pbrn-story" t-esc="sty['story']"/>
+              <div class="pbrn-tile-f">
+                <img class="pbrn-av" t-att-src="sty['avatar']" alt=""/>
+                <div>
+                  <div class="pbrn-card-t" t-esc="sty['nominee']"/>
+                  <div class="pbrn-card-s">said by <t t-esc="sty['nominator']"/></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================== next few weeks ======================
+             Names and days. No date of birth is anywhere on this page. -->
+        <div class="pbrn-sec" t-if="celebrations">
+          <div class="pbrn-sec-h">
+            <h3>Coming up</h3>
+          </div>
+          <div class="pbrn-celeb">
+            <div class="pbrn-celeb-row" t-foreach="celebrations" t-as="cel">
+              <span class="pbrn-celeb-ic">
+                <t t-call="pb_rnr.rn_icon">
+                  <t t-set="icon" t-value="cel['kind'] == 'birthday' and 'cake' or 'sparkles'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+              </span>
+              <span class="pbrn-celeb-n" t-esc="cel['name']"/>
+              <span class="pbrn-celeb-w">
+                <t t-if="cel['kind'] == 'birthday'">Birthday</t>
+                <t t-else=""><t t-esc="cel['years']"/> years with us</t>
+              </span>
+              <span class="pbrn-celeb-d" t-esc="cel['day_label']"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================== mine =========================== -->
+        <div class="pbrn-sec" t-if="received">
+          <div class="pbrn-sec-h">
+            <h3>What people have said about you</h3>
+          </div>
+          <div class="pbrn-cards">
+            <div class="pbrn-card" t-foreach="received" t-as="rcv">
+              <div class="pbrn-card-h">
+                <span t-attf-class="pbrn-chip pbrn-chip--#{rcv['color']}"
+                      t-esc="rcv['value']"/>
+                <span class="pbrn-badge" t-if="rcv['winner']">Chosen for the quarter</span>
+                <span class="pbrn-when" t-esc="rcv['when']"/>
+              </div>
+              <p class="pbrn-story" t-esc="rcv['story']"/>
+              <div class="pbrn-card-s">said by <t t-esc="rcv['nominator']"/></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pbrn-sec" t-if="given">
+          <div class="pbrn-sec-h">
+            <h3>What you have said about other people</h3>
+            <span class="pbrn-sec-n">
+              This is the number worth being proud of.
+            </span>
+          </div>
+          <div class="pbrn-mine">
+            <div class="pbrn-mine-row" t-foreach="given" t-as="gvn">
+              <img class="pbrn-av" t-att-src="gvn['avatar']" alt=""/>
+              <span class="pbrn-mine-n" t-esc="gvn['nominee']"/>
+              <span t-attf-class="pbrn-chip pbrn-chip--#{gvn['color']}"
+                    t-esc="gvn['value']"/>
+              <span t-attf-class="pbrn-state pbrn-state--#{gvn['state']}"
+                    t-esc="gvn['outcome'] and gvn['outcome_label'] or gvn['state_label']"/>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

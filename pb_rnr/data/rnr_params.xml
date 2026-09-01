@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE SWITCHES ARE NOT HERE, and that is the same call P3-P7 all
+         wrote down: they default IN CODE (`rnr_common.DEFAULTS`), and
+         shipping a record for a switch freezes whatever value a test run
+         happened to leave behind, because `noupdate="1"` means the next
+         upgrade never corrects it.
+
+         The switches, and every one that SENDS ships off:
+           pb_rnr.digest_mail       off  the monthly mood board, to everybody
+           pb_rnr.anniv_mail        off  a congratulation on the day
+           pb_rnr.manager_mail      off  the Monday heads-up to managers
+           pb_rnr.thanks_mail       off  telling somebody they were praised
+           pb_rnr.hr_alert_mail     off  telling HR a story came in
+           pb_rnr.employee_view     on   /my/recognition
+
+         What IS here are the settings that are ANSWERS rather than
+         switches, because somebody has to be able to find them.
+         ================================================================== -->
+
+    <record id="param_digest_test_email" model="ir.config_parameter">
+        <field name="key">pb_rnr.digest_test_email</field>
+        <!-- SET, THE MOOD BOARD GOES HERE AND NOWHERE ELSE, whatever the
+             broadcast switch says. That is the order things happen in: read
+             it yourself, then let the whole company read it. Clear this
+             field to let the monthly email reach everybody. -->
+        <field name="value"></field>
+    </record>
+
+    <record id="param_hr_alert_email" model="ir.config_parameter">
+        <field name="key">pb_rnr.hr_alert_email</field>
+        <!-- Where "somebody has been nominated" goes. Empty means nobody,
+             and the log says so rather than the message quietly going
+             nowhere. -->
+        <field name="value"></field>
+    </record>
+
+    <record id="param_award_kind" model="ir.config_parameter">
+        <field name="key">pb_rnr.award_kind</field>
+        <!-- Which kind of award a recognition prize is raised as, in the
+             pay team's own list. A spot award is what this is. -->
+        <field name="value">spot</field>
+    </record>
+
+</data>
+</odoo>
