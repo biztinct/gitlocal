@@ -81,7 +81,7 @@ class PbBudgetExport(models.TransientModel):
         cur = board['currency']['code']
         ws.cell(row=1, column=1,
                 value=_('%(type)s budget %(year)s — every figure in %(cur)s',
-                        type=type_label(board['budget_type']),
+                        type=type_label(board['budget_type'], self.env),
                         year=board['fy_label'], cur=cur)).font = bold
         ws.cell(row=2, column=1, value=board['headline'])
 
@@ -142,7 +142,7 @@ class PbBudgetExport(models.TransientModel):
             'file_b64': base64.b64encode(out.read()).decode(),
             'filename': _('Budget %(year)s %(type)s.xlsx',
                           year=board['fy_label'],
-                          type=type_label(board['budget_type'])),
+                          type=type_label(board['budget_type'], self.env)),
             'mimetype': ('application/vnd.openxmlformats-officedocument.'
                          'spreadsheetml.sheet'),
             'rows': len(board['functions']),
@@ -163,7 +163,7 @@ class PbBudgetExport(models.TransientModel):
             'file_b64': base64.b64encode(pdf).decode(),
             'filename': _('Budget %(year)s %(type)s.pdf',
                           year=board['fy_label'],
-                          type=type_label(board['budget_type'])),
+                          type=type_label(board['budget_type'], self.env)),
             'mimetype': 'application/pdf',
             'rows': len(board['functions']),
         }

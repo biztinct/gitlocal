@@ -42,13 +42,22 @@ class TestBudgetRails(TransactionCase):
         src = _read('models', 'budget_actuals.py')
         code = '\n'.join(ln for ln in src.splitlines()
                          if not ln.strip().startswith('#'))
-        # The only mention allowed is the zero it puts on a row it CREATES for
-        # spend that nobody budgeted — which is not an overwrite of anything.
-        writes = [ln for ln in code.splitlines()
-                  if 'forecast_' in ln and "'forecast_cost': 0.0" not in ln
-                  and "'forecast_headcount': 0" not in ln]
+        # A WRITE is a dict key or an assignment. READING `rec.forecast_cost`
+        # to decide whether an empty auto row is worth keeping is not a write,
+        # and the two zeroes put on a row the job CREATES for spend nobody
+        # budgeted are not an overwrite of anything.
+        allowed = ("'forecast_cost': 0.0", "'forecast_headcount': 0")
+        writes = []
+        for line in code.splitlines():
+            body = line.split('#')[0]
+            if not body.strip():
+                continue
+            for col in ('forecast_cost', 'forecast_headcount'):
+                if ("'%s':" % col) in body or ('%s =' % col) in body:
+                    if not any(a in body for a in allowed):
+                        writes.append(body.strip())
         self.assertFalse(
-            [ln for ln in writes if '"""' not in ln and 'the BUDGET' not in ln],
+            writes,
             'the actuals writer must never write a budget column: %s' % writes)
 
     def test_the_narrow_rule_ships_with_its_wide_partner(self):
@@ -97,8 +106,9 @@ class TestBudgetRails(TransactionCase):
                     src = text.splitlines()[line - 1]
                     if any(tok in src for tok in (
                             'from odoo', 'import odoo', 'odoo.addons',
-                            '@odoo-module', '<odoo>', '</odoo>', 'odoo-bin',
-                            'Odoo 19', 'odoo/orm', '# ', '//', '*')):
+                            '@odoo-module', '@odoo/', '<odoo>', '</odoo>',
+                            'odoo-bin', 'Odoo 19', 'odoo/orm',
+                            '# ', '//', '*')):
                         continue
                     bad.append('%s:%s %s' % (name, line, src.strip()))
         self.assertFalse(bad, 'user-visible strings must never name it: %s' % bad)
@@ -227,10 +237,13 @@ class TestBudgetModel(TransactionCase):
         fx = self.env['pb.budget.fx']
         cur = self.env['res.currency']
         made = cur.sudo().create({'name': 'ZZT', 'symbol': 'Z'})
-        vnd = cur.sudo().search([('name', '=', 'VND')], limit=1) or made
-        value, known = fx.convert(1000, made, vnd)
-        if made == vnd:
+        vnd = cur.sudo().search([('name', '=', 'VND')], limit=1)
+        if not vnd:
             self.skipTest('no second currency on this database')
+        # ZZT has no `res.currency.rate` row at all, so it silently reads as
+        # 1.0 — and converting it into a currency that DOES have one produces a
+        # plausible number built on nothing. That is what this refuses.
+        value, known = fx.convert(1000, made, vnd)
         self.assertFalse(known)
         self.assertEqual(value, 0.0)
         # A manual rate is the row's own answer and always wins.

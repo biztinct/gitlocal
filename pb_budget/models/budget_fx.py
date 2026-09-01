@@ -73,16 +73,37 @@ class PbBudgetFx(models.AbstractModel):
         return root.currency_id or company.currency_id or self.env.company.currency_id
 
     @api.model
+    def _has_rate(self, currency, day):
+        """Has anybody ever told this database what this currency is worth?
+
+        THE PRIMARY TEST, and it had to be. R23's original tell — two different
+        currencies coming back at exactly 1.0 — is necessary but not sufficient
+        on a database that holds rates for SOME currencies: a currency with no
+        rate row at all silently defaults to 1.0, so converting it into one that
+        DOES have a rate produces a plausible-looking number built on a fiction.
+        A brand-new currency converted into dong came back "known" at 26,330 to
+        one, which is the same lie R23 records wearing a different hat. What is
+        actually being asked is whether a `res.currency.rate` row exists, so
+        that is what is asked.
+        """
+        if not currency:
+            return False
+        return bool(self.env['res.currency.rate'].sudo().search_count([
+            ('currency_id', '=', currency.id), ('name', '<=', day)]))
+
+    @api.model
     def rate_known(self, src, dst, date=None):
         """Is there a real exchange rate between these two, or only silence?
 
-        Two DIFFERENT currencies reported at the SAME rate means nobody has told
-        this database what one is worth in the other. Same currency both sides is
-        trivially known — there is nothing to convert.
+        Same currency both sides is trivially known — there is nothing to
+        convert. Otherwise BOTH sides need a rate of their own, and the rate
+        between them must not be the 1.0 that means "nobody said".
         """
         if not src or not dst or src == dst:
             return True
         day = date or fields.Date.context_today(self)
+        if not (self._has_rate(src, day) and self._has_rate(dst, day)):
+            return False
         try:
             # `@api.model` on `res.currency` (base/models/res_currency.py:273) —
             # called on the model, with both currencies passed in.
