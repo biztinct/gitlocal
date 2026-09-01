@@ -180,7 +180,7 @@ without owner approval between them.
 | P5 | pb_probation — policy, `pb_probation_state`, the review machine, the training gate, Probation lens, `/my/journey` card | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
 | P6 | pb_pip — coaching, the plan, the decision, `/my/growth`, its OWN group ladder | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T15 pass) |
 | P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass; one additive edit to pb_payhub — assets only, no version bump) |
-| P8 | pb_rnr (+ recognition wall, anniversary engine wow) | pending |
+| P8 | pb_rnr (+ recognition wall, anniversary engine wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T12 pass; one additive JS edit to pb_home_hub — a soft lens registry, now test-enforced — and one icon added to pb_import_kit) |
 | P9 | pb_budget (+ budget heat view wow) | pending |
 | P10 | pb_contract_lifecycle | pending |
 | P11 | pb_vendor_access | pending |
@@ -717,3 +717,98 @@ without owner approval between them.
 - **R75 — ⌘K blocks after P6.** P7 took the **2800** block (cb_paycal 2800,
   cb_awards 2810, cb_packages 2820, cb_benefits 2830, cb_my_pay 2840). P8 starts
   at 2900.
+
+### P8 (pb_rnr, 2026-09-01)
+
+- **R76 — a CAP that is right for a SCREEN is a bug in a CRON.**
+  `upcoming_celebrations` capped its answer at sixty, which is correct for the
+  wall's side strip and for the mood board — and silently wrong for the two
+  jobs that WRITE to people. A seven-day window on this tenant holds a hundred
+  and forty-two managers' worth of celebrations, so the Monday heads-up told
+  the first sixty rows' managers and nobody else, reported a cheerful number,
+  and logged no error. Any read shared between a payload and a job needs the
+  cap as a PARAMETER, and the job passes "no cap". The same trap is waiting in
+  every `_read` a later phase reuses for a cron.
+- **R77 — `hr_employee.first_contract_date` is a REAL COLUMN that is not
+  WRITABLE on this build.** It exists in Postgres (unlike the `hr.version`
+  family of R14) and it reads back fine, but a `create`/`write` carrying it is
+  dropped on the floor: it is derived. A fixture built with one has no join
+  date at all, so it has no work anniversary and no joiner row in the digest,
+  and nothing anywhere says so. The join date must come through the
+  `pb_people._join_date` ladder — the column, then `min(hr_contract.date_start)`,
+  then `create_date` — and a test fixture that needs one needs a real
+  `hr.contract`.
+- **R78 — Postgres on this box has NO `unaccent` extension**
+  (`select * from pg_extension` — it is not there). So `ilike '%bui%'` does not
+  find "Bùi", and about four and a half thousand of the five thousand people on
+  this tenant have an accent in their name. Any people-picker has to fold
+  accents in PYTHON (`rnr_common.fold`, NFKD plus the hand map for `đ` — R28's
+  helper, reached from the other direction) over a `search_read` of the two
+  columns it needs, never a domain `ilike` and never a `search` of records
+  (R56: one field of an `hr.employee` prefetches forty).
+- **R79 — an administrator's own `hr.employee` sits in company 1**, the empty
+  shell the initial install left (R16 from the other end). So ANY facade that
+  scopes to `self._me().company_id` answers an administrator with an empty
+  screen — P8's colleague picker offered nobody at all until it was scoped to
+  `self.env.companies.ids` instead. The company boundary is a property of the
+  SESSION, not of where somebody's employee record happens to live; enforce it
+  at the moment of writing, not at the moment of listing.
+- **R80 — a chip that counts one thing over a list that shows another is two
+  bugs.** The wall's value chips counted `pb.company.value.nomination_count`,
+  which includes praise its writer asked to keep PRIVATE. The result said
+  "Excellence 1" over a wall with no Excellence story on it: a filter that
+  matches nothing (R27) AND a quiet admission that a private story exists.
+  Any count beside a filtered list must be computed from THAT LIST'S OWN
+  domain — here `pb.rnr.nomination._public_domain()`, the single clause that
+  decides what the wall shows.
+- **R81 — the Awards lens's "Put into a pay run" dialog picks by the RUN'S
+  MONTH, not by what is approved.** `pb.oneoff.feed._pick` falls back to
+  `approved_for_month(run.date_end)` when no ids are passed, and the P7 lens
+  passes none. So an award raised in September cannot be put into the August
+  run FROM THE BUTTON — the dialog simply does not list it — even though
+  `preview_for_run(run_id, [ids])` says it is payable and `queue_for_run` does
+  it correctly. Not a defect in either module; it is a real limit on the
+  button, and anybody proving a cross-month award has to call the API with
+  explicit ids. Worth an owner decision if recognition awards routinely need to
+  ride an older run.
+- **R82 — `/web/image/hr.employee/<id>/image_128` draws a grey CAMERA when the
+  field is unset; `avatar_128` draws a real default avatar** (a coloured disc
+  with the person's initial). Both answer 200, so nothing looks broken to a
+  test — it just looks broken to a person. Use `avatar_128` for anything
+  person-shaped.
+- **R83 — `pb_home_hub` had no soft lens registry.** Its two lenses were a
+  literal array, so P8 added ONE: the exported constant
+  `HOME_LENSES = "pb_home_hub_lens"` and an `extraLenses()` spread at the end
+  of the list — an exact clone of `pb_people_hub`'s (`people_hub.js:82`) and of
+  what P7 did to `pb_payhub` (R73). The edit is JS ONLY — no manifest bump — so
+  the deploy needs the asset-cache purge and never a `-u pb_home_hub`, and the
+  seam is now enforced by
+  `pb_home_hub/tests/test_home_hub.py::test_a_later_module_can_bolt_a_lens_on_without_editing_this_hub`.
+  The two shipped lenses carry no sequence, so bolted-on ones start at 20 (P8
+  took **Wall 20**). On the People hub, Records is 40 and Assets is 50, so
+  **Praise took 60**.
+- **R84 — "Recognition" does not fit the 60px lens rail (R63), and the fix was
+  the same one P6 found.** Eleven characters with no break in them measure
+  wider than the box, exactly as "Improvement" did. The label is **"Praise"**,
+  which measures 37px against a 60px box — narrower than the shipped
+  "Employees" (61px) and "Contracts" (63px), which both marginally overflow
+  today — and which has the better property of being the same word the
+  employee reads on their own page and on the wall.
+- **R85 — `prefers-reduced-motion` cannot be emulated through Chrome MCP**
+  (`emulate` exposes colour scheme and viewport, not media features). The
+  stronger proof is the COMPILED CSS: put every moving declaration
+  (`opacity: 0`, the transform AND the animation) inside
+  `@media (prefers-reduced-motion: no-preference)`, then fetch the deployed
+  bundle and read the block back. Under a reduced-motion preference none of the
+  three is applied at all, so the surface paints finished on the first frame
+  with nothing to recover from — which is a different and better property than
+  declaring an animation and then cancelling it. `@keyframes` must live at the
+  TOP LEVEL of the stylesheet: nested inside a selector, Sass emits it nested
+  too and no browser plays it.
+- **R86 — ⌘K blocks after P7.** P8 took the **2900** block (rnr_wall 2900,
+  rnr_board 2910, rnr_values 2920, rnr_cycles 2930, rnr_my 2940). P9 starts at
+  **3000**.
+- **R87 — the ESS/manager fixture passwords, again (R29/R74).** P8 set
+  `rize.p8.mate@example.com` / `RizeP8!2026` (uid 2333, employee 17138) and
+  re-set `rize.p4.boss@example.com` / `RizeP4!2026` (uid 2326). Owner debt with
+  the rest: clear these at programme end.
