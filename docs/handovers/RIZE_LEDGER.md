@@ -182,7 +182,7 @@ without owner approval between them.
 | P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass; one additive edit to pb_payhub — assets only, no version bump) |
 | P8 | pb_rnr (+ recognition wall, anniversary engine wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T12 pass; one additive JS edit to pb_home_hub — a soft lens registry, now test-enforced — and one icon added to pb_import_kit) |
 | P9 | pb_budget (+ budget heat view wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, T12 waived by D9; two additive JS edits — a soft lens registry on pb_insights_hub, now test-enforced, and one icon in pb_import_kit) |
-| P10 | pb_contract_lifecycle | pending |
+| P10 | pb_contract_lifecycle | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass, T14 waived by D9; one fallback-safe edit to `pb_hr_payroll_analytics`, its own commit) |
 | P11 | pb_vendor_access | pending |
 
 ## Gotchas discovered during RIZE phases (append here)
@@ -915,3 +915,112 @@ without owner approval between them.
   `rize.p9.plain@example.com` (2338), `rize.p9.wfp@example.com` (2339),
   `rize.p9.both@example.com` (2340) — all `RizeP9!2026`. Owner debt with
   R29/R74/R87: clear these at programme end.
+
+### P10 (pb_contract_lifecycle, 2026-09-01/02)
+
+- **R100 — a job that skips only OPEN work re-does the work that is FINISHED.**
+  `_due_for_decision` skipped a contract while its decision was open, which is
+  the obvious test and the wrong one: the night after a contract was extended
+  the SAME contract was raised again and its manager emailed about it, for
+  ever, because "done" is not "open". A nightly job that creates a record per
+  parent has to test for ANY child, not for an unfinished one — and the manual
+  door (`open_for`) has to refuse by name, saying what was decided and pointing
+  at the contract that followed. The same shape is waiting in every phase whose
+  cron opens a case per record.
+- **R101 — a REQUIRED field with a DEFAULT cannot tell you whether anybody has
+  said.** `employee_type` is required and defaults to `employee`, so "nobody
+  has typed this person" and "somebody deliberately made this person permanent"
+  are the same stored value. The nightly top-up therefore read the contract of
+  somebody who had just been converted, saw the word "contractor" in the
+  category they used to be on, and typed them back — every night, reporting a
+  cheerful count. A guess can only lose to a statement if the statement is
+  WRITTEN DOWN: `pb_employment_type_set` is set by every deliberate write (a
+  person, the connected system, a conversion) and the guess never looks at a
+  record that carries it.
+- **R102 — reusing another phase's machine means inheriting its SIDE EFFECTS,
+  not just its flow.** P5's `kind` field made a conversion evaluation free —
+  but all three of P5's verdict handlers write `pb_probation_state`, and the
+  extend one moves `trial_date_end`, which is the one in-place employment write
+  ruling D1 carves out FOR PROBATION. Run against a conversion those are false
+  records: a two-year contractor's file read "Trial period: Not passed" about a
+  trial period they never had. Snapshot the fields the borrowed machine writes
+  and put them back for your own kind; do not fork six things it does
+  correctly to change one.
+- **R103 — a borrowed machine's WORDS are part of its behaviour.** P5's four
+  emails and three letters say "trial period" and "probation" — right for a
+  trial period, wrong for somebody being considered for a permanent contract
+  after two years on fixed terms. The first live conversion told a manager
+  "…'s trial period ends soon — who should we ask?", and the one that did not
+  pass sent the person a letter saying their employment had not been confirmed,
+  over a board whose own consequence copy promises "nothing is created and
+  nobody is told they failed". Reworded WITHOUT touching P5's `noupdate` seeds
+  (R57 — that means the `ir_model_data` dance across every live review): the
+  later module ships its own templates and swaps them in with a two-line
+  `_mail` override keyed on `kind`, and suppresses the borrowed letters when it
+  is sending its own.
+- **R104 — R56 can eat a SUCCESS and report it as a failure.** The person who
+  agrees a contract extension is the employee's own MANAGER, who holds no HR
+  group by definition — and `private_email` carries `groups="hr.group_hr_user"`.
+  So the first live approval built the new contract, closed the decision and
+  filed the letter, then died working out who to email, inside the caller's
+  try/except, and posted "the new contract could not be prepared" over a
+  contract that had been created a line earlier. Two rules out of it: every
+  address helper reads the employee AS THE SYSTEM, and the notification legs
+  (letter, mail) get their own guards so paperwork can never be reported as a
+  failed agreement.
+- **R105 — a term of N months ENDS THE DAY BEFORE the anniversary.** Twelve
+  months from 1 Nov 2026 is 31 Oct 2027, not 1 Nov — `add_months` alone makes
+  every contract a day long, the next term starts on the 2nd, and each renewal
+  walks one more day from the date it is meant to keep. `contract_common
+  .term_end()` is `add_months(start, months) - 1 day` and is the only thing
+  that should compute a contract's end.
+- **R106 — a heuristic word list must not contain a word that is TRUE OF BOTH
+  SIDES.** "fixed-term" was in the contractor list, and a fixed-term EMPLOYEE
+  is an employee — the whole premise of this phase is that permanent staff can
+  be on an agreement with a date on it. The live backfill retyped a test
+  employee off a contract called "P10 fixed-term — …" and out of the headcount.
+  The "Fixed-term contractor" contract type still matches, on the word
+  "contractor" that is actually in it.
+- **R107 — `hr.contract.type` is ALREADY SEEDED on this database, twelve rows
+  from the standard `hr` module, "Intern" among them** (`hr.contract_type_intern`,
+  id 7) — not the three rows `om_hr_payroll/data/hr_contract_type.xml` implies.
+  A `<record>` of our own would have put a SECOND row called Intern in the
+  picker, and a picker with two identical options is a picker nobody can use.
+  ENSURE by name from a hook that the daily job also calls, never seed. (P10
+  created only "Fixed-term contractor", id 83.) `hr.contract.type` also has NO
+  `company_id` on this build — probe before setting one.
+- **R108 — `format_date(env, d)` with no pattern answers the LOCALE's format,
+  and for an `en_US` admin that is `02/01/2027`** — the first of February to
+  half the world and the second of January to the other half, printed beside a
+  board that writes "1 Feb 2027" from `toLocaleDateString`. Two date formats on
+  one screen is one too many and an ambiguous one on a contract letter is worse
+  than that. Pass `date_format='d MMM y'` for anything a person reads.
+- **R109 — a facet's sort order is part of what it MEANS.** Month chips sorted
+  by count read "October 2026, November 2026, August 2026, December 2026…" and
+  a reader looking for next month had to hunt. A `YYYY-MM` key sorts
+  chronologically as a string; any facet whose values have a natural order
+  wants that order, not the biggest-first default the other facets use.
+- **R110 — the assets bundle does NOT always rebuild on `-u`.** P10's lens was
+  absent from `registry.category("pb_lifecycle_lenses")` in the browser after a
+  clean `-i` with EXIT=0, on a module whose JS had been on disk the whole time.
+  The purge is the fix (`DELETE FROM ir_attachment WHERE url LIKE
+  '/web/assets/%'` then a hard reload), and the check that matters is reading
+  the registry in the browser rather than trusting the version number (R73's
+  advice, reached from the install side rather than the JS-only side).
+- **R111 — ⌘K blocks after P9.** P10 took the **3100** block (contracts_board
+  3100, contracts_decisions 3110, contracts_extensions 3120). P11 starts at
+  **3200**. Lifecycle-hub lens sequences are now Journeys (none), New joiners
+  20, Exits 30, Probation 40, Growth plans 50, **Contracts 60**; P11 starts at
+  70. "Contracts" measures 63px in the 60px rail label box — the same marginal
+  overflow as the People hub's own shipped "Contracts" (63px) and "Employees"
+  (61px), and the shortest label that is still the word on the screen.
+- **R112 — the P10 test cast** (D9: left in place, listed for the owner).
+  Employees **17140-17147** (`rize.p10.a@example.com` … `rize.p10.h@example.com`,
+  company 5, department "RIZE P4 (test)", manager 17122) each with an end-dated
+  contract 14581-14588, plus **17148** "RIZE P10 Arriving Intern"
+  (`rize.p10.intern@example.com`) created through the connected-system path to
+  prove an arriving intern arrives AS an intern. None of them has a login. The
+  approvals were made as **`rize.p4.boss@example.com` / `RizeP4!2026`** (uid
+  2326, R87's account, password unchanged) to prove a manager who holds NO HR
+  group can agree an extension.
+
