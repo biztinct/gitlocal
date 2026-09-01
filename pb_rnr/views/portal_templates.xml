@@ -91,67 +91,12 @@
           <span t-esc="problem"/>
         </div>
 
-        <!-- ========================== the hero ==========================
-             The form IS the hero. Everything else on this page is worth
-             reading; this is the thing the page exists to make happen. -->
-        <div class="pbrn-hero">
-          <div class="pbrn-hero-tx">
-            <div class="pbrn-hero-eyebrow">Recognition</div>
-            <h2 class="pbrn-hero-h">Say thank you to somebody</h2>
-            <p class="pbrn-hero-s">
-              Write down one thing a colleague actually did. It goes to their
-              manager first, then to HR — and once they have both agreed, the
-              whole company can read it.
-            </p>
-          </div>
-        </div>
-
-        <form class="pbrn-form" action="/my/recognition/nominate" method="post">
-          <input type="hidden" name="csrf_token"
-                 t-att-value="request.csrf_token()"/>
-
-          <label class="pbrn-flabel" for="rn_nominee">Who deserves it</label>
-          <select class="pbrn-in" id="rn_nominee" name="nominee_id" required="required">
-            <option value="">Pick a colleague</option>
-            <option t-foreach="colleagues" t-as="col"
-                    t-att-value="col['id']" t-esc="col['name']"/>
-          </select>
-
-          <div class="pbrn-flabel">Which value</div>
-          <div class="pbrn-values">
-            <label t-foreach="values" t-as="val"
-                   t-attf-class="pbrn-value pbrn-value--#{val['color']}">
-              <input type="radio" name="value_id" t-att-value="val['id']"
-                     required="required"/>
-              <span class="pbrn-value-b">
-                <span class="pbrn-value-n" t-esc="val['name']"/>
-                <span class="pbrn-value-m" t-esc="val['motto']"/>
-              </span>
-            </label>
-          </div>
-
-          <label class="pbrn-flabel" for="rn_story">What they did</label>
-          <textarea class="pbrn-in pbrn-ta" id="rn_story" name="story" rows="4"
-                    required="required"
-                    placeholder="One real example. What happened, and why it mattered."/>
-
-          <label class="pbrn-check">
-            <input type="checkbox" name="public" value="1" checked="checked"/>
-            <span>Show it on the recognition wall once it is agreed. Untick to
-                  keep it between them, their manager and HR.</span>
-          </label>
-
-          <button type="submit" class="pbrn-btn">
-            <t t-call="pb_rnr.rn_icon">
-              <t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/>
-            </t>
-            <span>Send it</span>
-          </button>
-        </form>
-
         <!-- ======================= waiting for you =======================
-             A manager's own step. It is above their own praise on purpose:
-             somebody is waiting. -->
+             A MANAGER'S OWN STEP, AND IT IS THE FIRST THING ON THE PAGE
+             WHEN THERE IS ONE. Somebody is waiting on them; asking them to
+             scroll past a form to find that out is how a two-hand design
+             quietly becomes a one-hand one. When nothing is waiting the
+             block is absent entirely and the form is the first thing.  -->
         <div class="pbrn-sec" t-if="waiting">
           <div class="pbrn-sec-h">
             <h3>Waiting for you</h3>
@@ -187,6 +132,80 @@
             </div>
           </div>
         </div>
+
+        <!-- ========================== the hero ==========================
+             The form IS the hero. Everything else on this page is worth
+             reading; this is the thing the page exists to make happen. -->
+        <div class="pbrn-hero">
+          <div class="pbrn-hero-tx">
+            <div class="pbrn-hero-eyebrow">Recognition</div>
+            <h2 class="pbrn-hero-h">Say thank you to somebody</h2>
+            <p class="pbrn-hero-s">
+              Write down one thing a colleague actually did. It goes to their
+              manager first, then to HR — and once they have both agreed, the
+              whole company can read it.
+            </p>
+          </div>
+        </div>
+
+        <form class="pbrn-form" action="/my/recognition/nominate" method="post">
+          <input type="hidden" name="csrf_token"
+                 t-att-value="request.csrf_token()"/>
+
+          <label class="pbrn-flabel" for="rn_nominee">Who deserves it</label>
+          <!-- A NATIVE SELECT, AND THE WHOLE COMPANY IS IN IT. This page
+               carries no JavaScript of ours, so the browser's own
+               type-to-find is the search box — and it is faster than one we
+               could write. What we CAN do is put the people most praise
+               actually goes to at the top, so the common case needs no
+               typing at all. -->
+          <select class="pbrn-in" id="rn_nominee" name="nominee_id" required="required">
+            <option value="">Pick a colleague</option>
+            <optgroup t-if="team" label="Your team">
+              <option t-foreach="team" t-as="tm"
+                      t-att-value="tm['id']" t-esc="tm['name']"/>
+            </optgroup>
+            <optgroup t-if="team" label="Everybody else">
+              <option t-foreach="colleagues" t-as="col"
+                      t-att-value="col['id']" t-esc="col['name']"/>
+            </optgroup>
+            <t t-if="not team">
+              <option t-foreach="colleagues" t-as="col"
+                      t-att-value="col['id']" t-esc="col['name']"/>
+            </t>
+          </select>
+
+          <div class="pbrn-flabel">Which value</div>
+          <div class="pbrn-values">
+            <label t-foreach="values" t-as="val"
+                   t-attf-class="pbrn-value pbrn-value--#{val['color']}">
+              <input type="radio" name="value_id" t-att-value="val['id']"
+                     required="required"/>
+              <span class="pbrn-value-b">
+                <span class="pbrn-value-n" t-esc="val['name']"/>
+                <span class="pbrn-value-m" t-esc="val['motto']"/>
+              </span>
+            </label>
+          </div>
+
+          <label class="pbrn-flabel" for="rn_story">What they did</label>
+          <textarea class="pbrn-in pbrn-ta" id="rn_story" name="story" rows="4"
+                    required="required"
+                    placeholder="One real example. What happened, and why it mattered."/>
+
+          <label class="pbrn-check">
+            <input type="checkbox" name="public" value="1" checked="checked"/>
+            <span>Show it on the recognition wall once it is agreed. Untick to
+                  keep it between them, their manager and HR.</span>
+          </label>
+
+          <button type="submit" class="pbrn-btn">
+            <t t-call="pb_rnr.rn_icon">
+              <t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/>
+            </t>
+            <span>Send it</span>
+          </button>
+        </form>
 
         <!-- ========================= the winners ========================= -->
         <div class="pbrn-sec" t-if="winners and winners.get('rows')">
@@ -248,10 +267,7 @@
                 </t>
               </span>
               <span class="pbrn-celeb-n" t-esc="cel['name']"/>
-              <span class="pbrn-celeb-w">
-                <t t-if="cel['kind'] == 'birthday'">Birthday</t>
-                <t t-else=""><t t-esc="cel['years']"/> years with us</t>
-              </span>
+              <span class="pbrn-celeb-w" t-esc="cel['years_label']"/>
               <span class="pbrn-celeb-d" t-esc="cel['day_label']"/>
             </div>
           </div>
@@ -267,7 +283,7 @@
               <div class="pbrn-card-h">
                 <span t-attf-class="pbrn-chip pbrn-chip--#{rcv['color']}"
                       t-esc="rcv['value']"/>
-                <span class="pbrn-badge" t-if="rcv['winner']">Chosen for the quarter</span>
+                <span class="pbrn-badge" t-if="rcv['winner']">Quarter winner</span>
                 <span class="pbrn-when" t-esc="rcv['when']"/>
               </div>
               <p class="pbrn-story" t-esc="rcv['story']"/>

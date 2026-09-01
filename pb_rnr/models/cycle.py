@@ -100,7 +100,7 @@ class PbRnrCycle(models.Model):
             row = by_emp.setdefault(emp.id, {
                 'employee_id': emp.id,
                 'employee': emp.name or '',
-                'avatar': '/web/image/hr.employee/%s/image_128' % emp.id,
+                'avatar': '/web/image/hr.employee/%s/avatar_128' % emp.id,
                 'count': 0,
                 'values': [],
                 'value_keys': set(),

@@ -89,7 +89,8 @@ class PbRnrCelebration(models.AbstractModel):
 
     # ------------------------------------------------------------- the read
     @api.model
-    def upcoming_celebrations(self, days=30, company_ids=None, offset=0):
+    def upcoming_celebrations(self, days=30, company_ids=None, offset=0,
+                              limit=CELEBRATION_CAP):
         """Who is celebrating in the next `days` days, soonest first.
 
         `days=0` means today and only today. `offset` shifts the whole window
@@ -97,8 +98,14 @@ class PbRnrCelebration(models.AbstractModel):
         out, which is the same question asked from a different Monday and not a
         second implementation of it.
 
+        `limit=0` MEANS NO CAP, and the two jobs pass it. The default cap is
+        there because a SCREEN is a strip and not a register — but a JOB that
+        stops at sixty people silently fails to congratulate the sixty-first,
+        and on this tenant a seven-day window holds about a hundred and twenty.
+        A ceiling that is right for a payload is a bug in a cron.
+
         Returns `[{employee_id, name, initials, avatar, kind, day, day_label,
-        years, department}]`. No year of birth, ever.
+        years, years_label, department}]`. No year of birth, ever.
         """
         span = 30 if days is None else max(0, int(days))
         start = fields.Date.add(fields.Date.context_today(self),
@@ -120,7 +127,7 @@ class PbRnrCelebration(models.AbstractModel):
                 'employee_id': emp.id,
                 'name': emp.name or '',
                 'initials': initials(emp.name or ''),
-                'avatar': '/web/image/hr.employee/%s/image_128' % emp.id,
+                'avatar': '/web/image/hr.employee/%s/avatar_128' % emp.id,
                 'kind': row['kind'],
                 # A date string, so a caller can sort or compare. The LABEL is
                 # what every screen prints, and for a birthday it carries the
@@ -128,11 +135,37 @@ class PbRnrCelebration(models.AbstractModel):
                 'day': fields.Date.to_string(row['day']),
                 'day_label': day_label(row['day']),
                 'years': row['years'],
+                # R46 — "1 years with us" is how a screen announces it was
+                # written by a programme. The sentence is built ONCE here so the
+                # wall, the portal page, the digest and the manager's email all
+                # say the same thing.
+                'years_label': (_('Birthday') if row['kind'] == 'birthday'
+                                else counted(row['years'], _('year with us'),
+                                             _('years with us'))),
                 'department': (emp.department_id.name
                                if emp.department_id else ''),
             })
         out.sort(key=lambda r: (r['day'], r['kind'], r['name']))
-        return out[:CELEBRATION_CAP]
+        cap = int(limit or 0)
+        return out[:cap] if cap > 0 else out
+
+    @api.model
+    def count_upcoming(self, days=30, company_ids=None, offset=0):
+        """HOW MANY, not which ones.
+
+        `upcoming_celebrations` is capped at sixty, because a payload is a strip
+        and not a register — and on this tenant a thirty-day window holds four
+        hundred people, so the capped LENGTH is not the answer to "how many".
+        A screen that prints one for the other is a screen telling a small lie
+        every month of the year. This runs the same cheap candidate pass and
+        counts it.
+        """
+        span = 30 if days is None else max(0, int(days))
+        start = fields.Date.add(fields.Date.context_today(self),
+                                days=max(0, int(offset or 0)))
+        ids = list(company_ids if company_ids is not None
+                   else (self.env.companies.ids or []))
+        return len(self._candidates(start, span, ids))
 
     @api.model
     def _candidates(self, start, span, company_ids):
@@ -209,7 +242,7 @@ class PbRnrCelebration(models.AbstractModel):
         rather than silence (R54).
         """
         on = flag(self.env, P_ANNIV_MAIL)
-        rows = self.upcoming_celebrations(days=0)
+        rows = self.upcoming_celebrations(days=0, limit=0)      # no cap: a job
         sent, skipped, would = 0, 0, 0
         Log = self.env['pb.rnr.celebration.log'].sudo()
         Emp = self.env['hr.employee'].sudo()
@@ -290,7 +323,7 @@ class PbRnrCelebration(models.AbstractModel):
         either pretending to be the other.
         """
         on = flag(self.env, P_MANAGER_MAIL)
-        rows = self.upcoming_celebrations(days=int(days or 7))
+        rows = self.upcoming_celebrations(days=int(days or 7), limit=0)
         Emp = self.env['hr.employee'].sudo()
         by_manager = {}
         for row in rows:
@@ -345,7 +378,14 @@ class PbRnrCelebration(models.AbstractModel):
         body = self.env['ir.qweb']._render('pb_rnr.mail_manager_week', {
             'manager': boss.name or '',
             'rows': items,
-            'count_line': counted(len(items), _('person'), _('people')),
+            # ONE PERSON CAN HAVE TWO. A birthday and a work anniversary on the
+            # same day is one colleague and two things to say, so the sentence
+            # counts CELEBRATIONS — "2 people" over a list naming one person
+            # twice is the kind of small lie nobody forgives a system for.
+            'count_line': counted(len(items), _('celebration'),
+                                  _('celebrations')),
+            # `len()` is not something a template should have to reach for.
+            'one': len(items) == 1,
         })
         self.env['mail.mail'].sudo().create({
             'subject': _("Your team's week ahead"),

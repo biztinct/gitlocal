@@ -83,7 +83,7 @@
             <div class="pbim-stat">
               <div class="pbim-stat-ic"><t t-out="ic('banknote',18)"/></div>
               <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.awarded_qtd || 0"/><span>paid for this quarter</span>
+                <b t-esc="state.kpis.awarded_qtd || 0"/><span>given money this quarter</span>
               </div>
             </div>
           </div>
@@ -178,7 +178,7 @@
                                      'err': pr.state === 'refused' }"
                       t-esc="pr.outcome_label or pr.state_label"/>
                 <span t-if="pr.amount" class="rnr-money" t-esc="money(pr)"/>
-                <span t-if="pr.winner" class="pbim-badge ok">Chosen for the quarter</span>
+<span t-if="pr.winner" class="pbim-badge ok rnr-winner">Quarter winner</span>
                 <span t-if="!pr.public" class="rnr-private">
                   <t t-out="ic('eyeOff',13)"/> Kept private
                 </span>
