@@ -74,6 +74,28 @@ export const PAYSLIP_RUN_GATE = [
     "pb_demo.group_payobook_demo",
 ];
 
+/**
+ * Where a later module bolts a lens onto Insights.
+ *
+ *     registry.category(INSIGHTS_LENSES).add("budget", {
+ *         key, icon, label, Component, groups,
+ *         propsFromContext(ctx) { return { ... }; },   // optional
+ *     }, { sequence: 20 });
+ *
+ * A REGISTRY rather than an import, and the direction of the dependency is the
+ * whole reason: a module that mounts a lens here depends on this hub, so this
+ * hub cannot import it back without a cycle no manifest can express. An exact
+ * clone of `pb_people_hub`'s, of the one P7 gave `pb_payhub` (R73) and of the
+ * one P8 gave `pb_home_hub` (R83) — same shape, same properties: absent module,
+ * absent lens, no error.
+ *
+ * The four shipped lenses carry no sequence, so bolted-on ones start at 20 and
+ * land after them. A bolted-on lens brings its OWN gate; the shell's per-lens
+ * `groups` is advisory and the facade behind it enforces (W12), which is what
+ * lets a lens live here whose readers are not analytics readers at all.
+ */
+export const INSIGHTS_LENSES = "pb_insights_hub_lens";
+
 export class PbInsightsHub extends Component {
     static template = "pb_insights_hub.PbInsightsHub";
     static components = { HubShell };
@@ -100,8 +122,21 @@ export class PbInsightsHub extends Component {
                   Component: PbWorkforceInsights, groups: ANALYTICS_GATE },
                 { key: "payroll", icon: "fileText", label: _t("Payroll Report"),
                   Component: PayrollReport, groups: PAYSLIP_RUN_GATE },
+                // Bolted-on lenses sit after the four this hub ships — what
+                // happened first, everything measured against it after.
+                ...this.extraLenses(),
             ],
         };
+    }
+
+    /** Lenses other modules registered, resolved ONCE (never in a getter, W21). */
+    extraLenses() {
+        const ctx = (this.props.action && this.props.action.context) || {};
+        return registry.category(INSIGHTS_LENSES).getAll().map((def) => {
+            const props = typeof def.propsFromContext === "function"
+                ? def.propsFromContext(ctx) : (def.props || {});
+            return { ...def, props };
+        });
     }
 
     /** The cog. A CLICK handler — the shell calls it, nothing else does. */

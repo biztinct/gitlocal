@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The `<report>` shortcut tag is gone from the Odoo 19 data-file RNG —
+         an explicit `ir.actions.report` record is the only form that loads. -->
+    <record id="action_report_budget_year" model="ir.actions.report">
+        <field name="name">Budget summary</field>
+        <field name="model">pb.budget.export</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_budget.report_budget_year_document</field>
+        <field name="report_file">pb_budget.report_budget_year_document</field>
+        <field name="print_report_name">'Budget %s' % (object.fy or '')</field>
+    </record>
+
+    <!-- ==================================================================
+         One page a person can put in front of a board.
+
+         R42 — this is server-side QWeb and NOT OWL. Every conditional class
+         is `t-attf-class` with a `#{...}` interpolation; a DICT would be
+         written into the attribute as its Python repr AND would replace the
+         static class. R5 — no `t-key` anywhere; that is an OWL directive
+         and here it only logs noise on every render.
+
+         Comments ruled with `=`, never a doubled hyphen (R35).
+         ================================================================== -->
+    <template id="report_budget_year_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="board" t-value="doc.board()"/>
+                <t t-set="k" t-value="board['kpis']"/>
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family:Inter,Arial,sans-serif;">
+
+                        <h2 style="margin:0 0 4px 0;">
+                            Budget <t t-esc="board['fy_label']"/>
+                        </h2>
+                        <div style="color:#64748b;font-size:13px;margin-bottom:6px;">
+                            <t t-esc="board['type_label']"/> — every figure in
+                            <t t-esc="board['currency']['code']"/>
+                        </div>
+                        <p style="font-size:14px;margin:0 0 20px 0;">
+                            <t t-esc="board['headline']"/>
+                        </p>
+
+                        <!-- ================= the four numbers ================= -->
+                        <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+                            <tbody>
+                                <tr>
+                                    <td style="padding:10px 14px;border:1px solid #e2e8f0;width:25%;">
+                                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Budget</div>
+                                        <div style="font-size:16px;font-weight:600;">
+                                            <t t-esc="'{:,.0f}'.format(k['budget'])"/>
+                                        </div>
+                                    </td>
+                                    <td style="padding:10px 14px;border:1px solid #e2e8f0;width:25%;">
+                                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Spent</div>
+                                        <div style="font-size:16px;font-weight:600;">
+                                            <t t-esc="'{:,.0f}'.format(k['spent'])"/>
+                                        </div>
+                                    </td>
+                                    <td style="padding:10px 14px;border:1px solid #e2e8f0;width:25%;">
+                                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Left</div>
+                                        <div style="font-size:16px;font-weight:600;">
+                                            <t t-esc="'{:,.0f}'.format(k['left'])"/>
+                                        </div>
+                                    </td>
+                                    <td style="padding:10px 14px;border:1px solid #e2e8f0;width:25%;">
+                                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Used / year gone</div>
+                                        <div style="font-size:16px;font-weight:600;">
+                                            <t t-esc="'{:,.0f}'.format(k['burn'])"/>% / <t t-esc="'{:,.0f}'.format(k['pace'])"/>%
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- ================== every function ================== -->
+                        <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:24px;">
+                            <thead>
+                                <tr style="background:#f1f5f9;">
+                                    <th style="text-align:left;padding:7px 10px;border:1px solid #e2e8f0;">Function</th>
+                                    <th style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Budget</th>
+                                    <th style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Spent</th>
+                                    <th style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Left</th>
+                                    <th style="text-align:right;padding:7px 10px;border:1px solid #e2e8f0;">Used</th>
+                                    <th style="text-align:left;padding:7px 10px;border:1px solid #e2e8f0;">Reading</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="board['functions']" t-as="fn">
+                                    <td style="padding:7px 10px;border:1px solid #e2e8f0;">
+                                        <t t-esc="fn['name']"/>
+                                    </td>
+                                    <td style="padding:7px 10px;border:1px solid #e2e8f0;text-align:right;">
+                                        <t t-esc="'{:,.0f}'.format(fn['budget'])"/>
+                                    </td>
+                                    <td style="padding:7px 10px;border:1px solid #e2e8f0;text-align:right;">
+                                        <t t-esc="'{:,.0f}'.format(fn['spent'])"/>
+                                    </td>
+                                    <td style="padding:7px 10px;border:1px solid #e2e8f0;text-align:right;">
+                                        <t t-esc="'{:,.0f}'.format(fn['left'])"/>
+                                    </td>
+                                    <td style="padding:7px 10px;border:1px solid #e2e8f0;text-align:right;">
+                                        <t t-esc="'{:,.0f}'.format(fn['burn'])"/>%
+                                    </td>
+                                    <td t-attf-style="padding:7px 10px;border:1px solid #e2e8f0;#{fn['tone'] == 'over' and 'color:#BE123C;font-weight:600;' or ''}#{fn['tone'] == 'watch' and 'color:#B45309;' or ''}">
+                                        <t t-esc="fn['tone_label']"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- ============== the months, as bars ============== -->
+                        <h4 style="margin:0 0 8px 0;font-size:13px;">Month by month</h4>
+                        <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:24px;">
+                            <tbody>
+                                <tr t-foreach="doc.month_bars(board)" t-as="bar">
+                                    <td style="padding:3px 8px;width:60px;color:#64748b;">
+                                        <t t-esc="bar['label']"/>
+                                    </td>
+                                    <td style="padding:3px 8px;">
+                                        <div style="background:#eef1f5;height:12px;width:100%;position:relative;">
+                                            <div t-attf-style="background:#6355C7;height:12px;width:#{bar['pct']}%;"/>
+                                        </div>
+                                    </td>
+                                    <td style="padding:3px 8px;width:120px;text-align:right;">
+                                        <t t-esc="'{:,.0f}'.format(bar['spent'])"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- ================== what it means ================== -->
+                        <h4 style="margin:0 0 8px 0;font-size:13px;">What that means</h4>
+                        <ul style="font-size:12px;line-height:1.7;padding-left:18px;">
+                            <li t-foreach="doc.narrative(board)" t-as="line">
+                                <t t-esc="line"/>
+                            </li>
+                        </ul>
+
+                        <p t-if="board['fx_unknown']" style="font-size:11px;color:#B45309;margin-top:16px;">
+                            <t t-esc="board['fx_note']"/>
+                        </p>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

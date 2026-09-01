@@ -494,3 +494,42 @@ class TestPayrollReportReskin(TransactionCase):
         self.assertNotIn('error', d, d.get('error'))
         for key in ('batch', 'prev_batch', 'employees', 'dept_chart', 'summary'):
             self.assertIn(key, d)
+
+
+@tagged('post_install', '-at_install')
+class TestSoftLensRegistry(TransactionCase):
+    """The seam RIZE P9 added, and the three pieces that make it one.
+
+    A module that mounts a lens here DEPENDS on this hub, so this hub can never
+    import it back — the registry is what lets the dependency run one way only
+    (`pb_people_hub`'s shape, the one P7 gave `pb_payhub` and the one P8 gave
+    `pb_home_hub`). Three things have to be true together and each fails
+    silently on its own: the category name is EXPORTED so the other module can
+    name it, the config SPREADS the resolved list, and the resolution happens
+    once in `extraLenses()` rather than in a getter — a fresh array per render
+    recreates every lens on every keystroke (W21).
+    """
+
+    def test_a_later_module_can_bolt_a_lens_on_without_editing_this_hub(self):
+        src = _code(_hub('static', 'src', 'js', 'insights_hub.js'))
+        self.assertIn('export const INSIGHTS_LENSES = "pb_insights_hub_lens"',
+                      src, 'the lens registry category must be exported by name')
+        self.assertIn('...this.extraLenses()', src,
+                      'the config must spread the registered lenses')
+        self.assertIn('extraLenses() {', src,
+                      'lenses are resolved ONCE in a method, never in a getter')
+        self.assertNotIn('get extraLenses', src,
+                         'a getter would rebuild the lens list on every render')
+
+    def test_the_four_shipped_lenses_are_still_the_first_four(self):
+        """A bolted-on lens lands AFTER what this hub ships, because the four
+        shipped ones carry no sequence and the registry orders the rest behind
+        them. If that ever stops being true, a later module could push the
+        Pulse off the front of the rail without editing this file."""
+        src = _code(_hub('static', 'src', 'js', 'insights_hub.js'))
+        order = [k for k in ('"pulse"', '"explorer"', '"workforce"', '"payroll"')
+                 if k in src]
+        self.assertEqual(order, ['"pulse"', '"explorer"', '"workforce"',
+                                 '"payroll"'])
+        self.assertLess(src.index('key: "payroll"'), src.index('extraLenses()'),
+                        'the spread must come last in the lens list')

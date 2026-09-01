@@ -1,0 +1,692 @@
+// ===========================================================================
+// pb_budget — the Budget lens on the Insights mission.
+//
+// pbim tokens only, one accent, flat fills, no gradients. Every rule that
+// depends on a token also carries a literal fallback, because a lens that
+// renders where the token sheet has not loaded must still be readable rather
+// than transparent-on-transparent.
+//
+// R32 — the kit's `.pbim-stats` is a grid with NO columns on purpose (each
+// cockpit knows how many numbers it has). The KPI row below declares its own.
+//
+// R45 — the kit's `.pbim-modal` carries NO padding and IS a column flex box:
+// it is built for the __head / __body / __foot rails, which pad themselves.
+// Both dialogs here ship those three rails, so they inherit the right shape.
+//
+// R33 — `.pbim-badge` capitalises every word. Nothing here puts a sentence in
+// a badge; the tone words are their own class and set `text-transform: none`.
+//
+// R85 — every MOVING declaration (the opacity, the transform AND the
+// animation) is inside `@media (prefers-reduced-motion: no-preference)`. Under
+// a reduced-motion preference none of the three is applied at all, so the board
+// paints finished on the first frame with nothing to recover from — a better
+// property than declaring an animation and then cancelling it. `@keyframes`
+// lives at the TOP LEVEL: nested inside a selector, Sass emits it nested too
+// and no browser plays it.
+//
+// Sass `min()`/`max()` with MIXED px/% units kills the entire asset bundle —
+// none of that here; widths are declared as width/max-width pairs.
+//
+// THE FOUR TONES are a map and this is the ONLY place a tone's colour is
+// spelled. Python ships a tone NAME (`over`, `watch`, `onpace`, `calm`,
+// `none`) and never a hex, so no tenant can put an arbitrary colour on the
+// board — and every tile carries its percentage AND a word beside the colour,
+// so the board reads identically without any colour at all.
+// ===========================================================================
+
+$bdg-tones: (
+    over:   (#BE123C, #FCEDF1),
+    watch:  (#B45309, #FDF3E3),
+    onpace: (#15803D, #E9F7EE),
+    calm:   (#0E7490, #E6F6FA),
+    none:   (#475569, #EEF1F5),
+);
+
+// The stagger. Top level, or Sass nests it and nothing plays it.
+@keyframes bdg-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.pbim.bdg {
+
+    // ------------------------------------------------------------- the head
+    .bdg-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .bdg-h {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        margin: 0 0 4px;
+    }
+
+    .bdg-s {
+        font-size: 13px;
+        color: var(--pbim-muted, #64748B);
+        margin: 0;
+        max-width: 720px;
+    }
+
+    .bdg-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    &.bdg--embedded .bdg-head { margin-top: 0; }
+
+    // -------------------------------------------------------- the context bar
+    .bdg-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        background: var(--pbim-surface, #FFFFFF);
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-md, 14px);
+    }
+
+    .bdg-spacer { flex: 1 1 20px; }
+
+    .bdg-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        &--full { width: 100%; margin-bottom: 10px; }
+    }
+
+    .bdg-field-l {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .bdg-in {
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-text, #1B1733);
+        padding: 8px 11px;
+        font-size: 13px;
+        font-family: inherit;
+        width: 100%;
+
+        &:focus {
+            outline: none;
+            border-color: var(--pbim-primary, #6355C7);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18));
+        }
+    }
+
+    .bdg-ta { resize: vertical; line-height: 1.6; }
+
+    .bdg-grid2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 10px;
+
+        @media (max-width: 640px) { grid-template-columns: 1fr; }
+    }
+
+    .bdg-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .bdg-chip {
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+        border-radius: var(--pbim-pill, 999px);
+        padding: 6px 14px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: .14s;
+
+        &:hover { background: var(--pbim-line-2, #F1F5F9); }
+
+        &.is-on {
+            background: var(--pbim-soft, #F1EFFC);
+            border-color: var(--pbim-primary, #6355C7);
+            color: var(--pbim-primary-strong, #493FA0);
+        }
+    }
+
+    .bdg-views {
+        display: flex;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        overflow: hidden;
+    }
+
+    .bdg-view {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 0;
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-muted, #64748B);
+        padding: 8px 14px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+
+        svg { vertical-align: -.18em; }
+
+        &.is-on {
+            background: var(--pbim-soft, #F1EFFC);
+            color: var(--pbim-primary-strong, #493FA0);
+        }
+    }
+
+    // ---------------------------------------------------- what is not certain
+    .bdg-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 14px;
+        margin-bottom: 12px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-soft, #F1EFFC);
+        color: var(--pbim-primary-strong, #493FA0);
+        font-size: 12.5px;
+        line-height: 1.5;
+
+        svg { flex: 0 0 auto; margin-top: 1px; }
+
+        &--warn {
+            background: var(--pbim-amber-soft, #FDF3E3);
+            color: #B45309;
+        }
+    }
+
+    // ------------------------------------------------------------- the KPIs
+    .bdg-kpis {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        margin-bottom: 18px;
+
+        @media (max-width: 1180px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        @media (max-width: 700px) { grid-template-columns: 1fr; }
+    }
+
+    // ============================================================= THE HEAT
+    .bdg-heat {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+        gap: 12px;
+    }
+
+    .bdg-tile {
+        text-align: left;
+        background: var(--pbim-surface, #FFFFFF);
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-left: 4px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-md, 14px);
+        padding: 14px 15px;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(16, 24, 40, .04);
+
+        &:hover { box-shadow: 0 6px 18px rgba(40, 50, 90, .10); }
+        &.is-open { box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18)); }
+    }
+
+    @each $tone, $pair in $bdg-tones {
+        .bdg-tile--#{$tone} {
+            border-left-color: nth($pair, 1);
+
+            .bdg-tone {
+                background: nth($pair, 2);
+                color: nth($pair, 1);
+            }
+
+            .bdg-fill { background: nth($pair, 1); }
+        }
+
+        .bdg-row--#{$tone} .bdg-vchip {
+            background: nth($pair, 2);
+            color: nth($pair, 1);
+        }
+    }
+
+    .bdg-tile-h {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .bdg-tile-n {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        line-height: 1.3;
+    }
+
+    // A tone is a SENTENCE fragment, not a status word, so it never takes the
+    // badge's capitalise-every-word (R33).
+    .bdg-tone {
+        flex: 0 0 auto;
+        border-radius: var(--pbim-pill, 999px);
+        padding: 3px 9px;
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: none;
+        white-space: nowrap;
+    }
+
+    // ---- THE ONE COMPARISON: the fill is the money, the notch is the year ---
+    .bdg-bar-wrap { margin-bottom: 12px; }
+
+    .bdg-track {
+        position: relative;
+        height: 10px;
+        border-radius: 5px;
+        background: var(--pbim-line-2, #F1F5F9);
+        overflow: visible;
+    }
+
+    .bdg-fill {
+        height: 10px;
+        border-radius: 5px;
+        background: var(--pbim-primary, #6355C7);
+        max-width: 100%;
+    }
+
+    .bdg-pace {
+        position: absolute;
+        top: -3px;
+        width: 2px;
+        height: 16px;
+        background: var(--pbim-ink, #1B1733);
+        border-radius: 1px;
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: -2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--pbim-ink, #1B1733);
+        }
+    }
+
+    .bdg-bar-l {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-top: 7px;
+    }
+
+    .bdg-burn {
+        font-size: 15px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-ink, #1B1733);
+    }
+
+    .bdg-of {
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .bdg-tile-f {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .bdg-num {
+        font-size: 13px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-ink, #1B1733);
+    }
+
+    .bdg-cap {
+        font-size: 10.5px;
+        color: var(--pbim-muted, #64748B);
+        font-weight: 600;
+    }
+
+    .bdg-spark {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 26px;
+    }
+
+    .bdg-spark-c {
+        flex: 1 1 0;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    .bdg-spark-b {
+        width: 100%;
+        border-radius: 2px 2px 0 0;
+        background: var(--pbim-soft, #F1EFFC);
+        border-top: 2px solid var(--pbim-primary, #6355C7);
+    }
+
+    // ------------------------------------------------------------ the drill
+    .bdg-drill {
+        margin-top: 16px;
+        background: var(--pbim-surface, #FFFFFF);
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-md, 14px);
+        padding: 18px 20px;
+    }
+
+    .bdg-drill-h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 14px;
+
+        h3 { margin: 0; font-size: 16px; font-weight: 800; }
+    }
+
+    .bdg-months {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 150px;
+        padding-bottom: 4px;
+    }
+
+    .bdg-mcol {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        height: 100%;
+        gap: 5px;
+    }
+
+    .bdg-mbars {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 100%;
+    }
+
+    .bdg-mbar {
+        flex: 1 1 0;
+        border-radius: 3px 3px 0 0;
+
+        &--budget { background: var(--pbim-soft, #F1EFFC); }
+        &--spent { background: var(--pbim-primary, #6355C7); }
+    }
+
+    .bdg-mlabel {
+        font-size: 10.5px;
+        color: var(--pbim-muted, #64748B);
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .bdg-legend {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+        margin: 10px 0 18px;
+    }
+
+    .bdg-key {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        vertical-align: -.15em;
+
+        &--budget { background: var(--pbim-soft, #F1EFFC); }
+        &--spent { background: var(--pbim-primary, #6355C7); }
+    }
+
+    .bdg-sub {
+        font-size: 12.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--pbim-muted, #64748B);
+        margin: 18px 0 8px;
+    }
+
+    // ------------------------------------------------------------ the tables
+    .bdg-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12.5px;
+
+        th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--pbim-muted, #64748B);
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--pbim-line, #E2E1EF);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-text, #1B1733);
+        }
+
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        th.num { text-align: right; }
+    }
+
+    .bdg-matrix {
+        background: var(--pbim-surface, #FFFFFF);
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-md, 14px);
+        overflow: hidden;
+
+        tfoot td {
+            font-weight: 800;
+            background: var(--pbim-line-2, #F1F5F9);
+            border-bottom: 0;
+        }
+    }
+
+    .bdg-inner {
+        font-size: 11.5px;
+
+        td, th { padding: 5px 7px; }
+    }
+
+    .bdg-sub-row > td {
+        background: var(--pbim-bg, #F8FAFC);
+        padding: 6px 14px 12px 34px;
+    }
+
+    .bdg-expand {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        color: var(--pbim-muted, #64748B);
+        padding: 0 6px 0 0;
+        vertical-align: -.15em;
+    }
+
+    .bdg-vchip {
+        display: inline-block;
+        border-radius: var(--pbim-pill, 999px);
+        padding: 2px 9px;
+        font-size: 11.5px;
+        font-weight: 800;
+        background: var(--pbim-line-2, #F1F5F9);
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .bdg-flag {
+        display: inline-block;
+        margin-left: 6px;
+        border-radius: var(--pbim-pill, 999px);
+        padding: 1px 8px;
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: none;
+        background: #FDF3E3;
+        color: #B45309;
+
+        &--ok { background: #E9F7EE; color: #15803D; }
+    }
+
+    .bdg-foot {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+    }
+
+    // ------------------------------------------------------------ the empty
+    .bdg-empty {
+        background: var(--pbim-surface, #FFFFFF);
+        border: 1px dashed var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-md, 14px);
+        padding: 44px 26px;
+
+        h3 { font-size: 17px; font-weight: 800; color: var(--pbim-ink, #1B1733); margin: 12px 0 6px; }
+        p { max-width: 520px; margin: 0 auto 16px; line-height: 1.65; }
+    }
+
+    .bdg-empty-ic { color: var(--pbim-primary, #6355C7); }
+
+    // ----------------------------------------------------------- the dialogs
+    .bdg-modal { width: 860px; }
+
+    .bdg-steps {
+        display: grid;
+        gap: 14px;
+        margin: 16px 0;
+    }
+
+    .bdg-step {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .bdg-step-n {
+        width: 28px;
+        height: 28px;
+        border-radius: 14px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        background: var(--pbim-soft, #F1EFFC);
+        color: var(--pbim-primary-strong, #493FA0);
+        font-weight: 800;
+        font-size: 12.5px;
+    }
+
+    .bdg-step-t { font-size: 13.5px; font-weight: 800; margin-bottom: 2px; }
+    .bdg-step-s { font-size: 12.5px; color: var(--pbim-muted, #64748B); margin-bottom: 8px; line-height: 1.5; }
+
+    .bdg-file { font-size: 12.5px; }
+    .bdg-fname { font-size: 12px; color: var(--pbim-muted, #64748B); margin-top: 6px; }
+
+    .bdg-plan {
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-bg, #F8FAFC);
+    }
+
+    .bdg-plan-h {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 6px;
+    }
+
+    .bdg-plan-s { font-size: 13px; line-height: 1.6; margin: 0 0 10px; }
+
+    .bdg-plan-bad {
+        margin: 10px 0;
+        padding: 10px 12px;
+        border-radius: var(--pbim-r-sm, 8px);
+        background: #FDF3E3;
+        color: #7C3A00;
+    }
+
+    .bdg-plan-row { font-size: 12.5px; font-weight: 700; }
+
+    .bdg-plan-t {
+        width: 100%;
+        max-height: 260px;
+        display: block;
+        overflow: auto;
+    }
+
+    .bdg-picker {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin: -6px 0 10px;
+        max-height: 180px;
+        overflow: auto;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+    }
+
+    .bdg-pick {
+        text-align: left;
+        border: 0;
+        background: transparent;
+        padding: 8px 11px;
+        font-size: 12.5px;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--pbim-text, #1B1733);
+
+        &:hover { background: var(--pbim-soft, #F1EFFC); }
+    }
+
+    // ------------------------------------------------------------ the motion
+    // R85 — the opacity, the transform AND the animation are all inside this
+    // block, so under a reduced-motion preference the board simply paints
+    // finished. Nothing is declared and then cancelled.
+    @media (prefers-reduced-motion: no-preference) {
+        .bdg-tile {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: bdg-rise .34s cubic-bezier(.22, .68, .36, 1) forwards;
+            animation-delay: calc(var(--bdg-i, 0) * 26ms);
+        }
+
+        .bdg-fill { transition: width .5s cubic-bezier(.22, .68, .36, 1); }
+        .bdg-tile { transition: box-shadow .16s; }
+    }
+}

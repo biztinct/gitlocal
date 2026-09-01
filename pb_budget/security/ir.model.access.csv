@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wfp_budget_actual_viewer,Budget rows for a budget holder,pb_hr_workforce_planning.model_wfp_budget_actual,pb_budget.group_budget_viewer,1,0,0,0
+access_wfp_budget_actual_finance,Budget rows for finance,pb_hr_workforce_planning.model_wfp_budget_actual,pb_budget.group_budget_finance,1,0,0,0
+access_wfp_budget_actual_manager,Budget rows for the budget team,pb_hr_workforce_planning.model_wfp_budget_actual,pb_budget.group_budget_manager,1,1,1,1
+access_pb_budget_expense_viewer,Expenses for a budget holder,model_pb_budget_expense,pb_budget.group_budget_viewer,1,0,0,0
+access_pb_budget_expense_finance,Expenses for finance,model_pb_budget_expense,pb_budget.group_budget_finance,1,0,0,0
+access_pb_budget_expense_manager,Expenses for the budget team,model_pb_budget_expense,pb_budget.group_budget_manager,1,1,1,1
+access_pb_budget_upload_manager,Budget upload for the budget team,model_pb_budget_upload_wizard,pb_budget.group_budget_manager,1,1,1,1
+access_pb_budget_export_viewer,Budget export for a budget holder,model_pb_budget_export,pb_budget.group_budget_viewer,1,1,1,0
