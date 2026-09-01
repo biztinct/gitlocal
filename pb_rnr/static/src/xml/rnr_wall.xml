@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The recognition wall, on the Home mission.
+
+       Comments ruled with `=`, never a doubled hyphen (R35/W22). No `t-as`
+       variable is named lt / gt / lte / gte / and / or / not / in (R1): the
+       story loop is `sty`, the value loop is `vl`, the celebration loop is
+       `ce`, the winner loop is `win`, the person loop is `pp`.
+
+       THE STAGGER IS A CSS CUSTOM PROPERTY, set per tile from the loop index
+       and read by an animation that lives entirely inside a
+       `prefers-reduced-motion: no-preference` block. Nothing in JavaScript
+       decides whether the wall moves.
+       ==================================================================== -->
+  <t t-name="pb_rnr.PbRnrWall">
+    <div class="pbim pbim-page rnw"
+         t-att-class="{ 'rnw--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the wall…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap rnw-wrap">
+
+        <!-- ========================= the header ========================= -->
+        <div class="rnw-head">
+          <div class="rnw-head-id">
+            <h2 class="rnw-h">What people said about each other</h2>
+            <p class="rnw-s" t-if="meLine" t-esc="meLine"/>
+            <p class="rnw-s" t-else="">
+              Every one of these was written by a colleague, agreed by a manager
+              and recognised by HR.
+            </p>
+          </div>
+          <div class="rnw-head-actions">
+            <button class="pbim-btn ghost" t-on-click="refresh"
+                    title="Read the wall again">
+              <t t-out="ic('refresh',15)"/>
+            </button>
+            <button class="pbim-btn ghost" t-on-click="openMine">
+              <t t-out="ic('user',15)"/> My praise
+            </button>
+            <button class="pbim-btn" t-on-click="openCreate">
+              <t t-out="ic('plus',15)"/> Say thank you
+            </button>
+          </div>
+        </div>
+
+        <!-- ==================== the quarter's winners ==================== -->
+        <div t-if="state.winners.rows and state.winners.rows.length"
+             class="rnw-banner">
+          <div class="rnw-banner-t" t-esc="state.winners.title"/>
+          <div class="rnw-banner-row">
+            <div t-foreach="state.winners.rows" t-as="win" t-key="win_index"
+                 class="rnw-winner">
+              <img t-if="win.avatar" class="rnw-av rnw-av--lg"
+                   t-att-src="win.avatar" alt=""/>
+              <span t-else="" class="rnw-av rnw-av--lg rnw-av--txt"
+                    t-esc="win.initials"/>
+              <div class="rnw-winner-n" t-esc="win.name"/>
+              <div class="rnw-winner-v" t-esc="win.value"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================= the value chips ======================= -->
+        <div t-if="state.values.length" class="rnw-values">
+          <button t-foreach="state.values" t-as="vl" t-key="vl.id"
+                  t-attf-class="rnw-vchip rnw-vchip--{{vl.color}} {{ state.valueFilter === vl.name ? 'is-on' : '' }}"
+                  t-att-title="vl.motto"
+                  t-on-click="() => this.setValueFilter(vl.name)">
+            <span class="rnw-vchip-n" t-esc="vl.name"/>
+            <span class="rnw-vchip-c" t-esc="vl.count"/>
+          </button>
+        </div>
+
+        <div class="rnw-body">
+
+          <!-- ========================== the wall ========================== -->
+          <div class="rnw-main">
+            <div t-if="!visibleStories.length" class="pbim-empty rnw-empty">
+              <div class="rnw-empty-ic"><t t-out="ic('award',30)"/></div>
+              <h3 t-if="!state.stories.length">The wall is empty, for now</h3>
+              <h3 t-else="">Nothing under that value yet</h3>
+              <p t-if="!state.stories.length">
+                Somebody near you has almost certainly done something worth
+                saying out loud this week. Yours could be the first one on it.
+              </p>
+              <p t-else="">Pick another value, or write the first one.</p>
+              <button class="pbim-btn" t-on-click="openCreate">Say thank you</button>
+            </div>
+
+            <div t-else="" class="rnw-wall">
+              <div t-foreach="visibleStories" t-as="sty" t-key="sty.id"
+                   t-attf-class="rnw-tile rnw-tile--{{sty.color}}"
+                   t-attf-style="--rnw-i: {{sty_index}}">
+                <div class="rnw-tile-h">
+                  <span class="rnw-chip" t-esc="sty.value"/>
+                  <span t-if="sty.winner" class="rnw-chip rnw-chip--win">
+                    Chosen for the quarter
+                  </span>
+                </div>
+                <p class="rnw-story" t-esc="sty.story"/>
+                <div class="rnw-tile-f">
+                  <img t-if="sty.avatar" class="rnw-av" t-att-src="sty.avatar"
+                       alt=""/>
+                  <span t-else="" class="rnw-av rnw-av--txt"
+                        t-esc="sty.initials"/>
+                  <div>
+                    <div class="rnw-tile-n" t-esc="sty.nominee"/>
+                    <div class="rnw-tile-s">
+                      said by <t t-esc="sty.nominator"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================= the side rail =======================
+               NAMES AND DAYS. There is no year of birth anywhere in this
+               payload, by construction — see the celebrations engine. -->
+          <aside class="rnw-side">
+            <div class="rnw-side-h">
+              <t t-out="ic('cake',15)"/> <span>Coming up</span>
+            </div>
+            <div t-if="!state.celebrations.length" class="rnw-side-empty">
+              Nobody is celebrating in the next three weeks.
+            </div>
+            <div t-foreach="state.celebrations" t-as="ce" t-key="ce_index"
+                 class="rnw-celeb">
+              <img t-if="ce.avatar" class="rnw-av rnw-av--sm"
+                   t-att-src="ce.avatar" alt=""/>
+              <span t-else="" class="rnw-av rnw-av--sm rnw-av--txt"
+                    t-esc="ce.initials"/>
+              <div class="rnw-celeb-tx">
+                <div class="rnw-celeb-n" t-esc="ce.name"/>
+                <div class="rnw-celeb-w">
+                  <t t-esc="kindLabel(ce)"/> · <t t-esc="ce.day_label"/>
+                </div>
+              </div>
+            </div>
+            <p class="rnw-side-note">
+              Days only. Nobody's date of birth is shown here.
+            </p>
+          </aside>
+
+        </div>
+
+        <!-- ==================== the say-thank-you dialog ==================== -->
+        <div t-if="state.creating" class="pbim-modal-scrim"
+             t-on-click="closeCreate">
+          <div class="pbim-modal rnw-modal" t-on-click.stop="() => {}">
+            <div class="rnw-modal-head">
+              <h3>Say thank you</h3>
+              <button class="pbim-btn-sm ghost" t-on-click="closeCreate">
+                <t t-out="ic('x',14)"/>
+              </button>
+            </div>
+            <div class="rnw-modal-body">
+              <label class="rnw-person">
+                <span>Who deserves it</span>
+                <input type="text" class="rnw-in"
+                       placeholder="Start typing a name"
+                       t-att-value="state.draft.nominee"
+                       t-on-input="onPersonSearch"/>
+                <div t-if="state.people.length" class="rnw-people">
+                  <button t-foreach="state.people" t-as="pp" t-key="pp.id"
+                          class="rnw-person-row"
+                          t-on-click="() => this.pickPerson(pp)">
+                    <img t-if="pp.avatar" class="rnw-av rnw-av--sm"
+                         t-att-src="pp.avatar" alt=""/>
+                    <span t-esc="pp.name"/>
+                    <small t-if="pp.department" t-esc="pp.department"/>
+                  </button>
+                </div>
+              </label>
+
+              <div class="rnw-flabel">Which value</div>
+              <div class="rnw-vpick">
+                <button t-foreach="state.values" t-as="vl" t-key="vl.id"
+                        t-attf-class="rnw-value rnw-value--{{vl.color}} {{ state.draft.value_id === vl.id ? 'is-on' : '' }}"
+                        t-on-click="() => this.pickValue(vl)">
+                  <span class="rnw-value-n" t-esc="vl.name"/>
+                  <span class="rnw-value-m" t-esc="vl.motto"/>
+                </button>
+              </div>
+
+              <label>
+                <span>What they did</span>
+                <textarea class="rnw-in rnw-ta" rows="4"
+                          placeholder="One real example. What happened, and why it mattered."
+                          t-on-input="(ev) => this.onDraft('story', ev)"/>
+              </label>
+
+              <label class="rnw-check">
+                <input type="checkbox" t-att-checked="state.draft.public"
+                       t-on-change="(ev) => this.onDraft('public', ev)"/>
+                <span>Show it on this wall once it is agreed. Untick to keep it
+                      between them, their manager and HR.</span>
+              </label>
+            </div>
+            <div class="rnw-modal-foot">
+              <button class="pbim-btn ghost" t-on-click="closeCreate">Cancel</button>
+              <button class="pbim-btn" t-on-click="confirmCreate"
+                      t-att-disabled="state.busy">Send it</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

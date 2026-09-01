@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Praise lens.
+
+       Comments ruled with `=`, never a doubled hyphen (R35/W22). No `t-as`
+       variable is named lt / gt / lte / gte / and / or / not / in (R1): the
+       praise loop is `pr`, the value loop is `vl`, the person loop is `pp`,
+       the roll-up loop is `ru`, the history loop is `hs`, the pick loop is
+       `pk`, the state loop is `stt`, the celebration loop is `ce`.
+       ==================================================================== -->
+  <t t-name="pb_rnr.PbRnrBoard">
+    <div class="pbim pbim-page rnr"
+         t-att-class="{ 'rnr--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading what people have said…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel rnr-locked">
+          <div class="rnr-locked-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>This one is deliberately locked</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="rnr-head">
+            <div class="rnr-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Praise</h1>
+              <p class="pbim-sub">What colleagues said about each other, who
+                 agreed it, and what the company did about it.</p>
+            </div>
+            <div class="rnr-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the board again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button class="pbim-btn ghost" t-on-click="openValues">
+                <t t-out="ic('shieldCheck',15)"/> Values
+              </button>
+              <button class="pbim-btn ghost" t-on-click="openAll">
+                <t t-out="ic('list',15)"/> All praise
+              </button>
+              <button class="pbim-btn ghost" t-on-click="openDigest"
+                      t-att-disabled="state.busy">
+                <t t-out="ic('mail',15)"/> Mood board
+              </button>
+              <button t-if="state.canReview" class="pbim-btn ghost"
+                      t-on-click="openRollup" t-att-disabled="state.busy">
+                <t t-out="ic('barChart',15)"/> Roll up the quarter
+              </button>
+              <button class="pbim-btn" t-on-click="openCreate">
+                <t t-out="ic('plus',15)"/> Say thank you
+              </button>
+            </div>
+          </div>
+
+          <!-- ======================= the numbers ======================= -->
+          <div class="pbim-stats rnr-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('award',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.this_month || 0"/><span>written this month</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('user',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.with_manager || 0"/><span>waiting on a manager</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('clock',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.with_hr || 0"/><span>waiting on HR</span>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('banknote',18)"/></div>
+              <div class="pbim-stat-tx">
+                <b t-esc="state.kpis.awarded_qtd || 0"/><span>paid for this quarter</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================== what is switched on ==================
+               R54: a switch that is off and does not SAY so is reported as
+               broken, so the strip prints all of it rather than leaving
+               somebody to wonder why nothing arrived. -->
+          <div class="rnr-switches">
+            <span class="rnr-switch">
+              <t t-out="ic('mail',13)"/> <t t-esc="switchLine"/>
+            </span>
+            <span class="rnr-switch">
+              <t t-out="ic('cake',13)"/>
+              <t t-if="state.switches.celebrations">Birthdays and work anniversaries are congratulated on the day.</t>
+              <t t-else="">Birthday and anniversary emails are switched off.</t>
+            </span>
+            <span class="rnr-switch">
+              <t t-out="ic('calendar',13)"/> <t t-esc="celebrationLine"/>
+            </span>
+            <button t-if="state.canReview" class="pbim-btn-sm ghost"
+                    t-on-click="runCelebrations" t-att-disabled="state.busy">
+              Run the daily job now
+            </button>
+          </div>
+
+          <!-- ======================= the filters ======================= -->
+          <div class="rnr-filters">
+            <div class="rnr-search">
+              <t t-out="ic('search',15)"/>
+              <input type="text" placeholder="Find a person or something they did"
+                     t-att-value="state.q" t-on-input="onSearch"/>
+            </div>
+            <div class="pbim-chips">
+              <button class="pbim-fchip"
+                      t-att-class="{ 'is-on': state.stateFilter === 'all' }"
+                      t-on-click="() => this.setStateFilter('all')">Anywhere</button>
+              <button t-foreach="state.states" t-as="stt" t-key="stt.key"
+                      class="pbim-fchip"
+                      t-att-class="{ 'is-on': state.stateFilter === stt.key }"
+                      t-on-click="() => this.setStateFilter(stt.key)"
+                      t-esc="stt.label"/>
+            </div>
+            <div class="pbim-chips">
+              <button t-foreach="state.values" t-as="vl" t-key="vl.id"
+                      class="pbim-fchip"
+                      t-att-class="{ 'is-on': state.valueFilter === vl.id }"
+                      t-on-click="() => this.setValueFilter(vl.id)"
+                      t-esc="vl.name"/>
+            </div>
+            <span class="rnr-count" t-esc="countLine"/>
+          </div>
+
+          <!-- ======================== the board ======================== -->
+          <div t-if="!visibleRows.length" class="pbim-empty rnr-empty">
+            <div class="rnr-empty-ic"><t t-out="ic('award',30)"/></div>
+            <h3 t-if="!state.rows.length">Nobody has been thanked yet</h3>
+            <h3 t-else="">Nothing matches what you are looking for</h3>
+            <p t-if="!state.rows.length">
+              Somebody near you has almost certainly done something worth saying
+              out loud this week. Write the first one — it goes to their manager,
+              then to HR, and then to the whole company.
+            </p>
+            <p t-else="">Clear the search or pick a different value.</p>
+            <button t-if="!state.rows.length" class="pbim-btn"
+                    t-on-click="openCreate">Say thank you</button>
+          </div>
+
+          <div t-else="" class="rnr-list">
+            <div t-foreach="visibleRows" t-as="pr" t-key="pr.id"
+                 t-attf-class="rnr-row rnr-row--{{pr.color}}">
+              <div class="rnr-row-who">
+                <img t-if="pr.avatar" class="rnr-av" t-att-src="pr.avatar"
+                     alt=""/>
+                <span t-else="" class="rnr-av rnr-av--txt" t-esc="pr.initials"/>
+                <div>
+                  <div class="rnr-row-n" t-esc="pr.nominee"/>
+                  <div class="rnr-row-s">
+                    said by <t t-esc="pr.nominator"/>
+                  </div>
+                </div>
+              </div>
+              <div class="rnr-row-mid">
+                <span t-attf-class="rnr-chip rnr-chip--{{pr.color}}"
+                      t-esc="pr.value"/>
+                <p class="rnr-row-story" t-esc="pr.excerpt"/>
+              </div>
+              <div class="rnr-row-end">
+                <span class="pbim-badge"
+                      t-att-class="{ 'ok': pr.state === 'done',
+                                     'warn': pr.state === 'submitted' or pr.state === 'manager',
+                                     'err': pr.state === 'refused' }"
+                      t-esc="pr.outcome_label or pr.state_label"/>
+                <span t-if="pr.amount" class="rnr-money" t-esc="money(pr)"/>
+                <span t-if="pr.winner" class="pbim-badge ok">Chosen for the quarter</span>
+                <span t-if="!pr.public" class="rnr-private">
+                  <t t-out="ic('eyeOff',13)"/> Kept private
+                </span>
+                <button class="pbim-btn-sm ghost"
+                        t-on-click="() => this.openReview(pr)">
+                  <t t-if="pr.state === 'submitted' or pr.state === 'manager'">Read and decide</t>
+                  <t t-else="">Read it</t>
+                </button>
+              </div>
+            </div>
+            <p t-if="state.capped" class="pbim-note">
+              Only the most recent stories are shown. Open “All praise” for the
+              whole list.
+            </p>
+          </div>
+
+          <!-- ==================== the new praise dialog ==================== -->
+          <div t-if="state.creating" class="pbim-modal-scrim"
+               t-on-click="closeCreate">
+            <div class="pbim-modal rnr-modal" t-on-click.stop="() => {}">
+              <div class="rnr-modal-head">
+                <h3>Say thank you</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeCreate">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+              <div class="rnr-modal-body">
+                <label class="rnr-person">
+                  <span>Who deserves it</span>
+                  <input type="text" class="rnr-in"
+                         placeholder="Start typing a name"
+                         t-att-value="state.draft.nominee"
+                         t-on-input="onPersonSearch"/>
+                  <div t-if="state.people.length" class="rnr-people">
+                    <button t-foreach="state.people" t-as="pp" t-key="pp.id"
+                            class="rnr-person-row"
+                            t-on-click="() => this.pickPerson(pp)">
+                      <img t-if="pp.avatar" class="rnr-av rnr-av--sm"
+                           t-att-src="pp.avatar" alt=""/>
+                      <span t-esc="pp.name"/>
+                      <small t-if="pp.department" t-esc="pp.department"/>
+                    </button>
+                  </div>
+                </label>
+
+                <div class="rnr-flabel">Which value</div>
+                <div class="rnr-values">
+                  <button t-foreach="state.values" t-as="vl" t-key="vl.id"
+                          t-attf-class="rnr-value rnr-value--{{vl.color}} {{ state.draft.value_id === vl.id ? 'is-on' : '' }}"
+                          t-on-click="() => this.pickValue(vl)">
+                    <span class="rnr-value-n" t-esc="vl.name"/>
+                    <span class="rnr-value-m" t-esc="vl.motto"/>
+                  </button>
+                </div>
+
+                <label>
+                  <span>What they did</span>
+                  <textarea class="rnr-in rnr-ta" rows="4"
+                            placeholder="One real example. What happened, and why it mattered."
+                            t-on-input="(ev) => this.onDraft('story', ev)"/>
+                </label>
+
+                <label class="rnr-check">
+                  <input type="checkbox" t-att-checked="state.draft.public"
+                         t-on-change="(ev) => this.onDraft('public', ev)"/>
+                  <span>Show it on the recognition wall once it is agreed.
+                        Untick to keep it between them, their manager and HR.</span>
+                </label>
+              </div>
+              <div class="rnr-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeCreate">Cancel</button>
+                <button class="pbim-btn" t-on-click="confirmCreate"
+                        t-att-disabled="state.busy">Send it</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====================== the review dialog ======================
+               THE STORY IS THE BIGGEST THING ON IT, and the person's own
+               history is beside it, because a decision made without that is a
+               decision made blind. -->
+          <div t-if="state.reviewing" class="pbim-modal-scrim"
+               t-on-click="closeReview">
+            <div class="pbim-modal rnr-modal rnr-modal--wide"
+                 t-on-click.stop="() => {}">
+              <div class="rnr-modal-head">
+                <h3>Read and decide</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeReview">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+              <div class="rnr-modal-body rnr-review">
+                <div class="rnr-review-main">
+                  <span t-attf-class="rnr-chip rnr-chip--{{state.reviewing.color}}"
+                        t-esc="state.reviewing.value"/>
+                  <p class="rnr-review-story" t-esc="state.reviewing.story"/>
+                  <div class="rnr-review-by">
+                    <img t-if="state.reviewing.avatar" class="rnr-av"
+                         t-att-src="state.reviewing.avatar" alt=""/>
+                    <div>
+                      <div class="rnr-row-n" t-esc="state.reviewing.nominee"/>
+                      <div class="rnr-row-s">
+                        said by <t t-esc="state.reviewing.nominator"/>
+                      </div>
+                    </div>
+                  </div>
+
+                  <label t-if="state.canReview and state.reviewing.state === 'manager'">
+                    <span>Cash with it (leave empty for praise on its own)</span>
+                    <input type="number" min="0" step="1000" class="rnr-in"
+                           t-att-value="state.reviewAmount"
+                           t-on-input="(ev) => this.onReviewField('reviewAmount', ev)"/>
+                  </label>
+                  <p t-if="state.canReview and state.reviewing.state === 'manager'"
+                     class="pbim-note">
+                    An amount raises an award for the pay team. It is approved
+                    and paid exactly like any other — nothing moves until
+                    somebody puts it into a pay run by hand.
+                  </p>
+
+                  <label>
+                    <span>Anything to add</span>
+                    <input type="text" class="rnr-in"
+                           placeholder="Optional — it is kept with the record"
+                           t-att-value="state.reviewNote"
+                           t-on-input="(ev) => this.onReviewField('reviewNote', ev)"/>
+                  </label>
+                </div>
+
+                <div class="rnr-review-side">
+                  <div class="rnr-side-h">What else they have been thanked for</div>
+                  <div t-if="!state.history.length" class="rnr-side-empty">
+                    This is the first time.
+                  </div>
+                  <div t-foreach="state.history" t-as="hs" t-key="hs.id"
+                       class="rnr-side-row">
+                    <span t-attf-class="rnr-dot rnr-dot--{{hs.color}}"/>
+                    <div>
+                      <div class="rnr-side-v" t-esc="hs.value"/>
+                      <div class="rnr-side-x" t-esc="hs.excerpt"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="rnr-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeReview">Close</button>
+                <button t-if="state.reviewing.state === 'submitted'"
+                        class="pbim-btn ghost" t-on-click="doDecline"
+                        t-att-disabled="state.busy">Not this time</button>
+                <button t-if="state.reviewing.state === 'submitted'"
+                        class="pbim-btn" t-on-click="doAgree"
+                        t-att-disabled="state.busy">Agree, send it to HR</button>
+                <button t-if="state.canReview and state.reviewing.state === 'manager'"
+                        class="pbim-btn ghost" t-on-click="doDecline"
+                        t-att-disabled="state.busy">Not this time</button>
+                <button t-if="state.canReview and state.reviewing.state === 'manager'"
+                        class="pbim-btn" t-on-click="doRecognise"
+                        t-att-disabled="state.busy">Recognise it</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================= the roll-up =======================
+               THE HERO. Nothing is written until the second dialog, and the
+               second dialog is a sentence rather than a form. -->
+          <div t-if="state.rolling" class="pbim-modal-scrim"
+               t-on-click="closeRollup">
+            <div class="pbim-modal rnr-modal rnr-modal--wide"
+                 t-on-click.stop="() => {}">
+              <div class="rnr-modal-head">
+                <h3>
+                  <t t-if="state.rollup and state.rollup.cycle">
+                    Who was noticed in <t t-esc="state.rollup.cycle.name"/>
+                  </t>
+                  <t t-else="">The quarter</t>
+                </h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeRollup">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+              <div class="rnr-modal-body">
+                <div t-if="!state.rollup" class="pbim-busy">
+                  <div class="pbim-spin"/><span>Ranking the quarter…</span>
+                </div>
+                <t t-else="">
+                  <p t-if="state.rollup.problem" class="pbim-note"
+                     t-esc="state.rollup.problem"/>
+                  <div t-if="state.rollup.rows.length" class="pbim-tablewrap">
+                    <table class="pbim-table rnr-rollup">
+                      <thead>
+                        <tr>
+                          <th class="pick"></th>
+                          <th>Who</th>
+                          <th class="num">Times named</th>
+                          <th>For what</th>
+                          <th class="num">Cash with it</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr t-foreach="state.rollup.rows" t-as="ru"
+                            t-key="ru.employee_id"
+                            t-att-class="{ 'is-picked': isPicked(ru) }">
+                          <td class="pick">
+                            <input type="checkbox" t-att-checked="isPicked(ru)"
+                                   t-att-disabled="!state.canReview"
+                                   t-on-change="() => this.togglePick(ru)"/>
+                          </td>
+                          <td>
+                            <span class="rnr-who">
+                              <img t-if="ru.avatar" class="rnr-av rnr-av--sm"
+                                   t-att-src="ru.avatar" alt=""/>
+                              <span t-esc="ru.employee"/>
+                            </span>
+                          </td>
+                          <td class="num"><b t-esc="ru.count"/></td>
+                          <td>
+                            <span t-foreach="ru.values" t-as="vl" t-key="vl.id"
+                                  t-attf-class="rnr-chip rnr-chip--{{vl.color}}"
+                                  t-esc="vl.name"/>
+                          </td>
+                          <td class="num">
+                            <input t-if="isPicked(ru)" type="number" min="0"
+                                   step="1000" class="rnr-in rnr-in--num"
+                                   t-att-value="pickAmount(ru)"
+                                   t-on-input="(ev) => this.onPickAmount(ru, ev)"/>
+                            <span t-else="" class="rnr-dash">—</span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </t>
+              </div>
+              <div class="rnr-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeRollup">Close</button>
+                <button t-if="state.canReview and state.rollup and state.rollup.rows.length"
+                        class="pbim-btn" t-on-click="askConfirm"
+                        t-att-disabled="state.busy">Choose these</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- =================== the plain-English confirm ================== -->
+          <div t-if="state.confirming" class="pbim-modal-scrim"
+               t-on-click="cancelConfirm">
+            <div class="pbim-modal rnr-modal" t-on-click.stop="() => {}">
+              <div class="rnr-modal-head">
+                <h3>Before this is written down</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="cancelConfirm">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+              <div class="rnr-modal-body">
+                <p class="rnr-confirm" t-esc="pickSentence"/>
+                <ul class="rnr-confirm-list">
+                  <li t-foreach="pickList" t-as="pk" t-key="pk.nomination_id">
+                    <span t-esc="pk.name"/>
+                    <b t-if="pk.amount" t-esc="pk.amount.toLocaleString()"/>
+                    <span t-else="" class="rnr-dash">no money</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="rnr-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="cancelConfirm">Go back</button>
+                <button class="pbim-btn" t-on-click="confirmPicks"
+                        t-att-disabled="state.busy">Yes, choose them</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====================== the mood board ====================== -->
+          <div t-if="state.digest" class="pbim-modal-scrim"
+               t-on-click="closeDigest">
+            <div class="pbim-modal rnr-modal rnr-modal--wide"
+                 t-on-click.stop="() => {}">
+              <div class="rnr-modal-head">
+                <h3>The <t t-esc="state.digest.month"/> mood board</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeDigest">
+                  <t t-out="ic('x',14)"/>
+                </button>
+              </div>
+              <div class="rnr-modal-body">
+                <p class="pbim-note" t-esc="switchLine"/>
+                <div class="rnr-digest" t-out="state.digestHtml"/>
+              </div>
+              <div class="rnr-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeDigest">Close</button>
+                <button t-if="state.canReview" class="pbim-btn"
+                        t-on-click="sendDigest" t-att-disabled="state.busy">
+                  Send it now
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

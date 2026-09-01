@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         FIVE VALUES, SEEDED SO THE FIRST NOMINATION HAS SOMETHING TO
+         POINT AT ON DAY ONE.
+
+         They are deliberately generic and deliberately REAL — each one has
+         a motto that says what it looks like on a Tuesday, because a value
+         with no example attached is a word on a wall. An owner renames
+         them, reorders them, archives the ones they do not recognise and
+         adds their own; they are ordinary records and nothing in the code
+         knows any of their names.
+
+         R8 — SEED DATA IS COMPANY-LESS. `company_id` otherwise defaults to
+         whichever company happened to run the install, and the
+         `['|', ('company_id','=',False), ...]` rule then hides the values
+         from everybody else. Every one of these ships
+         `<field name="company_id" eval="False"/>`.
+
+         Section comments are ruled with `=` and never with hyphens: a
+         doubled hyphen inside an XML comment is a parse error that takes
+         the whole data file with it (R35).
+         ================================================================== -->
+
+    <record id="value_ownership" model="pb.company.value">
+        <field name="name">Ownership</field>
+        <field name="motto">You saw it, so you picked it up — and you saw it through.</field>
+        <field name="description">Nobody had to ask. The thing that needed doing got done, by the person who noticed it, and it stayed done.</field>
+        <field name="icon">shieldCheck</field>
+        <field name="color">primary</field>
+        <field name="sequence">10</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="value_care" model="pb.company.value">
+        <field name="name">Care</field>
+        <field name="motto">You looked after somebody when it was not your job to.</field>
+        <field name="description">For the colleague who stayed late with a new starter, the person who noticed somebody was struggling, the small kindness nobody was watching for.</field>
+        <field name="icon">smilePlus</field>
+        <field name="color">rose</field>
+        <field name="sequence">20</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="value_candour" model="pb.company.value">
+        <field name="name">Candour</field>
+        <field name="motto">You said the difficult thing, early, and kindly.</field>
+        <field name="description">Bad news that travels fast is worth more than good news that travels at all. This is for the person who put their hand up first.</field>
+        <field name="icon">zap</field>
+        <field name="color">amber</field>
+        <field name="sequence">30</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="value_excellence" model="pb.company.value">
+        <field name="name">Excellence</field>
+        <field name="motto">You did it properly when nobody would have checked.</field>
+        <field name="description">The work that holds up a year later. Not the heroic all-nighter — the careful thing that meant nobody ever needed one.</field>
+        <field name="icon">sparkles</field>
+        <field name="color">cyan</field>
+        <field name="sequence">40</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="value_one_team" model="pb.company.value">
+        <field name="name">One team</field>
+        <field name="motto">You made somebody else's week easier and said nothing about it.</field>
+        <field name="description">Crossing a team boundary to help, covering for somebody, handing over work so well that the next person did not have to ask a single question.</field>
+        <field name="icon">users</field>
+        <field name="color">green</field>
+        <field name="sequence">50</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</data>
+</odoo>
