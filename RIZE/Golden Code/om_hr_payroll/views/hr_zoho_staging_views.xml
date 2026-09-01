@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record id="zoho_staging_importer_form_view" model="ir.ui.view">
+            <field name="name">zoho.staging.importer.form</field>
+            <field name="model">zoho.staging.importer</field>
+            <field name="arch" type="xml">
+                <form>
+                    <p>To import the data from Zoho, press the button below:</p>
+                    <group>
+                        <field name="payroll_country" widget="radio" options="{'horizontal': true}"/>
+                        <field name="from_date" widget="date" default="context_today().replace(day=1) - relativedelta(months=1).replace(day=21)" />
+                        <field name="to_date" widget="date" default="context_today().replace(day=20)" />
+                    </group>
+                    <footer>
+                        <button name="import_timesheets" string="Import Employee Data" type="object" class="btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+
+
+        <record id="action_zoho_staging_importer" model="ir.actions.act_window">
+            <field name="name">Import Staging Data</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">zoho.staging.importer</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+ <record id="zoho_staging_data_form_view" model="ir.ui.view">
+    <field name="name">zoho.staging.data.form</field>
+    <field name="model">zoho.staging.data</field>
+    <field name="arch" type="xml">
+        <form>
+            <group>
+                <group>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="last_workday"/>
+                    <field name="employee_id"/>
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="email"/>
+                    <field name="department"/>
+                    <field name="employee_status"/>
+                    <field name="location_name"/>
+                    <field name="designation"/>
+                    <field name="pan_number"/>
+                    <field name="bank_name"/>
+                    <field name="pit_number"/>
+                    <field name="dependent"/>
+                    <field name="other_notcounted"/>
+                    <field name="res_status"/>
+                    <field name="idcard_num"/>
+                    <field name="contract_from"/>
+                     <field name="contract_to"/>
+                     <field name="enroll_tax"/>
+                     <field name="enroll_ins"/>
+
+
+                </group>
+                <group>
+                    <field name="bank_account_number_vnd"/>
+                    <field name="uan_number"/>
+                    <field name="costcenter"/>
+                    <field name="aadhaar_number"/>
+                    <field name="zoho_id"/>
+                    <field name="full_name_en"/>
+                    <field name="full_name_vn"/>
+                    <field name="insurance_book_number"/>
+                    <field name="gender"/>
+                    <field name="employee_type"/>
+                    <field name="date_of_birth"/>
+                    <field name="mobile"/>
+                    <field name="date_of_joining"/>
+                    <field name="number_of_dependents"/>
+                    <field name="etu"/>
+                    <field name="emp_bank_accntname"/>
+                    <field name="bank_branch"/>
+                    <field name="bank_code"/>
+                     <field name="paidleave_unused"/>
+                     <field name="longterm_incent"/>
+
+                </group>
+            </group>
+
+            <group>
+                <group>
+                    <field name="base_salary"/>
+                    <field name="gas_allowance"/>
+                    <field name="phone_allowance"/>
+                    <field name="meal_allowance"/>
+                    <field name="resp_allowance"/>
+                    <field name="park_allowance"/>
+                    <field name="taxi_allowance"/>
+                    <field name="recog_bonus"/>
+                    <field name="other_income"/>
+                    <field name="paidleave_unused"/>
+                    <field name="bonus_stip"/>
+                    <field name="marsh_ins"/>
+                    <field name="adjustment"/>
+                    <field name="shui_part"/>
+                    <field name="tu_part"/>
+                    <field name="sales_incentive"/>
+                    <field name="thirteenth_month"/>
+                    <field name="sever_allow"/>
+                    <field name="reimb_payment"/>
+                    <field name="monthly_pit"/>
+                    <field name="total_ded"/>
+                    <field name="net_pay"/>
+                    <field name="social_ins175"/>
+                    <field name="med_ins3"/>
+                    <field name="sihiui_total215"/>
+                    <field name="trade_er2"/>
+                    <field name="total_cte"/>
+                </group>
+                <group>
+                    <field name="actual_basicsalary"/>
+                    <field name="actual_gas"/>
+                    <field name="actual_phone"/>
+                    <field name="actual_meal"/>
+                    <field name="actual_resp"/>
+                    <field name="actual_parking"/>
+                    <field name="actual_taxi"/>
+                    <field name="ot_15amount"/>
+                    <field name="ot_2amount"/>
+                    <field name="ot_3amount"/>
+                    <field name="ns_amount"/>
+                    <field name="otns_weekamount"/>
+                    <field name="otns_offamount"/>
+                    <field name="otns_holamount"/>
+                    <field name="total_otamount"/>
+                    <field name="ot_nontax"/>
+                    <field name="ot_tax"/>
+                    <field name="actual_totalincome"/>
+                    <field name="salary_si"/>
+                    <field name="salary_ui"/>
+                    <field name="social_ins8"/>
+                    <field name="med_ins15"/>
+                    <field name="unemp_ins1"/>
+                    <field name="sihiui_total105"/>
+                    <field name="dep_amount"/>
+                    <field name="tax_income"/>
+                    <field name="taxincome_afterded"/>
+
+                </group>
+            </group>
+
+            <notebook>
+                <page string="Attendance">
+                    <group>
+                        <group>
+                            <field name="standard_whr"/>
+                            <field name="actual_working_hours_incl_paid_leave"/>
+                            <field name="actual_working_hours_excl_paid_leave"/>
+                            <field name="overtime_normal_150_hour"/>
+                            <field name="overtime_nightshift_390_hour"/>
+                            <field name="nightshift_hour"/>    
+                        </group>
+                        <group>
+                            <field name="overtime_weekend_200_hour"/>
+                            <field name="overtime_holiday_300_hour"/>
+                            <field name="overtime_nightshift_200_hour"/>
+                            <field name="overtime_nightshift_210_hour"/>
+                            <field name="overtime_nightshift_270_hour"/>
+                        
+                        </group>
+                    </group>
+                </page>
+            </notebook>
+
+        </form>
+    </field>
+</record>
+
+
+        <record id="zoho_staging_data_tree_view" model="ir.ui.view">
+            <field name="name">zoho.staging.data.tree</field>
+            <field name="model">zoho.staging.data</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="employee_id"/>
+                    <field name="full_name_vn"/>                    
+                    <field name="date_of_joining"/>                    
+                    <field name="employee_status"/>                    
+                    <field name="last_workday"/>                    
+                    <field name="location_name"/>                    
+                    <field name="base_salary"/>                    
+                    <field name="gas_allowance"/>                    
+                    <field name="phone_allowance"/>                    
+                    <field name="meal_allowance"/>                    
+                    <field name="resp_allowance"/>                    
+                    <field name="park_allowance"/>                    
+                    <field name="taxi_allowance"/>                    
+                    <field name="standard_whr"/>                    
+                    <field name="actual_working_hours_incl_paid_leave"/>                    
+                    <field name="actual_working_hours_excl_paid_leave"/>                    
+                    <field name="overtime_normal_150_hour"/>                    
+                    <field name="overtime_weekend_200_hour"/>                    
+                    <field name="overtime_holiday_300_hour"/>                    
+                    <field name="nightshift_hour"/>                    
+                    <field name="overtime_nightshift_210_hour"/>                    
+                    <field name="overtime_nightshift_270_hour"/>                    
+                    <field name="overtime_nightshift_390_hour"/>                    
+                    <field name="other_notcounted"/>                    
+                    <field name="costcenter"/>                    
+                   </tree>
+            </field>
+        </record>
+
+
+<!--
+        <record id="view_import_oca_data_wizard_form" model="ir.ui.view">
+            <field name="name">import.oca.data.wizard.form</field>
+            <field name="model">import.oca.data.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import OCA Data">
+                    <group>
+                        <field name="file" filename="file_name"/>
+                    </group>
+                    <footer>
+                        <button string="Import" type="object" name="import_file" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_import_oca_data_wizard" model="ir.actions.act_window">
+            <field name="name">Import OCA Data</field>
+            <field name="res_model">import.oca.data.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_import_oca_data" name="Import OCA Data" parent="menu_hr_payroll_configuration" action="action_import_oca_data_wizard"/>
+
+
+-->
+        <record id="view_zoho_staging_data_pivot" model="ir.ui.view">
+            <field name="name">zoho.staging.data.pivot</field>
+            <field name="model">zoho.staging.data</field>
+            <field name="arch" type="xml">
+                <pivot string="Zoho Staging Data">
+                    <field name="department" type="row"/> 
+                    <field name="designation" type="row"/> 
+                    <field name="employee_type" type="col"/> 
+                    <field name="base_salary" type="measure"/> 
+                </pivot>
+            </field>
+        </record>
+
+        <record id="action_zoho_staging_data" model="ir.actions.act_window">
+            <field name="name">Employee Staging Data</field>
+            <field name="res_model">zoho.staging.data</field>
+            <field name="view_mode">tree,form,pivot</field>
+        </record>
+
+
+   
+
+
+        <menuitem id="menu_zoho_staging_data" 
+                  name="Zoho Staging Data" 
+                  parent="menu_hr_payroll_configuration" 
+                  action="action_zoho_staging_data" 
+                  sequence="20"/>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Override the Print Payslip button in the form view -->
+    <record id="view_hr_payslip_form_indonesia_button" model="ir.ui.view">
+        <field name="name">hr.payslip.form.indonesia.button</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <!-- Replace the existing Print Payslip button with our custom one -->
+            <xpath expr="//button[@name='%(om_hr_payroll.action_report_payslip)d']" position="replace">
+                <button name="action_print_payslip" 
+                        type="object" 
+                        string="Print Payslip" 
+                        class="oe_highlight" 
+                        states="done,verify"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Add Print Payslips button to hr.payslip.run form -->
+    <record id="view_hr_payslip_run_form_print_button" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.print.button</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_send_email_all']" position="after">
+                <button string="Print Payslips" 
+                        name="action_print_payslips" 
+                        type="object" 
+                        class="oe_highlight" 
+                        states="done"
+                        help="Print payslips for this batch"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Alternative: Add as a report action for right-click menu -->
+    <record id="action_print_batch_payslips" model="ir.actions.server">
+        <field name="name">Print Batch Payslips</field>
+        <field name="model_id" ref="om_hr_payroll.model_hr_payslip_run"/>
+        <field name="binding_model_id" ref="om_hr_payroll.model_hr_payslip_run"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">
+action = records.action_print_payslips()
+        </field>
+    </record>
+    
+    <!-- Payslip Print Wizard Form View -->
+    <record id="view_payslip_print_wizard_form" model="ir.ui.view">
+        <field name="name">payslip.print.wizard.form</field>
+        <field name="model">payslip.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Payslip Structure to Print">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="payslip_run_id" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <field name="structure_name" widget="radio"/>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>Note:</strong> This payslip batch contains payslips with different salary structures. 
+                        Each structure uses a different template format:
+                        <ul>
+                            <li><strong>Indonesia Salary Structure:</strong> Uses Indonesia payslip template</li>
+                            <li><strong>Vietnam Salary Structure:</strong> Uses Vietnam payslip template</li>
+                        </ul>
+                        Please select which structure's payslips you want to print.
+                    </div>
+                </sheet>
+                
+                <footer>
+                    <button name="action_print_selected_structure" type="object" string="Print Payslips" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Payslip Print Wizard Action -->
+    <record id="action_payslip_print_wizard" model="ir.actions.act_window">
+        <field name="name">Select Payslip Structure</field>
+        <field name="res_model">payslip.print.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_payslip_print_wizard_form"/>
+    </record>
+
+</odoo>
