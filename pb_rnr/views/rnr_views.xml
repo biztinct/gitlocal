@@ -54,7 +54,7 @@
                         </group>
                     </group>
                     <group string="More about it">
-                        <field name="description" nolabel="1"
+                        <field name="description" colspan="2" nolabel="1"
                                placeholder="A sentence or two people will actually read when they are picking one."/>
                     </group>
                 </sheet>
@@ -163,11 +163,11 @@
                         — nothing is paid until somebody does that.
                     </div>
                     <group string="What they did">
-                        <field name="story" nolabel="1"
+                        <field name="story" colspan="2" nolabel="1"
                                placeholder="The actual thing that happened."/>
                     </group>
                     <group string="Note with the decision">
-                        <field name="decision_note" nolabel="1"/>
+                        <field name="decision_note" colspan="2" nolabel="1"/>
                     </group>
                 </sheet>
                 <chatter/>

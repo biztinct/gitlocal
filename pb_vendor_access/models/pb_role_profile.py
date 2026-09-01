@@ -71,7 +71,8 @@ class PbRoleProfile(models.Model):
     #: is a count that is wrong the moment somebody is granted the group by any
     #: other route, and there are several other routes.
     holder_count = fields.Integer(
-        string='People who hold it', compute='_compute_holders')
+        string='People who hold it', compute='_compute_holders',
+        search='_search_holder_count')
 
     _group_uniq = models.Constraint(
         'unique(group_id)',
@@ -100,6 +101,31 @@ class PbRoleProfile(models.Model):
                     'pb.role.profile: could not count holders of %s',
                     group.id, exc_info=True)
                 rec.holder_count = 0
+
+    def _search_holder_count(self, operator, value):
+        """Make "nobody holds this" a filter you can actually press.
+
+        The count is computed, not stored, on purpose (see above) — so there is
+        no column to compare against and the ORM cannot search it for us. The
+        honest way is to work the count out for every profile once and hand
+        back a plain id domain; there are a couple of dozen profiles, not a
+        couple of million, so one pass is cheaper than the machinery that would
+        avoid it. `sudo()` is confined to the COUNTING (group membership is not
+        the reader's business); which profiles the reader may see is still
+        decided by the record rules on the search this domain feeds.
+        """
+        try:
+            records = self.sudo().search([])
+            matching = records.filtered_domain(
+                [('holder_count', operator, value)])
+            return [('id', 'in', matching.ids)]
+        except Exception:                           # noqa: BLE001
+            _logger.warning(
+                'pb.role.profile: holder-count search failed for %s %s',
+                operator, value, exc_info=True)
+            # A filter that cannot be worked out must not silently show
+            # everything — that reads as "every role is unheld".
+            return [('id', 'in', [])]
 
     def _compute_display_name(self):
         for rec in self:

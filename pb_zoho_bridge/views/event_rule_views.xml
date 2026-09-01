@@ -52,7 +52,7 @@
                         </group>
                     </group>
                     <group string="Why this rule exists">
-                        <field name="note" nolabel="1"
+                        <field name="note" colspan="2" nolabel="1"
                                placeholder="A sentence for the next person who reads this list."/>
                     </group>
                     <div class="text-muted mt-3">
