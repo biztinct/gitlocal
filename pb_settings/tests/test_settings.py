@@ -129,8 +129,17 @@ class TestSettingsDescriptor(TransactionCase):
         # Integrations Cycle 2 adds `pb_mapping_studio` — a sixth door, and the
         # method lost the word "five" from its name rather than keeping a name
         # that lies about its own assertion (W76.3: amend at the site).
+        #
+        # RIZE P11 amendment: the source is read with its comments STRIPPED.
+        # The soft-registry paragraph has to be able to SHOW a worked example
+        # (`tag: "pb_vendors_board"`), and a gate that reads the file rather
+        # than the code counted that as a seventh shipped door — W101/W114's
+        # fifth bite, which every other gate in this file already guards
+        # against. The assertion itself is unchanged: these six are what the
+        # DESCRIPTOR ships, and a category registered by a later module is not
+        # in this file at all.
         self.assertEqual(
-            sorted(set(_RE_TAG.findall(_js()))),
+            sorted(set(_RE_TAG.findall(_code(_js())))),
             ['pb_formula_studio', 'pb_integrations', 'pb_mapping_studio',
              'pb_statutory', 'pb_structures', 'pb_tenants'],
             "the tags are the payroll cockpits plus Tenants. The hub's own "
@@ -223,6 +232,80 @@ class TestSettingsDescriptor(TransactionCase):
                 "Python; in JavaScript it is a SyntaxError, and one unparseable "
                 "file blanks web.assets_backend for every user with a clean "
                 "server log (W74)" % fname)
+
+
+@tagged('post_install', '-at_install')
+class TestSoftCategoryRegistry(TransactionCase):
+    """The seam RIZE P11 added, and the four pieces that make it one.
+
+    A module that mounts a category here DEPENDS on this hub, so this hub can
+    never import it back — the registry is what lets the dependency run one way
+    only. It is `pb_people_hub`'s shape, the one P7 gave `pb_payhub` (R73), P8
+    `pb_home_hub` (R83) and P9 `pb_insights_hub` (R96), applied to CATEGORIES
+    because that is the unit this hub is made of.
+
+    Four things have to be true together and each fails silently on its own:
+    the category name is EXPORTED so the other module can name it, the
+    resolution happens once in a FUNCTION rather than in a getter (a fresh
+    array per render recreates every card on every keystroke, W21), the
+    component reads the COMBINED list rather than the literal one, and the
+    action probe covers the bolted-on cards too — a registered `act_window`
+    card whose xmlid was never probed renders and opens nothing (W79).
+    """
+
+    def test_a_later_module_can_bolt_a_category_on_without_editing_this_hub(self):
+        src = _code(_js())
+        self.assertIn('export const SETTINGS_CATEGORIES = "pb_settings_category"',
+                      src, 'the category registry must be exported by name')
+        self.assertIn('export function extraCategories()', src,
+                      'categories are resolved ONCE in a function')
+        self.assertNotIn('get extraCategories', src,
+                         'a getter would rebuild the list on every render')
+        self.assertIn('export function allCategories()', src,
+                      'the shipped eight and the registered ones must be '
+                      'combined in one place, so every rule below sees both')
+
+    def test_the_component_reads_the_combined_list_everywhere(self):
+        """A bolted-on category that is filtered by `this.all` but gated
+        against `CATEGORIES` is a category that renders ungated — and group
+        resolution FAILS OPEN, so nothing about that is visible at runtime."""
+        src = _code(_js())
+        setup = src.split('setup() {', 1)[1].split('onWillStart', 1)[0]
+        self.assertIn('this.all = allCategories()', setup,
+                      'the combined list is resolved once, in setup')
+        gates = src.split('_resolveGroups() {', 1)[1].split('\n    }', 1)[0]
+        self.assertIn('this.all.flatMap', gates)
+        self.assertNotIn('CATEGORIES.flatMap', gates,
+                         'gate resolution must cover the registered '
+                         'categories too')
+        cats = src.split('get categories() {', 1)[1].split('\n    }', 1)[0]
+        self.assertIn('this.all.filter', cats)
+        self.assertNotIn('CATEGORIES.filter', cats)
+
+    def test_the_action_probe_covers_registered_cards(self):
+        src = _code(_js())
+        probe = src.split('export function settingsActionXmlids()', 1)[1]
+        probe = probe.split('\n}', 1)[0]
+        self.assertIn('allCategories()', probe,
+                      'a registered act_window card whose xmlid is never '
+                      'probed renders and answers a click with silence (W79)')
+
+    def test_the_eight_shipped_categories_are_still_the_first_eight(self):
+        """A bolted-on category lands AFTER what this hub ships, because the
+        eight shipped ones carry no sequence and `allCategories` spreads the
+        registry behind them. If that ever stops being true, a later module
+        could push Formula Engine off the top of the list without editing this
+        file."""
+        src = _code(_js())
+        self.assertLess(
+            src.index('export const CATEGORIES'), src.index('allCategories()'),
+            'the shipped array must be declared before the combining helper')
+        combined = src.split('export function allCategories()', 1)[1]
+        combined = combined.split('\n}', 1)[0]
+        self.assertIn('...CATEGORIES', combined)
+        self.assertLess(combined.index('...CATEGORIES'),
+                        combined.index('...extraCategories()'),
+                        'the shipped categories come first')
 
 
 @tagged('post_install', '-at_install')
