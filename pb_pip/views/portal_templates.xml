@@ -137,7 +137,7 @@
                   decided until the three of you have talked about it.
                 </t>
                 <t t-else="">
-                  Running to <strong><t t-esc="plan.end_date"/></strong>. This
+                  Running to <strong><t t-esc="end_label"/></strong>. This
                   is everything that was agreed, in one place, so nothing about
                   it has to be remembered.
                 </t>
@@ -181,10 +181,10 @@
               When you and your manager will talk
             </div>
             <p class="pbme-muted">
-              <t t-esc="freq_label"/>, for as long as the plan runs. These are
-              for support as much as for review — if something on the plan
-              turns out to be unrealistic, that is the place to say so and it
-              can be changed.
+              You and your manager will sit down <t t-esc="freq_label"/>, for
+              as long as the plan runs. These are for support as much as for
+              review — if something on the plan turns out to be unrealistic,
+              that is the place to say so and it can be changed.
             </p>
             <div class="pbpg-dates">
               <div t-foreach="checkins" t-as="ck" t-key="ck['id']"
@@ -194,7 +194,7 @@
                     <t t-call="pb_pip.pg_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="12"/></t>
                   </t>
                 </span>
-                <span class="pbpg-date-d" t-esc="ck['date']"/>
+                <span class="pbpg-date-d" t-esc="ck['label']"/>
                 <span t-if="ck['next']" class="pbpg-date-n">next</span>
                 <span t-elif="ck['state'] == 'missed'" class="pbpg-date-m">did not happen</span>
               </div>

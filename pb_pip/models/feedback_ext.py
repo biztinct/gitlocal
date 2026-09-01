@@ -22,7 +22,7 @@ class PbFeedbackRequest(models.Model):
     _inherit = 'pb.feedback.request'
 
     pip_case_id = fields.Many2one(
-        'pb.pip.case', string='Improvement plan', index=True,
+        'pb.pip.case', string='Growth plan', index=True,
         ondelete='cascade')
 
     def submit_answers(self, answers):

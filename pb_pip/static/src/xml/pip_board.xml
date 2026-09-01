@@ -43,7 +43,7 @@
           <!-- ===================== header ===================== -->
           <div class="pip-head">
             <div class="pip-head-id" t-if="!props.embedded">
-              <h1 class="pbim-h1">Improvement plans</h1>
+              <h1 class="pbim-h1">Growth plans</h1>
               <p class="pbim-sub">Coaching first, then a plan with dates on it —
                  and a decision somebody actually makes.</p>
             </div>
@@ -178,7 +178,7 @@
                where nobody is on one. -->
           <div t-if="!state.rows.length" class="pbim-panel pip-empty">
             <div class="pip-empty-ic"><t t-out="ic('sunrise',30)"/></div>
-            <h2 t-esc="state.closedView ? 'Nothing has been closed yet' : 'Nobody is on an improvement plan'"/>
+            <h2 t-esc="state.closedView ? 'Nothing has been closed yet' : 'Nobody is on a growth plan'"/>
             <p t-if="!state.closedView">This starts when a line manager asks HR
                to look at how somebody is getting on — there is a row in the
                command bar for it. The first thing that happens is a
@@ -392,7 +392,7 @@
                     t-att-value="state.drawer.coaching"
                     t-on-input="onCoaching"
                     placeholder="What was said, what they said was getting in the way, and what you agreed to try…"/>
-          <div t-else="" class="pip-note" t-out="html(state.drawer.coaching)"/>
+          <div t-else="" class="pip-note" t-esc="state.drawer.coaching"/>
           <button t-if="state.canWrite and ['requested','coaching','active'].includes(state.drawer.row.state)"
                   class="pbim-btn ghost pbim-btn-sm pip-save"
                   t-on-click="saveCoaching">

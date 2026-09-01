@@ -57,7 +57,7 @@ def _refusal():
         'templates': [],
         'employee_view': False,
         'manager_sees_own': False,
-        'why': _("Improvement plans are looked after by a small group in HR. "
+        'why': _("Growth plans are looked after by a small group in HR. "
                  "This screen is not part of the general HR permissions, and "
                  "it is not part of being an administrator either — somebody "
                  "has to add you to it by name. Ask your HR lead if you "
@@ -67,7 +67,7 @@ def _refusal():
 
 class PbPip(models.AbstractModel):
     _name = 'pb.pip'
-    _description = 'Payobook Improvement Plan cockpit data'
+    _description = 'Payobook Growth Plan cockpit data'
 
     # ------------------------------------------------------------------ gates
     @api.model
@@ -113,8 +113,7 @@ class PbPip(models.AbstractModel):
     def _require_head(self):
         if not self._is_head():
             raise AccessError(_(
-                "Changing who can see improvement plans is for the head of "
-                "HR."))
+                "Changing who can see growth plans is for the head of HR."))
         return True
 
     # ------------------------------------------------------------- the board
@@ -314,7 +313,7 @@ class PbPip(models.AbstractModel):
             default=self.env['pb.employee.checkin'].browse())
         return {
             'row': self._row(case),
-            'coaching': str(case.coaching_html or ''),
+            'coaching': case.coaching_note or '',
             'coaching_start': str(case.coaching_start or ''),
             'outcome_note': case.outcome_note or '',
             'final_rating': case.final_rating or 0,
@@ -358,9 +357,9 @@ class PbPip(models.AbstractModel):
         return self._case(case_id).action_take_up(note=note)
 
     @api.model
-    def save_coaching(self, case_id, html):
+    def save_coaching(self, case_id, text):
         self._require_read()
-        return self._case(case_id).action_save_coaching(html)
+        return self._case(case_id).action_save_coaching(text)
 
     @api.model
     def close_at_coaching(self, case_id, note=None):

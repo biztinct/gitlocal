@@ -19,7 +19,7 @@
 
     <!-- ================== a manager has asked HR ================== -->
     <record id="mail_template_pip_requested" model="mail.template">
-        <field name="name">Improvement plan: a manager has asked HR to look at somebody</field>
+        <field name="name">Growth plan: a manager has asked HR to look at somebody</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
@@ -39,7 +39,7 @@
                 </p>
                 <p>
                     Nothing has been written to their record and nothing has
-                    been sent to them. Open <strong>Improvement plans</strong>
+                    been sent to them. Open <strong>Growth plans</strong>
                     in Payobook and take it up when you can — the first step is
                     a conversation.
                 </p>
@@ -51,7 +51,7 @@
 
     <!-- ================== HR has taken it up ================== -->
     <record id="mail_template_pip_taken_up" model="mail.template">
-        <field name="name">Improvement plan: HR has taken it up</field>
+        <field name="name">Growth plan: HR has taken it up</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.requested_by_user_id.email or '' }}</field>
@@ -82,7 +82,7 @@
          THE ONLY EMAIL THE PERSON THEMSELVES EVER GETS from this module,
          and it is sent only when their own page is switched on. -->
     <record id="mail_template_pip_started" model="mail.template">
-        <field name="name">Improvement plan: your plan is ready to read</field>
+        <field name="name">Growth plan: your plan is ready to read</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
@@ -123,7 +123,7 @@
 
     <!-- ================== they have read it ================== -->
     <record id="mail_template_pip_acknowledged" model="mail.template">
-        <field name="name">Improvement plan: they have read it</field>
+        <field name="name">Growth plan: they have read it</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
@@ -149,7 +149,7 @@
 
     <!-- ================== a check-in did not happen ================== -->
     <record id="mail_template_pip_checkin_missed" model="mail.template">
-        <field name="name">Improvement plan: a check-in did not happen</field>
+        <field name="name">Growth plan: a check-in did not happen</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
@@ -182,7 +182,7 @@
 
     <!-- ================== the plan has reached its end ================== -->
     <record id="mail_template_pip_due" model="mail.template">
-        <field name="name">Improvement plan: it has reached its end date</field>
+        <field name="name">Growth plan: it has reached its end date</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
@@ -200,7 +200,7 @@
                 <p>
                     Nothing has been sent to their manager and nothing has been
                     decided — that is for you to start when you are ready. Open
-                    <strong>Improvement plans</strong> in Payobook and press
+                    <strong>Growth plans</strong> in Payobook and press
                     "Ask their manager".
                 </p>
                 <p style="color:#4A5568;">
@@ -216,7 +216,7 @@
 
     <!-- ================== the evaluation came back ================== -->
     <record id="mail_template_pip_eval_in" model="mail.template">
-        <field name="name">Improvement plan: the evaluation came back</field>
+        <field name="name">Growth plan: the evaluation came back</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
@@ -231,7 +231,7 @@
                     plan have come back.
                 </p>
                 <p>
-                    Open <strong>Improvement plans</strong> in Payobook to read
+                    Open <strong>Growth plans</strong> in Payobook to read
                     them beside the objectives they are about, and then talk to
                     the person before anything is recorded.
                 </p>
@@ -243,7 +243,7 @@
 
     <!-- ================== it worked ================== -->
     <record id="mail_template_pip_passed" model="mail.template">
-        <field name="name">Improvement plan: completed successfully</field>
+        <field name="name">Growth plan: completed successfully</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
@@ -276,7 +276,7 @@
          this product will ever do; that is a conversation, and the module
          exists to make sure it is one. -->
     <record id="mail_template_pip_failed" model="mail.template">
-        <field name="name">Improvement plan: not completed</field>
+        <field name="name">Growth plan: not completed</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
@@ -307,7 +307,7 @@
 
     <!-- ================== they resigned ================== -->
     <record id="mail_template_pip_terminated" model="mail.template">
-        <field name="name">Improvement plan: closed because they are leaving</field>
+        <field name="name">Growth plan: closed because they are leaving</field>
         <field name="model_id" ref="model_pb_pip_case"/>
         <field name="email_from">{{ (user.email_formatted) }}</field>
         <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>

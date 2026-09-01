@@ -42,7 +42,7 @@ class ResUsers(models.Model):
 
     pip_manager_sees_own = fields.Boolean(
         compute='_compute_pip_manager_sees_own',
-        string='Can see the improvement plan they asked for',
+        string='Can see the growth plan they asked for',
         help='Read from the pb_pip.manager_sees_own setting. It exists so '
              'that the record rule granting a manager sight of their own '
              'request has a single source of truth.')

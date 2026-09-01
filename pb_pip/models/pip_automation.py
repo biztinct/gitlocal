@@ -88,7 +88,7 @@ class PbJourneyCasePipReminders(models.Model):
         made = 0
         for case in due:
             try:
-                summary = _("Improvement plan has reached its end date")
+                summary = _("Growth plan has reached its end date")
                 existing = Activity.search([
                     ('res_model', '=', 'pb.pip.case'),
                     ('res_id', '=', case.id),
@@ -125,7 +125,7 @@ class PbJourneyCasePipReminders(models.Model):
         user = self.env.user
         if not (user.has_group(GROUP_USER) or user.has_group(GROUP_HEAD)):
             raise AccessError(_(
-                "Improvement plans are looked after by the HR team."))
+                "Growth plans are looked after by the HR team."))
         today = fields.Date.today()
         out = {'missed': 0, 'due': 0, 'open': 0}
         try:

@@ -15,7 +15,7 @@ from .pip_common import CHECKIN_FREQS
 
 class PbPipTemplate(models.Model):
     _name = 'pb.pip.template'
-    _description = 'Improvement Plan Template'
+    _description = 'Growth Plan Template'
     _order = 'sequence, name, id'
 
     name = fields.Char(required=True, translate=True)
@@ -30,8 +30,8 @@ class PbPipTemplate(models.Model):
         help='How often the person and their manager sit down while the plan '
              'is running. Every one of these is put in the diary the moment '
              'the plan starts.')
-    coaching_body_html = fields.Html(
-        string='Coaching note — starting text', sanitize=True, translate=True,
+    coaching_body = fields.Text(
+        string='Coaching note — starting text', translate=True,
         help='What HR opens the coaching conversation with. It is copied onto '
              'the case and edited there, so changing this never rewrites a '
              'conversation somebody is already having.')
@@ -45,7 +45,7 @@ class PbPipTemplate(models.Model):
 
     def _compute_display_name(self):
         for rec in self:
-            rec.display_name = rec.name or _('Improvement plan template')
+            rec.display_name = rec.name or _('Growth plan template')
 
     @api.constrains('default_weeks')
     def _check_weeks(self):
@@ -58,7 +58,7 @@ class PbPipTemplate(models.Model):
 
 class PbPipTemplateLine(models.Model):
     _name = 'pb.pip.template.line'
-    _description = 'Improvement Plan Template — focus area'
+    _description = 'Growth Plan Template — focus area'
     _order = 'sequence, id'
 
     template_id = fields.Many2one(

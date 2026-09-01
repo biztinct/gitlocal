@@ -50,7 +50,7 @@ export const PIP_GATE = [
 registry.category(LIFECYCLE_LENSES).add("pip", {
     key: "pip",
     icon: "sunrise",
-    label: _t("Improvement plans"),
+    label: _t("Growth plans"),
     Component: PbPipBoard,
     groups: PIP_GATE,
 }, { sequence: 50 });
@@ -61,7 +61,7 @@ const palette = registry.category("pb_hub_palette");
 
 palette.add("pip_board", {
     id: "pip_board",
-    label: _t("Improvement plans"),
+    label: _t("Growth plans"),
     sublabel: _t("Lifecycle"),
     icon: "sunrise",
     groups: PIP_GATE,
@@ -79,7 +79,7 @@ palette.add("pip_board", {
 palette.add("pip_request", {
     id: "pip_request",
     label: _t("Ask HR about someone in my team"),
-    sublabel: _t("Improvement plans"),
+    sublabel: _t("Growth plans"),
     icon: "smilePlus",
     groups: ["base.group_user"],
     requires: "pb_pip_request",
@@ -88,8 +88,8 @@ palette.add("pip_request", {
 
 palette.add("pip_cases", {
     id: "pip_cases",
-    label: _t("All improvement plans"),
-    sublabel: _t("Improvement plans"),
+    label: _t("All growth plans"),
+    sublabel: _t("Growth plans"),
     icon: "fileText",
     groups: PIP_GATE,
     requires: "pb_pip_board",
@@ -98,8 +98,8 @@ palette.add("pip_cases", {
 
 palette.add("pip_templates", {
     id: "pip_templates",
-    label: _t("Improvement plan templates"),
-    sublabel: _t("Improvement plans"),
+    label: _t("Growth plan templates"),
+    sublabel: _t("Growth plans"),
     icon: "layers",
     groups: ["pb_pip.group_pip_head"],
     requires: "pb_pip_board",

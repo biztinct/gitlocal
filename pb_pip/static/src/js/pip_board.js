@@ -26,7 +26,7 @@
  * OWL RESERVES `lt`/`gt`/`lte`/`gte`/`and`/`or`/`not`/`in` AS OPERATORS (R1),
  * so no `t-as` variable in the template is named any of those.
  */
-import { Component, useState, onWillStart, markup } from "@odoo/owl";
+import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -117,16 +117,6 @@ export class PbPipBoard extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
-
-    /** The coaching note, as HTML rather than as its own source code (R51).
-     *
-     * `t-out` escapes a PLAIN STRING and renders a `markup()` value raw — and
-     * an Html field crossing JSON-RPC arrives as a plain string. Marking it
-     * safe is correct here because the field is `sanitize=True` on the way in,
-     * so the only markup that can reach this is markup Odoo's own sanitiser
-     * allowed.
-     */
-    html(value) { return markup(value || ""); }
 
     // ------------------------------------------------------------------ read
     async load() {

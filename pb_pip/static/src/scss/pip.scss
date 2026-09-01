@@ -280,11 +280,13 @@
         font-size: 13.5px; line-height: 1.6; color: var(--pbim-text);
         white-space: pre-wrap; margin: 0;
     }
+    // The coaching note is PLAIN TEXT (see pip_case.coaching_note), so the
+    // line breaks somebody typed are the only structure it has and
+    // `pre-wrap` is what keeps them.
     .pip-note {
         background: var(--pbim-bg); border-radius: 12px; padding: 14px 16px;
         font-size: 13.5px; line-height: 1.6; color: var(--pbim-text);
-        p { margin: 0 0 8px; }
-        b, strong { color: var(--pbim-ink); }
+        white-space: pre-wrap;
     }
     .pip-save { margin-top: 9px; }
 
@@ -638,6 +640,12 @@
         font-size: 12px; color: var(--pbim-muted); margin: 12px 0 0;
         line-height: 1.55;
     }
+
+    // The kit's `.pbim-badge` capitalises Every Word, which is right for a
+    // status word and wrong for a sentence (R33). Every badge on this page
+    // carries a plan's state, and those are sentences: "Closed — left the
+    // company" reads as an announcement when it is title-cased.
+    .pbim-badge { text-transform: none; }
 
     .pipr-empty, .pipr-done { text-align: center; padding: 50px 26px; }
     .pipr-empty-ic, .pipr-done-ic {
