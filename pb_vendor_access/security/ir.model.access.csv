@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_vendor_user,pb.vendor vendor owner,model_pb_vendor,group_vendor_user,1,0,0,0
+access_pb_vendor_manager,pb.vendor vendor team,model_pb_vendor,group_vendor_manager,1,1,1,0
+access_pb_vendor_lifecycle_manager,pb.vendor lifecycle manager,model_pb_vendor,pb_lifecycle.group_lifecycle_manager,1,0,0,0
+access_pb_vendor_lifecycle_admin,pb.vendor lifecycle admin,model_pb_vendor,pb_lifecycle.group_lifecycle_admin,1,1,1,0
+access_pb_vendor_agreement_user,pb.vendor.agreement vendor owner,model_pb_vendor_agreement,group_vendor_user,1,0,0,0
+access_pb_vendor_agreement_manager,pb.vendor.agreement vendor team,model_pb_vendor_agreement,group_vendor_manager,1,1,1,0
+access_pb_vendor_agreement_lifecycle_manager,pb.vendor.agreement lifecycle manager,model_pb_vendor_agreement,pb_lifecycle.group_lifecycle_manager,1,0,0,0
+access_pb_vendor_agreement_lifecycle_admin,pb.vendor.agreement lifecycle admin,model_pb_vendor_agreement,pb_lifecycle.group_lifecycle_admin,1,1,1,0
+access_pb_role_profile_user,pb.role.profile everybody reads the catalogue,model_pb_role_profile,base.group_user,1,0,0,0
+access_pb_role_profile_access_manager,pb.role.profile access team,model_pb_role_profile,group_access_manager,1,1,1,1
+access_pb_access_delegation_user,pb.access.delegation mine (never unlink),model_pb_access_delegation,base.group_user,1,0,0,0
+access_pb_access_delegation_access_manager,pb.access.delegation access team (never unlink),model_pb_access_delegation,group_access_manager,1,1,1,0
+access_pb_access_delegation_lifecycle_admin,pb.access.delegation lifecycle admin (never unlink),model_pb_access_delegation,pb_lifecycle.group_lifecycle_admin,1,1,1,0
+access_pb_vendor_export_user,pb.vendor.export anybody who can open a board,model_pb_vendor_export,base.group_user,1,1,1,1

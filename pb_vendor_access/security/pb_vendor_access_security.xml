@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ITS OWN LADDER, GRANTED BY NAME.
+
+         Three tiers, and each one is a different question:
+
+           vendor user     "which suppliers am I responsible for"
+           vendor manager  "I look after the supplier register" — adds,
+                           edits, renews, runs the reminder job
+           access manager  "I decide who holds what" — the roles board,
+                           and taking back anybody's hand-over
+
+         NO `implied_ids` from any lifecycle, people or payroll group in
+         either direction. Deciding who holds what is not something to give
+         to everybody who happens to hold an HR permission. The lifecycle
+         tiers reach the vendor register through their OWN ACL lines
+         (ir.model.access.csv) and their OWN record rules below — additive,
+         and with nothing of theirs edited.
+
+         WHAT IS NOT HERE, AND NEVER WILL BE. Nothing in this module ever
+         hands out `base.group_system` or `base.group_erp_manager`. The
+         catalogue excludes them, `pb.role.profile` refuses to point at
+         one, and both facades check again. Three refusals for one rule,
+         because it is the only rule here whose failure cannot be undone by
+         somebody who is still allowed to log in.
+         ================================================================== -->
+
+    <record id="module_category_vendor_access" model="ir.module.category">
+        <field name="name">Vendors &amp; Access</field>
+        <field name="sequence">59</field>
+    </record>
+
+    <!-- Odoo 19: `res.groups` has no `category_id`; a privilege carries it. -->
+    <record id="res_groups_privilege_vendor_access" model="res.groups.privilege">
+        <field name="name">Vendors &amp; Access</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_vendor_access"/>
+    </record>
+
+    <record id="group_vendor_user" model="res.groups">
+        <field name="name">Vendor owner</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_vendor_access"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">See the suppliers you are named as looking after, and their agreements. You are the one told when one is about to run out.</field>
+    </record>
+
+    <record id="group_vendor_manager" model="res.groups">
+        <field name="name">Vendor team</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_vendor_access"/>
+        <field name="implied_ids" eval="[(4, ref('group_vendor_user'))]"/>
+        <field name="comment">See every supplier in the companies you work in, add and change them, record and renew agreements, and run the renewal check.</field>
+    </record>
+
+    <record id="group_access_manager" model="res.groups">
+        <field name="name">Access team</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_vendor_access"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <!-- The two built-in administrator accounts and NOBODY ELSE. Adding
+             whoever happened to run the upgrade is the failure a ladder like
+             this exists to prevent. -->
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Give people roles and take them away, see every hand-over of access in the company, and take any of them back. It never includes the system administrator permission.</field>
+    </record>
+
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY. Global rules (no `groups`), ANDed with everything below.
+         A vendor row carries the company it belongs to, and the companies
+         somebody has switched on decide whether they see it at all.
+
+         R8 — anything SEEDED is company-less, so it is visible to everyone
+         rather than to whichever company happened to run the install. The
+         `'|' company_id = False` clause below is what makes that work.
+         ================================================================== -->
+
+    <record id="rule_vendor_company" model="ir.rule">
+        <field name="name">Vendor: company</field>
+        <field name="model_id" ref="model_pb_vendor"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_agreement_company" model="ir.rule">
+        <field name="name">Vendor agreement: company</field>
+        <field name="model_id" ref="model_pb_vendor_agreement"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_delegation_company" model="ir.rule">
+        <field name="name">Hand-over: company</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE PAIR (R60/R65). `ir.rule` group rules are ORed, but only over
+         the rules that APPLY — so a narrow rule shipped ALONE is a
+         narrowing, and somebody who holds two of the groups below would
+         end up with only the narrow one applying and lose everything they
+         had. Every wide tier gets its OWN rule, in the same file as the
+         narrow one, and each gets its own record so that revoking one can
+         never silently widen another.
+         ================================================================== -->
+
+    <record id="rule_vendor_manager_all" model="ir.rule">
+        <field name="name">Vendor: the vendor team sees all of it</field>
+        <field name="model_id" ref="model_pb_vendor"/>
+        <field name="groups" eval="[(4, ref('group_vendor_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_vendor_lifecycle_manager_all" model="ir.rule">
+        <field name="name">Vendor: the lifecycle team sees all of it</field>
+        <field name="model_id" ref="model_pb_vendor"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_vendor_lifecycle_admin_all" model="ir.rule">
+        <field name="name">Vendor: lifecycle administrators see all of it</field>
+        <field name="model_id" ref="model_pb_vendor"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_admin'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- THE NARROW ONE. A vendor owner sees the suppliers they were named
+         on, and anything they added themselves. `responsible_user_id` is a
+         plain indexed column precisely so this is a comparison rather than
+         a walk. -->
+
+    <record id="rule_vendor_user_own" model="ir.rule">
+        <field name="name">Vendor: the ones I look after</field>
+        <field name="model_id" ref="model_pb_vendor"/>
+        <field name="groups" eval="[(4, ref('group_vendor_user'))]"/>
+        <field name="domain_force">['|', ('responsible_user_id', '=', user.id), ('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- The same four shapes for the agreements. `responsible_user_id` is
+         a stored related on the agreement so this stays one comparison. -->
+
+    <record id="rule_agreement_manager_all" model="ir.rule">
+        <field name="name">Vendor agreement: the vendor team sees all of it</field>
+        <field name="model_id" ref="model_pb_vendor_agreement"/>
+        <field name="groups" eval="[(4, ref('group_vendor_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_agreement_lifecycle_manager_all" model="ir.rule">
+        <field name="name">Vendor agreement: the lifecycle team sees all of it</field>
+        <field name="model_id" ref="model_pb_vendor_agreement"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_agreement_lifecycle_admin_all" model="ir.rule">
+        <field name="name">Vendor agreement: lifecycle administrators see all of it</field>
+        <field name="model_id" ref="model_pb_vendor_agreement"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_admin'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_agreement_user_own" model="ir.rule">
+        <field name="name">Vendor agreement: the ones I look after</field>
+        <field name="model_id" ref="model_pb_vendor_agreement"/>
+        <field name="groups" eval="[(4, ref('group_vendor_user'))]"/>
+        <field name="domain_force">['|', ('responsible_user_id', '=', user.id), ('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE CATALOGUE. Everybody with a login reads it — the hand-over
+         dialog is for everybody by requirement, and it cannot offer what
+         it cannot read.
+
+         `visible_group_id` is the exception the handover asks for: the
+         growth-plan profiles are nobody's business but the heads of HR's.
+         A profile that names a group is listed only to people who hold it.
+         The PAIR rule applies here too — the access team's own rule is
+         separate, so a head of HR who is also on the access team keeps
+         seeing everything rather than being narrowed by the row below.
+         ================================================================== -->
+
+    <record id="rule_profile_visible" model="ir.rule">
+        <field name="name">Role: the ones this person is meant to see</field>
+        <field name="model_id" ref="model_pb_role_profile"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('visible_group_id', '=', False), ('visible_group_id', 'in', user.all_group_ids.ids)]</field>
+    </record>
+
+    <record id="rule_profile_access_team_all" model="ir.rule">
+        <field name="name">Role: the access team sees all of them</field>
+        <field name="model_id" ref="model_pb_role_profile"/>
+        <field name="groups" eval="[(4, ref('group_access_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE HAND-OVERS. Mine, or ones handed to me — plus the access team
+         and lifecycle administrators, who see all of them.
+
+         HISTORY IS NEVER DELETED. The ACL grants unlink to nobody and
+         `unlink()` refuses for everybody, an administrator included: an
+         audit trail with a delete button is a diary.
+         ================================================================== -->
+
+    <record id="rule_delegation_mine" model="ir.rule">
+        <field name="name">Hand-over: mine, or handed to me</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('delegator_user_id', '=', user.id), ('delegate_user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_delegation_access_team_all" model="ir.rule">
+        <field name="name">Hand-over: the access team sees all of them</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="groups" eval="[(4, ref('group_access_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_delegation_lifecycle_admin_all" model="ir.rule">
+        <field name="name">Hand-over: lifecycle administrators see all of them</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_admin'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</data>
+</odoo>
