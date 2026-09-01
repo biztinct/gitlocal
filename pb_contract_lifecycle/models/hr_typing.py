@@ -116,16 +116,62 @@ class HrEmployee(models.Model):
                             'type this build knows', kind)
             return False
         if self._pb_employment_type() == kind:
+            # Already that. Still stamp it as deliberate — somebody said so
+            # out loud — and still align the trial state, because the reason
+            # this is being pressed at all is usually that something else
+            # about the record disagrees with it.
+            try:
+                if not self.sudo().pb_employment_type_set:
+                    self.sudo().pb_employment_type_set = True
+            except Exception:           # noqa: BLE001
+                _logger.warning('pb_contract_lifecycle: could not stamp the '
+                                'employment type on %s', self.id,
+                                exc_info=True)
+            self._pb_align_trial_state(kind)
             return True
         try:
             self.sudo().write({'employee_type': kind,
                                'pb_employment_type_set': True})
             if reason:
                 self.sudo().message_post(body=reason)
+            self._pb_align_trial_state(kind)
             return True
         except Exception:               # noqa: BLE001
             _logger.exception('pb_contract_lifecycle: could not set the '
                               'employment type on employee %s', self.id)
+            return False
+
+    def _pb_align_trial_state(self, kind):
+        """An intern is not on probation, so the Probation board says so.
+
+        P5's OWN RULE, applied at the moment the type changes.
+        `probation_common.NON_STAFF_TYPES` already says a contractor or an
+        intern has a trial state of "not applicable" — that is what P5's
+        default computes for a new record — but a person whose type is set
+        AFTER they arrive keeps whatever state they were given first. The
+        arriving intern from the connected system landed as "In probation"
+        with a trial end date, and turned up on the Probation lens beside four
+        genuine new joiners.
+
+        One direction only. Becoming non-permanent means the trial period does
+        not apply; becoming permanent says nothing about whether somebody
+        passed one, so that case is left exactly as it is.
+
+        Never raises: this is a tidy-up, not the write the caller asked for.
+        """
+        self.ensure_one()
+        if kind not in NON_PERMANENT_TYPES:
+            return False
+        try:
+            if self.sudo().pb_probation_state == 'na':
+                return True
+            self._pb_set_probation_state('na', reason=_(
+                "Recorded as %s, so a trial period does not apply.",
+                EMPLOYEE_TYPE_LABEL.get(kind, kind)))
+            return True
+        except Exception:               # noqa: BLE001
+            _logger.warning('pb_contract_lifecycle: could not align the trial '
+                            'state on employee %s', self.id, exc_info=True)
             return False
 
     # --------------------------------------------------------- the backfill

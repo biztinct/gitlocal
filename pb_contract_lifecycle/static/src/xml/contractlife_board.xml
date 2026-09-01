@@ -462,7 +462,7 @@
             </div>
             <p class="ctl-hist-n">
               <t t-esc="hs.by ? 'By ' + hs.by + '. ' : ''"/>
-              <t t-esc="'The contract ran to ' + day(hs.end_date) + '.'"/>
+              <t t-esc="'About the contract ending ' + day(hs.end_date) + '.'"/>
             </p>
             <p t-if="hs.note" class="ctl-hist-n" t-esc="hs.note"/>
             <div class="ctl-hist-act">
