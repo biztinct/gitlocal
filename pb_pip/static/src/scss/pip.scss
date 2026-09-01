@@ -1,0 +1,656 @@
+// =====================================================================
+//  The PIP lens — .pip-*  and the manager's request page — .pipr-*
+//
+//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  .pbim-fchip, .pbim-badge, .pbim-modal). This file only says what is
+//  SPECIFIC to a board whose row is a plan somebody is trying to complete:
+//  the card, the four-stop stage rail, the time bar, the objective blocks
+//  and the two dialogs.
+//
+//  The stage rail is deliberately the SAME shape as the Probation lens's
+//  (.prb-rail). The two boards sit on the same hub, and a reader who has
+//  learnt one has learnt the other.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file.
+// =====================================================================
+
+.pip {
+    // ---------------------------------------------------------- header
+    .pip-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    &.pip--embedded .pip-head { margin-bottom: 12px; }
+    .pip-head-id { flex: 1 1 320px; min-width: 0; }
+    .pip-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
+    // cockpit knows how many numbers it has (R32). Five, as the four lenses
+    // beside it on the same hub have, so all five line up.
+    .pip-kpis {
+        grid-template-columns: repeat(5, 1fr);
+        margin-bottom: 16px;
+    }
+    @media (max-width: 1180px) { .pip-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .pip-kpis { grid-template-columns: repeat(2, 1fr); } }
+
+    // -------------------------------------- the switch, said out loud
+    .pip-notice {
+        display: flex; gap: 13px; align-items: flex-start;
+        padding: 14px 16px; margin-bottom: 16px;
+        background: var(--pbim-soft); border-color: var(--pbim-primary);
+
+        b { font-size: 13.5px; color: var(--pbim-ink); }
+        p { margin: 4px 0 0; font-size: 12.5px; color: var(--pbim-muted);
+            line-height: 1.55; }
+    }
+    .pip-notice-ic { color: var(--pbim-primary-strong); flex: 0 0 auto; }
+
+    // --------------------------------------------------------- filters
+    .pip-filters { padding: 14px 16px; margin-bottom: 18px; }
+    .pip-filter-row {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        & + .pip-filter-row { margin-top: 10px; }
+    }
+    .pip-search {
+        display: flex; align-items: center; gap: 8px; flex: 1 1 260px;
+        border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 8px 12px; color: var(--pbim-muted);
+        background: var(--pbim-surface);
+
+        input {
+            flex: 1; border: none; outline: none; background: transparent;
+            font: inherit; font-size: 13.5px; color: var(--pbim-text);
+            min-width: 0;
+        }
+        &:focus-within {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+
+    // ------------------------------------------------------- the cards
+    .pip-grid {
+        display: grid; gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    }
+    .pip-card {
+        padding: 18px; display: flex; flex-direction: column; gap: 12px;
+        transition: box-shadow .15s, transform .15s, border-color .15s;
+
+        &:hover { box-shadow: var(--pbim-sh-lg); transform: translateY(-2px); }
+        &.is-drift { border-color: var(--pbim-amber); }
+        &.is-late { border-color: var(--pbim-rose); }
+    }
+    .pip-card-top {
+        display: flex; align-items: center; gap: 12px; cursor: pointer;
+    }
+    .pip-av {
+        width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
+        border: 2px solid var(--pbim-soft); flex: 0 0 auto;
+    }
+    .pip-av--lg { width: 64px; height: 64px; }
+    .pip-who { flex: 1; min-width: 0; }
+    .pip-name {
+        font-size: 15px; font-weight: 800; color: var(--pbim-ink);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pip-job {
+        font-size: 12.5px; color: var(--pbim-muted); margin-top: 1px;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pip-when { text-align: right; flex: 0 0 auto; }
+    .pip-when-d {
+        font-size: 14px; font-weight: 800; color: var(--pbim-primary-strong);
+        font-variant-numeric: tabular-nums;
+    }
+    .pip-when-w { font-size: 11.5px; color: var(--pbim-muted); }
+
+    // ---- the stage rail ----
+    // A colour AND a shape, never a colour alone: "done" carries a tick and
+    // "now" carries a ring, so the rail is readable by somebody who does not
+    // see green and indigo apart.
+    .pip-rail {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 13px;
+    }
+    .pip-stage {
+        position: relative; text-align: center; min-width: 0;
+        padding-top: 18px;
+    }
+    .pip-stage-dot {
+        position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+        width: 15px; height: 15px; border-radius: 50%;
+        border: 2px solid var(--pbim-line);
+        background: var(--pbim-surface);
+        display: grid; place-items: center; color: #fff; z-index: 1;
+    }
+    .pip-stage::after {
+        content: ""; position: absolute; top: 7px; left: 50%; right: -50%;
+        height: 2px; background: var(--pbim-line-2); z-index: 0;
+    }
+    .pip-stage:last-child::after { display: none; }
+    .pip-stage-l {
+        display: block; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .04em; text-transform: uppercase;
+        color: var(--pbim-muted);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pip-stage-n {
+        display: block; font-size: 11px; color: var(--pbim-muted);
+        margin-top: 1px; font-variant-numeric: tabular-nums;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pip-stage--done {
+        .pip-stage-dot {
+            background: var(--pbim-green); border-color: var(--pbim-green);
+        }
+        .pip-stage-l { color: var(--pbim-text); }
+        &::after { background: var(--pbim-green); }
+    }
+    .pip-stage--now {
+        .pip-stage-dot {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 4px var(--pbim-ring);
+        }
+        .pip-stage-l { color: var(--pbim-primary-strong); }
+        .pip-stage-n { color: var(--pbim-primary-strong); font-weight: 700; }
+    }
+
+    // ---- how far through, in TIME ----
+    .pip-bar { display: flex; align-items: center; gap: 11px; }
+    .pip-bar-track {
+        flex: 1; height: 7px; border-radius: 999px; min-width: 0;
+        background: var(--pbim-line-2); overflow: hidden;
+    }
+    .pip-bar-fill {
+        height: 100%; border-radius: 999px;
+        background: var(--pbim-primary);
+        transition: width .3s cubic-bezier(.22, .8, .3, 1);
+    }
+    .pip-bar-l {
+        font-size: 11.5px; color: var(--pbim-muted); flex: 0 0 auto;
+        white-space: nowrap;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .pip-bar-fill { transition: none; }
+    }
+
+    // ---- the four facts ----
+    .pip-facts {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 9px 14px;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 12px;
+    }
+    .pip-fact { min-width: 0; }
+    .pip-fact-l {
+        display: block; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .05em; text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+    .pip-fact-v {
+        display: block; font-size: 12.5px; font-weight: 700; margin-top: 2px;
+        color: var(--pbim-text);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+
+        &.muted { color: var(--pbim-muted); font-weight: 500; }
+        &.warn { color: var(--pbim-amber); }
+    }
+
+    .pip-chips {
+        display: flex; gap: 7px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 11px;
+    }
+    // The kit's `.pbim-badge` capitalises Every Word, which is right for a
+    // status word and wrong for a sentence (R33).
+    .pip-sentence { text-transform: none; }
+
+    .pip-card-act {
+        display: flex; gap: 8px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 11px;
+    }
+    .pip-capped {
+        margin-top: 16px; font-size: 12.5px; color: var(--pbim-muted);
+        text-align: center;
+    }
+
+    // ----------------------------------------------------- empty state
+    .pip-empty { text-align: center; padding: 54px 26px; }
+    .pip-empty-ic {
+        width: 74px; height: 74px; border-radius: 50%; margin: 0 auto 16px;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        display: grid; place-items: center;
+    }
+    .pip-empty h2 { font-size: 18px; font-weight: 800; }
+    .pip-empty p {
+        color: var(--pbim-muted); margin: 8px auto 0; max-width: 560px;
+        line-height: 1.6;
+    }
+    .pip-empty .pbim-btn { margin-top: 16px; }
+
+    // -------------------------------------------------------- drawer
+    .pip-scrim {
+        position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1400);
+        background: var(--pbim-scrim, rgba(27, 23, 51, .46));
+        display: flex; justify-content: flex-end;
+    }
+    .pip-drawer {
+        width: 640px; max-width: 100%; height: 100%; overflow: auto;
+        background: var(--pbim-surface); border-left: 1px solid var(--pbim-line);
+        box-shadow: -18px 0 44px rgba(40, 50, 90, .16);
+        padding: 22px 24px 40px;
+        animation: pip-slide .22s cubic-bezier(.22, .8, .3, 1) both;
+    }
+    @keyframes pip-slide { from { transform: translateX(28px); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+        .pip-drawer { animation: none; }
+        .pip-card { transition: none; }
+    }
+
+    .pip-drawer-head {
+        display: flex; align-items: flex-start; gap: 14px;
+        padding-bottom: 16px; border-bottom: 1px solid var(--pbim-line);
+
+        h2 { font-size: 19px; font-weight: 800; margin: 0; color: var(--pbim-ink); }
+        p { font-size: 13px; color: var(--pbim-muted); margin: 2px 0 0; }
+        & > div { flex: 1; min-width: 0; }
+    }
+    .pip-drawer-when {
+        display: inline-flex; align-items: center; gap: 6px;
+        color: var(--pbim-primary-strong) !important; font-weight: 700;
+        margin-top: 6px !important;
+    }
+    .pip-drawer-h3 {
+        font-size: 12px; font-weight: 800; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        margin: 22px 0 10px;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .pip-drawer-none {
+        font-size: 13px; color: var(--pbim-muted); padding: 10px 0;
+        line-height: 1.55;
+    }
+    .pip-drawer-act {
+        display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px;
+        border-top: 1px solid var(--pbim-line); padding-top: 16px;
+    }
+    .pip-quote {
+        background: var(--pbim-bg); border-left: 3px solid var(--pbim-primary);
+        border-radius: 0 10px 10px 0; padding: 12px 15px;
+        font-size: 13.5px; line-height: 1.6; color: var(--pbim-text);
+        white-space: pre-wrap; margin: 0;
+    }
+    .pip-note {
+        background: var(--pbim-bg); border-radius: 12px; padding: 14px 16px;
+        font-size: 13.5px; line-height: 1.6; color: var(--pbim-text);
+        p { margin: 0 0 8px; }
+        b, strong { color: var(--pbim-ink); }
+    }
+    .pip-save { margin-top: 9px; }
+
+    // ---- the objectives ----
+    .pip-obj, .pip-decide-obj {
+        border-left: 3px solid var(--pbim-line);
+        padding: 12px 0 12px 13px; margin-top: 11px;
+    }
+    .pip-obj--at_risk  { border-left-color: var(--pbim-amber); }
+    .pip-obj--met      { border-left-color: var(--pbim-green); }
+    .pip-obj--not_met  { border-left-color: var(--pbim-rose); }
+    .pip-obj--on_track { border-left-color: var(--pbim-primary); }
+    .pip-decide-obj    { border-left-color: var(--pbim-primary); }
+
+    .pip-obj-h {
+        display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+        b { font-size: 14px; flex: 1; min-width: 0; color: var(--pbim-ink); }
+    }
+    .pip-obj-m {
+        font-size: 13px; margin: 5px 0 0; line-height: 1.55;
+        color: var(--pbim-muted);
+    }
+    .pip-obj-t {
+        font-size: 12px; margin: 3px 0 0; font-weight: 700;
+        color: var(--pbim-text);
+    }
+    .pip-obj-act {
+        display: flex; gap: 5px; flex-wrap: wrap; margin-top: 9px;
+        align-items: center;
+    }
+    .pip-pill {
+        border: 1px solid var(--pbim-line); background: transparent;
+        border-radius: 999px; padding: 3px 11px; font: inherit;
+        font-size: 11.5px; font-weight: 700; color: var(--pbim-muted);
+        cursor: pointer; text-transform: none; letter-spacing: 0;
+
+        &:hover { background: var(--pbim-bg); }
+        &.on {
+            border-color: var(--pbim-primary); background: var(--pbim-soft);
+            color: var(--pbim-primary-strong);
+        }
+    }
+    .pip-inline-btn {
+        display: inline-flex; align-items: center; gap: 4px;
+        border: 1px solid var(--pbim-line); background: transparent;
+        color: var(--pbim-primary-strong); border-radius: 8px;
+        padding: 3px 9px; font: inherit; font-size: 11.5px; font-weight: 700;
+        letter-spacing: 0; text-transform: none; cursor: pointer;
+
+        &:hover { background: var(--pbim-soft); }
+    }
+    .pip-inline-btn.pip-inline-btn--quiet {
+        color: var(--pbim-muted); margin-left: auto;
+        &:hover { color: var(--pbim-rose); background: transparent; }
+    }
+
+    // ---- the conversations ----
+    .pip-check {
+        border-top: 1px solid var(--pbim-line-2); padding: 11px 0;
+        &:first-of-type { border-top: none; }
+        &.is-red { border-left: 3px solid var(--pbim-rose); padding-left: 11px; }
+        &.is-missed b { color: var(--pbim-muted); }
+    }
+    .pip-check-l {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        b { font-size: 13.5px; font-variant-numeric: tabular-nums; }
+    }
+    .pip-check-o { font-size: 11.5px; color: var(--pbim-muted); flex: 1;
+                   min-width: 0; }
+    .pip-check-n {
+        font-size: 12.5px; color: var(--pbim-muted); margin: 5px 0 0;
+        line-height: 1.5;
+    }
+
+    // ---- what the manager said ----
+    .pip-eval {
+        display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding: 9px 0;
+        font-size: 13px;
+        &:first-of-type { border-top: none; }
+        b { flex: 1; min-width: 0; font-weight: 700; }
+    }
+    .pip-eval-s {
+        font-size: 11.5px; font-weight: 700; color: var(--pbim-primary-strong);
+        white-space: nowrap;
+    }
+    .pip-eval-note { margin-top: 11px; }
+    .pip-eval-l {
+        display: block; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .05em; text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+    .pip-eval-note p {
+        font-size: 13px; margin: 3px 0 0; line-height: 1.55;
+        color: var(--pbim-text);
+    }
+
+    // --------------------------------------------------- the dialogs
+    // THE KIT'S `.pbim-modal` HAS NO PADDING AND IS A COLUMN FLEX BOX (R45).
+    // A dialog that writes its own contents pads itself and scrolls itself.
+    .pip-modal {
+        width: 600px; max-width: 100%;
+        display: block; padding: 22px 24px 20px; overflow: auto;
+        max-height: 88vh;
+
+        h2 { font-size: 18px; font-weight: 800; color: var(--pbim-ink);
+             margin: 0 0 4px; }
+    }
+    .pip-modal--wide { width: 760px; }
+
+    .pip-lbl {
+        display: block; font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        margin: 14px 0 5px;
+    }
+    .pip-in, .pip-ta {
+        width: 100%; border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 9px 12px; font: inherit; font-size: 13.5px;
+        color: var(--pbim-text); background: var(--pbim-surface);
+        resize: vertical;
+
+        &:focus {
+            outline: none; border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+    .pip-in.pip-in--sm { width: 90px; display: inline-block; }
+    .pip-in-unit {
+        font-size: 12.5px; color: var(--pbim-muted); margin-left: 8px;
+    }
+    .pip-modal-act {
+        display: flex; justify-content: flex-end; gap: 9px; margin-top: 16px;
+        flex-wrap: wrap;
+    }
+    .pip-hint {
+        font-size: 12.5px; color: var(--pbim-primary-strong); font-weight: 700;
+        margin: 12px 0 0; line-height: 1.5;
+    }
+
+    // ---- the wizard ----
+    .pip-steps { display: flex; gap: 6px; margin: 14px 0 16px; flex-wrap: wrap; }
+    .pip-step {
+        display: inline-flex; align-items: center; gap: 7px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        border-radius: 999px; padding: 6px 13px 6px 6px;
+        font: inherit; font-size: 12px; font-weight: 700;
+        color: var(--pbim-muted); cursor: pointer;
+
+        &.on {
+            border-color: var(--pbim-primary); color: var(--pbim-primary-strong);
+            background: var(--pbim-soft);
+        }
+        &[disabled] { opacity: .5; cursor: default; }
+    }
+    .pip-step-n {
+        width: 20px; height: 20px; border-radius: 50%;
+        background: var(--pbim-line-2); color: var(--pbim-text);
+        display: grid; place-items: center; font-size: 11px;
+    }
+    .pip-step.on .pip-step-n { background: var(--pbim-primary); color: #fff; }
+
+    .pip-verdicts {
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+        margin-top: 20px;
+    }
+    .pip-verdict {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
+        border: 1px solid var(--pbim-line); border-radius: 13px;
+        background: var(--pbim-surface); padding: 14px;
+        font: inherit; text-align: left; cursor: pointer;
+        transition: border-color .12s, background .12s, transform .12s;
+
+        b { font-size: 14px; color: var(--pbim-ink); }
+        span { font-size: 11.5px; color: var(--pbim-muted); line-height: 1.45; }
+        &:hover { transform: translateY(-2px); }
+    }
+    .pip-verdict--pass {
+        color: var(--pbim-green);
+        &:hover { border-color: var(--pbim-green);
+                  background: var(--pbim-green-soft, #E7F6EE); }
+    }
+    .pip-verdict--fail {
+        color: var(--pbim-rose);
+        &:hover { border-color: var(--pbim-rose);
+                  background: var(--pbim-rose-soft, #FDECEC); }
+    }
+
+    .pip-preview, .pip-blocked {
+        margin-top: 6px; padding: 15px 17px; border-radius: 13px;
+        background: var(--pbim-soft); border: 1px solid var(--pbim-primary);
+
+        ul { margin: 9px 0 0; padding-left: 20px; }
+        li { font-size: 13.5px; line-height: 1.6; color: var(--pbim-text);
+             margin-bottom: 4px; }
+        p { font-size: 13.5px; margin: 9px 0 0; line-height: 1.55; }
+    }
+    .pip-blocked {
+        background: var(--pbim-rose-soft, #FDECEC);
+        border-color: var(--pbim-rose);
+    }
+    .pip-preview-h, .pip-blocked-h {
+        display: flex; align-items: center; gap: 9px;
+        color: var(--pbim-primary-strong);
+        b { font-size: 14px; color: var(--pbim-ink); }
+    }
+    .pip-blocked-h { color: var(--pbim-rose); }
+
+    // ---- the two switches ----
+    .pip-switch {
+        display: flex; align-items: flex-start; gap: 16px;
+        border-top: 1px solid var(--pbim-line-2); padding: 16px 0;
+    }
+    .pip-switch-tx {
+        flex: 1; min-width: 0;
+        b { font-size: 14px; color: var(--pbim-ink); }
+        p { font-size: 12.5px; color: var(--pbim-muted); margin: 5px 0 0;
+            line-height: 1.55; }
+        code { font-size: 12px; background: var(--pbim-bg);
+               padding: 1px 5px; border-radius: 5px; }
+    }
+    .pip-toggle {
+        flex: 0 0 auto; width: 46px; height: 26px; border-radius: 999px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-line-2);
+        cursor: pointer; padding: 0; position: relative;
+        transition: background .15s, border-color .15s;
+
+        &.on { background: var(--pbim-primary);
+               border-color: var(--pbim-primary); }
+    }
+    .pip-toggle-k {
+        position: absolute; top: 2px; left: 2px;
+        width: 20px; height: 20px; border-radius: 50%;
+        background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .22);
+        transition: transform .15s cubic-bezier(.22, .8, .3, 1);
+    }
+    .pip-toggle.on .pip-toggle-k { transform: translateX(20px); }
+    @media (prefers-reduced-motion: reduce) {
+        .pip-toggle, .pip-toggle-k { transition: none; }
+    }
+
+    // ---------------------------------------------------------- narrow
+    @media (max-width: 720px) {
+        .pip-grid { grid-template-columns: 1fr; }
+        .pip-facts { grid-template-columns: 1fr; }
+        .pip-drawer { width: 100%; }
+        .pip-verdicts { grid-template-columns: 1fr; }
+        .pip-rail { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+        .pip-stage:nth-child(2)::after { display: none; }
+    }
+}
+
+// =====================================================================
+//  The manager's request page — .pipr-*
+//  One column, dialog-shaped, deliberately narrow: it is one question.
+// =====================================================================
+.pipr {
+    .pipr-wrap { max-width: 720px; margin: 0 auto; }
+    .pipr-head { margin-bottom: 18px; }
+    .pipr-panel { padding: 22px 24px; }
+    .pipr-h3 {
+        font-size: 12px; font-weight: 800; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        margin: 20px 0 10px;
+        &:first-child { margin-top: 0; }
+    }
+    .pipr-note {
+        font-size: 12.5px; color: var(--pbim-muted); line-height: 1.55;
+        margin: 0 0 10px;
+    }
+
+    .pipr-team {
+        display: grid; gap: 8px;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+    .pipr-person {
+        display: flex; align-items: center; gap: 11px; width: 100%;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        background: var(--pbim-surface); text-align: left; cursor: pointer;
+        padding: 9px 12px; font: inherit;
+
+        &:hover { background: var(--pbim-bg); }
+        &.is-on { border-color: var(--pbim-primary);
+                  background: var(--pbim-soft); }
+    }
+    .pipr-av {
+        width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+        flex: 0 0 auto;
+    }
+    .pipr-person-tx {
+        flex: 1; min-width: 0;
+        b { display: block; font-size: 13.5px; font-weight: 700;
+            color: var(--pbim-ink);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        span { display: block; font-size: 11.5px; color: var(--pbim-muted);
+               overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+    .pipr-tick {
+        width: 20px; flex: 0 0 auto; color: var(--pbim-primary-strong);
+        display: grid; place-items: center;
+    }
+
+    .pipr-ta {
+        width: 100%; border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 11px 13px; font: inherit; font-size: 13.5px;
+        color: var(--pbim-text); background: var(--pbim-surface);
+        resize: vertical;
+
+        &:focus {
+            outline: none; border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+
+    .pipr-tpls {
+        display: grid; gap: 8px;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+    .pipr-tpl {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        background: var(--pbim-surface); padding: 12px 14px;
+        font: inherit; text-align: left; cursor: pointer;
+
+        b { font-size: 13px; color: var(--pbim-ink); }
+        &:hover { background: var(--pbim-bg); }
+        &.is-on { border-color: var(--pbim-primary);
+                  background: var(--pbim-soft); }
+    }
+    .pipr-tpl-l { font-size: 11.5px; color: var(--pbim-muted);
+                  line-height: 1.45; }
+
+    .pipr-hint {
+        font-size: 12.5px; color: var(--pbim-primary-strong); font-weight: 700;
+        margin: 14px 0 0; line-height: 1.5;
+    }
+    .pipr-send { margin-top: 14px; }
+
+    .pipr-mine { padding: 18px 24px; margin-top: 16px; }
+    .pipr-row {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding: 9px 0;
+        font-size: 13px;
+        &:first-of-type { border-top: none; }
+        b { flex: 1; min-width: 0; font-weight: 700; }
+    }
+    .pipr-row-d {
+        font-size: 11.5px; color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums;
+    }
+    .pipr-quiet {
+        font-size: 12px; color: var(--pbim-muted); margin: 12px 0 0;
+        line-height: 1.55;
+    }
+
+    .pipr-empty, .pipr-done { text-align: center; padding: 50px 26px; }
+    .pipr-empty-ic, .pipr-done-ic {
+        width: 74px; height: 74px; border-radius: 50%; margin: 0 auto 16px;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        display: grid; place-items: center;
+    }
+    .pipr-done-ic { background: var(--pbim-green-soft, #E7F6EE);
+                    color: var(--pbim-green); }
+    .pipr-empty h2, .pipr-done h2 { font-size: 18px; font-weight: 800; }
+    .pipr-empty p, .pipr-done p {
+        color: var(--pbim-muted); margin: 8px auto 0; max-width: 520px;
+        line-height: 1.6;
+    }
+    .pipr-done .pbim-btn { margin-top: 18px; }
+}
