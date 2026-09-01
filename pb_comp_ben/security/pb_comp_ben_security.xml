@@ -23,13 +23,13 @@
          ================================================================== -->
 
     <record id="module_category_comp_ben" model="ir.module.category">
-        <field name="name">Pay Packages &amp; Awards</field>
+        <field name="name">Pay Packages and Awards</field>
         <field name="sequence">56</field>
     </record>
 
     <!-- Odoo 19: `res.groups` has no `category_id`; a privilege carries it. -->
     <record id="res_groups_privilege_comp_ben" model="res.groups.privilege">
-        <field name="name">Pay Packages &amp; Awards</field>
+        <field name="name">Pay Packages and Awards</field>
         <field name="sequence">10</field>
         <field name="category_id" ref="module_category_comp_ben"/>
     </record>

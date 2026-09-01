@@ -28,13 +28,13 @@
          ================================================================== -->
 
     <record id="module_category_vendor_access" model="ir.module.category">
-        <field name="name">Vendors &amp; Access</field>
+        <field name="name">Vendors and Access</field>
         <field name="sequence">59</field>
     </record>
 
     <!-- Odoo 19: `res.groups` has no `category_id`; a privilege carries it. -->
     <record id="res_groups_privilege_vendor_access" model="res.groups.privilege">
-        <field name="name">Vendors &amp; Access</field>
+        <field name="name">Vendors and Access</field>
         <field name="sequence">10</field>
         <field name="category_id" ref="module_category_vendor_access"/>
     </record>
