@@ -7,6 +7,8 @@ access_pb_vendor_agreement_user,pb.vendor.agreement vendor owner,model_pb_vendor
 access_pb_vendor_agreement_manager,pb.vendor.agreement vendor team,model_pb_vendor_agreement,group_vendor_manager,1,1,1,0
 access_pb_vendor_agreement_lifecycle_manager,pb.vendor.agreement lifecycle manager,model_pb_vendor_agreement,pb_lifecycle.group_lifecycle_manager,1,0,0,0
 access_pb_vendor_agreement_lifecycle_admin,pb.vendor.agreement lifecycle admin,model_pb_vendor_agreement,pb_lifecycle.group_lifecycle_admin,1,1,1,0
+access_pb_role_ability_user,pb.role.ability everybody reads the catalogue,model_pb_role_ability,base.group_user,1,0,0,0
+access_pb_role_ability_access_manager,pb.role.ability access team,model_pb_role_ability,group_access_manager,1,1,1,1
 access_pb_role_profile_user,pb.role.profile everybody reads the catalogue,model_pb_role_profile,base.group_user,1,0,0,0
 access_pb_role_profile_access_manager,pb.role.profile access team,model_pb_role_profile,group_access_manager,1,1,1,1
 access_pb_access_delegation_user,pb.access.delegation mine (never unlink),model_pb_access_delegation,base.group_user,1,0,0,0

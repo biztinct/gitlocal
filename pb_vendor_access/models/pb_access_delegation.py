@@ -42,7 +42,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import format_date
 
 from .vendor_common import (DELEGATION_KINDS, DELEGATION_STATES, counted, flag,
-                            forbidden_group_ids, param_int)
+                            forbidden_in_closure, param_int)
 
 _logger = logging.getLogger(__name__)
 
@@ -179,9 +179,15 @@ class PbAccessDelegation(models.Model):
             raise UserError(_(
                 "This hand-over is already %s.",
                 dict(DELEGATION_STATES).get(self.state, self.state)))
-        groups = self._groups_to_hand()
+        wanted = self._groups_to_hand()
 
         delegate = self.delegate_user_id.sudo()
+        # WHAT THEY ALREADY HAVE IS NOT LENT TO THEM. A borrower who reaches a
+        # permission through a ladder of their own does not need it written on
+        # to their record as well — and if it were, ending the loan would strip
+        # a direct membership they never had before it started.
+        already = set(delegate.all_group_ids.ids)
+        groups = wanted.filtered(lambda g: g.id not in already)
         before = set(delegate.group_ids.ids)
         delegate.write({'group_ids': [(4, g.id) for g in groups]})
         # THE SNAPSHOT IS MEASURED, NOT PREDICTED. Odoo may materialise implied
@@ -203,7 +209,7 @@ class PbAccessDelegation(models.Model):
             who=self.delegate_user_id.name or '',
             whose=self.delegator_user_id.name or '',
             what=self._profile_words()))
-        if added != sorted(g.id for g in groups):
+        if added != sorted(g.id for g in wanted):
             # Honest, and worth saying: somebody already held part of it.
             self._post(_(
                 "Some of that was already theirs, so this hand-over will only "
@@ -223,20 +229,25 @@ class PbAccessDelegation(models.Model):
         if not self.profile_ids:
             raise UserError(_(
                 "Choose at least one thing to hand over."))
-        forbidden = forbidden_group_ids(self.env)
         bad = self.profile_ids.filtered(
-            lambda p: p.group_id and p.group_id.id in forbidden)
+            lambda p: forbidden_in_closure(p.group_ids | p.group_id, self.env))
         if bad:
             raise UserError(_(
-                "\"%s\" is the administrator permission for the whole system. "
-                "It is never handed over from this screen.",
+                "\"%s\" would carry the administrator permission for the whole "
+                "system. It is never handed over from this screen.",
                 ', '.join(bad.mapped('name'))))
 
         # R7 — the transitive set. Direct membership misses everyone who holds
         # a group through a ladder, which is most people who hold one.
+        #
+        # LEND ONLY WHAT YOU HOLD, AND A BUNDLE IS ALL OF IT. A lender holding
+        # three of a role's four permissions cannot do the job the role's
+        # sentence describes, so they cannot pass it on either — handing over
+        # the three they do have would be a hand-over of something that is not
+        # the role, under the role's name.
         held = set(self.delegator_user_id.sudo().all_group_ids.ids)
         missing = self.profile_ids.filtered(
-            lambda p: p.group_id and p.group_id.id not in held)
+            lambda p: p.group_ids and not set(p.group_ids.ids) <= held)
         if missing:
             what = ', '.join('"%s"' % n for n in missing.mapped('name'))
             # The whole sentence branches, rather than swapping one word into
@@ -251,7 +262,7 @@ class PbAccessDelegation(models.Model):
                 "anybody else. You can only lend what somebody holds "
                 "themselves.",
                 who=self.delegator_user_id.name or '', what=what))
-        return self.profile_ids.mapped('group_id')
+        return self.profile_ids.group_ids
 
     # ================================================================== revoke
     def action_revoke(self, note=None):
