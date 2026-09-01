@@ -398,7 +398,7 @@
             What everybody said
           </h3>
           <div t-if="state.drawer.report" class="prb-report"
-               t-out="state.drawer.report"/>
+               t-out="report(state.drawer.report)"/>
 
           <!-- ==== the course ==== -->
           <h3 class="prb-drawer-h3" t-if="state.drawer.training.length">
@@ -408,7 +408,7 @@
                class="prb-train" t-att-class="{ 'is-done': tr.done }">
             <div class="prb-train-l">
               <b t-esc="tr.name"/>
-              <span t-if="tr.required" class="pbim-badge err">must be done</span>
+              <span t-if="tr.required" class="pbim-badge err">Required</span>
               <span t-else="" class="pbim-badge muted">optional</span>
             </div>
             <div class="prb-train-m">
@@ -576,7 +576,7 @@
               <div class="pbim-spin"/><span>Reading the answers…</span>
             </div>
             <div t-elif="state.verdicting.report" class="prb-report"
-                 t-out="state.verdicting.report"/>
+                 t-out="report(state.verdicting.report)"/>
             <div t-else="" class="prb-drawer-none">
               Nothing has been put together yet for this person.
             </div>

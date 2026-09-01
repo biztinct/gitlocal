@@ -23,7 +23,7 @@
  * are the boundary; `state.canWrite` only decides whether a control is OFFERED,
  * because an offer the server would refuse is worse than no offer (W29).
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -32,11 +32,18 @@ import { ic } from "@pb_import_kit/js/import_icons";
 /** The four stops the rail shows, in order. */
 const STAGES = ["peers", "answers", "talk", "decision"];
 
-/** What each stop is called. */
+/** What each stop is called.
+ *
+ * SHORT ENOUGH TO FIT. These four sit in a four-column grid on a card that can
+ * be 340px wide, and a label that ellipses ("CONVERSATI…") is a label that has
+ * stopped being a label. "Meeting" is the same thing said in seven characters;
+ * the prose everywhere else in this module still calls it the conversation,
+ * because there it has room to.
+ */
 const STAGE_LABEL = {
     peers: _t("Colleagues"),
     answers: _t("Answers"),
-    talk: _t("Conversation"),
+    talk: _t("Meeting"),
     decision: _t("Decision"),
 };
 
@@ -101,6 +108,17 @@ export class PbProbationBoard extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
+
+    /** The consolidated report, as HTML rather than as its own source code.
+     *
+     * `t-out` escapes a PLAIN STRING and renders a `markup()` value raw — and
+     * an Html field crossing JSON-RPC arrives as a plain string, so without
+     * this the reader gets `<h4>How they were rated</h4>` on the screen
+     * instead of a heading. Marking it safe is correct here and nowhere else:
+     * every value inside it was `escape()`d by `_build_report()` on the way
+     * in, so the only markup in the string is markup this codebase wrote.
+     */
+    report(html) { return markup(html || ""); }
 
     // ------------------------------------------------------------------ read
     async load() {
