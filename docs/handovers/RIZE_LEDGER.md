@@ -181,7 +181,7 @@ without owner approval between them.
 | P6 | pb_pip — coaching, the plan, the decision, `/my/growth`, its OWN group ladder | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T15 pass) |
 | P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass; one additive edit to pb_payhub — assets only, no version bump) |
 | P8 | pb_rnr (+ recognition wall, anniversary engine wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T12 pass; one additive JS edit to pb_home_hub — a soft lens registry, now test-enforced — and one icon added to pb_import_kit) |
-| P9 | pb_budget (+ budget heat view wow) | pending |
+| P9 | pb_budget (+ budget heat view wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, T12 waived by D9; two additive JS edits — a soft lens registry on pb_insights_hub, now test-enforced, and one icon in pb_import_kit) |
 | P10 | pb_contract_lifecycle | pending |
 | P11 | pb_vendor_access | pending |
 
@@ -812,3 +812,106 @@ without owner approval between them.
   `rize.p8.mate@example.com` / `RizeP8!2026` (uid 2333, employee 17138) and
   re-set `rize.p4.boss@example.com` / `RizeP4!2026` (uid 2326). Owner debt with
   the rest: clear these at programme end.
+
+### P9 (pb_budget, 2026-09-01)
+
+- **R88 — a RATE ROW BELONGS TO A COMPANY, and R23's tell is not enough on
+  its own.** R23 says two different currencies reported at the SAME rate
+  means nobody has told the database what one is worth. True, and
+  insufficient: a currency with NO `res.currency.rate` row at all silently
+  reads as 1.0, so converting it into one that DOES have a rate produces a
+  plausible-looking number built on nothing — a brand-new currency came back
+  convertible into dong at 26,330 to one. And `_get_rates` reads only the
+  rows whose `company_id` is empty or is the company being converted FOR, so
+  a probe that ignores the company answers "known" about a rate the
+  conversion is then not allowed to use. Ask both questions:
+  a rate row exists, VISIBLE TO THIS COMPANY, dated on or before the day —
+  and only then apply the 1.0 guard. **On this tenant all 163 rate rows
+  belong to company 1 ("Your Company")**, so the operating company
+  (Payobook Vietnam JSC, company 5) genuinely cannot convert anything and the
+  per-row manual rate is the only honest answer there.
+- **R89 — `report.sudo()._render_qweb_pdf()` RENDERS AS SUPERUSER, and a
+  report that re-reads its own data then sees every company.** P7's precedent
+  sudoes the report record, which is fine for a report over records the
+  caller already holds; it is a leak the moment the template calls a facade.
+  P9's budget summary carried another company's departments into a
+  company-scoped reader's PDF, with totals that disagreed with the
+  spreadsheet exported beside it — and nothing looked wrong. Render as the
+  caller (`report.with_context(allowed_company_ids=self.env.companies.ids)`)
+  AND put the company clause explicitly in every facade search, which is the
+  Explorer's own rule (C18.11/18) reached from a new direction.
+- **R90 — a Monetary is rounded to its CURRENCY, so an unrounded write is
+  "changed" for ever.** Dong keeps no cents: 103,634,883.44 was written, read
+  back as 103,634,883, and found different on the next run. The figures were
+  identical every time and only the COUNT lied — "10 department-months
+  updated" every night, on a job whose whole claim is that it is idempotent.
+  Round to the target currency (`currency.round(value)`) BEFORE comparing and
+  before writing, and a nightly job's report becomes a number somebody can
+  act on.
+- **R91 — `hr.department.complete_name` is COMPUTED and NOT STORED on this
+  build.** `search(..., order='complete_name')` dies with *Cannot convert
+  hr.department.complete_name to SQL*. Sort in Python
+  (`.sorted(lambda d: ...)`), which is where a translated tree path has to be
+  sorted anyway. (`search_read` of it is fine — only ORDER BY is not.)
+- **R92 — a swallowed exception logged at DEBUG is invisible on a live
+  server.** The `safe()` wrapper every cockpit facade uses returned its
+  default and said nothing, so a job that half worked reported a cheerful
+  small number and no error — R54 and R76's shape reached from a third
+  direction. Log at WARNING with `exc_info=True`; the caller still gets its
+  default, and the failure is findable.
+- **R93 — `wfp.budget.actual` was an EMPTY SHELL, which is why D2 could name
+  it canonical without a migration.** Zero rows, zero writers, zero views;
+  its only references in the codebase were its own two ACL lines and a
+  one2many on the scenario. That is what made three overrides safe:
+  `scenario_id` optional (a budget is not a by-product of a compensation
+  scenario), `company_id` from `related='scenario_id.company_id'` to the
+  row's own stored column (without it a scenario-less row carries NO company,
+  and a company-less row is visible to everybody — R8), and `currency_id`
+  following the row's own `pb_currency_id`. **Overriding a field to drop its
+  `related` works**: Odoo 19 merges field attributes down the MRO with
+  `attrs.update(self._args__)` and gates on `if self.related:` truthiness
+  (`odoo/orm/fields.py:399,539`), so an explicit `related=False` in the
+  inheriting class clears it.
+- **R94 — the column map, for anybody reading a budget row.**
+  `forecast_cost` / `forecast_headcount` are the BUDGET and only the upload
+  or a person writes them; `actual_cost` / `actual_headcount` are the SPEND
+  and only the actuals job writes them; `variance_amount` is the first minus
+  the second and `variance_pct` that over the budget, both computed by the
+  model as it shipped. The actuals job never NAMES a forecast column, and
+  `pb_budget/tests/test_budget.py` greps the file to keep that true.
+- **R95 — the Cost Explorer mirror, written out once.** A budget row's
+  payroll figure is `measure=total_cost, dimension=department_id,
+  grain=month, filters={}` — i.e. `SUM(amount) FROM pb_fact_line WHERE
+  run_id IN <built, non-cancelled runs> AND company_id IN <companies> AND
+  category_type IN ('basic','allowance','employer_cost') AND
+  COALESCE(is_rollup, FALSE) = FALSE GROUP BY department_id, month`, with the
+  head count from `pb_fact_emp` because a distinct count at component grain
+  double-counts people. Two deliberate differences: no `_RUN_SCAN` 200-run
+  cap (R76 — right for a screen, wrong for a job) and it never builds facts,
+  it reports what is not built yet. Proven equal to the dong: Engineering,
+  June 2026 = 28,620,552,880 ₫ on both surfaces.
+- **R96 — `pb_insights_hub` had no soft lens registry.** Its four lenses were
+  a literal array, so P9 added ONE: the exported constant
+  `INSIGHTS_LENSES = "pb_insights_hub_lens"` and an `extraLenses()` spread at
+  the end of the list — an exact clone of what P7 gave `pb_payhub` (R73) and
+  P8 gave `pb_home_hub` (R83). JS ONLY, so the deploy needs the asset-cache
+  purge and never a `-u pb_insights_hub`, and the seam is now enforced by
+  `pb_insights_hub/tests/test_insights_hub.py::TestSoftLensRegistry`. The four
+  shipped lenses carry no sequence, so bolted-on ones start at 20 (P9 took
+  **Budget 20**). "Budget" is six characters and sits well inside the 60px
+  label box (R63).
+- **R97 — a lens can be the ONLY lens somebody sees, and that is correct.** A
+  budget holder holds no analytics group, so the Insights hub opens for them
+  with Budget alone on the rail — `HubShell._resolveAccess` falls back to the
+  first allowed lens, so nobody lands on a lens they cannot read. The hub's
+  own ⌘K row is still gated on the analytics union and does NOT offer them
+  the mission; their door is this module's own palette row. Worth knowing
+  before adding a lens whose readers are not the hub's usual readers.
+- **R98 — ⌘K blocks after P8.** P9 took the **3000** block (bdg_board 3000,
+  bdg_upload 3010, bdg_expenses 3020, bdg_rows 3030). P10 starts at **3100**.
+- **R99 — the P9 test logins** (D9: left in place, listed for the owner).
+  `rize.p9.head@example.com` (uid 2336, budget holder, employee 17139, manages
+  the test function 657), `rize.p9.finance@example.com` (2337),
+  `rize.p9.plain@example.com` (2338), `rize.p9.wfp@example.com` (2339),
+  `rize.p9.both@example.com` (2340) — all `RizeP9!2026`. Owner debt with
+  R29/R74/R87: clear these at programme end.
