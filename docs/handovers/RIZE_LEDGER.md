@@ -1135,3 +1135,17 @@ without owner approval between them.
   users read identical to before P11. Records themselves are left in place
   per D9. Passwords re-set to the ledger's values (R74's drift): `RizeP4!2026`,
   `RizeP6!2026`, `RizeP8!2026`, `RizeP9!2026`.
+- **R124 — never put `&` (or any XML-special char) in a `res.groups.privilege`
+  or `ir.module.category` name.** Odoo 19 assembles the res.users form's
+  access-rights arch by embedding privilege names into `<group string="…">`
+  WITHOUT escaping, so `Pay Packages & Awards` (P7) and `Vendors & Access`
+  (P11) made the arch unparseable — opening ANY user from Settings → Users
+  died in an OwlError dialog ("An error occured while parsing … [object
+  HTMLCollection]"). Found live 2026-09-01 when the owner tried to change
+  their own password. Fix: renamed both to "and" (commit 20101c48) in XML +
+  live DB (`res_groups_privilege` 58/61 and the two `ir_module_category`
+  rows, jsonb `{"en_US": …}`), files rsynced; **a service restart is
+  required** — the generated arch is cached in the running registry, so the
+  SQL rename alone still crashes until restart. Verify with
+  `SELECT id,name FROM res_groups_privilege WHERE name::text LIKE '%&%'`
+  (must be zero rows) and by opening a user form.
