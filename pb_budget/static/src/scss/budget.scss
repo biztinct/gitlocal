@@ -371,6 +371,8 @@ $bdg-tones: (
         align-items: flex-end;
         gap: 3px;
         height: 26px;
+        padding-top: 2px;
+        border-bottom: 1px solid var(--pbim-line, #E2E1EF);
     }
 
     .bdg-spark-c {
@@ -380,11 +382,16 @@ $bdg-tones: (
         align-items: flex-end;
     }
 
+    // A month with almost nothing in it still has to be VISIBLE as a month
+    // with almost nothing in it — a 2% bar drawn as a hairline reads as a
+    // baseline, and twelve of them read as an empty chart rather than a year
+    // whose spending started in April.
     .bdg-spark-b {
         width: 100%;
+        min-height: 3px;
         border-radius: 2px 2px 0 0;
         background: var(--pbim-soft, #F1EFFC);
-        border-top: 2px solid var(--pbim-primary, #6355C7);
+        border-top: 3px solid var(--pbim-primary, #6355C7);
     }
 
     // ------------------------------------------------------------ the drill
