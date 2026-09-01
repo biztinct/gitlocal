@@ -39,7 +39,7 @@ from odoo.exceptions import AccessError
 
 from .contract_common import (
     GROUP_MANAGER, P_AUTO_TRIGGER, P_LEAD_DAYS, P_NAG_DAYS, P_TRIGGER_CAP,
-    REVIEW_OPEN, REVIEW_WAITING, counted, flag, number,
+    REVIEW_WAITING, counted, flag, number,
 )
 
 _logger = logging.getLogger(__name__)
@@ -106,8 +106,16 @@ class PbJourneyCaseContractAutomation(models.Model):
             try:
                 if not contract.employee_id:
                     continue
-                if Review.search_count([('contract_id', '=', contract.id),
-                                        ('state', 'in', REVIEW_OPEN)]):
+                # ANY decision, not just an OPEN one. A contract whose
+                # decision was made — extended, converted, let go — is a
+                # contract nobody has to decide about again: the thing to
+                # watch from then on is the NEW contract that followed, which
+                # has its own end date and turns up here in its own time.
+                # Testing only the open states raised a second decision on
+                # every contract the night after it was extended, and emailed
+                # the manager about it, for ever. Re-raising a decided
+                # contract is a human act, and `open_for` says so.
+                if Review.search_count([('contract_id', '=', contract.id)]):
                     continue
                 out.append(contract)
             except Exception:           # noqa: BLE001
