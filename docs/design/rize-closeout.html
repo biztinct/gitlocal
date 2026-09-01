@@ -1,0 +1,209 @@
+<title>RIZE Closeout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F6F7FB; --surface:#FFFFFF; --surface2:#FAFAFE;
+    --ink:#1E1B2E; --muted:#5B6478; --faint:#8A91A5;
+    --brand:#5A4BB0; --brand-deep:#241F52; --brand-soft:#EDEAF8; --brand-mid:#CBC2EE;
+    --good:#2E7D4F; --good-soft:#E7F3EC;
+    --info:#2563EB; --info-soft:#E8EFFD;
+    --warn:#B45309; --warn-soft:#FBF0E1;
+    --bad:#DC2668;  --bad-soft:#FCE9F0;
+    --border:#E2E8F0; --border2:#D6DBE8;
+    --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px -12px rgba(30,27,46,.12);
+    --r:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+      --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+      --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-soft:#2B2648; --brand-mid:#3D3766;
+      --good:#5CBF8A; --good-soft:#1D3229;
+      --info:#7CA5F5; --info-soft:#1E2A44;
+      --warn:#E5A455; --warn-soft:#3A2C18;
+      --bad:#F07AA4;  --bad-soft:#3D2030;
+      --border:#33304D; --border2:#403C5E;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+    --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+    --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-soft:#2B2648; --brand-mid:#3D3766;
+    --good:#5CBF8A; --good-soft:#1D3229;
+    --info:#7CA5F5; --info-soft:#1E2A44;
+    --warn:#E5A455; --warn-soft:#3A2C18;
+    --bad:#F07AA4;  --bad-soft:#3D2030;
+    --border:#33304D; --border2:#403C5E;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Public Sans",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Sora",sans-serif;margin:0;text-wrap:balance}
+  code,.mono{font-family:"IBM Plex Mono",monospace;font-size:.92em}
+  .wrap{max-width:1040px;margin:0 auto;padding:44px 24px 40px}
+
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--good);background:var(--good-soft);border-radius:999px;padding:7px 14px;margin-bottom:16px}
+  .eyebrow svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  h1{font-size:clamp(30px,5vw,42px);font-weight:800;letter-spacing:-.02em;margin-bottom:12px}
+  .lede{font-size:17.5px;color:var(--muted);max-width:64ch;margin:0}
+  .lede b{color:var(--ink)}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:26px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .stat .n{font-family:"Sora",sans-serif;font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--brand)}
+  .stat .l{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+
+  section{margin-top:52px}
+  h2{font-size:23px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+  .sub{color:var(--muted);max-width:70ch;margin:0 0 18px;font-size:15px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .mod{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px}
+  .mod .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .mod h3{font-size:15px;font-weight:700}
+  .mod p{margin:0;font-size:13px;color:var(--muted)}
+  .mod .where{font-size:12px;color:var(--brand);font-weight:600;margin-top:2px}
+  .live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--good);background:var(--good-soft);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px}
+  .card.key{border-color:var(--warn);background:var(--warn-soft)}
+  .card.key h3{font-size:16px;margin-bottom:6px}
+  .card.key p{margin:0;font-size:14.5px}
+  .pw{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:6px 12px;margin:6px 0;user-select:all}
+
+  .tw{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);background:var(--surface)}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.8px}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:left;padding:11px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+  td{padding:10px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.k{font-weight:600;white-space:nowrap}
+  .chip{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .chip.on{color:var(--good);background:var(--good-soft)}
+  .chip.off{color:var(--muted);background:var(--surface2);border:1px solid var(--border)}
+  .chip.warn{color:var(--warn);background:var(--warn-soft)}
+
+  ol.dec{margin:0;padding:0;list-style:none;counter-reset:d;display:flex;flex-direction:column;gap:10px}
+  ol.dec li{counter-increment:d;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px 14px 56px;position:relative;box-shadow:var(--shadow);font-size:14.5px}
+  ol.dec li::before{content:counter(d);position:absolute;left:16px;top:13px;width:28px;height:28px;border-radius:8px;background:var(--brand-soft);color:var(--brand);font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center}
+  ol.dec li b{display:block;margin-bottom:2px}
+  ol.dec li span{color:var(--muted)}
+
+  pre{margin:0;background:var(--brand-deep);color:#ECEAF6;border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6}
+  :root[data-theme="dark"] pre{background:#0F0D1A}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) pre{background:#0F0D1A}}
+  .note{font-size:14px;color:var(--muted);margin:10px 0 0}
+  .note b{color:var(--ink)}
+
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--border);color:var(--faint);font-size:13px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+  a{color:var(--brand)}
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Programme complete · 2 Sep 2026</span>
+  <h1>RIZE Closeout</h1>
+  <p class="lede">Every module in the approved blueprint is <b>built, tested in the browser, and live on payobook.com</b> — ten modules, all six extra "wow" features, and every decision exactly as recommended. This page is what you need to take it over.</p>
+  <div class="stats">
+    <div class="stat"><div class="n">12</div><div class="l">modules live</div></div>
+    <div class="stat"><div class="n">6</div><div class="l">wow features live</div></div>
+    <div class="stat"><div class="n">8</div><div class="l">new portal pages</div></div>
+    <div class="stat"><div class="n">123</div><div class="l">traps recorded</div></div>
+    <div class="stat"><div class="n">56</div><div class="l">commits to push</div></div>
+  </div>
+</header>
+
+<section>
+  <h2>What's live, and where to find it</h2>
+  <p class="sub">Shown in the order it was built. Everything sits inside the missions you already had, plus one new one — <b>Lifecycle</b> — on the left rail.</p>
+  <div class="grid">
+    <div class="mod"><div class="top"><h3>Journey engine</h3><span class="live">Live</span></div><p>Checklists, check-ins, letters, reminders — the spine everything else rides on.</p><div class="where">Lifecycle → Journeys</div></div>
+    <div class="mod"><div class="top"><h3>Zoho door</h3><span class="live">Live</span></div><p>Joiners and resignations arrive automatically; a file upload does the same until Zoho is connected.</p><div class="where">Integrations · Arrivals</div></div>
+    <div class="mod"><div class="top"><h3>Assets</h3><span class="live">Live</span></div><p>Physical and digital items, per-country codes, handover history, exit returns, exports.</p><div class="where">People → Assets · My assets</div></div>
+    <div class="mod"><div class="top"><h3>New joiners</h3><span class="live">Live</span></div><p>Buddy, HRBP, welcome poster, day-one invite, orientation, 30-60-90, pulse, timeline, org chart.</p><div class="where">Lifecycle → New joiners · My journey</div></div>
+    <div class="mod"><div class="top"><h3>Exits</h3><span class="live">Live</span></div><p>Resignation, approvals, handover, clearances, settlement guard, experience letter, farewell.</p><div class="where">Lifecycle → Exits · My resignation</div></div>
+    <div class="mod"><div class="top"><h3>Probation</h3><span class="live">Live</span></div><p>Country clocks, peer evaluation with deadlines, 1:1, pass/extend/fail letters, training gate.</p><div class="where">Lifecycle → Probation</div></div>
+    <div class="mod"><div class="top"><h3>Growth plans</h3><span class="live">Live</span></div><p>Coaching first, then a plan with dates; strictly visible to HR only; closes itself on resignation.</p><div class="where">Lifecycle → Growth plans · My growth plan</div></div>
+    <div class="mod"><div class="top"><h3>Pay packages &amp; awards</h3><span class="live">Live</span></div><p>Package view, bonus ledger with letters feeding the pay run, payroll calendar, benefits, finance pack.</p><div class="where">Pay Run → Calendar, Awards · My compensation</div></div>
+    <div class="mod"><div class="top"><h3>Recognition</h3><span class="live">Live</span></div><p>Praise against values, quarterly winners, cash awards into pay, mood-board email, the Wall, anniversaries.</p><div class="where">People → Praise · Home → Wall</div></div>
+    <div class="mod"><div class="top"><h3>Budgets</h3><span class="live">Live</span></div><p>Upload the budget; pay runs fill in the actuals; heat view; scoped by function, country, finance.</p><div class="where">Insights → Budget</div></div>
+    <div class="mod"><div class="top"><h3>Contracts &amp; interns</h3><span class="live">Live</span></div><p>Two-month early decision: terminate, extend, or convert — extensions become new contracts.</p><div class="where">Lifecycle → Contracts</div></div>
+    <div class="mod"><div class="top"><h3>Vendors &amp; access</h3><span class="live">Live</span></div><p>Vendor register with renewal alerts; roles in plain words; temporary hand-overs that revert themselves.</p><div class="where">Settings → Vendors, Access &amp; delegation</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Your login</h2>
+  <div class="card key">
+    <h3>The admin password was reset — please change it</h3>
+    <p>The password you gave me didn't work on the live database, so I reset it as you allowed. Sign in at <b>payobook.com</b> as <span class="mono">ash@biztinct.com</span> with:</p>
+    <div class="pw">Rize#Payobook2026</div>
+    <p>Change it under your profile once you're in.</p>
+  </div>
+  <p class="note"><b>Test accounts that exist.</b> A temporary validator (<span class="mono">igc1.validator</span>) and about fifteen <span class="mono">rize.p*@example.com</span> test people were used to prove the flows. Two demo employee logins were given passwords (<span class="mono">ess1.demo</span>, <span class="mono">ess2.demo</span>). None of them can receive real email. Switch them off whenever you like — the full list is in the written closeout.</p>
+</section>
+
+<section>
+  <h2>Switches</h2>
+  <p class="sub">Automations and emails that ship switched on or off. Anything "off" was left that way on purpose so nothing goes out before you've read it.</p>
+  <div class="tw"><table>
+    <tr><th>Area</th><th>State</th><th>What it means</th></tr>
+    <tr><td class="k">Joiner emails</td><td><span class="chip on">On</span></td><td>Welcome poster to the team, buddy invitations, pulse check-ins, day-one invite with calendar attachment.</td></tr>
+    <tr><td class="k">Farewell email</td><td><span class="chip on">On</span></td><td>Goes to the leaver's own department only, capped at 60 people. One switch turns it off.</td></tr>
+    <tr><td class="k">Probation reviews</td><td><span class="chip warn">On — confirm</span></td><td>Each night, evaluations open themselves 3 weeks before a trial ends and the manager is emailed. Real from now on.</td></tr>
+    <tr><td class="k">Contract decisions</td><td><span class="chip warn">On — confirm</span></td><td>Each night, contracts ending within 60 days get a decision review; HR and the manager are emailed.</td></tr>
+    <tr><td class="k">Finance pack &amp; award letters</td><td><span class="chip on">On</span></td><td>On final pay-run approval the bank file and summary are produced. The finance address is still a test one — set the real one.</td></tr>
+    <tr><td class="k">Payroll cut-off reminders</td><td><span class="chip on">On</span></td><td>HR is reminded 5, 2 and 0 days before each month's cut-off.</td></tr>
+    <tr><td class="k">Budget actuals</td><td><span class="chip on">On</span></td><td>Spend is read from pay runs daily; budgets are never touched by the job.</td></tr>
+    <tr><td class="k">Vendor renewal alerts</td><td><span class="chip on">On</span></td><td>Owner and HR are told 45 days before an agreement runs out.</td></tr>
+    <tr><td class="k">Recognition emails</td><td><span class="chip off">Off</span></td><td>Mood-board digest, birthday and anniversary notes, "you were praised" — all off until you like the wording. Turn on one at a time; the digest also needs its test address cleared.</td></tr>
+    <tr><td class="k">Employee sees own growth plan</td><td><span class="chip on">On</span></td><td>They must acknowledge it. Can be switched off.</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2>Decisions waiting for you</h2>
+  <ol class="dec">
+    <li><b>Push the work.</b><span>56 commits sit on the branch, unpushed — the whole programme and earlier streams. Say push, and it goes.</span></li>
+    <li><b>Confirm the two nightly automations.</b><span>Probation evaluations and contract-decision reviews now open themselves and email managers. Both can be switched to manual.</span></li>
+    <li><b>Move the HR role off your account.</b><span>Your login holds the HR role, so every HR escalation email lands in your inbox. Name real HR people for clearances, HR-partner rules and department owners.</span></li>
+    <li><b>Turn on recognition emails when ready.</b><span>Preview the mood board first (there's a preview button), clear the test address, then switch it on.</span></li>
+    <li><b>Award month vs pay month.</b><span>From the screen, an award can only be queued into a pay run for the same month. Fine unless awards routinely ride the previous month's run.</span></li>
+    <li><b>Dark mode on plain list screens.</b><span>Broken across the whole product before this work started — a separate theme job, not part of RIZE.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Connecting the real Zoho later</h2>
+  <p class="sub">The door is built and tested with sample data. When you have Zoho admin access, point its webhook here. The key lives on the connector called <b>"Zoho People — inbound"</b> in Integrations.</p>
+  <pre>POST https://payobook.com/api/zoho/webhook
+{ "connector_id": 1232, "token": "&lt;key from the connector&gt;",
+  "data_type": "employee",
+  "records": [ { "EmployeeID": "…", "FirstName": "…", "LastName": "…",
+                 "EmailID": "…", "Department": "…", "Designation": "…",
+                 "Dateofjoining": "YYYY-MM-DD", "Employeestatus": "Active" } ] }</pre>
+  <p class="note">Arrivals land in the company set on that connector (currently Payobook Vietnam JSC — an editable field). The <b>Arrival rules</b> table decides what each status word does: open a joining checklist, open an exit, update the record, or park it for review. Sending Payobook data back to Zoho was deliberately left out, as agreed.</p>
+</section>
+
+<section>
+  <h2>Two money rules to remember</h2>
+  <div class="card">
+    <p style="margin:0 0 10px;font-size:14.5px"><b>Awards reach a payslip only when a person presses Queue</b> on the Awards panel, after a preview. The pay run must still be at the start of its approval chain, and its pay scheme needs an input component coded <span class="mono">INCENTV</span> — otherwise the screen refuses and says why. Awards mark themselves Paid when the run's final approval lands.</p>
+    <p style="margin:0;font-size:14.5px"><b>A final settlement cannot be closed</b> while equipment is out, a department clearance is pending, or a blocking exit task is open. The refusal names every blocker.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Demo data</h2>
+  <p class="sub">As you asked, nothing created during testing was deleted — payobook.com is the demo database. You'll find worked examples in every module: joiners mid-journey, an exit blocked at settlement (and one closed), probation verdicts of all three kinds, growth plans at every stage, awards queued and paid, praise on the Wall, a full 2026 budget for the main company, contract extensions and a conversion, and two vendors with agreements.</p>
+</section>
+
+<footer>
+  <span>RIZE HR programme · design <a href="rize-hrms-blueprint.html">blueprint</a> · full written closeout in docs/handovers</span>
+  <span>Built 31 Aug – 2 Sep 2026</span>
+</footer>
+
+</div>
