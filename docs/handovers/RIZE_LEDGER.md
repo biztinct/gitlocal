@@ -177,7 +177,7 @@ without owner approval between them.
 | P2 | pb_assets — register, handovers, requests, People-hub Assets lens, `/my/assets` | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass) |
 | P3 | pb_onboarding (+ journey timeline, new-hire pulse, living org chart wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
 | P4 | pb_offboarding — resignation, clearances, handover, the settlement gate, Exits lens, /my/resignation | **DONE** (live on `payobook`, 19.0.1.0.0, T1-T16 pass) |
-| P5 | pb_probation | pending |
+| P5 | pb_probation — policy, `pb_probation_state`, the review machine, the training gate, Probation lens, `/my/journey` card | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
 | P6 | pb_pip | pending |
 | P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | pending |
 | P8 | pb_rnr (+ recognition wall, anniversary engine wow) | pending |
@@ -477,3 +477,59 @@ without owner approval between them.
   look for it anyway. Its `_sql_constraints` list is also silently ignored on
   Odoo 19, so the "one settlement per employee per date" rule is not actually
   enforced — a pre-existing hole, not P4's, but do not rely on it.
+
+### P5 (pb_probation, 2026-09-01)
+
+- **R49 — a duplicate test whose key can be FALSE matches every row that is
+  also empty.** `_make_feedback_requests` deduplicated on
+  `respondent_user_id = False OR respondent_email = <theirs>`, and on this
+  database most employees have no login — so the SECOND peer was recognised as
+  "already asked" because the FIRST peer also had no user, and a three-person
+  review silently sent one link. `sent: 1` was the only symptom, and it looks
+  like a mail failure rather than a domain bug. **Only the identifiers a record
+  actually HAS may go into an idempotency key**; a record with none has no
+  identity to be a duplicate of and must be created. (The same shape as R21 —
+  an audit row cannot carry the key it duplicates — reached from the other
+  direction.)
+- **R50 — ordering by a Selection column sorts by the STORED STRING.** A board
+  that wanted "the live one first" wrote `order='state, id desc'` and got
+  `closed` before `consolidation` before `feedback` … because that is
+  alphabetical order, not lifecycle order. The Probation lens showed "Closed"
+  for a person whose second round had just been scheduled, and the live review
+  was invisible. Never let a state's importance be implied by its spelling —
+  ask the question in a domain (`state in OPEN`) and fall back, which is what
+  `pb.probation.review.for_employee()` does.
+- **R51 — `t-out` ESCAPES a plain string and only renders `markup()` raw.**
+  An `Html` field crossing JSON-RPC arrives in the browser as a plain string,
+  so a cockpit that hands it to `t-out` puts `<h4>How they were rated</h4>` on
+  the screen — the report's own source code, rendered as prose. Wrap it once
+  with `markup()` from `@odoo/owl` (the codebase's existing idiom — see
+  `pb_dashboard`), and only where the HTML was built server-side with every
+  interpolated value `escape()`d.
+- **R52 — R43 bites inside a module as easily as across one.** P5's own
+  `pb.training.track.tracks_for()` / `ensure_for_employee()` are public,
+  take a record, are called with records internally — and blew up with
+  `'int' object has no attribute 'job_id'` the first time a test called them
+  over RPC. Every public method whose argument is a record needs the
+  `_as_employee` coercion at the door, including the ones a phase writes for
+  itself.
+- **R53 — a "run it now" button must do exactly what the night does.**
+  `run_probation_automation` originally ran four of the daily job's five
+  pieces (it left out the trial-state top-up), which meant the number it
+  reported could not be compared to the morning's log — and the one piece it
+  skipped was the only one reachable for testing, because everything else in
+  the cron chain is a private method (R40).
+- **R54 — a switch that is off and does not SAY so is reported as broken.**
+  `pb_probation.auto_trigger` ships off, because the first night after install
+  would otherwise open a review and email a manager for every trial period
+  already inside its lead time. Off, the daily job COUNTS them and logs the
+  number ("3 would have had a review opened tonight"), and the lens says the
+  same thing on screen with the same number. The kill-switch/log-only first run
+  is worth copying for any phase whose cron writes to people.
+- **R55 — the live database has NO employee with a trial end date.** All 4,537
+  are `pb_probation_state = 'passed'` after the backfill, and every
+  `employee_type` is `employee`, so the `na` branch never fired in anger. A
+  phase that needs somebody mid-trial has to make one. (It also means the
+  backfill's expensive path — the ORM pass over the exceptions — was never
+  exercised at scale; the cheap path, one UPDATE over 4,537 rows, ran in
+  well under a second.)
