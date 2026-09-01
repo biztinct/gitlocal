@@ -129,6 +129,19 @@ export class PbBudgetBoard extends Component {
 
     setView(view) { this.state.view = view; }
 
+    /**
+     * The local/reporting switch, offered only when it would DO something.
+     *
+     * On a tenant whose budgets are all in the company's own money the two
+     * chips read "VND" and "VND", which is a control that changes nothing and
+     * a question nobody asked. It appears when the two are genuinely different.
+     */
+    get showCurrencyToggle() {
+        const c = this.cur;
+        return Boolean(c.local_available && c.local_code
+                       && c.local_code !== c.report_code);
+    }
+
     toggleRow(id) {
         this.state.expanded[id] = !this.state.expanded[id];
     }

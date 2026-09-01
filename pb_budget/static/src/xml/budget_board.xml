@@ -86,7 +86,7 @@
                     t-esc="tp.label"/>
           </div>
 
-          <div class="bdg-chips bdg-chips--cur" t-if="cur.local_available">
+          <div class="bdg-chips bdg-chips--cur" t-if="showCurrencyToggle">
             <button t-attf-class="bdg-chip {{ state.currency === 'local' ? 'is-on' : '' }}"
                     t-on-click="() => this.setCurrency('local')"
                     t-esc="cur.local_code"/>
@@ -149,8 +149,8 @@
           <div class="pbim-stat">
             <div class="pbim-stat-ic"><t t-out="ic('percent',18)"/></div>
             <div class="pbim-stat-tx">
-              <div class="n" t-esc="pct(kpis.burn) + ' of ' + pct(kpis.pace)"/>
-              <div class="l">money gone against year gone</div>
+              <div class="n" t-esc="pct(kpis.burn) + ' vs ' + pct(kpis.pace)"/>
+              <div class="l">money gone, year gone</div>
             </div>
           </div>
           <div t-attf-class="pbim-stat {{ kpis.hot ? 'err' : '' }}">
@@ -302,10 +302,8 @@
                       <td t-esc="xp.date"/>
                       <td t-esc="xp.name"/>
                       <td t-esc="xp.supplier"/>
-                      <td class="num">
-                        <t t-esc="Math.round(xp.amount).toLocaleString()"/>
-                        <t t-esc="xp.currency"/>
-                      </td>
+                      <td class="num"
+                          t-esc="Math.round(xp.amount).toLocaleString() + ' ' + xp.currency"/>
                     </tr>
                   </tbody>
                 </table>
@@ -482,10 +480,8 @@
                       t-key="ln_index">
                     <td t-esc="ln.department"/>
                     <td t-esc="ln.month_key"/>
-                    <td class="num">
-                      <t t-esc="Math.round(ln.amount).toLocaleString()"/>
-                      <t t-esc="ln.currency"/>
-                    </td>
+                    <td class="num"
+                        t-esc="Math.round(ln.amount).toLocaleString() + ' ' + ln.currency"/>
                     <td>
                       <span t-if="ln.exists" class="bdg-flag bdg-flag--ok">updates</span>
                       <span t-else="" class="bdg-flag">new</span>
